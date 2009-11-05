@@ -2413,7 +2413,7 @@ if (!apf.basePath) {
 })(window);*/
 
 if (location.protocol == "file:") {
-	apf.$loader = {
+	/*apf.$loader = {
 	    $settings : {},
 		setGlobalDefaults:function(settings) { // intentionally does not return an "engine" instance -- must call as stand-alone function call on $fLAB
 			this.$settings = settings;
@@ -2435,10 +2435,211 @@ if (location.protocol == "file:") {
 			return this;
 		},
 		wait:function(f){ // will ensure that the chain's previous scripts are executed before execution of scripts in subsequent chain links
-			if (f) setTimeout(function(){f();});
+			if (f) setTimeout(function(){f();}, 1000);
 			return this;
 		}
-	};
+	};*/
+	
+	(function(global){
+    	var sUNDEF = "undefined",				// constants used for compression optimization
+    		sSTRING = "string",
+    		sOBJECT = "object",
+    		sHEAD = "head",
+    		sBODY = "body",
+    		sFUNCTION = "function",
+    		sSCRIPT = "script",
+    		sSRCURI = "srcuri",
+    		sDONE = "done",
+    		sWHICH = "which",
+    		sREADYSTATE = "readyState",
+    		bTRUE = true,
+    		bFALSE = false,
+    		oDOC = global.document,
+    		oDOCLOC = oDOC.location,
+    		fSETTIMEOUT = global.setTimeout,
+    		fGETELEMENTSBYTAGNAME = function(tn){return oDOC.getElementsByTagName(tn);},
+    		fOBJTOSTRING = Object.prototype.toString,
+    		fNOOP = function(){},
+    		append_to = {},
+    		all_scripts = {},
+    		PAGEROOT = /^[^?#]*\//.exec(oDOCLOC.href)[0], // TODO: FIX THESE FOR file:/// type URIs
+    		DOCROOT = /^\w+\:\/\/\/?[^\/]+/.exec(PAGEROOT)[0],
+    		docScripts = fGETELEMENTSBYTAGNAME(sSCRIPT),
+    		global_defs = {
+    			dupe:bFALSE, // allow duplicate scripts?
+    			base:"", // base path to prepend to all non-absolute-path scripts
+    			which:sHEAD // which DOM object ("head" or "body") to append scripts to
+    		}
+    	;
+    	
+    	append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
+    	append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
+    	
+    	function canonicalScriptURI(src,base_path) {
+    		if (typeof src !== sSTRING) src = "";
+    		if (typeof base_path !== sSTRING) base_path = "";
+    		var ret = (/^\w+\:\/\//.test(src) ? "" : base_path) + src;
+    		return ((/^\w+\:\/\//.test(ret) ? "" : (ret.charAt(0) === "/" ? DOCROOT : PAGEROOT)) + ret);
+    	}
+    	function sameDomain(src) { return (canonicalScriptURI(src).indexOf(DOCROOT) === 0); }
+    	function scriptTagExists(uri) { // checks if a script uri has ever been loaded into this page's DOM
+    		var i = 0, script;
+    		while (script = docScripts[i++]) {
+    			if (typeof script.src === sSTRING && uri === canonicalScriptURI(script.src)) return bTRUE;
+    		}
+    		return bFALSE;
+    	}
+    	function engine(queueExec,opts) {
+    		queueExec = !(!queueExec);
+    		if (typeof opts === sUNDEF) opts = global_defs;
+    		
+    		var ready = bFALSE,
+    			_which = opts.which,
+    			_base_path = opts.base,
+    			waitFunc = fNOOP,
+    			scripts_loading = bFALSE,
+    			publicAPI,
+    			scripts = {},
+    			exec = []
+    		;
+    		
+    		function isScriptLoaded(elem,scriptentry) {
+    			if ((elem[sREADYSTATE] && elem[sREADYSTATE]!=="complete" && elem[sREADYSTATE]!=="loaded") || scriptentry[sDONE]) { return bFALSE; }
+    			elem.onload = elem.onreadystatechange = null; // prevent memory leak
+    			return bTRUE;
+    		}
+    		function handleScriptLoad(elem,scriptentry) {
+    			if (!(isScriptLoaded(elem,scriptentry))) return;
+    			scriptentry[sDONE] = bTRUE;
+    
+    			for (var key in scripts) {
+    				if (scripts.hasOwnProperty(key) && !(scripts[key][sDONE])) return;
+    			}
+    			ready = bTRUE;
+    			if (ready) waitFunc();
+    		}
+    		function createScriptTag(scriptentry,src,type,charset) {
+    			if (append_to[scriptentry[sWHICH]][0] === null) { // append_to object not yet ready
+    				fSETTIMEOUT(arguments.callee,25); 
+    				return;
+    			}
+    			var scriptElem = oDOC.createElement(sSCRIPT), fSETATTRIBUTE = function(attr,val){scriptElem.setAttribute(attr,val);};
+    			fSETATTRIBUTE("type",type);
+    			if (typeof charset === sSTRING) fSETATTRIBUTE("charset",charset);
+    			scriptElem.onload = scriptElem.onreadystatechange = function(){handleScriptLoad(scriptElem,scriptentry);};
+    			fSETATTRIBUTE("src",src);
+    			append_to[scriptentry[sWHICH]][0].appendChild(scriptElem);
+    		}
+    		function loadScript(o) {
+    			if (typeof o.allowDup === sUNDEF) o.allowDup = opts.dupe;
+    			var src = o.src, type = o.type, charset = o.charset, allowDup = o.allowDup, 
+    				src_uri = canonicalScriptURI(src,_base_path), scriptentry;
+    			if (typeof type !== sSTRING) type = "text/javascript";
+    			if (typeof charset !== sSTRING) charset = null;
+    			allowDup = !(!allowDup);
+
+    			if (!allowDup && 
+    				(
+    					(typeof all_scripts[src_uri] !== sUNDEF && all_scripts[src_uri] !== null) || 
+    					scriptTagExists(src_uri)
+    				)
+    			) {
+    				return;
+    			}
+    			if (typeof scripts[src_uri] === sUNDEF) scripts[src_uri] = {};
+    			scriptentry = scripts[src_uri];
+    			if (typeof scriptentry[sWHICH] === sUNDEF) scriptentry[sWHICH] = _which;
+    			scriptentry[sDONE] = bFALSE;
+    			scriptentry[sSRCURI] = src_uri;
+    			scripts_loading = bTRUE;
+    			
+    			all_scripts[scriptentry[sSRCURI]] = bTRUE;
+    			createScriptTag(scriptentry,src_uri,type,charset);
+    		}
+    		function onlyQueue(execBody) {
+    			exec.push(execBody);
+    		}
+    		function queueOrExecute(execBody) { // helper for publicAPI functions below
+    			if (queueExec) onlyQueue(execBody);
+    			else execBody();
+    		}
+    		function serializeArgs(args) {
+    			var sargs = [];
+    			for (var i=0; i<args.length; i++) {
+    				if (fOBJTOSTRING.call(args[i]) === "[object Array]") sargs = sargs.concat(serializeArgs(args[i]));
+    				else sargs[sargs.length] = args[i];
+    			}
+    			return sargs;
+    		}
+    				
+    		publicAPI = {
+    			script:function() {
+    				var args = serializeArgs(arguments);
+    				for (var i=0; i<args.length; i++) {
+    					var arg = (typeof args[i] === sOBJECT) ? args[i] : {src:args[i]};
+    					loadScript(arg);
+    				}
+    				return publicAPI;
+    			},
+    			wait:function(func) {
+    				if (typeof func !== sFUNCTION) func = fNOOP;
+    				// On this current chain's waitFunc function, tack on call to trigger the queue for the *next* engine 
+    				// in the chain, which will be executed when the current chain finishes loading
+    				var e = engine(bTRUE,opts),	// 'bTRUE' tells the engine to be in queueing mode
+    					triggerNextChain = e.trigger, // store ref to e's trigger function for use by 'wfunc'
+    					wfunc = function(){ try { func(); } catch(err) {} triggerNextChain(); };
+    				delete e.trigger; // remove the 'trigger' property from e's public API, since only used internally
+    				var fn = function(){
+    					if (scripts_loading && !ready) waitFunc = wfunc;
+    					else fSETTIMEOUT(wfunc,0);
+    				};
+    				
+    				if (queueExec && !scripts_loading) onlyQueue(fn)
+    				else queueOrExecute(fn);
+    				return e;
+    			}
+    		};
+    		publicAPI.block = publicAPI.wait;	// alias "block" to "wait" -- "block" is now deprecated
+    		if (queueExec) {
+    			// if queueing, return a function that the previous chain's waitFunc function can use to trigger this 
+    			// engine's queue. NOTE: this trigger function is captured and removed from the public chain API before return
+    			publicAPI.trigger = function() {
+    				var i=0, fn; 
+    				while (fn = exec[i++]) fn();
+    				exec = []; 
+    			}
+    		}
+    		return publicAPI;
+    	}
+    	function extendOpts(opts) {
+    		var k, newOpts = {}, optMappings = {"AppendTo":"which","AllowDuplicates":"dupe","BasePath":"base"};
+    		newOpts.order = !(!global_defs.order);
+    		for (k in optMappings) {
+    			if (typeof global_defs[optMappings[k]] !== sUNDEF) newOpts[optMappings[k]] = (typeof opts[k] !== sUNDEF) ? opts[k] : global_defs[optMappings[k]];
+    		}
+    		newOpts.preserve = !(!newOpts.preserve);
+    		newOpts.dupe = !(!newOpts.dupe);
+    		newOpts.base = (typeof newOpts.base === sSTRING) ? newOpts.base : "";
+    		newOpts.which = (newOpts.which === sHEAD || newOpts.which === sBODY) ? newOpts.which : sHEAD;
+    		return newOpts;
+    	}
+    	
+    	apf.$loader = {
+    		setGlobalDefaults:function(gdefs) { // intentionally does not return an "engine" instance -- must call as stand-alone function call on $fLAB
+    			global_defs = extendOpts(gdefs);
+    		},
+    		setOptions:function(opts){ // set options per chain
+    			return engine(bFALSE,extendOpts(opts));
+    		},
+    		script:function(){ // will load one or more scripts
+    			return engine().script.apply(null,arguments);
+    		},
+    		wait:function(){ // will ensure that the chain's previous scripts are executed before execution of scripts in subsequent chain links
+    			return engine().wait.apply(null,arguments);
+    		}
+    	};
+    	apf.$loader.block = apf.$loader.wait;	// alias "block" to "wait" -- "block" is now deprecated
+    })(window);
 }
 else {
     (function(global){
