@@ -23,24 +23,35 @@
 
 /**
  * This abstraction is used for creating block elements which can be moved by
- * mouse or keyboard, rotated with 90 degreed steps, flipped horizontally and vertically
- * and resized on the fly using the mouse. Each block can have inputs defined in
- * a template file. Inputs allow creating stiff connections between block
- * elements. If a block does not have inputs, the connection is created in the most optimal way.
+ * mouse or keyboard, rotated with 90 degreed steps, flipped horizontally and
+ * vertically and resized on the fly using the mouse. Each block can have inputs
+ * defined in a template file. Inputs allow creating stiff connections between
+ * block elements. If a block does not have inputs, the connection is created in
+ * the most optimal way.
  *
  * @event onmousedown   Fires when mouse button is pressed on document body
  * @event onmousemove   Fires when mouse pointer is moving over document body
- * @event onmouseup     Fires when mouse button is released while the pointer is over the document body
+ * @event onmouseup     Fires when mouse button is released while the pointer is
+ *                      over the document body
  *
- * @attribute {Boolean} isMoved              the state of movement. When connection is moving, this attribute is set to true. It gives information to other methods what happens with the connection element.
+ * @attribute {Boolean} isMoved              the state of movement. When connection
+ *                                           is moving, this attribute is set to true.
+ *                                           It gives information to other methods
+ *                                           what happens with the connection element.
  *     Possible values:
  *     true   block moves
  *     false  block don't move
- * @attribute {Object}  objCanvases          storage workareas objects, it allows an easy access to them if need 
- * @attribute {Object}  connectionsTemp      keeps information about source block and its input in moment of connection creation. (mode must be set to "connection-add")
- * @attribute {Object}  connectionsManager   manage of entire connection creation process
+ * @attribute {Object}  objCanvases          storage workareas objects, it allows
+ *                                           an easy access to them if need
+ * @attribute {Object}  connectionsTemp      keeps information about source block
+ *                                           and its input in moment of connection
+ *                                           creation. (mode must be set to
+ *                                           "connection-add")
+ * @attribute {Object}  connectionsManager   manage of entire connection creation
+ *                                           process
  * @attribute {Number}  sSize                connection line width
- * @attrubute {Number}  fsSize               define size of first and last connection segment
+ * @attrubute {Number}  fsSize               define size of first and last connection
+ *                                           segment
  *
  * @private
  * @default_private
@@ -68,8 +79,8 @@ apf.flow = {
             e = (e || event);
 
             /* Looking for Block element */
-            var target = e.target || e.srcElement;
-            var isDraged = false;
+            var target   = e.target || e.srcElement,
+                isDragged = false;
 
             if (target.tagName == 'HTML')
                 return;
@@ -91,20 +102,19 @@ apf.flow = {
                 t = parseInt(target.style.top),
                 newTop, newLeft;
             //Snap
-            var snap  = objBlock.canvas.snap;
+            var snap  = objBlock.canvas.snap,
                 gridW = objBlock.canvas.gridW,
                 gridH = objBlock.canvas.gridH;
 
             //objBlock.canvas.htmlElement.scrollLeft = Math.round(l+dx+target.offsetWidth);
 
-            if (e.preventDefault) {
+            if (e.preventDefault)
                 e.preventDefault();
-            }
 
             document.body.onmousemove = function(e) {
                 e = (e || event);
 
-                isDraged = true;
+                isDragged = true;
 
                 dx = e.clientX - sx;
                 dy = e.clientY - sy;
@@ -114,7 +124,7 @@ apf.flow = {
 
                 if (snap) {
                     target.style.left = Math.round(newLeft / gridW) * gridW + "px";
-                    target.style.top  = Math.round(newTop / gridH) * gridH + "px";
+                    target.style.top  = Math.round(newTop  / gridH) * gridH + "px";
                 }
                 else {
                     target.style.left = newLeft + "px";
@@ -126,17 +136,17 @@ apf.flow = {
                 apf.flow.onblockmove();
 
                 return false;
-            }
+            };
 
             document.body.onmouseup = function(e) {
                 document.body.onmousemove = null;
 
-                if (apf.flow.onaftermove && isDraged) {
+                if (apf.flow.onaftermove && isDragged) {
                     apf.flow.onaftermove(dy, dx);
 
-                    isDraged = false;
+                    isDragged = false;
                 }
-            }
+            };
         };
     }
 };
@@ -159,8 +169,8 @@ apf.flow.canvas = function(htmlElement) {
     this.htmlConnectors = {};
     
     this.scrollPointer  = null;
-    this.lastTop  = 0;
-    this.lastLeft = 0;
+    this.lastTop        = 0;
+    this.lastLeft       = 0;
 
     this.mode           = "normal";
     this.disableremove  = false;
@@ -188,7 +198,7 @@ apf.flow.canvas = function(htmlElement) {
                 con.selected = false;
             }
         }
-    }
+    };
 
     this.setMode = function(mode) {
         this.mode = mode;
@@ -241,10 +251,11 @@ apf.flow.canvas = function(htmlElement) {
     
     this.getWidth = function() {
         return this.htmlElement.offsetWidth;
-    }
+    };
+
     this.getHeight = function() {
         return this.htmlElement.offsetHeight;
-    }
+    };
 };
 
 /**
@@ -262,15 +273,18 @@ apf.flow.canvas = function(htmlElement) {
  *        Possible values:
  *        false   block element is unlocled
  *        true    block element is locked
- *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is flipped automaticly, default is false
+ *    {Boolean}   flipv   whether to mirror the block over the vertical axis,
+ *                        background image is flipped automaticly, default is false
  *        Possible values:
  *        true    block element is flipped
  *        false   block element is not flipped
- *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is flipped automaticly. default is false
+ *    {Boolean}   fliph   whether to mirror the block over the horizontal axis,
+ *                        background image is flipped automaticly. default is false
  *        Possible values:
  *        true    block element is flipped
  *        false   block element is not flipped
- *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, default is 0
+ *    {Number}    rotation   the rotation in degrees clockwise, background image
+ *                           is rotated automaticly, default is 0
  *        Possible values:
  *        0     0   degrees rotation
  *        90    90  degrees rotation
@@ -278,21 +292,26 @@ apf.flow.canvas = function(htmlElement) {
  *        270   270 degrees rotation
  *    {Object}   inputList   Block's inputs list, block could haven't any inputs
  *        Properties:
- *        {Number}  x          position in pixels relative to Block's horizontal dimension
- *        {Number}  y          position in pixels relative to Block's vertical dimension
+ *        {Number}  x          position in pixels relative to Block's horizontal
+ *                             dimension
+ *        {Number}  y          position in pixels relative to Block's vertical
+ *                             dimension
  *        {String}  position   edge where input is placed
  *            Possible values:
  *            top      input is placed on top edge of block
  *            right    input is placed on right edge of block
  *            bottom   input is placed on bottom edge of block
  *            left     input is placed on left edge of block
- *    {String}       type         name of block with special abilities, which could set in template file
+ *    {String}       type         name of block with special abilities, which
+ *                                could set in template file
  *    {String}       picture      Path to image file.
  *    {Number}       dwidth       the minimal horizontal size of Block element
  *    {Number}       dheight      the minimal vertical size of Block element
  *    {Boolean}      scalex       resizing in horizontal plane
  *    {Boolean}      scaley       resizing in vertical plane
- *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
+ *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only
+ *                                is not allowed. Resizing in two dimensions
+ *                                plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
  *    {String}       caption      description placed under block element
  * @constructor
@@ -308,7 +327,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
     this.image         = null;
     this.other         = other;
 
-    var _self = this;
+    var _self          = this;
 
     this.destroy = function() {
         //removing events
@@ -328,21 +347,23 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
     this.initBlock = function() {
         this.canvas.htmlBlocks[this.id] = this;
 
-        var bChilds = this.htmlElement.childNodes;
-        for (var i = 0, l = bChilds.length; i < l; i++) {
-            var tag = bChilds[i].tagName;
-            if (tag) {
-                if (tag.toLowerCase() == "div") {
-                   var dChilds = bChilds[i].childNodes;
+        var tag, dChilds, j, l2,
+            bChilds = this.htmlElement.childNodes,
+            i       = 0,
+            l       = bChilds.length
+        for (; i < l; i++) {
+            tag = bChilds[i].tagName;
+            if (tag && (tag = tag.toLowerCase())) {
+                if (tag == "div") {
+                   dChilds = bChilds[i].childNodes;
 
-                   for (var j = 0; j < dChilds.length; j++) {
-                       if(dChilds[j].tagName.toLowerCase() == "img") {
-                           this.imageContainer = bChilds[i];
-                           this.image = dChilds[j];
-                       }
+                   for (j = 0, l2 = dChilds.length; j < l2; j++) {
+                       if (dChilds[j].tagName.toLowerCase() != "img") continue;
+                       this.imageContainer = bChilds[i];
+                       this.image = dChilds[j];
                    }
                 }
-                else if (tag.toLowerCase() == "blockquote") {
+                else if (tag == "blockquote") {
                     this.caption = bChilds[i];
                 }
             }
@@ -377,21 +398,22 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     this.updateOutputs = function() {
-        var inp = this.other.inputList;
+        var id, input, pos, _x, _y,
+            inp = this.other.inputList;
 
-        for (var id in inp) {
-            var input = this.htmlOutputs[id]
+        for (id in inp) {
+            input = this.htmlOutputs[id]
                 ? this.htmlOutputs[id]
                 : new apf.flow.input(this, id);
 
             if (!this.htmlOutputs[id])
                 this.htmlOutputs[id] = input;
-            var pos = this.updateInputPos(inp[id]);
+            pos = this.updateInputPos(inp[id]);
 
-            var _x = pos[0] - (pos[2] == "left" || pos[2] == "right"
+            _x = pos[0] - (pos[2] == "left" || pos[2] == "right"
                 ? Math.ceil(parseInt(apf.getStyle(input.htmlElement, "width"))/2)
                 : Math.ceil(apf.flow.sSize/2));
-            var _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom"
+            _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom"
                 ? Math.ceil(parseInt(apf.getStyle(input.htmlElement, "height"))/2)
                 : Math.ceil(apf.flow.sSize/2));
 
@@ -448,7 +470,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                     "-" + (Math.ceil(c.offsetHeight / 2)) + "px";
             }
         }
-    }
+    };
 
     /**
      * Moves block to new x, y position
@@ -457,21 +479,20 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {Number}   left   horizontal coordinate
      */
     this.moveTo = function(top, left) {
-        var t = parseInt(this.htmlElement.style.top);
-        var l = parseInt(this.htmlElement.style.left);
+        var t = parseInt(this.htmlElement.style.top),
+            l = parseInt(this.htmlElement.style.left);
 
         if (t !== top || l !== left) {
             this.htmlElement.style.top  = top + "px";
             this.htmlElement.style.left = left + "px";
             
-            var st = this.canvas.getScrollTop();
-            var sl = this.canvas.getScrollLeft();
+            //var st = this.canvas.getScrollTop();
+            //var sl = this.canvas.getScrollLeft();
             
             if (this.canvas.lastTop < top || top > this.canvas.getHeight() - 100) {
                 this.canvas.moveTopScrollPointer(top);
                 this.canvas.scrollTop();
             }
-
             if (this.canvas.lastLeft < left && left > this.canvas.getWidth() - 100) {
                 this.canvas.moveLeftScrollPointer(left);
                 this.canvas.scrollLeft();
@@ -486,16 +507,16 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {Number}   height   new horizontal block size
      */
     this.resize = function(width, height) {
-        var w = parseInt(this.htmlElement.style.width);
-        var h = parseInt(this.htmlElement.style.height);
+        var w = parseInt(this.htmlElement.style.width),
+            h = parseInt(this.htmlElement.style.height);
 
         if (w !== width || h !== height) {
             this.htmlElement.style.width  = this.imageContainer.style.width
-                                      = width + "px";
+                                    = width  + "px";
             this.htmlElement.style.height = this.imageContainer.style.height
-                                      = height + "px";
+                                    = height + "px";
             this.image.style.height = height + "px";
-            this.image.style.width = width + "px";
+            this.image.style.width  = width  + "px";
             this.image.style.filter = "";
         }
     }
@@ -559,19 +580,19 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
         var p = this.image;
         if (p.style.display == "none")
             return;
-        else
-            p.style.display = "block";
+        p.style.display = "block";
 
         p.angle = !whence
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;
 
-        var rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle) / 180;
-        var costheta = Math.cos(rotation);
-        var sintheta = Math.sin(rotation);
+        var canvas,
+            rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle) / 180,
+            costheta = Math.cos(rotation),
+            sintheta = Math.sin(rotation);
 
         if (document.all && !window.opera) {
-            var canvas          = document.createElement('img');
+            canvas              = document.createElement('img');
             canvas.src          = p.src;
             canvas.style.height = p.height + "px";
             canvas.style.width  = p.width + "px";
@@ -591,7 +612,7 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
             }
         }
         else {
-            var canvas = document.createElement('canvas');
+            canvas = document.createElement('canvas');
             if (!p.oImage) {
                 canvas.oImage = new Image();
                 canvas.oImage.src = p.src;
@@ -621,20 +642,14 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                     break;
             }
 
-            if (rotation <= Math.PI / 2) {
+            if (rotation <= Math.PI / 2)
                 context.translate(sintheta * canvas.oImage.height, 0);
-            }
-            else if (rotation <= Math.PI) {
-                context.translate(canvas.width,
-                                  -costheta * canvas.oImage.height);
-            }
-            else if (rotation <= 1.5 * Math.PI) {
-                context.translate(-costheta * canvas.oImage.width,
-                                  canvas.height);
-            }
-            else {
+            else if (rotation <= Math.PI)
+                context.translate(canvas.width, -costheta * canvas.oImage.height);
+            else if (rotation <= 1.5 * Math.PI)
+                context.translate(-costheta * canvas.oImage.width, canvas.height);
+            else
                 context.translate(0, -sintheta * canvas.oImage.width);
-            }
             context.rotate(rotation);
 
             try {
@@ -655,10 +670,9 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * element have. Notified object must have onMove function).
      */
     this.onMove = function() {
-        apf.console.info(this.moveListeners.length)
-        for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
+        //apf.console.info(this.moveListeners.length)
+        for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++)
             ml[i].onMove();
-        }
     };
 
     /**
@@ -684,19 +698,25 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * @return {Object}   new input position
      */
     this.updateInputPos = function(input, dPos) {
-        var b = this.htmlElement,
-            o = this.other,
-            w = parseInt(b.style.width), h = parseInt(b.style.height),
-            ior = input ? input.position : "auto",
-            x = input ? input.x : w / 2, y = input ? input.y : h / 2,
-            dw = o.dwidth, dh = o.dheight,
-            fv = o.flipv, fh = o.fliph, r = o.rotation;
-        var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
-                         "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
-        var sSize = apf.flow.sSize, hSize = Math.floor(apf.flow.sSize/2);
+        var b         = this.htmlElement,
+            o         = this.other,
+            w         = parseInt(b.style.width),
+            h         = parseInt(b.style.height),
+            ior       = input ? input.position : "auto",
+            x         = input ? input.x : w / 2,
+            y         = input ? input.y : h / 2,
+            dw        = o.dwidth,
+            dh        = o.dheight,
+            fv        = o.flipv,
+            fh        = o.fliph,
+            r         = o.rotation,
+            positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
+                         "top" : 0, "right" : 1, "bottom" : 2, "left" : 3},
+            sSize     = apf.flow.sSize,
+            hSize     = Math.floor(apf.flow.sSize / 2);
 
         /* Changing input floating */
-        ior = ior == "auto"
+        ior = (ior == "auto")
             ? "auto"
             : positions[(positions[ior] + parseInt(r) / 90)%4];
 
@@ -707,26 +727,14 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                 ior = ior == "left" ? "right" : (ior == "right" ? "left" : ior);
 
             /* If block is resized, block keep proportion */
-            x = r == 90 || r == 270 ? x*h / dh : x*w / dw;
-            y = r == 90 || r == 270 ? y*w / dw : y*h / dh;
+            x = (r == 90 || r == 270) ? x*h / dh : x*w / dw;
+            y = (r == 90 || r == 270) ? y*w / dw : y*h / dh;
 
             /* If rotate, change inputs coordinates */
             var _x = x, _y = y;
 
-            _x = r == 90
-                ? w - y - 1
-                : (r == 180
-                    ? w - x - 1
-                    : (r == 270
-                        ? y
-                        : x));
-            _y = r == 90
-                ? x
-                : (r == 180
-                    ? h - y - 1
-                    : (r == 270
-                        ? h - x - 1
-                        : y));
+            _x = (r == 90) ? w - y - 1 : (r == 180 ? w - x - 1 : (r == 270 ? y : x));
+            _y = (r == 90) ? x : (r == 180 ? h - y - 1 : (r == 270 ? h - x - 1 : y));
 
             /* Flip Vertical and Horizontal */
             _x = fh ? w - _x : _x;
@@ -743,8 +751,10 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                 : _y;
         }
         else {
-            var st = parseInt(b.style.top), sl = parseInt(b.style.left),
-                dt = dPos[1], dl = dPos[0], dw = dPos[2], dh = dPos[3];
+            var st = parseInt(b.style.top),
+                sl = parseInt(b.style.left),
+                dt = dPos[1], dl = dPos[0];
+            dw = dPos[2], dh = dPos[3];
 
             if (st + h * 1.5 < dt) {
                 ior = "bottom";
@@ -753,36 +763,28 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                 ior = "top";
             }
             else {
-                if (sl > dl + dw / 2) {
+                if (sl > dl + dw / 2)
                     ior = "left";
-                }
-                else if (sl < dl) {
+                else if (sl < dl)
                     ior = "right";
-                }
-                else {
+                else
                     ior = "left";
-                }
             }
 
-            _x = ior == "top" || ior == "bottom"
+            _x = (ior == "top" || ior == "bottom")
                 ? w/2 - hSize
-                : ior == "right"
-                    ? w
-                    : 0;
-            _y = ior == "left" || ior == "right"
+                : ior == "right" ? w : 0;
+            _y = (ior == "left" || ior == "right")
                 ? h/2 - hSize
-                : ior == "bottom"
-                    ? h
-                    : 0;
+                : ior == "bottom" ? h : 0;
         }
         return [_x, _y, ior];
     };
 
     this.htmlElement.onmouseup = function(e) {
-        if (!_self.other.type && _self.canvas.mode == "connection-add") {
+        if (!_self.other.type && _self.canvas.mode == "connection-add")
             apf.flow.connectionsManager.addBlock(_self, 0);
-        }
-    }
+    };
 };
 
 /**
@@ -835,30 +837,29 @@ apf.flow.input = function(objBlock, number) {
         e.cancelBubble = true;
         apf.flow.isMoved = true;
 
-        var pn         = _self.htmlElement.parentNode,
-            canvas     = _self.objBlock.canvas,
+        var canvas     = _self.objBlock.canvas,
+            pn         = _self.htmlElement.parentNode,
             mode       = canvas.mode;
 
-        if (e.preventDefault) {
+        if (e.preventDefault)
             e.preventDefault();
-        }
 
         vMB = new apf.flow.virtualMouseBlock(canvas, e);
 
         var con = apf.flow.findConnector(_self.objBlock, _self.number);
         if (con) {
             var source = con.source
-                ? con.connector.objDestination
-                : con.connector.objSource;
-            var destination = con.source
-                ? con.connector.objSource
-                : con.connector.objDestination;
-            var sourceInput = con.source
-                ? con.connector.other.input
-                : con.connector.other.output;
-            var destinationInput = con.source
-                ? con.connector.other.output
-                : con.connector.other.input;
+                    ? con.connector.objDestination
+                    : con.connector.objSource,
+                destination = con.source
+                    ? con.connector.objSource
+                    : con.connector.objDestination,
+                sourceInput = con.source
+                    ? con.connector.other.input
+                    : con.connector.other.output,
+                destinationInput = con.source
+                    ? con.connector.other.output
+                    : con.connector.other.input;
             /* Temporary connection must keeping output direction */
             vMB.other.inputList[1].position = destination.updateInputPos(
                 destination.other.inputList[destinationInput])[2];
@@ -884,8 +885,7 @@ apf.flow.input = function(objBlock, number) {
 
         document.body.onmousemove = function(e) {
             e = (e || event);
-
-            if(vMB)
+            if (vMB)
                 vMB.onMove(e);
         };
 
@@ -971,8 +971,7 @@ apf.flow.connectionsManager = new (function() {
  */
 apf.flow.virtualMouseBlock = function(canvas) {
     var hook = [0, 0, "virtual"];
-    var _self = this;
-    this.canvas = canvas;
+    this.canvas      = canvas;
     this.htmlElement = document.createElement('div');
 
     this.canvas.htmlElement.appendChild(this.htmlElement);
@@ -981,7 +980,7 @@ apf.flow.virtualMouseBlock = function(canvas) {
     this.moveListeners             = new Array();
     this.draggable                 = 0;
     this.htmlOutputs               = {};
-    this.htmlOutputs[1] = {
+    this.htmlOutputs[1]            = {
         htmlElement : this.htmlElement.appendChild(document.createElement("div")),
         number      : 1,
         lastUpdate  : hook
@@ -996,12 +995,13 @@ apf.flow.virtualMouseBlock = function(canvas) {
 
     this.onMove = function(e) {
         //@todo apf3.x see why this is twice (2 * this.canvas.getWindowScrollLeft() - for Top either)
-        this.htmlElement.style.left = (e.clientX + 2 + this.canvas.getWindowScrollLeft() + this.canvas.getScrollLeft() - sPos[0]) + "px";
-        this.htmlElement.style.top = (e.clientY + 2 + this.canvas.getWindowScrollTop() + this.canvas.getScrollTop() - sPos[1]) + "px";
+        this.htmlElement.style.left = (e.clientX + 2 + this.canvas.getWindowScrollLeft()
+            + this.canvas.getScrollLeft() - sPos[0]) + "px";
+        this.htmlElement.style.top  = (e.clientY + 2 + this.canvas.getWindowScrollTop()
+            + this.canvas.getScrollTop() - sPos[1]) + "px";
 
-        for (var i = 0, l = this.moveListeners.length; i < l; i++) {
+        for (var i = 0, l = this.moveListeners.length; i < l; i++)
             this.moveListeners[i].onMove();
-        }
     };
 
     this.destroy = function() {
@@ -1071,19 +1071,18 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     this.htmlElement     = htmlElement;
     this.virtualSegment  = null;
 
-    var sSize            = apf.flow.sSize; //Segment size
-    var fsSize           = apf.flow.fsSize; //First segment size
-    var hSize            = Math.floor(sSize/2);
+    var sSize            = apf.flow.sSize, //Segment size
+        fsSize           = apf.flow.fsSize, //First segment size
+        hSize            = Math.floor(sSize / 2),
 
-    var sourceHtml       = this.objSource.htmlElement;
-    var destinationHtml  = this.objDestination.htmlElement;
+        sourceHtml       = this.objSource.htmlElement,
+        destinationHtml  = this.objDestination.htmlElement,
 
-    var _self = this;
+        _self = this;
 
     this.initConnector = function() {
-        if (!htmlElement.getAttribute("id")) {
+        if (!htmlElement.getAttribute("id"))
             apf.setUniqueHtmlId(htmlElement);
-        }
         objCanvas.htmlConnectors[htmlElement.getAttribute("id")] = this;
 
         this.objSource.moveListeners.push(this);
@@ -1100,22 +1099,22 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         this.i2 = other.input && this.objDestination.other.inputList[other.input]
             ? this.objDestination.other.inputList[other.input]
             : {x : 0, y : 0, position : "auto"};
-    }
+    };
 
     this.destroy = function() {
-        _self.deselectInputs("Selected");
-        var sl = this.objSource.moveListeners;
-        for (var i = 0, l = sl.length; i < l; i++) {
-            if (sl[i] == this) {
+        this.deselectInputs("Selected");
+        var sl = this.objSource.moveListeners,
+            i  = 0,
+            l  = sl.length;
+        for (; i < l; i++) {
+            if (sl[i] == this)
                 this.objSource.moveListeners.removeIndex(i);
-            }
         }
 
         var dl = this.objDestination.moveListeners;
-        for (var i = 0, l = dl.length; i < l; i++) {
-            if (dl[i] == this) {
+        for (i = 0, l = dl.length; i < l; i++) {
+            if (dl[i] == this)
                 this.objDestination.moveListeners.removeIndex(i);
-            }
         }
         objCanvas.removeConnector(this.htmlElement.getAttribute("id"));
     };
@@ -1131,7 +1130,8 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     };
 
     this.draw = function() {
-        var l = [],
+        var sIPos, dIPos,
+            l = [],
             s = [parseInt(sourceHtml.style.left),
                  parseInt(sourceHtml.style.top)],
             d = [parseInt(destinationHtml.style.left),
@@ -1144,12 +1144,12 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         this.htmlSegments = [];
 
         if (this.i1.position == "auto" || this.i2.position == "auto") {
-            var sIPos = this.objSource.updateInputPos(this.i1, d);
-            var dIPos = this.objDestination.updateInputPos(this.i2, s);
+            sIPos = this.objSource.updateInputPos(this.i1, d);
+            dIPos = this.objDestination.updateInputPos(this.i2, s);
         }
         else {
-            var sIPos = this.objSource.htmlOutputs[other.output].lastUpdate;
-            var dIPos = this.objDestination.htmlOutputs[other.input].lastUpdate;
+            sIPos = this.objSource.htmlOutputs[other.output].lastUpdate;
+            dIPos = this.objDestination.htmlOutputs[other.input].lastUpdate;
         }
 
         var sO = sIPos[2];
@@ -1161,81 +1161,91 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         d[0] += dIPos[0];
         d[1] += dIPos[1];
 
-        if (sO !== "virtual") {
+        if (sO !== "virtual")
             s = this.createSegment(s, [fsSize, sO], true);
-        }
 
-        if (dO !== "virtual") {
+        if (dO !== "virtual")
             d = this.createSegment(d, [fsSize, dO], true);
-        }
 
         l = s;
         var position = s[0] > d[0]
-                 ? (s[1] > d[1]
-                     ? "TL" : (s[1] < d[1] ? "BL" : "ML"))
+                 ? (s[1] > d[1] ? "TL" : (s[1] < d[1] ? "BL" : "ML"))
                  : (s[0] < d[0]
-                     ? (s[1] > d[1]
-                         ? "TR" : (s[1] < d[1] ? "BR" : "MR"))
-                     : (s[1] > d[1]
-                         ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
+                     ? (s[1] > d[1] ? "TR" : (s[1] < d[1] ? "BR" : "MR"))
+                     : (s[1] > d[1] ? "TM" : (s[1] < d[1] ? "MM" : "BM"))),
 
-        var condition = position
-                      + (sO == "left"
-                          ? 1
-                          : (sO == "right"
-                              ? 2
-                              : sO == "top"
-                                  ? 4
-                                  : 8))
-                      + (dO == "left"
-                          ? 1
-                          : (dO == "right"
-                              ? 2
-                              : dO == "top"
-                                  ? 4
-                                  : 8));
+            condition = position
+                      + (sO == "left" ? 1 : (sO == "right" ? 2 : sO == "top" ? 4 : 8))
+                      + (dO == "left" ? 1 : (dO == "right" ? 2 : dO == "top" ? 4 : 8));
     //rot.setValue(condition)
 
         switch (condition) {
             case "TR41":
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? d[0] - s[0]
+                    : Math.ceil(d[0] - s[0]), "right"]);
                 break;
             case "TR44":
             case "TR14":
             case "TR11":
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
                 break;
             case "BR22":
             case "BR24":
             case "BR42":
             case "BR44":
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil(Math.abs(d[1] - s[1])), "bottom"]);
                 break;
             case "BR41":
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
                 l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : Math.ceil((d[0] - s[0]) / 2), "right"]);
+                l = this.createSegment(l, [apf.isGecko 
+                    ? (d[0] - s[0]) / 2
+                    : Math.ceil((d[0] - s[0]) / 2), "right"]);
                 break;
             case "BR48":
             case "BR28":
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "BR21":
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[1] - s[1]
+                    : Math.ceil(d[1] - s[1]), "bottom"]);
                 l = this.createSegment(l, [parseInt((d[0] - s[0]) / 2)+1, "right"]);
                 break;
             case "TL44":
             case "TL42":
             case "TL24":
             case "TL22":
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0]
+                    : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TR21":
             case "TR24":
@@ -1245,118 +1255,196 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "TR24":
             case "TR81":
             case "TR84":
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? (d[0] - s[0]) / 2 : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[0] - s[0]) / 2
+                    : (d[0] - s[0]) / 2, "right"]);
                 break;
             case "BR18":
             case "BR88":
             case "BR81":
             case "BR11":
                 l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.ceil(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[0] - s[0]
+                    : Math.ceil(d[0] - s[0]), "right"]);
                 break;
             case "BR14":
-                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[1] - s[1]) / 2
+                    : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BR84":
             case "BR82":
             case "BR12":
-                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[1] - s[1]) / 2
+                    : Math.ceil((d[1] - s[1]) / 2) , "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
                 l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
                 break;
             case "BL84":
             case "BL24":
             case "BL21":
-                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [apf.isGecko ? (d[1] - s[1]) / 2 : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[1] - s[1]) / 2
+                    : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0]
+                    : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (d[1] - s[1]) / 2
+                    : Math.ceil((d[1] - s[1]) / 2), "bottom"]);
                 break;
             case "BL11":
             case "BL14":
             case "BL41":
             case "BL44":
             case "BL81":
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0]
+                    : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[1] - s[1]
+                    : Math.ceil(d[1] - s[1]), "bottom"]);
                 break;
             case "BL12":
             case "BL18":
             case "BL42":
             case "BL48":
-                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[0] - d[0]) / 2
+                    : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[1] - s[1]
+                    : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[0] - d[0]) / 2
+                    : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "BL88":
             case "BL82":
             case "BL28":
             case "BL22":
-                l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[1] - s[1]
+                    : Math.ceil(d[1] - s[1]), "bottom"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0]
+                    : Math.ceil(s[0] - d[0]), "left"]);
                 break;
             case "TL88":
             case "TL81":
             case "TL18":
             case "TL11":
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0]
+                    : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             case "TL41":
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.ceil((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.ceil((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TL48":
             case "TL28":
             case "TL21":
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TL12":
             case "TL14":
             case "TL82":
             case "TL84":
-                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                l = this.createSegment(l, [apf.isGecko ? (s[0] - d[0]) / 2 : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[0] - d[0]) / 2
+                    : (s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[0] - d[0]) / 2
+                    : (s[0] - d[0]) / 2, "left"]);
                 break;
             case "TR12":
             case "TR18":
             case "TR42":
             case "TR48":
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
-                 l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
-                l = this.createSegment(l, [apf.isGecko ? (s[1] - d[1]) / 2 : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.floor((s[1] - d[1]) / 2), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? (s[1] - d[1]) / 2
+                    : Math.floor((s[1] - d[1]) / 2), "top"]);
                 break;
             case "TR22":
             case "TR28":
             case "TR82":
             case "TR88":
-                l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
-                l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? d[0] - s[0]
+                    : Math.floor(d[0] - s[0]), "right"]);
+                l = this.createSegment(l, [apf.isGecko
+                    ? s[1] - d[1]
+                    : Math.ceil(s[1] - d[1]), "top"]);
                 break;
             default:
                 switch (position) {
                     case "ML":
-                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? s[0] - d[0]
+                            : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MM":
-                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
-                        l = this.createSegment(l, [apf.isGecko ? d[1] - s[1] : Math.ceil(d[1] - s[1]), "bottom"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? s[0] - d[0]
+                            : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? d[1] - s[1]
+                            : Math.ceil(d[1] - s[1]), "bottom"]);
                         break;
                     case "TM":
-                        l = this.createSegment(l, [apf.isGecko ? s[1] - d[1] : Math.ceil(s[1] - d[1]), "top"]);
-                        l = this.createSegment(l, [apf.isGecko ? s[0] - d[0] : Math.ceil(s[0] - d[0]), "left"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? s[1] - d[1]
+                            : Math.ceil(s[1] - d[1]), "top"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? s[0] - d[0]
+                            : Math.ceil(s[0] - d[0]), "left"]);
                         break;
                     case "MR":
                         // This part is not checked, MR41 needs only "right"
                         // line, else need them both
-                        l = this.createSegment(l, [apf.isGecko ? d[0] - s[0] : Math.floor(d[0] - s[0]), "right"]);
+                        l = this.createSegment(l, [apf.isGecko
+                            ? d[0] - s[0]
+                            : Math.floor(d[0] - s[0]), "right"]);
                         if (condition.substring(2,4) == "41")
                             break;
                         l = this.createSegment(l, [Math.abs(d[1] - s[1]),
@@ -1366,35 +1454,34 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                 break;
         }
 
-        for (var i = htmlSegmentsTemp.length - 1; i >= 0; i--) {
+        for (var i = htmlSegmentsTemp.length - 1; i >= 0; i--)
             htmlSegmentsTemp[i][0].style.display = "none";
-        }
 
-        if (this.other.label) {
+        if (this.other.label)
            this.htmlLabel = apf.flow.label(this);
-        }
 
         if (this.other.type) {
             var _type = this.other.type.split("-");
 
-            if (_type[0] !== "none") {
+            if (_type[0] !== "none")
                 this.htmlStart = apf.flow.connectorsEnds(this, "start", _type[0]);
-            }
-            if(_type[1] !== "none") {
+            if (_type[1] !== "none")
                 this.htmlEnd = apf.flow.connectorsEnds(this, "end", _type[1]);
-            }
         }
     };
 
     this.createSegment = function(coor, lines, startSeg) {
-        var or = lines[1], l = lines[0],
-            sX = coor[0] || 0, sY = coor[1] || 0,
-            _temp = htmlSegmentsTemp.shift(),
-            segment = _temp ? _temp[0] : null;
-        var plane = or == "top" || or == "bottom" ? "ver" : "hor";
+        var or      = lines[1],
+            l       = lines[0],
+            sX      = coor[0] || 0,
+            sY      = coor[1] || 0,
+            _temp   = htmlSegmentsTemp.shift(),
+            _self   = this,
+            segment = _temp ? _temp[0] : null,
+            plane   = (or == "top" || or == "bottom") ? "ver" : "hor";
 
         if (!segment) {
-            var segment = htmlElement.appendChild(document.createElement("div"));
+            segment = htmlElement.appendChild(document.createElement("div"));
 
             apf.setUniqueHtmlId(segment);
             apf.setStyleClass(segment, "segment");
@@ -1406,31 +1493,30 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             /* Segment events */
             segment.onmouseover = function(e) {
                 if (!apf.flow.isMoved && ((canvas.mode == "connection-change"
-                    && _self.selected) || canvas.mode == "connection-add")) {
+                  && _self.selected) || canvas.mode == "connection-add")) {
                     _self.select("hover");
                 }
-            }
+            };
 
             segment.onmouseout = function(e) {
                 _self.deselect("hover");
-            }
+            };
 
             segment.onmousedown = function(e) {
                 e = e || event;
                 e.cancelBubble = true;
                 _self.deselect("selected");
                 _self.select("clicked");
-            }
+            };
 
             segment.onmouseup = function(e) {
                 e = (e || event);
                 e.cancelBubble = true;
-                var ctrlKey  = e.ctrlKey;
-                var temp = _self.selected;
+                var ctrlKey  = e.ctrlKey,
+                    temp     = _self.selected;
 
-                if (!ctrlKey) {
+                if (!ctrlKey)
                     _self.objSource.canvas.deselectConnections();
-                }
 
                 _self.selected = temp ? false : _self.selected ? false : true;
 
@@ -1446,18 +1532,17 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                     _self.deselect("selected");
                     canvas.setMode("normal");
                 }
-            }
+            };
         }
 
         segment.plane = plane;
 
-        var w = plane == "ver" ? sSize : l;
-        var h = plane == "ver" ? l : sSize;
-        var className = "segment "+"seg_" + plane;
+        var w = plane == "ver" ? sSize : l,
+            h = plane == "ver" ? l : sSize,
+            className = "segment "+"seg_" + plane;
 
-        if (_self.virtualSegment) {
+        if (_self.virtualSegment)
             className += " seg_"+plane+"_virtual";
-        }
 
         segment.className = className;
 
@@ -1486,88 +1571,95 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     };
 
     this.deselect = function(type) {
-        var segments = _self.htmlElement.childNodes;
+        var segments = this.htmlElement.childNodes,
+            i        = 0,
+            l        = segments.length;
 
-        for (var i = 0, l = segments.length; i < l; i++) {
+        for (; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
                 apf.setStyleClass(segments[i], "",
                     ["seg_" + segments[i].plane + "_" + type]);
             }
         }
-        if (!_self.selected)
-            _self.deselectInputs("Selected");
+        if (!this.selected)
+            this.deselectInputs("Selected");
 
         if (this.htmlLabel && type == "selected")
             this.htmlLabel.className = "label";
     };
 
     this.select = function(type) {
-        var segments = this.htmlElement.childNodes;
+        var segments = this.htmlElement.childNodes,
+            i        = 0,
+            l        = segments.length;
 
-        for (var i = 0, l = segments.length; i < l; i++) {
+        for (; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
                 apf.setStyleClass(segments[i],
                     "seg_" + segments[i].plane + "_" + type);
             }
         }
-        _self.selectInputs();
+        this.selectInputs();
         if (this.htmlLabel && type == "selected")
             this.htmlLabel.className = "label labelSelected";
     };
 
     this.selectInputs = function(type) {
-        if (_self.other.output && _self.objSource.htmlOutputs[other.output]) {
-            var output = _self.objSource.htmlOutputs[other.output].htmlElement;
+        if (this.other.output && this.objSource.htmlOutputs[other.output]) {
+            var output = this.objSource.htmlOutputs[other.output].htmlElement;
             apf.setStyleClass(output, "input" + type);
         }
-        if (_self.other.input && _self.objDestination.htmlOutputs[other.input]) {
-            var input = _self.objDestination.htmlOutputs[other.input].htmlElement;
+        if (this.other.input && this.objDestination.htmlOutputs[other.input]) {
+            var input = this.objDestination.htmlOutputs[other.input].htmlElement;
             apf.setStyleClass(input, "input" + type);
         }
     };
 
     this.deselectInputs = function(type) {
-        if (_self.other.output && _self.objSource.htmlOutputs[_self.other.output]) {
-            var output = _self.objSource.htmlOutputs[_self.other.output].htmlElement;
+        if (this.other.output && this.objSource.htmlOutputs[this.other.output]) {
+            var output = this.objSource.htmlOutputs[this.other.output].htmlElement;
             apf.setStyleClass(output, "", ["input" + type]);
         }
-        if (_self.other.input && _self.objDestination.htmlOutputs[_self.other.input]) {
-            var input = _self.objDestination.htmlOutputs[_self.other.input].htmlElement;
+        if (this.other.input && this.objDestination.htmlOutputs[this.other.input]) {
+            var input = this.objDestination.htmlOutputs[this.other.input].htmlElement;
             apf.setStyleClass(input, "", ["input" + type]);
         }
     };
 };
 
 apf.flow.connectorsEnds = function(connector, place, type) {
-    var conEnd = place == "start" ? connector.htmlStart : connector.htmlEnd;
-    var segment = connector.htmlSegments[place == "start" ? 0 : 1];
+    var conEnd  = (place == "start") ? connector.htmlStart : connector.htmlEnd,
+        segment = connector.htmlSegments[place == "start" ? 0 : 1],
 
-    var l = parseInt(segment[0].style.left);
-    var t = parseInt(segment[0].style.top);
+        l       = parseInt(segment[0].style.left),
+        t       = parseInt(segment[0].style.top),
 
-    var htmlElement = conEnd ? conEnd : connector.htmlElement.appendChild(document.createElement("div"));
+        htmlElement = conEnd ? conEnd : connector.htmlElement.appendChild(document.createElement("div"));
 
-    t += segment[1] == "top" ? parseInt(segment[0].style.height) - 14 : 0;
-    l += segment[1] == "left" ? parseInt(segment[0].style.width) - 11 : (segment[1] == "right" ? 3 : 0);
+    t += (segment[1] == "top")  ? parseInt(segment[0].style.height) - 14 : 0;
+    l += (segment[1] == "left") 
+        ? parseInt(segment[0].style.width) - 11
+        : (segment[1] == "right" ? 3 : 0);
 
     htmlElement.style.left = l + "px";
-    htmlElement.style.top = t + "px";
-    htmlElement.className = "connector-end " + type + " or"+segment[1];
+    htmlElement.style.top  = t + "px";
+    htmlElement.className  = "connector-end " + type + " or"+segment[1];
 
     return htmlElement;
-}
+};
 
 apf.flow.label = function(connector, number) {
-    var number = number || Math.ceil(connector.htmlSegments.length / 2);
-    var segment = connector.htmlSegments[number];
-    var l = parseInt(segment[0].style.left);
-    var t = parseInt(segment[0].style.top);
+    number = number || Math.ceil(connector.htmlSegments.length / 2);
+    var htmlElement,
+        segment = connector.htmlSegments[number],
+        l       = parseInt(segment[0].style.left),
+        t       = parseInt(segment[0].style.top);
 
     if (connector.htmlLabel) {
-        var htmlElement = connector.htmlLabel;
+        htmlElement = connector.htmlLabel;
     }
     else {
-        var htmlElement = connector.htmlElement.appendChild(document.createElement("span"));
+        htmlElement = connector.htmlElement.appendChild(document.createElement("span"));
         apf.setStyleClass(htmlElement, "label");
     }
 
@@ -1579,8 +1671,8 @@ apf.flow.label = function(connector, number) {
         : segment[0].offsetHeight - 2;
 
     htmlElement.style.left = l + "px";
-    htmlElement.style.top = t + "px";
-    htmlElement.innerHTML = connector.other.label;
+    htmlElement.style.top  = t + "px";
+    htmlElement.innerHTML  = connector.other.label;
 
     return htmlElement;
 }
@@ -1612,13 +1704,13 @@ apf.flow.findBlock = function(blockId) {
  * @return {Object}   object representation of block element
  */
 apf.flow.isBlock = function(htmlNode) {
-    var c = apf.flow.objCanvases;
+    var id, block,
+        c = apf.flow.objCanvases;
 
-    for (var id in c) {
-        var block = c[id].htmlBlocks[htmlNode.getAttribute("id")];
-        if (block) {
+    for (id in c) {
+        block = c[id].htmlBlocks[htmlNode.getAttribute("id")];
+        if (block)
             return block;
-        }
     }
 };
 
@@ -1629,9 +1721,8 @@ apf.flow.isBlock = function(htmlNode) {
  * @return {Object}   object representation of canvas element
  */
 apf.flow.isCanvas = function(htmlNode) {
-    if (htmlNode) {
+    if (htmlNode)
         return apf.flow.objCanvases[htmlNode.id];
-    }
 };
 
 /**
@@ -1653,35 +1744,33 @@ apf.flow.isCanvas = function(htmlNode) {
  *         false   when objBlock isn't a source block
  */
 apf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
-    var c = apf.flow.objCanvases;
-    var connectors;
+    var id, id2, cobjS, cobjD, co, ci, connectors,
+        c = apf.flow.objCanvases;
 
-    for (var id in c) {
+    for (id in c) {
         connectors = c[id].htmlConnectors;
-        for (var id2 in connectors) {
+        for (id2 in connectors) {
             if (connectors[id2]) {
-                var cobjS = connectors[id2].objSource;
-                var cobjD = connectors[id2].objDestination;
-                var co = connectors[id2].other.output;
-                var ci = connectors[id2].other.input;
+                cobjS = connectors[id2].objSource,
+                cobjD = connectors[id2].objDestination,
+                co    = connectors[id2].other.output,
+                ci    = connectors[id2].other.input;
 
                 if (objBlock2 && iNumber2) {
                     if (cobjS.id == objBlock.id && co == iNumber
-                        && cobjD.id == objBlock2.id && ci == iNumber2) {
+                      && cobjD.id == objBlock2.id && ci == iNumber2) {
                         return {connector : connectors[id2], source : true};
                     }
                     else if (cobjD.id == objBlock.id && ci == iNumber
-                             && cobjS.id == objBlock2.id && co == iNumber2) {
+                      && cobjS.id == objBlock2.id && co == iNumber2) {
                         return {connector : connectors[id2], source : false};
                     }
                 }
                 else {
-                    if (cobjS == objBlock && co == iNumber) {
+                    if (cobjS == objBlock && co == iNumber)
                         return {connector : connectors[id2], source : true};
-                    }
-                    else if (cobjD == objBlock && ci == iNumber) {
+                    else if (cobjD == objBlock && ci == iNumber)
                         return {connector : connectors[id2], source : false};
-                    }
                 }
             }
         }
@@ -1740,15 +1829,18 @@ apf.flow.removeCanvas = function(htmlNode) {
  *        Possible values:
  *        false   block element is unlocled
  *        true    block element is locked
- *    {Boolean}   flipv   whether to mirror the block over the vertical axis, background image is flipped automaticly. Default is false.
+ *    {Boolean}   flipv   whether to mirror the block over the vertical axis,
+ *                        background image is flipped automaticly. Default is false.
  *        Possible values:
  *        true    block element is flipped
  *        false   block element is not flipped
- *    {Boolean}   fliph   whether to mirror the block over the horizontal axis, background image is flipped automaticly. Default is false.
+ *    {Boolean}   fliph   whether to mirror the block over the horizontal axis,
+ *                        background image is flipped automaticly. Default is false.
  *        Possible values:
  *        true    block element is flipped
  *        false   block element is not flipped
- *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
+ *    {Number}    rotation   the rotation in degrees clockwise, background image
+ *                           is rotated automaticly, Default is 0.
  *        Possible values:
  *        0     0   degrees rotation
  *        90    90  degrees rotation
@@ -1756,21 +1848,26 @@ apf.flow.removeCanvas = function(htmlNode) {
  *        270   270 degrees rotation
  *    {Object}   inputList   Block's inputs list, block could haven't any inputs
  *        Properties:
- *        {Number}  x          position in pixels relative to Block's horizontal dimension
- *        {Number}  y          position in pixels relative to Block's vertical dimension
+ *        {Number}  x          position in pixels relative to Block's horizontal
+ *                             dimension
+ *        {Number}  y          position in pixels relative to Block's vertical
+ *                             dimension
  *        {String}  position   edge where input is placed
  *            Possible values:
  *            top      input is placed on top edge of block
  *            right    input is placed on right edge of block
  *            bottom   input is placed on bottom edge of block
  *            left     input is placed on left edge of block
- *    {String}       type         name of block with special abilities, which could set in template file
+ *    {String}       type         name of block with special abilities, which
+ *                                could set in template file
  *    {String}       picture      Path to image file.
  *    {Number}       dwidth       the minimal horizontal size of Block element
  *    {Number}       dheight      the minimal vertical size of Block element
  *    {Boolean}      scalex       Allows only horizontal resizing
  *    {Boolean}      scaley       Allows only vertical resizing
- *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
+ *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not
+ *                                allowed. It's possible to resizing in two
+ *                                dimensions plane at the same time.
  *    {XMLElement}   xmlNode      xml representation of block from model
  *    {String}       caption      description placed under block element
  * @return {Object}   object representation of block element
