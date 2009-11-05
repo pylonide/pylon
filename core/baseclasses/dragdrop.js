@@ -140,8 +140,15 @@ apf.__DRAGDROP__ = 1 << 5;
  *  </a:datagrid>
  * </code>
  *
- * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} copy  a javascript expression that determines whether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
+ * @attribute {String} select          an xpath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The xpath is
+ *                                     automatically prefixed by 'self::'.
+ * @attribute {String} copy            a javascript expression that determines
+ *                                     whether the dragged element is a copy or
+ *                                     a move. Use event.ctrlKey to use the Ctrl
+ *                                     key to determine whether the element is copied.
  *
  * @define drop   Determines whether a {@link term.datanode data node} can 
  * be dropped on a data node bound to this element. 
@@ -170,14 +177,24 @@ apf.__DRAGDROP__ = 1 << 5;
  *  </a:datagrid>
  * </code>
  
- * @attribute {String} select          an xpath statement querying the {@link term.datanode data node} that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} target          an xpath statement determining the new parent of the dropped {@link term.datanode data node}. The xpath is automatically prefixed by 'self::'.
- * @attribute {String} action          the action to perform when the {@link term.datanode data node} is inserted.
+ * @attribute {String} select          an xpath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The xpath is
+ *                                     automatically prefixed by 'self::'.
+ * @attribute {String} target          an xpath statement determining the new
+ *                                     parent of the dropped {@link term.datanode data node}.
+ *                                     The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} action          the action to perform when the
+ *                                     {@link term.datanode data node} is inserted.
  *   Possible values:
  *   tree-append    Appends the {@link term.datanode data node} to the element it's dropped on.
  *   list-append    Appends the {@link term.datanode data node} to the root element of this element.
  *   insert-before  Inserts the {@link term.datanode data node} before the elements it's dropped on.
- * @attribute {String} copy  a javascript expression that determines whether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine whether the element is copied.
+ * @attribute {String} copy            a javascript expression that determines
+ *                                     whether the drop is a copy or a move.
+ *                                     Use event.ctrlKey to use the Ctrl key to
+ *                                     determine whether the element is copied.
  */
 /**
  * @constructor
@@ -200,8 +217,12 @@ apf.DragDrop = function(){
      *
      * @action
      * @param  {XMLElement} xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement} pNode        the new parent element of the copied {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
-     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node} is inserted.
+     * @param  {XMLElement} pNode        the new parent element of the copied
+     *                                   {@link term.datanode data node}. If none
+     *                                   specified the root element of the data
+     *                                   loaded in this element is used.
+     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node}
+     *                                   is inserted.
      */
     this.copy = function(nodeList, pNode, beforeNode, isMove){
         if (nodeList.nodeType)
@@ -241,8 +262,12 @@ apf.DragDrop = function(){
      *
      * @action
      * @param  {XMLElement}  xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement}  pNode        the new parent element of the moved {@link term.datanode data node}. If none specified the root element of the data loaded in this element is used.
-     * @param  {XMLElement}  [beforeNode] the position where the {@link term.datanode data node} is inserted.
+     * @param  {XMLElement}  pNode        the new parent element of the moved
+     *                                    {@link term.datanode data node}. If none
+     *                                    specified the root element of the data
+     *                                    loaded in this element is used.
+     * @param  {XMLElement}  [beforeNode] the position where the
+     *                                    {@link term.datanode data node} is inserted.
      */
     this.move = function(nodeList, pNode, beforeNode){
         return this.copy(nodeList, pNode, beforeNode, true);
@@ -306,8 +331,10 @@ apf.DragDrop = function(){
      * would specify you can drag&drop folders within an account, and emails between
      * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
-     * @param  {XMLElement} target   the {@link term.datanode data node} on which the dragged data node is dropped.
+     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject
+     *                               to the test.
+     * @param  {XMLElement} target   the {@link term.datanode data node} on which
+     *                               the dragged data node is dropped.
      * @return {Boolean} result of the test
      * @see baseclass.dragdrop.method.isDragAllowed
      */
@@ -1031,7 +1058,8 @@ apf.DragServer = {
             apf.DragServer.dragdata.y);
 
         dragdata.indicator.style.top = storeIndicatorTopPos;
-        //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
+        //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
+        //+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
         //Set Indicator
         dragdata.host.$moveDragIndicator(c);
 
