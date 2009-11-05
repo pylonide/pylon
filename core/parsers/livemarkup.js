@@ -518,33 +518,36 @@ apf.lm = new (function(){
                                         o[ol++] = "^";
                                     break;
                                 case 4: //'= += -= assignment macro mode
-                                    if (!parse_mode)
-                                        switchToBlock(true);
-                                    o[ol++] = tok;
-                                    // lets scan in reverse to see if we have an output or a non-output
-                                    for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
-                                        || o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
-                                    if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
-                                        ol -= 2;
-                                        while (is_out_space[o[ol]])
-                                            ol--;
-                                        w = last_tok;
-                                        o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
-                                        o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
-                                        o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
-                                        s[sl++] = ""; // notabene, this stored item is checked everywhere
-                                    }
-                                    else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
-                                        if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
-                                            throw {
-                                                t: "Invalid xpath assign",
-                                                p: pos
-                                            };
-                                        o[w] = u,o[v] = ",", o[v + 1] = "", o[v + 2] = "";
-                                        s[sl++] = scope | (parse_mode << 28),
-                                        s[sl++] = "" // this value is checked everywhere
-                                    }
-                                    break;
+									if(last_tok!='<' && last_tok!='>'){
+										if (!parse_mode)
+											switchToBlock(true);
+										o[ol++] = tok;
+										// lets scan in reverse to see if we have an output or a non-output
+										for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
+											|| o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
+										if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
+											ol -= 2;
+											while (is_out_space[o[ol]])
+												ol--;
+											w = last_tok;
+											o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
+											o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
+											o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
+											s[sl++] = ""; // notabene, this stored item is checked everywhere
+										}
+										else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
+											if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
+												throw {
+													t: "Invalid xpath assign",
+													p: pos
+												};
+											o[w] = u,o[v] = ",", o[v + 1] = "", o[v + 2] = "";
+											s[sl++] = scope | (parse_mode << 28),
+											s[sl++] = "" // this value is checked everywhere
+										}
+									}else{
+										o[ol++] = tok;
+									}break;
                                 case 5: // '/' // regexp mode
                                     if (pre_regexp[last_tok]) {
                                         s[sl++] = scope | (parse_mode << 28);
