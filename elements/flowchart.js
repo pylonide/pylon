@@ -304,7 +304,7 @@ apf.flowchart = function(struct, tagName){
 
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function() {
-        var objBlock = objBlocks[this.$applyBindRule("id", this.selected)];
+        var objBlock = this.$flowVars.objBlocks[this.$applyBindRule("id", this.selected)];
         if (!objBlock)
             return;
         return objBlock.caption;
@@ -592,9 +592,9 @@ apf.flowchart = function(struct, tagName){
         var prevFlipV  = this.$applyBindRule("flipv", xmlNode) == "true"
                 ? true
                 : false,
-            prevFlipH  = this.$applyBindRule("fliph", xmlNode) == "true"
+            /*prevFlipH  = this.$applyBindRule("fliph", xmlNode) == "true"
                 ? true
-                : false,
+                : false,*/
             prevRotate = this.$applyBindRule("rotation", xmlNode)
                 ? parseInt(this.$applyBindRule("rotation", xmlNode))
                 : 0;
@@ -636,18 +636,20 @@ apf.flowchart = function(struct, tagName){
      * @type {String}
      */
     this.$executeMulticallAction = function(atName, setNames, xmlNode, values) {
-        var i, node, value, changes, props = changes = [], l = setNames.length;
+        var i, node, value, atAction, args,
+            changes = [],
+            l       = setNames.length;
         for (i = 0; i < l; i++) {
             node = this.$getDataNode(
               setNames[i], xmlNode, this.$createModel);
             value = values[i];
 
             if (node) {
-                var atAction = node.nodeType == 1 || node.nodeType == 3
+                atAction = node.nodeType == 1 || node.nodeType == 3
                             || node.nodeType == 4
                     ? "setTextNode"
                     : "setAttribute";
-                var args = node.nodeType == 1
+                args = node.nodeType == 1
                     ? [node, value]
                     : (node.nodeType == 3 || node.nodeType == 4
                         ? [node.parentNode, value]
@@ -690,9 +692,11 @@ apf.flowchart = function(struct, tagName){
      * @param {Object} xmlNodeArray   xml representations of connections elements
      */
     this.removeConnectors = function(xmlNodeArray) {
-        var changes = [];
+        var changes = [],
+            i       = 0,
+            l       = xmlNodeArray.length;
 
-        for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
+        for (; i < l; i++) {
             changes.push({
                 func : "removeNode",
                 args : [xmlNodeArray[i]]
@@ -726,16 +730,16 @@ apf.flowchart = function(struct, tagName){
 
         var nXmlNode = this.xmlRoot.ownerDocument.createElement("block");
 
-        nXmlNode.setAttribute("id", "b"+(this.$flowVars.lastBlockId + 1));
-        nXmlNode.setAttribute("left", left || 20);
-        nXmlNode.setAttribute("top", top || 20);
-        nXmlNode.setAttribute("width", elTemplate.getAttribute("dwidth"));
-        nXmlNode.setAttribute("height", elTemplate.getAttribute("dheight"));
-        nXmlNode.setAttribute("type", type);
+        nXmlNode.setAttribute("id",      "b"+(this.$flowVars.lastBlockId + 1));
+        nXmlNode.setAttribute("left",    left || 20);
+        nXmlNode.setAttribute("top",     top || 20);
+        nXmlNode.setAttribute("width",   elTemplate.getAttribute("dwidth"));
+        nXmlNode.setAttribute("height",  elTemplate.getAttribute("dheight"));
+        nXmlNode.setAttribute("type",    type);
         nXmlNode.setAttribute("caption", caption);
 
         this.$executeAction("appendChild", [this.xmlRoot, nXmlNode],
-                           "addBlock", this.xmlRoot);
+                            "addBlock", this.xmlRoot);
     };
 
     /**
@@ -746,11 +750,14 @@ apf.flowchart = function(struct, tagName){
      * @param {Object}   xmlNodeArray   xml representations of blocks elements
      */
     this.removeBlocks = function(xmlNodeArray) {
-        var changes = [];
-        var ids     = [];
+        var id, id2, j, k,
+            changes = [],
+            ids     = [],
+            i       = 0,
+            l       = xmlNodeArray.length;
 
-        for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
-            var id = this.$applyBindRule("id", xmlNodeArray[i]);
+        for (; i < l; i++) {
+            id = this.$applyBindRule("id", xmlNodeArray[i]);
             ids.push(id);
 
             changes.push({
@@ -760,9 +767,9 @@ apf.flowchart = function(struct, tagName){
         }
 
         /* Removing connections from other blocks */
-        for (var id2 in this.$flowVars.xmlConnections) {
-            for (var j = this.$flowVars.xmlConnections[id2].length - 1; j >= 0 ; j--) {
-                for (var k = 0; k < ids.length; k++) {
+        for (id2 in this.$flowVars.xmlConnections) {
+            for (j = this.$flowVars.xmlConnections[id2].length - 1; j >= 0 ; j--) {
+                for (k = 0, l = ids.length; k < l; k++) {
                     if (this.$flowVars.xmlConnections[id2][j].ref == ids[k]) {
                         changes.push({
                             func : "removeNode",
@@ -774,7 +781,7 @@ apf.flowchart = function(struct, tagName){
         }
 
         this.$executeAction("multicall", changes,
-                           "removeBlocksWithConnections", xmlNodeArray);
+                            "removeBlocksWithConnections", xmlNodeArray);
     };
 
     this.$draw = function() {
@@ -802,8 +809,8 @@ apf.flowchart = function(struct, tagName){
     }
 
     this.$dragdrop = function(el, dragdata, candrop) {
-        var blockPos  = apf.getAbsolutePosition(dragdata.indicator);
-        var canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
+        var blockPos  = apf.getAbsolutePosition(dragdata.indicator),
+            canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
 
         this.moveTo(
             [dragdata.xmlNode[0]],
@@ -817,9 +824,9 @@ apf.flowchart = function(struct, tagName){
         
         var fv       = this.$flowVars,
             blockId  = this.$applyBindRule("id", xmlNode),
-            objBlock = fv.objBlocks[blockId];
+            objBlock = fv.objBlocks[blockId],
 
-        var t = parseInt(this.$applyBindRule("top", xmlNode))
+            t = parseInt(this.$applyBindRule("top", xmlNode))
                 ? this.$applyBindRule("top", xmlNode)
                 : parseInt(objBlock.htmlElement.style.top),
             l = parseInt(this.$applyBindRule("left", xmlNode))
@@ -837,7 +844,7 @@ apf.flowchart = function(struct, tagName){
         objBlock.resize(w, h);
 
         /* Rename */
-       objBlock.setCaption(this.$applyBindRule("caption", xmlNode));
+        objBlock.setCaption(this.$applyBindRule("caption", xmlNode));
 
         /* Lock */
         var lock = this.$applyBindRule("lock", xmlNode) == "true"
@@ -853,13 +860,16 @@ apf.flowchart = function(struct, tagName){
         );
 
         /* Checking for changes in connections */
-        var cNew     = this.$getDataNode("connection", xmlNode, null, null, true),
-            cCurrent = fv.xmlConnections[blockId] || [];
+        var j, l2, found, ref, output, input, label, type,
+            cNew     = this.$getDataNode("connection", xmlNode, null, null, true),
+            cCurrent = fv.xmlConnections[blockId] || [],
+            i        = 0;
+        l = cCurrent.length;
 
         //Checking for removed connections
         if (cCurrent.length) {
-            for (var i = 0; i < cCurrent.length; i++) {
-                for (var j = 0, found = false; j < cNew.length; j++) {
+            for (; i < l; i++) {
+                for (j = 0, found = false, l2 = cNew.length; j < l2; j++) {
                     if (cCurrent[i].xmlNode == cNew[j]) {
                         found = true;
                         break;
@@ -883,10 +893,10 @@ apf.flowchart = function(struct, tagName){
         }
 
         //Checking for new connections
-        for (var i = 0; i < cNew.length; i++) {
-            var found = false;
+        for (i = 0, l = cNew.length; i < l; i++) {
+            found = false;
             if (cCurrent) {
-                for (var j = 0; j < cCurrent.length; j++) {
+                for (j = 0, l2 = cCurrent.length; j < l2; j++) {
                     if (cCurrent[j].xmlNode == cNew[i]) {
                         found = true;
                         break;
@@ -895,11 +905,11 @@ apf.flowchart = function(struct, tagName){
             }
 
             if (!found) {
-                var ref    = this.$applyBindRule("ref", cNew[i]),
-                    output = this.$applyBindRule("blockoutput", cNew[i]),
-                    input  = this.$applyBindRule("blockinput", cNew[i]),
-                    label  = this.$applyBindRule("blocklabel", cNew[i]),
-                    type   = this.$applyBindRule("type", cNew[i]);
+                ref    = this.$applyBindRule("ref", cNew[i]),
+                output = this.$applyBindRule("blockoutput", cNew[i]),
+                input  = this.$applyBindRule("blockinput", cNew[i]),
+                label  = this.$applyBindRule("blocklabel", cNew[i]),
+                type   = this.$applyBindRule("type", cNew[i]);
 
                 if (fv.xmlBlocks[ref]) {
                     var r = fv.xmlConnections[blockId] || [];
@@ -956,44 +966,40 @@ apf.flowchart = function(struct, tagName){
         this.nodes.push(block);
 
         /* Set Css style */
-        var style  = [], style2 = [];
-        var left   = this.$applyBindRule("left", xmlNode) || 0;
-        var top    = this.$applyBindRule("top", xmlNode) || 0;
+        var style  = [], style2 = [], _style, k, l,
+            left   = this.$applyBindRule("left", xmlNode) || 0,
+            top    = this.$applyBindRule("top", xmlNode) || 0,
+            zindex = this.$applyBindRule("zindex", xmlNode) || 1001;
         if (this.snap) {
             left = Math.round(left / this.gridW) * this.gridW;
-            top = Math.round(top / this.gridH) * this.gridH;
+            top  = Math.round(top  / this.gridH) * this.gridH;
         }
         
-        var zindex = this.$applyBindRule("zindex", xmlNode) || 1001;
-
         style.push("z-index:" + zindex);
         style.push("left:" + left + "px");
         style.push("top:" + top + "px");
 
         if (this.$flowVars.template) {
             var elTemplate = this.$flowVars.template.selectSingleNode("//element[@type='"
-                           + this.$applyBindRule("type", xmlNode)
-                           + "']");
+                           + this.$applyBindRule("type", xmlNode) + "']");
             if (elTemplate) {
                 var stylesFromTemplate = elTemplate.getAttribute("css");
 
                 if (stylesFromTemplate) {
                     stylesFromTemplate = stylesFromTemplate.split(";");
 
-                    for (var k = 0; k < stylesFromTemplate.length; k++) {
-                        var _style = stylesFromTemplate[k].trim();
+                    for (k = 0, l = stylesFromTemplate.length; k < l; k++) {
+                        _style = stylesFromTemplate[k].trim();
                         if (_style !== "") {
-                            if (_style.substr(0, 5) == "color") {
+                            if (_style.substr(0, 5) == "color")
                                 elCaption.setAttribute("style", [_style].join(";"));
-                            }
-                            else {
+                            else
                                 style.push(_style);
-                            }
                         }
                     }
                 }
-                var w = elTemplate.getAttribute("dwidth");
-                var h = elTemplate.getAttribute("dheight");
+                var w = elTemplate.getAttribute("dwidth"),
+                    h = elTemplate.getAttribute("dheight");
             }
         }
 
@@ -1045,10 +1051,10 @@ apf.flowchart = function(struct, tagName){
         this.$flowVars.xmlBlocks[id] = xmlNode;
 
         /* Creating Connections */
-        var r = [],
+        var r = [], i,
             connections = this.$getDataNode("connection", xmlNode, null, null, true);
 
-        for (var i = 0, l = connections.length; i < l; i++) {
+        for (i = 0, l = connections.length; i < l; i++) {
             r.push({
                 ref     : this.$applyBindRule("ref", connections[i]),
                 output  : this.$applyBindRule("blockoutput", connections[i]),
@@ -1067,22 +1073,22 @@ apf.flowchart = function(struct, tagName){
     this.$fill = function() {
         apf.insertHtmlNodes(this.nodes, this.$int);
         apf.console.info("FILL");
-        var fv = this.$flowVars;
-        for (var id in fv.xmlBlocks) {
-            var xmlBlock = fv.xmlBlocks[id],
+        var id, i, l,
+            fv = this.$flowVars;
+        for (id in fv.xmlBlocks) {
+            var xmlBlock    = fv.xmlBlocks[id],
                 htmlElement = apf.xmldb.findHtmlNode(xmlBlock, this),
-                type = this.$flowVars.xmlBlocks[id].getAttribute("type") || null,
-                inputList = {};
+                type        = this.$flowVars.xmlBlocks[id].getAttribute("type") || null,
+                inputList   = {};
 
             if (type) {
                 if (fv.template) {
-                    var elTemplate = fv.template
-                        .selectSingleNode("element[@type='"
+                    var elTemplate = fv.template.selectSingleNode("element[@type='"
                         + this.$applyBindRule("type", xmlBlock) + "']");
 
                     var inputs = elTemplate.selectNodes("input");
                     if (inputs) {
-                        for (var i = 0, l = inputs.length; i < l; i++) {
+                        for (i = 0, l = inputs.length; i < l; i++) {
                             inputList[parseInt(inputs[i].getAttribute("name"))] = {
                                 x        : parseInt(inputs[i].getAttribute("x")),
                                 y        : parseInt(inputs[i].getAttribute("y")),
@@ -1094,50 +1100,51 @@ apf.flowchart = function(struct, tagName){
             }
 
             var lock = this.$applyBindRule("lock", xmlBlock) == "true"
-                ? true
-                : false;
-            var other = {
-                lock : lock,
-                flipv : this.$applyBindRule("flipv", xmlBlock) == "true"
                     ? true
                     : false,
-                fliph : this.$applyBindRule("fliph", xmlBlock) == "true"
-                    ? true
-                    : false,
-                rotation : parseInt(this.$applyBindRule("rotation", xmlBlock))
-                           || 0,
-                inputList : inputList,
-                type : type,
-                picture : type && fv.template
-                    ? elTemplate.getAttribute("picture")
-                    : null,
-                dwidth : type && fv.template
-                    ? parseInt(elTemplate.getAttribute("dwidth"))
-                    : 56,
-                dheight : type && fv.template
-                    ? parseInt(elTemplate.getAttribute("dheight"))
-                    : 56,
-                scalex : type && fv.template
-                    ? (elTemplate.getAttribute("scalex") == "true"
+                other = {
+                    lock : lock,
+                    flipv : this.$applyBindRule("flipv", xmlBlock) == "true"
                         ? true
-                        : false)
-                    : true,
-                scaley : type && fv.template
-                    ? (elTemplate.getAttribute("scaley") == "true"
+                        : false,
+                    fliph : this.$applyBindRule("fliph", xmlBlock) == "true"
                         ? true
-                        : false)
-                    : true,
-                scaleratio : type && fv.template
-                    ? (elTemplate.getAttribute("scaleratio") == "true"
-                        ? true
-                        : false)
-                    : false,
-                xmlNode : xmlBlock,
-                caption : this.$applyBindRule("caption", xmlBlock),
-                capPos  : this.$applyBindRule("cap-pos", xmlBlock)
-            }
+                        : false,
+                    rotation : parseInt(this.$applyBindRule("rotation", xmlBlock))
+                               || 0,
+                    inputList : inputList,
+                    type : type,
+                    picture : type && fv.template
+                        ? elTemplate.getAttribute("picture")
+                        : null,
+                    dwidth : type && fv.template
+                        ? parseInt(elTemplate.getAttribute("dwidth"))
+                        : 56,
+                    dheight : type && fv.template
+                        ? parseInt(elTemplate.getAttribute("dheight"))
+                        : 56,
+                    scalex : type && fv.template
+                        ? (elTemplate.getAttribute("scalex") == "true"
+                            ? true
+                            : false)
+                        : true,
+                    scaley : type && fv.template
+                        ? (elTemplate.getAttribute("scaley") == "true"
+                            ? true
+                            : false)
+                        : true,
+                    scaleratio : type && fv.template
+                        ? (elTemplate.getAttribute("scaleratio") == "true"
+                            ? true
+                            : false)
+                        : false,
+                    xmlNode : xmlBlock,
+                    caption : this.$applyBindRule("caption", xmlBlock),
+                    capPos  : this.$applyBindRule("cap-pos", xmlBlock)
+                },
 
-            var objBlock = apf.flow.isBlock(htmlElement);
+                objBlock = apf.flow.isBlock(htmlElement),
+                _self    = this;
 
             if (objBlock) {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
@@ -1145,8 +1152,7 @@ apf.flowchart = function(struct, tagName){
                 objBlock.initBlock();
             }
             else {
-                var objBlock = apf.flow.addBlock(htmlElement, this.objCanvas, other),
-                    _self    = this;
+                objBlock = apf.flow.addBlock(htmlElement, this.objCanvas, other);
 
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
@@ -1158,10 +1164,10 @@ apf.flowchart = function(struct, tagName){
             }
         }
 
-        for (var id in fv.xmlBlocks) {
+        for (id in fv.xmlBlocks) {
             var c = fv.xmlConnections[id] || [];
 
-            for (var i = 0, l = c.length; i < l; i++) {
+            for (i = 0, l = c.length; i < l; i++) {
                 var con = apf.flow.findConnector(fv.objBlocks[id], c[i].output,
                                                  fv.objBlocks[c[i].ref], c[i].input);
                 if (!con) {
@@ -1205,7 +1211,7 @@ apf.flowchart = function(struct, tagName){
         }
 
         /* Try to draw rest of connections */
-        for (var i = fv.connToPaint.length-1; i >= 0 ; i--) {
+        for (i = fv.connToPaint.length - 1; i >= 0 ; i--) {
             if (fv.objBlocks[fv.connToPaint[i].id] && fv.objBlocks[fv.connToPaint[i].id2]) {
                 new apf.flow.addConnector(this.objCanvas,
                                           fv.objBlocks[fv.connToPaint[i].id],
@@ -1308,23 +1314,23 @@ apf.flowchart = function(struct, tagName){
 
 }).call(apf.flowchart.prototype = new apf.BaseList());
 
-apf.aml.setElement("flowchart", apf.flowchart);
-apf.aml.setElement("resize", apf.BindingRule);
-apf.aml.setElement("left", apf.BindingRule);
-apf.aml.setElement("top", apf.BindingRule);
-apf.aml.setElement("id", apf.BindingRule);
-apf.aml.setElement("width", apf.BindingRule);
-apf.aml.setElement("height", apf.BindingRule);
-apf.aml.setElement("flipv", apf.BindingRule);
-apf.aml.setElement("fliph", apf.BindingRule);
-apf.aml.setElement("rotation", apf.BindingRule);
-apf.aml.setElement("lock", apf.BindingRule);
-apf.aml.setElement("type", apf.BindingRule);
-apf.aml.setElement("cap-pos", apf.BindingRule);
-apf.aml.setElement("zindex", apf.BindingRule);
-apf.aml.setElement("connection", apf.BindingRule);
-apf.aml.setElement("ref", apf.BindingRule);
+apf.aml.setElement("flowchart",   apf.flowchart);
+apf.aml.setElement("resize",      apf.BindingRule);
+apf.aml.setElement("left",        apf.BindingRule);
+apf.aml.setElement("top",         apf.BindingRule);
+apf.aml.setElement("id",          apf.BindingRule);
+apf.aml.setElement("width",       apf.BindingRule);
+apf.aml.setElement("height",      apf.BindingRule);
+apf.aml.setElement("flipv",       apf.BindingRule);
+apf.aml.setElement("fliph",       apf.BindingRule);
+apf.aml.setElement("rotation",    apf.BindingRule);
+apf.aml.setElement("lock",        apf.BindingRule);
+apf.aml.setElement("type",        apf.BindingRule);
+apf.aml.setElement("cap-pos",     apf.BindingRule);
+apf.aml.setElement("zindex",      apf.BindingRule);
+apf.aml.setElement("connection",  apf.BindingRule);
+apf.aml.setElement("ref",         apf.BindingRule);
 apf.aml.setElement("blockoutput", apf.BindingRule);
-apf.aml.setElement("blockinput", apf.BindingRule);
-apf.aml.setElement("blocklabel", apf.BindingRule);
+apf.aml.setElement("blockinput",  apf.BindingRule);
+apf.aml.setElement("blocklabel",  apf.BindingRule);
 //#endif
