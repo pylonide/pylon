@@ -81,6 +81,51 @@
             </a:graph>
         </a:axis>        
  	</a:chart>
+
+        <a:chart width="300" height="150" anim="10">
+                <a:axis
+                  mode       = "3D"
+                  x1         = "-3"
+                  y1         = "-1"
+                  x2         = "3"
+                  y2         = "0.5"
+                  z1         = "-3"
+                  z2         = "3"
+                  x3d        = "2"
+                  y3d        = "0.5"
+                  z3d        = "2"
+                  lockyzoom  = "1"
+                  orbity     = "0.2"
+                  distance   = "3.3"
+                  orbitxanim = "0.01">
+                    <a:style type="text/chartcss">
+                        bar{fill:null;stroke:null;}
+                        label{color:#333333;};
+                        plane{fill:null;}
+                        tick{stroke:white}
+                        axis{stroke:white;side1:1;side2:1;}
+                        planexz{stroke:white;fill:gray;fillopacity:0.2;oneside:1;side:0}
+                        hbarxz{oneside:1;side:0;stroke:white;opacity:0.5}
+                        vbarxz{oneside:1;side:0;stroke:white;opacity:0.5}
+                    </a:style>
+                <a:graph
+                  mode      = "height"
+                  dataslice = "1XZ"
+                  steps     = "15"
+                  formula   = "(abs(4*sin((__e=sqrt(x*x+z*z))-2*n)/(__e+1))-1)
+                  *a+(1-a)*sin((__e=sqrt(x*x+z*z)*3)-2*n)/(__e+0.3)">
+                    <a:style type="text/chartcss">
+                        graph {
+                          fill:#f1d309;
+                          single:1;
+                          fillopacity:0.3;
+                          strokeopacity:0.5;
+                          stroke:#f1d309;
+                        }
+                    </a:style>
+                </a:graph>
+            </a:axis>
+        </a:chart>
 	
      <!--a:chart id="heightMap" width="500" height="230" anim="10" style="background-color:white">
 		<a:axis mode="3D" 
