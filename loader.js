@@ -408,15 +408,16 @@ apf.$x = apf.$loader
 
             apf.dispatchEvent("domready");
         }, null, ["body", "class"]);
-    })
-    
-    .script(apf.$required);
+    });
+
+    apf.$x.script.apply(apf.$x, apf.$required).wait();
 
 apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];
     for (var i = 0; i < arguments.length; i++) {
         apf.$x.script(apf.getAbsolutePath(dir, arguments[i]));
     }
+    apf.$x.wait();
 }
 
 /*if(document.body)

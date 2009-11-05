@@ -2412,7 +2412,7 @@ if (!apf.basePath) {
     apf.$loader.block = apf.$loader.wait;    // alias "block" to "wait" -- "block" is now deprecated
 })(window);*/
 
-if (location.protocol == "file:") {
+if (location.protocol == "file:" && !(/a/.__proto__=='//' || /source/.test((/a/.toString+'')))) {
 	/*apf.$loader = {
 	    $settings : {},
 		setGlobalDefaults:function(settings) { // intentionally does not return an "engine" instance -- must call as stand-alone function call on $fLAB
@@ -2672,7 +2672,7 @@ else {
     		append_to = {},
     		all_scripts = {},
     		PAGEROOT = /^[^?#]*\//.exec(oDOCLOC.href)[0], // these ROOTs do not support file:/// usage, only http:// type usage
-    		DOCROOT = /^\w+\:\/\/[^\/]+/.exec(PAGEROOT)[0],
+    		DOCROOT = /^\w+\:\/\/\/[^\/]+/.exec(PAGEROOT)[0],
     		docScripts = fGETELEMENTSBYTAGNAME(sSCRIPT),
     		is_ie = !+"\v1", // feature detection based on Andrea Giammarchi's solution: http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
     		is_safari = /a/.__proto__=='//', // feature detections from http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
@@ -2851,11 +2851,11 @@ else {
     			scripts_loading = bTRUE;
     			
     			if (_use_preload && !_use_script_order) { // only use xhr/cache preloading if not script-order loading
-    				if (_use_xhr_preload && same_domain) loadScriptXHR(scriptentry,src,type,charset);
-    				else loadScriptCache(scriptentry,src,type,charset);
+    				if (_use_xhr_preload && same_domain) loadScriptXHR(scriptentry,src_uri,type,charset);
+    				else loadScriptCache(scriptentry,src_uri,type,charset);
     			}
     			else {
-    				loadScriptElem(scriptentry,src,type,charset);
+    				loadScriptElem(scriptentry,src_uri,type,charset);
     			}
     		}
     		function onlyQueue(execBody) {

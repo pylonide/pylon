@@ -60,7 +60,7 @@ apf.aml.setElement("include", apf.XiInclude);
     
     function finish(xmlNode){
         var domParser = this.ownerDocument.$domParser;
-        
+
         if (this.clear)
             this.parentNode.$int.innerHTML = "";
         
