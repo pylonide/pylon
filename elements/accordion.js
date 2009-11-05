@@ -146,11 +146,7 @@
  */
 apf.accordion = function(struct, tagName){
     this.$init(tagName || "accordion", apf.NODE_VISIBLE, struct);
-};
-
-(function() {
-    this.$focussable     = false;
-
+    
     this.$animtype1      = apf.tween.NORMAL;
     this.$animtype2      = apf.tween.NORMAL;
     this.animdelay       = 10;
@@ -189,7 +185,11 @@ apf.accordion = function(struct, tagName){
      * can be opened
      */
     this.startExpanded = 0;
+    
+    this.$focussable     = false;
+};
 
+(function() {
     //this.$appendedBars = 0;
 
     this.$booleanProperties["multiexpand"]  = true;
@@ -263,6 +263,7 @@ apf.accordion = function(struct, tagName){
      *     {String} unique name of title bar
      */
     this.slideDown = function(id) {
+        apf.console.info("down..."+id)
         var id2 = null;
 
         if (!this.bars[id]) {
@@ -379,9 +380,9 @@ apf.accordion = function(struct, tagName){
                     onfinish : function() {
                         _self.$setStyleClass(bar.htmlNode, "active", [""]);
 
-                        /*if (startSH !== bar.htmlBody.scrollHeight && _self.$dir == "vertical") {
-                            _self.slideDown(id);
-                        }*/
+                        //if (startSH !== bar.htmlBody.scrollHeight && _self.$dir == "vertical") {
+                            //_self.slideDown(id);
+                        //}
 
                         if (_self.$dir == "horizontal")
                             bar.htmlBody.style.width = "auto";
@@ -486,6 +487,8 @@ apf.accordion = function(struct, tagName){
         
         var xmlBars = 0;
         var htmlBars = 0;
+        
+        var barsToOpen = [];
 
         for (var i = 0; i < len; i++) {
             node = nodes[i];
@@ -595,7 +598,8 @@ apf.accordion = function(struct, tagName){
                     };
 
                     if ((opened || _self.startexpanded) && (_self.multiexpand || _self.startExpanded == 0)) {
-                        _self.slideDown(htmlTitle.id);
+                        //_self.slideDown(htmlTitle.id);
+                        barsToOpen.push(htmlTitle.id);
                         _self.startExpanded++;
                     }
                     
@@ -610,7 +614,18 @@ apf.accordion = function(struct, tagName){
                 });
             }
         }
-
+        
+        var openBarTimer = null;
+        clearInterval(openBarTimer);
+        openBarTimer = setInterval(function() {
+            if (htmlBars == xmlBars) {
+                for (var i = 0; i < barsToOpen.length; i++) {
+                    var id = barsToOpen.pop();
+                    _self.slideDown(id);
+                }
+                clearInterval(openBarTimer);
+            }
+        }, 50);
     };
 
     this.$loadAml = function(x) {
