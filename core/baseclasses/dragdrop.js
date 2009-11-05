@@ -207,8 +207,11 @@ apf.DragDrop = function(){
         if (nodeList.nodeType)
             nodeList = [nodeList];
         
-        var i, exec, changes = [];
-        for (var i = 0; i < nodeList.length; i++) {
+        var exec,
+            changes = [],
+            i       = 0,
+            l       = nodeList.length;
+        for (; i < l; i++) {
             changes.push({
                 func : isMove ? "moveNode" : "appendChild",
                 args : [pNode, isMove
@@ -217,9 +220,10 @@ apf.DragDrop = function(){
             });
         }
         
-        if (this.$actions[(isMove ? "movegroup" : "copygroup")])
+        if (this.$actions[(isMove ? "movegroup" : "copygroup")]) {
             exec = this.$executeAction("multicall", changes, 
                 (isMove ? "movegroup" : "copygroup"), nodeList[0]);
+        }
         else {
             exec = this.$executeAction("multicall", changes, 
                 (isMove ? "move" : "copy"), nodeList[0], null, null, 
@@ -260,7 +264,7 @@ apf.DragDrop = function(){
      */
     this.isDragAllowed = function(x, data){
         //#ifdef __WITH_OFFLINE
-        if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
+        if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
         //#endif
 
@@ -278,8 +282,11 @@ apf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;*/
 
-        var d, ruleList = [];
-        for (var j = 0; j < x.length; j++) {
+        var d, 
+            ruleList = [],
+            j        = 0,
+            l        = x.length;
+        for (; j < l; j++) {
             d = this.$getDataNode("drag", x[j], null, ruleList);
             if (!d) return false; //It's all or nothing
             if (data)
@@ -336,8 +343,10 @@ apf.DragDrop = function(){
             return false;
 
         //@todo this can be optimized when needed
-        var rule;
-        for (var op, strTgt, i = 0, rl = rules.length; i < rl; i++) {
+        var rule, strTgt,
+            i  = 0,
+            rl = rules.length;
+        for (; i < rl; i++) {
             rule = this.$bindings.getRuleIndex("drop", i);
 
             for (var j = 0, l = x.length; j < l; j++) {
@@ -368,6 +377,7 @@ apf.DragDrop = function(){
     };
 
     this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event){
+        // @todo apf3.0 action not known here yet... should be moved down?
         if (action == "tree-append" && isParent) 
             return false;
 
@@ -394,8 +404,9 @@ apf.DragDrop = function(){
         //@todo apf3.0 below should actually be compileNode with with_options
         ifcopy = rule && rule.copy;//.getAttribute("copy");
         
-        if (ifcopy)
+        if (ifcopy) {
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
+        }
         else if (typeof this.dragcopy == "boolean") { //@todo apf3.0 boolean here?
             if (this.dragcopy) {
                 ifcopy = event.ctrlKey;
@@ -507,8 +518,9 @@ apf.DragDrop = function(){
             }
             //#endif
 
-            var fEl, srcEl = e.originalTarget || e.srcElement || e.target;
-            var multiselect = _self.hasFeature(apf.__MULTISELECT__);
+            var fEl,
+                srcEl       = e.originalTarget || e.srcElement || e.target,
+                multiselect = _self.hasFeature(apf.__MULTISELECT__);
             if (multiselect && srcEl == _self.$int)
                 return;
             _self.dragging = 0;
@@ -566,8 +578,9 @@ apf.DragDrop = function(){
             this.$initDragDrop();
             this.$dragInited = 2;
         }
-        else 
+        else {
             this.$dragInited = true;
+        }
     };
     
     function disableDragDrop(){
@@ -682,8 +695,9 @@ apf.DragDrop = function(){
     });
 };
 
-apf.GuiElement.propHandlers["drop"] = 
-apf.GuiElement.propHandlers["drag"] = function(value, f, prop) {
+apf.GuiElement.propHandlers["dragcopy"] =
+apf.GuiElement.propHandlers["drop"]     =
+apf.GuiElement.propHandlers["drag"]     = function(value, f, prop) {
     if (!apf.isFalse(value)) {
         if (!this.hasFeature(apf.__DRAGDROP__)) {
             this.implement(apf.DragDrop);
@@ -1121,7 +1135,7 @@ apf.MultiselectDragDrop = function() {
             if (this.lastDragNode)
                 apf.destroyHtmlNode(this.lastDragNode);
 
-            var sel = this.$selected || this.$caret;
+            sel = this.$selected || this.$caret;
             var oDrag = sel.cloneNode(true);
             oDrag.removeAttribute("onmousedown"); oDrag.onmousedown = null;
             oDrag.removeAttribute("onmouseup"); oDrag.onmouseup = null;
@@ -1176,8 +1190,9 @@ apf.MultiselectDragDrop = function() {
             apf.destroyHtmlNode(this.lastDragNode);
             this.lastDragNode = null;
         }
-        else
+        else {
             this.oDrag.style.display = "none";
+        }
     };
     
     this.$moveDragIndicator = function(e){
