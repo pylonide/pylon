@@ -92,8 +92,8 @@ o.constructor.prototype = new apf.list();
 //#endif
 
 /* #ifdef __WITH_HTML5
-if (tagName == "input") {
-    objName = apf.HTML5INPUT[objName = x.getAttribute("type")]
-        || objName || "textbox";
-}
+//if (tagName == "input") {
+//    objName = apf.HTML5INPUT[objName = x.getAttribute("type")]
+//        || objName || "textbox";
+//}
 //#endif*/
