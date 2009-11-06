@@ -406,7 +406,7 @@ apf.caldropdown = function(struct, tagName){
 
         apf.popup.show(this.$uniqueId, {
             x       : 0,
-            y       : this.$ext.offsetHeight + this.$getPageScroll()[0],
+            y       : this.$ext.offsetHeight,
             animate : true,
             ref     : this.$ext,
             width   : this.$ext.offsetWidth + 1,
@@ -421,8 +421,8 @@ apf.caldropdown = function(struct, tagName){
     
     this.$getPageScroll = function() {
         return [
-            document.documentElement.scrollTop || document.body.scrollTop,
-            document.documentElement.scrollLeft || document.body.scrollLeft
+            document.documentElement.scrollLeft || document.body.scrollLeft,
+            document.documentElement.scrollTop || document.body.scrollTop
         ];
     }
 
