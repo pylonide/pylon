@@ -865,7 +865,7 @@ apf.BaseList = function(){
 }).call(apf.BaseList.prototype = new apf.MultiSelect());
 /* #elseif __WITH_DATABINDING
 }).call(apf.BaseList.prototype = new apf.MultiselectBinding());
-   #else
+#else 
 }).call(apf.BaseList.prototype = new apf.Presentation());
 #endif*/
 
