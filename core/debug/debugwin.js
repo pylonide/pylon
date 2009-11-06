@@ -244,7 +244,7 @@ apf.debugwin = {
             apf.loadStylesheet(BASEPATH + "Library/Core/Highlighter/SyntaxHighlighter.css");
         }
         else if (self.SyntaxHighlighterCSS) {
-            apf.importCssString(document, SyntaxHighlighterCSS);
+            apf.importCssString(SyntaxHighlighterCSS);
         }
         else {
             apf.setcookie("highlight", false)
@@ -919,7 +919,7 @@ apf.debugwin = {
         this.resPath = apf.CDN + apf.VERSION + "/resources/";
         #endif */
 
-        apf.importCssString(document, "\
+        apf.importCssString("\
             html{\
                 height : 100%;\
                 overflow : hidden;\

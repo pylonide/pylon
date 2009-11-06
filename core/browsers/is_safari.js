@@ -129,7 +129,7 @@ apf.runIphone = function() {
     if (!apf.isIphone) return;
 
     // #ifdef __WITH_STYLE
-    apf.importCssString(document,
+    apf.importCssString(
        'html, body {\
             margin: 0;\
             font-family: Helvetica;\

@@ -567,6 +567,7 @@ apf.xmpp = function(struct, tagName){
                 clearTimeout(this.$listener);
                 this.$listener = null;
                 return this.connect(this.$serverVars["username"], this.$serverVars["password"],
+                    this.$serverVars["login_callback"],
                     this.$serverVars["register"] || this.$autoRegister)
             }
             this.$retryCount++;
@@ -575,25 +576,31 @@ apf.xmpp = function(struct, tagName){
             this.$retryCount = 0;
         }
 
+        var bIsAuth = nType & apf.xmpp.ERROR_AUTH,
+            bIsConn = nType & apf.xmpp.ERROR_CONN;
+
         // #ifdef __DEBUG
-        apf.console.log("[XMPP-" + (nType & apf.xmpp.ERROR_AUTH
+        apf.console.log("[XMPP-" + (bIsAuth
             ? "AUTH"
-            : "CONN") + "] onError called.", "xmpp");
+            : bIsConn ? "CONN" : "REG")
+            + "] onError called.", "xmpp");
         // #endif
         clearTimeout(this.$listener);
         this.$listener = null;
-        //unregister.call(this, "password");
+        //delete this.$serverVars["password"];
 
         var extra = {
             username : this.$serverVars["username"],
             server   : this.url,
-            message  : sMsg || (nType & apf.xmpp.ERROR_AUTH
+            message  : sMsg || (bIsAuth
                 ? "Access denied. Please check your username or password."
-                : "Could not connect to server, please contact your System Administrator.")
+                : bIsConn 
+                    ? "Could not connect to server, please contact your System Administrator."
+                    : "Could not register for a new user account")
         },
         cb = this.$serverVars["login_callback"];
         if (cb) {
-            unregister.call(this, "login_callback");
+            delete this.$serverVars["login_callback"];
             return cb(null, nState || apf.ERROR, extra);
         }
 
@@ -602,9 +609,9 @@ apf.xmpp = function(struct, tagName){
                           + ", server: " + extra.server + ")", "xmpp");
         // #endif
 
-        return this.dispatchEvent(nType & apf.xmpp.ERROR_AUTH
+        return this.dispatchEvent(bIsAuth
             ? "authfailure"
-            : "connectionerror", extra);
+            : bIsConn ? "connectionerror" : "registererror", extra);
     }
 
     /**
@@ -614,12 +621,12 @@ apf.xmpp = function(struct, tagName){
      * @param {String}   username   Name of the user on the XMPP server Virtual
      *                              Host
      * @param {String}   password   Password of the user
-     * @param {Boolean}  [reg]      Specifies whether to auto-register a new user
      * @param {Function} [callback] Function that will be called after the Async
      *                              login request
+     * @param {Boolean}  [reg]      Specifies whether to auto-register a new user
      * @type  {void}
      */
-    this.connect = function(username, password, reg, callback) {
+    this.connect = function(username, password, callback, reg) {
         this.reset();
 
         this.$serverVars["username"]       = username;
@@ -710,15 +717,15 @@ apf.xmpp = function(struct, tagName){
         // #endif
         // unregister ALL variables:
         for (var i in this.$serverVars)
-            unregister.call(this, i);
+            delete this.$serverVars[i];
 
         // apply some initial values to the serverVars global scoped Array
         this.$RID = null;
-        this.$serverVars["cnonce"]     = generateCnonce(14);
-        this.$serverVars["nc"]         = "00000001";
-        this.$serverVars[CONN]         = false;
+        this.$serverVars["cnonce"] = generateCnonce(14);
+        this.$serverVars["nc"]     = "00000001";
+        this.$serverVars[CONN]     = false;
         // #ifdef __TP_XMPP_ROSTER
-        this.$serverVars[ROSTER]       = new apf.xmpp_roster(this.$model,
+        this.$serverVars[ROSTER]   = new apf.xmpp_roster(this.$model,
            this.$modelContent, this.resource);
         // #endif
         this.$serverVars["bind_count"] = 0;
@@ -755,14 +762,13 @@ apf.xmpp = function(struct, tagName){
 
         // reset retry/ connection counter
         this.$retryCount = 0;
-        //apf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.$isPoll) {
-            this.$serverVars[SID]     = oXml.getAttribute("sid");
+            this.$serverVars[SID]       = oXml.getAttribute("sid");
             this.$serverVars["AUTH_ID"] = oXml.getAttribute("authid");
         }
         else {
             var aCookie = extra.http.getResponseHeader("Set-Cookie").splitSafe(";");
-            this.$serverVars[SID]     = aCookie[0].splitSafe("=")[1];
+            this.$serverVars[SID]       = aCookie[0].splitSafe("=")[1];
             this.$serverVars["AUTH_ID"] = oXml.firstChild.getAttribute("id");
         }
 
@@ -792,7 +798,7 @@ apf.xmpp = function(struct, tagName){
 
         if (!found) {
             return onError.call(this, apf.xmpp.ERROR_AUTH,
-             "No supported authentication protocol found. We cannot continue!");
+                "No supported authentication protocol found. We cannot continue!");
         }
 
         return (this.$serverVars["AUTH_REG"] && this.$serverVars["register"])
@@ -823,7 +829,7 @@ apf.xmpp = function(struct, tagName){
                     var iq = oXml.getElementsByTagName("iq")[0];
                     if ((iq && iq.getAttribute("type") == "error")
                       || oXml.getElementsByTagName("error").length) {
-                        return onError.call(_self, apf.xmpp.ERROR_AUTH,
+                        onError.call(_self, apf.xmpp.ERROR_REG,
                             "New account registration for account '"
                             + this.$serverVars["username"] + " failed.");
                     }
@@ -1117,7 +1123,7 @@ apf.xmpp = function(struct, tagName){
                   || oXml.getElementsByTagName("error").length) {
                     return onError.call(this, apf.xmpp.ERROR_AUTH);
                 }
-                unregister.call(this, "password");
+                delete this.$serverVars["password"];
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
@@ -1291,7 +1297,7 @@ apf.xmpp = function(struct, tagName){
                     cb(null, apf.SUCCESS, {
                         username : _self.$serverVars["username"]
                     });
-                    unregister.call(_self, "login_callback");
+                    delete _self.$serverVars["login_callback"];
                 }
             }, this.$isPoll
             ? createStreamElement.call(this, null, null, sIq)
@@ -2046,7 +2052,7 @@ apf.xmpp = function(struct, tagName){
      * - xmpp:name.logout()
      * - xmpp:name.notify(message, to_address, thread, type)
      */
-    this.exec = function(method, callback, args){
+    this.exec = function(method, args, callback){
         switch(method){
             case "login":
                 this.connect(args[0], args[1], callback);
@@ -2098,6 +2104,7 @@ apf.xmpp.CONN_BOSH = 0x0002;
 apf.xmpp.ERROR_AUTH = 0x0004;
 apf.xmpp.ERROR_CONN = 0x0008;
 apf.xmpp.ERROR_MUC  = 0x0010;
+apf.xmpp.ERROR_REG  = 0x0011;
 
 apf.xmpp.SUBSCR_FROM = "from";
 apf.xmpp.SUBSCR_TO   = "to";

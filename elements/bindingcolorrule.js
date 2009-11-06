@@ -42,8 +42,7 @@ apf.BindingColorRule = function(struct, tagName){
             apf.setStyleRule("." + this.$baseCSSname + (apf.isIE
                 ? " .records .highlight"
                 : " .records .highlight"), "backgroundColor", clr.getAttribute("row"), null, this.oWin);
-            /*apf.importCssString(document, 
-                "." + this.$baseCSSname + " .records div.highlight{background-color:" 
+            /*apf.importCssString("." + this.$baseCSSname + " .records div.highlight{background-color:" 
                 + clr.getAttribute("row") + ";} ." 
                 + this.$baseCSSname + " .records div.highlight span{color:" 
                 + clr.getAttribute("text") + ";}");*/

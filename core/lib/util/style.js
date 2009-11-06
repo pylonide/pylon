@@ -136,11 +136,11 @@ apf.setStyleClass = function(oHtml, className, exclusion, special){
 
 /**
  * This method imports a css stylesheet from a string
- * @param {Object} doc        the reference to the document where the css is applied on
  * @param {String} cssString  the css definition
- * @param {String} media      the media to which this css applies (i.e. 'print' or 'screen')
+ * @param {Object} [doc]      the reference to the document where the css is applied on
+ * @param {String} [media]    the media to which this css applies (i.e. 'print' or 'screen')
  */
-apf.importCssString = function(doc, cssString, media){
+apf.importCssString = function(cssString, doc, media){
     doc = doc || document;
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 

@@ -30,7 +30,7 @@ apf.draw.vml = {
     initRoot : function(r){
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
         if(!apf.isIE8){
-            apf.importCssString(document, "v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
+            apf.importCssString("v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
             r.$int.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                             background:url(images/spacer.gif);width:"+

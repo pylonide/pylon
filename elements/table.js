@@ -520,7 +520,7 @@ apf.table = function(struct, tagName){
             apf.setStyleClass(this.$ext, this.getAttribute("class"));
 
         if (!apf.isIE && !apf.table.$initedcss) {
-            apf.importCssString(document, ".table>*{position:absolute}");
+            apf.importCssString(".table>*{position:absolute}");
             apf.table.$initedcss = true;
         }
     };

@@ -292,7 +292,7 @@ apf.runIE = function(){
             if (content.parentNode)
                 content.parentNode.removeChild(content);
             if (style)
-                apf.importCssString(this.popup.document, style);
+                apf.importCssString(style, this.popup.document);
 
             return this.popup.document;
         },

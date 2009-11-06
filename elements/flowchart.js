@@ -819,7 +819,7 @@ apf.flowchart = function(struct, tagName){
             blockPos[0] - canvasPos[0],
             blockPos[1] - canvasPos[1]
         );
-    }
+    };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         apf.console.info("UPDATE")
@@ -948,7 +948,7 @@ apf.flowchart = function(struct, tagName){
 
         objBlock.updateOutputs();
         objBlock.onMove();
-    }
+    };
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */

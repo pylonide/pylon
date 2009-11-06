@@ -671,7 +671,6 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
      * element have. Notified object must have onMove function).
      */
     this.onMove = function() {
-        //apf.console.info(this.moveListeners.length)
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++)
             ml[i].onMove();
     };
@@ -897,16 +896,15 @@ apf.flow.input = function(objBlock, number) {
             apf.flow.isMoved = false;
 
             if (t && canvas.mode == "connection-change") {
-                if ((t.className || "").indexOf("input") == -1) {
+                if ((t.className || "").indexOf("input") == -1)
                     apf.flow.connectionsManager.addBlock(destination, destinationInput);
-                }
             }
             apf.flow.connectionsManager.clear();
 
-            if (connection) {
+            if (connection)
                 apf.flow.removeConnector(connection.newConnector.htmlElement);
-            }
             if (vMB) {
+                vMB.onMove(e);
                 vMB.destroy();
                 vMB = null;
                 _self.objBlock.canvas.setMode("normal");

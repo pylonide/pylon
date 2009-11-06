@@ -47,8 +47,8 @@ apf.printer = {
             zIndex          = 100000000;
         }
         
-        apf.importCssString(document, "#print_content{display:none}");
-        apf.importCssString(document, (apf.hasCSSChildOfSelector
+        apf.importCssString("#print_content{display:none}");
+        apf.importCssString((apf.hasCSSChildOfSelector
           ? "body #print_content{display:block} body>*{display:none}"
           : "body #print_content, body #print_content *{display:block} body *{display:none}")
             , "print");

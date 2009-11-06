@@ -77,8 +77,8 @@ apf.ContentEditable.plugin("fontstyle", function() {
             if (aCss.length) {
                 // insert resulting CSS into container document AND inside the
                 // document of the editor's iframe
-                apf.importCssString(window.document, bCss.join(""));
-                apf.importCssString(editor.$activeDocument, aCss.join(""));
+                apf.importCssString(bCss.join(""));
+                apf.importCssString(aCss.join(""), editor.$activeDocument);
                 if (apf.isIE) {
                     // removing text nodes from the HEAD section, which are added
                     // by IE in some cases.

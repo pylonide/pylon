@@ -36,9 +36,8 @@ apf.style = function(struct, tagName){
     this.$focussable = false;
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-		if(this.type != 'text/chartcss'){
-			apf.importCssString(document, this.firstChild.nodeValue);
-		}
+        if (this.type != "text/chartcss" && this.firstChild)
+            apf.importCssString(this.firstChild.nodeValue);
     });
 }).call(apf.style.prototype = new apf.AmlElement());
 

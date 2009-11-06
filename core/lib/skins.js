@@ -166,7 +166,7 @@ apf.skins = {
             return;
 
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        apf.importCssString(document, cssString);
+        apf.importCssString(cssString);
 
         //#ifdef __WITH_OFFLINE_APPLICATION
         this.loadedCss += cssString;
@@ -182,7 +182,7 @@ apf.skins = {
         var template = skin.templates[name[1]];
         this.importSkinDef(template, skin.base, skin.name);
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        apf.importCssString(win.document, cssString);
+        apf.importCssString(cssString);
 
         this.css = [];
     },

@@ -39,7 +39,7 @@ apf.popup = {
         };
         content.style.position = "absolute";
         //if(content.parentNode) content.parentNode.removeChild(content);
-        //if(style) apf.importCssString(this.popup.document, style);
+        //if(style) apf.importCssString(style, this.popup.document);
         
         content.onmousedown  = function(e) {
             if (!e) e = event;
