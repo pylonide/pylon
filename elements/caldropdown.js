@@ -90,21 +90,6 @@
 apf.caldropdown = function(struct, tagName){
     this.$init(tagName || "caldropdown", apf.NODE_VISIBLE, struct);
     
-};
-
-(function() {
-    this.implement(
-        //#ifdef __WITH_DATAACTION
-        apf.DataAction
-        //#endif
-        //#ifdef __WITH_DATABINDING
-        //,apf.StandardBinding
-        //#endif
-        //#ifdef __WITH_XFORMS
-        //,apf.XForms
-        //#endif
-    );
-
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -152,6 +137,21 @@ apf.caldropdown = function(struct, tagName){
                         {name : "November",  number : 30},
                         {name : "December",  number : 31}]
     };
+    
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //#ifdef __WITH_DATABINDING
+        //,apf.StandardBinding
+        //#endif
+        //#ifdef __WITH_XFORMS
+        //,apf.XForms
+        //#endif
+    );
 
     this.$supportedProperties.push("initial-message", "output-format",
                                    "default", "caption-format", "value");
