@@ -488,7 +488,7 @@ apf.http = function(){
         function send(isLocal){
             var hasError;
 
-            if (apf.isIE && isLocal) //This is here because IE executes this sync for local files.
+            if (apf.isIE && isLocal) //When local IE calls onreadystate immediately
                 http.send(data);
             else {
                 try{
@@ -505,7 +505,7 @@ apf.http = function(){
                     : "Browser is currently working offline";
 
                 //#ifdef __DEBUG
-                apf.console.info(msg, "teleport");
+                apf.console.warn(msg, "teleport");
                 //#endif
 
                 var state = window.navigator.onLine
@@ -532,7 +532,7 @@ apf.http = function(){
             return this.receive(id);
         }
         else {
-            if (apf.isIE && location.protocol == "file:"
+            if (apf.loadsLocalFilesSync && location.protocol == "file:"
               && url.indexOf("http://") == -1) {
                 setTimeout(function(){
                     send.call(_self, true);

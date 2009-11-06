@@ -270,13 +270,13 @@ apf.DOMParser.prototype = new (function(){
                 
                 //#ifdef __DEBUG
                 if (!namespaceURI) {
-                    throw new Error("Missing namespace"); //@todo apf3.0 make proper error
+                    throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
                 }
                 if (!apf.namespaces[namespaceURI]) {
                     if (this.allowAnyElement)
                         namespaceURI = apf.ns.xhtml;
                     else 
-                        throw new Error("Missing namespace handler"); //@todo apf3.0 make proper error
+                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
                 }
                 //#endif
                 

@@ -142,7 +142,9 @@ apf.textbox  = function(struct, tagName){
             return;
 
         // Set Value
-        if (this.isHTMLBox) {
+        if (!initial && !value) //@todo apf3.x research the use of clear
+            this.clear();
+        else if (this.isHTMLBox) {
             if (this.$int.innerHTML != value)
                 this.$int.innerHTML = value;
         }
@@ -304,7 +306,7 @@ apf.textbox  = function(struct, tagName){
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
         else {
-            this.$propHandlers["value"].call(this, "");
+            this.$propHandlers["value"].call(this, "", null, true);
         }
         
         this.dispatchEvent("clear");//@todo this should work via value change

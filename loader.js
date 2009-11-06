@@ -386,10 +386,14 @@ apf.$x = apf.$loader
         "elements/bindingseriesrule.js",
         "elements/bindingeachrule.js",
         "processinginstructions/livemarkup.js"
-    )  
+    );
+    
+    apf.$x.script.apply(apf.$x, apf.$required)
     
     //Let's start APF
     .wait(function(){
+        if (apf.started) 
+            return; //@todo ask @getify why this function is called twice
         apf.start();
 
         //Conditional compilation workaround... (can this be improved??)
@@ -409,8 +413,7 @@ apf.$x = apf.$loader
             apf.dispatchEvent("domready");
         }, null, ["body", "class"]);
     });
-
-    apf.$x.script.apply(apf.$x, apf.$required).wait();
+    
 
 apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];

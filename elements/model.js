@@ -675,9 +675,15 @@ apf.model = function(struct, tagName){
         }
 
         this.$state = 1;
-        var _self    = this;
+        if (!this.$callCount) this.$callCount = 1;
+        else this.$callCount++;
+
+        var _self    = this, callCount = this.$callCount;
         var callback = options.callback;
         options.callback = function(data, state, extra){
+            if (callCount != _self.$callCount)
+                return; //another call has invalidated this one
+            
             _self.dispatchEvent("afterretrieve");
 
             //#ifdef __WITH_OFFLINE_MODELS
@@ -725,9 +731,7 @@ apf.model = function(struct, tagName){
             }
         };
 
-        apf.getData(instruction, options);
-
-        return this;
+        return apf.getData(instruction, options);
     };
     
     /**

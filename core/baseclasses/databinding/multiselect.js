@@ -440,7 +440,7 @@ apf.MultiselectBinding = function(){
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
-            return;// this.clear(); //@todo apf3.0 this should clear an set a listener
+            return this.clear(); //@todo apf3.0 this should clear an set a listener
 
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);

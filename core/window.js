@@ -903,71 +903,71 @@ apf.window = function(){
 
         var p,
             amlNode = apf.findHost(e.srcElement || e.target);
-        if (!amlNode) //@todo check this for documentElement apf3.0
-            return;
-        
+
         // #ifdef __WITH_POPUP
-        if (apf.popup.last && apf.popup.last != amlNode.$uniqueId)
+        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId))
             apf.popup.forceHide();
         // #endif
 
-        //#ifdef __WITH_FOCUS
-        //Make sure the user cannot leave a modal window
-        if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
-          && apf.config.allowBlur && amlNode.canHaveChildren != 2) {
-            lastFocusParent = null;
-            if (apf.document.activeElement)
-                apf.document.activeElement.blur();
-        }
-        else if ((p = apf.document.activeElement
-          && apf.document.activeElement.$focusParent || lastFocusParent)
-            && p.visible && p.modal && amlNode.$focusParent != p) {
-                apf.window.$focusLast(p, {mouse: true});
-        }
-        else if (!amlNode && apf.document.activeElement) {
-            apf.window.$focusRoot();
-        }
-        else if (amlNode.$isWindowContainer == -1) {
-            if (amlNode.$tabList.length)
-                apf.window.moveNext(null, amlNode.$tabList[0], null, {mouse: true});
-            else
-                apf.window.$focus(amlNode);
-        }
-        else if (!amlNode.disabled && amlNode.focussable !== false) {
-            if (amlNode.$focussable === apf.KEYBOARD_MOUSE)
-                apf.window.$focus(amlNode, {mouse: true});
-            else if (amlNode.canHaveChildren == 2) {
-                if (!apf.config.allowBlur || !apf.document.activeElement 
-                  || apf.document.activeElement.$focusParent != amlNode)
-                    apf.window.$focusLast(amlNode, {mouse: true});
+        if (amlNode) { //@todo check this for documentElement apf3.0
+            //#ifdef __WITH_FOCUS
+            //Make sure the user cannot leave a modal window
+            if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
+              && apf.config.allowBlur && amlNode.canHaveChildren != 2) {
+                lastFocusParent = null;
+                if (apf.document.activeElement)
+                    apf.document.activeElement.blur();
             }
-            else
+            else if ((p = apf.document.activeElement
+              && apf.document.activeElement.$focusParent || lastFocusParent)
+                && p.visible && p.modal && amlNode.$focusParent != p) {
+                    apf.window.$focusLast(p, {mouse: true});
+            }
+            else if (!amlNode && apf.document.activeElement) {
+                apf.window.$focusRoot();
+            }
+            else if (amlNode.$isWindowContainer == -1) {
+                if (amlNode.$tabList.length)
+                    apf.window.moveNext(null, amlNode.$tabList[0], null, {mouse: true});
+                else
+                    apf.window.$focus(amlNode);
+            }
+            else if (!amlNode.disabled && amlNode.focussable !== false) {
+                if (amlNode.$focussable === apf.KEYBOARD_MOUSE)
+                    apf.window.$focus(amlNode, {mouse: true});
+                else if (amlNode.canHaveChildren == 2) {
+                    if (!apf.config.allowBlur || !apf.document.activeElement 
+                      || apf.document.activeElement.$focusParent != amlNode)
+                        apf.window.$focusLast(amlNode, {mouse: true});
+                }
+                else
+                    apf.window.$focusDefault(amlNode, {mouse: true});
+            }
+            else {
                 apf.window.$focusDefault(amlNode, {mouse: true});
+            }
+    
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (apf.hasFocusBug) {
+                var isContentEditable = ta[(e.srcElement || e.target).tagName]
+                    && !(e.srcElement || e.target).disabled
+                    || (e.srcElement && e.srcElement.isContentEditable)
+                    || amlNode.$isContentEditable
+                    && amlNode.$isContentEditable(e) && !amlNode.disabled;
+    
+                if (!amlNode || !isContentEditable)
+                    apf.window.$focusfix();
+            }
+            else if (!last) {
+                apf.window.$focusevent();
+            }
+            //#endif
+            //#endif
         }
-        else {
-            apf.window.$focusDefault(amlNode, {mouse: true});
-        }
-
-        //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
-            var isContentEditable = ta[(e.srcElement || e.target).tagName]
-                && !(e.srcElement || e.target).disabled
-                || (e.srcElement && e.srcElement.isContentEditable)
-                || amlNode.$isContentEditable
-                && amlNode.$isContentEditable(e) && !amlNode.disabled;
-
-            if (!amlNode || !isContentEditable)
-                apf.window.$focusfix();
-        }
-        else if (!last) {
-            apf.window.$focusevent();
-        }
-        //#endif
-        //#endif
-
+        
         apf.dispatchEvent("mousedown", {
             htmlEvent : e,
-            amlNode   : amlNode
+            amlNode   : amlNode || apf.document.documentElement
         });
 
         //Non IE/ iPhone selection handling
