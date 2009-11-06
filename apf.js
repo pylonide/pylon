@@ -642,7 +642,7 @@ var apf = {
         //catch(e){apf.root = false}
         this.root = true;
         
-        /* #ifndef __PACKAGED
+        /* #ifdef __PACKAGED
         for (var i = 0; i < apf.$required.length; i++) {
             apf.include(apf.$required[i]);
         }
