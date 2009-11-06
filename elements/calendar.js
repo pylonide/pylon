@@ -132,7 +132,7 @@ apf.calendar = function(struct, tagName){
     this.$supportedProperties.push("output-format", "default");
 
     /**
-     * @attribute {String} style of returned date
+     * @attribute {String} output-format style of returned date
      * 
      * Possible values:
      *     d      day of the month as digits, no leading zero for single-digit days

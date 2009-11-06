@@ -161,7 +161,7 @@ apf.caldropdown = function(struct, tagName){
      * when it doesn't have a value set. This property is inherited from parent
      * nodes. When none is found it is looked for on the appsettings element.
      *
-     * @attribute {String} style of returned date
+     * @attribute {String} output-format style of returned date
      * 
      * Possible values:
      *     d      day of the month as digits, no leading zero for single-digit days
@@ -194,7 +194,7 @@ apf.caldropdown = function(struct, tagName){
     }
 
     /**
-     * @attribute {String} style of returned date
+     * @attribute {String} caption-format style of returned date
      * 
      * Possible values
      *     d      day of the month as digits, no leading zero for single-digit days
