@@ -87,7 +87,7 @@ apf.BaseTab = function(){
 
     /**
      * @attribute {Number} activepagenr the child number of the active page.
-     * Example
+     * Example:
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
      * <code>
