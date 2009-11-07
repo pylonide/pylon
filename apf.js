@@ -572,7 +572,7 @@ var apf = {
         //try{ISROOT = !window.opener || !window.opener.apf}catch(e){ISROOT = true}
 
         //Browser Specific Stuff
-        this.browserDetect();
+        //this.browserDetect();
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
@@ -2059,7 +2059,8 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
         return xmlNode.getElementsByTagNameNS(xmlns, tag);
 }
 
-document.documentElement.className += " has_apf"; 
+document.documentElement.className += " has_apf";
+apf.browserDetect();
 apf.Init.run("apf");
 
 //#ifndef __PACKAGED

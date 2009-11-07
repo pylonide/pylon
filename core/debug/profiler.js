@@ -1,3 +1,4 @@
+//#ifdef __PROFILER
 /**
  * $Id$
  * Profiler class
@@ -593,3 +594,4 @@ var Profiler_functionTemplate = function() {
         return ret;
     };
 };
+//#endif

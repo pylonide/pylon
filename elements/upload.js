@@ -457,8 +457,8 @@ apf.upload = function(struct, tagName){
             // #ifdef __DEBUG
             verbose        : true,
             /* #else
-            verbose         : false,*/
-            // #endif
+            verbose         : false,
+            #endif */
             fileSizeMin    : this["filesize-min"],
             fileSizeMax    : this["filesize-max"],
             allowDuplicates: this["allow-duplicates"],

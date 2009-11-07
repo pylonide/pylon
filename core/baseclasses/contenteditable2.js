@@ -20,7 +20,7 @@
  */
 apf.__CONTENTEDITABLE__  = 1 << 24;
 
-// #ifdef __WITH_CONTENTEDITABLE
+// #ifdef __WITH_CONTENTEDITABLE2
 
 apf.ContentEditable2 = function() {
     this.$regbase = this.$regbase | apf.__CONTENTEDITABLE__;

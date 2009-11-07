@@ -20,7 +20,7 @@
  */
 
 apf.XhtmlElement = function(struct, tagName){
-    this.$init(tagName, apf.NODE_VISIBLE, struct);
+    this.$init(tagName || true, apf.NODE_VISIBLE, struct);
 };
 
 (function(){
