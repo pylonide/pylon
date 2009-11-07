@@ -135,6 +135,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
                         modelContent.muc ? resource : null),
             bareJID = node + "@" + domain;
 
+        //update of own account status from another resource not supported
+        if (bareJID == this.bareJID && resource != this.resource)
+            return;
+
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oEnt) {// && node && domain) {
