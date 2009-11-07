@@ -36,7 +36,7 @@ apf.$loader
         "core/lib/util/utilities.js",
         "core/lib/util/color.js",
         "core/lib/util/ecmaext.js",
-        "core/lib/util/json.js",
+        //"core/lib/util/json.js", //@todo needs to be reworked
         "core/lib/util/nameserver.js",
         "core/lib/util/xml.js",
         "core/lib/util/xmldiff.js",
@@ -56,12 +56,12 @@ apf.$loader
         "core/lib/draw/vml.js",
         "core/lib/draw/chartdraw.js",*/
         
-        "core/browsers/is_o3.js",
+        "core/browsers/is_o3.js"
         //"core/browsers/non_ie.js",
     )
     .wait()
     .script(
-        "core/window_o3.js",
+        "core/window-o3.js",
         "core/lib/config.js",
         
         //"core/lib/offline.js",
@@ -78,13 +78,13 @@ apf.$loader
         "core/markup/xforms.js",*/
         //"core/markup/xslt/xslt.js",
         
-        //"core/markup/aml.js",
-        //"core/markup/xhtml.js",
+        "core/markup/aml.js",
+        "core/markup/xhtml.js",
         "core/markup/xsd.js"
     )
     .wait()
     .script(
-        "core/lib/offline/transactions.js",
+        /*"core/lib/offline/transactions.js",
         "core/lib/offline/models.js",
         "core/lib/offline/state.js",
         "core/lib/offline/queue.js",
@@ -98,7 +98,7 @@ apf.$loader
         "core/lib/storage/flash.js",
         "core/lib/storage/gears.js",
         "core/lib/storage/html5.js",
-        "core/lib/storage/memory.js",
+        "core/lib/storage/memory.js",*/
         //"lib/storage/deskrun.js",
         //"lib/storage/deskrun.file.js",
         //"lib/storage/deskrun.sql.js",
@@ -158,7 +158,7 @@ apf.$loader
         "core/markup/xsd/totaldigits.js",
         "core/markup/xsd/union.js",
         
-        //"core/debug/debug.js",
+        "core/debug/debug.js",
         //"core/debug/debugwin.js",
         //"debug/profiler.js",
     
@@ -223,16 +223,10 @@ apf.$loader
         "elements/bindingseriesrule.js",
         "elements/bindingeachrule.js",
         "processinginstructions/livemarkup.js"
-    );
-    
-    apf.$x.script.apply(apf.$x, apf.$required)
+    )
     
     //Let's start APF
     .wait(function(){
-        if (apf.started) 
-            return; //@todo ask @getify why this function is called twice
-        apf.start();
-
         apf.dispatchEvent("domready");
     });
 

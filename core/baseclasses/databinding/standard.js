@@ -30,7 +30,8 @@ apf.StandardBinding = function(){
     this.$init(true);
     
     //#ifdef __WITH_VALIDATION
-    this.implement(apf.Validation);
+    if (apf.Validation)
+        this.implement(apf.Validation);
     //#endif
     
     if (!this.setQueryValue)

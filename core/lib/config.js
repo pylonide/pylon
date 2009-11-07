@@ -53,7 +53,7 @@ apf.extend(apf.config, {
     iphoneFixedViewport: true,
     // #endif
     skinset            : "default",
-    name               : window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
+    name               : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
 
     tags               : {},
     defaults           : {},
@@ -206,9 +206,10 @@ apf.extend(apf.config, {
 });
 
 //#ifdef __WITH_HISTORY
-apf.addEventListener("load", function(){
-    apf.history.init(apf.config.defaultPage, "page");
-});
+if (apf.history)
+    apf.addEventListener("load", function(){
+        apf.history.init(apf.config.defaultPage, "page");
+    });
 //#endif
 
 //#endif

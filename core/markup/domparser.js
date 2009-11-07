@@ -124,7 +124,6 @@ apf.DOMParser.prototype = new (function(){
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
-
         (function recur(amlNode, nodes){
             var cL, newNode, node, nNodes,
                 cNodes = amlNode.childNodes,
@@ -227,7 +226,7 @@ apf.DOMParser.prototype = new (function(){
         //instead of $amlLoaded use something more generic see compareDocumentPosition
         if (!options.ignoreSelf && !amlNode.$amlLoaded)
             amlNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
-        
+
         //Recursively signal non prio nodes
         (function _recur(nodes){
             var node, nNodes;
@@ -262,7 +261,7 @@ apf.DOMParser.prototype = new (function(){
                     if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml) 
                       && !(prefix = doc.$prefixes[namespaceURI]))
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
-                    nodeName = xmlNode.baseName || xmlNode.localName;
+                    nodeName = xmlNode.baseName || xmlNode.localName || xmlNode.tagName.split(":").pop();
                 }
                 else {
                     prefix = doc.$prefixes[namespaceURI] || "";

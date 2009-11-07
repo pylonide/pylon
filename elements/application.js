@@ -31,18 +31,20 @@
 apf.application = function(){
     this.$init("application", apf.NODE_HIDDEN);
     
-    this.$int        = document.body;
-    this.$tabList    = []; //Prevents documentElement from being focussed
-    this.$focussable = apf.KEYBOARD;
-    this.focussable  = true;
-    this.visible     = true;
-    this.$isWindowContainer = true;
-    this.focus = function(){ this.dispatchEvent("focus"); };
-    this.blur  = function(){ this.dispatchEvent("blur"); };
+    if (!apf.isO3) {    
+        this.$int        = document.body;
+        this.$tabList    = []; //Prevents documentElement from being focussed
+        this.$focussable = apf.KEYBOARD;
+        this.focussable  = true;
+        this.visible     = true;
+        this.$isWindowContainer = true;
+        this.focus = function(){ this.dispatchEvent("focus"); };
+        this.blur  = function(){ this.dispatchEvent("blur"); };
     
-    //#ifdef __WITH_FOCUS
-    apf.window.$addFocus(this);
-    //#endif
+        //#ifdef __WITH_FOCUS
+        apf.window.$addFocus(this);
+        //#endif
+    }
 };
 apf.application.prototype = new apf.AmlElement();
 apf.aml.setElement("application", apf.application);

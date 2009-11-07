@@ -737,7 +737,7 @@ apf.Class.prototype = new (function(){
             if (!e || !e.currentTarget) {
                 if (!(options || (options = {})).currentTarget)
                     options.currentTarget = this;
-    
+
                 //Capture support
                 if (arr = this.$captureStack[eventName]) {
                     for (i = 0, l = arr.length; i < l; i++) {

@@ -96,7 +96,7 @@ apf.window = function(){
         apf.console.info("Start parsing main application");
         // #endif
         // #ifdef __DEBUG
-        apf.Latometer.start();
+        //apf.Latometer.start();
         // #endif
         
         //Put this in callback in between the two phases
@@ -139,9 +139,9 @@ apf.window = function(){
                 //#endif
                 
                 // #ifdef __DEBUG
-                apf.Latometer.end();
-                apf.Latometer.addPoint("Total load time");
-                apf.Latometer.start(true);
+                //apf.Latometer.end();
+                //apf.Latometer.addPoint("Total load time");
+                //apf.Latometer.start(true);
                 // #endif
           }
         }); //async

@@ -5,6 +5,16 @@ apf.runO3 = function(){
     var XMLDocument = o3.xml.parseFromString("<root />", "text/xml");
     var Element = XMLDocument.documentElement;
     var Node = Element;
+    document = o3.xml.parseFromString("<html><body /></html>", "text/xml");
+    document.body = document.documentElement.firstChild;
+
+    setTimeout = setInterval = function(a){
+        if (typeof a == "string") eval(a);
+        else a();
+        return 1;
+    }
+    clearInterval = clearTimeout = function(){}
+
 
     //XMLDocument.selectNodes
 //    XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){
@@ -28,7 +38,7 @@ apf.runO3 = function(){
     
     //apf.importClass(runXpath, true, self);
     apf.runXpath();
-    apf.runXslt();
+    //apf.runXslt();
     //apf.importClass(runXslt, true, self);
     
     var ASYNCNOTSUPPORTED = false;
@@ -224,7 +234,5 @@ apf.runO3 = function(){
         
         return xml;
     };
-
-    apf.xmldb = new apf.XmlDatabase();
 }
 //#endif

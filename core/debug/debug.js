@@ -250,7 +250,7 @@ apf.ProfilerClass = function(nostart){
 
 apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
 
-if (navigator.userAgent.indexOf("Opera") != -1) {
+if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
     window.console = {};
     ["log", "debug", "info", "warn", "error"].forEach(function(type) {
         window.console[type] = function() {

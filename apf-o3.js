@@ -48,16 +48,34 @@ apf = {
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
+    isO3          : true,
+
+    /**
+     * {Object} contains several known and often used namespace URI's.
+     * @private
+     *
+     */
+    ns : {
+        apf    : "http://ajax.org/2005/aml",
+        aml    : "http://ajax.org/2005/aml",
+        xsd    : "http://www.w3.org/2001/XMLSchema",
+        xhtml  : "http://www.w3.org/1999/xhtml",
+        xslt   : "http://www.w3.org/1999/XSL/Transform",
+        xforms : "http://www.w3.org/2002/xforms",
+        ev     : "http://www.w3.org/2001/xml-events"
+    },
     
-    start : function(){
+    start : function(strAml){
         this.host     = null;
         this.hostPath = null;
         this.CWD      = null;
         this.TAGNAME  = "localName";
         
         apf.runO3();
-        
+
         this.implement(apf.Class);
+
+        apf.window.init(strAml);
     },
     
     importClass : function(ref, strip, win){
@@ -164,7 +182,7 @@ apf = {
                 + dt.getSeconds()    + "."
                 + ms;
             
-            root.out.write((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
+            o3.out((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
         },
         //#endif
         
@@ -243,12 +261,18 @@ apf = {
         return str.join("\n");
         //#endif
     },
+
+    namespaces : {},
+    setNamespace : function(namespaceURI, oNamespace){
+        this.namespaces[namespaceURI] = oNamespace;
+        oNamespace.namespaceURI = namespaceURI;
+    },
     
     /* Init */
     
     include : function(sourceFile, doBase){
         apf.console.info("including js file: " + sourceFile);
-        include(sourceFile);
+        o3.js.include(sourceFile);
         //var fd = fs.child(sourceFile);
         //eval(fd.data, self);
     },
@@ -267,7 +291,7 @@ apf = {
             if (f) f();
             return this;
         }
-    }
+    },
     
     Init : {
         add   : function(func, o){

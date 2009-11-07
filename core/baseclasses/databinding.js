@@ -1533,7 +1533,10 @@ apf.DataBinding = function(){
     };
     //#endif
 };
-apf.DataBinding.prototype = new apf.Presentation();
+if (apf.Presentation)
+    apf.DataBinding.prototype = new apf.Presentation();
+else
+    apf.DataBinding.prototype = new apf.AmlElement();
 
 apf.config.$inheritProperties["model"]           = 1;
 apf.config.$inheritProperties["empty-message"]   = 1;

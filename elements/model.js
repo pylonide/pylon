@@ -118,10 +118,6 @@ apf.model = function(struct, tagName){
     this.canHaveChildren  = false;
     this["save-original"] = true;
 
-    //#ifdef __DEBUG
-    apf.console.info("Creating Model");
-    //#endif
-
     this.$state = 0;//1 = loading
 
     //1 = force no bind rule, 2 = force bind rule
