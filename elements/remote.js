@@ -153,6 +153,7 @@ apf.remote = function(struct, tagName){
     this.lookup     = {};
     this.select     = [];
     this.models     = [];
+    this.rsbQueue   = {};
     this.queueTimer = null;
     
     //#ifdef __WITH_OFFLINE
@@ -170,25 +171,19 @@ apf.remote = function(struct, tagName){
 
         clearTimeout(this.queueTimer);
         
-        var message = [this.buildMessage(args, model)];
-        
-        //#ifdef __DEBUG
-        apf.console.info("Sending RSB message\n" + apf.serialize(message));
-        //#endif
-        
         var _self = this;
         this.queueMessage(args, model, this);
         // use a timeout to batch consecutive calls into one RSB call
         this.queueTimer = setTimeout(function() {
-            _self.processQueue();
+            _self.processQueue(_self);
         });
-        //this.transport.sendRSB(apf.serialize(message));
     };
     
     this.buildMessage = function(args, model){
-        for (var i = 0, l = args.length; i < l; i++)
+        for (var i = 0, l = args.length; i < l; i++) {
             if (args[i] && args[i].nodeType)
                 args[i] = this.xmlToXpath(args[i], model.data);
+        }
         
         return {
             model     : model.name,
@@ -198,25 +193,32 @@ apf.remote = function(struct, tagName){
     };
     
     this.queueMessage = function(args, model, qHost){
-        if (!qHost.rsbQueue) {
-            qHost.rsbQueue = [];
-            qHost.rsbModel = model;
+        if (!model.id)
+            model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
+
+        if (!qHost.rsbQueue)
+            qHost.rsbQueue = {};
+        if (!qHost.rsbQueue[model.id]) {
+            qHost.rsbQueue[model.id] = [];
+            qHost.rsbModel           = model;
         }
-        
-        qHost.rsbQueue.push(this.buildMessage(args, model));
+        // @todo do some more additional processing here...
+        qHost.rsbQueue[model.id].push(this.buildMessage(args, model));
     };
     
     this.processQueue = function(qHost){
-        if (apf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
-            return;
-        
-        //#ifdef __DEBUG
-        apf.console.info("Sending RSB message\n" + apf.serialize(qHost.rsbQueue));
-        //#endif
-        
-        this.transport.sendRSB(apf.serialize(qHost.rsbQueue));
-        
-        qHost.rsbQueue = [];
+        if (qHost === this)
+            clearTimeout(this.queueTimer);
+        if (apf.xmldb.disableRSB) return;
+
+        for (var model in qHost.rsbQueue) {
+            if (!qHost.rsbQueue[model].length) continue;
+            //#ifdef __DEBUG
+            apf.console.info("Sending RSB message\n" + apf.serialize(qHost.rsbQueue[model]));
+            //#endif
+            this.transport.sendRSB(apf.serialize(qHost.rsbQueue[model]));
+        }
+        qHost.rsbQueue = {};
     };
     
     this.receiveChange = function(message){
@@ -224,6 +226,7 @@ apf.remote = function(struct, tagName){
             return;
 
         //#ifdef __WITH_OFFLINE
+        // @todo apf3.0 implement proper offline support in RSB
         if (apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
             queue.push(message);
             return;
@@ -267,6 +270,7 @@ apf.remote = function(struct, tagName){
                 apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
                 break;
             case "setAttribute":
+                console.log("setting attr of node ", xmlNode, q[2], q[3], q[4]);
                 apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
                 break;
             case "addChildNode":

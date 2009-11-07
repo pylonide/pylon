@@ -633,6 +633,7 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["password"]       = password;
         this.$serverVars["login_callback"] = callback;
         this.$serverVars["register"]       = reg || this.$autoRegister;
+        this.$serverVars["previousMsg"]    = [];
         // #ifdef __TP_XMPP_ROSTER
         this.$serverVars[ROSTER].registerAccount(username, this.$domain);
         // #endif
@@ -1292,12 +1293,20 @@ apf.xmpp = function(struct, tagName){
         this.$doXmlRequest(function(oXml) {
                 parseData.call(_self, oXml);
                 _self.$listen();
-                var cb = _self.$serverVars["login_callback"];
+                var cb  = _self.$serverVars["login_callback"],
+                    msg = _self.$serverVars["previousMsg"];
                 if (cb) {
                     cb(null, apf.SUCCESS, {
                         username : _self.$serverVars["username"]
                     });
                     delete _self.$serverVars["login_callback"];
+                }
+                // @todo apf3.0 properly test the delayed messaging after reconnect
+                if (msg && msg.length) {
+                    for (var i = 0, l = msg.length; i < l; i++)
+                        _self.sendMessage.apply(_self, msg[i]);
+                    delete msg;
+                    _self.$serverVars["previousMsg"] = [];
                 }
             }, this.$isPoll
             ? createStreamElement.call(this, null, null, sIq)
@@ -1403,6 +1412,7 @@ apf.xmpp = function(struct, tagName){
      */
     function parseData(oXml) {
         if (oXml && oXml.nodeType) {
+            this.$serverVars["previousMsg"] = [];
             // do other stuff... like processing the messages? :P
             var aMessages = oXml.getElementsByTagName("message");
             if (aMessages.length)
@@ -1969,6 +1979,7 @@ apf.xmpp = function(struct, tagName){
         if (!this.$serverVars[CONN]) return false;
 
         var bRoom = (this.$canMuc && type == "groupchat"),
+            aArgs = Array.prototype.slice.call(arguments),
             oUser;
         // #ifdef __TP_XMPP_ROSTER
         if (!bRoom)
@@ -1985,17 +1996,18 @@ apf.xmpp = function(struct, tagName){
         }
 
         var sMsg = createMessageBlock.call(this, {
-            type       : type || apf.xmpp.MSG_CHAT,
-            to         : to,
-            thread     : thread,
-            "xml:lang" : "en"
-        },
-        "<![CDATA[" + message + "]]>");
+                type       : type || apf.xmpp.MSG_CHAT,
+                to         : to,
+                thread     : thread,
+                "xml:lang" : "en"
+            },
+            "<![CDATA[" + message + "]]>");
 
         this.$doXmlRequest(function(data, state, extra){
                 if (callback)
                     callback.call(_self, data, state, extra);
 
+                _self.$serverVars["previousMsg"] = aArgs;
                 restartListener.call(_self, data, state, extra);
             }, this.$isPoll
             ? createStreamElement.call(this, null, null, sMsg)

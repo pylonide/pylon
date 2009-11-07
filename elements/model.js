@@ -139,10 +139,12 @@ apf.model = function(struct, tagName){
     this.$propHandlers["get"] = function(value, prop){
         if (this.$amlLoaded)
             this.$loadFrom(value);
-    }
+    };
+
     this.$propHandlers["validation"] = function(value, prop){
         apf.nameserver.get("validation", value).register(this); //@todo error handling
-    }
+    };
+    
     //Connect to a remote smartbinding
     this.$propHandlers["remote"] = function(value, prop){
         if (this.rsb) {
@@ -158,13 +160,13 @@ apf.model = function(struct, tagName){
                 throw new Error(apf.formatErrorString(0, null,
                     "Loading AML into model",
                     "Could not find reference to remote smartbinding: '"
-                    + x.getAttribute("remote") + "'", x))
+                    + this.getAttribute("remote") + "'", this))
             }
             //#endif
 
             this.rsb.models.push(this);
         }
-    }
+    };
 
     //#ifdef __WITH_MODEL_VALIDATION
     this.validate = function(xmlNode, checkRequired, validityState, amlNode){
@@ -197,7 +199,9 @@ apf.model = function(struct, tagName){
      * receive data loaded in this model.
      *
      * @param  {AMLElement}  amlNode  The aml element to be registered.
-     * @param  {String}      [xpath]  the xpath query which is executed on the data of the model to select the node to be loaded in the <code>amlNode</code>.
+     * @param  {String}      [xpath]  the xpath query which is executed on the
+     *                                data of the model to select the node to be
+     *                                loaded in the <code>amlNode</code>.
      * @return  {Model}  this model
      * @private
      */
@@ -304,7 +308,7 @@ apf.model = function(struct, tagName){
     };
     
     this.$loadInAmlProp = function(id, xmlNode){
-        var prop, p = this.$propBinds[id], amlNode = apf.all[id];
+        var prop, node, p = this.$propBinds[id], amlNode = apf.all[id];
         for (prop in p) {
             if (node = p[prop].root ? xmlNode.selectSingleNode(p[prop].root) : xmlNode) {
                 delete this.$proplisteners[id];
@@ -313,7 +317,7 @@ apf.model = function(struct, tagName){
             else
                 this.$waitForXml(amlNode, prop);
         }            
-    }
+    };
     
     /*
         We don't want to connect to the root, that would create a rush
@@ -379,7 +383,7 @@ apf.model = function(struct, tagName){
         this.$waitForXml(amlNode, prop);
         
         return p;
-    }
+    };
     
     this.$unbindXmlProperty = function(amlNode, prop){
         var id = amlNode.$uniqueId;
@@ -399,7 +403,7 @@ apf.model = function(struct, tagName){
         delete this.$proplisteners[id + prop];
         delete this.$propBinds[id][prop];
         return p;
-    }
+    };
 
     /**
      * Gets a copy of current state of the xml of this model.
@@ -470,6 +474,7 @@ apf.model = function(struct, tagName){
         
         return this.data.selectSingleNode(xpath)
     };
+
     /**
      * Executes an xpath statement on the data of this model
      *
@@ -491,7 +496,7 @@ apf.model = function(struct, tagName){
         var insertNode = xpath
           ? apf.createNodeFromXpath(this.data, xpath)
           : this.data;
-        if (!node)
+        if (!insertNode)
             return null;
         
         if (typeof xmlNode == "string")
@@ -650,7 +655,6 @@ apf.model = function(struct, tagName){
      */
     this.$loadFrom = function(instruction, options){
         var data      = instruction.split(":");
-        var instrType = data.shift();
 
         if (!options)
             options = {};
@@ -675,11 +679,14 @@ apf.model = function(struct, tagName){
         }
 
         this.$state = 1;
-        if (!this.$callCount) this.$callCount = 1;
-        else this.$callCount++;
+        if (!this.$callCount)
+            this.$callCount = 1;
+        else
+            this.$callCount++;
 
-        var _self    = this, callCount = this.$callCount;
-        var callback = options.callback;
+        var _self     = this,
+            callCount = this.$callCount,
+            callback  = options.callback;
         options.callback = function(data, state, extra){
             if (callCount != _self.$callCount)
                 return; //another call has invalidated this one
@@ -745,7 +752,7 @@ apf.model = function(struct, tagName){
             this.$loadFrom.apply(this, this.$srcOptions);
         else if (this.src)
             this.$loadFrom(this.src);
-    }
+    };
 
     /**
      * Loads data in this model
@@ -798,7 +805,6 @@ apf.model = function(struct, tagName){
 
         this.data = xmlNode;
 
-        var p, node, amlNode;
         for (id in this.$propBinds)
             this.$loadInAmlProp(id, xmlNode);
 
@@ -825,12 +831,12 @@ apf.model = function(struct, tagName){
         //node.xmlRoot = null; //.load(null)
         //if (amlNode.xmlRoot)
             //amlNode.clear();
-    }
+    };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //@todo optimize by only doing this for add, sync etc actions
         
-        var xmlNode, p, b;
+        var p, b;
         for (var id in this.$listeners) {
             if (xmlNode = this.data.selectSingleNode(this.$amlNodes[id].xpath || ".")) {
                 this.$listeners[id].load(xmlNode);
@@ -851,7 +857,7 @@ apf.model = function(struct, tagName){
                   : this.data);
             }
         }
-    }
+    };
 
     /**** INSERT ****/
 
@@ -950,7 +956,7 @@ apf.model = function(struct, tagName){
         var newNode = apf.mergeXml(xmlNode, options.insertPoint, options);
 
         //Call __XMLUpdate on all this.$listeners
-        apf.xmldb.applyChanges("insert", parentXMLNode);
+        apf.xmldb.applyChanges("insert", options.insertPoint);//parentXMLNode);
 
         //this.dispatchEvent("afterinsert");
 
@@ -1010,8 +1016,9 @@ apf.model = function(struct, tagName){
         function cbFunc(data, state, extra){
             if ((state == apf.TIMEOUT 
               || (model.retryOnError && state == apf.ERROR))
-              && extra.retries < apf.maxHttpRetries)
+              && extra.retries < apf.maxHttpRetries) {
                 return extra.tpModule.retry(extra.id);
+            }
             else {
                 if (state != apf.SUCCESS) {
                     model.dispatchEvent("submiterror", extra);
@@ -1025,15 +1032,12 @@ apf.model = function(struct, tagName){
         }
         
         var data;
-        if (type.indexOf("xml") > -1) {
+        if (type.indexOf("xml") > -1)
             data = apf.getXmlString(xmlNode);
-        }
-        else if (type.indexOf("form") > -1) {
+        else if (type.indexOf("form") > -1)
             data = apf.convertXml(apf.xmldb.getCleanCopy(xmlNode), "cgiobjects");
-        }
-        else if (type.indexOf("json") > -1) {
+        else if (type.indexOf("json") > -1)
             data = apf.convertXml(xmlNode, "json");
-        }
 
         apf.saveData(instruction, {
             xmlNode  : xmlNode,

@@ -444,8 +444,10 @@ apf.actiontracker = function(struct, tagName){
                 bubbles : true
             }, extra));
 
-            //Sent out the RSB message, letting friends know of our change
+            //#ifdef __WITH_RSB
+            //Send out the RSB message, letting friends know of our change
             UndoObj.processRsbQueue();
+            //#endif
 
             if (callback)
                 callback();
@@ -469,7 +471,9 @@ apf.actiontracker = function(struct, tagName){
                 apf.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
+            //#ifdef __WITH_RSB
             UndoObj.clearRsbQueue();
+            //#endif
 
             return;
         }
@@ -605,7 +609,10 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
  */
 apf.UndoData = function(settings, at){
     this.localName = "UndoData";
-    this.extra   = {};
+    this.extra     = {};
+    //#ifdef __WITH_RSB
+    this.rsbQueue  = {};
+    //#ifdef
     apf.extend(this, settings);
 
     if (at)
@@ -613,7 +620,9 @@ apf.UndoData = function(settings, at){
     //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
+        //#ifdef __WITH_RSB
         this.rsbArgs = settings.rsbArgs.slice();
+        //#endif
     }
     //Constructor
     else {
@@ -638,8 +647,10 @@ apf.UndoData = function(settings, at){
 
         serialState = {
             action    : this.action,
+            //#ifdef __WITH_RSB
             rsbModel  : this.rsbModel ? this.rsbModel.name : null,
             rsbQueue  : this.rsbQueue,
+            //#ifdef
             at        : this.at.name,
             timestamp : this.timestamp,
             parsed    : options ? options.parsed : null, //errors when options is not defined
@@ -647,10 +658,12 @@ apf.UndoData = function(settings, at){
             extra     : {}
         };
 
+        //#ifdef __WITH_RSB
         //this can be optimized
         var rsb = this.rsbModel
             ? this.rsbModel.rsb
             : apf.remote;
+        //#ifdef
 
         //Record arguments
         var sLookup = (typeof apf.offline != "undefined" && apf.offline.sLookup)
@@ -738,8 +751,10 @@ apf.UndoData = function(settings, at){
     };
 
     this.$import = function(){
+        //#ifdef __WITH_RSB
         if (this.rsbModel)
             this.rsbModel = apf.nameserver.get("model", this.rsbModel);
+        //#ifdef
 
         if (this.argsModel) {
             var model = apf.nameserver.get("model", this.argsModel)
@@ -752,13 +767,15 @@ apf.UndoData = function(settings, at){
             if (!sLookup.count) sLookup.count = 0;
 
             var args = this.args,
+                //#ifdef __WITH_RSB
                 rsb  = this.rsbModel
                     ? this.rsbModel.rsb
                     : apf.remote,
+                //#ifdef
                 xmlNode, i, l, item, name;
 
             for (i = 0, l = args.length; i < l; i++) {
-                if(args[i] && args[i].xpath)
+                if (args[i] && args[i].xpath)
                     args[i] = unserializeNode(args[i], model);
             }
 
@@ -807,6 +824,7 @@ apf.UndoData = function(settings, at){
     };
     //#endif
 
+    //#ifdef __WITH_RSB
     //Send RSB Message..
     this.processRsbQueue = function(){
         if (this.rsbModel)
@@ -817,6 +835,7 @@ apf.UndoData = function(settings, at){
         this.rsbQueue = 
         this.rsbModel = null;
     };
+    //#endif
 
     /**
      * Save the change to a data source.
@@ -838,7 +857,9 @@ apf.UndoData = function(settings, at){
         }
 
         if (!dataInstruction) {
+            //#ifdef __WITH_RSB
             this.processRsbQueue();
+            //#endif
             return at.$queueNext(this);
         }
 
@@ -1138,7 +1159,7 @@ apf.actiontracker.actions = {
 
     //@todo please change .func to .action for constency reasons
     "multicall" : function(UndoObj, undo, at){
-        var prop, q = UndoObj.args;
+        var q = UndoObj.args;
 
         var dUpdate = apf.xmldb.delayUpdate;
         apf.xmldb.delayUpdate = true;
@@ -1148,14 +1169,18 @@ apf.actiontracker.actions = {
             for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
                     q[i].extra = {};
+                //#ifdef __WITH_RSB
                 if (q[0].rsbModel)
                     q[i].rsbQueue = q[0].rsbQueue;
+                //#endif
                 apf.actiontracker.actions[q[i].func](q[i], false, at);
             }
+            //#ifdef __WITH_RSB
             if (q[0].rsbModel) {
                 UndoObj.rsbModel = q[0].rsbModel;
                 UndoObj.rsbQueue = q[0].rsbQueue;
             }
+            //#endif
         }
         // Undo Calls
         else {

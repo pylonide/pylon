@@ -402,13 +402,10 @@ apf.flowchart = function(struct, tagName){
      * @param {Number} dt             vertical alteration
      */
     this.moveTo = function(xmlNodeArray, dl, dt) {
-        if(!xmlNodeArray) {
-            return;
-        }
+        if(!xmlNodeArray) return;
 
-        if (!xmlNodeArray.length) {
+        if (!xmlNodeArray.length)
             xmlNodeArray = [xmlNodeArray];
-        }
 
         var changes = [],
             setNames = ["top", "left"],
@@ -419,7 +416,7 @@ apf.flowchart = function(struct, tagName){
                   setNames[j], xmlNodeArray[i], this.$createModel);
                 value = (setNames[j] == "left" ? dl : dt) 
                   + (parseInt(this.$applyBindRule(setNames[j], xmlNodeArray[i])) || 0);
-                  
+
                 if (this.snap) {
                     var gridSize = setNames[j] == "top" ? this.gridH : this.gridW;
                     value = Math.round(value / gridSize) * gridSize;
@@ -732,7 +729,7 @@ apf.flowchart = function(struct, tagName){
 
         var nXmlNode = this.xmlRoot.ownerDocument.createElement("block");
 
-        nXmlNode.setAttribute("id",      "b"+(this.$flowVars.lastBlockId + 1));
+        nXmlNode.setAttribute("id",      "b" + (this.$flowVars.lastBlockId + 1));
         nXmlNode.setAttribute("left",    left || 20);
         nXmlNode.setAttribute("top",     top || 20);
         nXmlNode.setAttribute("width",   elTemplate.getAttribute("dwidth"));
@@ -955,12 +952,12 @@ apf.flowchart = function(struct, tagName){
         this.$flowVars.lastBlockId++;
         //apf.flow.alert_r(xmlNode)
         apf.console.info("ADD");
-        this.$getNewContext("block");
-        var block            = this.$getLayoutNode("block"),
-            elSelect         = this.$getLayoutNode("block", "select"),
-            elImage          = this.$getLayoutNode("block", "image"),
-            elimageContainer = this.$getLayoutNode("block", "imagecontainer"),
-            elCaption        = this.$getLayoutNode("block", "caption");
+        this.$getNewContext("item");
+        var block            = this.$getLayoutNode("item"),
+            elSelect         = this.$getLayoutNode("item", "select"),
+            elImage          = this.$getLayoutNode("item", "image"),
+            elimageContainer = this.$getLayoutNode("item", "imagecontainer"),
+            elCaption        = this.$getLayoutNode("item", "caption");
 
         if (elCaption)
             elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
@@ -1069,6 +1066,15 @@ apf.flowchart = function(struct, tagName){
             });
 
         }
+
+        // #ifdef __WITH_CSS_BINDS
+        var cssClass = this.$applyBindRule("css", xmlNode);
+        if (cssClass) {
+            this.$setStyleClass(block, cssClass);
+            if (cssClass)
+                this.dynCssClasses.push(cssClass);
+        }
+        // #endif
         
         if (r.length > 0)
             this.$flowVars.xmlConnections[id] = r;
