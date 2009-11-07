@@ -811,11 +811,13 @@ apf.flowchart = function(struct, tagName){
         var blockPos  = apf.getAbsolutePosition(dragdata.indicator),
             canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
 
-        this.moveTo(
+        apf.setNodeValue(this.$getDataNode("top",  dragdata.xmlNode[0]), blockPos[1] - canvasPos[1], true);
+        apf.setNodeValue(this.$getDataNode("left", dragdata.xmlNode[0]), blockPos[0] - canvasPos[0], true);
+        /*this.moveTo(
             [dragdata.xmlNode[0]],
             blockPos[0] - canvasPos[0],
             blockPos[1] - canvasPos[1]
-        );
+        );*/
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
