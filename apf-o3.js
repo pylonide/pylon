@@ -19,13 +19,13 @@
  *
  */
 
-//#ifdef __SUPPORT_JAW
+//#ifdef __SUPPORT_O3
 
 /** 
- * Ajax.org Platform for jaw
+ * Ajax.org Platform for O3
  *
  * @author    Ruben Daniels ruben@javeline.com
- * @version   1.0
+ * @version   3.0
  * @url       http://www.ajax.org
  */
 
@@ -55,32 +55,9 @@ apf = {
         this.CWD      = null;
         this.TAGNAME  = "localName";
         
-        //this.importClass(runJaw, true);
-        apf.runJaw();
+        apf.runO3();
         
         this.implement(apf.Class);
-    },
-    
-    startDependencies : function(){
-        var i;
-        // Load Kernel Modules
-        for (i = 0; i < this.KernelModules.length; i++)
-            apf.include("core/" + this.KernelModules[i], true);
-        
-        // Load TelePort Modules
-        for (i = 0; i < this.TelePortModules.length; i++)
-            apf.include("elements/teleport/" + this.TelePortModules[i], true);
-
-        for (i = 0; i < this.Jaw.length; i++)
-            apf.include("./" + this.Jaw[i], true);
-        
-        // Load Components
-        for (i = 0; i < this.Components.length; i++) {
-            var c = this.Components[i];
-            apf.include("elements/" + c + ".js", true);
-        }
-        
-        apf.start();
     },
     
     importClass : function(ref, strip, win){
@@ -276,6 +253,22 @@ apf = {
         //eval(fd.data, self);
     },
     
+    $loader : {
+        setGlobalDefaults : function(){
+            
+        },
+        script : function(){
+            for (var i = 0; i < arguments.length; i++) {
+                apf.include(arguments[i]);
+            }
+            return this;
+        },
+        wait : function(f){
+            if (f) f();
+            return this;
+        }
+    }
+    
     Init : {
         add   : function(func, o){
             func.call(o);
@@ -373,34 +366,34 @@ Function.prototype.toHTMLNode = function(highlight){
 };
 
 apf.stacktrace = function(){
-        var list = [], seen = {}, loop, end;
-        
-        //Opera doesnt support caller... weird...
-        //try {
-            loop = end = arguments.callee.caller.caller
-              ? arguments.callee.caller.caller.caller
-              : arguments.callee.caller.caller;
+    var list = [], seen = {}, loop, end;
+    
+    //Opera doesnt support caller... weird...
+    //try {
+        loop = end = arguments.callee.caller.caller
+          ? arguments.callee.caller.caller.caller
+          : arguments.callee.caller.caller;
 
-            if (loop) {
-                //try {
-                    do {
-                        if (seen[loop.toString()])
-                            break; //recursion checker
-                        seen[loop.toString()] = true;
-                        //str += loop.toHTML();
-                        list.push(loop.toHTMLNode());
-                        loop = loop.caller;
-                    }
-                    while (list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
-                //}
-                //catch(a) {
-                //    list=[];
-                //}
-            }
-        //}
-        //catch(e){}
+        if (loop) {
+            //try {
+                do {
+                    if (seen[loop.toString()])
+                        break; //recursion checker
+                    seen[loop.toString()] = true;
+                    //str += loop.toHTML();
+                    list.push(loop.toHTMLNode());
+                    loop = loop.caller;
+                }
+                while (list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
+            //}
+            //catch(a) {
+            //    list=[];
+            //}
+        }
+    //}
+    //catch(e){}
 
-        return list.join("\n");
+    return list.join("\n");
 };
 
 //#endif

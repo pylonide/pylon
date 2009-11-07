@@ -23,7 +23,7 @@
  * Ajax.org Platform
  *
  * @author    Ruben Daniels ruben@javeline.com
- * @version   2.0
+ * @version   3.0
  * @url       http://www.ajax.org
  *
  * @event domready      Fires when the browsers' dom is ready to be manipulated.
