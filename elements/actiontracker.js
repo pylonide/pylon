@@ -1147,8 +1147,14 @@ apf.actiontracker.actions = {
         if (!undo) {
             for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
-                    q[i].extra = {}
+                    q[i].extra = {};
+                if (q[0].rsbModel)
+                    q[i].rsbQueue = q[0].rsbQueue;
                 apf.actiontracker.actions[q[i].func](q[i], false, at);
+            }
+            if (q[0].rsbModel) {
+                UndoObj.rsbModel = q[0].rsbModel;
+                UndoObj.rsbQueue = q[0].rsbQueue;
             }
         }
         // Undo Calls
