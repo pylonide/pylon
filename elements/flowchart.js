@@ -807,18 +807,14 @@ apf.flowchart = function(struct, tagName){
         this.$flowVars.resizeManager.hide();
     }
 
-    this.$dragdrop = function(el, dragdata, candrop) {
-        var blockPos  = apf.getAbsolutePosition(dragdata.indicator),
+    //this.$dragdrop = function(el, dragdata, candrop) {
+    this.addEventListener("dragdrop", function(e){
+        var blockPos  = apf.getAbsolutePosition(e.indicator),
             canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
 
-        apf.setNodeValue(this.$getDataNode("top",  dragdata.xmlNode[0]), blockPos[1] - canvasPos[1], true);
-        apf.setNodeValue(this.$getDataNode("left", dragdata.xmlNode[0]), blockPos[0] - canvasPos[0], true);
-        /*this.moveTo(
-            [dragdata.xmlNode[0]],
-            blockPos[0] - canvasPos[0],
-            blockPos[1] - canvasPos[1]
-        );*/
-    };
+        apf.setNodeValue(this.$getDataNode("top",  e.data[0], true), parseInt(e.top) - canvasPos[1]);
+        apf.setNodeValue(this.$getDataNode("left", e.data[0], true), blockPos[0] - canvasPos[0]);
+    });
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         apf.console.info("UPDATE")

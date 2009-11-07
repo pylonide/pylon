@@ -955,7 +955,7 @@ apf.DragServer = {
 
         //EVENT - cancelable: ondragdrop
         if (candrop) {
-            if (o.dispatchEvent("dragdrop", apf.extend({candrop : candrop},
+            if (o.dispatchEvent("dragdrop", apf.extend({candrop : candrop, htmlEvent : e, top: lastTop},
               this.dragdata)) === false) {
                 candrop = false;
             }
