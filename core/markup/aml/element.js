@@ -491,7 +491,7 @@ apf.AmlElement = function(struct, tagName){
 
         var handler;
         return (handler = this.$propHandlers && this.$propHandlers[prop]
-          || this.nodeFunc == apf.NODE_VISIBLE && apf.GuiElement.propHandlers[prop])
+          || this.nodeFunc == apf.NODE_VISIBLE && apf.GuiElement && apf.GuiElement.propHandlers[prop])
           && handler.call(this, value, prop, force);
     };
     

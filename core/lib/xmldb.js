@@ -767,7 +767,10 @@ apf.xmldb = new (function(){
             return;
 
         var xmlNode = args[1] && args[1].length && args[1][0] || args[1],
-            model   = apf.nameserver.get("model", apf.xmldb.getXmlDocId(xmlNode));
+            mdlId   = apf.xmldb.getXmlDocId(xmlNode), 
+            model   = apf.nameserver.get("model", mdlId);
+        if (!model && apf.isO3)
+            model = self[mdlId];
         if (!model) {
             if (!apf.nameserver.getAll("remove").length)
                 return;
@@ -786,7 +789,6 @@ apf.xmldb = new (function(){
         // Or send message now
         else
             model.rsb.sendChange(args, model);
-
     };
     //#endif
 

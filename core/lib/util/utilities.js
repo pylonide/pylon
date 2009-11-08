@@ -472,7 +472,9 @@ apf.exec = function(str, win){
     if (!win)
         win = self;
 
-    if (apf.hasExecScript) {
+    if (apf.isO3)
+        eval(str, self);
+    else if (apf.hasExecScript) {
         win.execScript(str);
     }
     else {

@@ -262,8 +262,8 @@ apf.http = function(){
         }
         //#endif
 
-        var async = options.async
-            || typeof options.async == "undefined" || apf.isOpera;
+        var async = (options.async
+            || typeof options.async == "undefined" || apf.isOpera);
 
         //#ifdef __SUPPORT_SAFARI
         if (apf.isWebkit)
@@ -508,7 +508,7 @@ apf.http = function(){
                 apf.console.warn(msg, "teleport");
                 //#endif
 
-                var state = window.navigator.onLine
+                var state = self.navigator && navigator.onLine
                     ? apf.ERROR
                     : apf.TIMEOUT;
 
@@ -585,14 +585,15 @@ apf.http = function(){
 
         var qItem    = this.queue[id],
             http     = qItem.http,
-            callback = qItem.callback,
-            apf      = window.apf;     // needed here to fix a rare ReferenceError in FF
+            callback = qItem.callback;
+        //if (apf.isGecko)
+        //    var apf = self.apf || apf;     // needed here to fix a rare ReferenceError in FF
 
         //#ifdef __SUPPORT_IE5
         clearInterval(qItem.timer);
         //#endif
 
-        if (window.navigator.onLine === false && (location.protocol != "file:"
+        if (self.navigator && navigator.onLine === false && (location.protocol != "file:"
           || qItem.url.indexOf("http://") > -1))
             return false;
 
@@ -809,7 +810,8 @@ apf.http = function(){
         clearInterval(this.queue[id].timer);
         //#endif
 
-        apf.releaseHTTP(this.queue[id].http);
+        if (apf.releaseHTTP)
+            apf.releaseHTTP(this.queue[id].http);
 
         this.queue[id] = null;
         delete this.queue[id];

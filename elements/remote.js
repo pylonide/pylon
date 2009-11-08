@@ -170,13 +170,13 @@ apf.remote = function(struct, tagName){
             return;
 
         clearTimeout(this.queueTimer);
-        
+        //return this.transport.sendRSB(apf.serialize(args)); 
         var _self = this;
         this.queueMessage(args, model, this);
         // use a timeout to batch consecutive calls into one RSB call
-        this.queueTimer = setTimeout(function() {
+        //this.queueTimer = setTimeout(function() {
             _self.processQueue(_self);
-        });
+        //});
     };
     
     this.buildMessage = function(args, model){
@@ -227,7 +227,7 @@ apf.remote = function(struct, tagName){
 
         //#ifdef __WITH_OFFLINE
         // @todo apf3.0 implement proper offline support in RSB
-        if (apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
+        if (apf.offline && apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
             queue.push(message);
             return;
         }
@@ -270,7 +270,6 @@ apf.remote = function(struct, tagName){
                 apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
                 break;
             case "setAttribute":
-                console.log("setting attr of node ", xmlNode, q[2], q[3], q[4]);
                 apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
                 break;
             case "addChildNode":
@@ -311,7 +310,7 @@ apf.remote = function(struct, tagName){
         var _self = this;
 
         //#ifdef __WITH_OFFLINE
-        if (apf.offline.enabled) {
+        if (apf.offline && apf.offline.enabled) {
             var queue = [];
             apf.offline.addEventListener("afteronline", function(){
                 for (var i = 0, l = queue.length; i < l; i++)
@@ -327,6 +326,13 @@ apf.remote = function(struct, tagName){
          * that provides a means to sent change messages to other clients.
          */
         this.transport = self[this["transport"]];
+
+        //#ifdef __DEBUG
+        if (!this.transport) {
+            throw new Error("Missing transport");//@todo make this a proper apf3.0 error
+        }
+        //#endif
+
         this.transport.addEventListener("datachange", function(e){
             var data = apf.unserialize(e.data),
                 i    = 0,

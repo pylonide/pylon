@@ -775,7 +775,8 @@ apf.xmpp = function(struct, tagName){
 
         var oMech  = oXml.getElementsByTagName("mechanisms")[0],
             sXmlns = oMech.getAttribute("xmlns");
-        this.$serverVars["AUTH_SASL"] = (sXmlns && sXmlns == apf.xmpp.NS.sasl);
+        // @todo apf3.0 hack for o3, remove when o3 is fixed
+        this.$serverVars["AUTH_SASL"] = apf.isO3 || (sXmlns && sXmlns == apf.xmpp.NS.sasl);
 
         var aNodes = oXml.getElementsByTagName("mechanism"),
             i      = 0,
@@ -801,7 +802,6 @@ apf.xmpp = function(struct, tagName){
             return onError.call(this, apf.xmpp.ERROR_AUTH,
                 "No supported authentication protocol found. We cannot continue!");
         }
-
         return (this.$serverVars["AUTH_REG"] && this.$serverVars["register"])
             ? doRegRequest.call(this)
             : doAuthRequest.call(this);
@@ -937,8 +937,8 @@ apf.xmpp = function(struct, tagName){
         if (!oXml || oXml.getElementsByTagName("failure").length)
             return false; // authentication failed!
 
-        var oChallenge = oXml.getElementsByTagName("challenge")[0];
-        if (oChallenge) {
+        var oChallenge = oXml.getElementsByTagName("challenge");
+        if (oChallenge.length && (oChallenge = oChallenge[0])) {
             var i, l, aChunk,
                 b64_challenge = oChallenge.firstChild.nodeValue,
                 aParts        = apf.crypto.Base64.decode(b64_challenge).split(",");

@@ -48,7 +48,9 @@ apf = {
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
+    $asyncObjects : {},
     isO3          : true,
+    supportNamespaces: true,
 
     /**
      * {Object} contains several known and often used namespace URI's.
@@ -70,7 +72,7 @@ apf = {
         this.hostPath = null;
         this.CWD      = null;
         this.TAGNAME  = "localName";
-        
+        this.oHttp    = new apf.http();
         apf.runO3();
 
         this.implement(apf.Class);
@@ -269,7 +271,36 @@ apf = {
     },
     
     /* Init */
-    
+   
+    /**
+ *      * Returns the directory portion of a url
+ *           * @param {String} url the url to retrieve from.
+ *                * @return {String} the directory portion of a url.
+ *                     */
+    getDirname : function(url){
+        return ((url || "").match(/^([^#]*\/)[^\/]*(?:$|\#)/) || {})[1]; //Mike will check out how to optimize this line
+    },
+
+    /**
+ *      * Returns the file portion of a url
+ *           * @param {String} url the url to retrieve from.
+ *                * @return {String} the file portion of a url.
+ *                     */
+    getFilename : function(url){
+        return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
+    },
+
+    /**
+ *      * Returns an absolute url based on url.
+ *           * @param {String} base the start of the url to which relative url's work.
+ *                * @param {String} url  the url to transform.
+ *                     * @return {String} the absolute url.
+ *                          */
+    getAbsolutePath : function(base, url){
+        return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
+    },
+
+ 
     include : function(sourceFile, doBase){
         apf.console.info("including js file: " + sourceFile);
         o3.js.include(sourceFile);

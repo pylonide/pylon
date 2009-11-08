@@ -199,8 +199,8 @@ apf.isJson = (function() {
     }
 })();
 
-if (!window["JSON"]) {
-    window["JSON"] = (function() {
+if (!self["JSON"]) {
+    self["JSON"] = (function() {
     // Will match a value in a well-formed JSON file.
     // If the input is not well-formed, may match strangely, but not in an
     // unsafe way.
@@ -438,7 +438,7 @@ if (!window["JSON"]) {
  * @todo allow for XML serialization
  */
 apf.serialize = function(o){
-    return JSON.stringify(o);
+    return self.JSON.stringify(o);
 };
 
 /**
@@ -451,7 +451,7 @@ apf.serialize = function(o){
  */
 apf.unserialize = function(str){
     if (!str) return str;
-    return JSON.parse(str);
+    return self.JSON.parse(str);
 };
 
 // #endif

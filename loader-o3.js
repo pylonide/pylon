@@ -36,7 +36,7 @@ apf.$loader
         "core/lib/util/utilities.js",
         "core/lib/util/color.js",
         "core/lib/util/ecmaext.js",
-        //"core/lib/util/json.js", //@todo needs to be reworked
+        "core/lib/util/json.js",
         "core/lib/util/nameserver.js",
         "core/lib/util/xml.js",
         "core/lib/util/xmldiff.js",
