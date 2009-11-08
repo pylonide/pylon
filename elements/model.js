@@ -141,6 +141,7 @@ apf.model = function(struct, tagName){
         apf.nameserver.get("validation", value).register(this); //@todo error handling
     };
     
+    //#ifdef __WITH_RSB
     //Connect to a remote smartbinding
     this.$propHandlers["remote"] = function(value, prop){
         if (this.rsb) {
@@ -163,6 +164,7 @@ apf.model = function(struct, tagName){
             this.rsb.models.push(this);
         }
     };
+    //#endif
 
     //#ifdef __WITH_MODEL_VALIDATION
     this.validate = function(xmlNode, checkRequired, validityState, amlNode){

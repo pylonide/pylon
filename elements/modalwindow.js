@@ -186,6 +186,7 @@ apf.AmlWindow = function(struct, tagName){
     this.show = function(callback){
         this.execAction = callback; //@todo Proper error handling??
         this.setProperty("visible", true, false, true);
+        return this;
     }
     
     //#endif

@@ -106,6 +106,8 @@ apf.xmpp = function(struct, tagName){
     this.$init(tagName || "xmpp", apf.NODE_HIDDEN, struct);
 
     this.$serverVars = {};
+    this.$reqCount   = 0;
+    this.$reqStack   = [];
     this.$listening  = false;
     this.$listener   = null;
     this.$sAJAX_ID   = this.$makeUnique("ajaxRSB");
@@ -114,10 +116,11 @@ apf.xmpp = function(struct, tagName){
 };
 
 (function() {
-    this.$server = null;
-    this.timeout = 10000;
-    this.useHTTP = true;
-    this.method  = "POST";
+    this.$server     = null;
+    this.timeout     = 10000;
+    this.maxrequests = 2;
+    this.useHTTP     = true;
+    this.method      = "POST";
 
     this.$model         = null;
     this.$modelContent  = null;
@@ -488,19 +491,34 @@ apf.xmpp = function(struct, tagName){
      * the XMPP server and processing the response in retries, error messages
      * or through a custom callback.
      *
-     * @param     {Function} callback
-     * @param     {String}   body
-     * @param     {Boolean}  isUserMessage Specifies whether this message is a
-     *   message sent over the established connection or a protocol message.
-     *   The user messages are recorded when offline and sent when the
-     *   application comes online again.
+     * @param     {Function} cb      Callback handling function to be executed when
+     *                               the response is available
+     * @param     {String}   s       Body of the request, usually an XML stanza
+     * @param     {Boolean}  bIsBind Specifies whether this message is a message
+     *                               sent over the established connection or a
+     *                               protocol message. The user messages are
+     *                               recorded when offline and sent when the
+     *                               application comes online again.
      * @exception {Error}    A general Error object
      * @type      {XMLHttpRequest}
      */
-    this.$doXmlRequest = function(callback, body) {
-        var _self = this;
+    this.$doXmlRequest = function(cb, s) {
+        if (cb && s)
+            this.$reqStack.push({callback: cb, body: s});
+
+        // execute this specific call AFTER the current one has finished...
+        if (this.$reqCount >= this.maxrequests)
+            return null;
+
+        var _self = this,
+            req   = this.$reqStack.shift();
+        ++this.$reqCount;
         return this.get(this.url,
             function(data, state, extra) {
+                --_self.$reqCount;
+                if (_self.$reqStack.length)
+                    _self.$doXmlRequest();
+
                 if (_self.$isPoll) {
                     if (!data || data.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") {
                         //state = apf.ERROR;
@@ -524,8 +542,8 @@ apf.xmpp = function(struct, tagName){
                         _self, "XMPP Communication error", 
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     
-                    if (typeof callback == "function") {
-                        callback.call(_self, data, state, extra);
+                    if (typeof req.callback == "function") {
+                        req.callback.call(_self, data, state, extra);
                         return true;
                     }
                     else if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
@@ -536,13 +554,13 @@ apf.xmpp = function(struct, tagName){
                     throw oError;
                 }
 
-                if (typeof callback == "function")
-                    callback.call(_self, data, state, extra);
+                if (typeof req.callback == "function")
+                    req.callback.call(_self, data, state, extra);
             }, {
                 nocache       : true,
                 useXML        : !this.$isPoll,
                 ignoreOffline : true,
-                data          : body || ""
+                data          : req.body || ""
             });
     };
 

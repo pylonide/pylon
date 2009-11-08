@@ -171,12 +171,17 @@ apf.remote = function(struct, tagName){
 
         clearTimeout(this.queueTimer);
         //return this.transport.sendRSB(apf.serialize(args)); 
-        var _self = this;
         this.queueMessage(args, model, this);
-        // use a timeout to batch consecutive calls into one RSB call
-        //this.queueTimer = setTimeout(function() {
-            _self.processQueue(_self);
-        //});
+        if (!apf.isO3) {
+            // use a timeout to batch consecutive calls into one RSB call
+            var _self = this;
+            this.queueTimer = setTimeout(function() {
+                _self.processQueue(_self);
+            });
+        }
+        else {
+            this.processQueue(this);
+        }
     };
     
     this.buildMessage = function(args, model){
@@ -340,17 +345,6 @@ apf.remote = function(struct, tagName){
             for (; i < l; i++)
                 _self.receiveChange(data[i]);
         });
-        
-        /*var nodes = this.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
-            
-            if (nodes[i].getAttribute("select"))  //@todo apf3.0 this should become match
-                this.select.push(nodes[i].getAttribute("select"),
-                    nodes[i].getAttribute("unique"));
-            else 
-                this.lookup[nodes[i][apf.TAGNAME]] = nodes[i].getAttribute("unique");
-        }*/
     });
 }).call(apf.remote.prototype = new apf.AmlElement());
 
