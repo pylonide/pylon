@@ -26,7 +26,7 @@
  * renamed, locked and moved.
  *
  * Example:
- * Flowchart component:
+ * Flowchart component
  * <code>
  * <a:model id="modelName" save-original="true">
  *     <flowchart>
