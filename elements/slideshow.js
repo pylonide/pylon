@@ -236,7 +236,7 @@ apf.slideshow = function(struct, tagName){
     
     this.$paint = function() {
         var _self = this;
-        
+
         this.current = this.getFirstTraverseNode();
 
         //Prepare area
@@ -1014,6 +1014,7 @@ apf.slideshow = function(struct, tagName){
             }
 
             var delta  = e.delta;
+            
             var curNode  = _self.current;
             var nextNode = _self.getNextTraverse(curNode);
             var prevNode = _self.getNextTraverse(curNode, true);
@@ -1021,7 +1022,7 @@ apf.slideshow = function(struct, tagName){
             _self.next     = nextNode ? nextNode : _self.getFirstTraverseNode();
             _self.previous = prevNode ? prevNode : _self.getLastTraverseNode();
 
-            _self.current = delta < 0 ? nextNode : prevNode;
+            _self.current = delta < 0 ? _self.next : _self.previous;
 
             _self.addSelection(delta);
 
