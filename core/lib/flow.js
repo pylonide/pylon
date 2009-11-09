@@ -358,9 +358,10 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
                    dChilds = bChilds[i].childNodes;
 
                    for (j = 0, l2 = dChilds.length; j < l2; j++) {
-                       if (dChilds[j].tagName.toLowerCase() != "img") continue;
-                       this.imageContainer = bChilds[i];
-                       this.image = dChilds[j];
+                       if (dChilds[j].tagName && dChilds[j].tagName.toLowerCase() == "img") {
+                           this.imageContainer = bChilds[i];
+                           this.image = dChilds[j];
+                       }
                    }
                 }
                 else if (tag == "blockquote") {

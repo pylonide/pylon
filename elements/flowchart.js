@@ -950,12 +950,12 @@ apf.flowchart = function(struct, tagName){
         this.$flowVars.lastBlockId++;
         //apf.flow.alert_r(xmlNode)
         apf.console.info("ADD");
-        this.$getNewContext("item");
-        var block            = this.$getLayoutNode("item"),
-            elSelect         = this.$getLayoutNode("item", "select"),
-            elImage          = this.$getLayoutNode("item", "image"),
-            elimageContainer = this.$getLayoutNode("item", "imagecontainer"),
-            elCaption        = this.$getLayoutNode("item", "caption");
+        this.$getNewContext("block");
+        var block            = this.$getLayoutNode("block"),
+            elSelect         = this.$getLayoutNode("block", "select"),
+            elImage          = this.$getLayoutNode("block", "image"),
+            elimageContainer = this.$getLayoutNode("block", "imagecontainer"),
+            elCaption        = this.$getLayoutNode("block", "caption");
 
         if (elCaption)
             elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
