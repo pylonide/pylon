@@ -103,16 +103,7 @@
  */
 apf.slideshow = function(struct, tagName){
     this.$init(tagName || "slideshow", apf.NODE_VISIBLE, struct);
-};
-
-(function() {
-    this.implement(
-        //#ifdef __WITH_DATAACTION
-        apf.DataAction
-        //#endif
-        //,apf.Cache
-    );
-
+    
     this.title            = "number";
     this.thumbheight      = 50;
     this.loadmsg          = null;
@@ -121,10 +112,6 @@ apf.slideshow = function(struct, tagName){
     this.defaulttitle     = null;
     this.delay            = 5;
     this.scalewidth       = false;
-
-    this.$supportedProperties.push("model", "thumbheight", "title", "loadmsg",
-                                   "defaultthumb", "defaulttitle",
-                                   "defaultimage", "scalewidth");
 
     /**
      * Contains current selected node, next node to select in two directions
@@ -188,6 +175,19 @@ apf.slideshow = function(struct, tagName){
     
     /* this.$hide and this.$show function are not overwritten */
     this.$positioning = "basic";
+};
+
+(function() {
+    this.implement(
+        //#ifdef __WITH_DATAACTION
+        apf.DataAction
+        //#endif
+        //,apf.Cache
+    );
+
+    this.$supportedProperties.push("model", "thumbheight", "title", "loadmsg",
+                                   "defaultthumb", "defaulttitle",
+                                   "defaultimage", "scalewidth");
     
     this.$booleanProperties["scalewidth"] = true;
 
@@ -888,7 +888,7 @@ apf.slideshow = function(struct, tagName){
         
         this.oClose.onclick = function() {
             //_self.visible = true;
-            _self.hide();
+            _self.$hide();
             _self.$showScrollbars();
         };
 
@@ -1069,6 +1069,43 @@ apf.slideshow = function(struct, tagName){
                 }, 550);
             };
             return false;
+        });
+    };
+    
+    this.$hide = function () {
+        var _self = this;
+
+        _self.$ext.style.display = "block";
+
+        apf.tween.single(_self.oBody, {
+            steps    : 10, 
+            type     : "fade",
+            from     : 1,
+            to       : 0,
+            onfinish : function() {
+                _self.oBody.style.display = "none";
+            }
+        });
+        
+        apf.tween.single(_self.oBeam, {
+            steps    : 10, 
+            type     : "fade",
+            from     : 1,
+            to       : 0,
+            onfinish : function() {
+                _self.oBeam.style.display = "none";
+                
+                apf.tween.single(_self.oCurtain, {
+                    steps    : 10, 
+                    type     : "fade",
+                    from     : 0.7,
+                    to       : 0,
+                    onfinish : function() {
+                        _self.$int.style.display  = "none";
+                        _self.$ext.style.display  = "none";
+                    }
+                });
+            }
         });
     };
     
