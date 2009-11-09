@@ -100,7 +100,9 @@ var test_list = {
 	82:["{if('aabc'.match(/[a]{2}/))'X'}", "X"],
 	83:["{\"hi$[main/test]\"}", "hitest"],
 	84:["{'hi\\$[main/test]'}", "hitest"],
-	85:["{'hi\\\\$[main/test]'}", "hi$[main/test]"]
+	85:["{'hi\\\\$[main/test]'}", "hi$[main/test]"],
+	86:["{each([folder])[@name]}", "F1F2F2"],
+	87:["{var x = [1,2,3];each(x)\"{item()}[folder/@name]\"}", "1F12F13F1"]
 	
 	},
 	2:{
@@ -199,14 +201,14 @@ var test_proc = {
 			if(typeof(o)!='string' || o.indexOf("error:")!=0)
 				error(id, num,"Expected exception, but returned"+o,inp,"exception");
 			else
-				equals(id, num,1,inp,1);
+				equals(id, num,1,inp,1,cod);
 		}else{
 			if(o===undefined || o===null)
-				error(num,"No return value!",inp,exp);
+				error(num,"No return value!",inp,exp,cod);
 			else if(typeof(o)=='string' && o.indexOf("error:")==0)
-				error(id, num,o,inp,exp);
+				error(id, num,o,inp,exp,cod);
 			else 
-				equals(id, num,o,inp,exp);
+				equals(id, num,o,inp,exp,cod);
 			
 		}
 	},	

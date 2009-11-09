@@ -112,7 +112,7 @@ parse: [x] += <node/>
                         jsltCode = apf.lm.compile( lm.slice(2), {event:1});
                     }else{
 						//{editable:1,parsecode:0,xpathmode:0} 
-                        var opt = {parsecode:1,xpathmode:0}; 
+                        var opt = {parsecode:1,xpathmode:0,storedyn:1}; 
 						//var dt = new Date().getTime();
                         jsltCode = apf.lm.compile( lm,opt );
                         //event:1,xpathmode:0,injectself:1

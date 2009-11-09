@@ -43,7 +43,9 @@
 				doTest();
 		}
 		// APF stub
+		Array.prototype.dataType = 1;
 		apf = {
+			ARRAY:1,
 			SUCCESS:1,
 			xmldb:{
 				removeNode:function(xmlNode){
