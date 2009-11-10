@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdRestriction = function(struct, tagName){
     this.$init(tagName || "restriction", apf.NODE_HIDDEN, struct);
 };
@@ -40,3 +41,4 @@ apf.XsdRestriction = function(struct, tagName){
 }).call(apf.XsdRestriction.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("restriction", apf.XsdRestriction);
+//#endif

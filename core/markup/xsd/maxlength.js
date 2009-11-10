@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the maximum number of characters or list items allowed. Must be equal to or greater than zero
  */
@@ -38,3 +39,4 @@ apf.XsdMaxLength = function(struct, tagName){
 }).call(apf.XsdMaxLength.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("maxlength", apf.XsdMaxLength);
+//#endif

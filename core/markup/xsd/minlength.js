@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the minimum number of characters or list items allowed. Must be equal to or greater than zero
  */
@@ -37,5 +38,6 @@ apf.XsdMinLength = function(struct, tagName){
             + ") return false;");
     };
 }).call(apf.XsdMinLength.prototype = new apf.XsdElement());
+//#endif
 
 apf.xsd.setElement("minlength", apf.XsdMinLength);

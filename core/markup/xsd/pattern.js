@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Defines the exact sequence of characters that are acceptable
  */
@@ -36,5 +37,6 @@ apf.XsdPattern = function(struct, tagName){
             .replace(/(\/|\^|\$)/g, "\\$1") + "$/.test(value)) return false;")
     };
 }).call(apf.XsdPattern.prototype = new apf.XsdElement());
+//#endif
 
 apf.xsd.setElement("pattern", apf.XsdPattern);

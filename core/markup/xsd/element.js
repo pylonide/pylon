@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdElement = function(struct, tagName){
     this.$init(true);
     
@@ -52,3 +53,4 @@ apf.XsdElement.prototype.$recompile = function(stack){
     else
         this.$compile();
 };
+//#endif

@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdSimpleType = function(struct, tagName){
     this.$init(tagName || "simpletype", apf.NODE_HIDDEN, struct);
     
@@ -57,3 +58,4 @@ apf.XsdSimpleType = function(struct, tagName){
 }).call(apf.XsdSimpleType.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("simpletype", apf.XsdSimpleType);
+//#endif

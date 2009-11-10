@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the exact number of characters or list items allowed. Must be equal to or greater than zero
  */
@@ -37,3 +38,4 @@ apf.XsdLength = function(struct, tagName){
 }).call(apf.XsdLength.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("length", apf.XsdLength);
+//#endif

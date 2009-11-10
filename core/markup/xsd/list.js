@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdList = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_HIDDEN, struct);
 };
@@ -28,3 +29,4 @@ apf.XsdList = function(struct, tagName){
 }).call(apf.XsdList.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("list", apf.XsdList);
+//#endif

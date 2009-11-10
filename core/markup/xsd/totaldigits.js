@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the exact number of digits allowed. Must be greater than zero
  */
@@ -38,3 +39,4 @@ apf.XsdTotalDigits = function(struct, tagName){
 }).call(apf.XsdTotalDigits.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("totaldigits", apf.XsdTotalDigits);
+//#endif

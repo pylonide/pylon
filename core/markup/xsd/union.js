@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /*
   <xs:simpleType name="SizeType">
     <xs:union memberTypes="DressSizeType">
@@ -63,3 +64,4 @@ apf.XsdUnion = function(struct, tagName){
 }).call(apf.XsdUnion.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("union", apf.XsdUnion);
+//#endif

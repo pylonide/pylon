@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the upper bounds for numeric values (the value must be less than this value)
  */
@@ -37,3 +38,4 @@ apf.XsdMaxExclusive = function(struct, tagName){
 }).call(apf.XsdMaxExclusive.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("maxexclusive", apf.XsdMaxExclusive);
+//#endif

@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdSchema = function(struct, tagName){
     this.$init(true);
 };
@@ -26,3 +27,4 @@ apf.XsdSchema = function(struct, tagName){
 apf.XsdSchema.prototype = new apf.XsdElement();
 
 apf.xsd.setElement("schema", apf.XsdSchema);
+//#endif

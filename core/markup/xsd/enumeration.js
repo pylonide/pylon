@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Defines a list of acceptable values
  */
@@ -49,3 +50,4 @@ apf.XsdEnumeration = function(struct, tagName){
 }).call(apf.XsdEnumeration.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("enumeration", apf.XsdEnumeration);
+//#endif

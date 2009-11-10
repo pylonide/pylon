@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 apf.XsdMinScale = function(struct, tagName){
     this.$init(tagName || "minscale", apf.NODE_HIDDEN, struct);
 };
@@ -33,3 +34,4 @@ apf.XsdMinScale = function(struct, tagName){
 }).call(apf.XsdMinScale.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("minscale", apf.XsdMinScale);
+//#endif

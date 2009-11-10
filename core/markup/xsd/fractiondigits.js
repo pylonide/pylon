@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Specifies the maximum number of decimal places allowed. Must be equal to or greater than zero
  */
@@ -38,3 +39,4 @@ apf.XsdFractionDigits = function(struct, tagName){
 }).call(apf.XsdFractionDigits.prototype = new apf.XsdElement());
 
 apf.xsd.setElement("maxinclusive", apf.XsdFractionDigits);
+//#endif
