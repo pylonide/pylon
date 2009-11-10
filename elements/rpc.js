@@ -107,12 +107,16 @@ apf.rpc = function(struct, tagName){
 
     //@todo change this to use prototype
     this.$propHandlers["protocol"] = function(value){
-        //#ifdef __DEBUG
+        if (!value)
+            return;
+        
         if (!apf[value]) {
+            //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
                 "Could not find Ajax.org Teleport RPC Component '" + value + "'", this));
+            //#endif
+            return;
         }
-        //#endif
         this.implement(apf[value]);
     };
 
