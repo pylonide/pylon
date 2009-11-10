@@ -615,8 +615,10 @@ var apf = {
             }
         //#endif
 
+        // #ifdef __TP_HTTP
         // Start HTTP object
         this.oHttp = new this.http();
+        //#endif
 
         // Load user defined includes
         this.Init.addConditional(this.parseAppMarkup, apf, ['body']);
