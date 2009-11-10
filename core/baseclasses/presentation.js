@@ -575,10 +575,4 @@ apf.Presentation = function(){
 
 apf.config.$inheritProperties["skinset"] = 1;
 
-// #ifdef __WITH_DATABINDING
-apf.AmlProcessingInstruction.prototype = new apf.StandardBinding();
-/* #else
-apf.AmlProcessingInstruction.prototype = new apf.Presentation();
-#endif */
-
 // #endif
