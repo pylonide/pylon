@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __WITH_XHTML
 apf.XhtmlBodyElement = function(struct, tagName){
     this.$init(tagName || "body", apf.NODE_VISIBLE, struct);
 };
@@ -34,3 +35,4 @@ apf.XhtmlBodyElement = function(struct, tagName){
 }).call(apf.XhtmlBodyElement.prototype = new apf.AmlElement());
 
 apf.xhtml.setElement("body", apf.XhtmlBodyElement);
+//#endif

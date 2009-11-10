@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __WITH_XHTML
+
 apf.XhtmlOptionElement = function(struct, tagName){
     this.$init(tagName || "option", apf.NODE_VISIBLE, struct);
 };
@@ -35,3 +37,4 @@ apf.XhtmlOptionElement = function(struct, tagName){
 }).call(apf.XhtmlOptionElement.prototype = new apf.AmlElement());
 
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
+//#endif

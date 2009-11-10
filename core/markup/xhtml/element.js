@@ -61,5 +61,4 @@ apf.XhtmlElement = function(struct, tagName){
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
 
 apf.xhtml.setElement("@default", apf.XhtmlElement);
-
 //#endif
