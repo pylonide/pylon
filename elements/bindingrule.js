@@ -76,8 +76,10 @@ apf.BindingRule = function(struct, tagName){
         if (this.$amlLoaded) {
             //Find parent that this rule works on
             var node = this;
-            while (node.$bindingRule) 
+            while (node && node.$bindingRule) 
                 node = node.parentNode;
+            
+            if (!node) return;
             
             //Reload parent to propagate change
             apf.queue.add("reload" + node.$uniqueId, function(){
