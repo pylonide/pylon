@@ -38,6 +38,6 @@ apf.XsdMinLength = function(struct, tagName){
             + ") return false;");
     };
 }).call(apf.XsdMinLength.prototype = new apf.XsdElement());
-//#endif
 
 apf.xsd.setElement("minlength", apf.XsdMinLength);
+//#endif
