@@ -200,7 +200,7 @@ apf.runIE = function(){
         pNode.appendChild(document.getElementById(id));
     }*/
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, str){
-        if (!htmlNode.style)
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
             return htmlNode.appendChild(xmlNode);
         
         var pNode = beforeNode || htmlNode;

@@ -566,6 +566,9 @@ apf.tree = function(struct, tagName){
             this.$setStyleClass(this.$getLayoutNode("item", "container", htmlNode),
                 treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
             
+            this.$getLayoutNode("item", "openclose", htmlNode)
+                .setAttribute("children", hasChildren);
+            
             if (!hasChildren && container)
                 container.style.display = "none";
         }
@@ -598,9 +601,11 @@ apf.tree = function(struct, tagName){
         this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         //this.$setStyleClass(oItem, xmlNode.tagName)
         var elOpenClose = this.$getLayoutNode("item", "openclose");
-        if (hasChildren && elOpenClose) {
+        if (elOpenClose) { //hasChildren && 
+            elOpenClose.setAttribute("children", hasChildren);
             elOpenClose.setAttribute("onmousedown",
-                "var o = apf.lookup(" + this.$uniqueId + ");\
+                "if (this.getAttribute('children') != true) return;\
+                var o = apf.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\
                 apf.cancelBubble(event, o);");

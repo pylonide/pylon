@@ -827,7 +827,7 @@ apf.MultiselectBinding = function(){
             // Determine next selection
             if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
               || xmlNode == this.$selectTimer.nextNode)
-                this.$selectTimer.nextNode = this.getDefaultNext(xmlNode);
+                this.$selectTimer.nextNode = this.getDefaultNext(xmlNode, this.$isTreeArch);
 
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             var _self = this;

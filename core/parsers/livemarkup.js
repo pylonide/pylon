@@ -401,6 +401,8 @@ apf.lm = new (function(){
         // compile chunks used in compile/match
         cc_async_o     = "(_a=_a||{}).i=0;try{",
         cc_async_c     = "}catch(_e){if(_e.x)return;throw(_e);}",
+        //cc_async_o     = "(_a=_a||{}).i=0;",
+        //cc_async_c     = "",
         cc_pc_o          = "(_a=_a||{}).i=0;try{_pc(_w);",
         cc_pc_c        = "}catch(_e){if(_e.x)return;throw(_e);}",
         cc_opt_o       = "with(_w){",

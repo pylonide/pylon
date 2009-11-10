@@ -901,12 +901,16 @@ apf.datagrid    = function(struct, tagName){
         
         if (!this.namevalue && this.$curBtn)
             p = this.$curBtn.parentNode;
-        
-        for (var h, i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
+
+        for (var nodeIter, h, i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
             h = apf.all[nodes[i].getAttribute("hid")];
             
+            nodeIter = htmlNodes[i];
+            while (nodeIter && nodeIter.nodeType != 1)
+                nodeIter = nodeIter.nextSibling;
+            
             //@todo fake optimization
-            node = this.$getLayoutNode("cell", "caption", htmlNodes[i]) || htmlNodes[i];//htmlNodes[i].firstChild || 
+            node = this.$getLayoutNode("cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
             
             if (h.type == "icon") {
                 (node.nodeType == 1 && node || node.parentNode)

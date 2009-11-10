@@ -1105,7 +1105,7 @@ apf.MultiSelect = function(){
     /**
      * @private
      */
-    this.getDefaultNext = function(xmlNode, isTree){
+    this.getDefaultNext = function(xmlNode, isTree){  //@todo why is isTree an argument
         var next = this.getNextTraverseSelected(xmlNode);
         //if(!next && xmlNode == this.xmlRoot) return;
 
