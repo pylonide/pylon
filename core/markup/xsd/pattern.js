@@ -37,6 +37,6 @@ apf.XsdPattern = function(struct, tagName){
             .replace(/(\/|\^|\$)/g, "\\$1") + "$/.test(value)) return false;")
     };
 }).call(apf.XsdPattern.prototype = new apf.XsdElement());
-//#endif
 
 apf.xsd.setElement("pattern", apf.XsdPattern);
+//#endif
