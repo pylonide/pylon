@@ -1640,7 +1640,7 @@ var apf = {
         }
         //#endif
 
-        //#ifdef __WITH_PARSEAMLFROMHTML
+        //#ifdef __WITH_PARSE_AML_FROM_HTML
         //Load aml without reloading the page, but also fully parse javascript
         //This requires there to be no self closing elements
         if (this.parseStrategy == 2) { //!this.parseStrategy
@@ -1692,7 +1692,8 @@ var apf = {
             isEmptyDocument = true;
         }
         //#endif
-        
+
+        //parse_by_reloading_doc  __WITH_PARTIAL_AML_LOADING
         if (isEmptyDocument && document.documentElement.outerHTML
           .split(">", 1)[0]
           .indexOf(apf.ns.aml) == -1) {
@@ -1762,6 +1763,7 @@ var apf = {
         */
 
         //apf.loadAmlIncludes(apf.AppData);
+        //#endif
     },
     
     namespaces : {},
