@@ -183,9 +183,3 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 
 apf.Init.run("standardbinding");
 // #endif
-
-// #ifdef __WITH_DATABINDING
-apf.AmlProcessingInstruction.prototype = new apf.StandardBinding();
-/* #else
-apf.AmlProcessingInstruction.prototype = new apf.Presentation();
-#endif */
