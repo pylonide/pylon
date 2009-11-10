@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __PARSER_XHTML
+
 apf.XhtmlElement = function(struct, tagName){
     this.$init(tagName || true, apf.NODE_VISIBLE, struct);
 };
@@ -59,3 +61,5 @@ apf.XhtmlElement = function(struct, tagName){
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
 
 apf.xhtml.setElement("@default", apf.XhtmlElement);
+
+//#endif
