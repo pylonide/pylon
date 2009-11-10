@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 /**
  * Defines a list of acceptable values
  */
@@ -140,3 +141,4 @@ apf.aml.setElement("include", apf.XiInclude);
         }));
     }
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
+//#endif
