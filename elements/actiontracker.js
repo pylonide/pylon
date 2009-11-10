@@ -612,7 +612,7 @@ apf.UndoData = function(settings, at){
     this.extra     = {};
     //#ifdef __WITH_RSB
     this.rsbQueue  = {};
-    //#ifdef
+    //#endif
     apf.extend(this, settings);
 
     if (at)
@@ -650,7 +650,7 @@ apf.UndoData = function(settings, at){
             //#ifdef __WITH_RSB
             rsbModel  : this.rsbModel ? this.rsbModel.name : null,
             rsbQueue  : this.rsbQueue,
-            //#ifdef
+            //#endif
             at        : this.at.name,
             timestamp : this.timestamp,
             parsed    : options ? options.parsed : null, //errors when options is not defined
@@ -663,7 +663,7 @@ apf.UndoData = function(settings, at){
         var rsb = this.rsbModel
             ? this.rsbModel.rsb
             : apf.remote;
-        //#ifdef
+        //#endif
 
         //Record arguments
         var sLookup = (typeof apf.offline != "undefined" && apf.offline.sLookup)
@@ -754,7 +754,7 @@ apf.UndoData = function(settings, at){
         //#ifdef __WITH_RSB
         if (this.rsbModel)
             this.rsbModel = apf.nameserver.get("model", this.rsbModel);
-        //#ifdef
+        //#endif
 
         if (this.argsModel) {
             var model = apf.nameserver.get("model", this.argsModel)
@@ -771,7 +771,7 @@ apf.UndoData = function(settings, at){
                 rsb  = this.rsbModel
                     ? this.rsbModel.rsb
                     : apf.remote,
-                //#ifdef
+                //#endif
                 xmlNode, i, l, item, name;
 
             for (i = 0, l = args.length; i < l; i++) {
