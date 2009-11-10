@@ -287,6 +287,10 @@ apf.BaseButton = function(){
             this.$ext.onmouseout = this.$ext.onclick = this.$ext.ondblclick = null;
         }
     };
+// #ifdef __WITH_DATABINDING
 }).call(apf.BaseButton.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.BaseButton.prototype = new apf.Presentation());
+#endif */
 
 // #endif
