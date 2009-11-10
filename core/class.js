@@ -861,10 +861,8 @@ apf.Class.prototype = new (function(){
         if (typeof this.$uniqueId == "undefined" && this.nodeType != 2)
             return;
         
-        //#ifdef __DEBUG
         this.$amlLoaded    = false;
         this.$amlDestroyed = true;
-        //#endif
         
         if (this.$destroy)
             this.$destroy();
