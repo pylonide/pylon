@@ -90,7 +90,9 @@ apf.AmlText = function(isPrototype){
             this.$propHandlers["calcdata"] = apf.LiveMarkupPi.prototype.$propHandlers["calcdata"];
             
             this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+            //#ifdef __WITH_DATABINDING
             this.implement(apf.StandardBinding);
+            //#endif
             
             pHtmlNode.appendChild(this.$ext = this.$int = document.createElement("span"));
             this.$setDynamicProperty("calcdata", this.nodeValue);
