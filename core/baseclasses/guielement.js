@@ -442,8 +442,8 @@ apf.GuiElement = function(){
             e.returnValue = false;//htmlEvent.
             e.cancelBubble = true;
         }
-        //#endif
     });
+    //#endif
 }).call(apf.GuiElement.prototype = new apf.AmlElement());
 
 /**
