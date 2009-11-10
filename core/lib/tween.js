@@ -50,6 +50,9 @@ apf.tween = {
     scrollTop: function(oHtml, value, center){
         oHtml.scrollTop = value;
     },
+    scrollLeft: function(oHtml, value, center){
+        oHtml.scrollLeft = value;
+    },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + "px";
         if (apf.hasSingleResizeEvent)
@@ -132,6 +135,7 @@ apf.tween = {
         "width"       : "width",
         "height"      : "height",
         "scrollTop"   : false,
+        "scrollLeft"  : false,
         "mwidth"      : false,
         "mheight"     : false,
         "scrollwidth" : false,
