@@ -78,6 +78,4 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
         this.$setDynamicProperty("calcdata", this.data);
     }, true);
-})
-
-apf.AmlProcessingInstruction.prototype = new apf.AmlNode();
+}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode())
