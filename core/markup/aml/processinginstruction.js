@@ -78,8 +78,4 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
         this.$setDynamicProperty("calcdata", this.data);
     }, true);
-// #ifdef __WITH_DATABINDING
-}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
-/* #else
-}).call(apf.AmlProcessingInstruction.prototype = new apf.Presentation());
-#endif */
+})

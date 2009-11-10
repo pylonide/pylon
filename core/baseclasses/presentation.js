@@ -573,6 +573,14 @@ apf.Presentation = function(){
     this.$removeClearMessage = function(){};*/
 }).call(apf.Presentation.prototype = new apf.GuiElement());
 
+apf.AmlProcessingInstruction.prototype = new apf.Presentation();
+
 apf.config.$inheritProperties["skinset"] = 1;
+
+// #ifdef __WITH_DATABINDING
+apf.AmlProcessingInstruction.prototype = new apf.AmlNode();
+/* #else
+apf.AmlProcessingInstruction.prototype = new apf.Presentation();
+#endif */
 
 // #endif
