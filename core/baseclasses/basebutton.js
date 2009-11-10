@@ -38,7 +38,9 @@ apf.BaseButton = function(){
 };
 
 (function() {
+    //#ifdef __WITH_CHILDVALUE
     this.implement(apf.ChildValue);
+    // #endif
     
     this.refKeyDown  =         // Number of keys pressed.
     this.refMouseDown = 0;     // Mouse button down?
