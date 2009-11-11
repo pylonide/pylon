@@ -1693,7 +1693,7 @@ var apf = {
         }
         //#endif
 
-        //parse_by_reloading_doc  __WITH_PARTIAL_AML_LOADING
+        //#ifdef  __WITH_PARSE_DOC_BY_RELOADING
         if (isEmptyDocument && document.documentElement.outerHTML
           .split(">", 1)[0]
           .indexOf(apf.ns.aml) == -1) {
