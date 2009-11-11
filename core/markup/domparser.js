@@ -259,8 +259,15 @@ apf.DOMParser.prototype = new (function(){
                 var id, prefix;
                 if (xmlNode) {
                     if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml) 
-                      && !(prefix = doc.$prefixes[namespaceURI]))
+                      && !(prefix = doc.$prefixes[namespaceURI])) {
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
+                        doc.$namespaceURIs[namespaceURI] = prefix;
+                        
+                        if (!doc.namespaceURI && !prefix) {
+                            doc.namespaceURI = namespaceURI;
+                            doc.prefix       = prefix;
+                        }
+                    }
                     nodeName = xmlNode.baseName || xmlNode.localName || xmlNode.tagName.split(":").pop();
                 }
                 else {
@@ -317,8 +324,8 @@ apf.DOMParser.prototype = new (function(){
                     o.value = o.nodeValue = nodeValue;
 
                 if (xmlNode) {
-                    if (xmlNode.namespaceURI && !(o.prefix = doc.$prefixes[o.namespaceURI = xmlNode.namespaceURI]))
-                        doc.$namespaceURIs[o.prefix = xmlNode.prefix || xmlNode.scopeName] = o.namespaceURI;
+                    if (xmlNode.namespaceURI && !(o.prefix = doc.$namespaceURIs[o.namespaceURI = xmlNode.namespaceURI]))
+                        doc.$prefixes[o.prefix = xmlNode.prefix || xmlNode.scopeName] = o.namespaceURI;
                 }
                 else {
                     o.prefix = doc.$prefixes[namespaceURI];

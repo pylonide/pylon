@@ -604,7 +604,7 @@ apf.tree = function(struct, tagName){
         if (elOpenClose) { //hasChildren && 
             elOpenClose.setAttribute("children", hasChildren);
             elOpenClose.setAttribute("onmousedown",
-                "if (this.getAttribute('children') != true) return;\
+                "if (this.getAttribute('children') == false) return;\
                 var o = apf.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this);\
                 if (o.onmousedown) o.onmousedown(event, this);\

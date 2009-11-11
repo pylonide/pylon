@@ -434,8 +434,17 @@ apf.Class.prototype = new (function(){
                     node  = eval(o.join("."));
                 }
                 catch(e){
-                    apf.console.warn("[287] Could not execute binding test : "
-                        + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
+                    if (arguments[2]) {
+                        apf.console.warn("[287] Could not execute binding test : "
+                            + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
+                    }
+                    else {
+                        var _self = this;
+                        apf.queue.add(prop + ":" + this.$uniqueId, function(){
+                            _self.$clearDynamicProperty(prop);
+                            _self.$setDynamicProperty(prop, pValue, true);
+                        });
+                    }
                     continue;
                 }
 
@@ -452,7 +461,22 @@ apf.Class.prototype = new (function(){
                 node  = self[o[0]] || o[0] == "this" && this;
             }
 
-            if (!node || !node.$bindProperty)
+            if (!node) {
+                if (arguments[2]) {
+                    apf.console.warn("[287] Could not execute binding test : "
+                        + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
+                }
+                else {
+                    var _self = this;
+                    apf.queue.add(prop + ":" + this.$uniqueId, function(){
+                        _self.$clearDynamicProperty(prop);
+                        _self.$setDynamicProperty(prop, pValue, true);
+                    });
+                    return;
+                }
+            }
+
+            if (!node.$bindProperty)
                 continue;  //return
 
             if (!this.$funcHandlers[prop])
