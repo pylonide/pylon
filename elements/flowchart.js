@@ -1095,14 +1095,17 @@ apf.flowchart = function(struct, tagName){
                     var elTemplate = fv.template.selectSingleNode("element[@type='"
                         + this.$applyBindRule("type", xmlBlock) + "']");
 
-                    var inputs = elTemplate.selectNodes("input");
-                    if (inputs) {
-                        for (i = 0, l = inputs.length; i < l; i++) {
-                            inputList[parseInt(inputs[i].getAttribute("name"))] = {
-                                x        : parseInt(inputs[i].getAttribute("x")),
-                                y        : parseInt(inputs[i].getAttribute("y")),
-                                position : inputs[i].getAttribute("position")
-                            };
+                    if (elTemplate) {
+                        var inputs = elTemplate.selectNodes("input");
+                        
+                        if (inputs) {
+                            for (i = 0, l = inputs.length; i < l; i++) {
+                                inputList[parseInt(inputs[i].getAttribute("name"))] = {
+                                    x        : parseInt(inputs[i].getAttribute("x")),
+                                    y        : parseInt(inputs[i].getAttribute("y")),
+                                    position : inputs[i].getAttribute("position")
+                                };
+                            }
                         }
                     }
                 }
@@ -1110,50 +1113,48 @@ apf.flowchart = function(struct, tagName){
 
             var lock = this.$applyBindRule("lock", xmlBlock) == "true"
                     ? true
-                    : false,
-                other = {
-                    lock : lock,
-                    flipv : this.$applyBindRule("flipv", xmlBlock) == "true"
-                        ? true
-                        : false,
-                    fliph : this.$applyBindRule("fliph", xmlBlock) == "true"
-                        ? true
-                        : false,
-                    rotation : parseInt(this.$applyBindRule("rotation", xmlBlock))
-                               || 0,
-                    inputList : inputList,
-                    type : type,
-                    picture : type && fv.template
-                        ? elTemplate.getAttribute("picture")
-                        : null,
-                    dwidth : type && fv.template
-                        ? parseInt(elTemplate.getAttribute("dwidth"))
-                        : 56,
-                    dheight : type && fv.template
-                        ? parseInt(elTemplate.getAttribute("dheight"))
-                        : 56,
-                    scalex : type && fv.template
-                        ? (elTemplate.getAttribute("scalex") == "true"
-                            ? true
-                            : false)
-                        : true,
-                    scaley : type && fv.template
-                        ? (elTemplate.getAttribute("scaley") == "true"
-                            ? true
-                            : false)
-                        : true,
-                    scaleratio : type && fv.template
-                        ? (elTemplate.getAttribute("scaleratio") == "true"
-                            ? true
-                            : false)
-                        : false,
-                    xmlNode : xmlBlock,
-                    caption : this.$applyBindRule("caption", xmlBlock),
-                    capPos  : this.$applyBindRule("cap-pos", xmlBlock)
-                },
+                    : false;
+            var other = {};
+            other['lock'] = lock;
+            other['flipv'] = this.$applyBindRule("flipv", xmlBlock) == "true"
+                ? true
+                : false;
+            other['fliph'] = this.$applyBindRule("fliph", xmlBlock) == "true"
+                ? true
+                : false;
+            other['rotation'] = parseInt(this.$applyBindRule("rotation", xmlBlock)) || 0;
+            other['inputList'] = inputList;
+            other['type'] = type;
+            other['picture'] = type && fv.template && elTemplate
+                ? elTemplate.getAttribute("picture")
+                : null;
+            other['dwidth'] = type && fv.template && elTemplate
+                ? parseInt(elTemplate.getAttribute("dwidth"))
+                : 56;
+            other['dheight'] = type && fv.template && elTemplate
+                ? parseInt(elTemplate.getAttribute("dheight"))
+                : 56;
+            other['scalex'] = type && fv.template && elTemplate
+                ? (elTemplate.getAttribute("scalex") == "true"
+                    ? true
+                    : false)
+                : true;
+            other['scaley'] = type && fv.template && elTemplate
+                ? (elTemplate.getAttribute("scaley") == "true"
+                    ? true
+                    : false)
+                : true;
+            other['scaleratio'] = type && fv.template && elTemplate
+                ? (elTemplate.getAttribute("scaleratio") == "true"
+                    ? true
+                    : false)
+                : false;
+            other['xmlNode'] = xmlBlock;
+            other['caption'] = this.$applyBindRule("caption", xmlBlock);
+            other['capPos'] = this.$applyBindRule("cap-pos", xmlBlock);
 
-                objBlock = apf.flow.isBlock(htmlElement),
-                _self    = this;
+            var objBlock = apf.flow.isBlock(htmlElement);
+            var _self    = this;
 
             if (objBlock) {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
@@ -1163,13 +1164,15 @@ apf.flowchart = function(struct, tagName){
             else {
                 objBlock = apf.flow.addBlock(htmlElement, this.objCanvas, other);
 
-                objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
-                    _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
-                };
-                objBlock.onremoveconnection = function(xmlNodeArray) {
-                    _self.removeConnectors(xmlNodeArray);
-                };
-                fv.objBlocks[id] = objBlock;
+                if (objBlock) {
+                    objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
+                        _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
+                    };
+                    objBlock.onremoveconnection = function(xmlNodeArray) {
+                        _self.removeConnectors(xmlNodeArray);
+                    };
+                    fv.objBlocks[id] = objBlock;
+                }
             }
         }
 

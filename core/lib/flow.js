@@ -1704,6 +1704,9 @@ apf.flow.findBlock = function(blockId) {
  * @return {Object}   object representation of block element
  */
 apf.flow.isBlock = function(htmlNode) {
+    if(!htmlNode)
+        return;
+    
     var id, block,
         c = apf.flow.objCanvases;
 
@@ -1873,7 +1876,7 @@ apf.flow.removeCanvas = function(htmlNode) {
  * @return {Object}   object representation of block element
  */
 apf.flow.addBlock = function(htmlElement, objCanvas, other) {
-    if (!apf.flow.isBlock(htmlElement)) {
+    if (htmlElement && !apf.flow.isBlock(htmlElement)) {
         if (!htmlElement.getAttribute("id")) {
             apf.setUniqueHtmlId(htmlElement);
         }
