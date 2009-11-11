@@ -141,6 +141,8 @@ apf.Alignment = function(){
     };
     
     function visibleHandler(e){ 
+        if (!this.aData) return;
+        
         if (e.value) {
             if (this.aData.preshow() !== false)
                 this.$ext.style.display = "none";

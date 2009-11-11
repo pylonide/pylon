@@ -395,14 +395,16 @@ apf.GuiElement = function(){
                         ? this.contextmenus[i]
                         : this.contextmenus[i].getAttribute("menu")
 
-                    // #ifdef __DEBUG
                     if (!self[menuId]) {
+                        // #ifdef __DEBUG
                         throw new Error(apf.formatErrorString(0, this,
                             "Showing contextmenu",
                             "Could not find contextmenu by name: '" + menuId + "'"),
                             this.$aml);
+                        // #endif
+                        
+                        return;
                     }
-                    // #endif
 
                     self[menuId].display(e.x, e.y, null, this, xmlNode);
 
@@ -428,14 +430,16 @@ apf.GuiElement = function(){
                 ? this.contextmenus[0]
                 : this.contextmenus[0].getAttribute("menu")
 
-            // #ifdef __DEBUG
             if (!self[menuId]) {
+                // #ifdef __DEBUG
                 throw new Error(apf.formatErrorString(0, this,
                     "Showing contextmenu",
                     "Could not find contextmenu by name: '" + menuId + "'",
                     this.$aml));
+                // #endif
+                
+                return;
             }
-            // #endif
 
             self[menuId].display(e.x, e.y, null, this);
 
