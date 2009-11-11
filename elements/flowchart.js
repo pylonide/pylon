@@ -384,6 +384,7 @@ apf.flowchart = function(struct, tagName){
         this.$setStyleClass(o, "", ["selected"]);
 
         var objBlock = apf.flow.isBlock(o);
+        if (!objBlock) return; //it might have been deleted recently...
         this.$deselectCaption(objBlock.caption);
 
         this.$flowVars.resizeManager.hide();

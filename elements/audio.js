@@ -56,12 +56,11 @@ apf.audio = function(struct, tagName){
 (function() {
     this.implement(
         //#ifdef __WITH_DATABINDING
-        apf.StandardBinding,
+        apf.StandardBinding
         //#endif
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ,apf.DataAction
         //#endif
-        apf.Media
     );
 
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
@@ -155,8 +154,7 @@ apf.audio = function(struct, tagName){
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
 
-            if (playerType && apf.audio[playerType] &&
-              apf.audio[playerType].isSupported()) {
+            if (this.$isSupported(playerType)) {
                 return playerType;
             }
         }
@@ -167,11 +165,13 @@ apf.audio = function(struct, tagName){
     /**
      * Checks if a specified playerType is supported by JPF or not...
      *
+     * @param {String} [playerType]
      * @type {Boolean}
      */
-    this.$isSupported = function() {
-        return (apf.audio[this.playerType]
-            && apf.audio[this.playerType].isSupported());
+    this.$isSupported = function(playerType) {
+        playerType = playerType || this.playerType;
+        return (apf.audio[playerType]
+            && apf.audio[playerType].isSupported());
     };
 
     /**
@@ -367,13 +367,12 @@ apf.audio = function(struct, tagName){
      * Parse the block of AML that constructs the HTML5 compatible <AUDIO> tag
      * for arguments like URL of the audio, volume, mimetype, etc.
      *
-     * @param {XMLRootElement} x
      * @type {void}
      */
-    this.$loadAml = function(x){
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         if (this.setSource())
             this.$propHandlers["type"].call(this, this.type);
-    };
+    });
 
     this.$destroy = function(bRuntime) {
         if (this.player && this.player.$detroy)
@@ -384,7 +383,7 @@ apf.audio = function(struct, tagName){
         if (bRuntime)
             this.$ext.innerHTML = "";
     };
-}).call(apf.audio.prototype = new apf.GuiElement());
+}).call(apf.audio.prototype = new apf.Media());
 
 apf.aml.setElement("audio", apf.audio);
 

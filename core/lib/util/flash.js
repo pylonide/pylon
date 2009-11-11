@@ -413,9 +413,10 @@ apf.flash = (function(){
         apf.console.info("[FLASH] received method call for player '" + id + "', '" + methodName + "'");
         // #endif
 
-        // Unable to use slice on arguments in some browsers. Iterate instead:
-        var args = [];
-        for (var i = 2; i < arguments.length; i++)
+        var args = [],
+            i    = 2,
+            l    = arguments.length;
+        for (; i < l; i++)
             args.push(decode(arguments[i]));
         player[methodName].apply(player, args);
     }
@@ -514,14 +515,14 @@ apf.flash = (function(){
      * @type {Boolean}
      */
     function isEightAvailable() {
-        return isAvailable('8.0.0');
+        return isAvailable("8.0.0");
     }
 
     var oSandboxTypes = {
-        remote          : 'remote (domain-based) rules',
-        localwithfile   : 'local with file access (no internet access)',
-        localwithnetwork: 'local with network (internet access only, no local access)',
-        localtrusted    : 'local, trusted (local + internet access)'
+        remote          : "remote (domain-based) rules",
+        localwithfile   : "local with file access (no internet access)",
+        localwithnetwork: "local with network (internet access only, no local access)",
+        localtrusted    : "local, trusted (local + internet access)"
     };
 
     function getSandbox(sType) {
@@ -533,10 +534,10 @@ apf.flash = (function(){
             error      : null
         };
         oSandbox.type = sType.toLowerCase();
-        oSandbox.description = oSandboxTypes[(typeof oSandboxTypes[oSandbox.type] != 'undefined'
+        oSandbox.description = oSandboxTypes[(typeof oSandboxTypes[oSandbox.type] != "undefined"
             ? oSandbox.type
-            : 'unknown')];
-        if (oSandbox.type == 'localwithfile') {
+            : "unknown")];
+        if (oSandbox.type == "localwithfile") {
             oSandbox.noRemote = true;
             oSandbox.noLocal  = false;
             oSandbox.error    = "Flash security note: Network/internet URLs will not \
@@ -545,11 +546,11 @@ apf.flash = (function(){
                                  Settings Page: \
                                  http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html";
         }
-        else if (oSandbox.type == 'localwithnetwork') {
+        else if (oSandbox.type == "localwithnetwork") {
             oSandbox.noRemote = false;
             oSandbox.noLocal  = true;
         }
-        else if (oSandbox.type == 'localtrusted') {
+        else if (oSandbox.type == "localtrusted") {
             oSandbox.noRemote = false;
             oSandbox.noLocal  = false;
         }

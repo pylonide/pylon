@@ -251,7 +251,7 @@ apf.MultiSelect = function(){
                 args : [nodeList[i]]
             });
         }
-        
+
         if (this.$actions["removegroup"])
             return this.$executeAction("multicall", changes, "removegroup", nodeList[0]);
         else {

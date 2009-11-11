@@ -226,10 +226,11 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            this.replacedNode.innerHTML = this.oTxt[apf.hasContentEditable
-                ? "innerText"
-                : "value"];
-
+            if (this.replacedNode) {
+                this.replacedNode.innerHTML = this.oTxt[apf.hasContentEditable
+                    ? "innerText"
+                    : "value"];
+            }
              //this.$selected.innerHTML = this.oTxt.innerHTML;
             this.rename(this.renameSubject,
                 this.oTxt[apf.hasContentEditable ? "innerText" : "value"]

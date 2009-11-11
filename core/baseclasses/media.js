@@ -41,7 +41,6 @@ apf.__MEDIA__ = 1 << 20;
  * @since       1.0
  */
 apf.Media = function(){
-
     this.$init(true);
 };
 
