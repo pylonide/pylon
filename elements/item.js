@@ -507,7 +507,8 @@ apf.item  = function(struct, tagName){
             
             this.$loadAml = function(){
                 //hack
-                this.setAttribute("caption", this.caption);
+                if (!this.getAttribute("caption"))
+                    this.setAttribute("caption", this.caption);
                 
                 var oInt = p == this.parentNode ? p.$int : this.parentNode.$int;
                 var node = oInt.lastChild;//@todo this should be more generic

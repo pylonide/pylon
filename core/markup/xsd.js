@@ -326,11 +326,14 @@ apf.xsd.matchType = function(value, type){
     var split  = type.split(":"),
         prefix = split[0],
         doc    = apf.document,
-        ns     = doc.$prefixes[prefix],
-        c      = this.typeHandlers[ns];
+        ns     = doc.$prefixes[prefix];
     type = split[1];
+    if (prefix == "xsd")
+        ns = "http://www.w3.org/2001/XMLSchema";
     if (!ns) 
         ns = doc.namespaceURI || apf.ns.xhtml;
+    
+    var c = this.typeHandlers[ns];
     
     //check if type is type
     if (c && c[type])
@@ -353,6 +356,8 @@ apf.xsd.checkType = function(type, xmlNode){
             name   = split[1],
             doc    = apf.document,
             ns     = doc.$prefixes[prefix];
+        if (prefix == "xsd")
+            ns = "http://www.w3.org/2001/XMLSchema";
         if (!ns) 
             ns = doc.namespaceURI || apf.ns.xhtml;
         

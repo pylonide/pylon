@@ -1712,7 +1712,7 @@ apf.debugwin = {
         apf.setcookie("jsexec", code);
 
         apf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
-            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</div></span>", "info", null, null, null, true);
+            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "\n<br />") + "</div></span>", "info", null, null, null, true);
 
         var doIt = function(){
             var x = eval(code);
@@ -1736,7 +1736,7 @@ apf.debugwin = {
                 
                 apf.console.write(str
                     .replace(/</g, "&lt;")
-                    .replace(/\n/g, "<br />"), "info", null, null, null, true);
+                    .replace(/\n/g, "\n<br />"), "info", null, null, null, true);
             }catch(e){
                 apf.console.write(x
                     ? "Could not serialize object"

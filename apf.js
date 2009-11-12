@@ -935,8 +935,10 @@ var apf = {
                      + ms;
 
             msg = (!nodate ? "[" + date + "] " : "")
-                    + String(msg).replace(/</g, "&lt;").replace(/ +/g, " ").replace(/\n/g, "\n<br />")
-                         .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
+                    + String(msg)
+                        .replace(/ /g, "&nbsp;")
+                        .replace(/\n/g, "\n<br />")
+                        .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
             var sPath = apf.debugwin
                 ? (apf.debugwin.resPath || "{imgpath}")
                 : apf.basePath + "core/debug/resources/";

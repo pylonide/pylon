@@ -63,7 +63,7 @@ apf.vbox = function(struct, tagName){
     this.$focussable     = false;
     
     /**** DOM Hooks ****/
-    
+    //@todo rewrite these
     this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
@@ -148,8 +148,9 @@ apf.vbox = function(struct, tagName){
                 var _self = this;
                 function propChange(name, old, value){
                     if (apf.isTrue(value) && _self.$ext.offsetHeight) {
-                        apf.layout.forceResize(_self.$int);
-                        
+                        //apf.layout.forceResize(_self.$int);
+                        apf.layout.queue(_self.$int, null, l.root);
+
                         var p = _self;
                         while (p) {
                             if (p.unwatch)

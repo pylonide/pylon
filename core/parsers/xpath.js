@@ -149,16 +149,15 @@ apf.XPath = {
                         if (n.nodeType != 1)
                             continue;
                         nodes.push(n);
-                        //@todo please dont seg fault
-                        if (n.tagName != "skin" && n.tagName != "jslt" && n.tagName != "ref" && n.parentNode.tagName != "bindings")
-                            recur(n);
+                        
+                        recur(n);
                     }
                 })(htmlNode);
             }
         }
         else {
             nodes = htmlNode.getElementsByTagName((prefix
-              && (apf.isGecko || apf.isOpera) ? prefix + ":" : "") + tagName);
+              && (apf.isGecko || apf.isOpera || htmlNode.nodeFunc) ? prefix + ":" : "") + tagName);
         }
 
         for (i = 0, l = nodes.length; i < l; i++) {

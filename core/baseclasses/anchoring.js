@@ -292,7 +292,40 @@ apf.Anchoring = function(){
     };
     //#endif
 
+var q = apf.q = {};
     this.$updateLayout = function(){
+        //@todo review if this can be improved
+        //#ifdef __WITH_PROPERTY_WATCH
+        if (!this.$ext.offsetHeight) {
+            var _self      = this;
+            var propChange = function (name, old, value){
+                if (_self.$updateQueue && apf.isTrue(value) && _self.$ext.offsetHeight) {
+                    _self.$updateLayout();
+                    apf.layout.activateRules(_self.$ext.parentNode);
+                    
+                    var p = _self;
+                    while (p) {
+                        p.unwatch("visible", propChange);
+                        p = p.parentNode;
+                    }
+                    
+                    _self.$isWaitingOnDisplay = false;
+                }
+            }
+
+            this.$isWaitingOnDisplay = true;
+            this.watch("visible", propChange);
+            
+            var p = this.parentNode;
+            while(p) {
+                p.watch("visible", propChange);
+                p = p.parentNode;
+            }
+            
+            return;
+        }
+        //#endif
+        
         if (!this.$parsed) {
             if (!this.$ext.getAttribute("id"))
                 apf.setUniqueHtmlId(this.$ext);

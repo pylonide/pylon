@@ -99,25 +99,25 @@ apf.errorbox = function(struct, tagName){
             host.$ext;
 
         document.body.appendChild(this.$ext);
-        var pos = apf.getAbsolutePosition(refHtml, document.body);
+        /*var pos = apf.getAbsolutePosition(refHtml, document.body);
 
         if (document != refHtml.ownerDocument) {
             var pos2 = apf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
             pos[0] += pos2[0];
             pos[1] += pos2[1];
-        }
-        
-        var x = (pos[0] + parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0)),
-            y = (pos[1] + parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
+        }*/
+
+        var x = (parseFloat(host.$getOption && host.$getOption("main", "erroffsetx") || 0)),
+            y = (parseFloat(host.$getOption && host.$getOption("main", "erroffsety") || 0));
         //this.$ext.style.left = x + "px"
         //this.$ext.style.top  = y + "px"
-        
+
         this.show();
         apf.popup.show(this.$uniqueId, {
             x       : x,
             y       : y,
             animate : false,
-            ref     : this.$ext.offsetParent
+            ref     : refHtml
         });
 
         this.$setStyleClass(this.$ext,

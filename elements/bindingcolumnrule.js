@@ -285,6 +285,8 @@ apf.BindingColumnRule = function(struct, tagName){
         
         this.$int.onmouseover = function(e){
             if (!e) e = event;
+            
+            if (pNode.disabled) return;
 
             apf.setStyleClass(this, "hover", ["down"]);
         };
@@ -292,7 +294,7 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$int.onmouseup = function(e){
             if (!e) e = event;
             
-            if (!apf.isChildOf(dragging, this, true)) 
+            if (pNode.disabled || !apf.isChildOf(dragging, this, true)) 
                 return;
             
             apf.setStyleClass(this, "hover", ["down"]);
@@ -307,6 +309,8 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$int.onmousedown = function(e){
             if (!e) e = event;
             dragging = target = this;
+            
+            if (pNode.disabled) return;
 
             //Resizing
             var pos   = apf.getAbsolutePosition(target),
@@ -443,12 +447,14 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$int.onmouseout = function(e){
             if (!e) e = event;
             
+            if (pNode.disabled) return;
+            
             pNode.$ext.style.cursor = "";
             apf.setStyleClass(this, "", ["hover", "down"]);
         };
         
         this.$int.onmousemove = function(e){
-            if (dragging)
+            if (dragging || pNode.disabled)
                 return;
                 
             if (!e) e = event;

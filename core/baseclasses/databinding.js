@@ -1328,7 +1328,7 @@ apf.DataBinding = function(){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //Set empty message if there is no data
-        if (!this.model && this.$setClearMessage)
+        if (!this.model && this.$setClearMessage && !this.value)
             this.$setClearMessage(this["empty-message"], "empty");
         
         /*var hasInitSb = apf.AmlParser.sbInit[this.$uniqueId] ? true : false;
