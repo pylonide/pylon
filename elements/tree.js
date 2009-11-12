@@ -716,9 +716,10 @@ apf.tree = function(struct, tagName){
         }
 
         var elCaption = this.$getLayoutNode("item", "caption");
-        if (elCaption) 
+        if (elCaption) {
             apf.setNodeValue(elCaption,
                 this.$applyBindRule("caption", xmlNode));
+        }
         
         var strTooltip = this.$applyBindRule("tooltip", xmlNode)
         if (strTooltip)

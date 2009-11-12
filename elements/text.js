@@ -290,7 +290,7 @@ apf.text = function(struct, tagName){
 
     this.$draw = function(){
         var _self = this;
-        
+
         this.$ext = this.$getExternal();
         this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
