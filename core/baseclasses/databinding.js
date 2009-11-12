@@ -1444,7 +1444,7 @@ apf.DataBinding = function(){
                 if (typeof pb[prop] == "function")
                     continue;
                 //#endif
-        
+
                 this.dataParent = {
                     parent : self[prop.split(".")[0]],
                     xpath  : null,

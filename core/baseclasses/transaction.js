@@ -477,7 +477,7 @@ apf.Transaction = function(){
             if (xmlNode)
                 return callback(xmlNode, apf.SUCCESS);
             else {
-                if (rule.get)
+                if (rule && rule.get)
                     return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
                 else {
                     //#ifdef __DEBUG

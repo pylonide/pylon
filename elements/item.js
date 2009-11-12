@@ -498,7 +498,7 @@ apf.item  = function(struct, tagName){
                 p.$setDynamicProperty("icon", "[@icon]");
                 p.$setDynamicProperty("image", "[@image]");
                 p.$setDynamicProperty("caption", "[label/text()|text()|@caption]");
-                p.$setDynamicProperty("eachvalue", "[value/text()|@value|text()]");
+                p.$setDynamicProperty("eachvalue", "[value/text()|text()|@value]");
                 p.$canLoadDataAttr = false;
                 
                 if (!p.xmlRoot)
