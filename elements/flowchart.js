@@ -269,7 +269,7 @@ apf.flowchart = function(struct, tagName){
         }
 
         //#ifdef __WITH_KEYBOARD
-        this.addEventListener("onkeydown", onkeydown_, true);
+        this.addEventListener("keydown", onkeydown_, true);
 
         apf.addEventListener("contextmenu", function() {return false;});
         //#endif
