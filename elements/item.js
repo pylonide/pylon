@@ -497,7 +497,7 @@ apf.item  = function(struct, tagName){
 
                 p.$setDynamicProperty("icon", "[@icon]");
                 p.$setDynamicProperty("image", "[@image]");
-                p.$setDynamicProperty("caption", "[label/text()|text()|@caption]");
+                p.$setDynamicProperty("caption", "[label/text()|@caption|text()]");
                 p.$setDynamicProperty("eachvalue", "[value/text()|@value|text()]");
                 p.$canLoadDataAttr = false;
                 
@@ -505,29 +505,34 @@ apf.item  = function(struct, tagName){
                     p.xmlRoot = p;
             }
             
-            var oInt = p == this.parentNode ? p.$int : this.parentNode.$int;
-            var node = oInt.lastChild;//@todo this should be more generic
-            if (!p.documentId)
-                p.documentId = apf.xmldb.getXmlDocId(this);
-            p.$add(this, apf.xmldb.nodeConnect(p.documentId, this, null, p), 
-                this.parentNode, oInt != p.$int && oInt, null);
-            p.$fill();
-
-            if (p.$isTreeArch) {
-                this.$int = p.$getLayoutNode("item", "container", 
-                   this.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
+            this.$loadAml = function(){
+                //hack
+                this.setAttribute("caption", this.caption);
+                
+                var oInt = p == this.parentNode ? p.$int : this.parentNode.$int;
+                var node = oInt.lastChild;//@todo this should be more generic
+                if (!p.documentId)
+                    p.documentId = apf.xmldb.getXmlDocId(this);
+                p.$add(this, apf.xmldb.nodeConnect(p.documentId, this, null, p), 
+                    this.parentNode, oInt != p.$int && oInt, null);
+                p.$fill();
+    
+                if (p.$isTreeArch) {
+                    this.$int = p.$getLayoutNode("item", "container", 
+                       this.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
+                }
+                else this.$ext = node && node.nextSibling || oInt.firstChild;
+                
+                var ns = this;
+                while((ns = ns.nextSibling) && ns.nodeType != 1);
+    
+                if (!ns || ns.$canLeechSkin != "item") {
+                    p.dispatchEvent("afterload");
+                    if (p.autoselect)
+                        p.$selectDefault(this.parentNode);
+                }
             }
-            else this.$ext = node && node.nextSibling || oInt.firstChild;
             
-            var ns = this;
-            while((ns = ns.nextSibling) && ns.nodeType != 1);
-
-            if (!ns || ns.$canLeechSkin != "item") {
-                p.dispatchEvent("afterload");
-                if (p.autoselect)
-                    p.$selectDefault(this.parentNode);
-            }
-
             return;
         }
         
