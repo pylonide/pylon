@@ -227,10 +227,10 @@ apf.Transaction = function(){
         this.$addParent       = null;
 
         //Cleanup
-        if (!noLoad) {
+        if (!noLoad)
             this.load(this.$originalNode);
-            this.$helperModel.reset();
-        }
+        
+        this.$helperModel.reset();
         
         this.$stopAction(this.$lastAction, true);
         

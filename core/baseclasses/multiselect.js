@@ -1640,8 +1640,8 @@ apf.MultiSelect = function(){
             var valueRule = this.$attrBindings["eachvalue"] && "eachvalue" 
                 || this.$bindings["value"] && "value" 
                 || this.$hasBindRule("caption") && "caption";
-              
-            if (valueRule && this.xmlRoot != this) {
+
+            if (valueRule) {
                 //@todo this will call the handler again - should be optimized
 
                 this.$lastValue = this.$applyBindRule(valueRule, e.selected)
@@ -1650,7 +1650,10 @@ apf.MultiSelect = function(){
                   (valueRule != "value" && (this.xmlRoot
                   && this.$applyBindRule("value", this.xmlRoot, null, true)) 
                   || this.value)) {
-                    this.change(this.$lastValue);
+                    if (this.xmlRoot != this)
+                        this.change(this.$lastValue);
+                    else
+                        this.setProperty("value", this.$lastValue);
                 }
                 /*else {
                     this.setProperty("value", this.$lastValue);
