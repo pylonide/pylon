@@ -154,7 +154,6 @@
  * @constructor
  *
  * @inherits apf.Cache
- * @inherits apf.MultiSelect
  * @inherits apf.BaseList
  * @inherits apf.Rename
  *
