@@ -348,9 +348,7 @@ apf.lm = new (function(){
     macro_o.foreach 	=
     macro_o.each        = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,("
     macro_c.foreach 	=
-    macro_c.each        = ")||[]),_t);(_t[_t.length-1].dataType==apf.ARRAY?"+
-						  "(_n=_t[_t.length-1][_t[_t.length-2]++]):"+
-						  "(_t[_t.length-1]++<_t[_t.lenght-1].length))||(_t.length-=2,_n=_t.pop(),0);)"
+    macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)"
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local("
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)"
     macro_o.localName   = "_localName(_n",
@@ -360,8 +358,6 @@ apf.lm = new (function(){
     macro_o.reset       = "(_o=[],l=0",
     macro_c.reset       = ")"
 
-    macro_o.item        = "(_t[_t.length-1][_t[_t.length-2]-1]",
-    macro_c.item        = ")",
     macro_o.first       = "(!_t[_t.length-2]",
     macro_c.first       = ")",
     macro_o.last        = "(_t[_t.length-2]==_t[_t.length-1].length",
