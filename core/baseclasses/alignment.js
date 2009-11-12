@@ -47,8 +47,59 @@ apf.__ALIGNMENT__ = 1 << 12;
  * See {@link baseclass.anchoring}
  *
  * @attribute {Boolean} dock whether this element can function as a dockable section of the layout.
+ * @attrinfo  layout/align  dropdown
+ * @default   false
  * @attribute {Boolean} dockable whether this element can be dragged to dock somewhere else
- *
+ * @attrinfo  layout/align  dropdown
+ * @default   false
+
+ * @attribute  {String} align       the edge of the parent to which this
+ *                                  element aligns. Possible values are
+ *                                  a combination of: "left", "middle",
+ *                                  "right", "top", "bottom" and "slider"
+ *                                  and optionally a size.
+ * Example:
+ * <code>
+ *  <a:tree align="left-splitter-3" />
+ * </code>
+ * @attrinfo  layout  textbox
+ * @attribute  {String} lean        the position of element when it is ambiguous.
+ *   Possible values:
+ *   left   the element leans towards the left
+ *   right  the element leans towards the right
+ *   top    the element leans towards the top
+ *   bottom the element leans towards the bottom
+ * @attrinfo  layout/align  dropdown
+ * @default   left
+ * @attribute  {Number} edge        the size of the edge of the space between
+ *                                  this and the neighbouring element to the
+ *                                  right or top. If the value of this attribute
+ *                                  is smaller than that of the splitter,
+ *                                  the edge will be the size of the splitter.
+ * @attrinfo  layout/align  slider
+ * @default   4
+ * @attribute  {Number} weight      the factor (between 0 and 1) this element
+ *                                  takes when no width is specified. The factor
+ *                                  is calculated by doing (weight/totalweight)
+ *                                  * space available in parent. Based on
+ *                                  the parent being a vbox or hbox this
+ *                                  attribute calculates either the element's
+ *                                  width or height.
+ * @attrinfo  layout/align  slider
+ * @default   1
+ * @attribute  {Number} splitter    the size of splitter that is placed between
+ *                                  this and the neighbouring element to the
+ *                                  right or top. When not specified, the
+ *                                  splitter is not displayed.
+ * @attrinfo  layout/align  slider
+ * @default   0
+ * @attribute  {Number} minwidth    the minimum horizontal size of this element.
+ * @attrinfo  Layout  slider
+ * @default   0
+ * @attribute  {Number} minheight   the minimum vertical size of this element.
+ * @attrinfo  Layout  slider
+ * @default   0
+
  * @constructor
  * @baseclass
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -198,39 +249,6 @@ apf.Alignment = function(){
     //@todo move the prophandlers to inside the constructor
     
     var propHandlers = {
-        /**
-         * @attribute  {String} align       the edge of the parent to which this
-         *                                  element aligns. Possible values are
-         *                                  a combination of: "left", "middle",
-         *                                  "right", "top", "bottom" and "slider"
-         *                                  and optionally a size.
-         * Example:
-         * <code>
-         *  <a:tree align="left-splitter-3" />
-         * </code>
-         * @attribute  {String} lean        the position of element when it is ambiguous.
-         *   Possible values:
-         *   right  the element leans towards the right
-         *   bottom the element leans towards the bottom
-         * @attribute  {Number} edge        the size of the edge of the space between
-         *                                  this and the neighbouring element to the
-         *                                  right or top. If the value of this attribute
-         *                                  is smaller than that of the splitter,
-         *                                  the edge will be the size of the splitter.
-         * @attribute  {Number} weight      the factor (between 0 and 1) this element
-         *                                  takes when no width is specified. The factor
-         *                                  is calculated by doing (weight/totalweight)
-         *                                  * space available in parent. Based on
-         *                                  the parent being a vbox or hbox this
-         *                                  attribute calculates either the element's
-         *                                  width or height.
-         * @attribute  {Number} splitter    the size of splitter that is placed between
-         *                                  this and the neighbouring element to the
-         *                                  right or top. When not specified, the
-         *                                  splitter is not displayed.
-         * @attribute  {Number} minwidth    the minimum horizontal size of this element.
-         * @attribute  {Number} minheight   the minimum vertical size of this element.
-         */
         //#ifdef __WITH_ALIGN_TEMPLATES
         "align" : function(value){
             this.aData.remove();
