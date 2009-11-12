@@ -1812,7 +1812,10 @@ apf.debugwin = {
             apf.setcookie("debugger", checked)
 
         if (!checked) {
-            window.onerror = this.errorHandler;
+            if (!apf.loaded && typeof oldWinError == "object")
+                oldWinError = this.errorHandler;
+            else
+                window.onerror = this.errorHandler;
         }
         else
             window.onerror = null;
