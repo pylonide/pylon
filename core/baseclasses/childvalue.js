@@ -23,7 +23,8 @@ apf.__CHILDVALUE__ = 1 << 27;
 
 //#ifdef __WITH_CHILDVALUE
 apf.ChildValue = function(){
-    this.$regbase = this.$regbase | apf.__CHILDVALUE__;
+    this.$childProperty = "value";
+    this.$regbase       = this.$regbase | apf.__CHILDVALUE__;
     
     var f;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
@@ -36,11 +37,11 @@ apf.ChildValue = function(){
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (v.indexOf("{") > -1 || v.indexOf("[") > -1) {
-            this.$setDynamicProperty(this.$childProperty || "value", v);
+            this.$setDynamicProperty(this.$childProperty, v);
         }
         else
         //#endif
-            this.setProperty(this.$childProperty || "value", v);
+            this.setProperty(this.$childProperty, v);
     });
     
     this.addEventListener("DOMNodeInserted", f);
@@ -56,10 +57,10 @@ apf.ChildValue = function(){
 
             //#ifdef __WITH_PROPERTY_BINDING
             if (v.indexOf("{") > -1 || v.indexOf("[") > -1)
-                this.$setDynamicProperty(this.$childProperty || "value", v);
+                this.$setDynamicProperty(this.$childProperty, v);
             else
             //#endif
-                this.setProperty(this.$childProperty || "value", v);
+                this.setProperty(this.$childProperty, v);
         }
         else if (typeof this[this.$childProperty] == "undefined")
             this.$propHandlers[this.$childProperty].call(this, "");

@@ -157,7 +157,7 @@ apf.table = function(struct, tagName){
     /**** DOM Hooks ****/
     
     this.addEventListener("DOMNodeRemoved", function(e){
-        if (this.$isWaitingOnDisplay)
+        if (this.$isWaitingOnDisplay || !this.$updateObj)
             return;
 
         if (e.currentTarget == this) {
