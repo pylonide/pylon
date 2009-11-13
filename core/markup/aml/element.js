@@ -332,12 +332,12 @@ apf.AmlElement = function(struct, tagName){
     
     //@todo
     this.querySelector = function(){
-        
+        // here we should use: http://code.google.com/p/css2xpath/source/browse/trunk/src/css2xpath.js
     };
     
     //@todo
     this.querySelectorAll = function(){
-        
+        // here we should use: http://code.google.com/p/css2xpath/source/browse/trunk/src/css2xpath.js
     };
     
     //@todo
