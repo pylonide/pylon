@@ -215,10 +215,10 @@ apf.Alignment = function(){
         
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.$ext.offsetHeight) {
+        if (!this.$ext.offsetWidth) {
             var _self      = this;
             var propChange = function (name, old, value){
-                if (_self.$ext.offsetHeight) {
+                if (_self.$ext.offsetWidth) {
                     l.queue(_self.$pHtmlNode, null, layout.root);
                     //apf.layout.activateRules(_self.$ext.parentNode);
                     

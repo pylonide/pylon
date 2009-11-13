@@ -205,7 +205,7 @@ apf.table = function(struct, tagName){
         //@todo when not visible make all property settings rule based
         //@todo isnt there a better way for doing this? (faster)
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.$ext.offsetHeight) {
+        if (!this.$ext.offsetWidth) {
             this.$isWaitingOnDisplay = true;
             this.watch("visible", this.$updateObj.propChange);
             
@@ -483,7 +483,7 @@ apf.table = function(struct, tagName){
             },
             //#ifdef __WITH_PROPERTY_WATCH
             propChange : function (name, old, value){
-                if (_self.$update && apf.isTrue(value) && _self.$ext.offsetHeight) {
+                if (_self.$update && apf.isTrue(value) && _self.$ext.offsetWidth) {
                     _self.$updateTable();
                     apf.layout.activateRules(_self.$ext);
                     

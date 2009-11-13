@@ -23,7 +23,8 @@ apf.__CHILDVALUE__ = 1 << 27;
 
 //#ifdef __WITH_CHILDVALUE
 apf.ChildValue = function(){
-    this.$childProperty = "value";
+    if (!this.$childProperty)
+        this.$childProperty = "value";
     this.$regbase       = this.$regbase | apf.__CHILDVALUE__;
     
     var f;
