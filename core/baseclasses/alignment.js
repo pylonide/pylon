@@ -94,10 +94,10 @@ apf.__ALIGNMENT__ = 1 << 12;
  * @attrinfo  layout/align  slider
  * @default   0
  * @attribute  {Number} minwidth    the minimum horizontal size of this element.
- * @attrinfo  Layout  slider
+ * @attrinfo  layout  slider
  * @default   0
  * @attribute  {Number} minheight   the minimum vertical size of this element.
- * @attrinfo  Layout  slider
+ * @attrinfo  layout  slider
  * @default   0
 
  * @constructor
