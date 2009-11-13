@@ -1096,7 +1096,7 @@ apf.ContentEditable = function() {
         if (!this.$plugins) //We're in the process of being destroyed
             return;
 
-        var oButton = this.$edVars.$buttons[item];
+        var oButton = this.$edVars.oButtons[item];
         if (!oButton)
             return;
 
@@ -1147,8 +1147,8 @@ apf.ContentEditable = function() {
      * @type  {void}
      */
     this.$notifyAllButtons = function(state) {
-        var o = this.$edVars;
-        for (var item in o.$buttons)
+        var item, o = this.$edVars.oButtons;
+        for (item in o)
             this.$notifyButton(item, state);
     };
 
@@ -1432,7 +1432,7 @@ apf.ContentEditable = function() {
                 item = btns[i].getAttribute("type");
                 if (!item) continue;
 
-                o.$buttons[item] = btns[i];
+                o.oButtons[item] = btns[i];
                 plugin = this.$plugins[item];
                 if (!plugin) continue;
 

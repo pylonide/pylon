@@ -2430,7 +2430,7 @@ else {
                 // which DOM object ("head" or "body") to append scripts to
                 which   : sHEAD
             };
-        
+
         append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
         append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
         
