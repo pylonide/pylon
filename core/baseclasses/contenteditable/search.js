@@ -231,7 +231,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
                                   onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
                               }),
                               (this.oReplBtn = new apf.button({
-                                  caption: this.editor.$translate("dereplace"),
+                                  caption: this.editor.$translate("doreplace"),
                                   onclick: "apf.lookup(" + this.$uniqueId + ").onDoReplClick(event)"
                               })),
                               (this.oReplAllBtn = new apf.button({

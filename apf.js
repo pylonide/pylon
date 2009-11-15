@@ -562,10 +562,9 @@ var apf = {
 
         //#ifdef __DEBUG
         apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("This is a debug build of Ajax.org Platform; \
-                          be aware that execution speed of this build is \
-                          <strong>several times</strong> slower than a \
-                          release build of Ajax.org Platform.");
+        apf.console.warn("This is a debug build of Ajax.org Platform; be aware\n"
+            + "that execution speed of this build is <strong>several times</strong> "
+            + "slower than a release build of Ajax.org Platform.");
         //#endif
 
         //mozilla root detection
@@ -599,20 +598,23 @@ var apf = {
         // #endif
 
         //#ifdef __PARSE_GET_VARS
-        for (var i, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++)
+        for (var i, l2, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++) {
             if (m = p[k].match(/(.*?)(\..*?|\[.*?\])?=([^#]*)/)) {
                 n = decodeURI(m[1]).toLowerCase(), o = this._GET;
-                if (m[2])
-                    for (a = decodeURI(m[2]).replace(/\[\s*\]/g, "[-1]").split(/[\.\[\]]/), i = 0; i < a.length; i++)
-                        v = a[i], o = o[n]
+                if (m[2]) {
+                    for (a = decodeURI(m[2]).replace(/\[\s*\]/g, "[-1]").split(/[\.\[\]]/), i = 0, l2 = a.length; i < l2; i++) {
+                        v = a[i],
+                        o = o[n]
                             ? o[n]
                             : o[n] = (parseInt(v) == v)
                                 ? []
-                                : {}, n = v.replace(/^["\'](.*)["\']$/,"$1");
-                n != '-1'
-                    ? o[n] = unescape(decodeURI(m[3]))
-                    : o[o.length] = unescape(decodeURI(m[3]));
+                                : {},
+                        n = v.replace(/^["\'](.*)["\']$/, "$1");
+                    }
+                }
+                o[n != "-1" ? n : o.length] = unescape(decodeURI(m[3]));
             }
+        }
         //#endif
 
         // #ifdef __TP_HTTP
@@ -661,7 +663,8 @@ var apf = {
     findPrefix : function(xmlNode, xmlns){
         var docEl;
         if (xmlNode.nodeType == 9) {
-            if (!xmlNode.documentElement) return false;
+            if (!xmlNode.documentElement)
+                return false;
             if (xmlNode.documentElement.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
             docEl = xmlNode.documentElement;
@@ -700,17 +703,11 @@ var apf = {
                 "importing class",
                 "Could not load reference. Reference is null"));
 
-        //if (!apf.hasExecScript)
-            //return ref();//.call(self);
-
         if (!strip)
             return apf.exec(ref.toString(), win);
 
-        var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
-        q = q.replace(/\}\s*$/, "");
-
-        //var q = ref.toString().split("\n");q.shift();q.pop();
-        //if(!win.execScript) q.shift();q.pop();
+        var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "")
+                              .replace(/\}\s*$/, "");
 
         return apf.exec(q, win);
     },
@@ -743,9 +740,10 @@ var apf = {
             classRef.call(this);//classRef
         }
         else {
-            for (var i = 0; i < arguments.length; i++) {
+            for (var a, i = 0, l = arguments.length; i < l; i++) {
+                a = arguments[i];
                 //#ifdef __DEBUG
-                if (!arguments[i]) {
+                if (!a) {
                     throw new Error(apf.formatErrorString(0, this,
                         "Implementing class",
                         "Could not implement from '" + arguments[i] + "'", this));
@@ -776,7 +774,7 @@ var apf = {
     /**
      * Retrieves a new unique id
      */
-    getUniqueId : function(oHtml){
+    getUniqueId : function(){
         return this.uniqueHtmlIds++;
     },
 
@@ -929,10 +927,9 @@ var apf = {
                 ms   = String(dt.getMilliseconds());
             while (ms.length < 3)
                 ms += "0";
-            var date = dt.getHours().toPrettyDigit() + ":"
-                     + dt.getMinutes().toPrettyDigit()    + ":"
-                     + dt.getSeconds().toPrettyDigit()    + "."
-                     + ms;
+            var date = dt.getHours().toPrettyDigit()   + ":"
+                     + dt.getMinutes().toPrettyDigit() + ":"
+                     + dt.getSeconds().toPrettyDigit() + "." + ms;
 
             msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg)
@@ -944,18 +941,18 @@ var apf = {
                 : apf.basePath + "core/debug/resources/";
 
             if (data) {
-                msg += "<blockquote style='margin:2px 0 0 0;\
-                        background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>\
-                        <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
-                        onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
-                        + (this.cache.push(data) - 1) + ")'>More information\
-                        </strong><div style='display:none;background-color:#EEEEEE;\
-                        padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>\
-                        </div></blockquote>";
+                msg += "<blockquote style='margin:2px 0 0 0;"
+                    +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
+                    +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
+                    +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
+                    +  (this.cache.push(data) - 1) + ")'>More information"
+                    +  "</strong><div style='display:none;background-color:#EEEEEE;"
+                    +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
+                    +  "</div></blockquote>";
             }
 
-            msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
-                line-height:15px;border-bottom:1px solid #EEE;background:url("
+            msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;"
+                + "line-height:15px;border-bottom:1px solid #EEE;background:url("
                 + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
@@ -1075,8 +1072,9 @@ var apf = {
         showWindow : function(msg){
             if (!this.win || this.win.closed) {
                 this.win = window.open("", "debug");
-                this.win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                                         <body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
+                this.win.document.write(
+                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+                  + '<body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
             }
             if (!this.win) {
                 if (!this.haspopupkiller)
@@ -1194,7 +1192,11 @@ var apf = {
 
     /**
      * Loads javascript from a url.
-     * @param {String} sourceFile the url where the javascript is located.
+     * 
+     * @param {String}  sourceFile the url where the javascript is located.
+     * @param {Boolean} [doBase]   check for basePath, otherwise prepend it
+     * @param {String}  [type]     set the type of a script tag, for later use
+     * @type  {void}
      */
     include : function(sourceFile, doBase, type){
         apf.console.info("including js file: " + sourceFile);
@@ -1215,7 +1217,7 @@ var apf = {
     },
     
     $required : [],
-    require : function(list){
+    require : function(){
         var dir = apf.getDirname(location.href),
             i   = 0,
             l   = arguments.length;
@@ -1315,10 +1317,10 @@ var apf = {
     //#ifdef __WITH_PARTIAL_AML_LOADING
     parsePartialAml : function(docElement){
         //#ifdef __DEBUG
-        apf.console.warn("The aml namespace definition wasn't found \
-                          on the root node of this document. We're assuming \
-                          you want to load a partial piece of aml embedded\
-                          in this document. Starting to search for it now.");
+        apf.console.warn("The aml namespace definition wasn't found "
+                       + "on the root node of this document. We're assuming "
+                       + "you want to load a partial piece of aml embedded "
+                       + "in this document. Starting to search for it now.");
         //#endif
 
         var findAml;
@@ -1353,11 +1355,11 @@ var apf = {
                     //#ifdef __DEBUG
                     throw new Error(apf.formatErrorString(0, null,
                         "Parsing inline aml (without xmlns on root node)",
-                        "Could not parse inline aml. This happens when the html\
-                         is mangled too much by Internet Explorer. Either you\
-                         are using a cdata section or javascript containing\
-                         symbols that throw off the browser. Please put this aml\
-                         in a seperate file and load it using an include element."));
+                        "Could not parse inline aml. This happens when the html"
+                      + "is mangled too much by Internet Explorer. Either you "
+                      + "are using a cdata section or javascript containing "
+                      + "symbols that throw off the browser. Please put this aml "
+                      + "in a seperate file and load it using an include element."));
                     //#endif
                     
                     return;
@@ -1582,10 +1584,10 @@ var apf = {
           && document.documentElement.outerHTML.split(">", 1)[0]
              .indexOf(apf.ns.aml) == -1) {
             //#ifdef __DEBUG
-            apf.console.warn("The aml namespace definition wasn't found \
-                              on the root node of this document. We're assuming \
-                              you want to load a partial piece of aml embedded\
-                              in this document. Starting to search for it now.");
+            apf.console.warn("The aml namespace definition wasn't found "
+                           + "on the root node of this document. We're assuming "
+                           + "you want to load a partial piece of aml embedded "
+                           + "in this document. Starting to search for it now.");
             //#endif
 
             //Walk tree
@@ -1597,9 +1599,9 @@ var apf = {
                         str = str.substr(5);
 
                         //#ifdef __DEBUG
-                        apf.console.info("Found a piece of aml. Assuming \
-                                          namespace prefix 'a'. Starting \
-                                          parsing now.");
+                        apf.console.info("Found a piece of aml. Assuming "
+                                       + "namespace prefix 'a'. Starting "
+                                       + "parsing now.");
                         //#endif
 
                         x = apf.getXml("<a:applicaton xmlns:j='"
@@ -1669,18 +1671,6 @@ var apf = {
                 var nodes = document.body.childNodes;
                 for (var i = nodes.length - 1; i >= 0; i--)
                     nodes[i].parentNode.removeChild(nodes[i]);
-
-                /*apf.AppData = $xmlns(docElement, "body", apf.ns.xhtml)[0];
-                apf.loadAmlIncludes(apf.AppData);
-
-                if (!self.ERROR_HAS_OCCURRED) {
-                    apf.Init.interval = setInterval(function(){
-                        if (apf.checkLoaded())
-                            apf.initialize();
-                    }, 20);
-                }
-
-                return;*/
             }
             catch(e) {
                 //Parsing went wrong, if we're on auto strategy we'll try loading from file
@@ -1700,8 +1690,8 @@ var apf = {
           .split(">", 1)[0]
           .indexOf(apf.ns.aml) == -1) {
             //#ifdef __DEBUG
-            apf.console.warn("The aml namespace declaration wasn't found. \
-                              No aml elements were found in the body. Exiting");
+            apf.console.warn("The aml namespace declaration wasn't found. "
+                           + "No aml elements were found in the body. Exiting");
             //#endif
             return false;
         }
@@ -1714,8 +1704,8 @@ var apf = {
                 function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
                         var oError = new Error(apf.formatErrorString(0, null,
-                            "Loading XML application data", "Could not load \
-                            XML from remote source: " + extra.message));
+                            "Loading XML application data", "Could not load "
+                          + "XML from remote source: " + extra.message));
 
                         if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                             return true;
@@ -1754,17 +1744,12 @@ var apf = {
                 }, {ignoreOffline: true});
         }
         else {
-            document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+            //might wanna make this variable based on layout loading...
+            document.body.style.display = "block";
 
             if (!self.ERROR_HAS_OCCURRED)
                 apf.initialize(docElement.outerHTML || docElement.xml);
         }
-        
-        /* 
-        apf.AppData = docElement.body ? docElement.body : $xmlns(docElement.documentElement, "body", apf.ns.xhtml)[0];
-        */
-
-        //apf.loadAmlIncludes(apf.AppData);
         //#endif
     },
     
@@ -1790,7 +1775,80 @@ var apf = {
         apf.Init.run(); //Process load dependencies
         
         //#ifdef __WITH_DEFAULT_SKIN
-        apf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml"><a:checkbox name="checkbox"><a:style><![CDATA[.cbcontainer{padding: 2px 2px 2px 18px;_padding: 2px; /* IE6 fix */position: relative;min-height: 13px;color: #4b4b4b;background: url(images/spacer.gif);_clear: both; /* IE6 fix */}.cbcontainer span{font-family: Tahoma;font-size: 11px;cursor: default;padding: 1px 3px 2px 3px;margin : -1px 0 0 0;overflow: hidden;display: block;float: left;line-height: 13px;}.cbcontainerFocus span{padding: 0px 2px 1px 2px;border: 1px dotted #BBB;}.cbcontainerChecked.cbcontainerDown.cbcontainerFocus .checkbox {background-position: 0 -48px;}.cbcontainer .checkbox{width: 12px;height: 12px;overflow: hidden;position: absolute;left: 2px;top: 2px;_position: relative; /* IE6 fix */_float: left; /* IE6 fix */_margin: -2px 4px 0 0; /* IE6 fix */background: url("images/checkbox.png") no-repeat 0 -12px;}.cbcontainerDown .checkbox{background-position: 0 -36px;}.cbcontainerChecked .checkbox{background-position: 0 -24px;}.cbcontainerError span{background-color : #ffb500;color: #fbfbfb;}.cbcontainerDisabled .checkbox{background-position: 0 -0px;}.cbcontainerDisabled span{color: #bebebe;}.cbcontainer br{display: none;}]]></a:style><a:style condition="!apf.isIE"><![CDATA[.cbcontainer br{line-height: 0;display: block;}]]></a:style><a:presentation><a:main label="span/text()"><div class="cbcontainer"><div class="checkbox"> </div><span>-</span><br clear="left" /></div></a:main></a:presentation></a:checkbox><a:bar name="bar"><a:style><![CDATA[#jem.apf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}#jem.apf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.apf_bar .apf_counter {position: absolute;bottom: 5px;left: 40px;}#jem.apf_bar .apf_countdown {position: absolute;bottom: 5px;right: 142px;}#jem.apf_bar .apf_volume {position: absolute;bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_volume span {margin: 0;padding: 0;width: 16px;height: 16px;}#jem.apf_bar .apf_fullscreen {position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_fullscreen span {height:14px;width:14px;margin:3px auto 0 0;}]]></a:style><a:presentation><a:main container="." resize-corner="17"><div class="apf_bar" id="jem"> </div></a:main></a:presentation></a:bar><a:label name="label"><a:style><![CDATA[#jem .apf_label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .apf_labelDisabled{color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .apf_label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></a:style><a:presentation><a:main caption="." for="@for"><div class="apf_label"> </div></a:main></a:presentation></a:label><a:slider name="slider"><a:style><![CDATA[#jem .apf_slider {background: url("images/bar_right.png") no-repeat top right;height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .apf_sliderDisabled {background-position: right -8px;}#jem .apf_slider .apf_left {background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .apf_sliderDisabled .apf_left {background-position: left -8px;}#jem .apf_sliderDisabled .apf_filledbar {background-position: 0 -8px;}#jem .apf_slider .apf_grabber {background: url("images/slider3.png") no-repeat top left;width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_sliderDisabled .apf_grabber {background-position: left -8px;}]]></a:style><a:presentation><a:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><marker><u> </u></marker></a:presentation></a:slider><a:slider name="slider16"><a:style><![CDATA[#jem .apf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .apf_slider16Disabled {background-position: right -16px;}#jem .apf_slider16 .apf_left {background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;margin: 0;}#jem .apf_slider16Disabled .apf_left {background-position: left -16px;}#jem .apf_slider16 .apf_grabber {background: url("images/rslider16x.png") no-repeat top right;width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_slider16Disabled .apf_grabber {background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .apf_slider16 .apf_sldprogress {background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]></a:style><a:presentation><a:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." direction="horizontal"><div class="apf_slider16"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main><progress><span class="apf_sldprogress"></span></progress><marker><u></u></marker></a:presentation></a:slider><a:button name="button"><a:style><![CDATA[#jem .apf_button {color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .apf_buttonOver {background-position: 0 -21px;}#jem .apf_buttonDisabled {background-position: 0 -42px;}#jem .apf_buttonDown {background-position: 0 0px;}#jem .apf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]></a:style><a:presentation><a:main background="span" icon="span"><div class="apf_button"><span></span></div></a:main></a:presentation></a:button><a:video name="video"><a:style><![CDATA[#jem .apf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}#jem .apf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></a:style><a:presentation><a:main container="."><div class="apf_video"></div></a:main></a:presentation></a:video></a:skin>';
+        apf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?>'
+            + '<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">'
+            + '<a:checkbox name="checkbox"><a:style><![CDATA[.cbcontainer{padding: 2px 2px 2px 18px;'
+            + '_padding: 2px; /* IE6 fix */position: relative;min-height: 13px;'
+            + 'color: #4b4b4b;background: url(images/spacer.gif);_clear: both; /* IE6 fix */}'
+            + '.cbcontainer span{font-family: Tahoma;font-size: 11px;cursor: default;padding: 1px 3px 2px 3px;'
+            + 'margin : -1px 0 0 0;overflow: hidden;display: block;float: left;line-height: 13px;}'
+            + '.cbcontainerFocus span{padding: 0px 2px 1px 2px;border: 1px dotted #BBB;}'
+            + '.cbcontainerChecked.cbcontainerDown.cbcontainerFocus .checkbox {background-position: 0 -48px;}'
+            + '.cbcontainer .checkbox{width: 12px;height: 12px;overflow: hidden;position: absolute;'
+            + 'left: 2px;top: 2px;_position: relative; /* IE6 fix */_float: left; /* IE6 fix */_margin: -2px 4px 0 0; /* IE6 fix */'
+            + 'background: url("images/checkbox.png") no-repeat 0 -12px;}.cbcontainerDown .checkbox{background-position: 0 -36px;}'
+            + '.cbcontainerChecked .checkbox{background-position: 0 -24px;}.cbcontainerError span{background-color : #ffb500;color: #fbfbfb;}'
+            + '.cbcontainerDisabled .checkbox{background-position: 0 -0px;}.cbcontainerDisabled span{color: #bebebe;}'
+            + '.cbcontainer br{display: none;}]]></a:style><a:style condition="!apf.isIE">'
+            + '<![CDATA[.cbcontainer br{line-height: 0;display: block;}]]></a:style>'
+            + '<a:presentation><a:main label="span/text()"><div class="cbcontainer"><div class="checkbox"> </div>'
+            + '<span>-</span><br clear="left" /></div></a:main>'
+            + '</a:presentation></a:checkbox>'
+            + '<a:bar name="bar"><a:style><![CDATA[#jem.apf_bar {position: relative;color: #4b4b4b;font-family: Tahoma;'
+            + 'font-size: 10px;padding: 10px;border: 1px solid #f3f3f3;cursor: default;margin: 0;'
+            + 'background: white url(images/resizehandle.gif) no-repeat right bottom;z-index: 10000;}'
+            + '#jem.apf_bar img {position: absolute;bottom: 13px;left: 216px;}#jem.apf_bar .apf_counter {'
+            + 'position: absolute;bottom: 5px;left: 40px;}#jem.apf_bar .apf_countdown {position: absolute;'
+            + 'bottom: 5px;right: 142px;}#jem.apf_bar .apf_volume {position: absolute;'
+            + 'bottom: 5px;right: 119px;left: auto;background: none;width: 16px;height: 16px;'
+            + 'margin: 0;padding: 0;cursor: pointer;cursor: hand;}#jem.apf_bar .apf_volume span {'
+            + 'margin: 0;padding: 0;width: 16px;height: 16px;}#jem.apf_bar .apf_fullscreen {'
+            + 'position: absolute;bottom: 2px;right: 28px;left: auto;width: 14px;background: transparent;'
+            + 'cursor: pointer;cursor: hand;}#jem.apf_bar .apf_fullscreen span {height:14px;width:14px;'
+            + 'margin:3px auto 0 0;}]]></a:style><a:presentation><a:main container="." resize-corner="17">'
+            + '<div class="apf_bar" id="jem"> </div></a:main></a:presentation></a:bar>'
+            + '<a:label name="label"><a:style><![CDATA[#jem .apf_label{font-size: 8pt;font-family: Tahoma;'
+            + 'overflow: hidden;cursor: default;line-height : 1.5em;margin : 0;}#jem .apf_labelDisabled{'
+            + 'color: #bebebe;}#jem .tiny {font-size : 9px;}#jem .error .apf_label{background : url(images/alert.png) no-repeat 0 0;'
+            + 'min-height : 37px;padding : 3px 0 0 45px;}]]></a:style><a:presentation>'
+            + '<a:main caption="." for="@for"><div class="apf_label"> </div></a:main></a:presentation></a:label>'
+            + '<a:slider name="slider"><a:style><![CDATA[#jem .apf_slider {background: url("images/bar_right.png") no-repeat top right;'
+            + 'height: 8px;position: relative;font-family: Tahoma;font-size: 9px;text-align: center;'
+            + 'position: absolute;bottom: 9px;right: 53px;margin: 0;}#jem .apf_sliderDisabled {'
+            + 'background-position: right -8px;}#jem .apf_slider .apf_left {background: url("images/bar_left.png") no-repeat top left;'
+            + 'height: 8px;overflow: hidden;margin: 0;margin-right: 4px;}#jem .apf_sliderDisabled .apf_left {'
+            + 'background-position: left -8px;}#jem .apf_sliderDisabled .apf_filledbar {background-position: 0 -8px;}'
+            + '#jem .apf_slider .apf_grabber {background: url("images/slider3.png") no-repeat top left;'
+            + 'width: 12px;height: 8px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_sliderDisabled .apf_grabber {'
+            + 'background-position: left -8px;}]]></a:style><a:presentation>'
+            + '<a:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal">'
+            + '<div class="apf_slider"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main>'
+            + '<marker><u> </u></marker></a:presentation></a:slider>'
+            + '<a:slider name="slider16"><a:style><![CDATA[#jem .apf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;'
+            + 'width: 300px;height: 16px;position: relative;padding-right: 7px;font-family: Tahoma;font-size: 9px;'
+            + 'text-align: center;position: absolute;bottom: 6px;left: 82px;margin: 0;}#jem .apf_slider16Disabled {background-position: right -16px;}'
+            + '#jem .apf_slider16 .apf_left {background: url("images/bar16x_left.png") no-repeat top left;'
+            + 'height: 16px;overflow: hidden;margin: 0;}#jem .apf_slider16Disabled .apf_left {background-position: left -16px;}'
+            + '#jem .apf_slider16 .apf_grabber {background: url("images/rslider16x.png") no-repeat top right;'
+            + 'width: 20px;height: 16px;overflow: hidden;position: absolute;margin: 0;}#jem .apf_slider16Disabled .apf_grabber {'
+            + 'background-position: left -16px;margin-left: 7px;cursor: normal;}#jem .apf_slider16 .apf_sldprogress {'
+            + 'background: #ddd;display: block;overflow: hidden;height: 4px;margin-left: 6px;margin-top: 6px;z-index: 0;}]]>'
+            + '</a:style><a:presentation><a:main slider="div[1]" container="." progress="div[2]" status2="div[2]/text()" markers="." '
+            + 'direction="horizontal"><div class="apf_slider16"><div class="apf_grabber"> </div><div class="apf_left"> </div></div></a:main>'
+            + '<progress><span class="apf_sldprogress"></span></progress><marker><u></u></marker>'
+            + '</a:presentation></a:slider>'
+            + '<a:button name="button"><a:style><![CDATA[#jem .apf_button {color: #4b4b4b;font-family: Tahoma;'
+            + 'font-size: 8pt;height: 21px;width: 34px;overflow: hidden;cursor: default;background: url(images/mediabtn2.png) no-repeat 0 -42px;'
+            + 'position: absolute;bottom: 3px;left: 3px;margin: 0;}#jem .apf_buttonOver {background-position: 0 -21px;}'
+            + '#jem .apf_buttonDisabled {background-position: 0 -42px;}#jem .apf_buttonDown {background-position: 0 0px;}'
+            + '#jem .apf_button span {display: block;background: no-repeat 0 0;width: 11px;height: 10px;margin: 4px auto 0 11px;}]]>'
+            + '</a:style><a:presentation><a:main background="span" icon="span"><div class="apf_button"><span></span></div>'
+            + '</a:main></a:presentation></a:button>'
+            + '<a:video name="video"><a:style><![CDATA[#jem .apf_video {line-height:300px;margin:0;'
+            + 'padding:0;text-align:center;vertical-align:middle;overflow : hidden;background : black;}'
+            + '#jem .apf_video #qt_event_source{position : absolute;left : 0;top : 0;}]]></a:style>'
+            + '<a:presentation><a:main container="."><div class="apf_video"></div></a:main></a:presentation>'
+            + '</a:video></a:skin>';
         if (false && !apf.skins.skins["default"] && apf.skins.defaultSkin) {
             //#ifdef __DEBUG
             apf.console.warn("No skin definition found. Using default skin.");
@@ -1866,13 +1924,6 @@ var apf = {
         //#endif
         {
             apf.window.init(xmlStr);
-            
-            // Start application
-            /*if (apf.AmlParser && apf.AppData)
-                apf.AmlParser.parse(apf.AppData);
-
-            if (apf.loadScreen && apf.config.autoHideLoading)
-                apf.loadScreen.hide();*/
         }
     },
 
@@ -1939,7 +1990,7 @@ var apf = {
                         // http://javascript.nwbox.com/IEContentLoaded/
                         doc.documentElement.doScroll("left");
                     }
-                    catch(error) {
+                    catch(ex) {
                         setTimeout(arguments.callee, 0);
                         return;
                     }
@@ -2019,7 +2070,10 @@ var apf = {
         this.popup.destroy();
         //#endif
 
-        for (var node, i = 0; i < this.all.length; i++) {
+        var node,
+            i = 0,
+            l = this.all.length;
+        for (; i < l; i++) {
             node = this.all[i];
             if (node && node != exclude && node.destroy && !node.apf)
                 node.destroy(false);
@@ -2027,7 +2081,7 @@ var apf = {
 
         //this.dispatchEvent("DOMNodeRemovedFromDocument", {});//@todo apf3.0
         
-        for (var i = 0; i < this.availHTTP.length; i++)
+        for (i = 0, l = this.availHTTP.length; i < l; i++)
             this.availHTTP[i] = null;
         
         this.availHTTP.length = 0;
@@ -2061,8 +2115,8 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
             return xmlNode.selectNodes(".//" + (prefix ? prefix + ":" : "") + tag);
         }
     }
-    else
-        return xmlNode.getElementsByTagNameNS(xmlns, tag);
+    
+    return xmlNode.getElementsByTagNameNS(xmlns, tag);
 }
 
 document.documentElement.className += " has_apf";
@@ -2070,127 +2124,201 @@ apf.browserDetect();
 apf.Init.run("apf");
 
 //#ifndef __PACKAGED
-if (!apf.basePath) {
-    var snodes = document.getElementsByTagName("script");
-    for (var src, i = 0; i < snodes.length; i++) {
-        src = snodes[i].getAttribute("src");
-        if (src && src.match(/^(.*)apf\.js$/)) {
-            apf.basePath = RegExp.$1;
-            break;
-        }
-    }
-    
-    if (apf.basePath) {
-        var s = apf.basePath.split("/");
-        var l = apf.getDirname(location.href).split("/"); l.pop();
-        for (var i = 0; i < s.length; i++) {
-            if (s[0] == "..") {
-                l.pop();
-                s.shift();
+(function(global){
+    if (!apf.basePath) {
+        var src,
+            s = document.getElementsByTagName("script"),
+            i = 0,
+            l = s.length;
+        for (; i < l; i++) {
+            src = s[i].getAttribute("src");
+            if (src && src.match(/^(.*)apf\.js$/)) {
+                apf.basePath = RegExp.$1;
+                break;
             }
-            else break;
         }
-        apf.basePath = l.join("/") + "/" + s.join("/");
-    }
-    
-    if (!apf.basePath)
-        apf.basePath = "./";
-}
 
-if (location.protocol == "file:" && !(/a/.__proto__=='//' || /source/.test((/a/.toString+'')))) {
-    (function(global){
-        // constants used for compression optimization
-        var sUNDEF                = "undefined",
-            sSTRING               = "string",
-            sOBJECT               = "object",
-            sHEAD                 = "head",
-            sBODY                 = "body",
-            sFUNCTION             = "function",
-            sSCRIPT               = "script",
-            sSRCURI               = "srcuri",
-            sDONE                 = "done",
-            sWHICH                = "which",
-            sREADYSTATE           = "readyState",
-            bTRUE                 = true,
-            bFALSE                = false,
-            oDOC                  = global.document,
-            oDOCLOC               = oDOC.location,
-            fSETTIMEOUT           = global.setTimeout,
-            fGETELEMENTSBYTAGNAME = function(tn){return oDOC.getElementsByTagName(tn);},
-            fOBJTOSTRING          = Object.prototype.toString,
-            fNOOP                 = function(){},
-            append_to             = {},
-            all_scripts           = {},
-            PAGEROOT              = /^[^?#]*\//.exec(oDOCLOC.href)[0], // TODO: FIX THESE FOR file:/// type URIs
-            DOCROOT               = /^\w+\:\/\/\/?[^\/]+/.exec(PAGEROOT)[0],
-            docScripts            = fGETELEMENTSBYTAGNAME(sSCRIPT),
-            global_defs           = {
-                dupe : bFALSE, // allow duplicate scripts?
-                base : "",     // base path to prepend to all non-absolute-path scripts
-                which: sHEAD   // which DOM object ("head" or "body") to append scripts to
-            }
-        ;
-        
-        append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
-        append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
-        
-        function canonicalScriptURI(src, base_path) {
-            if (typeof src !== sSTRING)
-                src = "";
-            if (typeof base_path !== sSTRING)
-                base_path = "";
-            var ret = (/^\w+\:\/\//.test(src) ? "" : base_path) + src;
-            return ((/^\w+\:\/\//.test(ret) 
-                ? ""
-                : (ret.charAt(0) === "/" ? DOCROOT : PAGEROOT)) + ret);
-        }
-        function sameDomain(src) {
-            return (canonicalScriptURI(src).indexOf(DOCROOT) === 0);
-        }
-        function scriptTagExists(uri) { // checks if a script uri has ever been loaded into this page's DOM
-            var i = 0, script;
-            while (script = docScripts[i++]) {
-                if (typeof script.src === sSTRING && uri === canonicalScriptURI(script.src))
-                    return bTRUE;
-            }
-            return bFALSE;
-        }
-        function engine(queueExec,opts) {
-            queueExec = !(!queueExec);
-            if (typeof opts === sUNDEF)
-                opts = global_defs;
-            
-            var publicAPI,
-                ready           = bFALSE,
-                _which          = opts.which,
-                _base_path      = opts.base,
-                waitFunc        = fNOOP,
-                scripts_loading = bFALSE,
-                scripts         = {},
-                exec            = [];
-            
-            function isScriptLoaded(elem,scriptentry) {
-                if ((elem[sREADYSTATE] && elem[sREADYSTATE] !== "complete"
-                  && elem[sREADYSTATE] !== "loaded") || scriptentry[sDONE])
-                    return bFALSE;
-                elem.onload = elem.onreadystatechange = null; // prevent memory leak
-                return bTRUE;
-            }
-            function handleScriptLoad(elem,scriptentry) {
-                if (!(isScriptLoaded(elem,scriptentry))) return;
-                scriptentry[sDONE] = bTRUE;
-    
-                for (var key in scripts) {
-                    if (scripts.hasOwnProperty(key) && !(scripts[key][sDONE]))
-                        return;
+        if (apf.basePath) {
+            s = apf.basePath.split("/"),
+            l = apf.getDirname(location.href).split("/"),
+            l.pop();
+            for (i = 0, l = s.length; i < l; i++) {
+                if (s[0] == "..") {
+                    l.pop();
+                    s.shift();
                 }
-                ready = bTRUE;
-                if (ready)
-                    waitFunc();
+                else
+                    break;
             }
-            function createScriptTag(scriptentry,src,type,charset) {
-                if (append_to[scriptentry[sWHICH]][0] === null) { // append_to object not yet ready
-                    fSETTIMEOUT(arguments.callee,25); 
+            apf.basePath = l.join("/") + "/" + s.join("/");
+        }
+
+        if (!apf.basePath)
+            apf.basePath = "./";
+    }
+
+    // constants used for compression optimization
+    var sUNDEF                = "undefined",
+        sSTRING               = "string",
+        sOBJECT               = "object",
+        sHEAD                 = "head",
+        sBODY                 = "body",
+        sFUNCTION             = "function",
+        sSCRIPT               = "script",
+        sREADYSTATE           = "readyState",
+        sXHRPOLL              = "xhrpoll",
+        sPRELOADDONE          = "preloaddone",
+        sLOADTRIGGER          = "loadtrigger",
+        sSRCURI               = "srcuri",
+        sPRELOAD              = "preload",
+        sDONE                 = "done",
+        sWHICH                = "which",
+        bTRUE                 = true,
+        bFALSE                = false,
+        oDOC                  = global.document,
+        oDOCLOC               = oDOC.location,
+        oACTIVEX              = global.ActiveXObject,
+        fSETTIMEOUT           = global.setTimeout,
+        fSETINTERVAL          = global.setInterval,
+        fCLEARINTERVAL        = global.clearInterval,
+        fGETELEMENTSBYTAGNAME = function(tn){return oDOC.getElementsByTagName(tn);},
+        fOBJTOSTRING          = Object.prototype.toString,
+        fNOOP                 = function(){},
+        append_to             = {},
+        all_scripts           = {},
+        // these ROOTs do not support file:/// usage, only http:// type usage
+        PAGEROOT              = /^[^?#]*\//.exec(oDOCLOC.href)[0],
+        DOCROOT               = /^\w+\:\/\/\/?[^\/]+/.exec(PAGEROOT)[0],
+        docScripts            = fGETELEMENTSBYTAGNAME(sSCRIPT),
+        // feature detection based on Andrea Giammarchi's solution:
+        // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+        is_ie                 = ! + "\v1",
+        // feature detections from
+        // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
+        is_safari             = /a/.__proto__ == "//",
+        is_chrome             = /source/.test((/a/.toString + "")),
+        is_opera              = /^function \(/.test([].sort),
+        is_ff                 = /a/[-1] == "a",
+        is_file               = (location.protocol == "file:" && !(is_safari || is_chrome)),
+        global_defs           = {
+            // use various tricks for "preloading" scripts
+            preload : bTRUE,
+            // IE/Safari/Chrome can use the "cache" trick to preload
+            cache   : is_ie||is_safari||is_chrome,
+            // FF/Opera preserve execution order with script tags automatically,
+            // so just add all scripts as fast as possible
+            order   : is_ff||is_opera,
+            // use XHR trick to preload local scripts
+            xhr     : bTRUE,
+            // allow duplicate scripts?
+            dupe    : bFALSE,
+            // preserve execution order of all loaded scripts (regardless of preloading)
+            preserve: bFALSE,
+            // base path to prepend to all non-absolute-path scripts
+            base    : "",
+            // which DOM object ("head" or "body") to append scripts to
+            which   : sHEAD
+        };
+
+    append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
+    append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
+
+    function canonicalScriptURI(src, base_path) {
+        if (typeof src !== sSTRING)
+            src = "";
+        if (typeof base_path !== sSTRING)
+            base_path = "";
+        var ret = (/^\w+\:\/\//.test(src) ? "" : base_path) + src;
+        return ((/^\w+\:\/\//.test(ret)
+            ? ""
+            : (ret.charAt(0) === "/" ? DOCROOT : PAGEROOT)) + ret);
+    }
+    function sameDomain(src) {
+        return (canonicalScriptURI(src).indexOf(DOCROOT) === 0);
+    }
+    // checks if a script uri has ever been loaded into this page's DOM
+    function scriptTagExists(uri) {
+        var i = 0, script;
+        while (script = docScripts[i++]) {
+            if (typeof script.src === sSTRING && uri === canonicalScriptURI(script.src)
+              && (!is_file && script.getAttribute("rel") !== sPRELOAD))
+                return bTRUE;
+        }
+        return bFALSE;
+    }
+    function engine(queueExec,opts) {
+        queueExec = !(!queueExec);
+        if (typeof opts === sUNDEF)
+            opts = global_defs;
+
+        var publicAPI,
+            ready             = bFALSE,
+            _use_preload      = !is_file && queueExec && opts.preload,
+            _use_cache        = !is_file && _use_preload && opts.cache,
+            _use_script_order = !is_file && _use_preload && opts.order,
+            _use_xhr_preload  = !is_file && _use_preload && opts.xhr,
+            _auto_wait        = !is_file && opts.preserve,
+            _which            = opts.which,
+            _base_path        = opts.base,
+            waitFunc          = fNOOP,
+            scripts_loading   = bFALSE,
+            first_pass        = !is_file && bTRUE,
+            scripts           = {},
+            exec              = [];
+
+        function isScriptLoaded(elem,scriptentry) {
+            if ((elem[sREADYSTATE] && elem[sREADYSTATE]!=="complete"
+              && elem[sREADYSTATE]!=="loaded") || scriptentry[sDONE])
+                return bFALSE;
+            elem.onload = elem.onreadystatechange = null; // prevent memory leak
+            return bTRUE;
+        }
+        function handleScriptLoad(elem,scriptentry,skipReadyCheck) {
+            // used to override ready check when script text was injected from
+            // XHR preload
+            skipReadyCheck = !is_file || !(!skipReadyCheck);
+            if (!skipReadyCheck && !(isScriptLoaded(elem,scriptentry))) return;
+            scriptentry[sDONE] = bTRUE;
+
+            for (var key in scripts) {
+                if (scripts.hasOwnProperty(key) && !(scripts[key][sDONE]))
+                    return;
+            }
+            ready = bTRUE;
+            if (ready)
+                waitFunc();
+        }
+        function loadTriggerExecute(scriptentry) {
+            if (typeof scriptentry[sLOADTRIGGER] === sFUNCTION) {
+                scriptentry[sLOADTRIGGER]();
+                scriptentry[sLOADTRIGGER] = null; // prevent memory leak
+            }
+        }
+        function handleScriptPreload(elem,scriptentry) {
+            if (!isScriptLoaded(elem,scriptentry)) return;
+            scriptentry[sPRELOADDONE] = bTRUE;
+            fSETTIMEOUT(function(){
+                // remove preload script node
+                append_to[scriptentry[sWHICH]][0].removeChild(elem);
+                loadTriggerExecute(scriptentry);
+            }, 0);
+        }
+        function handleXHRPreload(xhr, scriptentry) {
+            if (xhr[sREADYSTATE] === 0)
+                fCLEARINTERVAL(scriptentry[sXHRPOLL]);
+            if (xhr[sREADYSTATE] === 4) {
+                fCLEARINTERVAL(scriptentry[sXHRPOLL]);
+                scriptentry[sPRELOADDONE] = bTRUE;
+                fSETTIMEOUT(function(){
+                    loadTriggerExecute(scriptentry);
+                }, 0);
+            }
+        }
+        function createScriptTag(scriptentry, src, type, charset, rel, onload, scriptText) {
+            var f = function(){
+                // append_to object not yet ready
+                if (append_to[scriptentry[sWHICH]][0] === null) {
+                    fSETTIMEOUT(arguments.callee, 25);
                     return;
                 }
                 var scriptElem = oDOC.createElement(sSCRIPT),
@@ -2198,451 +2326,127 @@ if (location.protocol == "file:" && !(/a/.__proto__=='//' || /source/.test((/a/.
                         scriptElem.setAttribute(attr,val);
                     };
                 fSETATTRIBUTE("type", type);
+                if (!is_file)
+                    fSETATTRIBUTE("rel",  rel);
                 if (typeof charset === sSTRING)
                     fSETATTRIBUTE("charset", charset);
-                scriptElem.onload = scriptElem.onreadystatechange = function(){
-                    handleScriptLoad(scriptElem, scriptentry);
-                };
-                fSETATTRIBUTE("src", src);
-                append_to[scriptentry[sWHICH]][0].appendChild(scriptElem);
-            }
-            function loadScript(o) {
-                if (typeof o.allowDup === sUNDEF)
-                    o.allowDup = opts.dupe;
-                var scriptentry,
-                    src      = o.src,
-                    type     = o.type,
-                    charset  = o.charset,
-                    allowDup = o.allowDup,
-                    src_uri  = canonicalScriptURI(src,_base_path);
-                if (typeof type !== sSTRING)
-                    type = "text/javascript";
-                if (typeof charset !== sSTRING)
-                    charset = null;
-                allowDup = !(!allowDup);
-
-                if (!allowDup && 
-                    (
-                        (typeof all_scripts[src_uri] !== sUNDEF && all_scripts[src_uri] !== null) || 
-                        scriptTagExists(src_uri)
-                    )
-                ) {
-                    return;
+                // load script via 'src' attribute, set onload/onreadystatechange listeners
+                if (is_file || typeof onload === sFUNCTION) {
+                    scriptElem.onload = scriptElem.onreadystatechange = function(){
+                        if (is_file)
+                            handleScriptLoad(scriptElem, scriptentry);
+                        else
+                            onload(scriptElem,scriptentry);
+                    };
+                    fSETATTRIBUTE("src",src);
                 }
-                if (typeof scripts[src_uri] === sUNDEF)
-                    scripts[src_uri] = {};
-                scriptentry = scripts[src_uri];
-                if (typeof scriptentry[sWHICH] === sUNDEF)
-                    scriptentry[sWHICH] = _which;
-                scriptentry[sDONE]   = bFALSE;
-                scriptentry[sSRCURI] = src_uri;
-                scripts_loading      = bTRUE;
-                
+                append_to[scriptentry[sWHICH]][0].appendChild(scriptElem);
+                // script text already avaiable from XHR preload, so just inject it
+                if (!is_file && typeof scriptText === sSTRING) {
+                    scriptElem.text = scriptText;
+                    // manually call 'load' callback function, skipReadyCheck=true
+                    handleScriptLoad(scriptElem, scriptentry, bTRUE);
+                }
+            };
+            if (is_file)
+                f();
+            else
+                fSETTIMEOUT(f,0);
+        }
+        function loadScriptElem(scriptentry,src,type,charset) {
+            all_scripts[scriptentry[sSRCURI]] = bTRUE;
+            createScriptTag(scriptentry, src, type, charset, "", handleScriptLoad);
+        }
+        function loadScriptCache(scriptentry,src,type,charset) {
+            var args = arguments;
+            if (first_pass && typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload into cache
+                scriptentry[sPRELOADDONE] = bFALSE;
+                // "text/html" causes a fetch into cache, but no execution
+                createScriptTag(scriptentry, src, "text/html", charset,
+                    sPRELOAD, handleScriptPreload);
+            }
+            // preload still in progress, make sure trigger is set for execution later
+            else if (!first_pass && !scriptentry[sPRELOADDONE]) {
+                scriptentry[sLOADTRIGGER] = function(){
+                    loadScriptCache.apply(null,args);
+                };
+            }
+            // preload done, so reload (from cache, hopefully!) as regular script element
+            else if (!first_pass) {
+                loadScriptElem.apply(null,args);
+            }
+        }
+        function loadScriptXHR(scriptentry,src,type,charset) {
+            var args = arguments, xhr;
+            if (first_pass && typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload
+                scriptentry[sPRELOADDONE] = bFALSE;
+                xhr = scriptentry.xhr     = (oACTIVEX ? new oACTIVEX("Microsoft.XMLHTTP") : new global.XMLHttpRequest());
+                scriptentry[sXHRPOLL]     = fSETINTERVAL(function() {
+                    handleXHRPreload(xhr,scriptentry);
+                }, 13);
+                xhr.open("GET",src);
+                xhr.send("");
+            }
+            // preload XHR still in progress, make sure trigger is set for
+            // execution later
+            else if (!first_pass && !scriptentry[sPRELOADDONE]) {
+                scriptentry[sLOADTRIGGER] = function(){
+                    loadScriptXHR.apply(null,args);
+                };
+            }
+            else if (!first_pass) { // preload done, so "execute" script via injection
+                all_scripts[scriptentry[sSRCURI]] = bTRUE;
+                createScriptTag(scriptentry, src, type, charset, "", null,
+                    scriptentry.xhr.responseText);
+                scriptentry.xhr = null;
+            }
+        }
+        function loadScript(o) {
+            if (typeof o.allowDup === sUNDEF)
+                o.allowDup = opts.dupe;
+            var scriptentry,
+                src         = o.src,
+                type        = o.type,
+                charset     = o.charset,
+                allowDup    = o.allowDup,
+                src_uri     = canonicalScriptURI(src, _base_path),
+                same_domain = !is_file && sameDomain(src_uri);
+            if (typeof type !== sSTRING)
+                type = "text/javascript";
+            if (typeof charset !== sSTRING)
+                charset = null;
+            allowDup = !(!allowDup);
+
+            if (!allowDup &&
+                (
+                    (typeof all_scripts[src_uri] !== sUNDEF && all_scripts[src_uri] !== null) ||
+                    (is_file || first_pass && scripts[src_uri]) ||
+                    scriptTagExists(src_uri)
+                )
+            ) {
+                if (!is_file && typeof scripts[src_uri] !== sUNDEF && scripts[src_uri][sPRELOADDONE]
+                  && !scripts[src_uri][sDONE] && same_domain) {
+                    // this script was preloaded via XHR, but is a duplicate, and dupes are not allowed
+                    // mark the entry as done and check if chain group is done
+                    handleScriptLoad(null,scripts[src_uri],bTRUE);
+                }
+                return;
+            }
+            if (typeof scripts[src_uri] === sUNDEF)
+                scripts[src_uri] = {};
+            scriptentry = scripts[src_uri];
+            if (typeof scriptentry[sWHICH] === sUNDEF)
+                scriptentry[sWHICH] = _which;
+            scriptentry[sDONE]   = bFALSE;
+            scriptentry[sSRCURI] = src_uri;
+            scripts_loading      = bTRUE;
+
+            // only use xhr/cache preloading if not script-order loading
+            if (is_file) {
                 all_scripts[scriptentry[sSRCURI]] = bTRUE;
                 createScriptTag(scriptentry, src_uri, type, charset);
             }
-            function onlyQueue(execBody) {
-                exec.push(execBody);
-            }
-            function queueOrExecute(execBody) { // helper for publicAPI functions below
-                if (queueExec)
-                    onlyQueue(execBody);
-                else
-                    execBody();
-            }
-            function serializeArgs(args) {
-                var sargs = [],
-                    i     = 0,
-                    l     = args.length;
-                for (; i < l; i++) {
-                    if (fOBJTOSTRING.call(args[i]) === "[object Array]")
-                        sargs = sargs.concat(serializeArgs(args[i]));
-                    else
-                        sargs[sargs.length] = args[i];
-                }
-                return sargs;
-            }
-                    
-            publicAPI = {
-                script:function() {
-                    var args = serializeArgs(arguments),
-                        i    = 0,
-                        l    = args.length;
-                    for (; i < l; i++) {
-                        var arg = (typeof args[i] === sOBJECT)
-                            ? args[i]
-                            : {src: args[i]};
-                        loadScript(arg);
-                    }
-                    return publicAPI;
-                },
-                wait:function(func) {
-                    if (typeof func !== sFUNCTION)
-                        func = fNOOP;
-                    // On this current chain's waitFunc function, tack on call to trigger the queue for the *next* engine 
-                    // in the chain, which will be executed when the current chain finishes loading
-                    // 'bTRUE' tells the engine to be in queueing mode
-                    var e                = engine(bTRUE, opts),
-                        // store ref to e's trigger function for use by 'wfunc'
-                        triggerNextChain = e.trigger,
-                        wfunc = function(){
-                            try {
-                                func();
-                            } catch(err) {}
-                            triggerNextChain();
-                        };
-                    delete e.trigger; // remove the 'trigger' property from e's public API, since only used internally
-                    var fn = function(){
-                        if (scripts_loading && !ready)
-                            waitFunc = wfunc;
-                        else
-                            fSETTIMEOUT(wfunc,0);
-                    };
-                    
-                    if (queueExec && !scripts_loading)
-                        onlyQueue(fn)
-                    else
-                        queueOrExecute(fn);
-                    return e;
-                }
-            };
-            // alias "block" to "wait" -- "block" is now deprecated
-            publicAPI.block = publicAPI.wait;
-            if (queueExec) {
-                // if queueing, return a function that the previous chain's
-                // waitFunc function can use to trigger this engine's queue.
-                // NOTE: this trigger function is captured and removed from the public chain API before return
-                publicAPI.trigger = function() {
-                    var i = 0, fn;
-                    while (fn = exec[i++])
-                        fn();
-                    exec = []; 
-                }
-            }
-            return publicAPI;
-        }
-        function extendOpts(opts) {
-            var k,
-                newOpts     = {},
-                optMappings = {"AppendTo":"which","AllowDuplicates":"dupe",
-                    "BasePath":"base"};
-            newOpts.order = !(!global_defs.order);
-            for (k in optMappings) {
-                if (typeof global_defs[optMappings[k]] !== sUNDEF) {
-                    newOpts[optMappings[k]] = (typeof opts[k] !== sUNDEF)
-                        ? opts[k]
-                        : global_defs[optMappings[k]];
-                }
-            }
-            newOpts.preserve = !(!newOpts.preserve);
-            newOpts.dupe     = !(!newOpts.dupe);
-            newOpts.base     = (typeof newOpts.base === sSTRING) ? newOpts.base : "";
-            newOpts.which    = (newOpts.which === sHEAD || newOpts.which === sBODY) 
-                ? newOpts.which
-                : sHEAD;
-            return newOpts;
-        }
-        
-        apf.$loader = {
-            // intentionally does not return an "engine" instance -- must call
-            // as stand-alone function call on $fLAB
-            setGlobalDefaults:function(gdefs) {
-                global_defs = extendOpts(gdefs);
-            },
-            // set options per chain
-            setOptions:function(opts){
-                return engine(bFALSE,extendOpts(opts));
-            },
-            // will load one or more scripts
-            script:function(){
-                return engine().script.apply(null,arguments);
-            },
-            // will ensure that the chain's previous scripts are executed before
-            // sexecution of scripts in subsequent chain links
-            wait:function(){
-                return engine().wait.apply(null,arguments);
-            }
-        };
-        // alias "block" to "wait" -- "block" is now deprecated
-        apf.$loader.block = apf.$loader.wait;
-    })(window);
-}
-else {
-    (function(global){
-        // constants used for compression optimization
-        var sUNDEF                = "undefined",
-            sSTRING               = "string",
-            sOBJECT               = "object",
-            sHEAD                 = "head",
-            sBODY                 = "body",
-            sFUNCTION             = "function",
-            sSCRIPT               = "script",
-            sREADYSTATE           = "readyState",
-            sXHRPOLL              = "xhrpoll",
-            sPRELOADDONE          = "preloaddone",
-            sLOADTRIGGER          = "loadtrigger",
-            sSRCURI               = "srcuri",
-            sPRELOAD              = "preload",
-            sDONE                 = "done",
-            sWHICH                = "which",
-            bTRUE                 = true,
-            bFALSE                = false,
-            oDOC                  = global.document,
-            oDOCLOC               = oDOC.location,
-            oACTIVEX              = global.ActiveXObject,
-            fSETTIMEOUT           = global.setTimeout,
-            fSETINTERVAL          = global.setInterval,
-            fCLEARINTERVAL        = global.clearInterval,
-            fGETELEMENTSBYTAGNAME = function(tn){return oDOC.getElementsByTagName(tn);},
-            fOBJTOSTRING          = Object.prototype.toString,
-            fNOOP                 = function(){},
-            append_to             = {},
-            all_scripts           = {},
-            // these ROOTs do not support file:/// usage, only http:// type usage
-            PAGEROOT              = /^[^?#]*\//.exec(oDOCLOC.href)[0],
-            DOCROOT               = /^\w+\:\/\/\/?[^\/]+/.exec(PAGEROOT)[0],
-            docScripts            = fGETELEMENTSBYTAGNAME(sSCRIPT),
-            // feature detection based on Andrea Giammarchi's solution:
-            // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-            is_ie                 = !+"\v1",
-            // feature detections from
-            // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
-            is_safari             = /a/.__proto__ == "//",
-            is_chrome             = /source/.test((/a/.toString + "")),
-            is_opera              = /^function \(/.test([].sort),
-            is_ff                 = /a/[-1] == "a",
-            global_defs           = {
-                // use various tricks for "preloading" scripts
-                preload : bTRUE,
-                // IE/Safari/Chrome can use the "cache" trick to preload
-                cache   : is_ie||is_safari||is_chrome,
-                // FF/Opera preserve execution order with script tags automatically,
-                // so just add all scripts as fast as possible
-                order   : is_ff||is_opera,
-                // use XHR trick to preload local scripts
-                xhr     : bTRUE,
-                // allow duplicate scripts?
-                dupe    : bFALSE,
-                // preserve execution order of all loaded scripts (regardless of preloading)
-                preserve: bFALSE,
-                // base path to prepend to all non-absolute-path scripts
-                base    : "",
-                // which DOM object ("head" or "body") to append scripts to
-                which   : sHEAD
-            };
-
-        append_to[sHEAD] = fGETELEMENTSBYTAGNAME(sHEAD);
-        append_to[sBODY] = fGETELEMENTSBYTAGNAME(sBODY);
-        
-        function canonicalScriptURI(src,base_path) {
-            if (typeof src !== sSTRING)
-                src = "";
-            if (typeof base_path !== sSTRING)
-                base_path = "";
-            var ret = (/^\w+\:\/\//.test(src) ? "" : base_path) + src;
-            return ((/^\w+\:\/\//.test(ret) 
-                ? ""
-                : (ret.charAt(0) === "/" ? DOCROOT : PAGEROOT)) + ret);
-        }
-        function sameDomain(src) {
-            return (canonicalScriptURI(src).indexOf(DOCROOT) === 0);
-        }
-        // checks if a script uri has ever been loaded into this page's DOM
-        function scriptTagExists(uri) {
-            var i = 0, script;
-            while (script = docScripts[i++]) {
-                if (typeof script.src === sSTRING && uri === canonicalScriptURI(script.src) 
-                  && script.getAttribute("rel") !== sPRELOAD)
-                    return bTRUE;
-            }
-            return bFALSE;
-        }
-        function engine(queueExec,opts) {
-            queueExec = !(!queueExec);
-            if (typeof opts === sUNDEF)
-                opts = global_defs;
-            
-            var publicAPI,
-                ready             = bFALSE,
-                _use_preload      = queueExec && opts.preload,
-                _use_cache        = _use_preload && opts.cache,
-                _use_script_order = _use_preload && opts.order,
-                _use_xhr_preload  = _use_preload && opts.xhr,
-                _auto_wait        = opts.preserve,
-                _which            = opts.which,
-                _base_path        = opts.base,
-                waitFunc          = fNOOP,
-                scripts_loading   = bFALSE,
-                first_pass        = bTRUE,
-                scripts           = {},
-                exec              = [];
-            
-            function isScriptLoaded(elem,scriptentry) {
-                if ((elem[sREADYSTATE] && elem[sREADYSTATE]!=="complete" 
-                  && elem[sREADYSTATE]!=="loaded") || scriptentry[sDONE])
-                    return bFALSE;
-                elem.onload = elem.onreadystatechange = null; // prevent memory leak
-                return bTRUE;
-            }
-            function handleScriptLoad(elem,scriptentry,skipReadyCheck) {
-                // used to override ready check when script text was injected from
-                // XHR preload
-                skipReadyCheck = !(!skipReadyCheck);
-                if (!skipReadyCheck && !(isScriptLoaded(elem,scriptentry))) return;
-                scriptentry[sDONE] = bTRUE;
-    
-                for (var key in scripts)
-                    if (scripts.hasOwnProperty(key) && !(scripts[key][sDONE])) return;
-                ready = bTRUE;
-                if (ready)
-                    waitFunc();
-            }
-            function loadTriggerExecute(scriptentry) {
-                if (typeof scriptentry[sLOADTRIGGER] === sFUNCTION) {
-                    scriptentry[sLOADTRIGGER]();
-                    scriptentry[sLOADTRIGGER] = null; // prevent memory leak
-                }
-            }
-            function handleScriptPreload(elem,scriptentry) {
-                if (!isScriptLoaded(elem,scriptentry)) return;
-                scriptentry[sPRELOADDONE] = bTRUE;
-                fSETTIMEOUT(function(){
-                    // remove preload script node
-                    append_to[scriptentry[sWHICH]][0].removeChild(elem);
-                    loadTriggerExecute(scriptentry);
-                }, 0);
-            }
-            function handleXHRPreload(xhr,scriptentry) {
-                if (xhr[sREADYSTATE] === 0)
-                    fCLEARINTERVAL(scriptentry[sXHRPOLL]);
-                if (xhr[sREADYSTATE] === 4) {
-                    fCLEARINTERVAL(scriptentry[sXHRPOLL]);
-                    scriptentry[sPRELOADDONE] = bTRUE;
-                    fSETTIMEOUT(function(){
-                        loadTriggerExecute(scriptentry);
-                    }, 0);
-                }
-            }
-            function createScriptTag(scriptentry,src,type,charset,rel,onload,scriptText) {
-                fSETTIMEOUT(function(){
-                    // append_to object not yet ready
-                    if (append_to[scriptentry[sWHICH]][0] === null) {
-                        fSETTIMEOUT(arguments.callee, 25);
-                        return;
-                    }
-                    var scriptElem = oDOC.createElement(sSCRIPT),
-                        fSETATTRIBUTE = function(attr, val){
-                            scriptElem.setAttribute(attr,val);
-                        };
-                    fSETATTRIBUTE("type", type);
-                    fSETATTRIBUTE("rel",  rel);
-                    if (typeof charset === sSTRING)
-                        fSETATTRIBUTE("charset",charset);
-                    // load script via 'src' attribute, set onload/onreadystatechange listeners
-                    if (typeof onload === sFUNCTION) {
-                        scriptElem.onload = scriptElem.onreadystatechange = function(){
-                            onload(scriptElem,scriptentry);
-                        };
-                        fSETATTRIBUTE("src",src);
-                    }
-                    append_to[scriptentry[sWHICH]][0].appendChild(scriptElem);
-                    // script text already avaiable from XHR preload, so just inject it
-                    if (typeof scriptText === sSTRING) {
-                        scriptElem.text = scriptText;
-                        // manually call 'load' callback function, skipReadyCheck=true
-                        handleScriptLoad(scriptElem, scriptentry, bTRUE);
-                    }
-                },0);
-            }
-            function loadScriptElem(scriptentry,src,type,charset) {
-                all_scripts[scriptentry[sSRCURI]] = bTRUE;
-                createScriptTag(scriptentry, src, type, charset, "", handleScriptLoad);
-            }
-            function loadScriptCache(scriptentry,src,type,charset) {
-                var args = arguments;
-                if (first_pass && typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload into cache
-                    scriptentry[sPRELOADDONE] = bFALSE;
-                    // "text/html" causes a fetch into cache, but no execution
-                    createScriptTag(scriptentry, src, "text/html", charset,
-                        sPRELOAD, handleScriptPreload);
-                }
-                // preload still in progress, make sure trigger is set for execution later
-                else if (!first_pass && !scriptentry[sPRELOADDONE]) {
-                    scriptentry[sLOADTRIGGER] = function(){
-                        loadScriptCache.apply(null,args);
-                    };
-                }
-                // preload done, so reload (from cache, hopefully!) as regular script element
-                else if (!first_pass) {
-                    loadScriptElem.apply(null,args);
-                }
-            }
-            function loadScriptXHR(scriptentry,src,type,charset) {
-                var args = arguments, xhr;
-                if (first_pass && typeof scriptentry[sPRELOADDONE] === sUNDEF) { // need to preload
-                    scriptentry[sPRELOADDONE] = bFALSE;
-                    xhr = scriptentry.xhr     = (oACTIVEX ? new oACTIVEX("Microsoft.XMLHTTP") : new global.XMLHttpRequest());
-                    scriptentry[sXHRPOLL]     = fSETINTERVAL(function() {
-                        handleXHRPreload(xhr,scriptentry);
-                    }, 13);
-                    xhr.open("GET",src);
-                    xhr.send("");
-                }
-                // preload XHR still in progress, make sure trigger is set for
-                // execution later
-                else if (!first_pass && !scriptentry[sPRELOADDONE]) {
-                    scriptentry[sLOADTRIGGER] = function(){
-                        loadScriptXHR.apply(null,args);
-                    };
-                }
-                else if (!first_pass) { // preload done, so "execute" script via injection
-                    all_scripts[scriptentry[sSRCURI]] = bTRUE;
-                    createScriptTag(scriptentry, src, type, charset, "", null,
-                        scriptentry.xhr.responseText);
-                    scriptentry.xhr = null;
-                }
-            }
-            function loadScript(o) {
-                if (typeof o.allowDup === sUNDEF)
-                    o.allowDup = opts.dupe;
-                var scriptentry,
-                    src         = o.src,
-                    type        = o.type,
-                    charset     = o.charset,
-                    allowDup    = o.allowDup,
-                    src_uri     = canonicalScriptURI(src,_base_path),
-                    same_domain = sameDomain(src_uri);
-                if (typeof type !== sSTRING)
-                    type = "text/javascript";
-                if (typeof charset !== sSTRING)
-                    charset = null;
-                allowDup = !(!allowDup);
-                            
-                if (!allowDup && 
-                    (
-                        (typeof all_scripts[src_uri] !== sUNDEF && all_scripts[src_uri] !== null) || 
-                        (first_pass && scripts[src_uri]) ||
-                        scriptTagExists(src_uri)
-                    )
-                ) {
-                    if (typeof scripts[src_uri] !== sUNDEF && scripts[src_uri][sPRELOADDONE]
-                      && !scripts[src_uri][sDONE] && same_domain) {
-                        // this script was preloaded via XHR, but is a duplicate, and dupes are not allowed
-                        // mark the entry as done and check if chain group is done
-                        handleScriptLoad(null,scripts[src_uri],bTRUE);
-                    }
-                    return;
-                }
-                if (typeof scripts[src_uri] === sUNDEF)
-                    scripts[src_uri] = {};
-                scriptentry = scripts[src_uri];
-                if (typeof scriptentry[sWHICH] === sUNDEF)
-                    scriptentry[sWHICH] = _which;
-                scriptentry[sDONE]   = bFALSE;
-                scriptentry[sSRCURI] = src_uri;
-                scripts_loading      = bTRUE;
-                
-                // only use xhr/cache preloading if not script-order loading
+            else {
                 if (_use_preload && !_use_script_order) {
                     if (_use_xhr_preload && same_domain)
                         loadScriptXHR(scriptentry, src_uri, type, charset);
@@ -2653,161 +2457,183 @@ else {
                     loadScriptElem(scriptentry, src_uri, type, charset);
                 }
             }
-            function onlyQueue(execBody) {
-                exec.push(execBody);
+        }
+        function onlyQueue(execBody) {
+            exec.push(execBody);
+        }
+        // helper for publicAPI functions below
+        function queueAndExecute(execBody) {
+            if (queueExec && !_use_script_order)
+                onlyQueue(execBody);
+            // if engine is either not queueing, or is queuing in preload mode,
+            // go ahead and execute
+            if (!queueExec || _use_preload)
+                execBody();
+        }
+        function queueOrExecute(execBody) { // helper for publicAPI functions below
+            if (queueExec)
+                onlyQueue(execBody);
+            else
+                execBody();
+        }
+        function serializeArgs(args) {
+            var sargs = [],
+                i     = 0,
+                l     = args.length;
+            for (; i < l; i++) {
+                if (fOBJTOSTRING.call(args[i]) === "[object Array]")
+                    sargs = sargs.concat(serializeArgs(args[i]));
+                else
+                    sargs[sargs.length] = args[i];
             }
-            // helper for publicAPI functions below
-            function queueAndExecute(execBody) {
-                if (queueExec && !_use_script_order)
-                    onlyQueue(execBody);
-                // if engine is either not queueing, or is queuing in preload mode,
-                // go ahead and execute
-                if (!queueExec || _use_preload)
-                    execBody();
-            }
-            function serializeArgs(args) {
-                var sargs = [],
-                    i     = 0,
-                    l     = args.length;
-                for (; i < l; i++) {
-                    if (fOBJTOSTRING.call(args[i]) === "[object Array]")
-                        sargs = sargs.concat(serializeArgs(args[i]));
-                    else
-                        sargs[sargs.length] = args[i];
-                }
-                return sargs;
-            }
-                    
-            publicAPI = {
-                script:function() {
-                    var args       = serializeArgs(arguments),
-                        use_engine = publicAPI,
-                        i          = 0,
-                        l          = args.length;
-                    if (_auto_wait) {
-                        for (; i < l; i++) {
-                            if (i === 0) {
-                                queueAndExecute(function(){
-                                    var arg = (typeof args[0] === sOBJECT)
-                                        ? args[0]
-                                        : {src: args[0]};
-                                    loadScript(arg);
-                                });
-                            }
-                            else
-                                use_engine = use_engine.script(args[i]);
-                            use_engine = use_engine.wait();
-                        }
+            return sargs;
+        }
+
+        publicAPI = {
+            script:function() {
+                var args       = serializeArgs(arguments),
+                    use_engine = publicAPI,
+                    i          = 0,
+                    l          = args.length;
+                if (is_file) {
+                    for (; i < l; i++) {
+                        var arg = (typeof args[i] === sOBJECT)
+                            ? args[i]
+                            : {src: args[i]};
+                        loadScript(arg);
                     }
-                    else {
-                        queueAndExecute(function(){
-                            for (; i < l; i++) {
-                                var arg = (typeof args[i] === sOBJECT) 
-                                    ? args[i]
-                                    : {src: args[i]};
+                    return publicAPI;
+                }
+                if (_auto_wait) {
+                    for (; i < l; i++) {
+                        if (i === 0) {
+                            queueAndExecute(function(){
+                                var arg = (typeof args[0] === sOBJECT)
+                                    ? args[0]
+                                    : {src: args[0]};
                                 loadScript(arg);
-                            }
-                        });
-                    }
-                    return use_engine;
-                },
-                wait:function(func) {
-                    first_pass = false;
-                    if (typeof func !== sFUNCTION)
-                        func = fNOOP;
-                    // On this current chain's waitFunc function, tack on call
-                    // to trigger the queue for the *next* engine in the chain,
-                    // which will be executed when the current chain finishes loading
-                    var e                = engine(bTRUE,opts), // 'bTRUE' tells the engine to be in queueing mode
-                        triggerNextChain = e.trigger, // store ref to e's trigger function for use by 'wfunc'
-                        wfunc            = function(){
-                            try {
-                                func();
-                            }
-                            catch(err) {}
-                            triggerNextChain();
-                        };
-                    delete e.trigger; // remove the 'trigger' property from e's public API, since only used internally
-                    var fn = function(){
-                        if (scripts_loading && !ready)
-                            waitFunc = wfunc;
+                            });
+                        }
                         else
-                            fSETTIMEOUT(wfunc,0);
+                            use_engine = use_engine.script(args[i]);
+                        use_engine = use_engine.wait();
+                    }
+                }
+                else {
+                    queueAndExecute(function(){
+                        for (; i < l; i++) {
+                            var arg = (typeof args[i] === sOBJECT)
+                                ? args[i]
+                                : {src: args[i]};
+                            loadScript(arg);
+                        }
+                    });
+                }
+                return use_engine;
+            },
+            wait:function(func) {
+                first_pass = false;
+                if (typeof func !== sFUNCTION)
+                    func = fNOOP;
+                // On this current chain's waitFunc function, tack on call
+                // to trigger the queue for the *next* engine in the chain,
+                // which will be executed when the current chain finishes loading
+                // 'bTRUE' tells the engine to be in queueing mode
+                var e                = engine(bTRUE,opts),
+                    // store ref to e's trigger function for use by 'wfunc'
+                    triggerNextChain = e.trigger,
+                    wfunc            = function(){
+                        try {
+                            func();
+                        }
+                        catch(err) {}
+                        triggerNextChain();
                     };
-                    
-                    if (queueExec && !scripts_loading)
-                        onlyQueue(fn)
+                delete e.trigger; // remove the 'trigger' property from e's public API, since only used internally
+                var fn = function(){
+                    if (scripts_loading && !ready)
+                        waitFunc = wfunc;
                     else
-                        queueAndExecute(fn);
-                    return e;
-                }
-            };
-            publicAPI.block = publicAPI.wait; // alias "block" to "wait" -- "block" is now deprecated
-            if (queueExec) {
-                // if queueing, return a function that the previous chain's
-                // waitFunc function can use to trigger this  engine's queue.
-                // NOTE: this trigger function is captured and removed from the
-                // public chain API before return
-                publicAPI.trigger = function() {
-                    var i = 0, fn;
-                    while (fn = exec[i++])
-                        fn();
-                    exec = []; 
-                }
-            }
-            return publicAPI;
-        }
-        function extendOpts(opts) {
-            var k,
-                newOpts     = {},
-                optMappings = {"UseCachePreload":"cache","UseLocalXHR":"xhr",
-                    "UsePreloading":"preload","AlwaysPreserveOrder":"preserve",
-                    "AppendTo":"which","AllowDuplicates":"dupe","BasePath":"base"};
-            newOpts.order = !(!global_defs.order);
-            for (k in optMappings) {
-                if (typeof global_defs[optMappings[k]] !== sUNDEF) {
-                    newOpts[optMappings[k]] = (typeof opts[k] !== sUNDEF)
-                        ? opts[k]
-                        : global_defs[optMappings[k]];
-                }
-            }
-            newOpts.preserve = !(!newOpts.preserve);
-            newOpts.cache    = !(!newOpts.cache);
-            newOpts.xhr      = !(!newOpts.xhr);
-            newOpts.preload  = !(!newOpts.preload);
-            newOpts.dupe     = !(!newOpts.dupe);
-            newOpts.base     = (typeof newOpts.base === sSTRING) ? newOpts.base : "";
-            if (!newOpts.preload)
-                newOpts.cache = newOpts.order = newOpts.xhr = bFALSE;
-            newOpts.which = (newOpts.which === sHEAD || newOpts.which === sBODY) 
-                ? newOpts.which
-                : sHEAD;
-            return newOpts;
-        }
-        
-        apf.$loader = {
-            // intentionally does not return an "engine" instance -- must call
-            // as stand-alone function call on $LAB
-            setGlobalDefaults:function(gdefs) {
-                global_defs = extendOpts(gdefs);
-            },
-            setOptions:function(opts){ // set options per chain
-                return engine(bFALSE, extendOpts(opts));
-            },
-            script:function(){ // will load one or more scripts
-                return engine().script.apply(null, arguments);
-            },
-            // will ensure that the chain's previous scripts are executed before
-            // execution of scripts in subsequent chain links
-            wait:function(){
-                return engine().wait.apply(null, arguments);
+                        fSETTIMEOUT(wfunc,0);
+                };
+
+                if (queueExec && !scripts_loading)
+                    onlyQueue(fn)
+                else if (is_file)
+                    queueOrExecute(fn);
+                else
+                    queueAndExecute(fn);
+                return e;
             }
         };
-        apf.$loader.block = apf.$loader.wait; // alias "block" to "wait" -- "block" is now deprecated
-    })(window);
-}
+        // alias "block" to "wait" -- "block" is now deprecated
+        publicAPI.block = publicAPI.wait;
+        if (queueExec) {
+            // if queueing, return a function that the previous chain's
+            // waitFunc function can use to trigger this  engine's queue.
+            // NOTE: this trigger function is captured and removed from the
+            // public chain API before return
+            publicAPI.trigger = function() {
+                var i = 0, fn;
+                while (fn = exec[i++])
+                    fn();
+                exec = [];
+            }
+        }
+        return publicAPI;
+    }
+    function extendOpts(opts) {
+        var k,
+            newOpts     = {},
+            optMappings = {"UseCachePreload":"cache","UseLocalXHR":"xhr",
+                "UsePreloading":"preload","AlwaysPreserveOrder":"preserve",
+                "AppendTo":"which","AllowDuplicates":"dupe","BasePath":"base"};
+        newOpts.order = !(!global_defs.order);
+        for (k in optMappings) {
+            if (typeof global_defs[optMappings[k]] !== sUNDEF) {
+                newOpts[optMappings[k]] = (typeof opts[k] !== sUNDEF)
+                    ? opts[k]
+                    : global_defs[optMappings[k]];
+            }
+        }
+        newOpts.preserve = !(!newOpts.preserve);
+        newOpts.cache    = !(!newOpts.cache);
+        newOpts.xhr      = !(!newOpts.xhr);
+        newOpts.preload  = !(!newOpts.preload);
+        newOpts.dupe     = !(!newOpts.dupe);
+        newOpts.base     = (typeof newOpts.base === sSTRING) ? newOpts.base : "";
+        if (!newOpts.preload)
+            newOpts.cache = newOpts.order = newOpts.xhr = bFALSE;
+        newOpts.which = (newOpts.which === sHEAD || newOpts.which === sBODY)
+            ? newOpts.which
+            : sHEAD;
+        return newOpts;
+    }
+
+    apf.$loader = {
+        // intentionally does not return an "engine" instance -- must call
+        // as stand-alone function call on $LAB
+        setGlobalDefaults:function(gdefs) {
+            global_defs = extendOpts(gdefs);
+        },
+        // set options per chain
+        setOptions:function(opts){
+            return engine(bFALSE, extendOpts(opts));
+        },
+        // will load one or more scripts
+        script:function(){
+            return engine().script.apply(null, arguments);
+        },
+        // will ensure that the chain's previous scripts are executed before
+        // execution of scripts in subsequent chain links
+        wait:function(){
+            return engine().wait.apply(null, arguments);
+        }
+    };
+    // alias "block" to "wait" -- "block" is now deprecated
+    apf.$loader.block = apf.$loader.wait;
+})(this);
 
 apf.$loader.script(apf.basePath + "loader.js");
-//apf.include(apf.basePath + 'loader.js');
 
 //#endif
