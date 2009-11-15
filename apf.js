@@ -22,7 +22,7 @@
 /**
  * Ajax.org Platform
  *
- * @author    Ruben Daniels ruben@javeline.com
+ * @author    Ruben Daniels (ruben AT javeline DOT com)
  * @version   3.0
  * @url       http://www.ajax.org
  *
