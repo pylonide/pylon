@@ -2150,7 +2150,7 @@ apf.Init.run("apf");
                 else
                     break;
             }
-            apf.basePath = l.join("/") + "/" + s.join("/");
+            apf.basePath = s2.join("/") + "/" + s.join("/");
         }
 
         if (!apf.basePath)
