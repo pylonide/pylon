@@ -189,6 +189,8 @@ apf.accordion = function(struct, tagName){
         "easeout" : apf.tween.EASEOUT,
         "none"    : "none"
     }
+    
+    this.lastOpened = [];
 };
 
 (function() {
