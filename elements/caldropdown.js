@@ -21,10 +21,9 @@
 
 // #ifdef __AMLCALDROPDOWN || __INC_ALL
 /**
- * Element displaying a list of day numbers in a grid, ordered by week. It
- * allows the user to choose the month and year for which to display the days.
- * Calendar returns a date in chosen date format. Minimal size of calendar is
- * 150px.
+ * Element displaying a calendar, ordered by week. It allows the user to choose 
+ * the month and year for which to display the days. Calendar returns a date 
+ * in chosen date format. Minimal size of calendar is 150px.
  * 
  * Remarks:
  * The language variables possible to use of this component:
@@ -45,15 +44,13 @@
  * @version     %I%, %G%
  * @since       1.0
  * 
- * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  * 
- * @attribute {String}   output-format    the format of the date value. See {@link term.dateformat more about the date format}.
- * @attribute {String}   caption-format   the format of the displayed date. Default yyyy-mm-dd. See {@link term.dateformat more about the date format}. 
+ * @attribute {String}   output-format    the format of the returned date; See {@link term.dateformat more about the date format}.
+ * @attribute {String}   caption-format   the format of the displayed date. Default is yyyy-mm-dd. See {@link term.dateformat more about the date format}. 
  * @attribute {String}   default          the default date set when the calendar is opened.
  *     Possible values:
  *     today   calendar is set on today's date
@@ -67,23 +64,19 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- * <a:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06"></a:caldropdown>
+ * <a:caldropdown top="200" left="400" output-format="yyyy-mm-dd" value="2008-12-06" />
  * </code>
- * 
+
  * Example:
  * Sets the date based on data loaded into this component.
  * <code>
- * <a:caldropdown>
- *     <a:bindings>
- *         <a:value select="@date" />
- *     </a:bindings>
- * </a:caldropdown>
- * </code>
- * 
- * Example:
- * A shorter way to write this is:
- * <code>
- * <a:caldropdown ref="@date" />
+ * <a:model id="mdlCalDD">
+ *      <data date="2009-11-25" />
+ * </a:model>
+ * <a:caldropdown 
+ *   output-format = "yyyy-mm-dd" 
+ *   model         = "mdlCalDD" 
+ *   value         = "[@date]" />
  * </code>
  */
 
@@ -363,7 +356,7 @@ apf.caldropdown = function(struct, tagName){
 
     /**
      * Toggles the visibility of the container with the calendar. It opens
-     * or closes it using a slide effect.
+     * or closes container using a slide effect.
      */
     this.slideToggle = function(e) {
         if (!e) e = event;
@@ -596,9 +589,8 @@ apf.caldropdown = function(struct, tagName){
             d_paddingTop = Math.floor(squareSize / 4 - 8) > 0
                 ? Math.floor(squareSize / 4 - 8)
                 : 0,
-            d_fontSize   = _width  <= 220 ? "9px" : "11px",
+            d_fontSize   = _width < 150 ? "6px" : (_width <= 220 ? "9px" : "11px"),
             d_width      = (squareSize * 8 + 32);
-
 
         this.oDow.style.width = d_width + "px";
 
@@ -692,8 +684,7 @@ apf.caldropdown = function(struct, tagName){
     };
 
     /**
-     * Change choosen date with selected and highlight its cell on calendar
-     * component
+     * Selects date and highlights its cell in calendar component
      *
      * @param {Number}   nr     day number
      * @param {String}   type   class name of html representation of selected cell
@@ -721,22 +712,22 @@ apf.caldropdown = function(struct, tagName){
     };
 
     /**
-     * Change displayed year to next
+     * Change displayed year to next one
      */
     this.nextYear = function() {
         this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear + 1);
     };
 
     /**
-     * Change displayed year to previous
+     * Change displayed year to previous one
      */
     this.prevYear = function() {
         this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear - 1);
     };
 
     /**
-     * Change displayed month to next. If actual month is December, function
-     * change current displayed year to next
+     * Change displayed month to next one. If actual month is December, function
+     * change current displayed year to next one
      */
     this.nextMonth = function() {
         var newMonth, newYear,
@@ -754,8 +745,8 @@ apf.caldropdown = function(struct, tagName){
     };
 
     /**
-     * Change displayed month to previous. If actual month is January, function
-     * change current displayed year to previous
+     * Change displayed month to previous one. If actual month is January, 
+     * function change current displayed year to previous one
      */
     this.prevMonth = function() {
         var newMonth, newYear,
@@ -773,10 +764,9 @@ apf.caldropdown = function(struct, tagName){
     };
 
     /**
-     * Select today's date on calendar component
+     * Select today's date in calendar component
      */
     this.today = function() {
-        //this.setProperty("value", new Date().format(this.outputFormat));
         this.change(new Date().format(this.outputFormat));
     };
 
