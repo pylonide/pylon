@@ -222,7 +222,7 @@ apf = {
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write("Fatal error: " + msg + "\nStacktrace:\n" + apf.stacktrace(), "error", subtype, data);
-            out.write("Execution stopped");
+            o3.print("Execution stopped");
             //#endif
             throw new Error();
             //this.write(apf.stacktrace());
