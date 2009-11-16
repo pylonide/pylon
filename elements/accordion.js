@@ -29,16 +29,16 @@
  * 
  * @attribute {String} animtype   animation effect for slide in and slide out, default is "normal normal"
  * Possible values:
- *     normal    
- *     easein    
- *     easeout   
+ *     normal    Linear tweening method
+ *     easein    Ease-in tweening method
+ *     easeout   Ease-out tweening method
  *     none      animation is disabled
  *        
  * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
  * 
- * @attribute {Boolean} multiexpand   allows collapsing one or more bars, default is true
+ * @attribute {Boolean} multiexpand   allows expanding one or more bars, default is true
  * Possible values:
- *     true    one or more planels can be expanded at a time
+ *     true    one or more bars can be expanded at a time
  *     false   only one bar can be expanded at a time
  * 
  * @attribute {String} expand   sets event which activate bar, default is click
@@ -46,10 +46,10 @@
  *     click   bar will be expanded when user click on it
  *     hover   bar will be expanded when user hover over it with mouse
  * 
- * @attribute {Boolean} startexpanded   collapses all bars on load, default is false
+ * @attribute {Boolean} startexpanded   expands all bars on load, default is false
  * Possible values:
- *     true    collapses all bars
- *     false   only choosen bars will be expanded
+ *     true    expands all bars
+ *     false   only chosen bars will be expanded
  * @see bar expanded="true" 
  * 
  * @inherits apf.Presentation
@@ -67,8 +67,7 @@
  *      multiexpand     = "true"
  *      expand          = "click"
  *      startexpanded   = "false"
- *      skin            = "accordion_apf_hor"
- *      >
+ *      skin            = "accordion_apf_hor">
  *     <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
  *         <b>Discography</b>
  *         <ul>
@@ -105,7 +104,7 @@
  * 
  * Example:
  * Vertical accordion component with 2 bars. Only one bar can be expanded
- * at a time. Both bars conatins JPF components.
+ * at a time. Both bars conatins APF components.
  * 
  * <code>
  * <a:accordion
@@ -173,11 +172,7 @@ apf.accordion = function(struct, tagName){
      * };
      */
     this.bars = {};
-    
-    /**
-     * Id of title from last opened bar
-     */
-    this.lastOpened = [];
+
     this.hoverTimer = null;
     
     /**
@@ -187,6 +182,13 @@ apf.accordion = function(struct, tagName){
     this.startExpanded = 0;
     
     this.$focussable     = false;
+    
+    this.animType = {
+        "normal"  : apf.tween.NORMAL,
+        "easein"  : apf.tween.EASEIN,
+        "easeout" : apf.tween.EASEOUT,
+        "none"    : "none"
+    }
 };
 
 (function() {
@@ -226,9 +228,9 @@ apf.accordion = function(struct, tagName){
         value = value.split(" ");
         
         if (value[0])
-            this.$animtype1 = animType[value[0]];
+            this.$animtype1 = this.animType[value[0]];
         if (value[1])
-            this.$animtype2 = animType[value[1]];
+            this.$animtype2 = this.animType[value[1]];
     };
 
     this.$propHandlers["animdelay"] = function(value) {
@@ -236,13 +238,10 @@ apf.accordion = function(struct, tagName){
     };
     
     /**
-     * Toggles the visibility of the container with content. It opens
-     * or closes it using a slide effect. 
+     * Toggles the visibility of the container with content. Opens
+     * or closes container using a slide effect. 
      * 
-     * @param {Mixed} e   data which allow on identifiaction of title bar
-     * Possible values:
-     *     {Object} onmousedown or onmouseover event
-     *     {String} unique name of title bar
+     * @param {Mixed} id   id of title
      */
     this.slideToggle = function(id) {
         if (!this.bars[id])
@@ -257,13 +256,9 @@ apf.accordion = function(struct, tagName){
     /**
      * Shows the container with content using a slide effect.
      * 
-     * @param {Mixed} e   data which allow on identifiaction of title bar
-     * Possible values:
-     *     {Object} onmousedown or onmouseover event
-     *     {String} unique name of title bar
+     * @param {Mixed} id   id of title
      */
     this.slideDown = function(id) {
-        apf.console.info("down..."+id)
         var id2 = null;
 
         if (!this.bars[id]) {
@@ -397,10 +392,7 @@ apf.accordion = function(struct, tagName){
     /**
      * Hides the container with content using a slide effect.
      * 
-     * @param {Mixed} e   data which allow on identifiaction of title bar
-     * Possible values:
-     *     {Object} onmousedown or onmouseover event
-     *     {String} unique name of title bar
+     * @param {Mixed} id   id of title
      */
     this.slideUp = function(id) {
         if (!this.bars[id]) {
@@ -423,7 +415,9 @@ apf.accordion = function(struct, tagName){
             var _self = this;
             apf.tween.single(bar.htmlBody, {
                 steps    : this.$animStep[this.$animtype2],
-                type     : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
+                type     : this.$dir == "vertical" 
+                               ? "scrollheight" 
+                               : "scrollwidth",
                 from     : this.$dir == "vertical"
                                ? bar.htmlBody.scrollHeight
                                : bar.htmlBody.scrollWidth,
@@ -446,9 +440,9 @@ apf.accordion = function(struct, tagName){
     };
     
     /**
-     * Returns the id of title bar
+     * Returns the id of title
      * 
-     * @param {Number} number   number of title bar, 1 and more for counting 
+     * @param {Number} number   number of title, 1 and more for counting 
      *                          from left to right for horizontal mode, and 
      *                          from top to bottom for vertical mode
      */
@@ -462,13 +456,6 @@ apf.accordion = function(struct, tagName){
 
         return null;
     };
-    
-    var animType = {
-        "normal"  : apf.tween.NORMAL,
-        "easein"  : apf.tween.EASEIN,
-        "easeout" : apf.tween.EASEOUT,
-        "none"    : "none"
-    }
 
     /**** Init ****/
 
