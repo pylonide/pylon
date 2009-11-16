@@ -2126,7 +2126,7 @@ apf.Init.run("apf");
 //#ifndef __PACKAGED
 (function(global){
     if (!apf.basePath) {
-        var src,
+        var src, s2,
             s = document.getElementsByTagName("script"),
             i = 0,
             l = s.length;
@@ -2139,12 +2139,12 @@ apf.Init.run("apf");
         }
 
         if (apf.basePath) {
-            s = apf.basePath.split("/"),
-            l = apf.getDirname(location.href).split("/"),
-            l.pop();
+            s  = apf.basePath.split("/"),
+            s2 = apf.getDirname(location.href).split("/"),
+            s2.pop();
             for (i = 0, l = s.length; i < l; i++) {
                 if (s[0] == "..") {
-                    l.pop();
+                    s2.pop();
                     s.shift();
                 }
                 else
