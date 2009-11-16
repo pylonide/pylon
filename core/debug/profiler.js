@@ -56,8 +56,6 @@ apf.profiler = {
                     continue;
                 obj.$profilerId = this.recurDetect.push(obj) - 1;
                 objName = arguments[(i + 1)];
-                if (objName.indexOf('contentDocument') > -1)
-                    alert(1);
                 for (j in obj) {
                     pName = objName + "." + j;
                     canProbe = false;

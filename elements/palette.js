@@ -127,7 +127,7 @@ apf.palette = function(struct, tagName){
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = "#"+clr;
     };
     
-    this.$setCustom = function(oItem, clr){alert(1)
+    this.$setCustom = function(oItem, clr){
         oItem.style.backgroundColor = clr;
         this.change(clr);
     };

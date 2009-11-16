@@ -51,6 +51,7 @@ apf = {
     $asyncObjects : {},
     isO3          : true,
     supportNamespaces: true,
+    basePath      : "",
 
     /**
      * {Object} contains several known and often used namespace URI's.
@@ -77,7 +78,9 @@ apf = {
 
         this.implement(apf.Class);
 
-        apf.window.init(strAml);
+        apf.console.log("AML?? " + strAml + ", " + typeof strAml);
+        if (strAml)
+            apf.window.init(strAml);
     },
     
     importClass : function(ref, strip, win){
@@ -184,7 +187,7 @@ apf = {
                 + dt.getSeconds()    + "."
                 + ms;
             
-            o3.out((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
+            o3.print((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
         },
         //#endif
         
@@ -273,35 +276,40 @@ apf = {
     /* Init */
    
     /**
- *      * Returns the directory portion of a url
- *           * @param {String} url the url to retrieve from.
- *                * @return {String} the directory portion of a url.
- *                     */
+     * Returns the directory portion of a url
+     * @param {String} url the url to retrieve from.
+     * @return {String} the directory portion of a url.
+     */
     getDirname : function(url){
         return ((url || "").match(/^([^#]*\/)[^\/]*(?:$|\#)/) || {})[1]; //Mike will check out how to optimize this line
     },
 
     /**
- *      * Returns the file portion of a url
- *           * @param {String} url the url to retrieve from.
- *                * @return {String} the file portion of a url.
- *                     */
+     * Returns the file portion of a url
+     * @param {String} url the url to retrieve from.
+     * @return {String} the file portion of a url.
+     */
     getFilename : function(url){
         return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
     },
 
     /**
- *      * Returns an absolute url based on url.
- *           * @param {String} base the start of the url to which relative url's work.
- *                * @param {String} url  the url to transform.
- *                     * @return {String} the absolute url.
- *                          */
+     * Returns an absolute url based on url.
+     * @param {String} base the start of the url to which relative url's work.
+     * @param {String} url  the url to transform.
+     * @return {String} the absolute url.
+     */
     getAbsolutePath : function(base, url){
         return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
     },
 
  
     include : function(sourceFile, doBase){
+        if (doBase) {
+            var base = apf.basePath || "";
+            if (sourceFile.indexOf(base) !== 0)
+                sourceFile = base + sourceFile;
+        }
         apf.console.info("including js file: " + sourceFile);
         o3.js.include(sourceFile);
         //var fd = fs.child(sourceFile);
@@ -314,7 +322,7 @@ apf = {
         },
         script : function(){
             for (var i = 0; i < arguments.length; i++) {
-                apf.include(arguments[i]);
+                apf.include(arguments[i], true);
             }
             return this;
         },
