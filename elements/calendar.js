@@ -21,42 +21,37 @@
 
 // #ifdef __AMLCALENDAR || __INC_ALL
 /**
- * Element displaying a list of day numbers in a grid, ordered by week. It
- * allows the user to choose the month and year for which to display the days.
- * Calendar returns a date in chosen date format. Minimal size of calendar is
- * 150px.
+ * Element displaying a calendar, ordered by week. It allows the user to choose 
+ * the month and year for which to display the days. Calendar returns a date 
+ * in chosen date format. Minimal size of calendar is 150px.
  * 
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
  * <a:calendar
- *     top           = "200"
- *     left          = "400"
- *     output-format = "yyyy-mm-dd"
- *     value         = "2008-12-05" />
+ *   top           = "200"
+ *   left          = "400"
+ *   output-format = "yyyy-mm-dd"
+ *   value         = "2008-12-06" />
  * </code>
  * 
  * Example:
  * Sets the date based on data loaded into this component.
  * <code>
- *  <a:calendar>
- *      <a:bindings>
- *          <a:value select="@date" />
- *      </a:bindings>
- *  </a:calendar>
- * </code>
- * 
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:calendar ref="@date" />
+ * <a:model id="mdlCalDD">
+ *     <data date="2009-11-25" />
+ * </a:model>
+ * <a:calendar 
+ *   output-format = "yyyy-mm-dd" 
+ *   model         = "mdlCalDD" 
+ *   value         = "[@date]" />
  * </code>
  * 
  * @constructor
  * @define calendar
  * @addnode elements
  *
- * @attribute {String}   output-format    the format of the date value. See {@link term.dateformat more about the date format}.
+ * @attribute {String}   output-format    the format of the returned value. See {@link term.dateformat more about the date format}.
  * @attribute {String}   default          the default date set when the calendar is opened.
  *     Possible values:
  *     today   calendar is set on today's date
@@ -65,9 +60,7 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  *
- * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -132,7 +125,7 @@ apf.calendar = function(struct, tagName){
     this.$supportedProperties.push("output-format", "default");
 
     /**
-     * @attribute {String} output-format style of returned date
+     * @attribute {String} output-format is a style of returned date
      * 
      * Possible values:
      *     d      day of the month as digits, no leading zero for single-digit days
@@ -629,6 +622,12 @@ apf.calendar = function(struct, tagName){
         c.inited = true;
     };
 
+    /**
+     * Selects date and highlights its cell in calendar component
+     *
+     * @param {Number}   nr     day number
+     * @param {String}   type   class name of html representation of selected cell
+     */
     this.selectDay = function(nr, type) {
         var c        = this.$calVars,
             newMonth = type == "prev"
@@ -653,22 +652,22 @@ apf.calendar = function(struct, tagName){
     };
 
     /**
-     * Change displayed year to next
+     * Change displayed year to next one
      */
     this.nextYear = function() {
         this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear + 1);
     };
 
     /**
-     * Change displayed year to previous
+     * Change displayed year to previous one
      */
     this.prevYear = function() {
         this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear - 1);
     };
 
     /**
-     * Change displayed month to next. If actual month is December, function
-     * change current displayed year to next
+     * Change displayed month to next one. If actual month is December, function
+     * change current displayed year to next one
      */
     this.nextMonth = function() {
         var c = this.$calVars;
@@ -679,8 +678,8 @@ apf.calendar = function(struct, tagName){
     };
 
     /**
-     * Change displayed month to previous. If actual month is January, function
-     * change current displayed year to previous
+     * Change displayed month to previous one. If actual month is January, function
+     * change current displayed year to previous one
      */
     this.prevMonth = function() {
         var c = this.$calVars;
@@ -691,7 +690,7 @@ apf.calendar = function(struct, tagName){
     };
 
     /**
-     * Select today's date on calendar component
+     * Select today's date in calendar component
      */
     this.today = function() {
         this.setProperty("value", new Date().format(this.outputFormat));
@@ -802,5 +801,4 @@ apf.calendar = function(struct, tagName){
 }).call(apf.calendar.prototype = new apf.StandardBinding());
 
 apf.aml.setElement("calendar", apf.calendar);
-
 // #endif
