@@ -28,7 +28,7 @@
  * Example:
  * Flowchart component
  * <code>
- * <a:model id="modelName" save-original="true">
+ * <a:model id="modelName">
  *     <flowchart>
  *         <block
  *             id     = "b1"
@@ -54,33 +54,32 @@
  *     </flowchart>
  * </a:model>
  * <a:flowchart id="WF" template="template.xml" model="modelName">
- *     <a:css default="red" />
- *     <a:bindings>
- *         <a:move select="self::node()[not(@move='0') and not(@lock='1')]" />
- *         <a:resize select="self::node()[@resize='1' and not(@lock='1')]" />
- *         <a:css select="self::node()[@lock='1']" default="locked"/>
- *         <a:left select="@left" />
- *         <a:top select="@top" />
- *         <a:id select="@id" />
- *         <a:width select="@width" />
- *         <a:height select="@height" />
- *         <a:flipv select="@flipv" />
- *         <a:fliph select="@fliph" />
- *         <a:rotation select="@rotation" />
- *         <a:lock select="@lock" />
- *         <a:type select="@type" />
- *         <a:type value="" />
- *         <a:zindex select="@zindex" />
- *         <a:image select="@src" />
- *         <a:each select="block" />
+ *     <a:each match="[block]">
+ *         <a:move match="[@move] != false &amp;&amp; [@lock] != true"></a:move>
+ *         <a:resize match="[@resize] == true &amp;&amp; [@lock] != true"></a:resize>
+ *         <a:css match="{true}" default="locked"></a:css>
+ *         <a:left match="[@left]"></a:left>
+ *         <a:top match="[@top]"></a:top>
+ *         <a:id match="[@id]"></a:id>
+ *         <a:width match="[@width]"></a:width>
+ *         <a:height match="[@height]"></a:height>
+ *         <a:flipv match="[@flipv]"></a:flipv>
+ *         <a:fliph match="[@fliph]"></a:fliph>
+ *         <a:rotation match="[@rotation]"></a:rotation>
+ *         <a:lock match="[@lock]"></a:lock>
+ *         <a:type match="[@type]"></a:type>
+ *         <a:caption match="[@caption]" default="Untitled block"></a:caption>
+ *         <a:cap-pos match="[@cap-pos]"></a:cap-pos>
+ *         <a:zindex match="[@zindex]"></a:zindex>
+ *         <a:image match="[@src]"></a:image>
  *
  *         <!-- Connection Binding Rules -->
- *         <a:connection select="connection" />
- *         <a:ref select="@ref" />
- *         <a:input select="@input" />
- *         <a:output select="@output" />
- *         <a:ttype select="@type" />
- *     </a:bindings>
+ *         <a:connection match="[block/connection]"></a:connection>
+ *         <a:ref match="[@ref]"></a:ref>
+ *         <a:blockinput match="[@input]"></a:blockinput>
+ *         <a:blockoutput match="[@output]"></a:blockoutput>
+ *         <a:blocklabel match="[@label]"></a:blocklabel>
+ *     </a:each>
  * </a:flowchart>
  * </code>
  *
