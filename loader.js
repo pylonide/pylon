@@ -90,9 +90,6 @@ apf.$x = apf.$loader
         "core/lib/teleport/iframe.js", // for IE secure environments
         
         "core/lib/draw.js",
-        "core/lib/draw/canvas.js",
-        "core/lib/draw/vml.js",
-        "core/lib/draw/chartdraw.js",
         
         "core/browsers/is_gecko.js",
         "core/browsers/is_ie.js",
@@ -105,6 +102,10 @@ apf.$x = apf.$loader
     .script(
         "core/window.js",
         "core/lib/config.js",
+        
+        "core/lib/draw/canvas.js",
+        "core/lib/draw/vml.js",
+        "core/lib/draw/chartdraw.js",
         
         "core/lib/offline.js",
         "core/lib/storage.js",
@@ -413,7 +414,6 @@ apf.$x = apf.$loader
             apf.dispatchEvent("domready");
         }, null, ["body", "class"]);
     });
-    
 
 apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];
