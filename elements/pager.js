@@ -67,10 +67,6 @@ apf.pager = function(struct, tagName){
         
     this.$booleanProperties["autohide"] = true;
     
-    /**
-     * @attribute {String} represent the id of the element to display 
-     * navigation for.
-     */
     this.$propHandlers["curpage"] = function(value){
         this.gotoPage(value);
     };

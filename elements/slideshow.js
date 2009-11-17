@@ -21,8 +21,8 @@
 
 // #ifdef __AMLSLIDESHOW || __INC_ALL
 /** 
- * This element is used for viewing images. It's possible to add thumbnails and 
- * a description to each of them. You can select a displayed image in several ways.
+ * This element is used for viewing images. It's possible to add thumbnail and 
+ * description to each of them. You can select a displayed image in several ways.
  * With a mouse buttons, the mousewheel or keyboard arrows. The thumbnails allow 
  * the user to quickly select the image from the displayed list.
  * 
@@ -52,12 +52,15 @@
  *      </slideshow>
  *  </a:model>
  *  
- *  <a:slideshow title="number+text" delay="5" model="mdlImages">
+ *  <a:slideshow 
+ *    title = "number+text" 
+ *    delay = "5" 
+ *    model = "mdlImages">
  *      <a:bindings>
- *          <a:src   select="@src"></a:src>
- *          <a:title select="@title"></a:title>
- *          <a:thumb select="@thumb"></a:thumb>
- *          <a:each select="picture"></a:each>
+ *          <a:src   match="[@src]"></a:src>
+ *          <a:title match="[@title]"></a:title>
+ *          <a:thumb match="[@thumb]"></a:thumb>
+ *          <a:each match="[picture]"></a:each>
  *      </a:bindings>
  *  </a:slideshow>
  * </code>
@@ -428,8 +431,8 @@ apf.slideshow = function(struct, tagName){
     };
     
     /**
-     * Adds selection to thumbnail of actual selected image and removes it from
-     * previous. When the "move" param is set, selected thumbnail
+     * Adds selection to thumbnail of actual selected image and removes selection
+     * from previous. When the "move" param is set, selected thumbnail
      * is always in displayed area.
      * 
      * @param {Number}   thumbnail bar scrolling direction
@@ -558,7 +561,9 @@ apf.slideshow = function(struct, tagName){
         this.$show();
     };
     
-    
+    /**
+     * Hides browser scrollbars
+     */
     this.$hideScrollbars = function() {
         this.lastOverflow = document.documentElement.style.overflow == "hidden"
             ? "auto"
@@ -567,6 +572,9 @@ apf.slideshow = function(struct, tagName){
         document.documentElement.style.overflow = "hidden";
     };
     
+    /**
+     * Shows browser scrollbars
+     */
     this.$showScrollbars = function() {
         document.documentElement.style.overflow = this.lastOverflow;
     };
@@ -640,7 +648,7 @@ apf.slideshow = function(struct, tagName){
     };
     
     /**
-     * Move first thumbnail on the left to end of imagebar elementlist.
+     * Move first thumbnail from the left to end of imagebar elementlist.
      * It's possible to scroll imagebar to infinity.
      */
     this.$tNext = function() {
@@ -657,6 +665,9 @@ apf.slideshow = function(struct, tagName){
            this.otBody.firstChild); 
     };
     
+    /**
+     * Starts the slide show
+     */
     this.$play = function() {
          var _self = this;
          clearInterval(this.tmrPlay);
@@ -669,6 +680,9 @@ apf.slideshow = function(struct, tagName){
          }, _self.delay * 1000);
     };
 
+    /**
+     * Stops the slide show
+     */
     this.$stop = function() {
         clearInterval(this.tmrPlay);
         this.tmrPlay = null;
@@ -676,8 +690,7 @@ apf.slideshow = function(struct, tagName){
     };
     
     /**
-     * It's called when thumbnail has been clicked.
-     * Adds selection to thumbnail and shows new image.
+     * Adds selection to thumbnail and shows the image.
      * 
      * @param {HTMLElement}   oThumb   html representation of thumbnail element
      */
@@ -688,11 +701,17 @@ apf.slideshow = function(struct, tagName){
     };
     
     this.$getPanelSize = function() {
-        var title_height = this.oTitle.offsetHeight || parseInt(apf.getStyle(this.oTitle, "height")) + apf.getDiff(this.oTitle)[1];
+        var title_height = this.oTitle.offsetHeight 
+            || parseInt(apf.getStyle(this.oTitle, "height")) 
+            + apf.getDiff(this.oTitle)[1];
         
         return Math.max(
             this.oBeam.offsetHeight, 
-            title_height + (this.thumbnails ? this.thumbheight : 0) + this.oConsole.offsetHeight
+            title_height 
+            + (this.thumbnails 
+                ? this.thumbheight 
+                : 0) 
+            + this.oConsole.offsetHeight
         );
     };
     
@@ -1072,6 +1091,9 @@ apf.slideshow = function(struct, tagName){
         });
     };
     
+    /**
+     * Closes slideshow component
+     */
     this.$hide = function () {
         var _self = this;
 
@@ -1298,7 +1320,7 @@ apf.slideshow = function(struct, tagName){
 
 apf.aml.setElement("slideshow", apf.slideshow);
 
-apf.aml.setElement("src",      apf.BindingRule);
-apf.aml.setElement("title",    apf.BindingRule);
-apf.aml.setElement("thumb",    apf.BindingRule);
+apf.aml.setElement("src",   apf.BindingRule);
+apf.aml.setElement("title", apf.BindingRule);
+apf.aml.setElement("thumb", apf.BindingRule);
 // #endif
