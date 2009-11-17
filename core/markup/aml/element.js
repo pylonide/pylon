@@ -154,9 +154,9 @@ apf.AmlElement = function(struct, tagName){
             // #ifdef __DEBUG
             if (error && value in self) {
                 apf.console.error("trying to set a value in the global scope with "
-                                + "a reserved name '" + value + "'. Nothing wrong "
+                                + "a reserved name '" + value + "'.\nNothing wrong "
                                 + "with that, except that you will not be able to "
-                                + "reference the object from the global scope in JS.")
+                                + "reference\nthe object from the global scope in JS.")
             }
             // #endif
             

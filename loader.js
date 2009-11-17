@@ -29,14 +29,13 @@
 // #ifndef __PACKAGED
 
 if (location.protocol != "file:") {
-    apf.console.warn("You are serving multiple files from a (local)\
-           webserver - please consider using the file:// protocol to \
-           load your files, because that will make your application \
-           load several times faster.\
-           On a webserver, we recommend using a release or debug build \
-           of Ajax.org Platform.");
+    apf.console.warn("You are serving multiple files from a (local) "
+           + "webserver - please consider\nusing the file:// protocol to "
+           + "load your files, because that will make your\napplication "
+           + "load several times faster.\n"
+           + "On a webserver, we recommend using a release or debug build "
+           + "of Ajax.org Platform.");
 }
-
 apf.$loader
     .setGlobalDefaults({
         BasePath: apf.basePath, 
@@ -272,7 +271,6 @@ apf.$x = apf.$loader
         "elements/application.js",
         "elements/appsettings.js",
         "elements/audio.js",
-        "elements/audio/type_flash.js",
         "elements/auth.js",
         "elements/axis.js",
         "elements/bar.js",
@@ -362,6 +360,9 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "elements/audio/type_flash.js",
+        //"elements/audio/type_native.js",
+        
         //RPC extensions (all need rpc.js)
         "elements/rpc/xmlrpc.js",      // XML-RPC
         //"rpc/soap.js",      // SOAP
@@ -387,12 +388,15 @@ apf.$x = apf.$loader
         "elements/bindingseriesrule.js",
         "elements/bindingeachrule.js",
         "processinginstructions/livemarkup.js"
-    );
-    
-    apf.$x.script.apply(apf.$x, apf.$required)
+    ).wait(function() {
+        if (apf.$required.length)
+            apf.$x.script.apply(apf.$x, apf.$required).wait(start);
+        else
+            start();
+    });
     
     //Let's start APF
-    .wait(function(){
+    function start(){
         if (apf.started) 
             return; //@todo ask @getify why this function is called twice
         apf.start();
@@ -413,15 +417,14 @@ apf.$x = apf.$loader
 
             apf.dispatchEvent("domready");
         }, null, ["body", "class"]);
-    });
+    }
 
 apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];
-    for (var i = 0; i < arguments.length; i++) {
-        apf.$x.script(apf.getAbsolutePath(dir, arguments[i]));
-    }
-    apf.$x.wait();
-}
+    for (var i = 0, l = arguments.length; i < l; i++) 
+        req.push(apf.getAbsolutePath(dir, arguments[i]))
+    apf.$x.script.apply(null, req).wait();
+};
 
 /*if(document.body)
     apf.Init.run("body");

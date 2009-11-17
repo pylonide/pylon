@@ -562,7 +562,7 @@ var apf = {
 
         //#ifdef __DEBUG
         apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("This is a debug build of Ajax.org Platform; be aware"
+        apf.console.warn("This is a debug build of Ajax.org Platform; be aware "
             + "that\nexecution speed of this build is <strong>several times</strong> "
             + "slower than arelease build\nof Ajax.org Platform.");
         //#endif
