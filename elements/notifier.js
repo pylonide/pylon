@@ -27,25 +27,25 @@
  * <code>
  * <a:notifier position="bottom-right" margin="10 10">
  *     <a:event 
- *         when    = "{offline.onLine}"
- *         message = "You are currently working offline"
- *         icon    = "icoOffline.gif" />
+ *       when    = "{offline.onLine}"
+ *       message = "You are currently working offline"
+ *       icon    = "icoOffline.gif" />
  *     <a:event 
- *         when    = "{!offline.onLine}"
- *         message = "You are online"
- *         icon    = "icoOnline.gif" />
+ *       when    = "{!offline.onLine}"
+ *       message = "You are online"
+ *       icon    = "icoOnline.gif" />
  *     <a:event 
- *         when    = "{offline.syncing}" 
- *         message = "Your changes are being synced" 
- *         icon    = "icoSyncing.gif" />
+ *       when    = "{offline.syncing}" 
+ *       message = "Your changes are being synced" 
+ *       icon    = "icoSyncing.gif" />
  *     <a:event 
- *         when    = "{!offline.syncing}"
- *         message = "Syncing done"
- *         icon    = "icoDone.gif" />
+ *       when    = "{!offline.syncing}"
+ *       message = "Syncing done"
+ *       icon    = "icoDone.gif" />
  * </a:notifier>
  * </code>
  * Example:
- * Notifier with 4 notifications which will be appears and stays over the 3 seconds
+ * Notifier with 4 notifications which appears and stays over the 3 seconds
  * begins to the top right corner and goes to the left. First notification will
  * be displayed when value in textbox will be bigger than 4. In next two cases 
  * notification will be shown when notifier's position or arrange attribute will 
