@@ -50,7 +50,7 @@
  * @attribute {Object}  connectionsManager   manage of entire connection creation
  *                                           process
  * @attribute {Number}  sSize                connection line width
- * @attrubute {Number}  fsSize               define size of first and last connection
+ * @attribute {Number}  fsSize               define size of first and last connection
  *                                           segment
  *
  * @private
