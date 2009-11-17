@@ -87,11 +87,14 @@
  * @attribute {String} template   the data instruction to load the xml for the
  * template that defines all the elements which are available on the flowchart.
  * 
- * @attribute {String} snap   
+ * @attribute {String} snap   snap block to grid; Default is false
  * Possible values:
- *     true
- *     false
- *     {Number}
+ *     true       Block is snap to grid; @see grid-width, @see grid-height
+ *     false      Block is not snap to grid;
+ *     {Number}   Block is snap to grid; Grid size is equal to this value
+ * 
+ * @attribute {Number} grid-width    horizontal grid size, Default is 48px
+ * @attribute {Number} grid-height   vertical grid size, Default is 48px
  * 
  * Example:
  * A template describing a single capacitor element
@@ -147,11 +150,13 @@
  * 
  * @binding connection  Determines xml representation of connection element
  * @binding ref         Determines unique name of destination block which will be connected with source block
- * @binding input       Determines input number of source block 
- * @binding output      Determines input number of destination block
+ * @binding blockinput  Determines input number of source block 
+ * @binding blockoutput Determines input number of destination block
+ * @binding blocklabel  Specifies a description of the block
  *
  * @constructor
  *
+ * @inherits apf.DataAction
  * @inherits apf.Cache
  * @inherits apf.BaseList
  * @inherits apf.Rename
@@ -394,7 +399,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Updates the position of a block to vector [x, y] and the XML it is bound 
-     * to. It's possible to return to previous state with Undo/Redo.
+     * to. It's possible to back to previous state with Undo/Redo.
      * 
      * @param {Object} xmlNodeArray   array with xml representations of blocks elements
      * @param {Number} dl             horizontal alteration
@@ -445,7 +450,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Set a new z-index of a block and the XML it is bound to. It's
-     * possible to return to previous state with Undo/Redo.
+     * possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement} xmlNode   xml representation of block element
      * @param {Number}     value     new z-index number
@@ -492,7 +497,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Immobilise block element on workarea. This is an action.
-     * It's possible to return to previous state with Undo/Redo.
+     * It's possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement} xmlNode   xml representation of block element
      * @param {Boolean}    value     prohibit block move, default is false.
@@ -505,7 +510,7 @@ apf.flowchart = function(struct, tagName){
     };
 
     /**
-     * Rotate block element. This is an action. It's possible to return to
+     * Rotate block element. This is an action. It's possible to back to
      * previous state with Undo/Redo
      *
      * @param {XMLElement}   xmlNode       xml representation of block element
@@ -525,9 +530,6 @@ apf.flowchart = function(struct, tagName){
                 : false,
             prevRotation = parseInt(this.$applyBindRule("rotation", xmlNode)) || 0,
 
-            /*prevRotation = start
-                ? 0
-                : parseInt(this.$applyBindRule("rotation", xmlNode)) || 0,*/
             names = ["fliph", "flipv", "rotation"],
             values;
 
@@ -552,7 +554,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Mirrors the block over the vertical axis. This is an action.
-     * It's possible to return to previous state with Undo/Redo.
+     * It's possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipV  new flip value, default is false
@@ -578,7 +580,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Mirrors the block over the horizontal axis. This is an action.
-     * It's possible to return to previous state with Undo/Redo.
+     * It's possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode   xml representation of block element
      * @param {Number}       newFlipH  new flip value, default is false
@@ -590,9 +592,7 @@ apf.flowchart = function(struct, tagName){
         var prevFlipV  = this.$applyBindRule("flipv", xmlNode) == "true"
                 ? true
                 : false,
-            /*prevFlipH  = this.$applyBindRule("fliph", xmlNode) == "true"
-                ? true
-                : false,*/
+
             prevRotate = this.$applyBindRule("rotation", xmlNode)
                 ? parseInt(this.$applyBindRule("rotation", xmlNode))
                 : 0;
@@ -607,7 +607,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Resize block element in vertical and horizontal plane. This is an
-     * action. It's possible to return to previous state with Undo/Redo.
+     * action. It's possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement}   xmlNode     xml representation of block element
      * @param {Number}       newWidth    block element horizontal size
@@ -624,7 +624,7 @@ apf.flowchart = function(struct, tagName){
     };
 
     /**
-     * Executes an actions based on the set names and the new values
+     * Executes multi actions on one element in one call
      *
      * @param {String}      atName     the name of action rule defined in actions for this element.
      * @param {Object}      setNames   the names list of the binding rule defined in bindings for this element.
@@ -664,7 +664,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Creates new connection between two blocks. This is an action. It's
-     * possible to return to previous state with Undo/Redo.
+     * possible to back to previous state with Undo/Redo.
      *
      * @param {XMLElement}   sXmlNode   xml representation of source block element
      * @param {Number}       sInput     source block input number
@@ -684,7 +684,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Removes connections between blocks. It's possible to remove more
-     * connections in one call. This is an action. It's possible to return
+     * connections in one call. This is an action. It's possible to back
      * to previous state with Undo/Redo.
      *
      * @param {Object} xmlNodeArray   xml representations of connections elements
@@ -742,7 +742,7 @@ apf.flowchart = function(struct, tagName){
 
     /**
      * Removes xml representation of block. It's possible to remove more
-     * xmlNodes in one call. This is an action. It's possible to return to
+     * xmlNodes in one call. This is an action. It's possible to back to
      * previous state with Undo/Redo.
      *
      * @param {Object}   xmlNodeArray   xml representations of blocks elements
@@ -947,7 +947,7 @@ apf.flowchart = function(struct, tagName){
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         this.$flowVars.lastBlockId++;
-        //apf.flow.alert_r(xmlNode)
+        
         apf.console.info("ADD");
         this.$getNewContext("item");
         var block            = this.$getLayoutNode("item"),
@@ -1026,7 +1026,6 @@ apf.flowchart = function(struct, tagName){
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
-        //apf.flow.alert_r(xmlNode);
         xmlNode.setAttribute("id", id);
         xmlNode.setAttribute("width", width);
         xmlNode.setAttribute("height", height);
@@ -1035,7 +1034,6 @@ apf.flowchart = function(struct, tagName){
         xmlNode.setAttribute("top", top);
         xmlNode.setAttribute("zindex", zindex);
         xmlNode.setAttribute("cap-pos", capPos);
-        //apf.flow.alert_r(xmlNode);
 
         if (elCaption)
             this.$setStyleClass(elCaption, capPos);
