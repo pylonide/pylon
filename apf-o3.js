@@ -52,6 +52,7 @@ apf = {
     isO3          : true,
     supportNamespaces: true,
     basePath      : "",
+    verbose       : 3,
 
     /**
      * {Object} contains several known and often used namespace URI's.
@@ -118,9 +119,10 @@ apf = {
     * @method
     */
     implement : function(classRef){
-        for (var i=0; i<arguments.length; i++) {
+        for (var arg, i = 0, l = arguments.length; i < l; i++) {
+            arg = arguments[i]
             //#ifdef __DEBUG
-            if (!arguments[i]) {
+            if (!arg) {
                 throw new Error(apf.formatErrorString(0, this, 
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
@@ -128,7 +130,7 @@ apf = {
             }
             //#endif
             
-            arguments[i].call(this);//classRef
+            arg.call(this);//classRef
         }
         
         return this;
