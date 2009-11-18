@@ -28,10 +28,10 @@
  * Example:
  * <code>
  *     <a:editor
- *         id="myEditor"
- *         left="100"
- *         width="50%"
- *         height="90%-10">
+ *         id     = "myEditor"
+ *         left   = "100"
+ *         width  = "50%"
+ *         height = "90%-10">
  *         Default value...
  *     </a:editor>
  * </code>
@@ -61,7 +61,16 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:colorpicker ref="body/text()" />
+ * <a:model id="mdlEditor">
+ *     <data>
+ *         <body>Some text</body>
+ *     </data>
+ * </a:model>
+ * <a:editor 
+ *   width  = "600" 
+ *   height = "300" 
+ *   model  = "mdlEditor" 
+ *   value  = "[body/text()]" />
  * </code>
  */
 apf.editor = function(struct, tagName){

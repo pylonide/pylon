@@ -29,28 +29,28 @@
  * Example:
  * A simple dropdown with inline items.
  * <code>
- *  <a:dropdown>
- *      <a:item>The Netherlands</a:item>
- *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:dropdown>
+ * <a:dropdown>
+ *     <a:item>The Netherlands</a:item>
+ *     <a:item>United States of America</a:item>
+ *     <a:item>United Kingdom</a:item>
+ *     ...
+ * </a:dropdown>
  * </code>
  * Example:
  * A databound dropdown with items loaded from an xml file.
  * <code>
- *  <a:dropdown model="friends.xml" each="friend" caption="@name" />
+ * <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
  * </code>
  * Example:
  * A databound dropdown using the bindings element
  * <code>
- *  <a:dropdown model="friends.xml">
- *      <a:bindings>
- *          <a:caption  select="@name" />
- *          <a:css      select="self::node()[@type='best']" value="bestfriend" />
- *          <a:each select="friend" />
- *      </a:bindings>
- *  </a:dropdown>
+ * <a:dropdown model="friends.xml">
+ *     <a:bindings>
+ *         <a:caption  match = "[@name]" />
+ *         <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
+ *         <a:each     match = "[friend]" />
+ *     </a:bindings>
+ * </a:dropdown>
  * </code>
  * Example:
  * A small form.
