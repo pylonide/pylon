@@ -77,8 +77,8 @@ apf.audio = function(struct, tagName){
     this.loadMedia = function() {
         if (!arguments.length) {
             if (this.player) {
-                this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', apf.Media.NETWORK_LOADING);
+                this.setProperty("currentSrc",   this.src);
+                this.setProperty("networkState", apf.Media.NETWORK_LOADING);
                 this.player.load(this.src);
             }
         }
@@ -118,14 +118,13 @@ apf.audio = function(struct, tagName){
      */
     this.$guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
-        var ext  = path.substr(path.lastIndexOf('.') + 1),
+        var ext  = path.substr(path.lastIndexOf(".") + 1),
             type = "";
-        switch (ext) {
-            default:
-            case "mp3":
-                type = "audio/flash";
-                break;
-        }
+        if (apf.hasAudio && ((ext == "ogg" || ext == "wav") || (ext == "mp3" && apf.isWebkit)))
+            type = "audio/ogg";
+        else if (ext == "mp3")
+            type = "audio/flash";
+
         return type;
     };
 
@@ -141,22 +140,24 @@ apf.audio = function(struct, tagName){
 
         var playerType = null;
 
-        var aMimeTypes = mimeType.splitSafe(',');
+        var aMimeTypes = mimeType.splitSafe(",");
         if (aMimeTypes.length == 1)
-            aMimeTypes = aMimeTypes[0].splitSafe(';');
-        for (var i = 0; i < aMimeTypes.length; i++) {
-            if (mimeType.indexOf('flash') > -1)
+            aMimeTypes = aMimeTypes[0].splitSafe(";");
+
+        for (var i = 0, l = aMimeTypes.length; i < l; i++) {
+            if (mimeType.indexOf("ogg") > -1)
+                playerType = "TypeNative";
+            if (mimeType.indexOf("flash") > -1)
                 playerType = "TypeFlash";
-            else if (mimeType.indexOf('quicktime') > -1)
+            else if (mimeType.indexOf("quicktime") > -1)
                 playerType = "TypeQT";
-            else if (mimeType.indexOf('wmv') > -1)
+            else if (mimeType.indexOf("wmv") > -1)
                 playerType = apf.isMac ? "TypeQT" : "TypeWmp";
-            else if (mimeType.indexOf('silverlight') > -1)
+            else if (mimeType.indexOf("silverlight") > -1)
                 playerType = "TypeSilverlight";
 
-            if (this.$isSupported(playerType)) {
+            if (this.$isSupported(playerType))
                 return playerType;
-            }
         }
 
         return playerType;
@@ -205,7 +206,7 @@ apf.audio = function(struct, tagName){
     this.$initHook = function(e) {
         if (e.error) {
             var oError = this.MediaError(e.error);
-            if (this.dispatchEvent('error', {
+            if (this.dispatchEvent("error", {
                 error  : oError,
                 bubbles: true
               }) === false)
@@ -242,6 +243,7 @@ apf.audio = function(struct, tagName){
      * @type {void}
      */
     this.$errorHook = function(e) {
+        apf.console.log("Error: <audio>");
         apf.console.error(e.error);
     };
 
@@ -255,11 +257,11 @@ apf.audio = function(struct, tagName){
      */
     this.$progressHook = function(e) {
         // bytesLoaded, totalBytes
-        this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
-        this.setProperty('totalBytes', e.totalBytes);
+        this.setProperty("bufferedBytes", {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
+        this.setProperty("totalBytes", e.totalBytes);
         var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
         if (iDiff <= 20)
-            this.setProperty('readyState', apf.Media.HAVE_ENOUGH_DATA);
+            this.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -290,15 +292,15 @@ apf.audio = function(struct, tagName){
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
             this.muted  = (e.volume > 0);
-            this.setProperty('volume', e.volume);
+            this.setProperty("volume", e.volume);
         }
         else {
             this.duration = this.player.getTotalTime();
             this.position = e.playheadTime / this.duration;
             if (isNaN(this.position)) return;
-            this.setProperty('position', this.position);
+            this.setProperty("position", this.position);
             this.currentTime = e.playheadTime;
-            this.setProperty('currentTime', this.currentTime);
+            this.setProperty("currentTime", this.currentTime);
         }
     };
 
@@ -311,7 +313,7 @@ apf.audio = function(struct, tagName){
      */
     this.$completeHook = function(e) {
         this.paused = true;
-        this.setProperty('paused', true);
+        this.setProperty("paused", true);
     };
 
     /**
@@ -322,12 +324,12 @@ apf.audio = function(struct, tagName){
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', apf.Media.NETWORK_LOADED);
-        this.setProperty('readyState',   apf.Media.HAVE_FUTURE_DATA);
-        this.setProperty('duration',     this.player.getTotalTime());
+        this.setProperty("networkState", apf.Media.NETWORK_LOADED);
+        this.setProperty("readyState",   apf.Media.HAVE_FUTURE_DATA);
+        this.setProperty("duration",     this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
-        this.setProperty('seeking', false);
+        this.setProperty("seeking", false);
         if (this.autoplay)
             this.play();
         return this;
@@ -341,15 +343,15 @@ apf.audio = function(struct, tagName){
      * @type {void}
      */
     this.$metadataHook = function(e) {
-        this.oVideo.setProperty('readyState', apf.Media.HAVE_METADATA);
+        this.oVideo.setProperty("readyState", apf.Media.HAVE_METADATA);
         if (e.waveData)
-            this.setProperty('waveform', e.waveData);
+            this.setProperty("waveform", e.waveData);
         if (e.peakData)
-            this.setProperty('peak', e.peakData);
+            this.setProperty("peak", e.peakData);
         if (e.eqData)
-            this.setProperty('EQ', e.eqData);
+            this.setProperty("EQ", e.eqData);
         if (e.id3Data)
-            this.setProperty('ID3', e.id3Data);
+            this.setProperty("ID3", e.id3Data);
     };
 
     /**

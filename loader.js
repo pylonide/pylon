@@ -361,7 +361,7 @@ apf.$x = apf.$loader
     .wait()
     .script(
         "elements/audio/type_flash.js",
-        //"elements/audio/type_native.js",
+        "elements/audio/type_native.js",
         
         //RPC extensions (all need rpc.js)
         "elements/rpc/xmlrpc.js",      // XML-RPC

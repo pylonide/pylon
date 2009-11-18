@@ -65,6 +65,8 @@ apf.Media = function(){
     this.$nomedia   = null;
     this.$amlTimer  = null;
     this.$loadTimer = null;
+    this.$posTimer  = null;
+    this.$volTimer  = null;
 
     /**
      * @attribute {Number} readyState 
@@ -115,25 +117,29 @@ apf.Media = function(){
      * @attribute {Number} position
      */
     this.$propHandlers["position"] = function(value){
-        if (this.duration > 0 && this.seek) {
+        clearTimeout(this.$posTimer);
+        if (this.duration <= 0 || !this.seek) return;
+
+        var _self = this;
+        this.$posTimer = setTimeout(function() {
             // first, check if the seek action doesn't go beyond the download
             // progress of the media element.
-            if (value >= this.progress)
-                value = this.progress - 0.05;
+            if (value >= _self.progress)
+                value = _self.progress - 0.05;
 
-            var isPlaying = !this.paused;
+            var isPlaying = !_self.paused;
             if (isPlaying)
-                this.pause();
+                _self.pause();
 
             if (value < 0)
                 value = 0;
             else if (value > 1)
                 value = 1;
 
-            this.seek(Math.round(value * this.duration));
+            _self.seek(Math.round(value * _self.duration));
 
-            this.setProperty('paused', !isPlaying);
-        }
+            _self.setProperty('paused', !isPlaying);
+        });
     };
 
     /**
