@@ -49,16 +49,21 @@
  * Example:
  * Sets the value of the checkbox based on data loaded into this component.
  * <code>
- *  <a:checkbox>
- *      <a:bindings>
- *          <a:value select="@answer" />
- *      </a:bindings>
- *  </a:checkbox>
+ * <a:checkbox>
+ *     <a:bindings>
+ *         <a:value select="@answer" />
+ *     </a:bindings>
+ * </a:checkbox>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:checkbox ref="@answer" />
+ * <a:model id="mdlCheckbox">
+ *     <data answer="Something"></data>
+ * </a:model>
+ * <a:checkbox 
+ *   model = "mdlCheckbox" 
+ *   value = "[@answer]">Caption</a:checkbox>
  * </code>
  */
 apf.checkbox = function(struct, tagName){

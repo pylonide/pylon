@@ -53,7 +53,12 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:colorpicker ref="@color" />
+ * <a:model id="mdlColor">
+ *     <data color="#00099"></data>
+ * </a:model>
+ * <a:colorpicker 
+ *   model = "mdlColor" 
+ *   value = "[@color]" />
  * </code>
  */
 apf.colorpicker = function(struct, tagName){
