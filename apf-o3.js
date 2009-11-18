@@ -79,7 +79,6 @@ apf = {
 
         this.implement(apf.Class);
 
-        apf.console.log("AML?? " + strAml + ", " + typeof strAml);
         if (strAml)
             apf.window.init(strAml);
     },
