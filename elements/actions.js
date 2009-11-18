@@ -30,8 +30,8 @@
  *      <a:add set="{comm.addPerson([.])}">
  *          <person name="New person" />
  *      </a:add
- *      <a:rename set="rpc.comm.renamePerson([@id], [@name])" />
- *      <a:remove select="@new" set="{comm.removePerson([@id])}"/>
+ *      <a:rename set="{comm.renamePerson([@id], [@name])}" />
+ *      <a:remove match="[@new]" set="{comm.removePerson([@id])}"/>
  *  </a:actions>
  *
  *  <a:tree actions="actPerson" />

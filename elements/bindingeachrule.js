@@ -36,19 +36,25 @@
  *  <a:list>
  *      <a:bindings>
  *          ...
- *          <a:each select="mail[not(@deleted='1')]" />
- *      </bindings>
+ *          <a:each match="mail[not(@deleted='1')]" />
+ *      </a:bindings>
  *  </a:list>
  * </code>
  * Example:
  * This example shows how to use the each rule to order files based
  * on their modified data.
  * <code>
- *  <a:each
- *      select      = "file"
- *      sort        = "@date"
- *      date-format = "DD-MM-YYYY"
- *      order       = "descending" />
+ * <a:model id="mdlList">
+ *     <data>
+ *         <item date="2009-11-12"></item>
+ *         <item date="2009-11-11"></item>
+ *     </data>
+ * </a:model>
+ * <a:list width="200" height="200" model="mdlList">
+ *     <a:each match="[item]" sort="[@date]" order="ascending">
+ *         <a:caption match="[@date]" />
+ *     </a:each>
+ * </a:list>
  * </code>
  * Example:
  * This example shows how to do complex sorting using a javascript callback function.
