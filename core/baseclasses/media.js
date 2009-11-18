@@ -214,20 +214,21 @@ apf.Media = function(){
      * @attribute {String} src
      */
     this.$propHandlers["src"] = function(value){
-        if (this.$loadTimer || !value) return; //@todo for mike: please check if this is the best behaviour for setting an empty value
+        //@todo for mike: please check if this is the best behaviour for setting an empty value
+        if (this.$loadTimer || !value) return;
 
         var oUrl = new apf.url(value);
         this.src = oUrl.uri;
 
         // #ifdef __DEBUG
-        if (!oUrl.isSameLocation())
-            apf.console.warn("Media player: the medium with URL '" + this.src + "' \
-                does not have the same origin as your web application. This can \
-                cause the medium to not load and/ or play.", "media");
         if (oUrl.protocol == "file")
-            apf.console.warn("Media player: the medium with URL '" + this.src + "' \
-                will be loaded through the 'file://' protocol. This can \
-                cause the medium to not load and/ or play.", "media");
+            apf.console.warn("Media player: the medium with URL '" + this.src + "'\n"
+                + "will be loaded through the 'file://' protocol.\nThis can "
+                + "cause the medium to not load and/ or play.", "media");
+        else if (!oUrl.isSameLocation())
+            apf.console.warn("Media player: the medium with URL '" + this.src + "'\n"
+                + "does not have the same origin as your web application.\nThis can "
+                + "cause the medium to not load and/ or play.", "media");
         // #endif
 
         if (this.src != this.currentSrc && this.networkState !== apf.Media.LOADING) {

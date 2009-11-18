@@ -44,12 +44,12 @@
  */
 apf.url = function(str) {
     var base;
-    if (str.indexOf(":") == -1 && (base = window.location.toString()).indexOf(":") != -1) {
+    if (str.indexOf(":") == -1 && (base = location.toString()).indexOf(":") != -1) {
         base = new apf.url(base);
-        str = apf.getAbsolutePath("http://" + base.host + "/"
+        str = apf.getAbsolutePath(base.protocol + "://" + base.host + "/"
             + (base.directory.charAt(base.directory.length - 1) == "/"
                  ? base.directory
-                 : base.directory + '/'), str);
+                 : base.directory + '/'), str).replace(/\/\/\/\//, "///");
     }
     var o    = apf.url.options,
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),

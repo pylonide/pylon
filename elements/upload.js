@@ -423,7 +423,8 @@ apf.upload = function(struct, tagName){
             case "fileStop":
                 //Function to execute when a file got stopped manually.
             case "fileRequeue":
-                //Function to execute when a file got added back to the queue after being stopped or completed.
+                //Function to execute when a file got added back to the queue after
+                //being stopped or completed.
             case "fileOpen":
                 //Function to execute when the file is accessed before for upload.
             case "fileProgress":
@@ -673,7 +674,11 @@ apf.upload = function(struct, tagName){
             this.$ext.style.zIndex   = "9999";
             this.$ext.style.width    = this.width;
             this.$ext.style.height   = this.height;
-            var options = {
+            apf.flash.embed({
+                // apf.flash#embed properties
+                context          : this,
+                htmlNode         : this.$ext,
+                // movie properties
                 src              : this.DEFAULT_SWF_PATH,
                 width            : "100%",
                 height           : "100%",
@@ -689,37 +694,7 @@ apf.upload = function(struct, tagName){
                 type             : "application/x-shockwave-flash",
                 pluginspage      : "http://www.adobe.com/go/getflashplayer",
                 menu             : "false"
-            };
-
-            // @todo Brrrr... do we need these timeouts.. really? [mike]
-            setTimeout(function() {
-                _self.$ext.innerHTML = apf.flash.buildContent(options);
-                _self.$player        = apf.flash.getElement(_self.$name);
-
-                setTimeout(function() {
-                    var fail = null;
-                    if (!_self.$player.parentNode) {
-                        fail = "File Uploader error: The movie has to be enabled "
-                             + "manually because of Flashblock. No browser refresh is required.";
-                    }
-                    else if (_self.$player.style.display == "none") {
-                        fail = "File Uploader error: Adblock Plus blocks or hides the "
-                             + "movie. Please enable it and refresh your browser.";
-                    }
-                    else if (!_self.$player.offsetWidth) {
-                        fail = "File Uploader error: The Flash movie failed to load. "
-                             + "Please check if the file exists and the path is correct.";
-                    }
-
-                    if (fail) {
-                        // #ifdef __DEBUG
-                        apf.console.error(fail, "upload");
-                        // #endif
-
-                        _self.dispatchEvent("error", {message: fail});
-                    }
-                }, 1000);
-            }, 1000);
+            });
         }
         else {
             //Build Main Skin

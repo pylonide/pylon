@@ -54,15 +54,6 @@ apf.audio = function(struct, tagName){
 };
 
 (function() {
-    this.implement(
-        //#ifdef __WITH_DATABINDING
-        apf.StandardBinding
-        //#endif
-        //#ifdef __WITH_DATAACTION
-        ,apf.DataAction
-        //#endif
-    );
-
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
 
     this.$mainBind = "src";
@@ -73,18 +64,12 @@ apf.audio = function(struct, tagName){
      * @param {String} sAudio
      * @type {Object}
      */
-    this.$dbLoad = this.load;
     this.loadMedia = function() {
-        if (!arguments.length) {
-            if (this.player) {
-                this.setProperty("currentSrc",   this.src);
-                this.setProperty("networkState", apf.Media.NETWORK_LOADING);
-                this.player.load(this.src);
-            }
-        }
-        else
-            this.$dbLoad.apply(this, arguments);
+        if (!this.player) return this;
 
+        this.setProperty("currentSrc",   this.src);
+        this.setProperty("networkState", apf.Media.NETWORK_LOADING);
+        this.player.load(this.src);
         return this;
     };
 
@@ -213,7 +198,7 @@ apf.audio = function(struct, tagName){
                 throw oError;
         }
 
-        this.load();
+        this.loadMedia();
     };
 
     /**

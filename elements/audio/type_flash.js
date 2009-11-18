@@ -69,7 +69,20 @@ apf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.player = null;
     apf.extend(this, apf.audio.TypeInterface);
 
-    this.initProperties().setOptions(options).createPlayer();
+    this.delayCalls = [];
+
+    // Properties set by flash player
+    this.totalTime = this.bytesLoaded = this.totalBytes = 0;
+    this.state = null;
+
+    // Internal properties that match get/set methods
+    this.autoPlay = this.autoLoad = this.firstLoad = true;
+    this.volume                 = 50;
+    this.playheadTime           = null;
+    this.bufferTime             = 0.1;
+    this.playheadUpdateInterval = 1000;
+
+    this.setOptions(options).createPlayer();
 }
 
 apf.audio.TypeFlash.isSupported = function() {
@@ -77,15 +90,17 @@ apf.audio.TypeFlash.isSupported = function() {
 };
 
 apf.audio.TypeFlash.prototype = {
+    properties: ["volume", "autoPlay", "autoLoad", "playHeadTime",
+                 "totalTime", "bufferTime", "playheadUpdateInterval"],
     /**
      * Load an audio file.
      *
-     * @param {String} audioPath Path to the mp3 file. If the audioPath is null, and the mp3 is playing, it will act as a play/pause toggle.
+     * @param {String} audioPath Path to the mp3 file. If the audioPath is null,
+     *                           and the mp3 is playing, it will act as a play/pause toggle.
      * @param {Number} totalTime Optional totalTime to override the mp3's built in totalTime
      */
     load: function(audioPath, totalTime) {
-        if (totalTime != null)
-            this.setTotalTime(totalTime);
+        this.setTotalTime(totalTime);
         if (audioPath != null)
             this.audioPath = audioPath;
         if (this.audioPath == null && !this.firstLoad)
@@ -118,7 +133,6 @@ apf.audio.TypeFlash.prototype = {
     /**
      * Toggle the pause state of the audio.
      *
-     * @param {Boolean} pauseState The pause state. Setting pause state to true will pause the audio.
      * @type {Object}
      */
     pause: function() {
@@ -170,7 +184,7 @@ apf.audio.TypeFlash.prototype = {
      * @type {Object}
      */
     setPlayheadTime: function(value) {
-        return this.setProperty("playheadTime", value);
+        return this.playheadTime = value;
     },
 
     /**
@@ -190,7 +204,8 @@ apf.audio.TypeFlash.prototype = {
      * @type {Object}
      */
     setTotalTime: function(value) {
-        return this.setProperty("totalTime", value);
+        if (!value) return;
+        return this.totalTime = value;
     },
 
     /**
@@ -216,7 +231,6 @@ apf.audio.TypeFlash.prototype = {
             args.unshift(this.player, "callMethod");
             apf.flash.remote.apply(null, args);
         }
-            
         return this;
     },
 
@@ -226,7 +240,7 @@ apf.audio.TypeFlash.prototype = {
      * @type {Object}
      */
     makeDelayCalls: function() {
-        for (var i = 0; i < this.delayCalls.length; i++)
+        for (var i = 0, l = this.delayCalls.length; i < l; i++)
             this.callMethod.apply(this, this.delayCalls[i]);
         return this;
     },
@@ -300,9 +314,10 @@ apf.audio.TypeFlash.prototype = {
                 this.oAudio.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "init":
+                if (this.inited) return;
                 this.inited = true;
-                this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime",
-                    "playheadUpdateInterval").validateNow().makeDelayCalls();
+                this.makeDelayCalls();
+                this.player.callMethod("setPolling", true);
                 this.oAudio.$initHook(apf.extend(evtObj, apf.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
@@ -318,34 +333,6 @@ apf.audio.TypeFlash.prototype = {
     },
 
     /**
-     * Mark out the properties, so they are initialized, and documented.
-     *
-     * @type {Object}
-     */
-    initProperties: function() {
-        this.delayCalls = [];
-
-        // Properties set by flash player
-        this.totalTime = this.bytesLoaded = this.totalBytes = 0;
-        this.state = null;
-
-        // Internal properties that match get/set methods
-        this.autoPlay = this.autoLoad = true;
-        this.volume                 = 50;
-        this.playheadTime           = null;
-        this.bufferTime             = 0.1;
-        this.playheadUpdateInterval = 1000;
-
-        this.firstLoad   = true;
-        this.pluginError = false;
-
-        this.properties = ["volume", "autoPlay", "autoLoad", "playHeadTime",
-            "totalTime", "bufferTime", "playheadUpdateInterval"];
-
-        return this;
-    },
-
-    /**
      * Create the HTML to render the player.
      *
      * @type {Object}
@@ -354,22 +341,25 @@ apf.audio.TypeFlash.prototype = {
         var div = this.htmlElement;
         if (div == null) return this;
 
-        this.pluginError = false;
-
         // place the HTML node outside of the viewport
         div.style.position = "absolute";
         div.style.width    = "1px";
         div.style.height   = "1px";
         div.style.left     = "-2000px";
-        div.innerHTML      = apf.flash.buildContent({
+        apf.flash.embed({
+            // apf.flash#embed properties
+            context          : this,
+            htmlNode         : div,
+            property         : "player",
+            // movie properties
             src              : this.DEFAULT_SWF_PATH,
-            width            : "1",
-            height           : "1",
+            //width            : "1",
+            //height           : "1",
             align            : "middle",
             id               : this.name,
             quality          : "high",
-            bgcolor          : "#000000",
-            allowFullScreen  : "true",
+            //bgcolor          : "#000000",
+            //allowFullScreen  : "true",
             name             : this.name,
             flashvars        : "playerID=" + this.id,
             allowScriptAccess: "always",
@@ -377,59 +367,7 @@ apf.audio.TypeFlash.prototype = {
             pluginspage      : "http://www.adobe.com/go/getflashplayer",
             menu             : "true"
         });
-        this.player        = apf.flash.getElement(this.name);
 
-        return this;
-    },
-
-    /**
-     * Mark a property as invalid, and create a timeout for redraw
-     *
-     * @type {Object}
-     */
-    invalidateProperty: function() {
-        if (this.invalidProperties == null)
-            this.invalidProperties = {};
-
-        for (var i = 0; i < arguments.length; i++)
-            this.invalidProperties[arguments[i]] = true;
-
-        if (this.validateInterval == null && this.inited) {
-            var _this = this;
-            this.validateInterval = setTimeout(function() {
-                _this.validateNow();
-            }, 100);
-        }
-
-        return this;
-    },
-
-    /**
-     * Updated player with properties marked as invalid.
-     *
-     * @type {Object}
-     */
-    validateNow: function() {
-        this.validateInterval = null;
-        var props = {};
-        for (var n in this.invalidProperties)
-            props[n] = this[n];
-        this.invalidProperties = {};
-        this.player.callMethod("setPolling", true);
-        return this;
-    },
-
-    /**
-     * All public properties use this proxy to minimize player updates
-     *
-     * @param {String} property
-     * @param {String} value
-     * @type {Object}
-     */
-    setProperty: function(property, value) {
-        this[property] = value; // Set the internal property
-        if (this.inited)
-            this.invalidateProperty(property); // Otherwise, it is already invalidated on init.
         return this;
     },
 

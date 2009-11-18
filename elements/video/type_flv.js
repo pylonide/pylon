@@ -403,7 +403,16 @@ apf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        var content = apf.flash.buildContent({
+        if (this.htmlElement == null) return this;
+
+        this.pluginError = false;
+        
+        apf.flash.embed({
+            // apf.flash#embed properties
+            context          : this,
+            htmlNode         : this.htmlElement,
+            property         : "player",
+            // movie properties
             src              : this.DEFAULT_SWF_PATH,
             width            : "100%",
             height           : "100%",
@@ -423,19 +432,6 @@ apf.video.TypeFlv.prototype = {
             pluginspage      : "http://www.adobe.com/go/getflashplayer",
             menu             : "true"
         });
-
-        if (this.htmlElement == null) return this;
-
-        this.pluginError = false;
-        this.htmlElement.innerHTML = content;
-
-        this.player    = this.getElement(this.name);
-        this.container = this.getElement(this.name + "_Container");
-
-//        var _self = this;
-//        setTimeout(function() {
-//            _self.onResize();
-//        });
 
         return this;
     },
@@ -492,15 +488,15 @@ apf.video.TypeFlv.prototype = {
     },
 
     $destroy: function() {
-        apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
+        if (apf.layout)
+            apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
         if (this.player) {
             try {
                 this.stop();
             }
             catch(e) {}
-            this.player = this.container = null;
+            this.player = null;
             delete this.player;
-            delete this.container;
         }
         this.htmlElement.innerHTML = "";
         this.oVideo = this.htmlElement = null;

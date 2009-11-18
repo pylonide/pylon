@@ -1360,7 +1360,9 @@ apf.window = function(){
                     //#endif
 
                     apf.loaded = true;
-                    apf.dispatchEvent("load");
+                    setTimeout(function() {
+                        apf.dispatchEvent("load");
+                    });
                 }
         
                 //END OF ENTIRE APPLICATION STARTUP

@@ -257,6 +257,43 @@ apf.flash = (function(){
             <a href="http://www.adobe.com/go/getflash/">Adobe Flash Player</a>.';
     }
 
+    function embed(options) {
+        var obj  = options.context,
+            node = options.htmlNode,
+            prop = options.property || "$player";
+        delete options.context, delete options.htmlNode, delete options.property;
+        
+        var content = buildContent(options);
+        apf.addEventListener("load", function() {
+            node.innerHTML = content;
+            obj[prop]      = getElement(options.id);
+            //console.log("flash movie loaded: ", _self.player);
+
+            setTimeout(function() {
+                var fail = null;
+                if (!obj[prop].parentNode) {
+                    fail = "File Uploader error: The movie has to be enabled "
+                         + "manually because of Flashblock. No browser refresh is required.";
+                }
+                else if (obj[prop].style.display == "none") {
+                    fail = "File Uploader error: Adblock Plus blocks or hides the "
+                         + "movie. Please enable it and refresh your browser.";
+                }
+                else if (!obj[prop].offsetWidth) {
+                    fail = "File Uploader error: The Flash movie failed to load. "
+                         + "Please check if the file exists and the path is correct.";
+                }
+
+                if (fail) {
+                    // #ifdef __DEBUG
+                    apf.console.error(fail, "audio");
+                    // #endif
+                    obj.dispatchEvent("error", {message: fail});
+                }
+            }, 1000);
+        });
+    }
+
     /**
      * Build the <OBJECT> tag that will load the Adobe installer for Flash
      * upgrades.
@@ -562,6 +599,7 @@ apf.flash = (function(){
         isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
         buildContent    : buildContent,
+        embed           : embed,
         encode          : encode,
         decode          : decode,
         getElement      : getElement,
