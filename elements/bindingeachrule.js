@@ -33,12 +33,21 @@
  * This example contains a list that displays elements with the tagName
  * 'mail' that do not have a deleted attribute set to 1.
  * <code>
- *  <a:list>
- *      <a:bindings>
- *          ...
- *          <a:each match="mail[not(@deleted='1')]" />
- *      </a:bindings>
- *  </a:list>
+ * <a:model id="mdlList">
+ *     <data>
+ *         <item date="2009-11-12" deleted="0"></item>
+ *         <item date="2009-11-11" deleted="0"></item>
+ *         <item date="2009-11-10" deleted="0"></item>
+ *         <item date="2009-11-09" deleted="1"></item>
+ *         <item date="2009-11-08" deleted="1"></item>
+ *     </data>
+ * </a:model>
+ * <a:list id="list" width="200" height="200" model="mdlList">
+ *     <a:bindings>
+ *         <a:caption match="[@date]" />
+ *         <a:each match="[item[not(@deleted='1')]]" />
+ *     </a:bindings>
+ * </a:list>
  * </code>
  * Example:
  * This example shows how to use the each rule to order files based

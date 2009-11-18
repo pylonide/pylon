@@ -26,13 +26,23 @@
  * bound elements referencing this element.
  * Example:
  * <code>
- *  <a:bindings id="bndFolders" >
- *      <a:caption select="@name" />
- *      <a:icon select="@icon" />
- *      <a:each select="folder" sort="@name" />
- *  </a:bindings>
- *
- *  <a:tree bindings="bndFolders" />
+ * <a:model id="mdlList">
+ *     <data>
+ *         <item date="2009-11-12" deleted="0"></item>
+ *         <item date="2009-11-11" deleted="0"></item>
+ *     </data>
+ * </a:model>
+ * <a:bindings id="bndFolders" >
+ *     <a:caption match="[@date]" />
+ *     <a:icon match="[@icon]" />
+ *     <a:each match="[item]" sort="[@date]" />
+ * </a:bindings>
+ * <a:list 
+ *   id       = "list" 
+ *   width    = "200" 
+ *   height   = "200" 
+ *   model    = "mdlList" 
+ *   bindings = "bndFolders" />
  * </code>
  * @see element.$smartbinding
  *
