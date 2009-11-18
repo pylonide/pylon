@@ -30,37 +30,31 @@
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
  * <code>
- * <a:spinner value="6" min="-99" max="199"></a:spinner>
+ * <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
  * </code>
  * 
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- * <a:spinner>
- *     <a:bindings>
- *         <a:value select="@value" />
- *     </a:bindings>
- * </a:spinner>
+ * <a:model id="mdlSpinner">
+ *     <data value="56"></data>
+ * </a:model>
+ * <a:spinner value="[@value]" model="mdlSpinner" />
  * </code>
- * 
- * Example:
- * A shorter way to write this is:
- * <code>
- * <a:spinner ref="@value" />
- * </code>
- * 
+
  * Example:
  * Is showing usage of model in spinner connected with textbox
  * <code>
  * <a:model id="mdlTest">
  *     <overview page="1" pages="50" />
  * </a:model>
- * <a:spinner id="spinner" min="0" model="mdlTest">
- *     <a:bindings>
- *         <a:value select = "@page" />
- *         <a:max select   = "@pages" />
- *         <a:caption><![CDATA[[@page] of [@pages], it's possible to add more text]]></a:caption>
- *     </a:bindings>
+ * <a:spinner 
+ *   id      = "spinner" 
+ *   min     = "0" 
+ *   max     = "[@pages]" 
+ *   model   = "mdlTest" 
+ *   value   = "[@page]" 
+ *   caption = "[@page] of [@pages]">
  * </a:spinner>
  * <a:textbox value="{spinner.caption}"></a:textbox>
  * </code>
@@ -85,6 +79,11 @@
  */
 apf.spinner = function(struct, tagName){
     this.$init(tagName || "spinner", apf.NODE_VISIBLE, struct);
+    
+    this.max     = 64000;
+    this.min     = -64000;
+    this.focused = false;
+    this.value   = 0;
 };
 
 (function() {
@@ -97,16 +96,11 @@ apf.spinner = function(struct, tagName){
         //#endif
     );
 
-    this.max     = 64000;
-    this.min     = -64000;
-    this.focused = false;
-    this.value   = 0;
-
     this.$supportedProperties.push("width", "value", "max", "min", "caption");
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
-
+apf.console.info("value: "+this.max+" : "+this.min+" : "+  " : "+ this.value+" : " +value)
         if (value) {
             this.value = this.oInput.value = (value > this.max
                 ? this.max
@@ -117,6 +111,7 @@ apf.spinner = function(struct, tagName){
     };
 
     this.$propHandlers["min"] = function(value) {
+        apf.console.info("MIN: "+this.max+" : "+this.min+" : "+value)
         if (!(value = parseInt(value))) return;
         this.min = value;
         if (value > this.value)
@@ -125,7 +120,9 @@ apf.spinner = function(struct, tagName){
 
     this.$propHandlers["max"] = function(value) {
         if (!(value = parseInt(value))) return;
+        apf.console.info("MAX: "+this.max+" : "+this.min+" : "+value)
         this.max = value;
+
         if (value < this.value)
             this.change(value);
     };
