@@ -95,7 +95,9 @@ apf.$x = apf.$loader
         "core/browsers/is_opera.js",
         "core/browsers/is_safari.js",
         "core/browsers/non_ie.js",
-        "core/browsers/is_gears.js"
+        "core/browsers/is_gears.js",
+        
+        "core/markup/domparser.js"
     )
     .wait()
     .script(
@@ -115,7 +117,6 @@ apf.$x = apf.$loader
         "core/parsers/js.js",
         "core/parsers/url.js",
         
-        "core/markup/domparser.js",
         /*"markup/html5.js",
         "core/markup/xforms.js",*/
         "core/markup/xslt/xslt.js",

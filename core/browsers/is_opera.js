@@ -116,34 +116,6 @@ apf.runOpera = function (){
     
     //#endif
     
-    var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var frag = document.createDocumentFragment();
-        for (var node, a = [], i = 0, l = nodeList.length; i < l; i++) {
-            if (!(node = nodeList[i])) continue;
-            frag.appendChild(node);
-        }
-        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-            ? "beforebegin"
-            : "beforeend", serializer.serializeToString(frag));//.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<([^>]+)\/>/g, "<$1></$1>");
-    };
-
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
-        if (!s) {
-            s = xmlNode.serialize 
-                ? xmlNode.serialize(true)
-                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
-                    ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode));
-        }
-        
-        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-            ? "beforebegin"
-            : "beforeend", serializer.serializeToString(frag));//apf.html_entity_decode
-
-        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-    };
-    
     if (apf.runNonIe)
         apf.runNonIe();
         //apf.importClass(apf.runNonIe, true, self);
