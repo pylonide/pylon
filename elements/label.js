@@ -56,16 +56,22 @@
  * Example:
  * Sets the label text based on data loaded into this component.
  * <code>
- *  <a:label>
- *      <a:bindings>
- *          <a:value select="@text" />
- *      </a:bindings>
- *  </a:label>
+ * <a:model id="mdlLabel">
+ *     <data text="Some text"></data>
+ * </a:model>
+ * <a:label model="mdlLabel">
+ *     <a:bindings>
+ *         <a:value match="[@text]" />
+ *     </a:bindings>
+ * </a:label>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:label ref="@text" />
+ * <a:model id="mdlLabel">
+ *     <data text="Some text"></data>
+ * </a:model>
+ * <a:label model="mdlLabel" value="[@text]" />
  * </code>
  */
 apf.label = function(struct, tagName){

@@ -23,30 +23,21 @@
 /**
  * Item of a menu displaying a clickable area.
  * Example:
- * <code>
- *  <a:iconmap id="tbicons" src="toolbar.icons.gif" 
- *    type="horizontal" size="20" offset="2,2" />
- *
- *  <a:menu>
- *      <a:item icon="tbicons:1">example</a:item>
- *      <a:item icon="tbicons:2">example</a:item>
- *      <a:divider />
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider />
- *      <a:check>item check 1</a:check>
- *      <a:check>item check 2</a:check>
- *      <a:divider />
- *      <a:item icon="tbicons:11" submenu="msub">example</a:item>
- *      <a:item icon="tbicons:10">example</a:item>
- *  </a:menu>
- *
- *  <a:menu id="msub" skin="menu2005">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
+ * <a:iconmap 
+ *   id     = "tbicons" 
+ *   src    = "toolbar.icons.gif"
+ *   type   = "horizontal" 
+ *   size   = "20" 
+ *   offset = "2,2" />
+ * <a:menu id="menu1">
+ *     <a:item icon="tbicons:1">Tutorials</a:item>
+ *     <a:item icon="tbicons:5">Contact</a:item>
+ * </a:menu>
+ * <a:toolbar>
+ *     <a:menubar>
+ *         <a:button submenu="menu1">File</a:button>
+ *     </a:menubar>
+ * </a:toolbar>
  * </code>
  * @define item, check, radio
  * @constructor

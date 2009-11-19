@@ -27,33 +27,41 @@
  * why this element is often called a contextmenu.
  * Example:
  * <code>
- *  <a:iconmap id="tbicons" src="toolbar.icons.gif"
- *      type="horizontal" size="20" offset="2,2"></a:iconmap>
- *
- *  <a:menu id="msub">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
- *
- *  <a:menu id="mmain">
- *      <a:item icon="tbicons:1">table_wizard</a:item>
- *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
- *      <a:divider></a:divider>
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider></a:divider>
- *      <a:check hotkey="Ctrl+T">item check 1</a:check>
- *      <a:check hotkey="F3">item check 2</a:check>
- *      <a:divider></a:divider>
- *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
- *      <a:item icon="tbicons:10">table_wizard</a:item>
- *  </a:menu>
- *
- *  <a:window contextmenu="mmain">
- *      ...
- *  </a:window>
+ * <a:iconmap 
+ *   id     = "tbicons" 
+ *   src    = "toolbar.icons.gif"
+ *   type   = "horizontal" 
+ *   size   = "20" 
+ *   offset = "2,2"></a:iconmap>
+ * 
+ * <a:menu id="msub">
+ *     <a:item icon="tbicons:12">test</a:item>
+ *     <a:item icon="tbicons:14">test2</a:item>
+ * </a:menu>
+ * 
+ * <a:menu id="mmain">
+ *     <a:item icon="tbicons:1">table_wizard</a:item>
+ *     <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
+ *     <a:divider></a:divider>
+ *     <a:radio>item 1</a:radio>
+ *     <a:radio>item 2</a:radio>
+ *     <a:radio>item 3</a:radio>
+ *     <a:radio>item 4</a:radio>
+ *     <a:divider></a:divider>
+ *     <a:check hotkey="Ctrl+T">item check 1</a:check>
+ *     <a:check hotkey="F3">item check 2</a:check>
+ *     <a:divider></a:divider>
+ *     <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
+ *     <a:item icon="tbicons:10">table_wizard</a:item>
+ * </a:menu>
+ * 
+ * <a:window 
+ *   visible     = "true" 
+ *   width       = "200"
+ *   height      = "190"
+ *   contextmenu = "mmain"
+ *   center      = "true">
+ * </a:window>
  * </code>
  * @see baseclass.guielement.event.contextmenu
  *

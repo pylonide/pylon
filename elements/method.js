@@ -29,13 +29,13 @@
  *                                       javascript method.
  * Example:
  * <code>
- *  <a:rpc id="comm" protocol="xmlrpc">
- *      <a:method name="save" />
- *  </a:rpc>
+ * <a:rpc id="comm" protocol="xmlrpc">
+ *     <a:method name="save" />
+ * </a:rpc>
  *
- *  <a:script>
- *      comm.save(data);
- *  </a:script>
+ * <a:script>
+ *     comm.save(data);
+ * </a:script>
  * </code>
  * @attribute {String}  [callback]       the name of the method that handles
  *                                       the return of the call.
