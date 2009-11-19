@@ -31,23 +31,23 @@
  * two methods which can be called. The return of the first method is handled
  * by a javascript function called processSearch.
  * <code>
- *  <a:rpc id="comm" protocol="xmlrpc">
- *      <a:method
- *        name    = "searchProduct"
- *        receive = "processSearch" />
- *      <a:method
- *        name = "loadProduct" />
- *  </a:rpc>
+ * <a:rpc id="comm" protocol="xmlrpc">
+ *     <a:method
+ *       name    = "searchProduct"
+ *       receive = "processSearch" />
+ *     <a:method
+ *       name = "loadProduct" />
+ * </a:rpc>
  *
- *  <a:script>
- *      //This function is called when the search returns
- *      function processSearch(data, state, extra){
- *          alert(data)
- *      }
+ * <a:script>
+ *     //This function is called when the search returns
+ *     function processSearch(data, state, extra){
+ *         alert(data)
+ *     }
  *
- *      //Execute a search for the product car
- *      comm.searchProduct('car', 10);
- *  </a:script>
+ *     //Execute a search for the product car
+ *     comm.searchProduct('car', 10);
+ * </a:script>
  * </code>
  *
  * @attribute {String}  protocol         the name of the plugin that is used

@@ -42,21 +42,27 @@
  * Example:
  * This example shows two slider which lets the user indicate a value in a form.
  * <code>
- *  <a:label>How would you grade the opening hours of the helpdesk</a:label>
- *  <a:slider ref="hours_hd"
- *    mask  = "no opinion|bad|below average|average|above average|good"
- *    min   = "0"
- *    max   = "5"
- *    step  = "1"
- *    slide = "snap" />
- *
- *  <a:label>How soon will you make your buying decision</a:label>
- *  <a:slider ref="decide_buy"
- *    mask  = "undecided|1 week|1 month|6 months|1 year|never"
- *    min   = "0"
- *    max   = "5"
- *    step  = "1"
- *    slide = "snap" />
+ * <a:model id="mdlSlider">
+ *     <data hours_hd="2" decide_buy="3"></data>
+ * </a:model>
+ * <a:label>How would you grade the opening hours of the helpdesk</a:label>
+ * <a:slider 
+ *   model = "mdlSlider" 
+ *   value = "[@hours_hd]"
+ *   mask  = "no opinion|bad|below average|average|above average|good"
+ *   min   = "0"
+ *   max   = "5"
+ *   step  = "1"
+ *   slide = "snap" />
+ * <a:label>How soon will you make your buying decision</a:label>
+ * <a:slider 
+ *   model = "mdlSlider" 
+ *   value = "[@decide_buy]"
+ *   mask  = "undecided|1 week|1 month|6 months|1 year|never"
+ *   min   = "0"
+ *   max   = "5"
+ *   step  = "1"
+ *   slide = "snap" />
  * </code>
  *
  * @constructor
@@ -85,7 +91,16 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:slider ref="@value" />
+ * <a:model id="mdlSlider">
+ *     <data value="5"></data>
+ * </a:model>
+ * <a:slider 
+ *   model = "mdlSlider" 
+ *   min   = "0" 
+ *   max   = "10" 
+ *   step  = "1" 
+ *   mask  = "#" 
+ *   value = "[@value]" />
  * </code>
  */
 apf.range  = function(struct, tagName){
@@ -137,9 +152,10 @@ apf.slider = function(struct, tagName){
      * Example:
      * <code>
      *  <a:label>How much money do you make annualy.</a:label>
-     *  <a:range ref="salary"
+     *  <a:range 
+     *    value = "2000"
      *    min   = "0"
-     *    max   = "50000"
+     *    max   = "5000"
      *    step  = "1000"
      *    slide = "snap" />
      * </code>
@@ -217,13 +233,13 @@ apf.slider = function(struct, tagName){
      * used as the caption of the slider when their connected value is picked.
      * Example:
      * <code>
-     *  <a:label>How big is your cat?</a:label>
-     *  <a:slider ref="decide_buy"
-     *    mask  = "don't know|20cm|25cm|30cm|35cm|&gt; 35cm"
-     *    min   = "0"
-     *    max   = "5"
-     *    step  = "1"
-     *    slide = "snap" />
+     * <a:label>How big is your cat?</a:label>
+     * <a:slider value="2"
+     *   mask  = "don't know|20cm|25cm|30cm|35cm|bigger than 35cm"
+     *   min   = "0"
+     *   max   = "5"
+     *   step  = "1"
+     *   slide = "snap" />
      * </code>
      */
     this.$propHandlers["mask"] = function(value){
