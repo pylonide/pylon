@@ -28,22 +28,29 @@
  * This example shows a list with pictures. When one is selected its displayed
  * in the img element.
  * <code>
- *  <a:model id="mdlPictures"> 
- *      <pictures> 
- *          <picture title="Landscape" src="http://example.com/landscape.jpg" />
- *          <picture title="Animal" src="http://example.com/animal.jpg" />
- *          <picture title="River" src="http://example.com/river.jpg" />
- *      </pictures> 
- *  </a:model>
- *  
- *  <a:list id="lstPics" skin="thumbnail" height="200" width="400" 
- *      each = "picture" 
- *      name = "@title" 
- *      model = "mdlPictures" 
- *      image = "@src" 
- *  />
- *   
- *  <a:img ref="@src" model="#lstPics" width="400" />
+ * <a:model id="mdlPictures"> 
+ *     <pictures> 
+ *         <picture title="Landscape" src="slideshow_img/landscape.jpg" />
+ *         <picture title="Animal" src="http://example.com/animal.jpg" />
+ *         <picture title="River" src="http://example.com/river.jpg" />
+ *     </pictures> 
+ * </a:model>
+ * <a:list 
+ *   id     = "lstPics" 
+ *   skin   = "thumbnail" 
+ *   height = "200" 
+ *   width  = "400" 
+ *   model  = "mdlPictures">
+ *     <a:each match = "[picture]" >
+ *         <a:name match="[@title]" />
+ *         <a:image match="[@src]" />
+ *     </a:each>
+ * </a:list>
+ * <a:img 
+ *   model  = "{lstPics.selected}" 
+ *   value  = "[@src]" 
+ *   width  = "200" 
+ *   height = "200" />
  * </code>
  *
  * @constructor

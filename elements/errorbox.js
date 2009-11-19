@@ -35,7 +35,7 @@
  * </code>
  * Remarks:
  * In most cases the errorbox element is not created directly but implicitly
- * by a validationgroup. an element that goes into an error state will
+ * by a validationgroup. An element that goes into an error state will
  * show the errorbox.
  * <code>
  *  <a:bar validgroup="vgForm">

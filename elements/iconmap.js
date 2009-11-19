@@ -26,13 +26,21 @@
  * single image containing many icons.
  * Example:
  * <code>
- *  <a:iconmap id="tbicons" src="toolbar.icons.gif"
- *    type="horizontal" size="20" offset="2,2" />
- *
- *  <a:menu id="mmain" skin="menu2005">
- *      <a:item icon="tbicons:1">Copy</a:item>
- *      <a:item icon="tbicons:2">Cut</a:item>
- *  </a:menu>
+ * <a:iconmap 
+ *   id     = "tbicons" 
+ *   src    = "toolbar.icons.gif"
+ *   type   = "horizontal" 
+ *   size   = "20" 
+ *   offset = "2,2" />
+ * <a:menu id="menu1">
+ *     <a:item icon="tbicons:1">Tutorials</a:item>
+ *     <a:item icon="tbicons:5">Contact</a:item>
+ * </a:menu>
+ * <a:toolbar>
+ *     <a:menubar>
+ *         <a:button submenu="menu1">File</a:button>
+ *     </a:menubar>
+ * </a:toolbar>
  * </code>
  * @attribute {String} src    the location of the image.
  * @attribute {String} type   the spatial distribution of the icons within the image.
