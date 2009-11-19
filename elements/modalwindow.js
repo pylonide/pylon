@@ -94,17 +94,19 @@ apf.WinServer = {
  * docking in an alignment layout.
  * Example:
  * <code>
- *  <a:window id="winMail"
- *    modal       = "false"
- *    buttons     = "min|max|close"
- *    title       = "Mail message"
- *    icon        = "icoMail.gif"
- *    visible     = "true"
- *    resizable   = "true"
- *    minwidth    = "300"
- *    minheight   = "290">
- *      ...
- *  </a:window>
+ * <a:window 
+ *   id        = "winMail"
+ *   modal     = "false"
+ *   buttons   = "min|max|close"
+ *   title     = "Mail message"
+ *   icon      = "icoMail.gif"
+ *   visible   = "true"
+ *   resizable = "true"
+ *   minwidth  = "300"
+ *   minheight = "290"
+ *   width     = "500"
+ *   height    = "400">
+ * </a:window>
  * </code>
  *
  * @constructor

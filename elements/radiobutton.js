@@ -26,23 +26,23 @@
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
  * <code>
- *  <a:frame title="Options">
- *      <a:radiobutton>Option 1</a:radiobutton>
- *      <a:radiobutton>Option 2</a:radiobutton>
- *      <a:radiobutton>Option 3</a:radiobutton>
- *      <a:radiobutton>Option 4</a:radiobutton>
- *  </a:frame>
+ * <a:frame title="Options">
+ *     <a:radiobutton>Option 1</a:radiobutton>
+ *     <a:radiobutton>Option 2</a:radiobutton>
+ *     <a:radiobutton>Option 3</a:radiobutton>
+ *     <a:radiobutton>Option 4</a:radiobutton>
+ * </a:frame>
  * </code>
  * Example:
  * This example shows radio buttons with an explicit group set:
  * <code>
- *  <a:label>Options</a:label>
- *  <a:radiobutton group="g1">Option 1</a:radiobutton>
- *  <a:radiobutton group="g1">Option 2</a:radiobutton>
+ * <a:label>Options</a:label>
+ * <a:radiobutton group="g1">Option 1</a:radiobutton>
+ * <a:radiobutton group="g1">Option 2</a:radiobutton>
  *
- *  <a:label>Choices</a:label>
- *  <a:radiobutton group="g2">Choice 1</a:radiobutton>
- *  <a:radiobutton group="g2">Choice 2</a:radiobutton>
+ * <a:label>Choices</a:label>
+ * <a:radiobutton group="g2">Choice 1</a:radiobutton>
+ * <a:radiobutton group="g2">Choice 2</a:radiobutton>
  * </code>
  *
  * @constructor
@@ -65,13 +65,13 @@
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  *
  *  <a:bindings id="bndExample">
- *      <a:value select="@value" />
+ *      <a:value match="[@value]" />
  *  </a:bindings>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:radiobutton group="g2" ref="@value" value="1">Choice 1</a:radiobutton>
+ *  <a:radiobutton group="g2" value="[@value]" value="1">Choice 1</a:radiobutton>
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  * </code>
  *

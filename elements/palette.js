@@ -52,7 +52,10 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:palette ref="@color" />
+ * <a:model id="mdlColor">
+ *     <data color="#00000"></data>
+ * </a:model>
+ * <a:palette model="mdlColor" value="[@color]" />
  * </code>
  */
 apf.palette = function(struct, tagName){

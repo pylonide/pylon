@@ -31,9 +31,9 @@
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
  * <code>
- *  <a:progressbar
- *     value="{apf.offline.progress}"
- *     visible="{apf.offline.syncing}" />
+ * <a:progressbar
+ *   value   = "{apf.offline.progress}"
+ *   visible = "{apf.offline.syncing}" />
  * </code>
  *
  * @constructor
@@ -61,7 +61,10 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:progressbar ref="@progress" />
+ * <a:model>
+ *     <data progress="50"></data>
+ * </a:model>
+ * <a:progressbar min="0" max="100" value="[@progress]" />
  * </code>
  */
 apf.progress    = function(struct, tagName){

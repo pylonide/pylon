@@ -40,7 +40,7 @@
  *  </a:teleport>
  *  
  *  <a:remote transport="myXMPP" id="rmtPersons">
- *      <a:person unique="@id" />
+ *      <a:person unique="[@id]" />
  *  </a:remote>
  *  
  *  <a:model id="mdlPersons" remote="rmtPersons">
@@ -52,8 +52,8 @@
  *
  *  <a:list id="lstPersons" model="mdlPersons" width="200" height="100">
  *      <a:bindings>
- *          <a:each select="person" />
- *          <a:caption select="text()" />
+ *          <a:each match="[person]" />
+ *          <a:caption match="[text()]" />
  *          <a:icon value="icoUsers.gif" />
  *      </a:bindings>
  *  </a:list>
@@ -125,10 +125,10 @@
  *  </a:model>
  *
  *  <a:remote transport="myXMPP" id="rmtPersons">
- *      <a:person unique="@number" />
- *      <a:unique select="self::galaxy" unique="@name" />
- *      <a:planet unique="@id" />
- *      <a:species unique="text()" />
+ *      <a:person unique="[@number]" />
+ *      <a:unique match="[self::galaxy]" unique="[@name]" />
+ *      <a:planet unique="[@id]" />
+ *      <a:species unique="[text()]" />
  *  </a:remote>
  * </code>
  * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes} that share a similar uniqueness trait.

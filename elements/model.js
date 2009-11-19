@@ -29,22 +29,27 @@
  * {@link element.remove synchronization between multiple clients}.
  * Example:
  * <code>
- *  <a:model load="products.xml" />
+ * <a:model src="products.xml" />
  * </code>
  * Example:
  * A small form where the bound data is submitted to a server using a model.
  * <code>
- *  <a:model id="mdlForm" submission="save_form.asp" />
- *
- *  <a:bar model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox ref="name" />
- *      <a:label>Address</a:label>
- *      <a:textarea ref="address" />
- *      ...
- *
- *      <a:button default="true" action="submit">Submit</a:button>
- *  </a:bar>
+ * <a:model id="mdlForm" submission="save_form.asp">
+ *     <data name="Lukasz" address="Poland"></data>
+ * </a:model>
+ * 
+ * <a:frame model="mdlForm">
+ *     <a:label>Name</a:label>
+ *     <a:textbox value="[@name]" />
+ *     <a:label>Address</a:label>
+ *     <a:textarea 
+ *       value  = "[@address]" 
+ *       width  = "100" 
+ *       height = "50" />
+ *     <a:button 
+ *       default = "true" 
+ *       action  = "submit">Submit</a:button>
+ * </a:frame>
  * </code>
  *
  * @event beforeretrieve    Fires before a request is made to retrieve data.
