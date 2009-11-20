@@ -59,11 +59,7 @@
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
- *  <a:label model="mdlLabel">
- *      <a:bindings>
- *          <a:value match="[@text]" />
- *      </a:bindings>
- *  </a:label>
+ *  <a:label model="mdlLabel" value="[@text]" />
  * </code>
  * Example:
  * A shorter way to write this is:
@@ -71,7 +67,7 @@
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
- *  <a:label model="mdlLabel" value="[@text]" />
+ *  <a:label value="[mdlLabel::@text]" />
  * </code>
  */
 apf.label = function(struct, tagName){
