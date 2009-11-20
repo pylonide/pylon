@@ -52,19 +52,18 @@
  * Example:
  * Sets the progress position based on data loaded into this component.
  * <code>
- *  <a:progressbar>
- *      <a:bindings>
- *          <a:value match="[@progress]" />
- *      </a:bindings>
- *  </a:progressbar>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
  *  <a:model>
  *      <data progress="50"></data>
  *  </a:model>
  *  <a:progressbar min="0" max="100" value="[@progress]" />
+ * </code>
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <a:model id="mdlProgress">
+ *      <data progress="50"></data>
+ *  </a:model>
+ *  <a:progressbar value="[mdlProgress::@progress]" />
  * </code>
  */
 apf.progress    = function(struct, tagName){

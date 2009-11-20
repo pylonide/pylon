@@ -51,11 +51,10 @@
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- *  <a:textbox>
- *      <a:bindings>
- *          <a:value match="[@name]" />
- *      </a:bindings>
- *  </a:textbox>
+ *  <a:model id="mdlTextbox">
+ *      <data name="Lukasz"></data>
+ *  </a:model>
+ *  <a:textbox model="mdlTextbox" value="[@name]" />
  * </code>
  * Example:
  * A shorter way to write this is:
@@ -63,8 +62,7 @@
  *  <a:model id="mdlTextbox">
  *      <data name="Lukasz"></data>
  *  </a:model>
- *  
- *  <a:textbox model="mdlTextbox" value="[@name]" />
+ *  <a:textbox value="[mdlTextbox::@name]" />
  * </code>
  *
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 

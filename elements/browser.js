@@ -48,11 +48,8 @@
  *  <a:browser 
  *    model  = "mdlBrowser" 
  *    width  = "800" 
- *    height = "600">
- *      <a:bindings>
- *          <a:value match="[@url]" />
- *      </a:bindings>
- *  </a:browser>
+ *    height = "600" 
+ *    value  = "[@url]" />
  * </code>
  * Example:
  * A shorter way to write this is:
@@ -61,10 +58,9 @@
  *      <data url="http://www.w3c.org"></data>
  *  </a:model>
  *  <a:browser 
- *    model  = "mdlBrowser" 
  *    width  = "800" 
  *    height = "600" 
- *    value  = "[@url]" />
+ *    value  = "[mdlBrowser::@url]" />
  * </code>
  */
 apf.browser = function(struct, tagName){

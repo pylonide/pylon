@@ -45,11 +45,12 @@
  * Example:
  * Sets the color based on data loaded into this component.
  * <code>
- *  <a:colorpicker>
- *      <a:bindings>
- *          <a:value match="[@color]" />
- *      </a:bindings>
- *  </a:colorpicker>
+ *  <a:model id="mdlColor">
+ *      <data color="#00099"></data>
+ *  </a:model>
+ *  <a:colorpicker 
+ *    model = "mdlColor" 
+ *    value = "[@color]" />
  * </code>
  * Example:
  * A shorter way to write this is:
@@ -57,9 +58,7 @@
  *  <a:model id="mdlColor">
  *      <data color="#00099"></data>
  *  </a:model>
- *  <a:colorpicker 
- *    model = "mdlColor" 
- *    value = "[@color]" />
+ *  <a:colorpicker value="[mdlColor::@color]" />
  * </code>
  */
 apf.colorpicker = function(struct, tagName){

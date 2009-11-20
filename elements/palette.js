@@ -43,19 +43,18 @@
  * Example:
  * Sets the color based on data loaded into this component.
  * <code>
- *  <a:palette>
- *      <a:bindings>
- *          <a:value select="@color" />
- *      </a:bindings>
- *  </a:palette>
+ *  <a:model id="mdlColor">
+ *      <data color="#00099"></data>
+ *  </a:model>
+ *  <a:palette model="mdlColor" value="[@color]" />
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
  *  <a:model id="mdlColor">
- *      <data color="#00000"></data>
+ *      <data color="#00099"></data>
  *  </a:model>
- *  <a:palette model="mdlColor" value="[@color]" />
+ *  <a:palette value="[mdlColor::@color]" />
  * </code>
  */
 apf.palette = function(struct, tagName){

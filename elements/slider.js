@@ -82,15 +82,6 @@
  * Example:
  * Sets the slider position based on data loaded into this component.
  * <code>
- *  <a:slider>
- *      <a:bindings>
- *          <a:value select="@value" />
- *      </a:bindings>
- *  </a:slider>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
  *  <a:model id="mdlSlider">
  *      <data value="5"></data>
  *  </a:model>
@@ -101,6 +92,19 @@
  *    step  = "1" 
  *    mask  = "#" 
  *    value = "[@value]" />
+ * </code>
+ * Example:
+ * A shorter way to write this is:
+ * <code>
+ *  <a:model id="mdlSlider">
+ *      <data value="5"></data>
+ *  </a:model>
+ *  <a:slider 
+ *    min   = "0" 
+ *    max   = "10" 
+ *    step  = "1" 
+ *    mask  = "#" 
+ *    value = "[mdlSlider::@value]" />
  * </code>
  */
 apf.range  = function(struct, tagName){
