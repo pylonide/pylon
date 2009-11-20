@@ -134,15 +134,15 @@
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <a:list>
+ *  <a:tree model="messages.xml">
  *      <a:bindings>
- *          <a:caption select="@caption" />
- *          <a:css select="message[@unread]" value="highlighUnread" />
- *          <a:icon select="@icon" />
- *          <a:icon select="self::folder" value="icoFolder.gif" />
- *          <a:each select="folder" />
- *      </bindings>
- *  </list>
+ *          <a:caption match="[@caption]" />
+ *          <a:css match="[folder/message[@unread]]" value="highlighUnread" />
+ *          <a:icon match="[@icon]" />
+ *          <a:icon match="[folder]" value="icoDir.png" />
+ *          <a:each match="[folder|message]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
  * @binding description Determines the text that is displayed under the expanded row.

@@ -74,14 +74,14 @@
  * <code>
  *  <a:upload>
  *      <a:bindings>
- *          <a:value select="@filename" />
+ *          <a:value match="[@filename]" />
  *      </a:bindings>
  *  </a:upload>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:upload ref="@filename" />
+ *  <a:upload value="[@filename]" />
  * </code>
  *
  * @todo get server side information to update the progressbar.

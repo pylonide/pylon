@@ -49,11 +49,11 @@
  * </code>
  * Example:
  * <code>
- *  <a:tree model="items.xml">
+ *  <a:tree model="filesystem.xml">
  *      <a:bindings>
- *          <a:caption select="@name" />
- *          <a:icon select="@icon"/>
- *          <a:each select="file|folder" />
+ *          <a:caption match="[@caption|@filename]" />
+ *          <a:icon match="[@icon]" />
+ *          <a:each match="[drive|file|folder]" />
  *      </a:bindings>
  *  </a:tree>
  * </code>
@@ -82,11 +82,13 @@
  * read the directory contents using webdav and insert it under the selected 
  * tree node.
  * <code>
- *  <a:bindings>
- *      <a:caption select="@caption" />
- *      <a:insert select="self::folder" get="{myWebdav.readdir([@id])}" />
- *      <a:each select="folder" />
- *  </a:bindings>
+ *  <a:tree model="filesystem.xml">
+ *      <a:bindings>
+ *          <a:caption match="[@caption]" />
+ *          <a:insert match="[folder]" get="{myWebdav.readdir([@id])}" />
+ *          <a:each match="[folder]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * @attribute {String} get the {@link term.datainstruction data instruction} that is used to load the new data.
  * @binding caption  Determines the caption of a tree node.
@@ -95,13 +97,13 @@
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <a:tree>
+ *  <a:tree model="messages.xml">
  *      <a:bindings>
- *          <a:caption select="@caption" />
- *          <a:css select="message[@unread]" value="highlighUnread" />
- *          <a:icon select="@icon" />
- *          <a:icon select="self::folder" value="icoFolder.gif" />
- *          <a:each select="folder" />
+ *          <a:caption match="[@caption]" />
+ *          <a:css match="[folder/message[@unread]]" value="highlighUnread" />
+ *          <a:icon match="[@icon]" />
+ *          <a:icon match="[folder]" value="icoDir.png" />
+ *          <a:each match="[folder|message]" />
  *      </a:bindings>
  *  </a:tree>
  * </code>
