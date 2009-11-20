@@ -23,21 +23,21 @@
 /**
  * Item of a menu displaying a clickable area.
  * Example:
- * <a:iconmap 
- *   id     = "tbicons" 
- *   src    = "toolbar.icons.gif"
- *   type   = "horizontal" 
- *   size   = "20" 
- *   offset = "2,2" />
- * <a:menu id="menu1">
- *     <a:item icon="tbicons:1">Tutorials</a:item>
- *     <a:item icon="tbicons:5">Contact</a:item>
- * </a:menu>
- * <a:toolbar>
- *     <a:menubar>
- *         <a:button submenu="menu1">File</a:button>
- *     </a:menubar>
- * </a:toolbar>
+ *  <a:iconmap 
+ *    id     = "tbicons" 
+ *    src    = "toolbar.icons.gif"
+ *    type   = "horizontal" 
+ *    size   = "20" 
+ *    offset = "2,2" />
+ *  <a:menu id="menu1">
+ *      <a:item icon="tbicons:1">Tutorials</a:item>
+ *      <a:item icon="tbicons:5">Contact</a:item>
+ *  </a:menu>
+ *  <a:toolbar>
+ *      <a:menubar>
+ *          <a:button submenu="menu1">File</a:button>
+ *      </a:menubar>
+ *  </a:toolbar>
  * </code>
  * @define item, check, radio
  * @constructor
@@ -150,7 +150,7 @@ apf.item  = function(struct, tagName){
      * space, a minus or plus sign as a seperator.
      * Example:
      * <code>
-     *      <a:item hotkey="Ctrl+Q">Quit</a:item>
+     *  <a:item hotkey="Ctrl+Q">Quit</a:item>
      * </code>
      */
     this.$propHandlers["hotkey"] = function(value){

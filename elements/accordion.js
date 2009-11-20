@@ -59,47 +59,47 @@
  * expanded on load.
  * 
  * <code>
- * <a:accordion
- *      width           = "400"
- *      height          = "200"
- *      left            = "200"
- *      top             = "20"
- *      multiexpand     = "true"
- *      expand          = "click"
- *      startexpanded   = "false"
- *      skin            = "accordion_apf_hor">
- *     <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
- *         <b>Discography</b>
- *         <ul>
- *             <li>Piece Of Mind</li>
- *             <li>X Factor</li>
- *         </ul>
- *     </a:bar>
- *     <a:bar title="Megadeth" icon="images/accordion_icon.png">
- *         <b>Discography</b>
- *         <ul>
- *             <li>Youthanasia</li>
- *         </ul>
- *     </a:bar>
- *     <a:bar title="Judas Priest" expanded="true" icon="icon.png">
- *         <b>Discography</b>
- *         <ul>
- *             <li>Painkiller</li>
- *         </ul>
- *     </a:bar>
- *     <a:bar title="Metallica" icon="images/accordion_icon.png">
- *         <b>Discography</b>
- *         <ul>
- *             <li>Load</li>
- *         </ul>
- *     </a:bar>
- *     <a:bar title="Behemoth" icon="images/accordion_icon.png">
- *         <b>Discography</b>
- *         <ul>
- *             <li>Satanica</li>
- *         </ul>
- *     </a:bar>
- * </a:accordion>
+ *  <a:accordion
+ *    width           = "400"
+ *    height          = "200"
+ *    left            = "200"
+ *    top             = "20"
+ *    multiexpand     = "true"
+ *    expand          = "click"
+ *    startexpanded   = "false"
+ *    skin            = "accordion_apf_hor">
+ *      <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
+ *          <b>Discography</b>
+ *          <ul>
+ *              <li>Piece Of Mind</li>
+ *              <li>X Factor</li>
+ *          </ul>
+ *      </a:bar>
+ *      <a:bar title="Megadeth" icon="images/accordion_icon.png">
+ *          <b>Discography</b>
+ *          <ul>
+ *              <li>Youthanasia</li>
+ *          </ul>
+ *      </a:bar>
+ *      <a:bar title="Judas Priest" expanded="true" icon="icon.png">
+ *          <b>Discography</b>
+ *          <ul>
+ *              <li>Painkiller</li>
+ *          </ul>
+ *      </a:bar>
+ *      <a:bar title="Metallica" icon="images/accordion_icon.png">
+ *          <b>Discography</b>
+ *          <ul>
+ *              <li>Load</li>
+ *          </ul>
+ *      </a:bar>
+ *      <a:bar title="Behemoth" icon="images/accordion_icon.png">
+ *          <b>Discography</b>
+ *          <ul>
+ *              <li>Satanica</li>
+ *          </ul>
+ *      </a:bar>
+ *  </a:accordion>
  * </code>
  * 
  * Example:
@@ -107,36 +107,35 @@
  * at a time. Both bars conatins APF components.
  * 
  * <code>
- * <a:accordion
- *     width           = "400"
- *     left            = "200"
- *     top             = "500"
- *     animtype        = "normal normal"
- *     animdelay       = "10"
- *     multiexpand     = "false"
- *     expand          = "click"
- *     startexpanded   = "false"
- *     skin            = "accordion_vertical"
- *     >
- *     <a:bar title="Components" expanded="true" icon="icon.png">
- *         <a:label>Choose Your favourite component</a:label><br />
- *         <a:dropdown>
- *             <a:item>Bar</a:item>
- *             <a:item>Notifier</a:item>
- *             <a:item>Tree</a:item>
- *         </a:dropdown><br />
- *     </a:bar>
- *     <a:bar title="Blog" icon="images/accordion_icon.png">
- *         <a:label>Choose Your favourite blog</a:label><br />
- *         <a:radiobutton group="g1">overthinkings</a:radiobutton> 
- *         <a:radiobutton group="g1">Rik on code </a:radiobutton> 
- *         <a:radiobutton group="g1">Arnolds wor(l)ds</a:radiobutton>
- *         <a:radiobutton group="g1">MikedeBoer.nl </a:radiobutton>
- *         <a:radiobutton group="g1">All about Javascript </a:radiobutton>
- *         <a:radiobutton group="g1">observing the dos</a:radiobutton><br />
- *         <a:button>Vote</a:button><br />
- *     </a:bar>
- * </a:accordion>
+ *  <a:accordion
+ *    width           = "400"
+ *    left            = "200"
+ *    top             = "500"
+ *    animtype        = "normal normal"
+ *    animdelay       = "10"
+ *    multiexpand     = "false"
+ *    expand          = "click"
+ *    startexpanded   = "false"
+ *    skin            = "accordion_vertical">
+ *      <a:bar title="Components" expanded="true" icon="icon.png">
+ *          <a:label>Choose Your favourite component</a:label><br />
+ *          <a:dropdown>
+ *              <a:item>Bar</a:item>
+ *              <a:item>Notifier</a:item>
+ *              <a:item>Tree</a:item>
+ *          </a:dropdown><br />
+ *      </a:bar>
+ *      <a:bar title="Blog" icon="images/accordion_icon.png">
+ *          <a:label>Choose Your favourite blog</a:label><br />
+ *          <a:radiobutton group="g1">overthinkings</a:radiobutton> 
+ *          <a:radiobutton group="g1">Rik on code </a:radiobutton> 
+ *          <a:radiobutton group="g1">Arnolds wor(l)ds</a:radiobutton>
+ *          <a:radiobutton group="g1">MikedeBoer.nl </a:radiobutton>
+ *          <a:radiobutton group="g1">All about Javascript </a:radiobutton>
+ *          <a:radiobutton group="g1">observing the dos</a:radiobutton><br />
+ *          <a:button>Vote</a:button><br />
+ *      </a:bar>
+ *  </a:accordion>
  * </code>
  *
  * @author      Lukasz Lipinski

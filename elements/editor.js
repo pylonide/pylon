@@ -27,13 +27,13 @@
  * considered to be the market leader among word-processors.
  * Example:
  * <code>
- *     <a:editor
- *         id     = "myEditor"
- *         left   = "100"
- *         width  = "50%"
- *         height = "90%-10">
- *         Default value...
- *     </a:editor>
+ *  <a:editor
+ *    id     = "myEditor"
+ *    left   = "100"
+ *    width  = "50%"
+ *    height = "90%-10">
+ *    Default value...
+ *  </a:editor>
  * </code>
  *
  * @constructor
@@ -54,23 +54,23 @@
  * <code>
  *  <a:editor>
  *      <a:bindings>
- *          <a:value select="body/text()" />
+ *          <a:value match="[body/text()]" />
  *      </a:bindings>
  *  </a:editor>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- * <a:model id="mdlEditor">
- *     <data>
- *         <body>Some text</body>
- *     </data>
- * </a:model>
- * <a:editor 
- *   width  = "600" 
- *   height = "300" 
- *   model  = "mdlEditor" 
- *   value  = "[body/text()]" />
+ *  <a:model id="mdlEditor">
+ *      <data>
+ *          <body>Some text</body>
+ *      </data>
+ *  </a:model>
+ *  <a:editor 
+ *    width  = "600" 
+ *    height = "300" 
+ *    model  = "mdlEditor" 
+ *    value  = "[body/text()]" />
  * </code>
  */
 apf.editor = function(struct, tagName){

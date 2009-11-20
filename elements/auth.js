@@ -33,16 +33,16 @@
  * Example:
  * This example sets up apf.auth with two services that it can log into. 
  * <code>
- * <a:appsettings>
- *     <a:auth>
- *          <a:service name   = "my-backend"
- *                     login  = "{comm.login(username, password)}"
- *                     logout = "{comm.logout()}" />
- *          <a:service name   = "my-jabber-server"
- *                     login  = "{myXmpp.login(username, password, domain)}"
- *                     logout = "{myXmpp.logout()}" />
- *     </a:auth>
- * </a:appsettings>
+ *  <a:appsettings>
+ *      <a:auth>
+ *           <a:service name   = "my-backend"
+ *                      login  = "{comm.login(username, password)}"
+ *                      logout = "{comm.logout()}" />
+ *           <a:service name   = "my-jabber-server"
+ *                      login  = "{myXmpp.login(username, password, domain)}"
+ *                      logout = "{myXmpp.logout()}" />
+ *      </a:auth>
+ *  </a:appsettings>
  * </code>
  * Example:
  * A login window with different states managed by apf.auth

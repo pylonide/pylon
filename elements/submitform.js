@@ -817,7 +817,7 @@ apf.submitform = function(struct, tagName){
      *    [useelements="boolean"]
      *    [model="id"]
      *  >
-     *    <a:Button action="submit" [submission="@id"] [model=""] />
+     *    <a:button action="submit" [submission="[@id]"] [model=""] />
      *  </a:submitform>
      */
     this.submit = function(submissionId){

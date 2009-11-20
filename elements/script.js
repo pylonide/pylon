@@ -30,11 +30,11 @@
  * </code>
  * Example:
  * <code>
- * <a:script>//<!-- 
- *     for (var i = 0; i < 2; i++) {
- *         alert(i);
- *     }
- * //--></a:script>
+ *  <a:script>//<!-- 
+ *      for (var i = 0; i < 2; i++) {
+ *          alert(i);
+ *      }
+ *  //--></a:script>
  * </code>
  * @attribute {String} src the location of the script file.
  * @addnode global, anyaml

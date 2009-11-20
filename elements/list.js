@@ -32,73 +32,73 @@
  * Example:
  * A simple list with inline items.
  * <code>
- * <a:list multiselect="false">
- *     <a:item>The Netherlands</a:item>
- *     <a:item>United States of America</a:item>
- *     <a:item>United Kingdom</a:item>
- *     ...
- * </a:list>
+ *  <a:list multiselect="false">
+ *      <a:item>The Netherlands</a:item>
+ *      <a:item>United States of America</a:item>
+ *      <a:item>United Kingdom</a:item>
+ *      ...
+ *  </a:list>
  * </code>
  * Example:
  * A databound list with items loaded from an xml file.
  * <code>
- * <a:list model="friends.xml" each="[friend]" caption="[@name]" />
+ *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
  * </code>
  * Example:
  * A databound list using the bindings element
  * <code>
- * <a:model id="mdlList">
- *     <data>
- *         <item date="2009-11-12" deleted="0"></item>
- *         <item date="2009-11-11" deleted="0"></item>
- *         <item date="2009-11-10" deleted="0"></item>
- *         <item date="2009-11-09" deleted="1"></item>
- *         <item date="2009-11-08" deleted="1"></item>
- *     </data>
- * </a:model>
- * <a:list id="list" width="200" height="200" model="mdlList">
- *     <a:bindings>
- *         <a:caption match="[@date]" />
- *         <a:each match="[item[not(@deleted='1')]]" />
- *     </a:bindings>
- * </a:list>
+ *  <a:model id="mdlList">
+ *      <data>
+ *          <item date="2009-11-12" deleted="0"></item>
+ *          <item date="2009-11-11" deleted="0"></item>
+ *          <item date="2009-11-10" deleted="0"></item>
+ *          <item date="2009-11-09" deleted="1"></item>
+ *          <item date="2009-11-08" deleted="1"></item>
+ *      </data>
+ *  </a:model>
+ *  <a:list id="list" width="200" height="200" model="mdlList">
+ *      <a:bindings>
+ *          <a:caption match="[@date]" />
+ *          <a:each match="[item[not(@deleted='1')]]" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * Example:
  * A small product search application using a list to display results.
  * <code>
- * <a:bar>
- *     <h1>Search for a product</h1>
- *     <a:textbox id="txtSearch" selectfocus="true" />
- *     <a:button onclick="search()" default="true">Search</a:button>
- * </a:bar>
+ *  <a:bar>
+ *      <h1>Search for a product</h1>
+ *      <a:textbox id="txtSearch" selectfocus="true" />
+ *      <a:button onclick="search()" default="true">Search</a:button>
+ *  </a:bar>
  * 
- * <a:model id="mdlSearch">
- *     <data>
- *         <item title="Title 1" src="siteimg/slideshow_img/img1_small.jpg" descr="Descr 1"></item>
- *         <item title="Title 2" src="siteimg/slideshow_img/img2_small.jpg" descr="Descr 2"></item>
- *     </data>
- * </a:model>
+ *  <a:model id="mdlSearch">
+ *      <data>
+ *          <item title="Title 1" src="siteimg/slideshow_img/img1_small.jpg" descr="Descr 1"></item>
+ *          <item title="Title 2" src="siteimg/slideshow_img/img2_small.jpg" descr="Descr 2"></item>
+ *      </data>
+ *  </a:model>
  * 
- * <a:list 
- *   model         = "mdlSearch"
- *   autoselect    = "false" 
- *   skin          = "thumbnail" 
- *   width         = "400"
- *   height        = "400"
- *   caching       = "false" 
- *   empty-message = "No products found">
- *     <a:bindings>
- *         <a:caption match="[@title]" />
- *         <a:image match="[@src]" />
- *         <a:each match="[item]" />
- *     </a:bindings>
- * </a:list>
+ *  <a:list 
+ *    model         = "mdlSearch"
+ *    autoselect    = "false" 
+ *    skin          = "thumbnail" 
+ *    width         = "400"
+ *    height        = "400"
+ *    caching       = "false" 
+ *    empty-message = "No products found">
+ *      <a:bindings>
+ *          <a:caption match="[@title]" />
+ *          <a:image match="[@src]" />
+ *          <a:each match="[item]" />
+ *      </a:bindings>
+ *  </a:list>
  * 
- * <a:script>
- *     function search(){
- *         mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
- *     }
- * </a:script>
+ *  <a:script>
+ *      function search(){
+ *          mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
+ *      }
+ *  </a:script>
  * </code>
  *
  * @event click Fires when a user presses a mouse button while over this element.
@@ -241,13 +241,13 @@ apf.list      = function(struct, tagName){
      *    more  = "caption:Other newspaper" 
      *    model = "mdlSuggestions:question[@key='krant']">
      *      <a:bindings>
-     *          <a:caption select="text()" />
-     *          <a:value select="text()" />
-     *          <a:each select="answer" />
+     *          <a:caption match="[text()]" />
+     *          <a:value match="[text()]" />
+     *          <a:each match="[answer]" />
      *      </a:bindings>
      *      <a:actions>
-     *          <a:rename select="self::node()[@custom='1']" />
-     *          <a:remove select="self::node()[@custom='1']" />
+     *          <a:rename select="[node()[@custom='1']]" />
+     *          <a:remove select="[node()[@custom='1']]" />
      *          <a:add>
      *              <answer custom="1" />
      *          </a:add>

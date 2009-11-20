@@ -64,23 +64,23 @@
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
  * <code>
- * <a:caldropdown 
- *   top           = "200" 
- *   left          = "400" 
- *   output-format = "yyyy-mm-dd" 
- *   value         = "2008-12-06" />
+ *  <a:caldropdown 
+ *    top           = "200" 
+ *    left          = "400" 
+ *    output-format = "yyyy-mm-dd" 
+ *    value         = "2008-12-06" />
  * </code>
-
+ * 
  * Example:
  * Sets the date based on data loaded into this component.
  * <code>
- * <a:model id="mdlCalDD">
- *      <data date="2009-11-25" />
- * </a:model>
- * <a:caldropdown 
- *   output-format = "yyyy-mm-dd" 
- *   model         = "mdlCalDD" 
- *   value         = "[@date]" />
+ *  <a:model id="mdlCalDD">
+ *       <data date="2009-11-25" />
+ *  </a:model>
+ *  <a:caldropdown 
+ *    output-format = "yyyy-mm-dd" 
+ *    model         = "mdlCalDD" 
+ *    value         = "[@date]" />
  * </code>
  */
 

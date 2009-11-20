@@ -42,8 +42,8 @@
  * </code>
  * An element can connect directly to a model in order to bind to data.
  * <code>
- * <a:model id="mdlExample" />
- * <a:tree model="mdlExample" />
+ *  <a:model id="mdlExample" />
+ *  <a:tree model="mdlExample" />
  * </code>
  *
  * The model can also be part of a smartbinding that is used by the element. 
@@ -149,25 +149,25 @@
  * In the next example a list is bound to some data representing a contact list.
  * Each contact's name is displayed as the caption of the item.
  * <code>
- * <a:model id="mdlSmart1">
- *     <data>
- *         <contact>
- *             <name>Ruben</name>
- *             <company>Javeline</company>
- *         </contact>
- *         <contact>
- *             <name>Łukasz</name>
- *             <company>Javeline</company>
- *         </contact>
- *     </data>
- * </a:model>
- * <a:list model="mdlSmart1">
- *     <a:bindings>
- *         <a:caption value="[name]" />
- *         <a:icon value="contact.png" />
- *         <a:each match="[contact]" />
- *     </a:bindings>
- * </a:list>
+ *  <a:model id="mdlSmart1">
+ *      <data>
+ *          <contact>
+ *              <name>Ruben</name>
+ *              <company>Javeline</company>
+ *          </contact>
+ *          <contact>
+ *              <name>Łukasz</name>
+ *              <company>Javeline</company>
+ *          </contact>
+ *      </data>
+ *  </a:model>
+ *  <a:list model="mdlSmart1">
+ *      <a:bindings>
+ *          <a:caption value="[name]" />
+ *          <a:icon value="contact.png" />
+ *          <a:each match="[contact]" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * 
  * Fallbacks:
@@ -189,28 +189,28 @@
  * the needed string or boolean. The following example uses {@link term.livemarkup live markup}
  * to determine the icon by the extension of the filename:
  * <code>
- * <a:model id="mdlSmart1">
- *     <data>
- *         <contact>
- *             <name>Ruben</name>
- *             <filename>Baseclasses</filename>
- *         </contact>
- *         <contact>
- *             <name>Łukasz</name>
- *             <filename>application.png</filename>
- *         </contact>
- *     </data>
- * </a:model>
- * <a:list model="mdlSmart1">
- *     <a:bindings>
- *         <a:caption value="[name]" />
- *         <a:icon><?lm
- *             var ext = {[filename].split(".").shift()};
- *             ext == [filename] ? "unknown.png" : ext + ".png";
- *         ?></a:icon>
- *         <a:each match="[contact]" />
- *     </a:bindings>
- * </a:list>
+ *  <a:model id="mdlSmart1">
+ *      <data>
+ *          <contact>
+ *              <name>Ruben</name>
+ *              <filename>Baseclasses</filename>
+ *          </contact>
+ *          <contact>
+ *              <name>Łukasz</name>
+ *              <filename>application.png</filename>
+ *          </contact>
+ *      </data>
+ *  </a:model>
+ *  <a:list model="mdlSmart1">
+ *      <a:bindings>
+ *          <a:caption value="[name]" />
+ *          <a:icon><?lm
+ *              var ext = {[filename].split(".").shift()};
+ *              ext == [filename] ? "unknown.png" : ext + ".png";
+ *          ?></a:icon>
+ *          <a:each match="[contact]" />
+ *      </a:bindings>
+ *  </a:list>
  * </code>
  * Instead of live markup you can use xslt as well. Furthermore you can apply some
  * javascript to the result by calling a method. The following examples shows
@@ -230,22 +230,22 @@
  * a tree element that loads subnodes whenever a user expands a node. This can
  * be achieved in the following way:
  * <code>
- * <a:model id="mdlSmart2">
- *     <data>
- *         <item title="Title 1" id="1" leaf="long"></item>
- *         <item title="Title 2" id="2"></item>
- *     </data>
- * </a:model>
- * 
- * <a:tree model="mdlSmart2">
- *     <a:bindings>
- *         <a:caption match = "[@title]" />
- *         <a:insert  
- *           match = "[item[not(@leaf)]]" 
- *           get   = "http://localhost/insert.php?keyword=[@id]" />
- *         <a:each match="[item]" />
- *     </a:bindings>
- * </a:tree>
+ *  <a:model id="mdlSmart2">
+ *      <data>
+ *          <item title="Title 1" id="1" leaf="long"></item>
+ *          <item title="Title 2" id="2"></item>
+ *      </data>
+ *  </a:model>
+ *  
+ *  <a:tree model="mdlSmart2">
+ *      <a:bindings>
+ *          <a:caption match = "[@title]" />
+ *          <a:insert  
+ *            match = "[item[not(@leaf)]]" 
+ *            get   = "http://localhost/insert.php?keyword=[@id]" />
+ *          <a:each match="[item]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  * For more information about how data can be loaded into aml elements please
  * check {@link term.datainstruction data instructions}.

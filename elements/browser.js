@@ -42,29 +42,29 @@
  * Example (BROKEN):
  * Sets the url based on data loaded into this component.
  * <code>
- * <a:model id="mdlBrowser">
- *     <data url="http://www.w3c.org"></data>
- * </a:model>
- * <a:browser 
- *   model  = "mdlBrowser" 
- *   width  = "800" 
- *   height = "600">
- *     <a:bindings>
- *         <a:value match="[@url]" />
- *     </a:bindings>
- * </a:browser>
+ *  <a:model id="mdlBrowser">
+ *      <data url="http://www.w3c.org"></data>
+ *  </a:model>
+ *  <a:browser 
+ *    model  = "mdlBrowser" 
+ *    width  = "800" 
+ *    height = "600">
+ *      <a:bindings>
+ *          <a:value match="[@url]" />
+ *      </a:bindings>
+ *  </a:browser>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- * <a:model id="mdlBrowser">
- *     <data url="http://www.w3c.org"></data>
- * </a:model>
- * <a:browser 
- *   model  = "mdlBrowser" 
- *   width  = "800" 
- *   height = "600" 
- *   value  = "[@url]" />
+ *  <a:model id="mdlBrowser">
+ *      <data url="http://www.w3c.org"></data>
+ *  </a:model>
+ *  <a:browser 
+ *    model  = "mdlBrowser" 
+ *    width  = "800" 
+ *    height = "600" 
+ *    value  = "[@url]" />
  * </code>
  */
 apf.browser = function(struct, tagName){

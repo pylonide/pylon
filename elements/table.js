@@ -31,7 +31,7 @@
  * to '*'. This means they will span the entire width of all columns, no matter
  * how many columns there are.
  * <code>
- *  <a:window>
+ *  <a:window visible="true" width="500" height="400">
  *      <a:table id="tableTest" 
  *        columns = "80, *"
  *        margin  = "10 10 10 10"
@@ -47,17 +47,21 @@
  *          
  *          <a:label span="*">Message</a:label>
  *          <a:textarea id="txtMessage" 
- *              height = "*" 
- *              span   = "*" />
+ *            height = "*" 
+ *            span   = "*" />
  *      </a:table>
  *      
  *      <a:button 
- *          caption = "Two Columns"
- *          onclick = "tableTest.setAttribute('columns', '80, *');"/>
- *          
+ *        caption = "Two Columns"
+ *        bottom  = "10"
+ *        left    = "10"
+ *        onclick = "tableTest.setAttribute('columns', '80, *');"/>
+ *              
  *      <a:button 
- *          caption = "Four Columns"
- *          onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *        bottom  = "10"
+ *        left    = "125"
+ *        caption = "Four Columns"
+ *        onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
  *  </a:window>
  * </code>
  * Remarks:

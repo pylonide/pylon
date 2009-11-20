@@ -32,28 +32,28 @@
  * This example shows a datagrid width several columns mixing percentage and
  * fixed size columns.
  * <code>
- * <a:model id="mdlNews">
- *     <data>
- *         <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
- *         <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
- *         <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
- *     </data>
- * </a:model>
- * <a:datagrid model="mdlNews" options="move|size">
- *     <a:each match="[news]">
- *         <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
- *         <a:column caption="Date" value="[@date]" width="70" />
- *         <a:column caption="Title" width="180" value="[@title]" />
- *         <a:column caption="Subtitle" value="[@subtitle]" width="100" />
- *     </a:each>
- * </a:datagrid>
+ *  <a:model id="mdlNews">
+ *      <data>
+ *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
+ *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
+ *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
+ *      </data>
+ *  </a:model>
+ *  <a:datagrid model="mdlNews" options="move|size">
+ *      <a:each match="[news]">
+ *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
+ *          <a:column caption="Date" value="[@date]" width="70" />
+ *          <a:column caption="Title" width="180" value="[@title]" />
+ *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
+ *      </a:each>
+ *  </a:datagrid>
  * </code>
  * Example:
  * This example shows a propedit (property editor) component. The propedit 
  * component is an alias for the datagrid. It has a different skin and different
  * defaults. See {@link element.datagrid.attribute.template the template attribute}.
  * <code>
- * <a:propedit template="mdlTemplate" />
+ *  <a:propedit template="mdlTemplate" />
  * </code>
  *
  * @constructor

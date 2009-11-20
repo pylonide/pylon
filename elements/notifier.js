@@ -25,24 +25,24 @@
  * to growl on the OSX platform.
  * Example:
  * <code>
- * <a:notifier position="bottom-right" margin="10 10">
- *     <a:event 
- *       when    = "{offline.onLine}"
- *       message = "You are currently working offline"
- *       icon    = "icoOffline.gif" />
- *     <a:event 
- *       when    = "{!offline.onLine}"
- *       message = "You are online"
- *       icon    = "icoOnline.gif" />
- *     <a:event 
- *       when    = "{offline.syncing}" 
- *       message = "Your changes are being synced" 
- *       icon    = "icoSyncing.gif" />
- *     <a:event 
- *       when    = "{!offline.syncing}"
- *       message = "Syncing done"
- *       icon    = "icoDone.gif" />
- * </a:notifier>
+ *  <a:notifier position="bottom-right" margin="10 10">
+ *      <a:event 
+ *        when    = "{offline.onLine}"
+ *        message = "You are currently working offline"
+ *        icon    = "icoOffline.gif" />
+ *      <a:event 
+ *        when    = "{!offline.onLine}"
+ *        message = "You are online"
+ *        icon    = "icoOnline.gif" />
+ *      <a:event 
+ *        when    = "{offline.syncing}" 
+ *        message = "Your changes are being synced" 
+ *        icon    = "icoSyncing.gif" />
+ *      <a:event 
+ *        when    = "{!offline.syncing}"
+ *        message = "Syncing done"
+ *        icon    = "icoDone.gif" />
+ *  </a:notifier>
  * </code>
  * Example:
  * Notifier with 4 notifications which appears and stays over the 3 seconds
@@ -52,12 +52,12 @@
  * be changed. In the last case notification will be shown when date 2008-12-24 
  * will be selected on calendar.
  * <code>
- * <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
- *     <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
- *     <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
- *     <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
- *     <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
- * </a:notifier>
+ *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
+ *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
+ *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
+ *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
+ *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
+ *  </a:notifier>
  * </code>
  * 
  * @define notifier

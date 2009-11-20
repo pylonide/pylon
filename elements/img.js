@@ -28,29 +28,29 @@
  * This example shows a list with pictures. When one is selected its displayed
  * in the img element.
  * <code>
- * <a:model id="mdlPictures"> 
- *     <pictures> 
- *         <picture title="Landscape" src="slideshow_img/landscape.jpg" />
- *         <picture title="Animal" src="http://example.com/animal.jpg" />
- *         <picture title="River" src="http://example.com/river.jpg" />
- *     </pictures> 
- * </a:model>
- * <a:list 
- *   id     = "lstPics" 
- *   skin   = "thumbnail" 
- *   height = "200" 
- *   width  = "400" 
- *   model  = "mdlPictures">
- *     <a:each match = "[picture]" >
- *         <a:name match="[@title]" />
- *         <a:image match="[@src]" />
- *     </a:each>
- * </a:list>
- * <a:img 
- *   model  = "{lstPics.selected}" 
- *   value  = "[@src]" 
- *   width  = "200" 
- *   height = "200" />
+ *  <a:model id="mdlPictures"> 
+ *      <pictures> 
+ *          <picture title="Landscape" src="slideshow_img/landscape.jpg" />
+ *          <picture title="Animal" src="http://example.com/animal.jpg" />
+ *          <picture title="River" src="http://example.com/river.jpg" />
+ *      </pictures> 
+ *  </a:model>
+ *  <a:list 
+ *    id     = "lstPics" 
+ *    skin   = "thumbnail" 
+ *    height = "200" 
+ *    width  = "400" 
+ *    model  = "mdlPictures">
+ *      <a:each match = "[picture]" >
+ *          <a:name match="[@title]" />
+ *          <a:image match="[@src]" />
+ *      </a:each>
+ *  </a:list>
+ *  <a:img 
+ *    model  = "{lstPics.selected}" 
+ *    value  = "[@src]" 
+ *    width  = "200" 
+ *    height = "200" />
  * </code>
  *
  * @constructor
@@ -73,14 +73,21 @@
  * <code>
  *  <a:img>
  *      <a:bindings>
- *          <a:value select="@src" />
+ *          <a:value match="[@src]" />
  *      </a:bindings>
  *  </a:img>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:img ref="@src" />
+ *  <a:model id="mdlPictures"> 
+ *      <data src="path/to/image.jpg" /> 
+ *  </a:model>
+ *  <a:img 
+ *    model  = "mdlPictures" 
+ *    value  = "[@src]" 
+ *    width  = "300" 
+ *    height = "300" />
  * </code>
  */
 apf.img = function(struct, tagName){

@@ -27,30 +27,33 @@
  * the user to choose from grouped buttons.
  * Example:
  * <code>
- *  <a:toolbar>
- *      <a:menubar>
- *          <a:button submenu="mnuFile">File</a:button>
- *          <a:button submenu="mnuEdit">Edit</a:button>
- *      </a:menubar>
- *      <a:bar>
- *          <a:button>Questions</a:button>
- *          <a:divider />
- *          <a:button icon="icoEmail.gif">e-mail</a:button>
- *          <a:button id="btnTest" 
- *              icon    = "icoPhone.gif"
- *              caption = "Change Skin" />
- *          <a:divider />
- *          <a:progressbar value="apf.offline.position" />
- *      </a:bar>
- *  </a:toolbar>
- *
- *  <a:menu id="mnuFile">
- *      ...
+ *  <a:menu id="menu5">
+ *      <a:item>About us</a:item>
+ *      <a:item>Help</a:item>
  *  </a:menu>
- *  
- *  <a:menu id="mnuEdit">
- *      ...
+ *  <a:menu id="menu6">
+ *      <a:item icon="email.png">Tutorials</a:item>
+ *      <a:item>Live Helps</a:item>
+ *      <a:divider></a:divider>
+ *      <a:item>Visit Ajax.org</a:item>
+ *      <a:item>Exit</a:item>
  *  </a:menu>
+ *  <a:window 
+ *    id          = "winMail"
+ *    contextmenu = "menu6"
+ *    width       = "300"
+ *    height      = "200" 
+ *    visible     = "true"
+ *    resizable   = "true" 
+ *    title       = "Mail message"
+ *    icon        = "email.png">
+ *      <a:toolbar>
+ *          <a:menubar>
+ *              <a:button submenu="menu6">File</a:button>
+ *              <a:button submenu="menu5">Edit</a:button>
+ *          </a:menubar>
+ *      </a:toolbar>
+ *  </a:window>
  * </code>
  *
  * @constructor

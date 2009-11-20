@@ -28,14 +28,12 @@
  * application.
  * Example:
  * <code>
- *   <a:statusbar align="bottom">
- *      <a:bar>
- *          Ajax.org Platform
- *      </a:bar>
- *      <a:progressbar value="{apf.offline.position}" />
- *      <a:bar>
- *      
- *      </a:bar>
+ *  <a:statusbar>
+ *      <a:section icon="application.png">Ajax.org</a:section>
+ *      <a:section>Some status information</a:section>
+ *      <a:section>
+ *          <a:progressbar anchors="6 5 5 5" autostart="true" />
+ *      </a:section>
  *  </a:statusbar>
  * </code>
  *

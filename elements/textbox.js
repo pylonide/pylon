@@ -33,12 +33,7 @@
  * value for the textbox can be looked up as you type. By setting the 
  * {@link element.textbox.attribute.mask mask atribute}, complex data input 
  * validation is done while the users types.
- * Example:
- * Sets the value based on data loaded into this component.
- * <code>
- *  <a:textbox ref="@name" />
- * </code>
- *
+ * 
  * @constructor
  * @define input, secret, textarea, textbox
  * @allowchild autocomplete, {smartbinding}
@@ -58,14 +53,18 @@
  * <code>
  *  <a:textbox>
  *      <a:bindings>
- *          <a:value select="@name" />
+ *          <a:value match="[@name]" />
  *      </a:bindings>
  *  </a:textbox>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:textbox ref="@name" />
+ *  <a:model id="mdlTextbox">
+ *      <data name="Lukasz"></data>
+ *  </a:model>
+ *  
+ *  <a:textbox model="mdlTextbox" value="[@name]" />
  * </code>
  *
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 

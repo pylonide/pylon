@@ -31,10 +31,10 @@
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
  * <code>
- * <a:progressbar
- *   value   = "{apf.offline.progress}"
- *   visible = "{apf.offline.syncing}" />
- * </code>
+ *  <a:progressbar
+ *    value   = "{apf.offline.progress}"
+ *    visible = "{apf.offline.syncing}" />
+ *  </code>
  *
  * @constructor
  * @allowchild {smartbinding}
@@ -54,17 +54,17 @@
  * <code>
  *  <a:progressbar>
  *      <a:bindings>
- *          <a:value select="@progress" />
+ *          <a:value match="[@progress]" />
  *      </a:bindings>
  *  </a:progressbar>
  * </code>
  * Example:
  * A shorter way to write this is:
  * <code>
- * <a:model>
- *     <data progress="50"></data>
- * </a:model>
- * <a:progressbar min="0" max="100" value="[@progress]" />
+ *  <a:model>
+ *      <data progress="50"></data>
+ *  </a:model>
+ *  <a:progressbar min="0" max="100" value="[@progress]" />
  * </code>
  */
 apf.progress    = function(struct, tagName){

@@ -28,59 +28,59 @@
  * Example:
  * Flowchart component
  * <code>
- * <a:model id="modelName">
- *     <flowchart>
- *         <block
- *             id     = "b1"
- *             type   = "current_source_cc"
- *             left   = "500"
- *             top    = "520" 
- *             width  = "56"
- *             height = "56"
- *             lock   = "false"
- *             flipv  = "true"
- *             fliph  = "false">
- *         </block>
- *         <block
- *             id     = "b5" 
- *             type   = "mosfet_p" 
- *             left   = "800" 
- *             top    = "400" 
- *             width  = "56" 
- *             height = "56" 
- *             lock   = "0">
- *             <connection ref="b1" output="3" input="3" />
- *         </block>
- *     </flowchart>
- * </a:model>
- * <a:flowchart id="WF" template="template.xml" model="modelName">
- *     <a:each match="[block]">
- *         <a:move match="[@move] != false &amp;&amp; [@lock] != true"></a:move>
- *         <a:resize match="[@resize] == true &amp;&amp; [@lock] != true"></a:resize>
- *         <a:css match="{true}" default="locked"></a:css>
- *         <a:left match="[@left]"></a:left>
- *         <a:top match="[@top]"></a:top>
- *         <a:id match="[@id]"></a:id>
- *         <a:width match="[@width]"></a:width>
- *         <a:height match="[@height]"></a:height>
- *         <a:flipv match="[@flipv]"></a:flipv>
- *         <a:fliph match="[@fliph]"></a:fliph>
- *         <a:rotation match="[@rotation]"></a:rotation>
- *         <a:lock match="[@lock]"></a:lock>
- *         <a:type match="[@type]"></a:type>
- *         <a:caption match="[@caption]" default="Untitled block"></a:caption>
- *         <a:cap-pos match="[@cap-pos]"></a:cap-pos>
- *         <a:zindex match="[@zindex]"></a:zindex>
- *         <a:image match="[@src]"></a:image>
+ *  <a:model id="modelName">
+ *      <flowchart>
+ *          <block
+ *            id     = "b1"
+ *            type   = "current_source_cc"
+ *            left   = "500"
+ *            top    = "520" 
+ *            width  = "56"
+ *            height = "56"
+ *            lock   = "false"
+ *            flipv  = "true"
+ *            fliph  = "false">
+ *          </block>
+ *          <block
+ *            id     = "b5" 
+ *            type   = "mosfet_p" 
+ *            left   = "800" 
+ *            top    = "400" 
+ *            width  = "56" 
+ *            height = "56" 
+ *            lock   = "0">
+ *              <connection ref="b1" output="3" input="3" />
+ *          </block>
+ *      </flowchart>
+ *  </a:model>
+ *  <a:flowchart id="WF" template="template.xml" model="modelName">
+ *      <a:each match="[block]">
+ *          <a:move match="[@move] != false &amp;&amp; [@lock] != true"></a:move>
+ *          <a:resize match="[@resize] == true &amp;&amp; [@lock] != true"></a:resize>
+ *          <a:css match="{true}" default="locked"></a:css>
+ *          <a:left match="[@left]"></a:left>
+ *          <a:top match="[@top]"></a:top>
+ *          <a:id match="[@id]"></a:id>
+ *          <a:width match="[@width]"></a:width>
+ *          <a:height match="[@height]"></a:height>
+ *          <a:flipv match="[@flipv]"></a:flipv>
+ *          <a:fliph match="[@fliph]"></a:fliph>
+ *          <a:rotation match="[@rotation]"></a:rotation>
+ *          <a:lock match="[@lock]"></a:lock>
+ *          <a:type match="[@type]"></a:type>
+ *          <a:caption match="[@caption]" default="Untitled block"></a:caption>
+ *          <a:cap-pos match="[@cap-pos]"></a:cap-pos>
+ *          <a:zindex match="[@zindex]"></a:zindex>
+ *          <a:image match="[@src]"></a:image>
  *
- *         <!-- Connection Binding Rules -->
- *         <a:connection match="[block/connection]"></a:connection>
- *         <a:ref match="[@ref]"></a:ref>
- *         <a:blockinput match="[@input]"></a:blockinput>
- *         <a:blockoutput match="[@output]"></a:blockoutput>
- *         <a:blocklabel match="[@label]"></a:blocklabel>
- *     </a:each>
- * </a:flowchart>
+ *          <!-- Connection Binding Rules -->
+ *          <a:connection match="[block/connection]"></a:connection>
+ *          <a:ref match="[@ref]"></a:ref>
+ *          <a:blockinput match="[@input]"></a:blockinput>
+ *          <a:blockoutput match="[@output]"></a:blockoutput>
+ *          <a:blocklabel match="[@label]"></a:blocklabel>
+ *      </a:each>
+ *  </a:flowchart>
  * </code>
  *
  * @define flowchart
@@ -108,15 +108,15 @@
  *        scalex      = "false"
  *        scaleratio  = "true">
  *          <input
- *              x        = "28"
- *              y        = "0"
- *              position = "top"
- *              name     = "1" />
+ *            x        = "28"
+ *            y        = "0"
+ *            position = "top"
+ *            name     = "1" />
  *          <input 
- *              x        = "28"
- *              y        = "56"
- *              position = "bottom"
- *              name     = "2" />
+ *            x        = "28"
+ *            y        = "56"
+ *            position = "bottom"
+ *            name     = "2" />
  *      </element>
  *  </template>
  * </code>

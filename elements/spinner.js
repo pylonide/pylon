@@ -30,33 +30,33 @@
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
  * <code>
- * <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
+ *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
  * </code>
  * 
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- * <a:model id="mdlSpinner">
- *     <data value="56"></data>
- * </a:model>
- * <a:spinner value="[@value]" model="mdlSpinner" />
+ *  <a:model id="mdlSpinner">
+ *      <data value="56"></data>
+ *  </a:model>
+ *  <a:spinner value="[@value]" model="mdlSpinner" />
  * </code>
 
  * Example:
  * Is showing usage of model in spinner connected with textbox
  * <code>
- * <a:model id="mdlTest">
- *     <overview page="1" pages="50" />
- * </a:model>
- * <a:spinner 
- *   id      = "spinner" 
- *   min     = "0" 
- *   max     = "[@pages]" 
- *   model   = "mdlTest" 
- *   value   = "[@page]" 
- *   caption = "[@page] of [@pages]">
- * </a:spinner>
- * <a:textbox value="{spinner.caption}"></a:textbox>
+ *  <a:model id="mdlTest">
+ *      <overview page="1" pages="50" />
+ *  </a:model>
+ *  <a:spinner 
+ *    id      = "spinner" 
+ *    min     = "0" 
+ *    max     = "[@pages]" 
+ *    model   = "mdlTest" 
+ *    value   = "[@page]" 
+ *    caption = "[@page] of [@pages]">
+ *  </a:spinner>
+ *  <a:textbox value="{spinner.caption}"></a:textbox>
  * </code>
  * 
  * @attribute {Number}   max       maximal allowed value, default is 64000
