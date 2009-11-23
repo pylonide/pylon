@@ -96,7 +96,7 @@ apf.Media = function(){
             this.dispatchEvent("havefuturedata");
         else if (value == apf.Media.HAVE_ENOUGH_DATA) {
             this.dispatchEvent("haveenoughdata");
-            this.setProperty('ready', true);
+            this.setProperty("ready", true);
         }
     };
 
@@ -138,7 +138,7 @@ apf.Media = function(){
 
             _self.seek(Math.round(value * _self.duration));
 
-            _self.setProperty('paused', !isPlaying);
+            _self.setProperty("paused", !isPlaying);
         });
     };
 
@@ -157,7 +157,7 @@ apf.Media = function(){
         if (!this.player) return;
         // #ifdef __DEBUG
         if (value < 0)
-            throw this.MediaError("Attempt to set the volume to a negative volue  '" + value);
+            throw this.MediaError("Attempt to set the volume to a negative value  '" + value + "'");
         // #endif
 
         if (value < 1 && value > 0)
@@ -261,7 +261,7 @@ apf.Media = function(){
 
     this.addEventListener("AMLRemove", function(doOnlyAdmin){
         // #ifdef __DEBUG
-        apf.console.log('Media: removing node...');
+        apf.console.log("Media: removing node...");
         // #endif
         reset.call(this);
     });
@@ -271,7 +271,7 @@ apf.Media = function(){
             return;
 
         // #ifdef __DEBUG
-        apf.console.log('Media: reparenting - ' + beforeNode + ', ' + pNode);
+        apf.console.log("Media: reparenting - " + beforeNode + ", " + pNode);
         // #endif
 
         this.$draw();
@@ -279,20 +279,20 @@ apf.Media = function(){
     });
 
     function reset() {
-        this.setProperty('networkState',  apf.Media.NETWORK_EMPTY);
-        //this.setProperty('readyState',   apf.Media.HAVE_NOTHING);
-        this.setProperty('ready',         false);
-        //this.setProperty('buffered',      {start: 0, end: 0, length: 0});
-        //this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
+        this.setProperty("networkState",  apf.Media.NETWORK_EMPTY);
+        //this.setProperty("readyState",   apf.Media.HAVE_NOTHING);
+        this.setProperty("ready",         false);
+        //this.setProperty("buffered",      {start: 0, end: 0, length: 0});
+        //this.setProperty("bufferedBytes", {start: 0, end: 0, length: 0});
         this.buffered      = {start: 0, end: 0, length: 0};
         this.bufferedBytes = {start: 0, end: 0, length: 0};
         this.totalBytes    = 0;
-        this.setProperty('progress', 0);
-        //this.setProperty('totalBytes',    0);
+        this.setProperty("progress", 0);
+        //this.setProperty("totalBytes",    0);
 
-        this.setProperty('seeking',  false);
-        this.setProperty('paused',   true);
-        this.setProperty('position', 0);
+        this.setProperty("seeking",  false);
+        this.setProperty("paused",   true);
+        this.setProperty("position", 0);
         this.currentTime = this.duration = 0;
         this.played = this.seekable = null;
         this.ended  = false;
@@ -304,7 +304,7 @@ apf.Media = function(){
 
     function reload(bNoReset) {
         // #ifdef __DEBUG
-        apf.console.log('Media: reloading medium with mimetype ', this.type);
+        apf.console.log("Media: reloading medium with mimetype '" + this.type + "'");
         // #endif
 
         window.clearTimeout(this.$loadTimer);
@@ -383,7 +383,7 @@ apf.Media = function(){
      *
      */
     this.play = function() {
-        this.setProperty('paused', false);
+        this.setProperty("paused", false);
     };
 
     /**
@@ -391,7 +391,7 @@ apf.Media = function(){
      *
      */
     this.pause = function() {
-        this.setProperty('paused', true);
+        this.setProperty("paused", true);
     };
 
     // looping

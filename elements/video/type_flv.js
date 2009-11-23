@@ -290,6 +290,7 @@ apf.video.TypeFlv.prototype = {
      * @type {void}
      */
     event: function(eventName, evtObj) {
+        apf.console.log("[FLASH] video event: " + eventName + ", " + evtObj);
         switch (eventName) {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;

@@ -242,6 +242,12 @@ apf.video = function(struct, tagName){
         }
     };
 
+    var typesQT = "mov",
+        typesFLV = "flv",
+        typesWMP = "asf|asx|avi|wmv",
+        typesNtv = "ogg",
+        typesVLC = "3gp|3gpp|3g2|3gpp2|divx|mp4|mpg4|mpg|mpeg|mpe|ogg|vob";
+
     /**
      * Guess the mime-type of a video file, based on its filename/ extension.
      *
@@ -250,36 +256,18 @@ apf.video = function(struct, tagName){
      */
     this.$guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
-        var ext  = path.substr(path.lastIndexOf('.') + 1);
-        var type = "";
-        switch (ext) {
-            case "mov":
-                type = "video/quicktime";
-                break;
-            case "flv":
-                type = "video/flv";
-                break;
-            case "asf":
-            case "asx":
-            case "avi":
-            case "wmv":
-                type = "video/wmv";
-                break;
-            case "3gp"  :
-            case "3gpp" :
-            case "3g2"  :
-            case "3gpp2":
-            case "divx" :
-            case "mp4"  :
-            case "mpg4" :
-            case "mpg"  :
-            case "mpeg" :
-            case "mpe"  :
-            case "ogg"  :
-            case "vob"  :
-                type = "video/vlc";
-                break;
-        }
+        var ext  = path.substr(path.lastIndexOf('.') + 1),
+            type = "";
+        if (typesQT.indexOf(ext) != -1)
+            type = "video/quicktime";
+        else if (typesFLV.indexOf(ext) != -1)
+            type = "video/flv";
+        else if (typesWMP.indexOf(ext) != -1)
+            type = "video/wmv";
+        else if (typesNtv.indexOf(ext) != -1 && apf.hasVideo)
+            type = "video/ogg";
+        else if (typesVLC.indexOf(ext) != -1)
+            type = "video/vlc";
         // mpeg video is better to be played by native players
         if (ext == "mpg" || ext == "mpeg" || ext == "mpe")
             type = apf.isMac ? "video/quicktime" : "video/wmv";
@@ -308,7 +296,9 @@ apf.video = function(struct, tagName){
         for (var i = 0; i < aMimeTypes.length; i++) {
             mimeType = aMimeTypes[i];
 
-            if (mimeType.indexOf('flv') > -1)
+            if (mimeType.indexOf('ogg') > -1)
+                playerType = "TypeNative";
+            else if (mimeType.indexOf('flv') > -1)
                 playerType = "TypeFlv";
             else if (mimeType.indexOf('quicktime') > -1)
                 playerType = "TypeQT";

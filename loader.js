@@ -374,6 +374,7 @@ apf.$x = apf.$loader
         "elements/rpc/yql.js",         // YQL
         
         "elements/video/type_flv.js",
+        "elements/video/type_native.js",
         "elements/video/type_qt.js",
         "elements/video/type_silverlight.js",
         "elements/video/type_vlc.js",
