@@ -278,7 +278,7 @@ apf.DOMParser.prototype = new (function(){
                 if (!namespaceURI) {
                     throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
                 }
-                if (!apf.namespaces[namespaceURI]) {debugger;
+                if (!apf.namespaces[namespaceURI]) {
                     if (this.allowAnyElement)
                         namespaceURI = apf.ns.xhtml;
                     else 
@@ -343,6 +343,11 @@ apf.DOMParser.prototype = new (function(){
                 break;
             case 7:
                 var target = nodeName || xmlNode && xmlNode.nodeName;
+                //#ifdef __DEBUG
+                if(!apf.aml.processingInstructions[target])
+                    throw new Error(apf.formatErrorString(0, null,
+                        "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
+                //#endif
                 o = new apf.aml.processingInstructions[target]();
                 o.target = o.nodeName  = target;
                 o.data   = o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
