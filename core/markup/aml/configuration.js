@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLCONFIGURATION
 apf.AmlConfiguration = function(isPrototype){
     this.parameterNames = [];
 
@@ -34,3 +35,4 @@ apf.AmlConfiguration = function(isPrototype){
         return this.parameterNames.indexOf(name) > -1;
     };
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
+// #endif

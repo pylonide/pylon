@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLNAMEDNODEMAP
 //@todo apf3.0
 apf.AmlNamedNodeMap = function(host){
     this.$host = host;
@@ -97,3 +98,4 @@ apf.AmlNamedNodeMap = function(host){
         }
     }
 }).call(apf.AmlNamedNodeMap.prototype = apf.isIE < 8 ? {} : []);
+// #endif

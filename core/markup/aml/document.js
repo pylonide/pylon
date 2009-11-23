@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_WINDOW
+// #ifdef __WITH_AMLDOCUMENT
 
 /**
  * The aml document, this is the root of the DOM Tree and has a nodeType with 

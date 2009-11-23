@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLATTR
 apf.AmlAttr = function(ownerElement, name, value){
     this.$init();
     
@@ -137,3 +138,4 @@ apf.AmlAttr = function(ownerElement, name, value){
     //@todo apf3.0 domattr
     this.addEventListener("DOMNodeInsertedIntoDocument", this.$triggerUpdate);
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
+// #endif

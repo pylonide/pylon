@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLEVENT
 /**
  * Implementation of W3C event object. An instance of this class is passed as
  * the first argument of any event handler. Per event it will contain different
@@ -64,3 +65,4 @@ apf.AmlEvent.prototype = {
         // #endif
     }
 };
+// #endif

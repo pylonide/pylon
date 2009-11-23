@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_XFORMSINSTANCEELEMENT
 /**
  * Element defining a container for data. This element is optional for normal use, but is required for xforms compatibility.
  * @attribute  {String}  src          the url to retrieve the data from.
@@ -37,3 +38,4 @@ apf.XformsInstanceElement = function(struct, tagName){
 }).call(apf.XformsInstanceElement.prototype = new apf.XformsElement());
 
 apf.xforms.setElement("html", apf.XformsInstanceElement);
+// #endif

@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_XFORMSMODELELEMENT
 /**
  * @todo description
  *
@@ -395,4 +396,4 @@ for (i = 0; i < models.length; i++)
 //#endif */
 
 apf.xforms.setElement("html", apf.XformsModelElement);
-
+// #endif

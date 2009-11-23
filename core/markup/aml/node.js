@@ -21,7 +21,7 @@
 
 apf.__AMLNODE__ = 1 << 14;
 
-// #ifdef __WITH_AMLDOM
+// #ifdef __WITH_AMLNODE
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM

@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLCOMMENT
 apf.AmlComment = function(isPrototype){
     this.nodeType = this.NODE_COMMENT;
     this.nodeName = "#comment";
@@ -39,3 +40,4 @@ apf.AmlComment = function(isPrototype){
         });
     }
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
+// #endif

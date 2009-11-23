@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_XFORMSLOADELEMENT
 /**
  * Element defining how data is loaded into a model.
  * @attribute  {String}  get          the data instruction on how to load data from the data source into this model.
@@ -38,4 +39,4 @@ apf.XformsLoadElement = function(struct, tagName){
 }).call(apf.XformsLoadElement.prototype = new apf.XformsElement());
 
 apf.xforms.setElement("html", apf.XformsLoadElement);
-
+// #endif

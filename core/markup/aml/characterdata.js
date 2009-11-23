@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLCHARACTERDATA
 apf.AmlCharacterData = function(){
     this.data = "";
     this.length = 0;
@@ -56,3 +57,4 @@ apf.AmlCharacterData = function(){
     this.substringData = function(nOffset, nCount){};
 }
 apf.AmlCharacterData.prototype = new apf.AmlNode();
+// #endif

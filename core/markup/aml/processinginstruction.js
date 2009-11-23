@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLPROCESSINGINSTRUCTION
 apf.AmlProcessingInstruction = function(isPrototype){
     this.$init(isPrototype);
     
@@ -78,4 +79,5 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
         this.$setDynamicProperty("calcdata", this.data);
     }, true);
-}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode())
+}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
+// #endif

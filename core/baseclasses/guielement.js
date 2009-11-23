@@ -22,7 +22,7 @@
 apf.__GUIELEMENT__ = 1 << 15;
 apf.__VALIDATION__ = 1 << 6;
 
-// #ifdef __WITH_AMLNODE
+// #ifdef __WITH_GUIELEMENT
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.

@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_XFORMSSUBMISSIONELEMENT
 /**
  * Element serving as a referencable entry to a way of submitting data to the server.
  * @attribute  {String}  action       the url to post the data to.
@@ -69,4 +70,4 @@ apf.XformsSubmissionElement = function(struct, tagName){
 }).call(apf.XformsSubmissionElement.prototype = new apf.XformsElement());
 
 apf.xforms.setElement("html", apf.XformsSubmissionElement);
-
+// #endif

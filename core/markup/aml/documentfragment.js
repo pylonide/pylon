@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLDOCUMENTFRAGMENT
 apf.AmlDocumentFragment = function(isPrototype){
     this.$init(isPrototype);
 };
@@ -27,3 +28,4 @@ apf.AmlDocumentFragment.prototype = new apf.AmlNode();
 apf.AmlDocumentFragment.prototype.nodeName = "#document-fragment";
 apf.AmlDocumentFragment.prototype.nodeType = 
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
+// #endif

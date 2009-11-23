@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_AMLDOM
+// #ifdef __WITH_AMLELEMENT
 apf.AmlElement = function(struct, tagName){
     var $init = this.$init;
     this.$init = function(tagName, nodeFunc, struct){

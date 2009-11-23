@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_AMLTEXTRECTANGLE
 apf.AmlTextRectangle = function(host){
     var _self = this;
     function handler(){
@@ -37,3 +38,4 @@ apf.AmlTextRectangle = function(host){
     handler.call(host);
 };
 apf.AmlTextRectangle.prototype = new apf.Class();
+// #endif
