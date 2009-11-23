@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __PARSER_AML
+// #ifdef __DOMPARSER
 /**
  * The parser of the Ajax.org Markup Language. Besides aml this parser takes care
  * of distributing parsing tasks to other parsers like the native html parser and
@@ -278,7 +278,7 @@ apf.DOMParser.prototype = new (function(){
                 if (!namespaceURI) {
                     throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
                 }
-                if (!apf.namespaces[namespaceURI]) {
+                if (!apf.namespaces[namespaceURI]) {debugger;
                     if (this.allowAnyElement)
                         namespaceURI = apf.ns.xhtml;
                     else 
