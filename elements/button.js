@@ -629,7 +629,7 @@ apf.button.actions  = {
     "undo" : function(action){
         var tracker;
         if (this.target && self[this.target]) {
-            tracker = self[this.target].tagName == "actiontracker"
+            tracker = self[this.target].localName == "actiontracker"
                 ? self[this.target]
                 : self[this.target].getActionTracker();
         }
