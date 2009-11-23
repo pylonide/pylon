@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//#ifdef __AMLSTATEGROUP || __INC_ALL
+//#ifdef __WITH_PRESENTATION || __INC_ALL
 
 /**
  * element specifying the skin of an application.
