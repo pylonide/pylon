@@ -107,7 +107,12 @@ apf.aml.setElement("include", apf.XiInclude);
                     if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                         return true;
 
-                    throw oError;
+                    apf.console.error(oError.message);
+
+                    finish.call(_self, null);
+
+                    //throw oError;
+                    return;
                 }
 
                 //@todo apf3.0 please make one way of doing this

@@ -488,8 +488,18 @@ apf.http = function(){
         function send(isLocal){
             var hasError;
 
-            if (apf.isIE && isLocal) //When local IE calls onreadystate immediately
+            if (apf.isIE && isLocal) { //When local IE calls onreadystate immediately
+                var oldWinOnerror = window.onerror;
+                window.onerror = function(){
+                    if (arguments.caller.callee == send) {
+                        window.onerror = oldWinOnerror;
+                        _self.receive(id);
+                        return true;
+                    }
+                }
                 http.send(data);
+                window.onerror = oldWinOnerror;
+            }
             else {
                 try{
                     http.send(data);
@@ -641,15 +651,15 @@ apf.http = function(){
 
         if (http.status >= 400 && http.status < 600 || http.status == 3) {
             //#ifdef __WITH_AUTH
-            var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
-            if (!auth)
-                return;
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
-                var wasDelayed = qItem.isAuthDelayed;
-                qItem.isAuthDelayed = true;
-                if (auth.authRequired(extra, wasDelayed) === true)
-                    return;
+                var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+                if (auth) {
+                    var wasDelayed = qItem.isAuthDelayed;
+                    qItem.isAuthDelayed = true;
+                    if (auth.authRequired(extra, wasDelayed) === true)
+                        return;
+                }
             }
             //#endif
 
