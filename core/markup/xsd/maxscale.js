@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
+//#ifdef __WITH_XSDMAXSCALE
 apf.XsdMaxScale = function(struct, tagName){
     this.$init(tagName || "maxscale", apf.NODE_HIDDEN, struct);
 };

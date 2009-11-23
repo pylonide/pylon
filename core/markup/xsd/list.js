@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
+//#ifdef __WITH_XSDLIST
 apf.XsdList = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_HIDDEN, struct);
 };
