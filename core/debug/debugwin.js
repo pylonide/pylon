@@ -389,7 +389,8 @@ apf.debugwin = {
         }
 
         this.$ext.style.display = "block";
-        apf.layout.forceResize(this.$ext);
+        if(apf.layout)
+            apf.layout.forceResize(this.$ext);
         this.logView.scrollTop = this.logView.scrollHeight;
 
         //!self.ERROR_HAS_OCCURRED && 
@@ -1628,12 +1629,15 @@ apf.debugwin = {
             case "redo":
                 apf.window.getActionTracker().redo();
                 break;
+            //#ifdef __WITH_OFFLINE
             case "reset":
                 apf.offline.clear();
                 break;
+            // #endif
             case "reboot":
                 apf.reboot();
                 break;
+            //#ifdef __WITH_OFFLINE
             case "online":
                 if (apf.offline.detector.detection != "manual") {
                     apf.console.info("Switching to manually network detection.");
@@ -1652,6 +1656,7 @@ apf.debugwin = {
 
                 apf.offline.goOffline()
                 break;
+            // #endif
             case "lm":
                 if (!apf.debugwin.$lm) {
                     apf.debugwin.$lm = new apf.LmImplementation();
