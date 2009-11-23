@@ -55,21 +55,26 @@
  * Example:
  * A small form.
  * <code>
- *  <a:model id="mdlForm" submission="save_form.asp" />
- *
+ *  <a:model id="mdlForm" submission="save_form.asp">
+ *      <data>
+ *          <name>Mike</name>
+ *          <city>amsterdam</city>
+ *      </data>
+ *  </a:model>
+ * 
  *  <a:bar model="mdlForm">
  *      <a:label>Name</a:label>
- *      <a:textbox ref="name" />
- *
+ *      <a:textbox value="[name]" />
+ *    
  *      <a:label>City</a:label>
- *      <a:dropdown ref="city" model="cities.xml">
+ *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
  *          <a:bindings>
- *              <a:caption select="text()" />
- *              <a:value select="@value" />
- *              <a:each select="city" />
+ *              <a:caption match="[text()]" />
+ *              <a:value match="[@value]" />
+ *              <a:each match="[city]" />
  *          </a:bindings>
  *      </a:dropdown>
- *
+ *    
  *      <a:button default="true" action="submit">Submit</a:button>
  *  </a:bar>
  * </code>

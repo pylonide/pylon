@@ -38,7 +38,7 @@
  * model using a {@link term.datainstruction data instruction} as the following
  * example shows:
  * <code>
- *  <a:model load="get_person.php?id=10" />
+ *  <a:model src="get_person.php?id=10" />
  * </code>
  * An element can connect directly to a model in order to bind to data.
  * <code>
@@ -107,12 +107,8 @@
  *          <name>Test</name>
  *      </contact>
  *  </a:model>
- *
- *  <a:textbox model="mdlExample">
- *      <a:bindings>
- *          <a:value match="[name]" />
- *      </a:bindings>
- *  </a:textbox>
+ *  
+ *  <a:textbox value="[mdlExample::name]" />
  * </code>
  * The textbox binds to the data of the model. The bind rule sets how the value
  * is retrieved from the bound data. In this case the value of the name node is
@@ -133,6 +129,11 @@
  * Each element has a primary bind rule that can be accessed in a short format.
  * This is usually the value bind rule. The short format works as follows:
  * <code>
+ *  <a:model id="mdlExample">
+ *      <contact>
+ *          <name>Test</name>
+ *      </contact>
+ *  </a:model>
  *  <a:textbox value="[name]" model="mdlExample" />
  * </code>
  *
