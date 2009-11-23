@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_AMLÎ¤Î•Î§Î¤
+// #ifdef __WITH_AMLÔÅ×Ô
 apf.AmlText = function(isPrototype){
     this.$init(isPrototype);
 };
