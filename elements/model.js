@@ -243,13 +243,17 @@ apf.model = function(struct, tagName){
             amlNode.noloading = false;
 
         //amlNode.$model = this;
-        if (this.$state == 1 && amlNode.clear) {
-            if (!amlNode.noloading)
+        if (this.$state == 1) {
+            if (amlNode.clear && !amlNode.noloading)
                 amlNode.clear("loading");//@todo apf3.0
         }
         else if (this.data) {
             this.$loadInAmlNode(item);
             //this.$loadInAmlProp(amlNode);
+        }
+        else { //@experimental
+            if (amlNode.clear)
+                amlNode.clear("empty");
         }
 
         return this;

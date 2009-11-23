@@ -380,9 +380,8 @@ apf.MultiselectBinding = function(){
         };
     }
     
-    var oEmpty;
     this.$setClearMessage = function(msg, className, lastHeight){
-        if (!oEmpty) {
+        if (!this.$empty) {
             if (!this.$hasLayoutNode("empty"))
                 return;
             
@@ -391,43 +390,43 @@ apf.MultiselectBinding = function(){
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
 
-            oEmpty = apf.insertHtmlNode(xmlEmpty, this.$int);
+            this.$empty = apf.insertHtmlNode(xmlEmpty, this.$int);
         }
         else {
-            this.$int.appendChild(oEmpty);
+            this.$int.appendChild(this.$empty);
         }
 
-        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
+        var empty = this.$getLayoutNode("empty", "caption", this.$empty);
 
         if (empty)
             apf.setNodeValue(empty, msg || "");
 
-        oEmpty.setAttribute("id", "empty" + this.$uniqueId);
-        apf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
+        this.$empty.setAttribute("id", "empty" + this.$uniqueId);
+        apf.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
         
         //@todo apf3.0 cleanup?
-        oEmpty.style.height = (lastHeight && !apf.getStyle(this.$ext, "height") && className != "empty")
+        this.$empty.style.height = (lastHeight && !apf.getStyle(this.$ext, "height") && className != "empty")
             ? (Math.max(10, (lastHeight
-               - apf.getHeightDiff(oEmpty)
+               - apf.getHeightDiff(this.$empty)
                - apf.getHeightDiff(this.$ext))) + "px")
             : "";
     };
 
     this.$updateClearMessage = function(msg, className) {
-        if (!oEmpty || oEmpty.parentNode != this.$int
-          || oEmpty.className.indexOf(className) == -1)
+        if (!this.$empty || this.$empty.parentNode != this.$int
+          || this.$empty.className.indexOf(className) == -1)
             return;
 
-        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
+        var empty = this.$getLayoutNode("empty", "caption", this.$empty);
         if (empty)
             apf.setNodeValue(empty, msg || "");
     }
 
     this.$removeClearMessage = function(){
-        if (!oEmpty)
-            oEmpty = document.getElementById("empty" + this.$uniqueId);
-        if (oEmpty && oEmpty.parentNode)
-            oEmpty.parentNode.removeChild(oEmpty);
+        if (!this.$empty)
+            this.$empty = document.getElementById("empty" + this.$uniqueId);
+        if (this.$empty && this.$empty.parentNode)
+            this.$empty.parentNode.removeChild(this.$empty);
     };
     
     /**
@@ -440,7 +439,7 @@ apf.MultiselectBinding = function(){
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
-            return this.clear(); //@todo apf3.0 this should clear an set a listener
+            return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
 
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
@@ -523,14 +522,14 @@ apf.MultiselectBinding = function(){
     };
 
     var actionFeature = {
-            "insert"      : 127,//1111111
-            "add"         : 123,//1111011
-            "remove"      : 46, //0101110
-            "redo-remove" : 79, //1001111
-            "synchronize" : 127,//1111111
-            "move-away"   : 105,//1101001
-            "move"        : 77  //1001101
-        };
+        "insert"      : 127,//1111111
+        "add"         : 123,//1111011
+        "remove"      : 46, //0101110
+        "redo-remove" : 79, //1001111
+        "synchronize" : 127,//1111111
+        "move-away"   : 105,//1101001
+        "move"        : 77  //1001101
+    };
 
     /**
      * Loops through parents of changed node to find the first
