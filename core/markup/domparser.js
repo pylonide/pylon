@@ -72,7 +72,7 @@ apf.DOMParser.prototype = new (function(){
         
             var xmlNode = apf.getXmlDom(str);
             if (apf.xmlParseError) apf.xmlParseError(xmlNode);
-        
+            xmlNode = xmlNode.documentElement;
             #endif */
         }
         else {
