@@ -315,7 +315,6 @@ apf.AmlElement = function(struct, tagName){
             : item.nodeValue) : null;
     };
     
-    //#ifdef __WITH_AMLDOM_FULL
     /**
      * Retrieves the attribute node for a given name
      * @param {String} name the name of the attribute to find.
@@ -324,7 +323,6 @@ apf.AmlElement = function(struct, tagName){
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
     };
-    // #endif
 
     this.getBoundingClientRect = function(){
         return new apf.AmlTextRectangle(this);

@@ -94,7 +94,6 @@ apf.AmlDocument = function(){
         return res;
     };
 
-    //#ifdef __WITH_AMLDOM_FULL
     /**
      * Creates a new aml element.
      * @param {mixed} tagName information about the new node to create.
@@ -165,7 +164,6 @@ apf.AmlDocument = function(){
     this.createDocumentFragment = function(){
         return this.$domParser.$createNode(this, this.NODE_DOCUMENT_FRAGMENT);
     };
-    //#endif
 
     this.querySelector = function(){};
     
