@@ -26,19 +26,15 @@
  * @define hbox Container that stacks it's children horizontally.
  * Example:
  * <code>
- *  <a:hbox>
- *      <a:vbox>
- *          <a:bar caption="Some Window"/>
- *          <a:bar caption="Another Window"/>
- *          <a:hbox>
- *              <a:bar caption="Redmond Window"/>
- *              <a:vbox>
- *                  <a:bar caption="Ping Window"/>
- *                  <a:bar caption="YAW window"/>
- *              </a:vbox>
+ *  <a:hbox height="500" width="600">
+ *      <a:vbox height="500" width="500">
+ *          <a:bar height="250" caption="Top bar" />
+ *          <a:hbox width="500" height="250">
+ *              <a:bar width="150" caption="Bottom left bar"/>
+ *              <a:bar width="350" caption="Bottom Right bar"/>
  *          </a:hbox>
  *      </a:vbox>
- *      <a:bar caption="Down Window"/>
+ *      <a:bar width="100" caption="Right bar"/>
  *  </a:hbox>
  * </code>
  * Remarks:
