@@ -749,7 +749,7 @@ apf.button.actions  = {
             ? self[this.target]
             : this.parentNode;
 
-        if (parent.tagName == "model")
+        if (parent.localName == "model")
             model = parent;
         else {
             if (!parent.$validgroup) {
