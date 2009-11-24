@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_HTML_CLEANER
+// #ifdef __PARSER_XHTML
 /**
  * The parser of the HyperText Markup Language.
  * @private
