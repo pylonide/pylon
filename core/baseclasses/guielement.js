@@ -158,10 +158,10 @@ apf.GuiElement = function(){
      */
     this.implement(
         //#ifdef __WITH_ANCHORING
-        apf.Anchoring,
+        apf.Anchoring
         //#endif
         //#ifdef __WITH_ALIGNMENT
-        apf.Alignment
+        ,apf.Alignment
         //#endif
     );
     
