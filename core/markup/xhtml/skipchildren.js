@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_XHTML
+//#ifdef __PARSER_XHTML
 apf.XhtmlSkipChildrenElement = function(struct, tagName){
     this.$init(tagName, apf.NODE_VISIBLE, struct);
 };

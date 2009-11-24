@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_XHTML
+//#ifdef __PARSER_XHTML
 
 /**
  * @todo description
