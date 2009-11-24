@@ -292,7 +292,7 @@ apf.setModel = function(instruction, amlNode){
             return;
         
         //@todo apf3.0 check here if string is valid url (relative or absolute)
-        if (instruction.indexOf(".") == -1 && instruction.indexOf("/") > == -1) {
+        if (instruction.indexOf(".") == -1 && instruction.indexOf("/") == -1) {
             //#ifdef __DEBUG
             apf.console.warn("Could not find model '" + instruction + "'");
             //#endif
