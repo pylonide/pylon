@@ -100,8 +100,9 @@ apf.DockServer = {
         this.nextPositionMarker.style.width   = (oItem.oHtml.offsetWidth  - diff[0]) + "px"
         this.nextPositionMarker.style.height  = (oItem.oHtml.offsetHeight - diff[1]) + "px";
         this.nextPositionMarker.style.display = "block";
-        
+        //#ifdef __WITH_LAYOUT
         apf.layout.pause(oItem.oHtml.parentNode);
+        //#endif
     },
     
     floatElement: function(e){
@@ -112,8 +113,10 @@ apf.DockServer = {
             this.dragdata.item.setFloat();
             this.dragdata.amlNode.$purgeAlignment();
         }
+        //#ifdef __WITH_LAYOUT
         else 
             apf.layout.play(this.dragdata.item.oHtml.parentNode);
+        //#endif
     },
     
     setPosition: function(e){
@@ -281,9 +284,10 @@ apf.DockServer = {
             //apf.layout.play(htmlNode.parentNode);
             return apf.DockServer.floatElement(e);
         }
+        //#ifdef __WITH_LAYOUT
         if (apf.DockServer.dragdata.item == amlNode.aData) 
             return apf.layout.play(htmlNode.parentNode);
-        
+        //#endif
         var pos = apf.getAbsolutePosition(htmlNode),
             l   = e.clientX - pos[0],
             t   = e.clientY - pos[1],
@@ -321,7 +325,9 @@ apf.DockServer = {
             return apf.DockServer.floatElement(e);
         
         var pHtmlNode = htmlNode.parentNode;
+        //#ifdef __WITH_LAYOUT
         l             = apf.layout.layouts[pHtmlNode.getAttribute("id")];
+        //#endif
         if (!l) 
             return false;
         
@@ -353,12 +359,16 @@ apf.DockServer = {
         }
         
         var type   = (region == "l" || region == "r") ? "hbox" : "vbox",
-            parent = current.parent,
-            newBox = apf.layout.getData(type, l.layout);
+            parent = current.parent
+            //#ifdef __WITH_LAYOUT
+            ,newBox = apf.layout.getData(type, l.layout);
+            //#endif
 
         newBox.splitter   = current.splitter;
         newBox.edgeMargin = current.edgeMargin;
+        //#ifdef __WITH_LAYOUT
         newBox.id         = apf.layout.metadata.push(newBox) - 1;
+        //#endif
         newBox.parent     = parent;
         parent.children[current.stackId] = newBox;
         newBox.stackId    = current.stackId;
@@ -380,7 +390,9 @@ apf.DockServer = {
         var root = root.copy();
         l.layout.compile(root);
         l.layout.reset();
+        //#ifdef __WITH_LAYOUT
         apf.layout.activateRules(l.layout.parentNode);
+        //#endif
     }
 };
 

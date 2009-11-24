@@ -1916,7 +1916,7 @@ var apf = {
                 loop = next;
             }
 
-            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __AMLTABLE
+            //#ifdef __WITH_LAYOUT
             setTimeout("apf.layout.forceResize();");
             // #endif
         }

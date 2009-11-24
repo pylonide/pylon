@@ -212,8 +212,10 @@ apf.BaseStateButtons = function(){
                                 to: this.$lastpos.px[3]}
                         ],
                         oneach   : function(){
+                            //#ifdef __WITH_LAYOUT
                             if (apf.hasSingleRszEvent)
                                 apf.layout.forceResize(_self.$int);
+                            //#endif
                         },
                         onfinish : function(){
                             _self.$propHandlers["state"].call(_self, value, true,
@@ -239,10 +241,11 @@ apf.BaseStateButtons = function(){
             if (this.aData && this.aData.restore)
                 this.aData.restore();
             //#endif
-            
+
+            //#ifdef __WITH_LAYOUT
             if (apf.layout)
                 apf.layout.play(this.$pHtmlNode);
-
+            //#endif
             if (this.$lastzindex) {
                 this.$ext.style.zIndex = this.$lastzindex[0];
                 if (this.oCover)
@@ -372,8 +375,10 @@ apf.BaseStateButtons = function(){
                                     to: (h - verdiff + box[0] + box[2])}
                             ],
                             oneach   : function(){
+                                //#ifdef __WITH_LAYOUT
                                 if (apf.hasSingleRszEvent)
                                     apf.layout.forceResize(_self.$int);
+                                //#endif
                             },
                             onfinish : function(){
                                 _self.animstate = 0;
@@ -394,10 +399,10 @@ apf.BaseStateButtons = function(){
                             - verdiff + box[0] + box[2]) + "px";
                     }
                 }
-
+                //#ifdef __WITH_LAYOUT
                 if (apf.layout)
                     apf.layout.pause(this.$pHtmlNode, setMax);
-
+                //#endif
                 this.$lastzindex = [
                     this.$ext.style.zIndex || 1, 
                     this.oCover && this.oCover.style.zIndex || 1
@@ -443,8 +448,10 @@ apf.BaseStateButtons = function(){
                 
             if (o.edit) { //@todo apf3.0
                 this.dispatchEvent("prop.visible", {value:true});
+                //#ifdef __WITH_LAYOUT
                 if (_self.oSettings)
                     apf.layout.forceResize(_self.oSettings);
+                //#endif
             }
 
             if (!o.maximized || lastState.maximized && _self.animate) {
@@ -461,8 +468,10 @@ apf.BaseStateButtons = function(){
             }
             //#endif
 
+            //#ifdef __WITH_LAYOUT
             if (!this.animate && apf.hasSingleRszEvent && apf.layout)
                 apf.layout.forceResize(_self.$int);
+            //#endif
         }
     };
 

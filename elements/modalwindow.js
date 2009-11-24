@@ -395,10 +395,10 @@ apf.AmlWindow = function(struct, tagName){
 
             this.$ext.style.display = "block"; //Some form of inheritance detection
 
-            //!apf.isIE &&
+            //#ifdef __WITH_LAYOUT
             if (apf.layout && this.$int)
                 apf.layout.forceResize(this.$int); //@todo this should be recursive down
-
+            //#endif
             //if (this.modal) 
                 //this.$ext.style.position = "fixed";
             
@@ -550,10 +550,10 @@ apf.AmlWindow = function(struct, tagName){
                 retValue = null;
                 return;
         }
-
+        //#ifdef __WITH_LAYOUT
         if (apf.hasSingleRszEvent)
             apf.layout.forceResize(this.$int);
-        
+        //#endif
         return retValue;
     }, true);
     

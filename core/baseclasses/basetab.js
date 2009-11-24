@@ -959,10 +959,12 @@ apf.BaseTab = function(){
                 };
             });
         }
-        
+
+        //#ifdef __WITH_LAYOUT
         apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
             "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
         apf.layout.queue(this.$ext);
+        //#endif
         // #endif
 
         //Skin changing support
@@ -1034,8 +1036,9 @@ apf.BaseTab = function(){
         if (bSkinChange || !this.oScroller)
             return;
         // #ifdef __ENABLE_TABSCROLL
+        //#ifdef __WITH_LAYOUT
         apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
-        
+        //#endif
         [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
             oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
             oBtn.onmouseout  = oBtn.onmouseup  = null;

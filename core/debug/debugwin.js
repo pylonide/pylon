@@ -389,8 +389,10 @@ apf.debugwin = {
         }
 
         this.$ext.style.display = "block";
+        //#ifdef __WITH_LAYOUT
         if(apf.layout)
             apf.layout.forceResize(this.$ext);
+        //#endif
         this.logView.scrollTop = this.logView.scrollHeight;
 
         //!self.ERROR_HAS_OCCURRED && 
@@ -726,11 +728,13 @@ apf.debugwin = {
             each          : "node()[local-name(.)]"
         });
 
+        //#ifdef __WITH_LAYOUT
         if (apf.layout && !apf.hasSingleRszEvent) {
             apf.layout.setRules(apf.getFirstElement(oInt), "resize",
                 "apf.layout.forceResize(apf.debugwin.$ext);");
             apf.layout.queue(oInt.firstChild);
         }
+        //#endif
     },
 
     PROFILER_ELEMENT   : null,
@@ -831,9 +835,10 @@ apf.debugwin = {
                 oFirst.focus();
             }
         }
-
+        //#ifdef __WITH_LAYOUT
         if (apf.layout)
             apf.layout.forceResize(this.$ext);
+        //#endif
     },
     
     $getOption : function(){
@@ -1569,7 +1574,8 @@ apf.debugwin = {
                     this.debugConsole.style.marginTop = "-108px";
                 }
             }
-            
+
+            //#ifdef __WITH_LAYOUT
             if (apf.layout) {
                 apf.layout.setRules(elError, "resize",
                     "var oHtml = document.getElementById('" + elError.id + "');\
@@ -1598,6 +1604,7 @@ apf.debugwin = {
                 ");
                 apf.layout.queue(elError);
             }
+            //#endif
         }
         else
             this.$ext = elError;
@@ -1858,9 +1865,11 @@ apf.debugwin = {
             }
             
             document.getElementById("apf_debugwin").style.display = "block";
-            
+
+            //#ifdef __WITH_LAYOUT
             if (apf.layout)
                 apf.layout.forceResize(this.$ext);
+            //#endif
         }
         else {
             apf.debugwin.errorHandler(msg, null, null, true);

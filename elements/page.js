@@ -298,9 +298,10 @@ apf.page = function(struct, tagName){
             this.parentNode.$setStyleClass(this.fake
                 ? this.relPage.$ext
                 : this.$ext, "curpage");
-
+            //#ifdef __WITH_LAYOUT
             if (apf.layout)
                 apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
+            //#endif
         }
 
         this.$active = true;

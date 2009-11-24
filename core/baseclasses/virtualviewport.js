@@ -416,12 +416,13 @@ apf.VirtualViewport = function(){
      * - Fix FF html conversion (insertHtmlNodes)
      * - Optimize grow function to use fill
      */
+    //#ifdef __WITH_LAYOUT
     apf.layout.setRules(this.$int, "scrollbar", "\
         var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
         s.update();\
     ", true);
     apf.layout.queue(this.$int);
-    
+    //#endif
     this.$isInViewport = function(xmlNode, struct){
         /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
         var start = marker ? marker.getAttribute("end") : 0;

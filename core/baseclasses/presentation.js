@@ -288,7 +288,9 @@ apf.Presentation = function(){
             this.$propHandlers["resizable"].call(this, this.resizable);
         //#endif
 
+        //#ifdef __WITH_LAYOUT
         apf.layout.forceResize(this.$ext);
+        //#endif
     };
     //#endif
 

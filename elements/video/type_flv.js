@@ -344,9 +344,11 @@ apf.video.TypeFlv.prototype = {
                 this.oVideo.$initHook({type:"init"});
                 this.onResize();
                 var node = this.oVideo.$int;
+                //#ifdef __WITH_LAYOUT
                 setTimeout(function() {
                     apf.layout.forceResize(node);
                 }, 1000);
+                //#endif
                 break;
             // #ifdef __DEBUG
             case "debug":
@@ -387,14 +389,14 @@ apf.video.TypeFlv.prototype = {
             "clickToTogglePlay", "autoLoad", "playHeadTime", "totalTime",
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
             "previewImagePath"];
-
+        //#ifdef __WITH_LAYOUT
         apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo",
             "(apf.all[" + this.oVideo.$uniqueId + "].player && apf.all["
             + this.oVideo.$uniqueId + "].player.onResize \
                 ? apf.all[" + this.oVideo.$uniqueId + "].player \
                 : {onResize:apf.K}).onResize()");
         apf.layout.queue(this.oVideo.$ext);
-
+        //#endif
         return this;
     },
 
@@ -489,8 +491,10 @@ apf.video.TypeFlv.prototype = {
     },
 
     $destroy: function() {
+        //#ifdef __WITH_LAYOUT
         if (apf.layout)
             apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
+        //#endif
         if (this.player) {
             try {
                 this.stop();

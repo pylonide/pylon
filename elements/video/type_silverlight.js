@@ -110,9 +110,11 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
     });
 
     //apf.extend(this, apf.video.TypeInterface);
+    //#ifdef __WITH_LAYOUT
     apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight",
         "apf.all[" + this.oVideo.$uniqueId + "].player.resizePlayer()");
     apf.layout.queue(this.oVideo.$ext);
+    //#endif
 };
 
 apf.video.TypeSilverlight.isSupported = function(){
@@ -446,7 +448,9 @@ apf.video.TypeSilverlight.prototype = {
     },
 
     $destroy: function() {
+        //#ifdef __WITH_LAYOUT
         apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight");
+        //#endif
         this.stopPlayPoll();
         if (this.player) {
             this.player = this.video = this.preview = null;

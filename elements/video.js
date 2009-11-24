@@ -171,9 +171,11 @@ apf.video = function(struct, tagName){
                 this.player.onAfterFullscreen(value);
 
             var _self = this;
+            //#ifdef __WITH_LAYOUT
             window.setTimeout(function() {
                 apf.layout.forceResize(_self.parentNode.$ext);
-            }, 100)
+            }, 100);
+            //#endif
         }
     };
 

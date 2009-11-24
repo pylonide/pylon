@@ -554,9 +554,10 @@ apf.Interactive = function(){
                 max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
-
+        //#ifdef __WITH_LAYOUT
         if (apf.hasSingleRszEvent)
             apf.layout.forceResize(_self.$int);
+        //#endif
     }
     
     function getResizeType(x, y){

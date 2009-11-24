@@ -102,9 +102,10 @@ apf.modalwindow.widget = function(){
             
             if (!apf.supportOpacity || htmlNode.className.indexOf("dockblank") > -1) //@todo hack apf3.0
                 htmlNode.style.filter = "";
-
+            //#ifdef __WITH_LAYOUT
             if (_self.$ext) //apf.hasSingleResizeEvent)
                 apf.layout.forceResize(_self.$ext); //@todo recursive apf3.0
+            //#endif
 
             apf.dragMode = false;
         };

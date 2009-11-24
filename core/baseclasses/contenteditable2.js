@@ -134,9 +134,10 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
                 jmlNode.setAttribute("height", Math.min(maxheight,
                     Math.max(minheight, htmlNode.offsetHeight)));
                 jmlNode.setAttribute("editable", true);
-            
+
+                //#ifdef __WITH_LAYOUT
                 apf.layout.processQueue();
-            
+                //#endif
                 this.resize.grab(jmlNode);
                 options.addedNode = jmlNode;
             }
@@ -212,7 +213,9 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
                     apf.ContentEditable2.execCommand(items[i][0], items[i][1]);
                 }
             }
+            //#ifdef __WITH_LAYOUT
             apf.layout.processQueue();
+            //#endif
             this.resize.regrab();
             return;
         case "rollback":
@@ -270,11 +273,12 @@ apf.Resize = function(){
         size   = 8,
         margin = 1;
     this.grab = function(oEl, options) {
+        //#ifdef __WITH_LAYOUT
         if (this.$ext) {
             apf.layout.removeRule(this.$ext, "contenteditable");
             apf.layout.activateRules(oEl);
         }
-        
+        //#endif
         if (!oEl) {
             this.hide();
             return;
@@ -308,9 +312,10 @@ apf.Resize = function(){
         }
 
         //This should all be removed on ungrab
+        //#ifdef __WITH_LAYOUT
         apf.layout.setRules(oEl, "contenteditable", "apf.all[" + this.$uniqueId + "].regrab()", true);
         apf.layout.queue(oEl);
-        
+        //#endif
         _self.onresize = function(){
             apf.ContentEditable2.execCommand("commit");
         };

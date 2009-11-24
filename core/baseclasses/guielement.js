@@ -511,10 +511,10 @@ apf.GuiElement.propHandlers = {
         }
         else { //if (apf.isTrue(value)) default
             this.$ext.style.display = "block"; //Some form of inheritance detection
-
+            //#ifdef __WITH_LAYOUT
             if (apf.layout && this.$int) //apf.hasSingleRszEvent)
                 apf.layout.forceResize(this.$int);//this.$int
-            
+            //#endif
             this.visible = true;
         }
     },
