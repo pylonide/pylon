@@ -124,7 +124,7 @@ apf.vbox = function(struct, tagName){
            
             if ("absolute|relative".indexOf(apf.getStyle(this.$int, "position")) == -1)
                 this.$int.style.position = "relative";
-            this.$int.style.overflow = "hidden";
+            this.$int.style.overflow = "visible";
             
             //@todo shouldn't this be generic?
             //this.implement(apf.Anchoring); /** @inherits apf.Anchoring */

@@ -98,12 +98,14 @@ apf.bar     = function(struct, tagName){
         this.oDrag = this.$getLayoutNode(this.$isLeechingSkin
             ? this.localName 
             : "main", "dragger", this.$ext);
-    };
-
-    this.$loadAml = function(x){
+            
         this.$int = this.$getLayoutNode(this.$isLeechingSkin
             ? this.localName 
             : "main", "container", this.$ext);
+    };
+
+    this.$loadAml = function(x){
+        
     };
     
     /*#ifdef __WITH_SKIN_CHANGE
