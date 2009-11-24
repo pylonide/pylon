@@ -25,10 +25,8 @@
  * @private
  */
 apf.printer = {
-    //#ifdef __WITH_AMLDOM_FULL
     tagName  : "printer",
     nodeFunc : apf.NODE_HIDDEN,
-    //#endif
     
     lastContent : "",
     inited      : false,

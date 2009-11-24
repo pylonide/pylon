@@ -524,8 +524,8 @@ apf.editor = function(struct, tagName){
         if (apf.isOnlyChild(this.firstChild, [3,4]))
             this.$handlePropSet("value", this.firstChild.nodeValue.trim());
 
-        if (typeof this.realtime == "undefined")
-            this.$propHandlers["realtime"].call(this);
+        //if (typeof this.realtime == "undefined")
+            //this.$propHandlers["realtime"].call(this);
     });
 
     this.$destroy = function() {
