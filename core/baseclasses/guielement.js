@@ -118,11 +118,16 @@ apf.GuiElement = function(){
         if (!this.$drawn || !this.$pHtmlNode)
             return false;
 
+
         if (this.parentNode) {
+            // #ifdef __AMLTABLE
             if (this.parentNode.localName == "table") {
                 this.parentNode.register(this);
                 return type == "table";
             }
+            // #endif
+            
+            // #ifdef __AMLVBOX || __AMLHBOX
             else if (this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
                 if (!this.$alignmentEnabled) {
                     this.$enableAlignment();
@@ -132,8 +137,10 @@ apf.GuiElement = function(){
                 }
                 return type == "alignment";
             }
+            // #endif
         }
-
+        
+        // #ifdef __WITH_ANCHORING
         if (!this.$anchoringEnabled) {
             this.$enableAnchoring();
             if (this.$disableCurrentLayout)
@@ -141,6 +148,7 @@ apf.GuiElement = function(){
             this.$disableCurrentLayout = this.$disableAnchoring;
         }
         return type == "anchoring";
+        // #endif
     }
 
     /**

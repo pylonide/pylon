@@ -843,5 +843,4 @@ apf.selection = function(oWin, oDoc, editor) {
         delete _self;
     };
 };
-
 // #endif

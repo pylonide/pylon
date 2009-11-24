@@ -1304,11 +1304,11 @@ apf.DataBinding = function(){
     };
     //#endif
 };
-if (apf.Presentation)
+// #ifdef __WITH_PRESENTATION
     apf.DataBinding.prototype = new apf.Presentation();
-else
+/* #else
     apf.DataBinding.prototype = new apf.AmlElement();
-
+#endif*/
 apf.config.$inheritProperties["model"]           = 1;
 apf.config.$inheritProperties["empty-message"]   = 1;
 apf.config.$inheritProperties["loading-message"] = 1;
