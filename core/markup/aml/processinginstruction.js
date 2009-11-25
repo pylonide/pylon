@@ -57,6 +57,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
+        
         if (prop == "data") {
             this.$clearDynamicProperty("calcdata");
             this.$setDynamicProperty("calcdata", value);

@@ -33,14 +33,15 @@ apf.XPath = {
         var nodes = htmlNode.childNodes;
         if (!nodes) return; //Weird bug in Safari
         for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1)
-                continue;
+            //if (nodes[i].nodeType != 1)
+                //continue;
 
             if (tagName && (tagName != nodes[i].tagName) && (nodes[i].style
               ? nodes[i].tagName.toLowerCase()
               : nodes[i].tagName) != tagName)
                 continue;// || numsearch && ++numfound != numsearch
-                htmlNode = nodes[i];
+            
+            htmlNode = nodes[i];
 
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, numfound++ , sResult);
