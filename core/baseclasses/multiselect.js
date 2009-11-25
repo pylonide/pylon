@@ -510,17 +510,13 @@ apf.MultiSelect = function(){
          * @see #setValue
          */
         this.getValue = function(xmlNode, noError){
+            return this.value;
+            /*
             if (!this.bindingRules && !this.caption) 
                 return false;
 
             // #ifdef __DEBUG
             if (!this.caption && !this.bindingRules[this.$mainBind] && !this.bindingRules["caption"]) {
-                /*apf.console.warn("Trying to get value for " 
-                    + this.localName + (this.name ? " [" + this.name + "]" : "") 
-                    + ". No value rule has been defined. There is no way \
-                       to determine the value of the selected item.");
-                return false;*/
-                
                 if (noError)
                     return false;
                 
@@ -533,7 +529,7 @@ apf.MultiSelect = function(){
 
             return this.$applyBindRule(this.$mainBind, xmlNode || this.selected, null, true)
                 || this.$applyBindRule("caption", xmlNode || this.selected, null, true);
-
+            */
         };
     }
 

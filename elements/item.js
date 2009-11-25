@@ -486,6 +486,7 @@ apf.item  = function(struct, tagName){
                 //@todo this is all an ugly hack
                 p.$preventDataLoad = true;//@todo apf3.0 add remove for this
 
+                p.$initingModel = true;
                 p.$setDynamicProperty("icon", "[@icon]");
                 p.$setDynamicProperty("image", "[@image]");
                 p.$setDynamicProperty("caption", "[label/text()|@caption|text()]");

@@ -296,10 +296,10 @@ var q = apf.q = {};
     this.$updateLayout = function(){
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.$ext.offsetWidth) {
+        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
             var _self      = this;
             var propChange = function (name, old, value){
-                if (_self.$updateQueue && apf.isTrue(value) && _self.$ext.offsetWidth) {
+                if (_self.$updateQueue && apf.isTrue(value) && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
                     _self.$updateLayout();
                     apf.layout.activateRules(_self.$ext.parentNode);
                     
