@@ -368,9 +368,8 @@ apf.editor = function(struct, tagName){
         apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this, false));
         //#ifdef __WITH_WINDOW_FOCUS
         apf.AbstractEvent.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
-        //#endif
         apf.AbstractEvent.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
-
+        //#endif
         this.$activeDocument.host = this;
 
         apf.AbstractEvent.addListener(this.$activeDocument.body, "paste", onPaste.bindWithEvent(this, false));
