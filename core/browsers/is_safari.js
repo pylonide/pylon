@@ -217,7 +217,7 @@ apf.runIphone = function() {
         };
     });
 
-    
+    //#ifdef __SUPPORT_IPHONE
     apf.iphone = {
         titleNode : null,
 
@@ -317,6 +317,7 @@ apf.runIphone = function() {
                             : window.innerWidth + el.offsetLeft + pad;
                     p.setProperty("visible", true);
                     p.setProperty("zindex",  apf.all.length + 1);
+                    //#ifdef __WITH_TWEEN
                     apf.tween.single(el, {
                         steps   : 5,
                         interval: 10,
@@ -325,6 +326,7 @@ apf.runIphone = function() {
                         type    : "left",
                         anim    : apf.tween.EASEIN
                     });
+                    //#endif
                 }
             },
 
@@ -339,6 +341,7 @@ apf.runIphone = function() {
             }
         }
     };
+    // #endif
     setTimeout(function() {
         apf.addEventListener("hashchange", apf.iphone.nav.go);
         if (location.href.match(/#(.*)$/))
