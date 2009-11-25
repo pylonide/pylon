@@ -366,7 +366,9 @@ apf.editor = function(struct, tagName){
         });
 
         apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this, false));
+        //#ifdef __WITH_WINDOW_FOCUS
         apf.AbstractEvent.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
+        //#endif
         apf.AbstractEvent.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
 
         this.$activeDocument.host = this;
