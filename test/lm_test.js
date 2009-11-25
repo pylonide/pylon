@@ -1,542 +1,293 @@
+var testmodel;
+var jsvar = 5;
+var testxml = "<xml><folder name='F1'><file>C</file><file>A</file><file>B</file></folder><folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder></xml>";
 
-function parseLM(expression, options, callback){
-    if (!xmlData) return "not executed";
-    
-    var genCode = compileLM(expression, options),
-        obj     = {v1:3};
-    try { 
-        if (genCode) {
-            if (genCode.type == 1) {
-                if (genCode.asyncs) {
-                    //logw("async call");
-                    genCode(xmlData, function(v) {
-                        callback('Async received:' + v);
-                    }, {});
-                }
-                else {
-                    return genCode( xmlData, {});
-                }
-            }
-            else {
-                if (genCode.type == 2)
-                    return genCode.str;
-                if (genCode.type == 3)
-                    return genCode(xmlData, {});
-            }
-        }
-    }
-    catch(e){
-        return "error"; //"LM Execution occured:\n" + e.message;
-    }
-}
+var testlang = {
+	'main/test':'test',
+	'"main/test"':'test',
+	'main/f1' : 'F1',
+	'main/f2' : 'F2',
+	'main/F1' : 'F1',
+	'main/F2' : 'F2',
+	'main/xpath' : 'folder/@name',
+	'main/model' : 'testmodel'
+};
 
-function compileLM(expression, options){
-    var genCode;
-    
-    try {
-        if (expression.indexOf('##') != -1) {
-            var args = expression.split(/##/);
-            for (i = 0; i < args.length; i++) {
-                if (args[i] == '-')
-                    args[i] = '';
-            }
-            genCode = apf.lm.compileMatch( args );
-        }
-        else {
-            genCode = apf.lm.compile(expression, options);
-        }
-    }
-    catch(e) {
-        throw new Error("LM Compilation occured:\n" + e.message + "\n\n" + expression);
-        genCode = null;
-    }
-    
-    return genCode;
-}
-function parseXml(x){
-    var p;
-    if (document.all) {
-        p = new ActiveXObject("microsoft.XMLDOM");
-        p.setProperty("SelectionLanguage", "XPath");
-        p.loadXML(x);
-    }
-    else{
-        p = new DOMParser();
-        if (x)
-            p = p.parseFromString(x, "text/xml");
-    }
-    return p;
-}
+var test_list = {
+	1:{
+	 0:['hi"asdasd<xml><xml />asdasd"', 'hi"asdasd<xml><xml />asdasd"'],
+	 1:['hi"asdasd<xml><xml />asdasd"', 'hi"asdasd<xml><xml />asdasd"'],
+	 2:['"asdasd{1+1}asdasd"','"asdasd2asdasd"'],
+	 3:["asdasd[folder/@name]", "asdasdF1"],
+	 4:['"asdasd[testmodel::folder/@name]"', '"asdasdF1"'],
+	 5:['"asdasd*[//file]"', '"asdasd<file>C</file><file>A</file><file>B</file><file>D</file><file>F</file><file>A</file>"'],
+	 6:['"asdasd%[folder]asdasd"', '"asdasd<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>asdasd"'],
+	 7:['"asdasd$[main/test]asd"', '"asdasdtestasd"'],
+	 8:['"asdasdasd\'asdasdasd\'asdasd"', '"asdasdasd\'asdasdasd\'asdasd"'],
+	 9:["<xml />\"asdasd\"<xml/>", "<xml />\"asdasd\"<xml/>"],
+	10:["<folder><file><file /><folder />", "<folder><file><file /><folder />"],
+	11:["<xml />{'ASDASD'.toLowerCase()}<xml/>", "<xml />asdasd<xml/>"],
+	12:["<folder>[folder/@name]<folder />", "<folder>F1<folder />"],
+	13:["<folder>[testmodel::folder/@name]<folder />", "<folder>F1<folder />"],
+	14:["<folder>%[folder]<folder />", '<folder><folder name="F1"><file>C</file><file>A</file><file>B</file></folder><folder />'],
+	15:["<folder>'asdasd0'<folder />", "<folder>'asdasd0'<folder />"],
+	16:['{"asdsa".substr(0,2)}', "as"],
+	17:["{<xml/>}", "<xml/>"],
+	18:["{1+1+{2+2}+3+3}", "12"],
+	19:['{"testmodel" + [folder/@name]}', "testmodelF1"],
+	20:["{\"asD\".replace(/\as/, 'test')}", "testD"],
+	21:['[folder{"/@name"}]', "F1"],
+	22:["[folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	23:["[testmodel::folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	24:["['folder/@name']", 0],
+	25:['[testmodel::"folder"]', 0],
+	26:["[testmodel::<file/>]", 0],
+	27:["[testmodel::'folder/@name']", 0],
+	28:['[testmodel::folder/@name]', "F1"],
+	29:['%[file"[1]"]', 0],
+	30:["$[{'main/test'}]", "test"],
+	31:["%[folder[@name='[folder[2]/@name]']]", "<folder name=\"F2\"><file>D</file></folder>"],
+	32:["%[folder[@*[folder[2]/@name]]]", "<folder name=\"F2\"><file>D</file></folder>"],
+	33:["$['folder']", ""],
+	34:["[\"folder\"/@name]", 0],
+	35:["[folder[@%[folder[2]/@name]]/@name]", "F2"],
+	36:["[folder[@name='$[main/f2]']/@name]", "F2"],
+	37:["[testmodel::{'folder/@name'}]", "F1"],
+	38:["[testmodel::$[main/xpath]]", "F1"],
+	39:["[<data><file name='test'/></data>::file/@name]", "test"],
+	40:["[{testmodel}::folder/@name]", "F1"],
+	41:["[*[testmodel::folder[2]]::@name]", "F2"],
+	//42:["[*[folder]::file]", ""],@todo fix document fragment parsing for LM
+	43:["%[%[folder]::file]", "<file>C</file>"],
+	44:["[$[main/model]::folder/@name]", "F1"],
+	45:["%[folder[@name='[testmodel::folder/@name]']]", "<folder name=\"F1\"><file>C</file><file>A</file><file>B</file></folder>"],
+	46:["[folder[@name='$[main/f1]']/@name]", "F1"],
+	47:["%[folder]", "<folder name=\"F1\"><file>C</file><file>A</file><file>B</file></folder>"],
+	48:["$[main/[testmodel::folder[2]/@name]]", "F2"],
+	49:["$[main/$[main/test]]", "test"],
+	50:["$[main/test]", "test"],
+	51:["<folder>$[main/test]<folder />", "<folder>test<folder />"],
+	52:['{[folder/@name] + "name"}', "F1name"],
+	53:["{[testmodel::folder/@name].toLowerCase()}", "f1"],
+	54:["{%[folder].xml}", '<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>'],
+	55:["{$[main/test]}", "test"],
+	56:["[folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	57:["[testmodel::folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	58:["[testmodel::*[folder]]", 0],
+	59:["[testmodel::%[folder]]", 0],
+	60:["[%[folder[3]]::@name]", "F2"],
+	61:["[testmodel::folder[2]/@name]", "F2"],
+	62:["*[//{'file2'.substr(0,3)}e]", "<file>C</file><file>A</file><file>B</file><file>D</file><file>F</file><file>A</file>"],
+	63:["*[folder[@name='[folder[3]/@name]']]", "<folder name=\"F2\"><file>D</file></folder><folder name=\"F2\"><file>F</file><file>A</file></folder>"],
+	64:["*[folder[@name='[testmodel::folder[3]/@name]']]", "<folder name=\"F2\"><file>D</file></folder><folder name=\"F2\"><file>F</file><file>A</file></folder>"],
+	65:["*[folder[@name='$[main/f2]']]","<folder name=\"F2\"><file>D</file></folder><folder name=\"F2\"><file>F</file><file>A</file></folder>"],
+	66:["*['folder']", 0],
+	67:["<folder>*[folder]</folder>", '<folder><folder name=\"F1\"><file>C</file><file>A</file><file>B</file></folder><folder name=\"F2\"><file>D</file></folder><folder name=\"F2\"><file>F</file><file>A</file></folder></folder>'],
+	68:["[file<xml/>]", 0],
+	69:["[folder*[folder]]", 0],
+	70:['*[folder"[2]"]', 0],
+	71:["*[file<xml/>]", 0],
+	72:["%[folder[@*[folder[2]/@name]]]", "<folder name=\"F2\"><file>D</file></folder>"],
+	73:['*[folder[@%[folder/@name]]/@name]', "name=\"F1\""],
+	74:['%[folder[@*[folder[1]/@name]]]', "<folder name=\"F1\"><file>C</file><file>A</file><file>B</file></folder>"],
+	75:["%[folder[@%[folder/@name]]/@name]", "name=\"F1\""],
+	76:["$[\"main/test\"]", "test"],
+	77:["$[file<xml/>]", ""],
+	78:["$[file*[folder]]", ""],
+	79:["$[file%[folder]]", ""],
+	80:["[folder/@name]<xml/>{if(1)\"A{jsvar}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
+	81:["[folder/@name]<xml/>{if(1)\"A{jsvar}\"+[1,2,3,4].join('');else 2;function test(){1;2;3;4;};test();var x = {t:\"{jsvar}\"};x.t }", "F1<xml/>A5123412345"],
+	82:["{if('aabc'.match(/[a]{2}/))'X'}", "X"],
+	83:["{\"hi$[main/test]\"}", "hitest"],
+	84:["{'hi\\$[main/test]'}", "hitest"],
+	85:["{'hi\\\\$[main/test]'}", "hi$[main/test]"],
+	86:["{each([folder])[@name]}", "F1F2F2"],
+	87:["{var x = [1,2,3];each(x)\"{item()}[folder/@name]\"}", "1F12F13F1"]
+	
+	},
+	2:{
+	 0:['"asdasd<xml><xml />asdasd"', 'asdasd<xml><xml />asdasd'],
+	 1:['"asdasd<xml><xml />asdasd"', 'asdasd<xml><xml />asdasd'],
+	 2:['"asdasd{1+1}asdasd"','asdasd2asdasd'],
+	 3:["'asdasd'[folder/@name]", "asdasdF1"],
+	 4:['"asdasd[testmodel::folder/@name]"', 'asdasdF1'],
+	 5:['"asdasd*[//file]"', 'asdasd<file>C</file><file>A</file><file>B</file><file>D</file><file>F</file><file>A</file>'],
+	 6:['"asdasd%[folder]asdasd"', 'asdasd<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>asdasd'],
+	 7:['"asdasd$[main/test]asd"', 'asdasdtestasd'],
+	 8:['"asdasdasd\'asdasdasd\'asdasd"', 'asdasdasd\'asdasdasd\'asdasd'],
+	 9:["<xml />\"asdasd\"<xml/>", "<xml />asdasd<xml/>"],
+	10:["<folder><file/><file id={jsvar}/></folder>", "<folder><file/><file id=\"5\"/></folder>"],
+	11:["<xml id='F{jsvar}'/>{'ASDASD'.toLowerCase()}<xml/>", "<xml id='F5'/>asdasd<xml/>"],
+	12:["<folder>[folder/@name]</folder>", "<folder>F1</folder>"],
+	13:["<folder>[testmodel::folder/@name]</folder>", "<folder>F1</folder>"],
+	14:["<folder>%[folder]</folder>", '<folder><folder name="F1"><file>C</file><file>A</file><file>B</file></folder></folder>'],
+	15:["<folder>'asdasd0'</folder>", "<folder>'asdasd0'</folder>"],
+	16:['{"asdsa".substr(0,2)}', "as"],
+	17:["{<xml/>}", "<xml/>"],
+	18:["{1+1+{2+2}+3+3}", "12"],
+	19:['{"testmodel" + [folder/@name]}', "testmodelF1"],
+	20:["{\"asD\".replace(/\as/, 'test')}", "testD"],
+	21:['[folder{"/@name"}]', "F1"],
+	22:["[folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	23:["[testmodel::folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	24:["['folder/@name']", 0],
+	25:['[testmodel::"folder"]', 0],
+	26:["[testmodel::<file/>]", 0],
+	27:["[testmodel::'folder/@name']", 0],
+	28:['[testmodel::folder/@name]', "F1"],
+	29:['%[file"[1]"]', 0],
+	30:["$[{'main/test'}]", "test"],
+	31:["%[folder[@name='[folder[2]/@name]']]", 1],
+	32:["%[folder[@*[folder[2]/@name]]]",1],
+	33:["$['folder']", ""],
+	34:["[\"folder\"/@name]", 0],
+	35:["[folder[@%[folder[2]/@name]]/@name]", "F2"],
+	36:["[folder[@name='$[main/f2]']/@name]", "F2"],
+	37:["[testmodel::{'folder/@name'}]", "F1"],
+	38:["[testmodel::$[main/xpath]]", "F1"],
+	39:["[<data><file name='test'/></data>::file/@name]", "test"],
+	40:["[{testmodel}::folder/@name]", "F1"],
+	41:["[*[testmodel::folder[2]]::@name]", "F2"],
+	//42:["[*[folder]::file]", ""],@todo fix document fragment parsing for LM
+	43:["%[%[folder]::file/text()]", 3],
+	44:["[$[main/model]::folder/@name]", "F1"],
+	45:["%[folder[@name='[testmodel::folder/@name]']/@name]",2],
+	46:["[folder[@name='$[main/f1]']/@name]", "F1"],
+	47:["%[folder]", 1],
+	48:["$[main/[testmodel::folder[2]/@name]]", "F2"],
+	49:["$[main/$[main/test]]", "test"],
+	50:["$[main/test]", "test"],
+	51:["<folder>$[main/test]</folder>", "<folder>test</folder>"],
+	52:['{[folder/@name] + "name"}', "F1name"],
+	53:["{[testmodel::folder/@name].toLowerCase()}", "f1"],
+	54:["{%[folder].xml}", '<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>'],
+	55:["{$[main/test]}", "test"],
+	56:["[folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	57:["[testmodel::folder[@name='[folder[2]/@name]']/@name]", "F2"],
+	58:["[testmodel::*[folder]]", 0],
+	59:["[testmodel::%[folder]]", 0],
+	60:["[%[folder[3]]::@name]", "F2"],
+	61:["[testmodel::folder[2]/@name]", "F2"],
+	62:["*[//{'file2'.substr(0,3)}e]",6],
+	63:["*[folder[@name='[folder[3]/@name]']]", 2],
+	64:["*[folder[@name='[testmodel::folder[3]/@name]']]",2],
+	65:["*[folder[@name='$[main/f2]']]",2],
+	66:["*['folder']", 0],
+	67:["<folder>*[folder]</folder>", '<folder><folder name=\"F1\"><file>C</file><file>A</file><file>B</file></folder><folder name=\"F2\"><file>D</file></folder><folder name=\"F2\"><file>F</file><file>A</file></folder></folder>'],
+	68:["[file<xml/>]", 0],
+	69:["[folder*[folder]]", 0],
+	70:['*[folder"[2]"]', 0],
+	71:["*[file<xml/>]", 0],
+	72:["%[folder[@*[folder[2]/@name]]]",1],
+	73:['*[folder[@%[folder/@name]]/@name]', 1],
+	74:['%[folder[@*[folder[1]/@name]]]', 1],
+	75:["%[folder[@%[folder/@name]]/@name]", 2],
+	76:["$[\"main/test\"]", "test"],
+	77:["$[file<xml/>]", ""],
+	78:["$[file*[folder]]", ""],
+	79:["$[file%[folder]]", ""],
+	80:["[folder/@name]<xml/>{if(1)\"A{jsvar}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
+	81:["/*   */\n\n[folder/@name]<xml/>{/*  */\n\nif(1)/*  */\n\"A{jsvar/*  */}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
+	82:["var x = [1,2,3,[4,5]];x[3][1]", "5"]
+	
+	}
+};
 
-var xmlData = parseXml("<folder name='F1'><file>C</file><file>A</file><file>B</file></folder><folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>");
- 
-var testmodel = {
-    data : xmlData,
-	copy : xmlData.cloneNode(true),
-	reset : function(){
-		this.data = this.copy.cloneNode(true);
-	},
-	queryValue : function(xpath) {
-		n = this.data.selectSingleNode(xpath);
-		return n.nodeType == 1 && n.firstChild && n.firstChild.nodeValue || n.nodeValue || "";
-	},
-	queryNode : function(xpath){
-		return this.data.selectSingleNode(xpath);
-	},
-	queryNodes : function(xpath){
-		return this.data.selectNodes(xpath);
+var test_proc = {
+	1 : function(dbg, id, num, inp, exp){
+		var o = runLM( inp, testmodel.data, {} );
+		var cod = apf.lm.lastCode();
+		if(exp === 0){ // expect error
+			if(typeof(o)!='string' || o.indexOf("error:")!=0)
+				error(id, num,"Expected exception, but returned"+o,inp,"exception");
+			else
+				equals(id, num,1,inp,1,cod);
+		}else{
+			if(o===undefined || o===null)
+				error(num,"No return value!",inp,exp,cod);
+			else if(typeof(o)=='string' && o.indexOf("error:")==0)
+				error(id, num,o,inp,exp,cod);
+			else 
+				equals(id, num,o,inp,exp,cod);
+			
+		}
+	},	
+	2 :  function(dbg, id, num, inp, exp){
+		var o = runLM( inp, testmodel.data, {parsecode:1} );
+		var cod = apf.lm.lastCode();
+		if(exp === 0){ // expect error
+			if(typeof(o)!='string' || o.indexOf("error:")!=0)
+				error(id, num,"Expected exception, but returned"+o,inp,"exception",cod);
+			else
+				equals(id, num,1,inp,1,cod);
+		}else{
+			if(typeof(exp) == 'number' ){ // its a number
+				if(typeof(o) != 'object')
+					error(id, num,"Expected node but wrong type!"+typeof(o),inp,exp,cod);
+				else
+					equals(id, num, o.nodeType || o.length, inp, exp,cod );
+			}else{
+				if(o===undefined || o===null)
+					error(num,"No return value!",inp,exp);
+				else if(typeof(o)=='string' && o.indexOf("error:")==0)
+					error(id, num,o,inp,exp,cod);
+				else 
+					equals(id, num,o,inp,exp,cod);
+			}
+		}
 	}
 }
-apf.nameserver.lookup.model.testmodel = testmodel;
 
-function escape(e){
-	return e.replace(/\</g,"&lt;").replace(/\>/g,"&gt;");
+function runLM(input, xmldata, options, callback){
+
+	function run(){
+		var genCode = apf.lm.compile(input, options)
+		if (genCode) {
+			if (genCode.type == 1) {
+				if (genCode.asyncs) {
+					if(!callback)
+						return "error: async call without callback";
+						
+					genCode(xmldata, function(v) {
+						callback('Async received:' + v);
+					}, {});
+				}
+				else 
+					return genCode( xmldata, {});
+			}
+			else {
+				if (genCode.type == 2)
+					return genCode.str;
+				if (genCode.type == 3)
+					return genCode(xmldata, {});
+			}
+		}
+	}
+	if(!options.nocatch){
+		try{return run();}
+		catch(e){return "error: "+e.message;}
+	}
+	else{
+		return run();
+	}
 }
 
-function lmstring(input, output){
-	try{
-		var f = apf.lm.compile(input, {});
-	}catch(e){
-		equals(0,1,"Error compiling "+x.message+"\nCode:"+escape(input) );
-		return;
+function doTest( id, num ){
+	apf.language.words = testlang;
+	testmodel = apf.testmodel(testxml);
+	apf.nameserver.lookup.model.testmodel = testmodel;
+	
+	if(id){ // find specific test
+		test_proc[id].apply(0,[1,id,num].concat(test_list[id][num]));
+	}else{ // run through all of em
+		for(var j in test_list){
+			var t = test_list[j];
+			for(var i in t)
+				test_proc[j].apply(0,[0,j,i].concat(t[i]));
+		}
 	}
-	try{
-		equals( f(), output, "Code:"+escape(input)+" expected:"+output+" result");
-	}catch(e){
-		equals(0,1,"Error executing "+e.message+"\nCode:"+escape(input) );
-		return;
-	}
-}
-
-test("lm_textmode()", function() {
-    // Detect and remove any common prefix.
-    // Null case.
-    var options = {};
-	
-    lmstring('{1 + 1}', "2");
-		
-    lmstring('"asdasd<xml><xml />asdasd"', "\"asdasd<xml><xml />asdasd\"");//xml literal INSIDE string double quotes
-	
-    equals(parseLM('"asdasd{1+1}asdasd"', options), "asdasd2asdasd");//code INSIDE string double quotes
-    equals(parseLM("asdasd[folder/@name]", options), "asdasdF1");//basic xpath INSIDE string double quotes
-    //doesnt return what expected
-    equals(parseLM('"asdasd[testmodel::folder/@name]"', options), "asdasdF1");//xpath with model INSIDE string double quotes
-    //returns an error
-    equals(parseLM('"asdasd*[//file]"', options), "asdasd<file>C</file><file>A</file><file>B</file><file>F</file><file>A</file>");//xpath select all INSIDE string double quotes
-    equals(parseLM('"asdasd%[folder]asdasd"'), '"asdasd<folder name=\\"F1\\"><file>C</file><file>A</file><file>B</file></folder>asdasd"');//xpath select node INSIDE string double quotes
-    //doesnt return what expected (no language table?)
-    equals(parseLM('"asdad$[main/test]asd"', options), "asdasdtestasd");//language symbol INSIDE string double quotes
-    equals(parseLM('"asdasdasd\'asdasdasd\'asdasd"', options), "\"asdasdasd'asdasdasd'asdasd\"");//single quoted string INSIDE string double quotes
-    equals(parseLM("<xml />\"asdasd\"<xml/>", options), "<xml />\"asdasd\"<xml/>");//string double quotes INSIDE xml literal
-    equals(parseLM("<folder><file><file /><folder />", options), "<folder><file><file /><folder />");//xml literal INSIDE xml literal
-    equals(parseLM("<xml />{'ASDASD'.toLowerCase()}<xml/>", options), "<xml />asdasd<xml/>");//code INSIDE xml literal
-    equals(parseLM("<folder>[folder/@name]<folder />", options), "<folder>F1<folder />");//basic xpath INSIDE xml literal
-    //xpath with model doesnt seem to work?
-    equals(parseLM("<folder>[testmodel::folder/@name]<folder />", options), "<folder><folder />");//xpath with model INSIDE xml literal
-    equals(parseLM("<folder>%[folder]<folder />"), '<folder><folder name="F1"><file>C</file><file>A</file><file>B</file></folder><folder />');//xpath select node INSIDE xml literal
-    equals(parseLM("<folder>'asdasd0'<folder />", options), "<folder>'asdasd0'<folder />");//single quoted string INSIDE xml literal
-    equals(parseLM('{"asdsa".substr(0,2)}', options), "as");//string double quotes INSIDE code
-    equals(parseLM("{<xml/>}", options), "<xml/>");//xml literal INSIDE code
-    equals(parseLM("{1+1+{2+2}+3+3}", options), "12");//code INSIDE code
-    
-    //this is no xpath select all? should be: "{*[folder]}"
-    equals(parseLM('{"testmodel" + [folder/@name]}', options), "testmodelF1");//xpath select all INSIDE code
-    equals(parseLM("{\"asD\".replace(/\as/, 'test')}", options), "testD");//regexp INSIDE code
-    equals(parseLM('[folder{"/@name"}]', options), "F1");//code INSIDE basic xpath
-
-    //is this a valid xpath in a xpath? no data returned
-    equals(parseLM("[folder[@name='[folder[2]/@name]']/@name]", options), "F2");//basic xpath INSIDE basic xpath
-    
-    //syntax error?
-    //error: Voorwaardelijke compilatie is uitgeschakeld
-    equals(parseLM("[testmodel::folder[@name='[folder[2]/@name]']/@name]", options), "F2");//xpath with model INSIDE basic xpath
-    
-    
-    //error message
-    //error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM("['folder/@name']", options), "error");//single quoted string INSIDE basic xpath
-    
-    //no data returned
-    equals(parseLM('[testmodel::"folder"]', options), "error");//string double quotes INSIDE xpath with model
-    
-    //expected error: no data returned or syntax error?
-    equals(parseLM("[testmodel::<file/>]", options), "error");//xml literal INSIDE xpath with model
-    
-    
-    //no data returned
-    equals(parseLM("[testmodel::'folder/@name']", options), "error");//single quoted string INSIDE xpath with model
-    //no data returned
-    equals(parseLM('["testmodel"::folder/@name]', options), "F1");//string double quotes INSIDE xpath select all
-    
-    //syntax error
-    //error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM('%[file"[1]"]', options), "error");//string double quotes INSIDE language symbol
-    
-    
-    //no data returned (no language table?)
-    equals(parseLM("$[{'main/test'}]", options), "test");//code INSIDE language symbol
-    
-    //no data returned
-    equals(parseLM("%[folder[@name='[folder[2]/@name]']]", options), "<folder name='F2'><file>D</file></folder>");//basic xpath INSIDE language symbol
-    
-    //expected error
-    equals(parseLM("%[folder[*[folder[2]/@name]]]", options), "<folder name='F2'><file>D</file></folder>");//xpath select all INSIDE language symbol
-    
-    //no data returned (no language table?)
-    equals(parseLM("$['folder']", options), "error");//single quoted string INSIDE regexp
-    
-    //error message
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht
-    equals(parseLM("[\"folder\"/@name]", options), "");//string double quotes INSIDE basic xpath
-    
-    //error: Onverwacht teken in querytekenreeks. %
-    equals(parseLM("[folder[%[folder[2]/@name]]/@name]", options), "F2");//xpath select node INSIDE basic xpath
-    
-    //no return data (no language table)
-    equals(parseLM("[folder[@name='$[main/f2]']/@name]", options), "F2");//language symbol INSIDE basic xpath
-    //no return data
-    equals(parseLM("[testmodel::{'folder/@name'}]", options), "F1");//code INSIDE xpath with model
-    //no return data
-    equals(parseLM("[testmodel::$[main/xpath]]", options), "F1");//language symbol INSIDE xpath with model
-    //doesnt return whats expected
-    equals(parseLM("[<data><file name='test'/></data>::file/@name]", options), "test");//xml literal INSIDE xpath select all
-    
-    //no return data this is no xpath select all? (*[{'FOLDER'.toLowerCase()}])
-    equals(parseLM("[{testmodel}::folder/@name]", options), "F1");//code INSIDE xpath select all
-    
-    //gives an error
-    equals(parseLM("[[testmodel::folder[2]]::@name]", options), "F2");//xpath with model INSIDE xpath select all
-    //no return data
-    equals(parseLM("[*[folder]::file]", options), "error");//xpath select all INSIDE xpath select all
-    
-    //no data returned
-    equals(parseLM("[%[folder]::file]", options), "<file>C</file>");//xpath select node INSIDE xpath select all
-    
-    //no data returned (no language table)
-    equals(parseLM("[$[main/test]::folder/@name]", options), "F1");//language symbol INSIDE xpath select all
-    
-    //gives an error: Ongeldige asnaam.
-    equals(parseLM("%[file[testmodel::folder]]", options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//xpath with model INSIDE language symbol
-    
-    //no data returned (no language table)
-    equals(parseLM("%[folder[@name='$[main/f1]']]", options), "F1");//language symbol INSIDE language symbol
-    
-    //gives an error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM("%['folder']", options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//single quoted string INSIDE xpath node
-    
-    //no data returned (no language table)
-    equals(parseLM("$[main/[testmodel::folder[2]/@name]]", options), "F1");//xpath with model INSIDE language xpath
-    
-    //no reutrn data (no language table)
-    equals(parseLM("$[main/$[main/test]]", options), "test");//language symbol language xpath
-    
-    //no data returned (no language table)
-    equals(parseLM("$['main/test']", options), "test");//single quoted string INSIDE language xpath
-    
-    //doesnt return whats expected (no language table)
-    equals(parseLM("<folder>$[main/test]<folder />", options), "<folder>test<folder />");//language symbol INSIDE xml literal
-    equals(parseLM('{[folder/@name] + "name"}', options), "F1name");//basic xpath INSIDE code
-    
-    //no data returned
-    equals(parseLM("{[testmodel::folder/@name].toLowerCase()}", options), "f1");//xpath with model INSIDE code
-    
-    equals(parseLM("{%[folder].xml}"), '<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>');//xpath select node INSIDE code
-    //no data returned (no language table)
-    equals(parseLM("{$[main/test]}", options), "test");//language symbol INSIDE code
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[folder[@name='[folder[2]/@name]']/@name]", options), "F2");//basic xpath INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::folder[@name='[folder[2]/@name]']/@name]", options), "F2");//xpath with model INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::*[folder]]", options), "error");//xpath select all INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::%[folder]]", options), "error");//xpath select node INSIDE xpath with model
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht [[folder[3]]::@name]
-    equals(parseLM("[[folder[3]]::@name]", options), "F2");//basic xpath INSIDE xpath select all
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("['testmodel'::folder[2]/@name]", options), "F2");//single quoted string INSIDE xpath select all
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[//{'file2'.substr(0,4)}]", options), "<file>C</file><file>A</file><file>B</file>")                         //testmodel.data.selectNodes('//file'));//code INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[folder[@name='[folder[3]/@name]']]", options), "<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")                //"testmodel.data.selectNodes('folder[@name=\'F2\']'));//basic xpath INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[folder[@name='[testmodel::folder[3]/@name]']]", options), "<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")      //" testmodel.data.selectNodes('folder[@name=\'F2\']'));//basic xpath INSIDE xpath select node
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    
-    equals(parseLM("*[folder[@name='$[main/f2]']]"),"<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")                        //testmodel.data.selectNodes('folder[@name=\'F2\']'));//language symbol INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*['folder']", options), "error"); //testmodel.data.selectNodes('folder'));//single quoted string INSIDE xpath select node
-
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("<folders>*[folder]<folders />"), '<folder><folder name=\'F1\'><file>C</file><file>A</file><file>B</file></folder><folder name=\'F2\'><file>D</file></folder><folder name=\'F2\'><file>F</file><file>A</file></folder></folder>');//xpath select all INSIDE xml literal
-    
-    //error expected
-    //error message: error: Verwacht token 'eof' gevonden '<'.
-    equals(parseLM("[file<xml/>]", options), "error");//xml literal INSIDE basic xpath
-    //error expected
-    //error message Verwacht token 'eof' gevonden '*'.
-    equals(parseLM("[folder*[folder]]", options), "error");//xpath select all INSIDE basic xpath
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht *[folder\"[2]\"]
-    equals(parseLM('*[folder"[2]"]', options), "error")                                     //testmode.data.selectNodes("folder[2]"));//string double quotes INSIDE xpath select node
-    
-    //error expected
-    //error message: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("*[file<xml/>]", options), "error");//xml literal INSIDE xpath select node
-    
-    //error expected
-    //error message: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("%[folder[*[folder[2]/@name]]", options), "<folder name='F2'><file>D</file></folder>");//xpath select all INSIDE xpath select node
-    
-    //error message: Compiling live markup functionError whilst compiling: ')' wordt verwacht *[folder[{\"%[folder/@name]\"}]/@name]
-    equals(parseLM('*[folder[%[folder/@name]]/@name]', options), "name='F1'");//xpath select node INSIDE xpath select node - testmodel.data.selectNodes("folder/@name")
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht %[folder[{\"*[folder[1]/@name]\"}]]
-    equals(parseLM('%[folder[*[folder[1]/@name]]]', options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//xpath select all INSIDE language symbol
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht %[folder[{\"%[folder/@name]\"}]/@name]
-    equals(parseLM("%[folder[%[folder/@name]]/@name]", options), "name='F1'");//xpath select node INSIDE language symbol
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht $[\"main/test\"]
-    //no language table
-    equals(parseLM("$[\"main/test\"]", options), "test");//string double quotes INSIDE regexp
-    
-    //last 3 are suposed to fail
-    equals(parseLM("$[file<xml/>]", options), "error");//xml literal INSIDE regexp
-    equals(parseLM("$[file*[folder]]", options), "error");//xpath select all INSIDE regexp
-    equals(parseLM("$[file%[folder]]", options), "error");//xpath select node INSIDE regexp
-});
-
-test("lm_codemode()", function() {
-    // Detect and remove any common prefix.
-    // Null case.
-    
-    options = {parsecode:1};
-    
-    equals(parseLM('{1 + 1}', options), "2");
-  
-    equals(parseLM('"asdasd<xml><xml />asdasd"', options), "asdasd<xml><xml />asdasd");//xml literal INSIDE string double quotes
-    equals(parseLM('"asdasd{1+1}asdasd"', options), "asdasd2asdasd");//code INSIDE string double quotes
-    equals(parseLM("asdasd[folder/@name]", options), "asdasdF1");//basic xpath INSIDE string double quotes
-    //doesnt return what expected
-    equals(parseLM('"asdasd[testmodel::folder/@name]"', options), "asdasdF1");//xpath with model INSIDE string double quotes
-    //returns an error
-    equals(parseLM('"asdasd*[//file]"', options), "asdasd<file>C</file><file>A</file><file>B</file><file>F</file><file>A</file>");//xpath select all INSIDE string double quotes
-    equals(parseLM('"asdasd%[folder]asdasd"'), '"asdasd<folder name=\\"F1\\"><file>C</file><file>A</file><file>B</file></folder>asdasd"');//xpath select node INSIDE string double quotes
-    //doesnt return what expected (no language table?)
-    equals(parseLM('"asdad$[main/test]asd"', options), "asdasdtestasd");//language symbol INSIDE string double quotes
-    equals(parseLM('"asdasdasd\'asdasdasd\'asdasd"', options), "\"asdasdasd'asdasdasd'asdasd\"");//single quoted string INSIDE string double quotes
-    equals(parseLM("<xml />\"asdasd\"<xml/>", options), "<xml />\"asdasd\"<xml/>");//string double quotes INSIDE xml literal
-    equals(parseLM("<folder><file><file /><folder />", options), "<folder><file><file /><folder />");//xml literal INSIDE xml literal
-    equals(parseLM("<xml />{'ASDASD'.toLowerCase()}<xml/>", options), "<xml />asdasd<xml/>");//code INSIDE xml literal
-    equals(parseLM("<folder>[folder/@name]<folder />", options), "<folder>F1<folder />");//basic xpath INSIDE xml literal
-    //xpath with model doesnt seem to work?
-    equals(parseLM("<folder>[testmodel::folder/@name]<folder />", options), "<folder><folder />");//xpath with model INSIDE xml literal
-    equals(parseLM("<folder>%[folder]<folder />"), '<folder><folder name="F1"><file>C</file><file>A</file><file>B</file></folder><folder />');//xpath select node INSIDE xml literal
-    equals(parseLM("<folder>'asdasd0'<folder />", options), "<folder>'asdasd0'<folder />");//single quoted string INSIDE xml literal
-    equals(parseLM('{"asdsa".substr(0,2)}', options), "as");//string double quotes INSIDE code
-    equals(parseLM("{<xml/>}", options), "<xml/>");//xml literal INSIDE code
-    equals(parseLM("{1+1+{2+2}+3+3}", options), "12");//code INSIDE code
-    
-    equals(parseLM('{"testmodel" + [folder/@name]}', options), "testmodelF1");//xpath select all INSIDE code
-    equals(parseLM("{\"asD\".replace(/\as/, 'test')}", options), "testD");//regexp INSIDE code
-    equals(parseLM('[folder{"/@name"}]', options), "F1");//code INSIDE basic xpath
-
-    //is this a valid xpath in a xpath? no data returned
-    equals(parseLM("[folder[@name='[folder[2]/@name]']/@name]", options), "F2");//basic xpath INSIDE basic xpath
-    
-    //syntax error?
-    //error: Voorwaardelijke compilatie is uitgeschakeld
-    equals(parseLM("[testmodel::folder[@name='[folder[2]/@name]']/@name]", options), "F2");//xpath with model INSIDE basic xpath
-    
-    
-    //error message
-    //error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM("['folder/@name']", options), "error");//single quoted string INSIDE basic xpath
-    
-    //no data returned
-    equals(parseLM('[testmodel::"folder"]', options), "error");//string double quotes INSIDE xpath with model
-    
-    //expected error: no data returned or syntax error?
-    equals(parseLM("[testmodel::<file/>]", options), "error");//xml literal INSIDE xpath with model
-    
-    
-    //no data returned
-    equals(parseLM("[testmodel::'folder/@name']", options), "error");//single quoted string INSIDE xpath with model
-    //no data returned
-    equals(parseLM('["testmodel"::folder/@name]', options), "F1");//string double quotes INSIDE xpath select all
-    
-    //syntax error
-    //error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM('%[file"[1]"]', options), "error");//string double quotes INSIDE language symbol
-    
-    
-    //no data returned (no language table?)
-    equals(parseLM("$[{'main/test'}]", options), "test");//code INSIDE language symbol
-    
-    //no data returned
-    equals(parseLM("%[folder[@name='[folder[2]/@name]']]", options), "<folder name='F2'><file>D</file></folder>");//basic xpath INSIDE language symbol
-    
-    //expected error
-    equals(parseLM("%[folder[*[folder[2]/@name]]]", options), "<folder name='F2'><file>D</file></folder>");//xpath select all INSIDE language symbol
-    
-    //no data returned (no language table?)
-    equals(parseLM("$['folder']", options), "error");//single quoted string INSIDE regexp
-    
-    //error message
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht
-    equals(parseLM("[\"folder\"/@name]", options), "");//string double quotes INSIDE basic xpath
-    
-    //error: Onverwacht teken in querytekenreeks. %
-    equals(parseLM("[folder[%[folder[2]/@name]]/@name]", options), "F2");//xpath select node INSIDE basic xpath
-    
-    //no return data (no language table)
-    equals(parseLM("[folder[@name='$[main/f2]']/@name]", options), "F2");//language symbol INSIDE basic xpath
-    //no return data
-    equals(parseLM("[testmodel::{'folder/@name'}]", options), "F1");//code INSIDE xpath with model
-    //no return data
-    equals(parseLM("[testmodel::$[main/xpath]]", options), "F1");//language symbol INSIDE xpath with model
-    //doesnt return whats expected
-    equals(parseLM("[<data><file name='test'/></data>::file/@name]", options), "simple string");//xml literal INSIDE xpath select all
-    
-    //no return data this is no xpath select all? (*[{'FOLDER'.toLowerCase()}])
-    equals(parseLM("[{testmodel}::folder/@name]", options), "F1");//code INSIDE xpath select all
-    
-    //gives an error
-    equals(parseLM("[[testmodel::folder[2]]::@name]", options), "F2");//xpath with model INSIDE xpath select all
-    //no return data
-    equals(parseLM("[*[folder]::file]", options), "error");//xpath select all INSIDE xpath select all
-    
-    //no data returned
-    equals(parseLM("[%[folder]::file]", options), "<file>C</file>");//xpath select node INSIDE xpath select all
-    
-    //no data returned (no language table)
-    equals(parseLM("[$[main/test]::folder/@name]", options), "F1");//language symbol INSIDE xpath select all
-    
-    //gives an error: Ongeldige asnaam.
-    equals(parseLM("%[file[testmodel::folder]]", options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//xpath with model INSIDE language symbol
-    
-    //no data returned (no language table)
-    equals(parseLM("%[folder[@name='$[main/f1]']]", options), "F1");//language symbol INSIDE language symbol
-    
-    //gives an error: Expressie retourneert geen DOM-knooppunt.
-    equals(parseLM("%['folder']", options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//single quoted string INSIDE xpath node
-    
-    //no data returned (no language table)
-    equals(parseLM("$[main/[testmodel::folder[2]/@name]]", options), "F1");//xpath with model INSIDE language xpath
-    
-    //no reutrn data (no language table)
-    equals(parseLM("$[main/$[main/test]]", options), "test");//language symbol language xpath
-    
-    //no data returned (no language table)
-    equals(parseLM("$['main/test']", options), "test");//single quoted string INSIDE language xpath
-    
-    //doesnt return whats expected (no language table)
-    equals(parseLM("<folder>$[main/test]<folder />", options), "<folder>test<folder />");//language symbol INSIDE xml literal
-    equals(parseLM('{[folder/@name] + "name"}', options), "F1name");//basic xpath INSIDE code
-    
-    //no data returned
-    equals(parseLM("{[testmodel::folder/@name].toLowerCase()}", options), "f1");//xpath with model INSIDE code
-    
-    equals(parseLM("{%[folder].xml}"), '<folder name="F1"><file>C</file><file>A</file><file>B</file></folder>');//xpath select node INSIDE code
-    //no data returned (no language table)
-    equals(parseLM("{$[main/test]}", options), "test");//language symbol INSIDE code
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[folder[@name='[folder[2]/@name]']/@name]", options), "F2");//basic xpath INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::folder[@name='[folder[2]/@name]']/@name]", options), "F2");//xpath with model INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::*[folder]]", options), "error");//xpath select all INSIDE xpath with model
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("[testmodel::%[folder]]", options), "error");//xpath select node INSIDE xpath with model
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht [[folder[3]]::@name]
-    equals(parseLM("[[folder[3]]::@name]", options), "F2");//basic xpath INSIDE xpath select all
-    
-    //no data returned dunno whats the problem
-    equals(parseLM("['testmodel'::folder[2]/@name]", options), "F2");//single quoted string INSIDE xpath select all
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[//{'file2'.substr(0,4)}]", options), "<file>C</file><file>A</file><file>B</file>")                         //testmodel.data.selectNodes('//file'));//code INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[folder[@name='[folder[3]/@name]']]", options), "<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")                //"testmodel.data.selectNodes('folder[@name=\'F2\']'));//basic xpath INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*[folder[@name='[testmodel::folder[3]/@name]']]", options), "<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")      //" testmodel.data.selectNodes('folder[@name=\'F2\']'));//basic xpath INSIDE xpath select node
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    
-    equals(parseLM("*[folder[@name='$[main/f2]']]"),"<folder name='F2'><file>D</file></folder><folder name='F2'><file>F</file><file>A</file></folder>")                        //testmodel.data.selectNodes('folder[@name=\'F2\']'));//language symbol INSIDE xpath select node
-    
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    //differents between "codemode" and "textmode"? no sure what to change
-    equals(parseLM("*['folder']", options), "error"); //testmodel.data.selectNodes('folder'));//single quoted string INSIDE xpath select node
-
-    //error: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("<folders>*[folder]<folders />"), '<folders><folder name=\'F1\'><file>C</file><file>A</file><file>B</file></folder><folder name=\'F2\'><file>D</file></folder><folder name=\'F2\'><file>F</file><file>A</file></folder><folders />');//xpath select all INSIDE xml literal
-    
-    //error expected
-    //error message: error: Verwacht token 'eof' gevonden '<'.
-    equals(parseLM("[file<xml/>]", options), "error");//xml literal INSIDE basic xpath
-    //error expected
-    //error message Verwacht token 'eof' gevonden '*'.
-    equals(parseLM("[folder*[folder]]", options), "error");//xpath select all INSIDE basic xpath
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht *[folder\"[2]\"]
-    equals(parseLM('*[folder"[2]"]', options), "error")                                     //testmode.data.selectNodes("folder[2]"));//string double quotes INSIDE xpath select node
-    
-    //error expected
-    //error message: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("*[file<xml/>]", options), "error");//xml literal INSIDE xpath select node
-    
-    //error expected
-    //error message: Deze eigenschap of methode wordt niet ondersteund door dit object
-    equals(parseLM("%[folder[*[folder[2]/@name]]", options), "<folder name='F2'><file>D</file></folder>");//xpath select all INSIDE xpath select node
-    
-    //error message: Compiling live markup functionError whilst compiling: ')' wordt verwacht *[folder[{\"%[folder/@name]\"}]/@name]
-    equals(parseLM('*[folder[%[folder/@name]]/@name]', options), "name='F1'");//xpath select node INSIDE xpath select node - testmodel.data.selectNodes("folder/@name")
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht %[folder[{\"*[folder[1]/@name]\"}]]
-    equals(parseLM('%[folder[*[folder[1]/@name]]]', options), "<folder name='F1'><file>C</file><file>A</file><file>B</file></folder>");//xpath select all INSIDE language symbol
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht %[folder[{\"%[folder/@name]\"}]/@name]
-    equals(parseLM("%[folder[%[folder/@name]]/@name]", options), "name='F1'");//xpath select node INSIDE language symbol
-    
-    //error: Compiling live markup functionError whilst compiling: ')' wordt verwacht $[\"main/test\"]
-    //no language table
-    equals(parseLM("$[\"main/test\"]", options), "test");//string double quotes INSIDE regexp
-    
-    //last 3 are suposed to fail
-    equals(parseLM("$[file<xml/>]", options), "error");//xml literal INSIDE regexp
-    equals(parseLM("$[file*[folder]]", options), "error");//xpath select all INSIDE regexp
-    equals(parseLM("$[file%[folder]]", options), "error");//xpath select node INSIDE regexp
-});
-
-	//-------------------------------" = "-------------------------------
-	
+};
+/*	
 	
 test("lm_equals_codemode()", function() {
     // Detect and remove any common prefix.
@@ -1009,3 +760,4 @@ test("lm_delete_codemode()", function() {
 	equals(parseLM("delete %[folder]") && testmode.queryNodes("folder").length, 2);//code INSIDE single quoted string
 });
 
+*/
