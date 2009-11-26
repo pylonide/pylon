@@ -336,7 +336,11 @@ apf.ContentEditable = function() {
                 //case 118: // v |  event handler...
                     if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey
                       && !e.altKey && this.realtime)
+                        // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
+                        /* #else
+                        this.setProperty("value", this.getValue())
+                        #endif*/
                     break;
                 case 8: // backspace
                     found = false;
@@ -390,7 +394,11 @@ apf.ContentEditable = function() {
                 if (found) {
                     apf.AbstractEvent.stop(e.htmlEvent || e);
                     if (this.realtime)
+                        // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
+                        /* #else
+                        this.setProperty("value", this.getValue())
+                        #endif*/
                 }
             }
         }
@@ -850,7 +858,11 @@ apf.ContentEditable = function() {
         if (!this.realtime || o.changeTimer !== null) return;
         o.changeTimer = setTimeout(function() {
             clearTimeout(o.changeTimer);
+            // #ifdef __WITH_DATAACTION
             this.change(this.getValue());
+            /* #else
+            this.setProperty("value", this.getValue())
+            #endif*/
             o.changeTimer = null;
         }, 200);
     }
@@ -1547,7 +1559,11 @@ apf.ContentEditable = function() {
         // #endif
         this.$selection.setContent(html, true);
         // notify SmartBindings that we changed stuff...
+        // #ifdef __WITH_DATAACTION
         this.change(this.getValue());
+        /* #else
+        this.setProperty("value", this.getValue())
+        #endif*/
 
         if (bNoFocus) return;
         var _self = this;
