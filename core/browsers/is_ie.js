@@ -150,8 +150,7 @@ apf.runIE = function(){
     apf.getStyle = function(el, prop) {
         return el.currentStyle[prop];
     };
-
-    //#ifdef __WITH_XMLDATABASE
+  
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode){
         for (var str = [], i = 0, l = nodeList.length; i < l; i++)
             str[i] = nodeList[i].xml;
@@ -227,7 +226,6 @@ apf.runIE = function(){
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     }
-    //#endif
     
     apf.getHorBorders = function(oHtml){
         return Math.max(0,
