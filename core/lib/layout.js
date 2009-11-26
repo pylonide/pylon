@@ -331,6 +331,7 @@ apf.layout = {
             },
 
             setFloat : function(){
+                debugger;
                 var diff = apf.getDiff(this.oHtml);
 
                 this.oHtml.style.width = (this.size[0]-diff[0]) + "px";
@@ -607,11 +608,14 @@ apf.layout = {
             aData.oHtml   = amlNode.$ext;
             amlNode.aData = aData;
 
-            if (!amlNode.hasFeature(apf.__ALIGNMENT__)) {
-                amlNode.implement(apf.Alignment);
+            //if (!amlNode.hasFeature(apf.__ALIGNMENT__)) {
+                /*amlNode.implement(apf.Alignment);
                 if (amlNode.hasFeature(apf.__ANCHORING__))
-                    amlNode.$disableAnchoring();
-            }
+                    amlNode.$disableAnchoring();*/
+                
+                //amlNode.align = -1;
+                amlNode.$setLayout("alignment");
+            //}
 
             var aml = amlNode;
             if (aml.getAttribute("width"))

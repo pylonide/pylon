@@ -175,7 +175,7 @@ apf.getData = function(instruction, options){
     var fParsed = options.fParsed || (instruction.indexOf("{") > -1 || instruction.indexOf("[") > -1
         ? apf.lm.compile(instruction, {
             withopt     : true, 
-            precall     : options._precall, //for the actiontracker
+            precall     : options._pc, //for the actiontracker
             alwayscb    : true, 
             simplexpath : true
           })
@@ -225,7 +225,10 @@ apf.getData = function(instruction, options){
     else {
         if (fParsed.type == 1 || fParsed.type == 3) {
             var callback2 = callback;
-            callback = function(data, state, extra){
+            callback = options.callback = function(data, state, extra){
+                if (state != apf.SUCCESS)
+                    return callback2.apply(this, arguments);
+debugger;
                 var url = data.split(" "), method = "get";
                 if (url.length > 1 && url[0].length < 10) {
                     method = url.shift();
@@ -233,7 +236,7 @@ apf.getData = function(instruction, options){
                 }
                 else url = data;
                 
-                callback = callback2;
+                callback = options.callback = callback2;
                 apf.oHttp.exec(method, [url], gCallback, options);
             }
             fParsed(options.xmlNode, gCallback, options);

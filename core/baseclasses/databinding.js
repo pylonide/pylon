@@ -565,7 +565,7 @@ apf.DataBinding = function(){
               amlNode     : this,
               callback    : function(){
                     //#ifdef __WITH_PROPERTY_BINDING
-                    amlNode.setProperty(this.hasFeature(apf.__MULTISELECT__) 
+                    amlNode.setProperty(amlNode.hasFeature(apf.__MULTISELECT__) 
                         ? "selected" 
                         : "root", xmlRootNode);
                     //#endif

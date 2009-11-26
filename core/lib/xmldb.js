@@ -208,17 +208,7 @@ apf.xmldb = new (function(){
         return this.getNode(htmlNode);
     };
     
-    /**
-     * Creates xml nodes from an xml string recursively.
-     *
-     * @param {String}  strXml     the xml definition.
-     * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
-     * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
-     * @return {XMLNode} the created xml node.
-     */
-    this.getXml = function(strXml, noError, preserveWhiteSpace){
-        return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
-    };
+    this.getXml = apf.getXml;
 
     this.nodeCount = {};
     /**

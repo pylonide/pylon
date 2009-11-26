@@ -130,7 +130,8 @@ apf.Alignment = function(){
      */
     //var lastPosition, amlNode = this;
     this.$disableAlignment = function(purge){
-        if (!this.aData) return;
+        if (!this.aData || !this.$alignmentEnabled) 
+            return;
 
         for (var prop in propHandlers)
             delete this.$propHandlers[prop];
@@ -191,7 +192,7 @@ apf.Alignment = function(){
         }
     };
     
-    function visibleHandler(e){ 
+    function visibleHandler(e){
         if (!this.aData) return;
         
         if (e.value) {
@@ -215,7 +216,8 @@ apf.Alignment = function(){
         
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
+        if (this.$ext.style.display == "block" 
+          && !this.$ext.offsetHeight && !this.$ext.offsetWidth) {
             var _self      = this;
             var propChange = function (name, old, value){
                 if (_self.$ext.offsetWidth || _self.$ext.offsetHeight) {

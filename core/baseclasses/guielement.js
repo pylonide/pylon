@@ -118,21 +118,21 @@ apf.GuiElement = function(){
         if (!this.$drawn || !this.$pHtmlNode)
             return false;
 
-
         if (this.parentNode) {
             // #ifdef __AMLTABLE
             if (this.parentNode.localName == "table") {
                 this.parentNode.register(this);
+                this.$disableCurrentLayout = null;
                 return type == "table";
             }
             // #endif
             
             // #ifdef __AMLVBOX || __AMLHBOX
-            else if (this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            else if (this.aData || this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
                 if (!this.$alignmentEnabled) {
-                    this.$enableAlignment();
                     if (this.$disableCurrentLayout)
                         this.$disableCurrentLayout();
+                    this.$enableAlignment();
                     this.$disableCurrentLayout = this.$disableAlignment;
                 }
                 return type == "alignment";
@@ -142,9 +142,9 @@ apf.GuiElement = function(){
         
         // #ifdef __WITH_ANCHORING
         if (!this.$anchoringEnabled) {
-            this.$enableAnchoring();
             if (this.$disableCurrentLayout)
                 this.$disableCurrentLayout();
+            this.$enableAnchoring();
             this.$disableCurrentLayout = this.$disableAnchoring;
         }
         return type == "anchoring";

@@ -40,6 +40,9 @@ apf.WinServer = {
         var topmost;
         if (!norecur && this.wins.length) {
             var topmost = this.wins[this.wins.length - 1];
+            if (topmost == win)
+                return;
+            
             if (!topmost.modal || !topmost.visible)
                 topmost = null;
             else if (topmost && win.modal) {
@@ -412,10 +415,13 @@ apf.AmlWindow = function(struct, tagName){
                       document.documentElement.scrollTop);
                 }
                 
+                //@todo it's better to add this to the layout queue
+                //this.$ext.offsetWidth
+                //this.$ext.offsetHeight
                 this.$ext.style.left = (Math.max(0, ((
-                    size[0] - this.$ext.offsetWidth)/2)) + size[2]) + "px";
+                    size[0] - parseInt(this.width))/2)) + size[2]) + "px";
                 this.$ext.style.top  = (Math.max(0, ((
-                    size[1] - this.$ext.offsetHeight)/3)) + size[3]) + "px";
+                    size[1] - parseInt(this.height))/3)) + size[3]) + "px";
             }
 
             if (!apf.canHaveHtmlOverSelects && this.hideselects) {

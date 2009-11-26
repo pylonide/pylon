@@ -119,7 +119,8 @@ apf.Anchoring = function(){
      *
      */
     this.$disableAnchoring = function(activate){
-        if (!this.$parsed || !this.$inited || !this.$anchoringEnabled || !this.$pHtmlNode)
+        //!this.$parsed || 
+        if (!this.$inited || !this.$anchoringEnabled || !this.$pHtmlNode)
             return;
 
         l.removeRule(this.$pHtmlNode, this.$uniqueId + "_anchors");

@@ -1646,7 +1646,7 @@ apf.MultiSelect = function(){
                   (valueRule != "value" && (this.xmlRoot
                   && this.$applyBindRule("value", this.xmlRoot, null, true)) 
                   || this.value)) {
-                    if (this.xmlRoot != this)
+                    if (valueRule == "eachvalue" || this.xmlRoot != this)
                         this.change(this.$lastValue);
                     else
                         this.setProperty("value", this.$lastValue);

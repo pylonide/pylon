@@ -134,10 +134,8 @@ apf.actiontracker = function(struct, tagName){
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        var x = this.$aml;
-        
-        if (parentNode)
-            parentNode.$at = this;
+        if (this.parentNode)
+            this.parentNode.$at = this;
     });
 
     /**
@@ -207,6 +205,10 @@ apf.actiontracker = function(struct, tagName){
         //Reset Redo Stack
         this.$stackUndone.length = 0;
         this.setProperty("redolength", this.$stackUndone.length);
+
+        this.dispatchEvent("afterchange", {
+            action   : "do"
+        })
 
         //return stack id of action
         return UndoObj;
@@ -284,7 +286,7 @@ apf.actiontracker = function(struct, tagName){
             redoStack = undo ? this.$stackUndone : this.$stackDone; //local vars switch
 
         if (!undoStack.length) return;
-
+        
         if (single) {
             var UndoObj = undoStack[id];
             if (!UndoObj) return;
@@ -319,6 +321,9 @@ apf.actiontracker = function(struct, tagName){
             this.setProperty("redolength", this.$stackUndone.length);
             return UndoObj;
         }
+
+        if (this.dispatchEvent("beforechange") === false)
+            return;
 
         //#ifdef __DEBUG
         apf.console.info("Executing " + (undo ? "undo" : "redo"));
@@ -518,7 +523,7 @@ apf.actiontracker = function(struct, tagName){
             These thow checks are so important, that they are also executed
             in release mode.
         */
-        if (this.$execStack[0].undoObj != UndoObj){
+        if (!this.$execStack[0] || this.$execStack[0].undoObj != UndoObj){
             throw new Error(apf.formatErrorString(0, this, "Executing Next \
                 action in queue", "The execution stack was corrupted. This is \
                 a fatal error. The application should be restarted. You will \
@@ -537,7 +542,7 @@ apf.actiontracker = function(struct, tagName){
         //#endif
 
         //Check if there is a new action to execute;
-        if (!this.$execStack[0] || lastItem == lastExecStackItem)
+        if (!this.$execStack[0] || lastItem == this.$lastExecStackItem)
             return;
 
         // @todo you could optimize this process by using multicall, but too much for now
@@ -899,7 +904,9 @@ apf.UndoData = function(settings, at){
 
         options = apf.extend({
             //undoObj   : this,
-            xmlNode   : this.selNode || this.xmlNode,
+            xmlNode   : this.action == "multicall" 
+              ? this.args[0].xmlNode
+              : this.selNode || this.xmlNode,
             userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             undo      : undo,
