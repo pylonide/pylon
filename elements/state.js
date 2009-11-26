@@ -134,6 +134,10 @@ apf.StateServer = {
  */
 apf.state = function(struct, tagName){
     this.$init(tagName || "state", apf.NODE_HIDDEN, struct);
+    
+    this.$signalElements = [];
+    this.$groupAdded     = {};
+    this.$locationAdded  = '';
 };
 
 (function(){
@@ -242,31 +246,25 @@ apf.state = function(struct, tagName){
 
     /**** Init ****/
 
-    this.$signalElements = [];
-    this.$groupAdded     = {};
-    this.$locationAdded  = '';
-    
-    var _self = this;
-    
     this.$propHandlers["group"] = function(value){  
         if (value) {
             apf.StateServer.addGroup(value, this);
-            _self.$groupAdded = {'value' : value, elState : this};
+            this.$groupAdded = {'value' : value, elState : this};
         }
         else {
-            apf.StateServer.removeGroup(_self.$groupAdded.value, _self.$groupAdded.elState);
-            _self.$groupAdded     = {};
+            apf.StateServer.removeGroup(this.$groupAdded.value, this.$groupAdded.elState);
+            this.$groupAdded     = {};
         }
     }
 
     this.$propHandlers["location"] = function(value){
         if (value) {
             apf.StateServer.locs[value] = this;
-            _self.$locationAdded = value;
+            this.$locationAdded = value;
         }
         else {
-            delete apf.StateServer.locs[_self.$locationAdded];
-            _self.$locationAdded = '';
+            delete apf.StateServer.locs[this.$locationAdded];
+            this.$locationAdded = '';
         }
     }
     

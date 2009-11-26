@@ -140,10 +140,10 @@ apf.vbox = function(struct, tagName){
                 apf.layout.queue(this.$int || this.$pHtmlNode, null, l.root);
 
             //#ifdef __WITH_PROPERTY_WATCH
-            if (!this.$int.offsetHeight) {
+            if (!this.$int.offsetHeight && !this.$int.offsetWidth) {
                 var _self = this;
                 function propChange(name, old, value){
-                    if (apf.isTrue(value) && _self.$ext.offsetHeight) {
+                    if (apf.isTrue(value) && (_self.$ext.offsetHeight || _self.$ext.offsetWidth)) {
                         //apf.layout.forceResize(_self.$int);
                         apf.layout.queue(_self.$int, null, l.root);
 

@@ -724,7 +724,7 @@ apf.button.actions  = {
             return;
         }
 
-        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf,"auth")[0];
+        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf,"auth")[0];
         if (!auth)
             return;
        
@@ -733,7 +733,7 @@ apf.button.actions  = {
     },
 
     "logout" : function(){
-        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (!auth)
             return;
 

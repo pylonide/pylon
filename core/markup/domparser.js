@@ -231,10 +231,7 @@ apf.DOMParser.prototype = new (function(){
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if ((node = nodes[i]).$parsePrio)
-                    continue;
-
-                if (!node.$amlLoaded)
+                if (!(node = nodes[i]).$parsePrio && !node.$amlLoaded)
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 
                 //Create children

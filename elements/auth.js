@@ -131,17 +131,16 @@
 
 apf.auth = function(struct, tagName){
     this.$init(tagName || "auth", apf.NODE_HIDDEN, struct);
-    
+
     this.$services = {};
+    this.$cache    = {};
+    this.$queue    = [];
 };
 
 apf.aml.setElement("auth", apf.auth);
 
 (function(){
-    this.$services   = {};
-    this.$cache      = {};
     this.$retry      = true;
-    this.$queue      = [];
     this.$loggedIn   = false;
     this.$needsLogin = false;
     this.$autoStart  = true;
@@ -163,9 +162,10 @@ apf.aml.setElement("auth", apf.auth);
     
     this.$booleanProperties["autostart"] = true;
 
-    this.$supportedProperties.push("login","logout", "fail-state", "error-state",
+    this.$supportedProperties.push("login", "logout", "fail-state", "error-state",
         "login-state", "logout-state", "waiting-state", "window", "autostart");
 
+    this.$propHandlers["login"]         = 
     this.$propHandlers["login-state"]   = function(value){
         this.$services["default"] = value ? this : null;
         this.$needsLogin          = value ? true : false;
@@ -183,12 +183,11 @@ apf.aml.setElement("auth", apf.auth);
             this.$needsLogin = false;
     }
     
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(aml){
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.inited = true;
-        if (!aml)
-            return;
-        var _self = this;
+
         if (this.$autoStart) {
+            var _self = this;
             apf.addEventListener("load", function(){
                 _self.authRequired();
                 apf.removeEventListener("load", arguments.callee);
@@ -307,7 +306,6 @@ apf.aml.setElement("auth", apf.auth);
     };
 
     this.relogin = function(){
-        var _self = this;
         if (this.dispatchEvent("beforerelogin") === false)
             return false;
 
@@ -316,7 +314,7 @@ apf.aml.setElement("auth", apf.auth);
         //#endif
 
         //@todo shouldn't I be using inProces here?
-        var name, pos = 0, len = 0,
+        var name, pos = 0, len = 0, _self = this,
             doneCallback = function(){
                 if (len != ++pos)
                     return;
