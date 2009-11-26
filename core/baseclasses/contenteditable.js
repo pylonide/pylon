@@ -968,7 +968,12 @@ apf.ContentEditable = function() {
         }
 
         this.$notifyAllButtons();
+        
+        // #ifdef __WITH_DATAACTION
         this.change(this.getValue());
+        /* #else
+        this.setProperty("value", this.getValue())
+        #endif*/
 
         var _self = this;
         setTimeout(function() {
