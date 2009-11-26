@@ -89,15 +89,18 @@ apf.runSafari = function(){
     
     var serializer = new XMLSerializer();
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var frag = document.createDocumentFragment();
-        for (var node, a = [], i = 0, l = nodeList.length; i < l; i++) {
+        var node,
+            frag = document.createDocumentFragment(),
+            a = [], i = 0, l = nodeList.length;
+        for (; i < l; i++) {
             if (!(node = nodeList[i])) continue;
             frag.appendChild(node);
         }
 
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag)));
+            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag))
+                .replace(/<([^>]+)\/>/g, "<$1></$1>"));
     };
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
@@ -111,7 +114,7 @@ apf.runSafari = function(){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", s);//apf.html_entity_decode
+            : "beforeend", apf.html_entity_decode(s).replace(/<([^>]+)\/>/g, "<$1></$1>"));
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };

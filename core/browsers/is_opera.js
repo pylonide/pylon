@@ -139,7 +139,7 @@ apf.runOpera = function (){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", serializer.serializeToString(frag));//apf.html_entity_decode
+            : "beforeend", s);//apf.html_entity_decode
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
