@@ -111,7 +111,7 @@ apf.runGecko = function(){
         }
 
         //apf.html_entity_decode(s)
-        o.innerHTML =  s.replace(/<([^>]+)\/>/g, "<$1></$1>");
+        o.innerHTML =  apf.html_entity_decode(s).replace(/<([^>]+)\/>/g, "<$1></$1>");
 
         if (beforeNode)
             htmlNode.insertBefore(o.firstChild, beforeNode);
