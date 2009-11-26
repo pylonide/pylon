@@ -235,7 +235,11 @@ apf.ContentEditable.plugin("fontstyle", function() {
                 }
             }
             // Notify the SmartBindings we've changed...
+            // #ifdef __WITH_DATAACTION
             oEditor.change(oEditor.getValue());
+            /* #else
+            oEditor.setProperty("value", oEditor.getValue())
+            #endif*/
         }
     };
 
