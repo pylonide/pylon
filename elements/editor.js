@@ -242,11 +242,13 @@ apf.editor = function(struct, tagName){
             _self  = this;
         setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
+            //#ifdef __WITH_FOCUS
             if (apf.document.activeElement != this) {
                 //this.$visualFocus(true);
                 _self.focus({});
             }
-            else if (!rClick)
+
+            else/* #endif */if (!rClick)
                 _self.$focus({});
         });
 
