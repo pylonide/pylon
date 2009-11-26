@@ -567,9 +567,10 @@ apf.tree = function(struct, tagName){
                 treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
             this.$setStyleClass(this.$getLayoutNode("item", "container", htmlNode),
                 treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
-            
-            this.$getLayoutNode("item", "openclose", htmlNode)
-                .setAttribute("children", hasChildren);
+
+            if(this.$getLayoutNode("item", "openclose", htmlNode))
+                this.$getLayoutNode("item", "openclose", htmlNode)
+                    .setAttribute("children", hasChildren);
             
             if (!hasChildren && container)
                 container.style.display = "none";
