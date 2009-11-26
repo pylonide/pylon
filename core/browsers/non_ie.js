@@ -19,53 +19,8 @@
  *
  */
 
-// #ifdef __SUPPORT_SAFARI || __SUPPORT_GECKO
+// #ifdef __SUPPORT_SAFARI || __SUPPORT_GECKO || __SUPPORT_SAFARI
 apf.runNonIe = function (){
-    var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var o    = document.createElement("div"),
-            frag = document.createDocumentFragment(),
-            i    = nodeList.length - 1,
-            l, node;
-        for (; i >= 0; i--) {
-            node = nodeList[i];
-            frag.insertBefore(node, frag.firstChild);
-        }
-
-        o.innerHTML = apf.html_entity_decode(serializer.serializeToString(frag))
-            .replace(/<([^>]+)\/>/g, "<$1></$1>");
-
-        frag = document.createDocumentFragment();
-        for (i = 0, l = o.childNodes.length; i < l; i++) {
-            node = o.childNodes[0];
-            frag.appendChild(node);
-        }
-
-        if (beforeNode)
-            htmlNode.insertBefore(frag, beforeNode);
-        htmlNode.appendChild(frag);
-    };
-
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
-        var o = document.createElement("div");
-
-        if (!s) {
-            s = xmlNode.serialize
-                ? xmlNode.serialize(true)
-                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
-                    ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode));
-        }
-
-        o.innerHTML =  apf.html_entity_decode(s).replace(/<([^>]+)\/>/g, "<$1></$1>");
-
-        if (beforeNode)
-            htmlNode.insertBefore(o.firstChild, beforeNode);
-        htmlNode.appendChild(o.firstChild);
-
-        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-    };
-    
     //#ifdef __SUPPORT_IE_API
 
     DocumentFragment.prototype.getElementById = function(id){
@@ -79,8 +34,7 @@ apf.runNonIe = function (){
             return (new XMLSerializer()).serializeToString(this);
         });
         XMLDocument.prototype.__defineSetter__("xml", function(){
-            throw new Error(apf.formatErrorString(1042, null, "XML serializer",
-                "Invalid assignment on read-only property 'xml'."));
+            throw new Error(apf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
         });
         
         //Node.xml
@@ -292,25 +246,16 @@ apf.runNonIe = function (){
             }
         }
         catch(e) {
-            if (xslDoc && oResult) {
-                throw new Error(apf.formatErrorString(1043, null, "XSLT Transformation",
-                    "Failed to transform document. \nInfo : " + e));
-            }
-            else if (!xslDoc) {
-                throw new Error(apf.formatErrorString(1044, null, "XSLT Transformation",
-                    "No Stylesheet Document was provided. \nInfo : " + e));
-            }
-            else if (!oResult) {
-                throw new Error(apf.formatErrorString(1045, null, "XSLT Transformation",
-                    "No Result Document was provided. \nInfo : " + e));
-            }
-            else if (xsltProcessor == null) {
-                throw new Error(apf.formatErrorString(1046, null, "XSLT Transformation",
-                    "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
-            }
-            else {
+            if (xslDoc && oResult)
+                throw new Error(apf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
+            else if (!xslDoc)
+                throw new Error(apf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
+            else if (!oResult)
+                throw new Error(apf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
+            else if (xsltProcessor == null)
+                throw new Error(apf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
+            else
                 throw e;
-            }
         }
     };
     
@@ -328,7 +273,17 @@ apf.runNonIe = function (){
         var newFragment   = xsltProcessor.transformToFragment(this,
             document.implementation.createDocument("", "", null));
     
-        return newFragment.xml || newFragment.serialize();
+        return newFragment.xml || newFragment.serialize()
+        
+        /*try{
+            var serializer = new XMLSerializer();
+            str = serializer.serializeToString(out);
+        }
+        catch(e){
+            throw new Error("---- APF Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
+        }
+        
+        return str;*/
     };
     
     // #endif
@@ -425,6 +380,13 @@ apf.runNonIe = function (){
             nodes[i].removeNode();
         nodes = null;
     });
+    
+    /*window.onerror = function(message, filename, linenr){
+        if(++ERROR_COUNT > MAXMSG) return;
+        filename = filename ? filename.match(/\/([^\/]*)$/)[1] : "[Mozilla Library]";
+        new Error("---- APF Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
+        return false;
+    }*/
     
     if (document.body)
         document.body.focus = function(){};

@@ -21,7 +21,6 @@
 
 // #ifdef __WITH_UTILITIES
 
-
 /**
  * Syntax highlights a code string using html.
  * @param {String} strCode the code to highlight.
@@ -34,6 +33,7 @@ apf.highlightCode = function(strCode){
         min = Math.min(min, lines[i].match(/^(\s+)?[^\s]/) && RegExp.$1.length || 1000);
         if (!min) break;
     }
+
     strCode = strCode.replace(new RegExp("^ {" + min + "}", "gm"), "")
       .replace(/<!--([\s\S]+?)-->|<\?([\w\-]+)([\s\S]+?)\?>|<\!\[CDATA\[([\s\S]*?)\]\]>|<(\w+:)?script([\s\S]*?)>([\s\S]*?)<\/(?:\w+:)?script>|<([\/\w\:\-]+)([\s\S]*?)(\/?)>/g, 
         function(m, comment, ptarget, pcontents, cdata, sprefix, sattr, scontent, tagName, attrs, bl){
@@ -72,7 +72,7 @@ apf.highlightCode = function(strCode){
             }
         });
 
-    return strCode;//.replace(/</g, "&lt;");
+    return strCode;//.replace(/&lt;/g, "&amp;lt;");
 }
 
 apf.convertAmlToJson = function(strCode){

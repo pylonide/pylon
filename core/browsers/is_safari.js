@@ -86,6 +86,36 @@ apf.runSafari = function(){
         apf.importClass(apf.runXpath, true, self);
         apf.importClass(apf.runXslt,  true, self);
     }
+    
+    var serializer = new XMLSerializer();
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
+        var frag = document.createDocumentFragment();
+        for (var node, a = [], i = 0, l = nodeList.length; i < l; i++) {
+            if (!(node = nodeList[i])) continue;
+            frag.appendChild(node);
+        }
+
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag)));
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (!s) {
+            s = xmlNode.serialize 
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode));
+        }
+        
+        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
+            ? "beforebegin"
+            : "beforeend", s);//apf.html_entity_decode
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
+
     // #endif
     
     if (apf.runNonIe)
