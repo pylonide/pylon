@@ -248,7 +248,8 @@ apf.editor = function(struct, tagName){
                 _self.focus({});
             }
 
-            else/* #endif */if (!rClick)
+            else/* #endif */
+                if (!rClick)
                 _self.$focus({});
         });
 
