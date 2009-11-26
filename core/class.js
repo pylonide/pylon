@@ -937,9 +937,11 @@ apf.Class.prototype = new (function(){
             this.ownerElement.removeAttributeNode(this);
 
         //Remove from focus list - Should be in AmlNode
+        //#ifdef __WITH_FOCUS
         if (this.$focussable && this.focussable)
             apf.window.$removeFocus(this);
-
+        //#endif
+        
         //#ifdef __WITH_PROPERTY_BINDING
         //Remove dynamic properties
         /*var f, i, l, h;
