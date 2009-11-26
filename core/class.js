@@ -268,7 +268,9 @@ apf.Class.prototype = new (function(){
         if (struct && struct.htmlNode) {
             this.$pHtmlNode = struct.htmlNode;
             this.ownerDocument.$domParser.$continueParsing(this);
+            // #ifdef __WITH_QUEUE
             apf.queue.empty();
+            // #endif
         }
         
         return this;
