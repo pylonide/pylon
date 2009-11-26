@@ -111,8 +111,12 @@ apf.ContentEditable.plugin("code", function() {
             _self.editor.$value = "";
             _self.editor.$propHandlers["value"].call(_self.editor, html);
         }
-        else 
+        else
+            // #ifdef __WITH_DATAACTION
             _self.editor.change(html);
+            /* #else
+            _self.editor.setProperty("value", html)
+            #endif*/
 
         return true;
     }
