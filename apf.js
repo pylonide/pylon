@@ -238,19 +238,16 @@ var apf = {
 
         var sAgent = navigator.userAgent.toLowerCase();
 
-        //Browser Detection
+        // Browser Detection, using feature inference methods where possible:
+        // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
+        // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+        
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera      = sAgent.indexOf("opera") != -1;
+        this.isOpera      = (self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         
-        /**
-         * Specifies whether the application is running in the OmniWeb browser.
-         * @type {Boolean}
-         */
-        this.isOmniWeb    = sAgent.indexOf("omniweb") != -1;
-
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
@@ -261,9 +258,7 @@ var apf = {
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari     = !this.isOpera && ((navigator.vendor
-            && navigator.vendor.match(/Apple/) ? true : false)
-            || sAgent.indexOf("safari") != -1);
+        this.isSafari     = /a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
@@ -281,7 +276,7 @@ var apf = {
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome     = sAgent.indexOf("chrome/") != -1;
+        this.isChrome     = Boolean(/source/.test((/a/.toString + "")));
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
@@ -301,20 +296,14 @@ var apf = {
          * Specifies whether the application is running in a Gecko based browser.
          * @type {Boolean}
          */
-        this.isGecko      = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
+        this.isGecko      = (function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
 
-        /**
-         * Specifies whether the application is running in the Camino browser.
-         * @type {Boolean}
-         */
-        this.isCamino     = this.isGecko && navigator.vendor.match(/Camino/);
-        
         /**
          * Specifies whether the application is running in the Firefox browser version 3.
          * @type {Boolean}
          */
-        this.isGecko3     = this.isGecko && sAgent.indexOf("firefox/3") != -1;
-        this.isGecko35    = this.isGecko && sAgent.indexOf("firefox/3.5") != -1;
+        this.isGecko3     = this.isGecko && (function x(){})[-5] == "x";
+        this.isGecko35    = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
         this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/firefox\/([\d\.]+)/)[1]) : -1;
         
         var found;
@@ -322,7 +311,7 @@ var apf = {
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE         = document.all && !this.isOpera && !this.isSafari ? true : false;
+        this.isIE         = ! + "\v1";
         if (this.isIE)
             this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
@@ -330,16 +319,16 @@ var apf = {
          * Specifies whether the application is running in the Internet Explorer browser version 8.
          * @type {Boolean}
          */
-        this.isIE8        = this.isIE && sAgent.indexOf("msie 8.") != -1 && (found = true);
+        this.isIE8        = this.isIE == 8 && (found = true);
         
         /**
          * Specifies whether the application is running in the Internet Explorer browser version 7.
          * @type {Boolean}
          */
-        this.isIE7        = this.isIE && !found && sAgent.indexOf("msie 7.") != -1 && (found = true);
+        this.isIE7        = !found && this.isIE == 7 && (found = true);
         
         //Mode detection
-        if (this.isIE8 && document.documentMode == 7) {
+        if (this.isIE == 8 && document.documentMode == 7) {
             apf.isIE7        = true;
             apf.isIE8        = false;
             apf.isIE7Emulate = true;
@@ -350,17 +339,7 @@ var apf = {
          * Specifies whether the application is running in the Internet Explorer browser version 6.
          * @type {Boolean}
          */
-        this.isIE6       = this.isIE && !found && sAgent.indexOf("msie 6.") != -1 && (found = true);
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 5.5.
-         * @type {Boolean}
-         */
-        this.isIE55      = this.isIE && !found && sAgent.indexOf("msie 5.5") != -1 && (found = true);
-        /**
-         * Specifies whether the application is running in the Internet Explorer browser version 5.0.
-         * @type {Boolean}
-         */
-        this.isIE50      = this.isIE && !found && sAgent.indexOf("msie 5.0") != -1 && (found = true);
+        this.isIE6       = !found && this.isIE == 6 && (found = true);
 
         var os           = (navigator.platform.match(/mac|win|linux/i) || ["other"])[0].toLowerCase();
         /**
@@ -447,6 +426,7 @@ var apf = {
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
         this.supportCSSAnim            = apf.isWebkit && (apf.webkitRev > 525);//apf.isIphone;
+        this.w3cRange                  = Boolean(window["getSelection"]);
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
@@ -623,7 +603,7 @@ var apf = {
         //#endif
 
         // Load user defined includes
-        this.Init.addConditional(this.parseAppMarkup, apf, ['body']);
+        this.Init.addConditional(this.parseAppMarkup, apf, ["body"]);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
 
         //IE fix
@@ -631,7 +611,7 @@ var apf = {
             if (apf.isIE)
                 document.execCommand("BackgroundImageCache", false, true);
         }
-        catch(e) {};
+        catch(e) {}
 
         //#ifdef __WITH_WINDOW
         //apf.window.init();
@@ -1870,7 +1850,7 @@ var apf = {
         }
         //#endif
         
-        var bodyMarginTop = parseFloat(apf.getStyle(document.body, 'marginTop'));
+        var bodyMarginTop = parseFloat(apf.getStyle(document.body, "marginTop"));
         apf.doesNotIncludeMarginInBodyOffset = (document.body.offsetTop !== bodyMarginTop);
 
         //#ifdef __WITH_PARTIAL_AML_LOADING
@@ -2042,7 +2022,7 @@ var apf = {
         if (el.addEventListener)
             el.addEventListener(type, fn, false);
         else if (el.attachEvent)
-            el.attachEvent('on' + type, fn);
+            el.attachEvent("on" + type, fn);
         return this;
     },
     
@@ -2050,7 +2030,7 @@ var apf = {
         if (el.removeEventListener)
             el.removeEventListener(type, fn, false);
         else if (el.detachEvent)
-            el.detachEvent('on' + type, fn);
+            el.detachEvent("on" + type, fn);
         return this;
     },
 
@@ -2117,7 +2097,7 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
     }
     
     return xmlNode.getElementsByTagNameNS(xmlns, tag);
-}
+};
 
 document.documentElement.className += " has_apf";
 apf.browserDetect();
@@ -2151,7 +2131,7 @@ if (!apf.basePath) {
         apf.basePath = "./";
 }
 
-if (location.protocol == "file:" && !(/a/.__proto__=='//' || /source/.test((/a/.toString+'')))) {
+if (location.protocol == "file:" && !(/a/.__proto__=="//" || /source/.test((/a/.toString+"")))) {
     (function(global){
         // constants used for compression optimization
         var sUNDEF                = "undefined",
