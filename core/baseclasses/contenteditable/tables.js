@@ -654,8 +654,11 @@ apf.ContentEditable.plugin("tablewizard", function() {
                     }
                     break;
            }
-           
-           _self.editor.change(_self.editor.getValue());
+           // #ifdef __WITH_DATAACTION
+            _self.editor.change(_self.editor.getValue());
+            /* #else
+            _self.editor.setProperty("value", _self.editor.getValue())
+            #endif*/
         });
     };
 });

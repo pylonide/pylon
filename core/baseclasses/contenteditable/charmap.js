@@ -109,7 +109,11 @@ apf.ContentEditable.plugin("charmap", function() {
             this.editor.$insertHtml(sCode, true);
             var _self = this;
             setTimeout(function() { //make sure the 'change' is notified to the smartbindings
+                // #ifdef __WITH_DATAACTION
                 _self.editor.change(_self.editor.getValue());
+                /* #else
+                _self.editor.setProperty("value", _self.editor.getValue())
+                #endif*/
             });
             //this.restoreSelection();
         }
