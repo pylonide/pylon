@@ -114,7 +114,7 @@ apf.runSafari = function(){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", apf.html_entity_decode(s).replace(/<([^>]+)\/>/g, "<$1></$1>"));
+            : "beforeend", s.replace(/<([^>]+)\/>/g, "<$1></$1>"));
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
