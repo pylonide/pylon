@@ -331,7 +331,6 @@ apf.layout = {
             },
 
             setFloat : function(){
-                debugger;
                 var diff = apf.getDiff(this.oHtml);
 
                 this.oHtml.style.width = (this.size[0]-diff[0]) + "px";

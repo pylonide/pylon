@@ -228,7 +228,7 @@ apf.getData = function(instruction, options){
             callback = options.callback = function(data, state, extra){
                 if (state != apf.SUCCESS)
                     return callback2.apply(this, arguments);
-debugger;
+
                 var url = data.split(" "), method = "get";
                 if (url.length > 1 && url[0].length < 10) {
                     method = url.shift();
