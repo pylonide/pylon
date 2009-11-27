@@ -204,8 +204,8 @@ apf.webdav = function(struct, tagName){
         }
 
         var _self = this;
-        return this.get(this.$server + sPath || "",
-            function(data, state, extra) {
+        return this.get(this.$server + sPath || "", {
+            callback: function(data, state, extra) {
                 if (state != apf.SUCCESS) {
                     var oError;
 
@@ -241,15 +241,15 @@ apf.webdav = function(struct, tagName){
 
                 if (typeof fCallback == "function")
                     fCallback.call(_self, data, state, extra, fCallback2);
-            }, {
-                nocache       : false,
-                useXML        : false,//true,
-                ignoreOffline : true,
-                data          : sBody || "",
-                headers       : oHeaders,
-                username      : this.$getVar("auth-username") || null,
-                password      : this.$getVar("auth-password") || null
-            });
+            },
+            nocache       : false,
+            useXML        : false,//true,
+            ignoreOffline : true,
+            data          : sBody || "",
+            headers       : oHeaders,
+            username      : this.$getVar("auth-username") || null,
+            password      : this.$getVar("auth-password") || null
+        });
     };
 
     /*

@@ -515,8 +515,8 @@ apf.xmpp = function(struct, tagName){
         var _self = this,
             req   = this.$reqStack.shift();
         ++this.$reqCount;
-        return this.get(this.url,
-            function(data, state, extra) {
+        return this.get(this.url, {
+            callback: function(data, state, extra) {
                 --_self.$reqCount;
                 if (_self.$reqStack.length)
                     _self.$doXmlRequest();
@@ -558,12 +558,12 @@ apf.xmpp = function(struct, tagName){
 
                 if (typeof req.callback == "function")
                     req.callback.call(_self, data, state, extra);
-            }, {
-                nocache       : true,
-                useXML        : !this.$isPoll,
-                ignoreOffline : true,
-                data          : req.body || ""
-            });
+            }, 
+            nocache       : true,
+            useXML        : !this.$isPoll,
+            ignoreOffline : true,
+            data          : req.body || ""
+        });
     };
 
     /*

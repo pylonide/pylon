@@ -34,36 +34,40 @@
  * Retrieving content over http synchronously:
  * <code>
  *  var http = new apf.http();
- *  var data = http.get("http://www.example.com/mydata.jsp", null, {async: false});
+ *  var data = http.get("http://www.example.com/mydata.jsp", {async: false});
  *  alert(data);
  * </code>
  * Example:
  * Retrieving content over http asynchronously:
  * <code>
  *  var http = new apf.http();
- *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
- *      if (state != apf.SUCCESS)
- *          return alert('an error has occurred');
+ *  http.get("http://www.example.com/mydata.jsp", {
+ *      callback: function(data, state, extra){
+ *          if (state != apf.SUCCESS)
+ *              return alert('an error has occurred');
  *
- *      alert(data);
+ *          alert(data);
+ *      }
  *  });
  * </code>
  * Example:
  * Async http request with retry.
  * <code>
  *  var http = new apf.http();
- *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
- *      if (state != apf.SUCCESS) {
- *          var oError = new Error(apf.formatErrorString(0, null,
- *              "While loading data", "Could not load data" + extra.message);
+ *  http.get("http://www.example.com/mydata.jsp", {
+ *      callback: function(data, state, extra){
+ *          if (state != apf.SUCCESS) {
+ *              var oError = new Error(apf.formatErrorString(0, null,
+ *                  "While loading data", "Could not load data" + extra.message);
  *
- *          if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
- *              return true;
+ *              if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+ *                  return true;
  *
- *          throw oError;
+ *              throw oError;
+ *          }
+ *
+ *          alert(data);
  *      }
- *
- *      alert(data);
  *  });
  * </code>
  *
@@ -201,7 +205,8 @@ apf.http = function(){
     this.getXml = function(url, callback, options){
         if (!options) options = {};
         options.useXML = true;
-        return this.get(url, callback, options);
+        options.callback = callback;
+        return this.get(url, options);
     };
 
     /**
@@ -222,11 +227,12 @@ apf.http = function(){
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
      */
-    this.get = this.$get = function(url, callback, options, id){
+    this.get = this.$get = function(url, options){
         if (!options)
             options = {};
 
         var _self = this;
+        var id    = options.id;
         //#ifdef __WITH_OFFLINE
         var bHasOffline = (typeof apf.offline != "undefined");
         if (bHasOffline && !apf.offline.onLine && options.notWhenOffline)
@@ -237,12 +243,12 @@ apf.http = function(){
                 //Let's record all the necesary information for future use (during sync)
                 var info = apf.extend({
                     url      : url,
-                    callback : callback,
+                    callback : options.callback,
                     retry    : function(){
-                        _self.get(this.url, this.callback, this, id);
+                        _self.get(this.url, this.options);
                     },
                     $object : [this.name, "apf.oHttp", "new apf.http()"],
-                    $retry : "this.object.get(this.url, this.callback, this)"
+                    $retry : "this.object.get(this.url, this.options)"
                 }, options);
 
                 apf.offline.queue.add(info);
@@ -289,7 +295,7 @@ apf.http = function(){
             id = this.queue.push({
                 http     : http,
                 url      : url,
-                callback : callback,
+                callback : options.callback,
                 retries  : 0,
                 options  : options
             }) - 1;
@@ -455,12 +461,12 @@ apf.http = function(){
                 this.shouldAutoroute = true;
 
                 options.autoroute = true;
-                return this.get(url, callback, options, id);
+                return this.get(url, options);
             }
 
             if (!useOtherXH) {
                 //Routing didn't work either... Throwing error
-                var noClear = callback ? callback(null, apf.ERROR, {
+                var noClear = options.callback ? options.callback(null, apf.ERROR, {
                     userdata: options.userdata,
                     http    : http,
                     url     : url,
@@ -523,7 +529,7 @@ apf.http = function(){
                     : apf.TIMEOUT;
 
                 // File not found
-                var noClear = callback ? callback(null, state, {
+                var noClear = options.callback ? options.callback(null, state, {
                     userdata : options.userdata,
                     http     : http,
                     url      : url,
@@ -577,10 +583,9 @@ apf.http = function(){
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
                 apf.getAbsolutePath(apf.config.baseurl, url), 
-                callback,
                 options.method == "GET" 
                     ? options 
-                    : apf.extend({data : query}, options)
+                    : apf.extend({data : query, callback : callback}, options)
             );
         }
     }
@@ -858,7 +863,7 @@ apf.http = function(){
         // #endif
 
         qItem.retries++;
-        this.get(qItem.url, qItem.callback, qItem.options, id);
+        this.get(qItem.url, qItem.options);
 
         return true;
     };
@@ -898,7 +903,7 @@ apf.http = function(){
                 this[this.childNodes[i].getAttribute("name")] = function(data, userdata){
                     options.userdata = userdata;
                     options.data     = data;
-                    return this.get(url, callback, options);
+                    return this.get(url, options);
                 }
             }
         };
@@ -916,7 +921,8 @@ apf.http = function(){
             this.getURL = function(data, userdata){
                 options.data     = data;
                 options.userdata = userdata;
-                return this.get(url, this.callbacks.getURL, options);
+                options.callback = this.callbacks.getURL;
+                return this.get(url, options);
             }
 
             var name = "http" + Math.round(Math.random() * 100000);

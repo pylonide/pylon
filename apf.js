@@ -1680,8 +1680,8 @@ var apf = {
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
             return apf.oHttp.get((apf.alternativeAml 
               || document.body.getAttribute("xmlurl") 
-              || location.href).split(/#/)[0],
-                function(xmlString, state, extra){
+              || location.href).split(/#/)[0], {
+                callback: function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
                         var oError = new Error(apf.formatErrorString(0, null,
                             "Loading XML application data", "Could not load "
@@ -1721,7 +1721,7 @@ var apf = {
 
                     apf.initialize(str);
 
-                }, {ignoreOffline: true});
+                }, ignoreOffline: true});
         }
         else {
             //might wanna make this variable based on layout loading...

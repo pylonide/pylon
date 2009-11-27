@@ -118,7 +118,12 @@ apf.aml.setElement("skin", apf.skin);
         //#endif
 
         var _self = this;
-        apf.getData(path, {
+        //#ifdef __WITH_DATA
+        apf.getData(
+        /*#else
+        apf.oHttp.get(
+        #endif */
+          path, {
           callback: function(xmlString, state, extra){
              if (state != apf.SUCCESS) {
                 var oError = new Error(apf.formatErrorString(1007,

@@ -93,18 +93,18 @@ apf.offline.detector = {
     },
 
     isSiteAvailable : function(callback){
-        this.oHttp.get(apf.getNoCacheUrl(this.detectUrl),
-            function(data, state, extra){
+        this.oHttp.get(apf.getNoCacheUrl(this.detectUrl), {
+            callback: function(data, state, extra){
                 if(state != apf.SUCCESS || !window.navigator.onLine){
                     apf.offline.goOffline(callback); //retry here??
                 }
                 else{
                     apf.offline.goOnline(callback);
                 }
-            }, {
-                ignoreOffline  : true,
-                hideLogMessage : true
-            });
+            },
+            ignoreOffline  : true,
+            hideLogMessage : true
+        });
     },
 
     /**

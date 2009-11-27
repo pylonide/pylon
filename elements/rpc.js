@@ -218,7 +218,8 @@ apf.rpc = function(struct, tagName){
 
         // Send the request
         var url  = apf.getAbsolutePath(apf.config.baseurl, this.url),
-            info = this.$get(url, pCallback, apf.extend({
+            info = this.$get(url, apf.extend({
+                callback      : pCallback,
                 async         : node.async,
                 userdata      : node.userdata,
                 nocache       : (this.nocache === false) ? false : true,
@@ -253,7 +254,8 @@ apf.rpc = function(struct, tagName){
             url = url + (url.match(/\?/) ? "&" : "?") + vars.join("&");
         }
 
-        var info = this.$get(url, callback, {
+        var info = this.$get(url, {
+            callback : callback,
             async    : async,
             userdata : userdata,
             nocache  : true,
