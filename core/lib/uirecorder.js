@@ -1,3 +1,4 @@
+// #ifdef __WITH_UIRECORDER
 /**
  * Provides a way to record user actions, store them and play them back.
  * @experimental
@@ -457,3 +458,4 @@ function fireScroll(frame) {
                 ? Math.round(el.offsetHeight / 6.73)
                 : 20))) * frame[3].delta;
 }
+// #endif
