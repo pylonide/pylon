@@ -549,7 +549,6 @@ apf.AmlNode = function(){
     
     /**** Xpath support ****/
 
-    //#ifdef __WITH_AMLDOM_XPATH
     /**
      * Queries the aml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
@@ -579,7 +578,6 @@ apf.AmlNode = function(){
         return apf.XPath.selectNodes(sExpr,
             contextNode || (this.nodeType == 9 ? this.documentElement : this))[0];
     };
-    // #endif
     
     /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         
