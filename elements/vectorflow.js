@@ -73,12 +73,50 @@ apf.vectorflow = function(struct, tagName){
             fill            : xmlNode.getAttribute("fill")
         };
 
+        // loop through connections
+        var connections = xmlNode.getElementsByTagName("connection");
+        if (connections.length) {
+            if (!this.nodes.line) this.nodes.line = [];
+            node.connections = [];
+
+            for (var connection, i = 0, l = connections.length; i < l; i++) {
+                connection = {
+                    ref     : connections[i].getAttribute("ref"),
+                    input   : connections[i].getAttribute("input"),
+                    output  : connections[i].getAttribute("output"),
+                    type    : 'line',
+                    from    : node,
+                    to      : this.nodes[connections[i].getAttribute("ref")] ? this.nodes[connections[i].getAttribute("ref")] : connections[i].getAttribute("ref"),
+                    top     : 0,
+                    left    : 0,
+                    width   : 100,
+                    height  : 100
+                };
+                
+                this.nodes.line.push(connection);
+                //node.connections.push(connection);
+            }
+        }
+        
+        // check if node is used as reference in other node
+        if (this.nodes.line && this.nodes.line.length) {
+            for (var i = 0, l = this.nodes.line.length; i < l; i++) {
+                if (this.nodes.line[i].to == node.id) {
+                    this.nodes.line[i].to = node;
+                }
+                else if (this.nodes.line[i].from == node.id) {
+                    this.nodes.line[i].from = node;
+                }
+            }
+        }
+        
         // set default line attach positions
-        node.lines = {
-            top:    {x: node.x, y: node.y - node.height/2},
-            left:   {x: node.x - node.width/2, y: node.y},
-            right:  {x: node.x + node.width/2, y: node.y},
-            bottom: {x: node.x, y: node.y + node.height/2},
+        var minLength = 10;
+        node.connectors = {
+            top:    {x: node.x, y: node.y - node.height/2, minLenghtX: node.x, minLenghtY: node.y - node.height/2 - minLength},
+            left:   {x: node.x - node.width/2, y: node.y, minLenghtX: node.x - node.width/2, minLenghtY: node.y},
+            right:  {x: node.x + node.width/2, y: node.y, minLengthX: node.x + node.width/2, minLengthY: node.y},
+            bottom: {x: node.x, y: node.y + node.height/2, minLengthX: node.x, minLengthY: node.y + node.height/2},
         }
         
         if ("line".indexOf(node.type) > -1) {
@@ -101,97 +139,171 @@ apf.vectorflow = function(struct, tagName){
             return;
         }
         this.nodes[node.id] = node;
+        
+        if (!this.nodes[node.type]) this.nodes[node.type] = [];
+        this.nodes[node.type].push(node);
     };
     
     //This function is called to do the final render pass
     this.$fill = function(){
+        
+        for (var type in this.nodes) {
+            if (this.$rootLayers[type]) {
+                var err = {};
+                var $style = apf.draw.parseStyle(this.$node_style , "", err );
+                apf.draw.initLayer(this.$rootLayers[type], this);
+                this.$drawCode = this.$compile( this.$rootLayers[type], $style, type);
+                this.$drawCode(this.$rootLayers[type], this);
+                apf.draw.resizeLayer(this.$rootLayers[type]);
+            }
+        }
+        
+        /*
+         * start compile text
+         */
+        type = "text";
         var err = {};
-        this.$style = apf.draw.parseStyle(this.$node_style , "", err );
+        var $style = apf.draw.parseStyle(this.$node_style , "", err );
+        apf.draw.initLayer(this.$rootLayers[type], this);
+        this.$drawCode = this.$compileText( this.$rootLayers[type], $style, type);
+        this.$drawCode(this.$rootLayers[type], this);
+        apf.draw.resizeLayer(this.$rootLayers[type]);
+        /*
+         * end compile text
+         */
 
-        apf.draw.initLayer(this.$rootLayer, this);
-        this.$drawCode = this.$compile( this.$rootLayer, this.$style );    
-        this.$drawCode(this.$rootLayer, this);
-        apf.draw.resizeLayer(this.$rootLayer);
     };
 
-    this.$compile = function(l,s){
+    this.$compileText = function(l,s,t){
         var e = apf.draw;
 
         var c = e.optimize([
             e.beginLayer(l),
             e.vars(),
             e.clear(),
-            e.beginShape(s.node),
-            "var type;",
-            "for (var name in this.nodes) {",
-                "type=this.nodes[name].type;",
+            e.beginShape(s[t]),
+            e.beginFont(s.text, "t", 0, 0, 0, 0),
+            e.text(100, 100, "test"),
+            e.endLayer()
+        ].join(''));
+
+        try{
+            return new Function('l','v','m',c);
+        }catch(x){
+            alert("Failed to compile:\n"+c);return 0;
+        }
+    }
+
+    this.$compile = function(l,s,t){
+        var e = apf.draw;
+
+        var c = e.optimize([
+            e.beginLayer(l),
+            e.vars(),
+            e.clear(),
+            e.beginShape(s[t]),
+            "for (var node, type, i = 0, l = this.nodes['",t,"'].length; i < l; i++) {",
+                "node=this.nodes['",t,"'][i];",
+                "type=node.type;",
                 "if (type === 'rect') {", 
                     e.rect(
-                        "this.nodes[name].left",
-                        "this.nodes[name].top",
-                        "this.nodes[name].width",
-                        "this.nodes[name].height"
+                        "node.left",
+                        "node.top",
+                        "node.width",
+                        "node.height"
                     ),
-//e.beginFont(s.label,  0, 0, 0, 0),
-//e.text(0, 0, "Label"), 
                 "}",
                 "else if (type === 'decision') {", 
-                    e.moveTo("this.nodes[name].lines.top.x", "this.nodes[name].lines.top.y"),
-                    e.lineTo("this.nodes[name].lines.right.x", "this.nodes[name].lines.right.y"),
-                    e.lineTo("this.nodes[name].lines.bottom.x", "this.nodes[name].lines.bottom.y"),
-                    e.lineTo("this.nodes[name].lines.left.x", "this.nodes[name].lines.left.y"),
-                    e.lineTo("this.nodes[name].lines.top.x", "this.nodes[name].lines.top.y"),
+                    e.moveTo("node.connectors.top.x", "node.connectors.top.y"),
+                    e.lineTo("node.connectors.right.x", "node.connectors.right.y"),
+                    e.lineTo("node.connectors.bottom.x", "node.connectors.bottom.y"),
+                    e.lineTo("node.connectors.left.x", "node.connectors.left.y"),
+                    e.lineTo("node.connectors.top.x", "node.connectors.top.y"),
                 "}",
-                "else if (type === 'circle') {", e.ellipse("this.nodes[name].x","this.nodes[name].y","this.nodes[name].width","this.nodes[name].height"), "}",
+                "else if (type === 'circle') {", e.ellipse("node.x","node.y","node.width","node.height"), "}",
                 "else if (type === 'line') {",
-                    "if (this.nodes[name].from && this.nodes[name].to) {",
-                        "var fromPos, toPos;",
-                        "if (this.nodes[this.nodes[name].from].y == this.nodes[this.nodes[name].to].y) {",
-                            "if (this.nodes[this.nodes[name].from].right < this.nodes[this.nodes[name].to].left) {",
-                                "fromPos = 'right';", 
-                                "toPos = 'left';",
-                            "}",
-                            "else {",
-                                "fromPos = 'left';", 
-                                "toPos = 'right';",
-                            "}",
-                        "}",
-                        "else if (this.nodes[this.nodes[name].from].x == this.nodes[this.nodes[name].to].x) {",
-                            "if (this.nodes[this.nodes[name].from].bottom > this.nodes[this.nodes[name].to].top) {",
-                                "fromPos = 'top';", 
-                                "toPos = 'bottom';",
-                            "}",
-                            "else {",
-                                "fromPos = 'bottom';", 
-                                "toPos = 'top';",
-                            "}",
-                        "}",
-
-                        "else if (this.nodes[this.nodes[name].from].right < this.nodes[this.nodes[name].to].left) {",
-                            "fromPos = 'right';", 
-                            "toPos = 'left';",
-                        "}",
-                        "else if (this.nodes[this.nodes[name].from].left > this.nodes[this.nodes[name].to].right) {",
-                            "fromPos = 'left';", 
-                            "toPos = 'right';",
-                        "}",
-                        "else {",
-                            "if (this.nodes[this.nodes[name].from].bottom > this.nodes[this.nodes[name].to].top) {",
-                                "fromPos = 'top';", 
-                                "toPos = 'bottom';",
-                            "}",
-                            "else {",
-                                "fromPos = 'bottom';", 
-                                "toPos = 'top';",
-                            "}",
-                        "}",
+                    e.moveTo(
+                        "node.from.connectors[node.output].x",
+                        "node.from.connectors[node.output].y"
+                    ),
+                    "if ((node.output == 'right' && node.input == 'left') || (node.output == 'left' && node.input == 'right')) {",
+                        e.lineTo(
+                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
+                            "node.from.connectors[node.output].y"
+                        ),
                         e.moveTo(
-                            "this.nodes[this.nodes[name].from].lines[fromPos].x",
-                            "this.nodes[this.nodes[name].from].lines[fromPos].y"
+                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
+                            "node.from.connectors[node.output].y"
                         ),
                         e.lineTo(
-                            "this.nodes[this.nodes[name].to].lines[toPos].x",
-                            "this.nodes[this.nodes[name].to].lines[toPos].y"
+                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
+                            "node.to.connectors[node.input].y"
+                        ),
+                        e.moveTo(
+                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
+                            "node.to.connectors[node.input].y"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x-10",
+                            "node.to.connectors[node.input].y"
+                        ),
+                        
+                        // horizontal arrow
+                        e.moveTo(
+                            "node.to.connectors[node.input].x-10",
+                            "node.to.connectors[node.input].y-5"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x-10",
+                            "node.to.connectors[node.input].y+5"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x",
+                            "node.to.connectors[node.input].y"
+                        ),
+
+                    "}",
+                    "else if ((node.output == 'bottom' && node.input == 'top')) {",
+                        e.lineTo(
+                            "node.from.connectors[node.output].x",
+                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
+                        ),
+                        e.moveTo(
+                            "node.from.connectors[node.output].x",
+                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x",
+                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
+                        ),
+                        e.moveTo(
+                            "node.to.connectors[node.input].x",
+                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x",
+                            "node.to.connectors[node.input].y-10"
+                        ),
+                        
+                        // vertical arrow
+                        e.moveTo(
+                            "node.to.connectors[node.input].x-5",
+                            "node.to.connectors[node.input].y-10"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x+5",
+                            "node.to.connectors[node.input].y-10"
+                        ),
+                        e.lineTo(
+                            "node.to.connectors[node.input].x",
+                            "node.to.connectors[node.input].y"
+                        ),
+
+                    "}",
+                    "else {",
+                        e.lineTo(
+                            "node.to.connectors[node.input].x",
+                            "node.to.connectors[node.input].y"
                         ),
                     "}",
                 "}",
@@ -207,49 +319,12 @@ apf.vectorflow = function(struct, tagName){
         }
     }
     
-    this.$createShape = function(l, e) {
-        if (l.type == "line") {
-            return [
-                
-            ].join('');
-        }
-        else if (l.type == "rect") {
-            return [
-                e.rect(0,0,l.width,l.height)
-            ].join('');
-        }
-        else if ("decision|conditional".indexOf(l.type) > -1) {
-            var top = 0, left = 0, 
-            bottom = top + l.height, right = left + l.width, 
-            hCenter = left + l.width/2, vCenter = top + l.height/2;
-            return [
-                e.moveTo(hCenter, top),
-                e.lineTo(right, vCenter),
-                e.lineTo(hCenter, bottom),
-                e.lineTo(left, vCenter),
-                e.lineTo(hCenter, top),
-            ].join('');
-        }
-    }
-    
-    // draw block
-    this.$drawShape = function(l){
-        l.err = {};
-        l.style = apf.draw.parseStyle(this.$node_style , "", l.err );;
-        apf.draw.initLayer( l, this );
-        
-        this.$drawCode = this.$compile( l, l.style);    
-        this.$drawCode(l, this);
-        apf.draw.resizeLayer(l);
-    }
-    
-    
     //This is called to unrender a node
     this.$deInitNode = function(xmlNode, htmlNode){
         
     };
     
-    //This is called to move a nove within this element (position)
+    //This is called to move a node within this element (position)
     this.$moveNode = function(xmlNode, htmlNode){
         
     };
@@ -553,29 +628,76 @@ apf.vectorflow = function(struct, tagName){
     
     /**** Init ****/
     this.$node_style = {
-        node : {
+        circle : {
             inherit:'shape',
-            fill:'white',
             stroke:'black',
+            fill:'red',
+        $:1},
+        rect : {
+            inherit:'shape',
+            stroke:'black',
+            fill:'blue',
+        $:1},
+        decision : {
+            inherit:'shape',
+            stroke:'black',
+            fill:'yellow',
+        $:1},
+        line : {
+            inherit:'shape',
+            stroke:'black',
+            fill: 'white',
         $:1},
         label : {
-            inherit : 'font', 
+            inherit : 'font',
+            join : 'label',
             width: 40,
-            top : 5,
-            left: 0,
-            side: 0, 
-            axis: 0, 
-            edgeclip : 2,
+            height: 40,
+            left: -20,
+            top: "fontz(-5,200)",
+            size: "fontz(10,200)",
+            scale: 0.2,
+            stroke: null,
+            angle : 'ang(180)',
+            format : "fixed(v,1)",
+        $:0},
+        text : {
+            inherit : 'label', 
+            angle:'ang(90+f1*90)',
             align:'center',
         $:1},
-    },
-    this.$rootLayer = {
-        type: "rect",
-        left: 0,
-        top: 0,
-        width: 800,
-        height: 800,
-        fill: "yellow"
+    };
+    this.$rootLayers = {
+        circle: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        },
+        rect: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        },
+        decision: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        },
+        line: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        },
+        text: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        }
     };
 
     this.addEventListener("$clear", function(){

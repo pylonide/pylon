@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Vector Flowchart</title>
+        <script src="apf.js"></script>
+        <script src="loader.js"></script>
+	</head>
+	<body>
+	    <a:skin src="skins.xml" />
+        
+        <a:model id="mdlGraph">
+            <data>
+                <block id="start" caption="start" type="circle"
+                    top="50" left="450" width="50" height="50">
+                    <connection ref="decision1" output="left" input="right" type="none-arrow" />
+                </block>
+                <block id="block1" caption="block1" type="rect"
+                    top="350" left="150" width="150" height="100">
+                    <connection ref="block2" output="right" input="left" type="none-arrow" />
+                </block>
+                <block id="decision1" caption="decision1" type="decision"
+                    top="150" left="100" width="100" height="100">
+                    <connection ref="block1" output="bottom" input="top" type="none-arrow" />
+                </block>
+                <block id="block2" caption="block2" type="rect"
+                    top="450" left="400" width="150" height="100">
+                </block>
+            </data>
+        </a:model>
+        
+        <a:vectorflow id="vg" width="800" height="800" model="mdlGraph">
+            <a:each match="[block]">
+                <a:id value="[@id]" />
+                <a:caption value="[@caption]" />
+                <a:type value="[@type]" />
+                <a:top value="[@top]" />
+                <a:left value="[@left]" />
+                <a:width value="[@width]" />
+                <a:height value="[@height]" />
+            </a:each>
+        </a:vectorflow>
+	</body>
+</html>
