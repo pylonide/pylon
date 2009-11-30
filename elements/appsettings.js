@@ -40,7 +40,7 @@
  * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined by the loader element is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
  * <code>
- *  apf.loadscreen.hide();
+ *  apf.document.getElementsByTagName("a:loader")[0].hide()
  * </code>
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
