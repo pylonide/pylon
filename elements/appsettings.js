@@ -41,6 +41,8 @@
  * @attribute {Boolean} auto-hide-loading       whether the load screen defined by the loader element is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
  * <code>
  *  apf.document.getElementsByTagName("a:loader")[0].hide()
+ *  //or
+ *  loaderId.hide()
  * </code>
  * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
