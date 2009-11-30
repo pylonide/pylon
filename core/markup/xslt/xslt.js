@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __SUPPORT_SAFARI
+// #ifdef __PARSER_XSLT
 apf.runXslt = function(){
     /**
      * @constructor
