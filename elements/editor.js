@@ -364,7 +364,9 @@ apf.editor = function(struct, tagName){
         apf.AbstractEvent.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
+            //#ifdef __WITH_POPUP
             apf.popup.forceHide();
+            //#endif
             apf.window.$mousedown(e);
         });
 
