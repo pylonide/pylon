@@ -28,9 +28,12 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
+// #ifdef __AMLPORTAL
 apf.body = function(){
     this.$init("body", apf.NODE_VISIBLE);
 };
+// #endif
 
 apf.AmlConfig = function(){
     this.$init("config", apf.NODE_VISIBLE);
