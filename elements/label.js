@@ -26,19 +26,10 @@
  * a description of another element. When the user clicks on the label it 
  * can set the focus to the connected aml element.
  * Example:
- * The aml label element is used in the same way as the html label element. This
- * example shows the label as a child of a form element. It is rendered outside
- * to the element.
- * <code>
- *  <a:textbox ref="address">
- *      <a:label>Address</a:label>
- *  </a:textbox>
- * </code>
- * Example:
  * This example uses the for attribute to connect the label to the form element.
  * <code>
  *  <a:label for="txtAddress">Address</a:label>
- *  <a:textbox id="txtAddress" ref="address" />
+ *  <a:textbox id="txtAddress" value="Some text" />
  * </code>
  *
  * @constructor

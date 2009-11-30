@@ -52,15 +52,6 @@
  * Example:
  * Sets the text based on data loaded into this component.
  * <code>
- *  <a:editor>
- *      <a:bindings>
- *          <a:value match="[body/text()]" />
- *      </a:bindings>
- *  </a:editor>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
  *  <a:model id="mdlEditor">
  *      <data>
  *          <body>Some text</body>
