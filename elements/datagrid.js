@@ -1180,6 +1180,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 //#endif
 
+// #ifdef __WITH_CONVERTIFRAME
 /**
  * @private
  */
@@ -1326,3 +1327,4 @@ apf.convertIframe = function(iframe, preventSelect){
     
     return doc;
 };
+//#endif
