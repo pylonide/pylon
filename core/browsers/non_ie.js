@@ -356,7 +356,8 @@ apf.runNonIe = function (){
         
         return xml;
     };
-    
+
+    //#ifdef __WITH_XMLDATABASE
     apf.xmldb.setReadyState = function(oDoc, iReadyState) {
         oDoc.readyState = iReadyState;
         if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
@@ -369,7 +370,8 @@ apf.runNonIe = function (){
         
         apf.xmldb.setReadyState(oDoc, 4);
     };
-    
+    //#endif
+    //
     //Fix XML Data-Island Support Problem with Form Tag
     apf.Init.add(function(){
         var i, nodes = document.getElementsByTagName("form");
