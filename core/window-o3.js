@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_WINDOW
+// #ifdef __WITH_O3WINDOW
 
 /**
  * Object representing the window of the aml application. The semantic is
