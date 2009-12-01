@@ -300,12 +300,30 @@
  * files and folders. Renaming a file and a folder might have different handlers. 
  * This would be encoded like this:
  * <code>
- *  <a:actions>
- *      <a:rename select = "self::file"   
- *                set    = "rename_folder.php?path=[@path]&name=[@name]" />
- *      <a:rename select = "self::folder" 
- *                set    = "rename_file.php?path=[@path]&name=[@name]" />
- *  </a:actions>
+ *  <a:tree 
+ *    id             = "tree" 
+ *    height         = "200" 
+ *    width          = "250"
+ *    model          = "filesystem.xml"
+ *    actiontracker  = "atExample"
+ *    startcollapsed = "false" 
+ *    onerror        = "alert('Sorry this action is not permitted');return false">
+ *      <a:each match="[folder|drive]">
+ *          <a:caption match="[@caption]" />
+ *          <a:icon value="Famfolder.gif" />
+ *      </a:each>
+ *      <a:rename match = "[file]"   
+ *                set    = "rename_folder.php?id=[@fid]" />
+ *      <a:rename match = "[folder]" 
+ *                set    = "rename_file.php?id=[@fid]" />
+ * </a:tree>
+ *       
+ * <a:button 
+ *   caption = "Rename"
+ *   right   = "10" 
+ *   top     = "10"
+ *   onclick = "tree.startRename()" />
+ * <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
  * </code>
  *
  * Undo:
@@ -329,11 +347,9 @@
  *          <a:caption match="[@caption]" />
  *          <a:icon value="Famfolder.gif" />
  *      </a:each>
- *      <a:actions>
- *          <a:remove set  = "remove.php?id=[@fid]"
- *                    undo = "undo_remove.php?id=[@fid]">
- *          </a:remove>
- *      </a:actions>
+ *      <a:remove set  = "remove.php?id=[@fid]"
+ *                undo = "undo_remove.php?id=[@fid]">
+ *      </a:remove>
  *  </a:tree>
  *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
  *  <a:button onclick="tree.remove();">Remove</a:button>
@@ -341,11 +357,9 @@
  * In the example above the server is required to support reverting remove. 
  * Another possibility is to add the item again as shown in this example:
  * <code>
- *  <a:actions>
- *      <a:remove set  = "remove.php?id=[@id]"
- *                undo = "add.php?xml=[.]">
- *      </a:remove>
- *  </a:actions>
+ *  <a:remove set  = "remove.php?id=[@id]"
+ *            undo = "add.php?xml=[.]">
+ *  </a:remove>
  * </code>
  *
  * Javascript:
@@ -365,9 +379,7 @@
  * The first is by calling the add method using javascript.
  * <code>
  *  <a:list id="myList">
- *      <a:actions>
- *          <a:add set="{comm.addProduct([.])}" />
- *      </a:actions>
+ *      <a:add set="{comm.addProduct([.])}" />
  *  </a:list>
  *  <a:script>
  *      myList.add('<product name="USB drive" type="storage" />');
@@ -375,12 +387,11 @@
  * </code>
  *
  * The second by specifying the template as a child of the add action rule:
- *  <a:actions>
- *      <a:add set="{comm.addProduct([.])}">
- *          <product name="USB drive" type="storage" />
- *      </a:add>
- *  </a:actions>
- *
+ * <code>
+ *  <a:add set="{comm.addProduct([.])}">
+ *      <product name="USB drive" type="storage" />
+ *  </a:add>
+ * </code>
  * The third way gets the added node from the server.
  * <code>
  *  <a:rpc id="comm" protocol="cgi">
@@ -394,9 +405,7 @@
  *          <a:value match="[text()]" />
  *          <a:each match="[product]" />
  *      </a:bindings>
- *      <a:actions>
- *          <a:add get="{comm.createNewProduct()}" />
- *      </a:actions>
+ *      <a:add get="{comm.createNewProduct()}" />
  *      <a:model>
  *          <data>
  *              <product>LCD Panel</product>
@@ -433,10 +442,8 @@
  *              <product>LCD Panel</product>
  *          </data>
  *      </a:model>
- *      <a:actions>
- *          <a:rename />
- *          <a:remove />
- *      </a:actions>
+ *      <a:rename />
+ *      <a:remove />
  *  </a:list>
  *  <a:button onclick="myList.getModel().submit('save.php', myList.xmlRoot)">
  *      Save
@@ -512,14 +519,12 @@
  *            target = "[folder]" 
  *            action = "tree-append" /> 
  *      </a:bindings>
- *      <a:actions>
- *         <a:add type="folder" get="{myWebdav.mkdir([@id], 'New Folder')}" />
- *         <a:add type="file" get="{myWebdav.create([@id], 'New File', '')}" />
- *         <a:rename set="{myWebdav.move(oldValue, [@name], [@id])}"/>
- *         <a:copy match="[.]" set="{myWebdav.copy([@id], [../@id])}"/>
- *         <a:move match="[.]" set="{myWebdav.move()}"/>
- *         <a:remove match="[.]" set="{myWebdav.remove([@path])}"/>
- *      </a:actions>
+ *      <a:add type="folder" get="{myWebdav.mkdir([@id], 'New Folder')}" />
+ *      <a:add type="file" get="{myWebdav.create([@id], 'New File', '')}" />
+ *      <a:rename set="{myWebdav.move(oldValue, [@name], [@id])}"/>
+ *      <a:copy match="[.]" set="{myWebdav.copy([@id], [../@id])}"/>
+ *      <a:move match="[.]" set="{myWebdav.move()}"/>
+ *      <a:remove match="[.]" set="{myWebdav.remove([@path])}"/>
  *  </a:smartbinding>
  *
  *  <a:tree 
