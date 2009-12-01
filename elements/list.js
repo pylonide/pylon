@@ -236,22 +236,30 @@ apf.list      = function(struct, tagName){
      * user can add a new option. A server script could remember the addition
      * and present it to all new users of the form.
      * <code>
-     *  <a:label>Which newspapers do you read?</a:label>
-     *  <a:list ref="krant" 
-     *    more  = "caption:Other newspaper" 
-     *    model = "mdlSuggestions:question[@key='krant']">
-     *      <a:bindings>
-     *          <a:caption match="[text()]" />
-     *          <a:value match="[text()]" />
-     *          <a:each match="[answer]" />
-     *      </a:bindings>
-     *      <a:actions>
-     *          <a:rename select="[node()[@custom='1']]" />
-     *          <a:remove select="[node()[@custom='1']]" />
-     *          <a:add>
-     *              <answer custom="1" />
-     *          </a:add>
-     *      </a:actions>
+     *  <a:model id="mdlSuggestions">
+     *      <suggestions>
+     *          <question key="krant">
+     *              <answer>Suggestion 1</answer>
+     *              <answer>Suggestion 2</answer>
+     *          </question>
+     *      </suggestions>
+     * </a:model>
+     * <a:label>Which newspapers do you read?</a:label>
+     * <a:list ref="krant" 
+     *   more  = "caption:Add new suggestion" 
+     *   model = "[mdlSuggestions::question[@key='krant']]">
+     *     <a:bindings>
+     *         <a:caption match="[text()]" />
+     *         <a:value match="[text()]" />
+     *         <a:each match="[answer]" />
+     *     </a:bindings>
+     *     <a:actions>
+     *         <a:rename match="[node()[@custom='1']]" />
+     *         <a:remove match="[node()[@custom='1']]" />
+     *         <a:add>
+     *             <answer custom="1">New Answer</answer>
+     *         </a:add>
+     *     </a:actions>
      *  </a:list>
      * </code>
      */
