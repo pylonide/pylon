@@ -243,7 +243,7 @@
  *          <a:caption match = "[@title]" />
  *          <a:insert  
  *            match = "[item[not(@leaf)]]" 
- *            get   = "http://localhost/insert.php?keyword=[@id]" />
+ *            get   = "http://servername.com/insert.php?keyword=[@id]" />
  *          <a:each match="[item]" />
  *      </a:bindings>
  *  </a:tree>
@@ -313,23 +313,37 @@
  * actiontracker. Undo can be triggered by calling the undo method.
  * <code>
  *  myTree.getActionTracker().undo();
+ *  //or
+ *  ActionTracker.undo();
  * </code>
  * Executing will revert the change to the data. This will also be communicated
  * to the server. In some cases the call to the server is not symmetric; the set
  * call cannot be used to revert. For these situations set the undo attribute.
  * <code>
- *  <a:actions>
- *      <a:remove set  = "remove.php?id=[@id]"
- *                undo = "undo_remove.php?id=[@id]" />
- *      </a:remove>
- *  </a:actions>
+ *  <a:tree id="tree" height="200" width="250"
+ *    model          = "filesystem.xml"
+ *    actiontracker  = "atExample"
+ *    startcollapsed = "false" 
+ *    onerror        = "alert('Sorry this action is not permitted');return false">
+ *      <a:each match="[folder|drive]">
+ *          <a:caption match="[@caption]" />
+ *          <a:icon value="Famfolder.gif" />
+ *      </a:each>
+ *      <a:actions>
+ *          <a:remove set  = "remove.php?id=[@fid]"
+ *                    undo = "undo_remove.php?id=[@fid]">
+ *          </a:remove>
+ *      </a:actions>
+ *  </a:tree>
+ *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
+ *  <a:button onclick="tree.remove();">Remove</a:button>
  * </code>
  * In the example above the server is required to support reverting remove. 
  * Another possibility is to add the item again as shown in this example:
  * <code>
  *  <a:actions>
  *      <a:remove set  = "remove.php?id=[@id]"
- *                undo = "add.php?xml=[.]" />
+ *                undo = "add.php?xml=[.]">
  *      </a:remove>
  *  </a:actions>
  * </code>
@@ -369,9 +383,27 @@
  *
  * The third way gets the added node from the server.
  * <code>
- *  <a:actions>
- *      <a:add get="{comm.createNewProduct()}" />
- *  </a:actions>
+ *  <a:rpc id="comm" protocol="cgi">
+ *      <a:method 
+ *        name = "createNewProduct" 
+ *        url  = "http://yourserver.com/create_product.php" />
+ *  </a:rpc>
+ *  <a:list id="myList" width="200">
+ *      <a:bindings>
+ *          <a:caption match="[text()]" />
+ *          <a:value match="[text()]" />
+ *          <a:each match="[product]" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:add get="{comm.createNewProduct()}" />
+ *      </a:actions>
+ *      <a:model>
+ *          <data>
+ *              <product>LCD Panel</product>
+ *          </data>
+ *      </a:model>
+ *  </a:list>
+ *  <a:button onclick="myList.add()">Add product</a:button>
  * </code>
  *
  * Purging:
@@ -390,7 +422,17 @@
  * you'll want to send the state of your data to the server directly. You can
  * do that like this:
  * <code>
- *  <a:list id="myList">
+ *  <a:list id="myList" width="200">
+ *      <a:bindings>
+ *          <a:caption match="[text()]" />
+ *          <a:value match="[text()]" />
+ *          <a:each match="[product]" />
+ *      </a:bindings>
+ *      <a:model>
+ *          <data>
+ *              <product>LCD Panel</product>
+ *          </data>
+ *      </a:model>
  *      <a:actions>
  *          <a:rename />
  *          <a:remove />
@@ -433,15 +475,21 @@
  * Example:
  * A simple example of a smartbinding transforming data into representation
  * <code>
- *  <a:smartbinding id="sbUsers">
- *      <a:bindings>
- *          <a:caption select="text()" />
- *          <a:icon value="icoUser.png" />
- *          <a:each select="user" />
- *      </a:bindings>
- *  </a:smartbinding>
- * 
- *  <a:list smartbinding="sbUsers" />
+ *  <a:smartbinding id="sbProducts">
+ *          <a:bindings>
+ *               <a:caption match="[text()]" />
+ *               <a:value match="[text()]" />
+ *               <a:each match="[product]" />
+ *           </a:bindings>
+ *      </a:smartbinding>
+ *     
+ *      <a:list smartbinding="sbProducts" width="200">
+ *          <a:model>
+ *               <data>
+ *                   <product>LCD Panel</product>
+ *               </data>
+ *           </a:model>
+ *      </a:list>
  * </code>
  * Example:
  * This is an elaborate example showing how to create a filesystem tree with
@@ -453,28 +501,31 @@
  * <code>
  *  <a:smartbinding id="sbFilesystem" model="{myWebdav.getRoot()}">
  *      <a:bindings>
- *          <a:insert select="self::folder" get="{myWebdav.readdir([@path])}" />
- *          <a:each select="file|folder" sort="@name" sort-method="filesort" />
- *          <a:caption select="@name" />
- *          <a:icon select="self::folder" value="icoFolder.png" />
- *          <a:icon select="self::file" method="getIcon" />
+ *          <a:insert match="[folder]" get="{myWebdav.readdir([@path])}" />
+ *          <a:each match="[file|folder]" sort="[@name]" sort-method="filesort" />
+ *          <a:caption match="[@name]" />
+ *          <a:icon match="[folder]" value="icoFolder.png" />
+ *          <a:icon match="[file]" method="getIcon" />
+ *          <a:drag match="[folder|file]" copy="event.ctrlKey" /> 
+ *          <a:drop 
+ *            match  = "[folder|file]" 
+ *            target = "[folder]" 
+ *            action = "tree-append" /> 
  *      </a:bindings>
  *      <a:actions>
  *         <a:add type="folder" get="{myWebdav.mkdir([@id], 'New Folder')}" />
  *         <a:add type="file" get="{myWebdav.create([@id], 'New File', '')}" />
  *         <a:rename set="{myWebdav.move(oldValue, [@name], [@id])}"/>
- *         <a:copy select="." set="{myWebdav.copy([@id], [../@id])}"/>
- *         <a:move select="." set="{myWebdav.move()}"/>
- *         <a:remove select="." set="{myWebdav.remove([@path])}"/>
+ *         <a:copy match="[.]" set="{myWebdav.copy([@id], [../@id])}"/>
+ *         <a:move match="[.]" set="{myWebdav.move()}"/>
+ *         <a:remove match="[.]" set="{myWebdav.remove([@path])}"/>
  *      </a:actions>
- *      <a:dragdrop>
- *          <a:allow-drag select="folder|file" /> 
- *          <a:allow-drop select="folder|file" target="folder" 
- *              operation="tree-append" copy-condition="event.ctrlKey" /> 
- *      </a:dragdrop>
  *  </a:smartbinding>
  *
- *  <a:tree model="mdlFilesystem" smartbinding="sbFilesystem" />
+ *  <a:tree 
+ *    dragcopy     = "true" 
+ *    model        = "mdlFilesystem" 
+ *    smartbinding = "sbFilesystem" />
  *
  *  <a:script>
  *      function filesort(value, args, xmlNode) {
@@ -534,25 +585,9 @@
  *  <a:tree binding="bndExample" action="actExample" model="example.php" />
  * </code>
  * Example:
- * This example shows the children of the smartbinding directly as a children of
- * the element that they apply to.
- * <code>
- *  <a:tree>
- *      <a:bindings>
- *          ...
- *      </a:bindings>
- *      <a:actions>
- *          ...
- *      </a:actions>
- *      <a:dragdrop>
- *          ...
- *      </a:dragdrop>
- *  </a:tree>
- * </code>
- * Example:
  * The shortest method to add binding rules to an element is as follows:
  * <code>
- *  <a:tree each="file|folder" caption="@name" icon="@icon" />
+ *  <a:tree each="[file|folder]" caption="[@name]" icon="[@icon]" />
  * </code>
  * @see baseclass.databinding
  * @see baseclass.databinding.attribute.smartbinding
