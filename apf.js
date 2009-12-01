@@ -19,6 +19,8 @@
  *
  */
 
+//#ifndef __WITH_O3
+
 /**
  * Ajax.org Platform
  *
@@ -2730,4 +2732,5 @@ else {
 
 apf.$loader.script(apf.basePath + "loader.js");
 
+//#endif
 //#endif
