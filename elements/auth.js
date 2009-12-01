@@ -47,43 +47,61 @@
  * Example:
  * A login window with different states managed by apf.auth
  * <code>
- *  <a:appsettings>
- *      <a:auth login  = "{myXmpp.login(username, password)}"
- *              logout = "{myXmpp.logout()}"
- *              autostart     = "true"
- *              window        = "winLogin"
- *              fail-state    = "stFail"
- *              error-state   = "stError"
- *              login-state   = "stIdle"
- *              waiting-state = "stLoggingIn" />
- *  </a:appsettings>
- *
- *  <a:state-group
- *    loginMsg.visible  = "false"
- *    winLogin.disabled = "false">
- *      <a:state id="stFail"
- *          loginMsg.value   = "Username or password incorrect"
- *          loginMsg.visible = "true" />
- *      <a:state id="stError"
- *          loginMsg.value   = "An error has occurred. Please check your network."
- *          loginMsg.visible = "true" />
- *      <a:state id="stLoggingIn"
- *          loginMsg.value    = "Please wait whilst logging in..."
- *          loginMsg.visible  = "true"
- *          winLogin.disabled = "true" />
- *      <a:state id="stIdle" />
+ *   <a:appsettings>
+ *       <a:auth 
+ *         login         = "{comm.login(username, password)}" 
+ *         logout        = "{comm.logout()}"
+ *         autostart     = "false"
+ *         window        = "winLogin"
+ *         fail-state    = "stFail"
+ *         error-state   = "stError"
+ *         login-state   = "stIdle"
+ *         logout-state  = "stLoggedOut"
+ *         waiting-state = "stLoggingIn" />
+ *   </a:appsettings>
+ *   <a:teleport>
+ *       <a:rpc id="comm" protocol="cgi">
+ *           <a:method name="login" url="http://localhost/login.php">
+ *               <a:variable name="username" />
+ *               <a:variable name="password" />
+ *           </a:method>
+ *           <a:method name="logout" url="http://localhost/logout.php" />
+ *       </a:rpc>
+ *   </a:teleport>
+ *  
+ *   <a:state-group
+ *     loginMsg.visible  = "false"
+ *     winLogin.disabled = "false">
+ *       <a:state id="stFail"
+ *         loginMsg.value   = "Username or password incorrect"
+ *         loginMsg.visible = "true" />
+ *       <a:state id="stError"
+ *         loginMsg.value   = "An error has occurred. Please check your network."
+ *         loginMsg.visible = "true" />
+ *       <a:state id="stLoggingIn"
+ *         loginMsg.value    = "Please wait whilst logging in..."
+ *         loginMsg.visible  = "true"
+ *         winLogin.disabled = "true"
+ *         btnLogout.visible = "false" />
+ *       <a:state id="stIdle"
+ *         btnLogout.visible = "true" />
+ *       <a:state id="stLoggedOut"
+ *         btnLogout.visible = "false"
+ *         loginMsg.visible  = "false"
+ *         winLogin.disabled = "false" />
  *  </a:state-group>
- *
- *  <a:window id="winLogin">
+ * 
+ *  <a:window id="winLogin" visible="true" width="400" height="400">
  *      <a:label>Username</a:label>
- *      <a:textbox type="username" />
- *
+ *      <a:textbox type="username" value="Lukasz" />
+ *  
  *      <a:label>Password</a:label>
- *      <a:textbox type="password" />
- *
- *      <a:text id="loginMsg" />
+ *      <a:textbox type="password" value="ppp" />
+ * 
+ *      <a:label id="loginMsg" />
  *      <a:button action="login">Log in</a:button>
  *  </a:window>
+ *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
  * </code>
  *
  * @event beforelogin   Fires before the log in request is sent to the service
