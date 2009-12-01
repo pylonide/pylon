@@ -19,6 +19,7 @@
  *
  */
 
+// #ifndef __PACKAGED
 //#ifdef __SUPPORT_O3
 
 apf.$loader
@@ -230,4 +231,5 @@ apf.$loader
         apf.dispatchEvent("domready");
     });
 
+//#endif
 //#endif
