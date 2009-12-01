@@ -75,8 +75,8 @@ apf.aml.setElement("chart", apf.Chart);
     this.$drawChart = function(){
         if (!this.childNodes) //We're being destroyed
             return;
-            
-        if (!this.$ext.offsetHeight) //We're not visible, so let's not bother
+
+        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) //We're not visible, so let's not bother
             return;
         
 		// check if we need to initialize or resize
@@ -251,7 +251,7 @@ apf.aml.setElement("chart", apf.Chart);
 	
     this.$loadAml = function(x){
         apf.draw.initDriver();
-
+		
         if (this.anim > 0){
 			var _self = this;
             this.$animTimer = window.setInterval(function(){
