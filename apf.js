@@ -238,7 +238,7 @@ var apf = {
             return;
         this.$bdetect = true;
 
-        var sAgent = navigator.userAgent.toLowerCase();
+        var sAgent = navigator.userAgent.toLowerCase() || "";
 
         // Browser Detection, using feature inference methods where possible:
         // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
@@ -306,7 +306,7 @@ var apf = {
          */
         this.isGecko3     = this.isGecko && (function x(){})[-5] == "x";
         this.isGecko35    = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
-        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/firefox\/([\d\.]+)/)[1]) : -1;
+        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|gecko)\/([\d\.]+)/i)[1]) : -1;
         
         var found;
         /**
