@@ -53,11 +53,17 @@
  * In this example the image url is read from the thumbnail attribute of the data node.
  * <code>
  *  <a:thumbnail>
+ *      <a:model>
+ *          <data>
+ *              <image caption="Thumb 1" thumbnail="thumb1.jpg" />
+ *              <image caption="Thumb 2" thumbnail="thumb2.jpg" />
+ *              <image caption="Thumb 3" />
+ *          </data>
+ *      </a:model>
  *      <a:bindings>
- *          <a:caption select="@caption" />
- *          <a:image select="@thumbnail" />
- *          <a:image value="no_image.png" />
- *          <a:each select="images" />
+ *          <a:caption match="[@caption]" />
+ *          <a:image match="[@thumbnail]" default="default_thumbnail.jpg" />
+ *          <a:each match="[image]" />
  *      </a:bindings>
  *  </a:thumbnail>
  * </code>
@@ -66,12 +72,21 @@
  * In this example a node is bold when the folder contains unread messages:
  * <code>
  *  <a:list>
+ *      <a:model>
+ *          <data>
+ *              <folder caption="Folder 1">
+ *                  <message unread="true" />
+ *              </folder>
+ *              <folder caption="Folder 2" icon="email.png"></folder>
+ *              <folder caption="Folder 3"></folder>
+ *          </data>
+ *      </a:model>
  *      <a:bindings>
- *          <a:caption select="@caption" />
- *          <a:css select="message[@unread]" value="highlighUnread" />
- *          <a:icon select="@icon" />
- *          <a:icon select="self::folder" value="icoFolder.gif" />
- *          <a:each select="folder" />
+ *          <a:caption match="[@caption]" />
+ *          <a:css match="[message[@unread]]" value="highlighUnread" />
+ *          <a:icon match="[@icon]" />
+ *          <a:icon match="[folder]" value="Famfolder.gif" />
+ *          <a:each match="[folder]" />
  *      </a:bindings>
  *  </a:list>
  * </code>

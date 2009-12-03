@@ -34,11 +34,12 @@ apf.__ANCHORING__ = 1 << 13;
  * frame that is displayed using different calculations and settings.
  * <code>
  *  <a:bar width="80%" height="80%" top="10%" left="10%">
- *      <a:frame title="Example"
- *          left    = "50%+10"
- *          top     = "100"
- *          right   = "10%"
- *          bottom  = "Math.round(0.232*100)" />
+ *      <a:frame 
+ *        caption = "Example" 
+ *        left    = "50%+10"
+ *        top     = "100"
+ *        right   = "10%"
+ *        bottom  = "Math.round(0.232*100)" />
  *  </a:bar>
  * </code>
  * Remarks:

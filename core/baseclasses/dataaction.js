@@ -586,22 +586,19 @@ apf.DataAction = function(){
      * is created and under that a 'name' element with a textnode containing
      * the entered text.
      * <code>
-     *  <a:model id="mdlForm" submission="save_form.php" />
-     *
      *  <a:bar>
      *      <a:label>Name</a:label>
-     *      <a:textbox ref="name" required="true" />
-     *
+     *      <a:textbox value="[name]" required="true" />
+     * 
      *      <a:label>Address</a:label>
-     *      <a:textarea ref="address" />
-     *
+     *      <a:textarea value="[address]" />
+     * 
      *      <a:label>Country</a:label>
      *      <a:dropdown 
-     *        ref      = "country" 
-     *        model    = "countries.xml" 
-     *        each = "country" 
-     *        caption  = "@name" />
-     *
+     *        value   = "[mdlForm::country]" 
+     *        model   = "countries.xml" 
+     *        each    = "[country]" 
+     *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
      * </code>

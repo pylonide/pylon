@@ -35,11 +35,11 @@ apf.__ALIGNMENT__ = 1 << 12;
  * Example:
  * An Outlook-like layout in AML
  * <code>
- * <a:toolbar   align = "top-1"          height = "40" />
- * <a:tree      align = "left-splitter"  width  = "20%" />
- * <a:datagrid  align = "right-splitter" height = "50%" />
- * <a:text      align = "right" />
- * <a:statusbar align = "bottom-2"       height = "20" />
+ *  <a:toolbar   align = "top-1"          height = "40" />
+ *  <a:tree      align = "left-splitter"  width  = "20%" />
+ *  <a:datagrid  align = "right-splitter" height = "50%" />
+ *  <a:text      align = "right" />
+ *  <a:statusbar align = "bottom-2"       height = "20" />
  * </code>
  * Remarks:
  * This is one of three positioning methods.
@@ -60,7 +60,15 @@ apf.__ALIGNMENT__ = 1 << 12;
  *                                  and optionally a size.
  * Example:
  * <code>
- *  <a:tree align="left-splitter-3" />
+ *  <a:tree align="left-splitter-3" width="200" height="200">
+ *      <a:item caption="root" icon="icoUsers.gif">
+ *          <a:item icon="icoUsers.gif" caption="test">
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *              <a:item icon="icoUsers.gif" caption="test" />
+ *          </a:item>
+ *      </a:item>
+ *  </a:tree>
  * </code>
  * @attrinfo  layout  textbox
  * @attribute  {String} lean        the position of element when it is ambiguous.

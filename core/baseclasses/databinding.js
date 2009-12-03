@@ -32,11 +32,17 @@ apf.__DATABINDING__ = 1 << 1;
  * Example:
  * <code>
  *  <a:list>
+ *      <a:model>
+ *          <data>
+ *              <item icon="ajax_org.gif">Item 1</item>
+ *              <item icon="ajax_org.gif">Item 2</item>
+ *          </data>
+ *      </a:model>
  *      <a:bindings>
- *          <a:icon select="@icon" />
- *          <a:caption select="text()" />
- *          <a:each select="item" />
- *      </bindings>
+ *          <a:icon match="[@icon]" />
+ *          <a:caption match="[text()]" />
+ *          <a:each match="[item]" />
+ *      </a:bindings>
  *  </a:list>
  * </code>
  *
@@ -321,17 +327,18 @@ apf.DataBinding = function(){
      * <code>
      *  <a:list id="lstExample">
      *      <a:bindings>
-     *          <a:caption select="text()" />
-     *          <a:icon select="@icon" />
-     *          <a:each select="image" />
-     *      </bindings>
+     *          <a:caption match="[text()]" />
+     *          <a:icon match="[@icon]" />
+     *          <a:each match="[image]" />
+     *      </a:bindings>
      *  </a:list>
-     *
+     * 
      *  <a:script>
      *      lstExample.load('<images>\
      *          <image icon="icoTest.gif">image 1</image>\
      *          <image icon="icoTest.gif">image 2</image>\
-     *          <image icon="icoTest.gif">image 3</image>');
+     *          <image icon="icoTest.gif">image 3</image>\
+     *          </images>');
      *  </a:script>
      * </code>
      *

@@ -96,8 +96,8 @@ apf.BaseTab = function(){
      *      <a:item value="1">General</a:item>
      *      <a:item value="2">Advanced</a:item>
      *  </a:dropdown>
-     *
-     *  <a:pages activepagenr="[ddMenu.value]">
+     * 
+     *  <a:pages activepagenr="{ddMenu.value}">
      *      <a:page>
      *          <h1>Home Page</h1>
      *      </a:page>
