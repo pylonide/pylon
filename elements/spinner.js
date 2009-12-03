@@ -100,7 +100,6 @@ apf.spinner = function(struct, tagName){
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
-apf.console.info("value: "+this.max+" : "+this.min+" : "+  " : "+ this.value+" : " +value)
         if (value) {
             this.value = this.oInput.value = (value > this.max
                 ? this.max
@@ -111,7 +110,6 @@ apf.console.info("value: "+this.max+" : "+this.min+" : "+  " : "+ this.value+" :
     };
 
     this.$propHandlers["min"] = function(value) {
-        apf.console.info("MIN: "+this.max+" : "+this.min+" : "+value)
         if (!(value = parseInt(value))) return;
         this.min = value;
         if (value > this.value)
@@ -120,7 +118,6 @@ apf.console.info("value: "+this.max+" : "+this.min+" : "+  " : "+ this.value+" :
 
     this.$propHandlers["max"] = function(value) {
         if (!(value = parseInt(value))) return;
-        apf.console.info("MAX: "+this.max+" : "+this.min+" : "+value)
         this.max = value;
 
         if (value < this.value)
