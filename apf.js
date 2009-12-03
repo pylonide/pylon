@@ -278,7 +278,7 @@ var apf = {
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome     = Boolean(/source/.test((/a/.toString + "")));
+        this.isChrome     = Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
