@@ -522,13 +522,25 @@ apf.DataBinding = function(){
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
      * <code>
-     *  <a:list id="lstExample" smartbinding="..." />
-     *
-     *  <a:text model="#lstExample">
+     *  <a:list id="lstExample" width="200" height="200">
      *      <a:bindings>
-     *          <a:load get="getMessage.php?id=[@id]" />
-     *          <a:contents select="message/text()" />
-     *      </bindings>
+     *          <a:caption match="[text()]" />
+     *          <a:value match="[text()]" />
+     *          <a:each match="[message]" />
+     *      </a:bindings>
+     *      <a:model>
+     *          <messages>
+     *              <message id="1">message 1</message>
+     *              <message id="2">message 2</message>
+     *          </messages>
+     *      </a:model>
+     *  </a:list>
+     * 
+     *  <a:text model="{lstExample.selected}" width="200" height="150">
+     *      <a:bindings>
+     *          <a:load get="http://localhost/getMessage.php?id=[@id]" />
+     *          <a:contents match="[message/text()]" />
+     *      </a:bindings>
      *  </a:text>
      * </code>
      * @attribute {string} get the {@link term.datainstruction data instruction}
@@ -756,12 +768,16 @@ apf.DataBinding = function(){
      *  <a:tree render-root="true">
      *      <a:model>
      *          <root name="My Computer">
-     *              <drive letter="C">
-     *                  <folder path="/Program Files" />
-     *                  <folder path="/Desktop" />
+     *              <drive name="C">
+     *                  <folder name="/Program Files" />
+     *                  <folder name="/Desktop" />
      *              </drive>
      *          </root>
      *      </a:model>
+     *      <a:bindings>
+     *          <a:caption match="[@name]"></a:caption>
+     *          <a:each match="[root|drive|folder]"></a:each>
+     *      </a:bindings>
      *  </a:tree>
      * </code>
      */
@@ -892,12 +908,6 @@ apf.DataBinding = function(){
      *      <a:bindings>
      *          ...
      *      </bindings>
-     *      <a:actions>
-     *          ...
-     *      </actions>
-     *      <a:dragdrop>
-     *          ...
-     *      </a:dragdrop>
      *      <a:model />
      *  </a:tree>
      * </code>
@@ -920,13 +930,34 @@ apf.DataBinding = function(){
      * send changes on the bound data to a server.
      * Example:
      * <code>
-     *  <a:tree actions="actExample" />
-     *
-     *  <a:actions id="actExample">
-     *      <a:rename set="{comm.update([@id], [@name])}" />
-     *      <a:remove set="{comm.remove([@id])}" />
-     *      <a:add get="{comm.add([../@id])}" />
-     *  </actions>
+     *  <a:tree 
+     *     id             = "tree" 
+     *     height         = "200" 
+     *     width          = "250" 
+     *     actions        = "actExample"
+     *     model          = "filesystem.xml"
+     *     actiontracker  = "atExample"
+     *     startcollapsed = "false" 
+     *     onerror        = "alert('Sorry this action is not permitted');return false">
+     *       <a:each match="[folder|drive]">
+     *           <a:caption match="[@caption]" />
+     *           <a:icon value="Famfolder.gif" />
+     *       </a:each>
+     *   </a:tree>
+     *   
+     *   <a:actions id="actExample">
+     *       <a:rename match = "[file]"   
+     *                set    = "rename_folder.php?id=[@fid]" />
+     *       <a:rename match = "[folder]" 
+     *                set    = "rename_file.php?id=[@fid]" />
+     *   </a:actions>
+     *   
+     *   <a:button 
+     *     caption = "Rename"
+     *     right   = "10" 
+     *     top     = "10"
+     *     onclick = "tree.startRename()" />
+     *   <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
      * </code>
      */
     this.$propHandlers["actions"] = 
@@ -940,13 +971,23 @@ apf.DataBinding = function(){
      * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
      * <code>
-     *  <a:list bindings="bndExample" />
-     *
-     *  <a:bindings id="bndExample">
-     *      <a:caption>[text()] (#[mail[@read=0]])</a:caption>
-     *      <a:icon     select = "@icon" />
-     *      <a:each select = "account" sort="text()" />
-     *  </bindings>
+     *  <a:model id="mdlExample">
+     *      <data>
+     *          <account icon="application.png">Account 1
+     *              <mail read="false" />
+     *              <mail read="false" />
+     *              <mail read="true" />
+     *          </account>
+     *          <account icon="application.png">Account 2</account>
+     *      </data>
+     *  </a:model>
+     *  <a:list bindings="bndExample" model="mdlExample" />
+     * 
+     *   <a:bindings id="bndExample">
+     *      <a:caption>[text()] (#[mail[@read != 'true']])</a:caption>
+     *      <a:icon match="[@icon]" />
+     *      <a:each match="[account]" sort="[text()]" />
+     *  </a:bindings>
      * </code>
      * Remarks:
      * Bindings can also be assigned directly by putting the bindings tag as a
@@ -956,7 +997,11 @@ apf.DataBinding = function(){
      * short way by adding an attribute with the name of the rule to the
      * element itself:
      * <code>
-     *  <a:list caption="text()" icon="@icon" each="item" />
+     *  <a:list 
+     *    caption = "[text()] (#[mail[@read != 'true']])"
+     *    icon    = "[@icon]"
+     *    each    = "[account]"
+     *    sort    = "[text()]" />
      * </code>
      */
     this.$propHandlers["bindings"] = function(value, prop){
@@ -1123,17 +1168,46 @@ apf.DataBinding = function(){
      * datainstruction to load data.
      * Example:
      * <code>
-     *  <a:tree model="mdlExample" />
-     *  <a:model id="mdlExample" load="example.xml" />
+     *  <a:model id="mdlExample" src="filesystem.xml" />
+     *   <a:tree 
+     *     height         = "200" 
+     *     width          = "250" 
+     *     model          = "mdlExample">
+     *       <a:each match="[folder|drive]">
+     *           <a:caption match="[@caption]" />
+     *           <a:icon value="Famfolder.gif" />
+     *       </a:each>
+     *   </a:tree>
      * </code>
      * Example:
      * <code>
-     *  <a:list model="friends.xml" />
+     *  <a:tree 
+     *    height         = "200" 
+     *    width          = "250" 
+     *    model          = "filesystem.xml">
+     *      <a:each match="[folder|drive]">
+     *          <a:caption match="[@caption]" />
+     *          <a:icon value="Famfolder.gif" />
+     *      </a:each>
+     *  </a:tree>
      * </code>
      * Example:
      * <code>
-     *  <a:tree id="trContacts" model="{comm.getContacts()}" />
-     *  <a:text model="#trContacts" />
+     *  <a:tree 
+     *     id             = "tree"
+     *     height         = "200" 
+     *     width          = "250" 
+     *     model          = "filesystem.xml">
+     *       <a:each match="[folder|drive]">
+     *           <a:caption match="[@caption]" />
+     *           <a:icon value="Famfolder.gif" />
+     *       </a:each>
+     *   </a:tree>
+     *   <a:text 
+     *     model  = "{tree.selected}" 
+     *     value  = "[@caption]" 
+     *     width  = "250" 
+     *     height = "100" />
      * </code>
      * Remarks:
      * This attribute is inherited from a parent when not set. You can use this
@@ -1141,12 +1215,12 @@ apf.DataBinding = function(){
      * <code>
      *  <a:bar model="mdlForm">
      *      <a:label>Name</a:label>
-     *      <a:textbox ref="name" />
-     *
+     *      <a:textbox value="[name]" />
+     * 
      *      <a:label>Happiness</a:label>
-     *      <a:slider ref="happiness" min="0" max="10"/>
+     *      <a:slider value="[happiness]" min="0" max="10" />
      *  </a:bar>
-     *
+     * 
      *  <a:model id="mdlForm">
      *      <data />
      *  </a:model>
@@ -1163,25 +1237,23 @@ apf.DataBinding = function(){
      * case this is the country element.
      * <code>
      *  <a:label>Name</a:label>
-     *  <a:textbox value="{name}" model="mdlForm" />
-     *
+     *  <a:textbox value="[name]" model="mdlForm" />
+     * 
      *  <a:label>Country</a:label>
      *  <a:dropdown
-     *      value        = "{mdlForm::country}"
-     *      each     = "{mdlCountries::country}"
-     *      value        = "[@value]"
-     *      caption      = "{text()}">
+     *    value   = "[mdlForm::country]"
+     *    each    = "[mdlCountries::country]"
+     *    caption = "[text()]">
      *  </a:dropdown>
-     *
+     * 
      *  <a:model id="mdlCountries">
      *      <countries>
      *          <country value="USA">USA</country>
      *          <country value="GB">Great Brittain</country>
      *          <country value="NL">The Netherlands</country>
-     *          ...
      *      </countries>
      *  </a:model>
-     *
+     * 
      *  <a:model id="mdlForm">
      *      <data>
      *          <name />

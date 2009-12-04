@@ -35,8 +35,8 @@ apf.__MULTISELECT__ = 1 << 8;
  * <code>
  *  <a:list>
  *      <a:bindings>
- *          <a:caption select="@name" />
- *          <a:each select="person[@show='1']" />
+ *          <a:caption match="[@name]" />
+ *          <a:each match="[person[@show='1']]" />
  *      </a:bindings>
  *      <a:model>
  *          <data>
@@ -82,10 +82,21 @@ apf.__MULTISELECT__ = 1 << 8;
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
  * <code>
- *  <a:tree>
+ *  <a:tree width="200">
  *      <a:bindings>
- *          <a:select select="self::node()[not(@disabled)]" />
+ *          <a:select match="[self::node()[not(@disabled) or @disabled != 'true']]" />
+ *          <a:each match="[person]"></a:each>
+ *          <a:caption match="[@name]"></a:caption>
  *      </a:bindings>
+ *      <a:model>
+ *          <data>
+ *              <person disabled="false" name="test 5"/>
+ *              <person disabled="true" name="test 3"/>
+ *              <person name="test 4"/>
+ *              <person disabled="true" name="test 2"/>
+ *              <person disabled="true" name="test 1"/>
+ *          </data>
+ *      </a:model>
  *  </a:tree>
  * </code>
  * @binding value  Determines the way the value for the element is retrieved
@@ -94,9 +105,9 @@ apf.__MULTISELECT__ = 1 << 8;
  * <code>
  *  <a:dropdown onafterchange="alert(this.value)">
  *      <a:bindings>
- *          <a:caption select="text()" />
- *          <a:value select="@value" />
- *          <a:each select="item" />
+ *          <a:caption match="[text()]" />
+ *          <a:value match="[@value]" />
+ *          <a:each match="[item]" />
  *      </a:bindings>
  *      <a:model>
  *          <items>
@@ -151,10 +162,10 @@ apf.MultiSelect = function(){
      * <code>
      *  <a:list id="myList">
      *      <a:bindings>
-     *          <a:caption select="@name" />
-     *          <a:value select="@id" />
+     *          <a:caption match="[@name]" />
+     *          <a:value match="[@id]" />
      *          <a:icon>[@type].png</a:icon>
-     *          <a:each select="product" />
+     *          <a:each match="[product]" />
      *      </a:bindings>
      *      <a:model>
      *          <products>

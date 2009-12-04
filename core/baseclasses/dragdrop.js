@@ -118,29 +118,47 @@ apf.__DRAGDROP__ = 1 << 5;
  * Example:
  * This example shows a small mail application. The tree element displays a root
  * node, accounts and folders in a tree. The datagrid contains the mails. This
- * rule specifies which data nodes you can drag. Folders can be dragged but not
- * accounts. Mails can be dragged from the datagrid.
+ * rule specifies which data nodes can be dropped where. Folders can be dropped 
+ * in folders and accounts. Mails can be dropped in folders.
  * <code>
  *  <a:tree align="left" width="200">
- *      <a:bindings>
- *          <a:caption select="@name" />
- *          <a:each select="root|account|folder" />
- *
- *          <a:drag select = "folder" />
- *          <a:drop select = "folder" 
- *                  target = "folder|account" />
- *          <a:drop select = "mail" 
- *                  target = "folder" />
- *      </a:bindings>
+ *      <a:each match="[root|account|folder|mail]">
+ *          <a:caption match="[@name]" />
+ *          <a:drag match  = "[folder]" />
+ *          <a:drop match  = "[folder]" 
+ *                  target = "[folder|account]"
+ *                  action = "tree-append" />
+ *          <a:drop match  = "[mail]" 
+ *                  target = "[folder]"
+ *                  action = "tree-append" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <root name="Root">
+ *                  <account name="Account 1">
+ *                      <folder name="Folder 1"></folder>
+ *                  </account>
+ *              </root>
+ *           </data>
+ *      </a:model>
  *  </a:tree>
  *  <a:datagrid align="right">
- *      <a:bindings>
- *          <a:drag select="mail" />
- *      </a:bindings>
+ *      <a:each match="[mail]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@name]"
+ *            width   = "100%" /> 
+ *          <a:drag match="[mail]" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <mail name="Mail 1"></mail>
+ *          </data>
+ *      </a:model>
  *  </a:datagrid>
  * </code>
  *
- * @attribute {String} select          an xpath statement querying the
+ * @attribute {String} match           an xpath statement querying the
  *                                     {@link term.datanode data node} that is
  *                                     dragged. If the query matches a node it
  *                                     is allowed to be dropped. The xpath is
@@ -152,32 +170,8 @@ apf.__DRAGDROP__ = 1 << 5;
  *
  * @define drop   Determines whether a {@link term.datanode data node} can 
  * be dropped on a data node bound to this element. 
- * Example:
- * This example shows a small mail application. The tree element displays a root
- * node, accounts and folders in a tree. The datagrid contains the mails. This
- * rule specifies which data nodes can be dropped where. Folders can be dropped 
- * in folders and accounts. Mails can be dropped in folders.
- * <code>
- *  <a:tree align="left" width="200">
- *      <a:bindings>
- *          <a:caption select="@name" />
- *          <a:each select="root|account|folder" />
- *
- *          <a:drag select = "folder" />
- *          <a:drop select = "folder" 
- *                        target = "folder|account" />
- *          <a:drop select = "mail" 
- *                        target = "folder" />
- *      </a:bindings>
- *  </a:tree>
- *  <a:datagrid align="right">
- *      <a:bindings>
- *          <a:drag select="mail" />
- *      </a:bindings>
- *  </a:datagrid>
- * </code>
- 
- * @attribute {String} select          an xpath statement querying the
+ * 
+ * @attribute {String} match           an xpath statement querying the
  *                                     {@link term.datanode data node} that is
  *                                     dragged. If the query matches a node it
  *                                     is allowed to be dropped. The xpath is
@@ -656,10 +650,19 @@ apf.DragDrop = function(){
      * @attribute  {Boolean}  dragcopy   whether dragged items are copied.
      * Example:
      * <code>
-     *  <a:list dragcopy="true">
-     *      <a:item>item 1</a:item>
-     *      <a:item>item 2</a:item>
-     *      <a:item>item 3</a:item>
+     *  <a:list 
+     *    drag    = "true" 
+     *    align   = "right" 
+     *    height  = "300" 
+     *    caption = "[@name]" 
+     *    each    = "[mail]">
+     *      <a:model>
+     *          <data>
+     *              <mail name="Mail 1"></mail>
+     *              <mail name="Mail 2"></mail>
+     *              <mail name="Mail 3"></mail>
+     *          </data>
+     *      </a:model>
      *  </a:list>
      * </code>
      * Example:
@@ -682,16 +685,48 @@ apf.DragDrop = function(){
      * </code>
      * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
      * <code>
-     *  <a:list bindings="bndDragdrop" />
-     *
+     *  <a:tree align="left" width="200" height="300">
+     *      <a:each match="[root|account|folder|mail]">
+     *          <a:caption match  = "[@name]" />
+     *          <a:drag    match  = "[folder|mail]" />
+     *          <a:drop    match  = "[folder]" 
+     *                     target = "[folder|account]"
+     *                     action = "tree-append" />
+     *           <a:drop   match  = "[mail]" 
+     *                     target = "[folder]"
+     *                     action = "tree-append" />
+     *      </a:each>
+     *      <a:model>
+     *          <data>
+     *              <root name="Root">
+     *                  <account name="Account 1">
+     *                      <folder name="Folder 1">
+     *                          <mail name="Mail drag drop"></mail>
+     *                      </folder>
+     *                  </account>
+     *              </root>
+     *          </data>
+     *      </a:model>
+     *  </a:tree>
+     * 
+     *  <a:list bindings="bndDragdrop" align="right">
+     *      <a:model>
+     *          <data>
+     *              <mail name="Mail 1"></mail>
+     *              <mail name="Mail 2"></mail>
+     *              <mail name="Mail 3"></mail>
+     *          </data>
+     *      </a:model>
+     *  </a:list>
+     * 
      *  <a:bindings id="bndDragdrop">
-     *      <a:drag select = "person" copy="event.ctrlKey" />
+     *      <a:caption match="[@name]" />
+     *      <a:each match="[mail]" />
+     *      <a:drag match = "[mail]" />
      *      <a:drop
-     *          select         = "offer"
-     *          target         = "person"
-     *          action         = "tree-append"
-     *          copy = "event.ctrlKey" />
-     *  </bindings>
+     *        match = "[mail]"
+     *        action = "list-append" />
+     *   </a:bindings>
      * </code>
      */
     this.$propHandlers["dragcopy"] =
