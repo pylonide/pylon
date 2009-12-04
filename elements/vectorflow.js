@@ -52,8 +52,9 @@ apf.vectorflow = function(struct, tagName){
     this.bufferselect  = true;
     
     /**** Properties and Attributes ****/
-    this.nodeIdIndex = 1;
-
+    this.$nodeIdIndex = 1;
+    this.$minLineLength = 30;
+    
     /**** Public Methods ****/
     
 
@@ -62,7 +63,7 @@ apf.vectorflow = function(struct, tagName){
     //Here each xml node from the data is rendered
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         var node = {
-            id              : this.$applyBindRule("id", xmlNode) || "n" + this.nodeIdIndex++,
+            id              : this.$applyBindRule("id", xmlNode) || "n" + this.$nodeIdIndex++,
             caption         : this.$applyBindRule("caption", xmlNode) || "",
             type            : this.$applyBindRule("type", xmlNode) || "rect",
             x               : parseInt(this.$applyBindRule("left", xmlNode)) || 0,
@@ -71,7 +72,8 @@ apf.vectorflow = function(struct, tagName){
             left            : parseInt(this.$applyBindRule("left", xmlNode)) || 0,
             width           : parseInt(this.$applyBindRule("width", xmlNode)) || 0,
             height          : parseInt(this.$applyBindRule("height", xmlNode)) || 0,
-            fill            : xmlNode.getAttribute("fill")
+            fill            : xmlNode.getAttribute("fill"),
+            selected        : false
         };
 
         // loop through connections
@@ -111,29 +113,12 @@ apf.vectorflow = function(struct, tagName){
             }
         }
         
-        // set default line attach positions
-        var minLength = 10;
-        node.connectors = {
-            top:    {x: node.x, y: node.y - node.height/2, minLenghtX: node.x, minLenghtY: node.y - node.height/2 - minLength},
-            left:   {x: node.x - node.width/2, y: node.y, minLenghtX: node.x - node.width/2, minLenghtY: node.y},
-            right:  {x: node.x + node.width/2, y: node.y, minLengthX: node.x + node.width/2, minLengthY: node.y},
-            bottom: {x: node.x, y: node.y + node.height/2, minLengthX: node.x, minLengthY: node.y + node.height/2},
-        }
-        
-        if ("line".indexOf(node.type) > -1) {
-            node.from       = xmlNode.getAttribute("from");
-            node.to         = xmlNode.getAttribute("to");
-        }
-        else if ("circle|rect|decision".indexOf(node.type) > -1) {
-            node.top    -= node.height/2;
-            node.left   -= node.width/2;
-            node.bottom = node.y + node.height/2;
-            node.right  = node.x + node.width/2;
-        }
         if ("circle".indexOf(node.type) > -1) {
             node.width /= 2;
             node.height /= 2;
         }
+
+        node = this.$setPositions(node);
         
         if (this.nodes[node.id]) {
             apf.console.error("block with id " + node.id + " already exists");
@@ -145,9 +130,40 @@ apf.vectorflow = function(struct, tagName){
         this.nodes[node.type].push(node);
     };
     
-    //This function is called to do the final render pass
-    this.$fill = function(){
+    this.$setPositions = function(node) {
+        // set default line attach positions
         
+        node.connectors = {
+            top:    {x: node.x, y: node.y - node.height/2, minLengthX: node.x, minLengthY: node.y - node.height/2 - this.$minLineLength},
+            left:   {x: node.x - node.width/2, y: node.y, minLengthX: node.x - node.width/2 - this.$minLineLength, minLengthY: node.y},
+            right:  {x: node.x + node.width/2, y: node.y, minLengthX: node.x + node.width/2 + this.$minLineLength, minLengthY: node.y},
+            bottom: {x: node.x, y: node.y + node.height/2, minLengthX: node.x, minLengthY: node.y + node.height/2 + this.$minLineLength},
+        }
+
+        if ("rect|decision".indexOf(node.type) > -1) {
+            node.top    = node.y - node.height/2;
+            node.left   = node.x - node.width/2;
+            node.bottom = node.y + node.height/2;
+            node.right  = node.x + node.width/2;
+        }
+        else if ("circle".indexOf(node.type) > -1) {
+            node.top    = node.y - node.height;
+            node.left   = node.x - node.width;
+            node.bottom = node.y + node.height;
+            node.right  = node.x + node.width;
+        }
+        
+        return node;
+    }
+    
+    this.$drawLayers = function() {
+        var err = {};
+        var $style = apf.draw.parseStyle(this.$node_style , "", err );
+        apf.draw.initLayer(this.$rootLayers["root"], this);
+        this.$drawCode = this.$compile( this.$rootLayers["root"], $style, "root");
+        this.$drawCode(this.$rootLayers["root"], this);
+        apf.draw.resizeLayer(this.$rootLayers["root"]);
+
         for (var type in this.nodes) {
             if (this.$rootLayers[type]) {
                 var err = {};
@@ -161,7 +177,9 @@ apf.vectorflow = function(struct, tagName){
         
         /*
          * start compile text
+         * todo after Rik fixed this
          */
+        /*
         type = "text";
         var err = {};
         var $style = apf.draw.parseStyle(this.$node_style , "", err );
@@ -169,12 +187,13 @@ apf.vectorflow = function(struct, tagName){
         this.$drawCode = this.$compileText( this.$rootLayers[type], $style, type);
         this.$drawCode(this.$rootLayers[type], this);
         apf.draw.resizeLayer(this.$rootLayers[type]);
+        */
         /*
          * end compile text
          */
+    }
 
-    };
-
+/*
     this.$compileText = function(l,s,t){
         var e = apf.draw;
 
@@ -183,8 +202,8 @@ apf.vectorflow = function(struct, tagName){
             e.vars(),
             e.clear(),
             e.beginShape(s[t]),
-            e.beginFont(s.text, "t", 0, 0, 0, 0),
-            e.text(100, 100, "test"),
+            e.beginFont(s[t], "t", 0, 0, 0, 0),
+            e.text(0, 0, "t"),
             e.endLayer()
         ].join(''));
 
@@ -194,125 +213,148 @@ apf.vectorflow = function(struct, tagName){
             alert("Failed to compile:\n"+c);return 0;
         }
     }
+*/    
+    //This function is called to do the final render pass
+    this.$fill = function(){
+        this.$drawLayers();
+    };
 
     this.$compile = function(l,s,t){
         var e = apf.draw;
 
-        var c = e.optimize([
-            e.beginLayer(l),
-            e.vars(),
-            e.clear(),
-            e.beginShape(s[t]),
-            "for (var node, type, i = 0, l = this.nodes['",t,"'].length; i < l; i++) {",
-                "node=this.nodes['",t,"'][i];",
-                "type=node.type;",
-                "if (type === 'rect') {", 
-                    e.rect(
-                        "node.left",
-                        "node.top",
-                        "node.width",
-                        "node.height"
-                    ),
-                "}",
-                "else if (type === 'decision') {", 
-                    e.moveTo("node.connectors.top.x", "node.connectors.top.y"),
-                    e.lineTo("node.connectors.right.x", "node.connectors.right.y"),
-                    e.lineTo("node.connectors.bottom.x", "node.connectors.bottom.y"),
-                    e.lineTo("node.connectors.left.x", "node.connectors.left.y"),
-                    e.lineTo("node.connectors.top.x", "node.connectors.top.y"),
-                "}",
-                "else if (type === 'circle') {", e.ellipse("node.x","node.y","node.width","node.height"), "}",
-                "else if (type === 'line') {",
-                    e.moveTo(
-                        "node.from.connectors[node.output].x",
-                        "node.from.connectors[node.output].y"
-                    ),
-                    "if ((node.output == 'right' && node.input == 'left') || (node.output == 'left' && node.input == 'right')) {",
+        // draw root layer
+        if (t === "root") {
+            var c = e.optimize([
+                e.beginLayer(l),
+                e.vars(),
+                e.clear(),
+                e.beginShape(s[t]),
+                e.rect(0, 0, l.width, l.height),
+                e.endLayer()
+            ].join(''));
+        } else {
+            // draw shape layer
+            var c = e.optimize([
+                e.beginLayer(l),
+                e.vars(),
+                e.beginShape(s[t]),
+                "for (var node, type, i = 0, l = this.nodes['",t,"'].length; i < l; i++) {",
+                    "node=this.nodes['",t,"'][i];",
+                    "type=node.type;",
+
+                    "if (type === 'selection') {", 
+                        e.rect(
+                            "node.left",
+                            "node.top",
+                            "node.width",
+                            "node.height"
+                        ),
+                    "}",
+                    "else if (type === 'rect') {", 
+                        e.rect(
+                            "node.left",
+                            "node.top",
+                            "node.width",
+                            "node.height"
+                        ),
+                    "}",
+                    "else if (type === 'decision') {", 
+                        e.moveTo("node.connectors.top.x", "node.connectors.top.y"),
+                        e.lineTo("node.connectors.right.x", "node.connectors.right.y"),
+                        e.lineTo("node.connectors.bottom.x", "node.connectors.bottom.y"),
+                        e.lineTo("node.connectors.left.x", "node.connectors.left.y"),
+                        e.lineTo("node.connectors.top.x", "node.connectors.top.y"),
+                    "}",
+                    "else if (type === 'circle') {", e.ellipse("node.x","node.y","node.width","node.height"), "}",
+                    "else if (type === 'line') {",
+                        "var from, to, prop, nodeLines = [], xPos;",
+                        
+                        "from = node.from.connectors[node.output];",
+                        "to = node.to.connectors[node.input];",
+                        
+                        "if (node.output == 'right' && node.input == 'left' || node.output == 'right' && node.input == 'left') {",
+                            "if (node.output == 'right') {",
+                                "from = node.from.connectors[node.output];",
+                                "to = node.to.connectors[node.input];",
+                            "}",
+                            "else if (node.output == 'left') {",
+                                "to = node.from.connectors[node.output];",
+                                "from = node.to.connectors[node.input];",
+                            "}",
+
+                            "if (from.x < to.x - this.$minLineLength*2) {",
+                                "nodeLines.push({x: (from.minLengthX + to.minLengthX)/2, y: from.minLengthY});",
+                                "nodeLines.push({x: (from.minLengthX + to.minLengthX)/2, y: to.minLengthY});",
+                            "}",
+                            "else {",
+                                "nodeLines.push({x: from.minLengthX, y: (from.minLengthY + to.minLengthY)/2});",
+                                "nodeLines.push({x: to.minLengthX, y: (from.minLengthY + to.minLengthY)/2});",
+                            "}",
+                        "}",
+                        "if (node.output == 'bottom' && node.input == 'top' || node.output == 'top' && node.input == 'bottom') {",
+                            "if (node.output == 'bottom') {",
+                                "from = node.from.connectors[node.output];",
+                                "to = node.to.connectors[node.input];",
+                            "}",
+                            "else if (node.output == 'top') {",
+                                "to = node.from.connectors[node.output];",
+                                "from = node.to.connectors[node.input];",
+                            "}",
+                            
+                            "if (from.y < to.y - this.$minLineLength*2) {",
+                                "nodeLines.push({x: from.minLengthX, y: (from.minLengthY + to.minLengthY)/2});",
+                                "nodeLines.push({x: to.minLengthX, y: (from.minLengthY + to.minLengthY)/2});",
+                            "}",
+                            "else {",
+                                "nodeLines.push({x: (from.minLengthX + to.minLengthX)/2, y: from.minLengthY});",
+                                "nodeLines.push({x: (from.minLengthX + to.minLengthX)/2, y: to.minLengthY});",
+                            "}",
+                        "}",
+                        
+                        
+                        e.moveTo(
+                            "from.x",
+                            "from.y"
+                        ),
                         e.lineTo(
-                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
-                            "node.from.connectors[node.output].y"
+                            "from.minLengthX",
+                            "from.minLengthY"
+                        ),
+
+                        "for (var n = 0, nl = nodeLines.length; n < nl; n++) {",
+                            e.lineTo(
+                                "nodeLines[n].x",
+                                "nodeLines[n].y"
+                            ),
+                            e.moveTo(
+                                "nodeLines[n].x",
+                                "nodeLines[n].y"
+                            ),
+                        "}",
+                        e.lineTo(
+                            "to.minLengthX",
+                            "to.minLengthY"
                         ),
                         e.moveTo(
-                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
-                            "node.from.connectors[node.output].y"
+                            "to.minLengthX",
+                            "to.minLengthY"
                         ),
                         e.lineTo(
-                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
-                            "node.to.connectors[node.input].y"
+                            "to.x",
+                            "to.y"
                         ),
                         e.moveTo(
-                            "(node.from.connectors[node.output].x + node.to.connectors[node.input].x)/2",
-                            "node.to.connectors[node.input].y"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x-10",
-                            "node.to.connectors[node.input].y"
+                            "to.x",
+                            "to.y"
                         ),
                         
-                        // horizontal arrow
-                        e.moveTo(
-                            "node.to.connectors[node.input].x-10",
-                            "node.to.connectors[node.input].y-5"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x-10",
-                            "node.to.connectors[node.input].y+5"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x",
-                            "node.to.connectors[node.input].y"
-                        ),
-
                     "}",
-                    "else if ((node.output == 'bottom' && node.input == 'top')) {",
-                        e.lineTo(
-                            "node.from.connectors[node.output].x",
-                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
-                        ),
-                        e.moveTo(
-                            "node.from.connectors[node.output].x",
-                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x",
-                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
-                        ),
-                        e.moveTo(
-                            "node.to.connectors[node.input].x",
-                            "(node.from.connectors[node.output].y + node.to.connectors[node.input].y)/2"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x",
-                            "node.to.connectors[node.input].y-10"
-                        ),
-                        
-                        // vertical arrow
-                        e.moveTo(
-                            "node.to.connectors[node.input].x-5",
-                            "node.to.connectors[node.input].y-10"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x+5",
-                            "node.to.connectors[node.input].y-10"
-                        ),
-                        e.lineTo(
-                            "node.to.connectors[node.input].x",
-                            "node.to.connectors[node.input].y"
-                        ),
-
-                    "}",
-                    "else {",
-                        e.lineTo(
-                            "node.to.connectors[node.input].x",
-                            "node.to.connectors[node.input].y"
-                        ),
-                    "}",
+                    e.close(),
                 "}",
-                e.close(),
-            "}",
-            e.endLayer()
-        ].join(''));
-
+                e.endLayer()
+            ].join(''));
+            
+        }
         try{
             return new Function('l','v','m',c);
         }catch(x){
@@ -337,6 +379,26 @@ apf.vectorflow = function(struct, tagName){
         
     };
     
+    this.$deleteNode = function() {
+        delete this.nodes[this.$selectedNode.id];
+        for (var i = 0, l = this.nodes[this.$selectedNode.type].length; i < l; i++) {
+            if (this.nodes[this.$selectedNode.type][i] == this.$selectedNode) {
+                this.nodes[this.$selectedNode.type].splice(i, 1);
+                break;
+            }
+        }
+
+        for (var i = 0, l = this.nodes.line.length; i < l; i++) {
+            if (this.nodes.line[i].to == this.$selectedNode || this.nodes.line[i].from == this.$selectedNode) {
+                this.nodes.line.splice(i, 1);
+            }
+        }
+
+        this.$selectedNode = null;
+        this.nodes["selection"] = [];
+        
+        this.$drawLayers();
+    }
     /**** Keyboard Support ****/
     
     // #ifdef __WITH_KEYBOARD
@@ -346,216 +408,52 @@ apf.vectorflow = function(struct, tagName){
             shiftKey = e.shiftKey,
             selHtml  = this.$caret || this.$selected,
             pos, top, el, node, nodes, sNode, pNode, container;
+            value = (ctrlKey ? 10 : (shiftKey ? 20 : 1));
 
-        if (!selHtml || this.renaming) 
+        if (!this.$selectedNode)
             return;
 
         var selXml = this.caret || this.selected,
             oExt   = this.$ext;
 
         switch (key) {
-            case 13: //Enter
-                if (this.$tempsel)
-                    this.$selectTemp();
-            
-                if (this.ctrlselect == "enter")
-                    this.select(this.caret, true);
-            
-                this.choose(selHtml);
+            case 27: //ESC
+                this.$selectedNode = null;
+                this.nodes["selection"] = [];
+                this.$drawLayers();
                 break;
-            case 32: //Spatie
-                if (this.$tempsel)
-                    this.$selectTemp();
-
-                if (this.$mode && !ctrlKey) {
-                    var sel = this.getSelection();
-                    if (!sel.length || !this.multiselect)
-                        this.checkToggle(this.caret);
-                    else
-                        this.checkList(sel, this.isChecked(this.selected), true);
-                }
-                else if (ctrlKey || !this.isSelected(this.caret))
-                    this.select(this.caret, true);
-                return false;
             case 46: //DEL
-                if (this.$tempsel)
-                    this.$selectTemp();
-            
-                //DELETE
-                //this.remove();
-                this.remove(this.caret); //this.mode != "check"
+                this.$deleteNode();
                 break;
-            case 36:
-                //HOME
-                this.$setTempSelected (this.getFirstTraverseNode(), false, shiftKey);
-                oExt.scrollTop = 0;
-                return false;
-            case 35:
-                //END
-                var lastNode = this.getLastTraverseNode();
-                while (!this.isCollapsed(lastNode))
-                    lastNode = this.getLastTraverseNode(lastNode);
-                
-                this.$setTempSelected (lastNode, false, shiftKey);    
-                oExt.scrollTop = oExt.scrollHeight;
-                return false;
             case 37:
                 //LEFT
-                if (this.$tempsel)
-                    this.$selectTemp();
-                    
-                if (this.caret.selectSingleNode(this.each) 
-                  && !this.isCollapsed(this.caret))
-                    this.slideToggle(this.$caret || this.$selected, 2)
-                else if (pNode = this.getTraverseParent(this.caret))
-                    this.select(pNode)
-                return false;
-            case 107: //+
-            case 187: //+
+                this.$selectedNode.x -= value;
+                this.$setPositions(this.$selectedNode);
+                this.$setSelection(this.$selectedNode, true);
+                this.$drawLayers();
+                break;
             case 39:
                 //RIGHT
-                if (this.$tempsel)
-                    this.$selectTemp();
-            
-                if (this.$hasLoadStatus(this.caret, "potential") 
-                  || this.getFirstTraverseNode(this.caret))
-                    this.slideToggle(this.$caret || this.$selected, 1)
-                break;
-            case 109:
-            case 189:
-                //-
-                if (this.getFirstTraverseNode(this.caret))
-                    this.slideToggle(this.$caret || this.$selected, 2)
+                this.$selectedNode.x += value;
+                this.$setPositions(this.$selectedNode);
+                this.$setSelection(this.$selectedNode, true);
+                this.$drawLayers();
                 break;
             case 38:
                 //UP
-                if (!selXml && !this.$tempsel) 
-                    return;
-                
-                node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
-                    : selXml;
-                
-                sNode = this.getNextTraverse(node, true);
-                if (sNode) {
-                    nodes = this.getTraverseNodes(sNode);
-                    
-                    do {
-                        container = this.$getLayoutNode("item", "container",
-                            this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
-                        if (container && apf.getStyle(container, "display") == "block" 
-                          && nodes.length) {
-                                sNode = nodes[nodes.length-1];
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
-                }
-                else if (this.getTraverseParent(node) == this.xmlRoot) {
-                    this.dispatchEvent("selecttop");
-                    return;
-                }
-                else
-                    sNode = this.getTraverseParent(node);
-
-                if (sNode && sNode.nodeType == 1)
-                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
-                else
-                    return false;
-                
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
-                     - (selHtml.offsetHeight/2);
-                if (top <= oExt.scrollTop)
-                    oExt.scrollTop = top;
-                
-                return false;
+                this.$selectedNode.y -= value;
+                this.$setPositions(this.$selectedNode);
+                this.$setSelection(this.$selectedNode, true);
+                this.$drawLayers();
+                break;
             case 40:
                 //DOWN
-                if (!selXml && !this.$tempsel) 
-                    return;
-
-                node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel)
-                    : selXml;
-                
-                sNode = this.getFirstTraverseNode(node);
-                if (sNode) {
-                    container = this.$getLayoutNode("item", "container",
-                        this.$findHtmlNode(apf.xmldb.getID(node, this)));
-                    if (container && apf.getStyle(container, "display") != "block")
-                        sNode = null;
-                }
-                
-                while (!sNode) {
-                    pNode = this.getTraverseParent(node);
-                    if (!pNode) break;
-                    
-                    var i = 0;
-                    nodes = this.getTraverseNodes(pNode);
-                    while (nodes[i] && nodes[i] != node)
-                        i++;
-                    sNode = nodes[i+1];
-                    node  = pNode;
-                }
-
-                if (sNode && sNode.nodeType == 1)
-                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
-                else
-                    return false;
-                    
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
-                    + (selHtml.offsetHeight/2);
-                if (top > oExt.scrollTop + oExt.offsetHeight)
-                    oExt.scrollTop = top - oExt.offsetHeight;
-                
-                return false;
-            case 33: //@todo
-                //PGUP
-                pos   = apf.getAbsolutePosition(this.$int);
-                el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
-                      - 2, pos[1] + 2);
-                sNode = apf.xmldb.findXmlNode(el);
-                if (sNode == this.selected) {
-                    oExt.scrollTop -= oExt.offsetHeight - apf.getHeightDiff(oExt);
-                    el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
-                          - 2, pos[1] + 2);
-                    sNode = apf.xmldb.findXmlNode(el);
-                }
-                this.select(sNode);
-                
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
-                     - (selHtml.offsetHeight / 2);
-                if (top <= oExt.scrollTop)
-                    oExt.scrollTop = top;
-                break;
-            case 34: //@todo
-                //PGDN
-                pos   = apf.getAbsolutePosition(this.$int);
-                el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
-                      - 2, pos[1] + this.$ext.offsetHeight - 4);
-                sNode = apf.xmldb.findXmlNode(el);
-                if (sNode == this.selected) {
-                    oExt.scrollTop += oExt.offsetHeight - apf.getHeightDiff(oExt);
-                    el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
-                          - 2, pos[1] + this.$ext.offsetHeight - 4);
-                    sNode = apf.xmldb.findXmlNode(el);
-                }
-                this.select(sNode);
-                
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
-                    + (selHtml.offsetHeight/2);
-                if (top > oExt.scrollTop + oExt.offsetHeight)
-                    oExt.scrollTop = top - oExt.offsetHeight;
+                this.$selectedNode.y += value;
+                this.$setPositions(this.$selectedNode);
+                this.$setSelection(this.$selectedNode, true);
+                this.$drawLayers();
                 break;
             default:
-                if (key == 65 && ctrlKey)
-                    this.selectAll();
                 break;
         }
     }, true);
@@ -629,6 +527,11 @@ apf.vectorflow = function(struct, tagName){
     
     /**** Init ****/
     this.$node_style = {
+        root : {
+            inherit:'shape',
+            stroke:'blue',
+            fill:'white',
+        $:1},
         circle : {
             inherit:'shape',
             stroke:'black',
@@ -638,6 +541,12 @@ apf.vectorflow = function(struct, tagName){
             inherit:'shape',
             stroke:'black',
             fill:'blue',
+            opacity:.5,
+        $:1},
+        selection : {
+            inherit:'shape',
+            stroke:'green',
+            fill:'null',
         $:1},
         decision : {
             inherit:'shape',
@@ -669,6 +578,12 @@ apf.vectorflow = function(struct, tagName){
         $:1},
     };
     this.$rootLayers = {
+        root: {
+            left: 0,
+            top: 0,
+            width: 800,
+            height: 800,
+        },
         circle: {
             left: 0,
             top: 0,
@@ -698,9 +613,15 @@ apf.vectorflow = function(struct, tagName){
             top: 0,
             width: 800,
             height: 800,
+        },
+        selection: {
+            left: 0,
+            top: 0,
+            width: 0,
+            height: 0
         }
     };
-
+            
     this.addEventListener("$clear", function(){
         return false;
     })
@@ -716,7 +637,202 @@ apf.vectorflow = function(struct, tagName){
         apf.draw.initDriver();
         apf.draw.initRoot(this);
         apf.draw.resizeRoot(this);
+        
+        var err = {};
+        var $style = apf.draw.parseStyle(this.$node_style , "", err );
+        apf.draw.initLayer(this.$rootLayers["root"], this);
+        this.$drawCode = this.$compile( this.$rootLayers["root"], $style, "root");
+        this.$drawCode(this.$rootLayers["root"], this);
+        apf.draw.resizeLayer(this.$rootLayers["root"]);
+
+        var self = this;
+        this.nodes["selection"] = [];
+        
+        // add click listener
+        
+        this.$int.onmousedown = function(e){
+            self.$mousedown = true;
+            if (!e) e = event;
+            var resize = false;
+                
+            if (typeof e.pageX == "undefined") {
+                e.pageX = e.clientX;
+                e.pageY = e.clientY;
+            }
+            var mouseX = e.pageX, mouseY = e.pageY;
+
+            
+            var blockNodes = [];
+            if (self.nodes["rect"]) blockNodes = blockNodes.concat(self.nodes["rect"]);
+            if (self.nodes["decision"]) blockNodes = blockNodes.concat(self.nodes["decision"]);
+            if (self.nodes["circle"]) blockNodes = blockNodes.concat(self.nodes["circle"]);
+            if (self.nodes["line"]) blockNodes = blockNodes.concat(self.nodes["line"]);
+            if (self.nodes["selection"]) blockNodes = blockNodes.concat(self.nodes["selection"]);
+            
+            var selectedNode = false;
+            for (var node, i = 0, l = blockNodes.length; i < l; i++) {
+                node = blockNodes[i];
+
+                if ('rect|decision|circle|selection'.indexOf(node.type) > -1) {
+                    if (mouseX > node.left && mouseX < node.right &&
+                        mouseY > node.top && mouseY < node.bottom) {
+                            if (node.type != "selection") {
+                                self.$selectedNode = node;
+                                node.selected = true;
+    
+                                // add node to selection layer
+                                self.$setSelection(node, true);
+                            
+                            // resize handlers
+                            } else {
+                                self.$handlerNode = node;
+                                resize = true;
+                            }
+                            selectedNode = true;
+                    } else {
+                        node.selected = false;
+                    }
+                }
+            }
+
+            if (!selectedNode) {
+                self.$selectedNode = null;
+                self.nodes["selection"] = [];
+            }
+                        
+            if (self.$selectedNode) {
+                var diffX = mouseX - self.$selectedNode.x;
+                var diffY = mouseY - self.$selectedNode.y;
+            }
+            if (!self.$selectedNode) {
+                self.nodes["selection"] = [];
+            }
+            
+            self.$drawLayers();
+            
+            self.$int.onmousemove = function(e) {
+                if (!e) e = event;
+                
+                if (typeof e.pageX == "undefined") {
+                    e.pageX = e.clientX;
+                    e.pageY = e.clientY;
+                }
+                var mouseX = e.pageX, mouseY = e.pageY;
+                
+                if (self.$mousedown && self.$selectedNode) {
+                    if (resize) {
+                        // resize width
+                        if ('bottomright|topright'.indexOf(self.$handlerNode.id) > -1) {
+                            self.$selectedNode.width = mouseX - self.$selectedNode.left - 20;
+                            if (self.$selectedNode.width < 10)
+                                self.$selectedNode.width = 10;
+                            self.$selectedNode.right = self.$selectedNode.left + self.$selectedNode.width;
+                        }
+                        else if ('bottomleft|topleft'.indexOf(self.$handlerNode.id) > -1) {
+                            self.$selectedNode.width = self.$selectedNode.right - self.$selectedNode.left + (self.$selectedNode.left - mouseX);
+                            if (self.$selectedNode.width < 10)
+                                self.$selectedNode.width = 10;
+                            self.$selectedNode.left = mouseX;
+                            self.$selectedNode.right = self.$selectedNode.left + self.$selectedNode.width;
+                        }
+
+                        // resize height
+                        if ('bottomleft|bottomright'.indexOf(self.$handlerNode.id) > -1) {
+                            self.$selectedNode.height = mouseY - self.$selectedNode.top - 20;
+                            if (self.$selectedNode.height < 10)
+                                self.$selectedNode.height = 10;
+                            self.$selectedNode.bottom = self.$selectedNode.top + self.$selectedNode.height;
+                        }
+                        else if ('topleft|topright'.indexOf(self.$handlerNode.id) > -1) {
+                            self.$selectedNode.height = self.$selectedNode.bottom - self.$selectedNode.top + (self.$selectedNode.top - mouseY);
+                            if (self.$selectedNode.height < 10)
+                                self.$selectedNode.height = 10;
+                            self.$selectedNode.top = mouseY;
+                            self.$selectedNode.bottom = self.$selectedNode.top + self.$selectedNode.height;
+                        }
+                        
+                        self.$setPositions(self.$selectedNode);
+                        
+                        // redraw selection box based on new size
+                        self.nodes["selection"] = [];
+                        self.$setSelection(self.$selectedNode, true);
+                    } 
+                    else {
+                        // set new node position
+                        self.$selectedNode.x = mouseX - diffX;
+                        self.$selectedNode.y = mouseY - diffY;
+                        self.$setPositions(self.$selectedNode);
+                        
+                        // reset current selection
+                        self.nodes["selection"] = [];
+                        
+                        // set new selection
+                        self.$setSelection(self.$selectedNode, true);
+                    }
+                    
+                    // refresh canvas
+                    self.$drawLayers();
+                }
+            }
+        }
+        
+        this.$int.onmouseup = function(e) {
+            self.$mousedown = false;
+            if (self.$selectedNode) {
+                //self.$setPositions(self.$selectedNode);
+                self.$drawLayers();
+            }
+        }
     };
+    
+    this.$setSelection = function(node, resize) {
+        this.nodes["selection"] = [];
+        var margin = 5;
+        if ('decision|rect'.indexOf(node.type) > -1) {
+            box = {
+                type: "selection",
+                left: node.left-margin,
+                top: node.top-margin,
+                width: node.width+margin*2,
+                height: node.height+margin*2
+            }
+        }
+        else {
+            box = {
+                type: "selection",
+                left: node.left-margin,
+                top: node.top-margin,
+                width: node.width*2+margin*2,
+                height: node.height*2+margin*2
+            }
+        }
+
+        this.nodes["selection"].push(box);
+        
+        if (resize) {
+            var hWidth = 20, hHeight = 20;
+            var top = node.top - hHeight;
+            var left = node.left - hWidth;
+            var bottom = node.bottom;
+            var right = node.right;
+            
+            var handlers = [
+                {type: "selection", id: "topleft", width: hWidth, height: hHeight, top: top, left: left, right: left+hWidth, bottom: top+hHeight }, //topleft 
+//                {type: "selection", id: "top", width: hWidth, height: hHeight, top: top, left: left + node.width/2 + hWidth/2, right: left + node.width/2 + hWidth/2 + hWidth, bottom: top+hHeight  }, //top
+                {type: "selection", id: "topright", width: hWidth, height: hHeight, top: top, left: right, right: right+hWidth, bottom: top+hHeight }, //topright
+//                {type: "selection", id: "right", width: hWidth, height: hHeight, top: top + node.height/2 + hWidth/2, left: right, right: right+hWidth, bottom: top + node.height/2 + hHeight}, //right
+                {type: "selection", id: "bottomright", width: hWidth, height: hHeight, top: bottom, left: right, right: right+hWidth, bottom: bottom+hHeight }, //bottomright
+//                {type: "selection", id: "bottom", width: hWidth, height: hHeight, top: top, left: left + hWidth/2 }, //bottom
+                {type: "selection", id: "bottomleft", width: hWidth, height: hHeight, top: bottom, left: left, right: left+hWidth, bottom: bottom+hHeight }, //bottomleft
+//                {type: "selection", id: "left", width: hWidth, height: hHeight, top: top + node.height/2, left: left }  //left
+            ];
+            
+            for (var h = 0, l = handlers.length; h < l; h++) {
+                this.nodes["selection"].push(handlers[h]);
+            }
+        }
+        
+    }
     
     this.$loadAml = function(){
         //Any init code that needs attributes set comes here
