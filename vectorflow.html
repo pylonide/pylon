@@ -13,19 +13,38 @@
         <a:model id="mdlGraph">
             <data>
                 <block id="start" caption="start" type="circle"
-                    top="50" left="450" width="50" height="50">
-                    <connection ref="decision1" output="left" input="right" type="none-arrow" />
-                </block>
-                <block id="block1" caption="block1" type="rect"
-                    top="350" left="150" width="150" height="100">
-                    <connection ref="block2" output="right" input="left" type="none-arrow" />
+                    top="50" left="50" width="50" height="50">
+                    <connection ref="decision1" output="right" input="left" type="none-arrow" />
                 </block>
                 <block id="decision1" caption="decision1" type="decision"
-                    top="150" left="100" width="100" height="100">
+                    top="150" left="200" width="100" height="100">
                     <connection ref="block1" output="bottom" input="top" type="none-arrow" />
+                    <connection ref="block3" output="right" input="left" type="none-arrow" />
+                </block>
+                <block id="block1" caption="block1" type="rect"
+                    top="350" left="200" width="200" height="100">
+                    <connection ref="block2" output="bottom" input="top" type="none-arrow" />
                 </block>
                 <block id="block2" caption="block2" type="rect"
-                    top="450" left="400" width="150" height="100">
+                    top="550" left="200" width="150" height="100">
+                    <connection ref="end" output="right" input="left" type="none-arrow" />
+                </block>
+                <block id="block3" caption="block3" type="rect"
+                    top="150" left="500" width="150" height="100">
+                    <connection ref="block4" output="bottom" input="top" type="none-arrow" />
+                </block>
+                <block id="block4" caption="block4" type="rect"
+                    top="350" left="500" width="150" height="100">
+                    <connection ref="circle2" output="bottom" input="top" type="none-arrow" />
+                </block>
+                <block id="circle2" caption="circle" type="circle"
+                    top="450" left="500" width="50" height="50">
+                    <connection ref="end" output="bottom" input="top" type="none-arrow" />
+                </block>
+                
+                
+                <block id="end" caption="end" type="circle"
+                    top="550" left="500" width="50" height="50">
                 </block>
             </data>
         </a:model>
