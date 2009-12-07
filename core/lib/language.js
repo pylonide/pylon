@@ -80,11 +80,11 @@
  *   </a:window>
  *
  *   <a:button icon="us.gif"
- *     onclick="apf.language.$loadFrom('mdlLang:english');">
+ *     onclick="apf.language.$loadFrom(%[mdlLang::english]);">
  *        English
  *   </a:button>
  *   <a:button icon="fr.gif"
- *     onclick="apf.language.$loadFrom('mdlLang:french');">
+ *     onclick="apf.language.$loadFrom(%[mdlLang::french]);">
  *        French
  *   </a:button>
  * </code>
