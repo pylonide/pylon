@@ -49,50 +49,52 @@ apf.__TRANSACTION__ = 1 << 3;
  * 'lockfail' event the user can be notified of the reason. For more information 
  * see {@link term.locking}.
  * <code>
- *  <a:list id="lstItems" onafterchoose="winEdit.show()">
- *      <a:bindings>
- *          <a:caption select="name" />
+ *  <a:list 
+ *    id            = "lstItems" 
+ *    onafterchoose = "winEdit.show()" 
+ *    width         = "200">
+ *      <a:each match="[item]">
+ *          <a:caption match="[@name]" />
  *          <a:icon value="icoItem.png" />
- *          <a:each select="item" />
- *      </a:bindings>
+ *      </a:each>
  *      <a:actions>
- *          <a:add set="save.php?xml=[.]">
+ *          <a:add set="http://localhost/save.php?xml=%[.]">
  *              <item name="New Item" />
  *          </a:add>
  *          <a:update 
- *              set="save.php?xml=[.]" 
- *              lock="lock.php?id=[@id]" />
+ *            set  = "http://localhost/save.php?xml=%[.]" 
+ *            lock = "http://localhost/lock.php?id=[@id]" />
  *      </a:actions>
  *      <a:model>
  *          <items>
- *              <item name="test" subject="subject">
- *                  message
- *              </item>
+ *              <item name="test" subject="subject" id="1">message</item>
  *          </items>
  *      </a:model>
  *  </a:list>
- *  
- *  <a:button onclick="winEdit.begin('add');">add new item</a:button>
- *  
- *  <a:window id="winEdit" 
+ *      
+ *  <a:button onclick="winEdit.begin('add');">Add new item</a:button>
+ *       
+ *  <a:window 
+ *    width       = "300"
+ *    id          = "winEdit" 
  *    transaction = "true"
- *    model       = "#lstItems"
+ *    model       = "{lstItems.selected}"
  *    title       = "Edit this message">
  *      <a:label>Name</a:label>
- *      <a:textbox ref="@name" required="true" 
- *        invalidmsg="Please enter your name" />
- *
+ *      <a:textbox 
+ *        value      = "[@name]" 
+ *        required   = "true" 
+ *        invalidmsg = "Please enter your name" />
  *      <a:label>Subject</a:label>
- *      <a:textbox ref="@subject" />
- *
+ *      <a:textbox value="[@subject]" />
+ *    
  *      <a:label>Message</a:label>
- *      <a:textarea ref="text()" min-length="100" />
+ *      <a:textarea value="[text()]" min-length="100" />
  *      
  *      <a:button action="ok" default="true">OK</a:button>
  *      <a:button action="cancel">Cancel</a:button>
- *      <a:button action="apply" 
- *        disabled="{!winEdit.undolength}">Apply</a:button>
- *  </a:window>
+ *      <a:button action="apply" disabled="{!winEdit.undolength}">Apply</a:button>
+ *   </a:window>
  * </code>
  *
  * @constructor

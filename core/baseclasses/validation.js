@@ -497,16 +497,16 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  *  <a:bar validgroup="vgForm">
  *      <a:label>Phone number</a:label>
  *      <a:textbox id="txtPhone"
- *          required   = "true"
- *          pattern    = "(\d{3}) \d{4} \d{4}"
- *          invalidmsg = "Incorrect phone number entered" />
+ *        required   = "true"
+ *        pattern    = "(\d{3}) \d{4} \d{4}"
+ *        invalidmsg = "Incorrect phone number entered" />
  *
  *      <a:label>Password</a:label>
  *      <a:textbox
- *          required   = "true"
- *          mask       = "password"
- *          minlength  = "4"
- *          invalidmsg = "Please enter a password of at least four characters" />
+ *        required   = "true"
+ *        mask       = "password"
+ *        minlength  = "4"
+ *        invalidmsg = "Please enter a password of at least four characters" />
  *  </a:bar>
  * </code>
  *

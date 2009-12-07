@@ -182,26 +182,35 @@ apf.MultiSelect = function(){
      * This example selects a product by it's value and then removes the
      * selection.
      * <code>
-     *  myList.setValue("product20");
-     *  myList.remove();
+     *  <a:script>
+     *      myList.setValue("product20");
+     *      myList.remove();
+     *  </a:script>
      * </code>
      * Example:
      * This example gets a product by it's value and then removes it.
      * <code>
-     *  var xmlNode = myList.findXmlNodeByValue("product20");
-     *  myList.remove(xmlNode);
+     *  <a:script>
+     *      var xmlNode = myList.findXmlNodeByValue("product20");
+     *      myList.remove(xmlNode);
+     *  </a:script>
      * </code>
      * Example:
      * This example retrieves all nodes from a list. All items with a length
      * greater than 10 are singled out and removed.
      * <code>
-     *  var list = myList.getTraverseNodes(); //get all nodes from a list.
-     *  var removeList = [];
-     *  for (var i = 0; i < list.length; i++) {
-     *      if (list[i].getAttribute("length") > 10)
-     *          removeList.push(list[i]);
-     *  }
-     *  myList.remove(removeList); //remove the list of nodes
+     *  <a:script><![CDATA[
+     *      apf.onload = function() {
+     *          var list = myList.getTraverseNodes();
+     * 
+     *          var removeList = [];
+     *          for (var i = 0; i < list.length; i++) {
+     *              if (list[i].getAttribute("length") > 10)
+     *                  removeList.push(list[i]);
+     *          }
+     *          myList.remove(removeList);
+     *      }
+     *   ]]></a:script>
      * </code>
      * Remarks:
      * Another way to trigger this method is by using the action attribute on a
@@ -212,18 +221,26 @@ apf.MultiSelect = function(){
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user removed an item.
      * <code>
-     *  <a:actions>
-     *      <a:remove set="remove_product.php?id=[@id]" />
-     *  </a:actions>
+     *     <a:list>
+     *         <a:bindings />
+     *         <a:remove set="remove_product.php?id=[@id]" />
+     *     </a:list>
      * </code>
      * For undo this action should be extended and the server should maintain a
      * copy of the deleted item.
      * <code>
-     *  <a:actions>
+     *  <a:list actiontracker="atList">
+     *      <a:bindings />
      *      <a:remove set  = "remove_product.php?id=[@id]"
      *                undo = "undo_remove_product.php?id=[@id]" />
-     *      </a:remove>
-     *  </a:actions>
+     *  </a:list>
+     *  <a:button 
+     *    action = "remove" 
+     *    target = "myList">Remove item</a:button>
+     *   <a:button 
+     *     caption  = "Undo"
+     *     disabled = "{!atList.undolength}" 
+     *     onclick  = "atList.undo()" />
      * </code>
      * @action
      * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
@@ -278,10 +295,10 @@ apf.MultiSelect = function(){
      * <code>
      *  <a:list id="myList">
      *      <a:bindings>
-     *          <a:caption select="@name" />
-     *          <a:value select="@id" />
+     *          <a:caption match="[@name]" />
+     *          <a:value match="[@id]" />
      *          <a:icon>[@type].png</a:icon>
-     *          <a:each select="product" />
+     *          <a:each match="[product]" />
      *      </a:bindings>
      *      <a:model>
      *          <products>
@@ -298,7 +315,11 @@ apf.MultiSelect = function(){
      * This example adds a product to this element.
      * selection.
      * <code>
-     *  myList.add('<product name="USB drive" type="storage" />');
+     *  <a:script><![CDATA[
+     *      apf.onload = function() {
+     *          myList.add('<product name="USB drive" type="storage" />');
+     *      }
+     *  ]]></a:script>
      * </code>
      * Example:
      * This example copy's the selected product, changes it's name and then
@@ -315,38 +336,49 @@ apf.MultiSelect = function(){
      * Another way to trigger this method is by using the action attribute on a
      * button.
      * <code>
+     *  <a:list>
+     *      <a:bindings />
+     *      <a:model />
+     *      <a:add>
+     *          <product name="New item" />
+     *      </a:add>
+     *  </a:list>
      *  <a:button action="add" target="myList">Add new product</a:button>
      * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user added an item.
      * <code>
-     *  <a:actions>
-     *      <a:add set="{comm.addProduct([.])}" />
-     *  </a:actions>
+     *  <a:add set="{comm.addProduct([.])}" />
      * </code>
      * For undo this action should be extended as follows.
      * <code>
-     *  <a:actions>
-     *      <a:add set  = "add_product.php?xml=[.]"
-     *             undo = "remove_product.php?id=[@id]" />
+     *  <a:list id="myList" actiontracker="atList">
+     *      <a:bindings />
+     *      <a:model />
+     *      <a:add set  = "add_product.php?xml=%[.]"
+     *             undo = "remove_product.php?id=[@id]">
+     *          <product name="New product" id="productId" />
      *      </a:add>
-     *  </a:actions>
+     *  </a:list>
+     *  <a:button 
+     *    action = "add" 
+     *    target = "myList">Add new product</a:button>
+     *  <a:button
+     *     caption  = "Undo"
+     *     disabled = "{!atList.undolength}" 
+     *     onclick  = "atList.undo()" />
      * </code>
      * In some cases the server needs to create the new product before it's
      * added. This is done as follows.
      * <code>
-     *  <a:actions>
-     *      <a:add get="{comm.createNewProduct()}" />
-     *  </a:actions>
+     *  <a:add get="{comm.createNewProduct()}" />
      * </code>
      * Alternatively the template for the addition can be provided as a child of
      * the action rule.
      * <code>
-     *  <a:actions>
-     *      <a:add set="add_product.php?xml=[.]">
-     *          <product name="USB drive" type="storage" />
-     *      </a:add>
-     *  </a:actions>
+     *  <a:add set="add_product.php?xml=%[.]">
+     *      <product name="USB drive" type="storage" />
+     *  </a:add>
      * </code>
      * @action
      * @param  {XMLElement} [xmlNode]    the {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.

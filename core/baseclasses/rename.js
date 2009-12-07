@@ -33,17 +33,26 @@ apf.__RENAME__ = 1 << 10;
  * This example shows a list containing products. Only products that have the
  * editable attribute set to 1 can be renamed by the user.
  * <code>
- *  <a:list model="/cgi-bin/products.cgi">
- *      <a:bindings>
- *          <a:caption select="@name" />
- *          <a:each select="product" />
- *      </a:bindings>
+ *  <a:model id="mdlTest">
+ *      <data>
+ *          <product name="TV" />
+ *          <product name="LCD" editable="1" />
+ *      </data>
+ *  </a:model>
+ *  <a:list id="list" model="mdlTest" width="200">
+ *      <a:each match="[product]">
+ *          <a:caption match="[@name]" />
+ *      </a:each>
  *      <a:actions>
  *          <a:rename
- *            select = "product[@editable='1']"
- *            set    = "{comm.update('product', [@id], [@name])}" />
+ *            match = "[product[@editable='1']]"
+ *            set   = "rename.php" />
  *      </a:actions>
  *  </a:list>
+ *       
+ *  <a:button
+ *    caption = "Rename"
+ *    onclick = "list.startRename()" />
  * </code>
  *
  * @event stoprename Fires when a rename action is cancelled.
