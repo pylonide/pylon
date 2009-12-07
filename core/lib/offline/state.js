@@ -35,9 +35,9 @@
  * Example:
  * <code>
  *  <a:offline 
- *      realtime  = "true" 
- *      set       = "store_session.jsp" 
- *      onrestore = "return confirm('Would you like to continue where you left of?')" />
+ *    realtime  = "true" 
+ *    set       = "store_session.jsp" 
+ *    onrestore = "return confirm('Would you like to continue where you left of?')" />
  * </code>
  *
  * @event restore Fires before restoring the application to the predefined state.

@@ -60,17 +60,21 @@
  *       </groups>
  *   </a:model>
  *
- *   <a:appsettings language="mdlLang:english" />
+ *   <a:appsettings language="[mdlLang:english]" />
  *
- *   <a:window title="$sub.main.title$" width="400" height="300" visible="true">
+ *   <a:window 
+ *     title   = "$[sub/main/title]$" 
+ *     width   = "400" 
+ *     height  = "300" 
+ *     visible = "true">
  *       <a:tab anchors="10 10 10 10">
- *           <a:page caption="$sub.main.tab0$">
- *               <a:label>$sub.main.1$</a:label>
+ *           <a:page caption="$[sub/main/tab0]$">
+ *               <a:label>$[sub/main/1]$</a:label>
  *               <a:textbox />
- *               <a:button>$sub.main.2$</a:button>
+ *               <a:button>$[sub/main/2]$</a:button>
  *           </a:page>
- *           <a:page caption="$sub.main.tab2$">
- *               <a:picture src="$sub.main.3$" />
+ *           <a:page caption="$[sub/main/tab2]$">
+ *               <a:picture src="$[sub/main/3]$" />
  *           </a:page>
  *       </a:tab>
  *   </a:window>

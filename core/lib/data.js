@@ -32,47 +32,47 @@
  *
  *  - for complex model expr. replace model.
  *  - use property binding for selection, instead of setConnections
- *  <j:bar model="[tree.selected]">
- *      <j:textbox value="{persons/person/text}" />
- *      <j:textbox value="{persons/person/text1}" />
- *      <j:textbox value="{persons/person/text2}" />
- *      <j:textbox value="{persons/person/text3}" />
- *      <j:textbox value="{persons/person/text4}" />
- *  </j:bar>
+ *  <a:bar model="{tree.selected}">
+ *      <a:textbox value="[persons/person/text]" />
+ *      <a:textbox value="[persons/person/text1]" />
+ *      <a:textbox value="[persons/person/text2]" />
+ *      <a:textbox value="[persons/person/text3]" />
+ *      <a:textbox value="[persons/person/text4]" />
+ *  </a:bar>
  *  - create exec function for async objects
  *  - have list of async objects
  *
  * Syntax:
  * Using data instructions to retrieve data
  * <code>
- * model="name_of_model"
- * model="{name_of_model::xpath}"
- * model="[element.selected]"
- * model="[local(element.selected) {xpath}]"
- * model="[element.choose]"
- * model="[local(element.choose) {xpath}]"
- * model="[local(element.root) {xpath}]"
- * load="<specialtag>[comm.doCall([@id], test(), 5+10).xml]</specialtag>"
- * get="example.jsp"
- * get="http://www.bla.nl?blah=10&foo=[@bar]&example=[10+5]"
- * get="[comm.submit('abc', [@bar])]"
- * get="[local(comm.submit('abc', [@bar])) return &{xpath}]"
- * get="[submit('abc', [@bar])]"
- * get="[xmpp.login(username, password)]"
- * get="[webdav.getRoot()]"
- * get="[10+5]"
+ *  model="name_of_model"
+ *  model="[name_of_model::xpath]"
+ *  model="{element.selected}"
+ *  model="[local(element.selected) {xpath}]"
+ *  model="{element.choose}"
+ *      model="[local(element.choose) {xpath}]"
+ *      model="[local(element.root) {xpath}]"
+ *      load="<specialtag>[comm.doCall([@id], test(), 5+10).xml]</specialtag>"
+ *      get="example.jsp"
+ *      get="http://www.bla.nl?blah=10&foo=[@bar]&example=[10+5]"
+ *      get="{comm.submit('abc', [@bar])}"
+ *      get="[local(comm.submit('abc', [@bar])) return [xpath]]"
+ *      get="[submit('abc', [@bar])]"
+ *      get="{xmpp.login(username, password)}"
+ *      get="{webdav.getRoot()}"
+ *      get="[10+5]"
  * </code>
  *
  * Syntax:
  * Using data instructions to store data
  * <code>
- * set="http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- * set="post http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
+ *  set="http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
+ *  set="post http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
  * <a:add set="[[@uid] = comm.addPerson('abc', {/bar})]" />
- * set="[submit('abc', {/bar})]"
- * set="[example=[@name]]"
- * set="[apf.setcookie('something', [.])]"
- * set="[o3.fs.get('/var/test.xml').data = [.]]"
+ *  set="[submit('abc', {/bar})]"
+ *  set="[example=[@name]]"
+ *  set="[apf.setcookie('something', [.])]"
+ *  set="[o3.fs.get('/var/test.xml').data = [.]]"
  * </code>
  *
  * [
@@ -116,10 +116,10 @@ apf.saveData =
  *
  *  <a:bindings>
  *    <!-- loads data using an remote procedure protocol -->
- *    <a:load   get = "[comm.getData()]" />
+ *    <a:load   get = "{comm.getData()}" />
  *
  *    <!-- inserts data using an remote procedure protocol -->
- *    <a:insert get = "[comm.getSubData([@id])]" />
+ *    <a:insert get = "{comm.getSubData([@id])}" />
  *  </a:bindings>
  *
  *  <a:actions>
@@ -131,7 +131,7 @@ apf.saveData =
  *  </a:actions>
  *
  *  <!-- creates a model which is loaded into a list -->
- *  <a:list model="[webdav.getRoot()]" />
+ *  <a:list model="{webdav.getRoot()}" />
  *
  *  <!-- loads data into a model and when submitted sends the altered data back -->
  *  <a:model load="load_contact.jsp" submission="save_contact.jsp" />
