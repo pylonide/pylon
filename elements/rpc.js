@@ -101,6 +101,8 @@ apf.rpc = function(struct, tagName){
     this["route-server"] = apf.host + "/cgi-bin/rpcproxy.cgi";
     this.autoroute       = false;
 
+    this.$auth           = false;
+
     this.$booleanProperties["multicall"] = true;
 
     this.$supportedProperties.push("protocol", "type", "multicall", "http-method");
@@ -138,7 +140,13 @@ apf.rpc = function(struct, tagName){
      * @param {Function} func the function that is called when the rpc method returns.
      */
     this.setCallback = function(name, func){
-        this[name].callback = func;
+        // #ifdef __DEBUG
+        if (!this.$methods[name])
+            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+                "Trying to set callback: method not found."));
+        // #endif
+            
+        this.$methods[name].callback = func;
     };
 
     this.$convertArgs = function(name, args){
@@ -176,10 +184,11 @@ apf.rpc = function(struct, tagName){
     };
 
     this.call = function(name, args, options){
-        var callback, node = this.$methods[name];
+        var callback,
+            node = this.$methods[name];
         
         if (typeof args[args.length - 1] == "function") {
-            args = Array.prototype.slice.call(args); //@todo optimize?
+            args     = Array.prototype.slice.call(args); //@todo optimize?
             callback = args.pop();
         }
         else {
@@ -217,8 +226,9 @@ apf.rpc = function(struct, tagName){
         }
 
         // Send the request
-        var url  = apf.getAbsolutePath(apf.config.baseurl, this.url),
-            info = this.$get(url, apf.extend({
+        var auth,
+            url  = apf.getAbsolutePath(apf.config.baseurl, this.url),
+            o    = apf.extend({
                 callback      : pCallback,
                 async         : node.async,
                 userdata      : node.userdata,
@@ -227,9 +237,24 @@ apf.rpc = function(struct, tagName){
                 useXML        : this.$useXml,
                 caching       : node.caching,
                 ignoreOffline : node["ignore-offline"]
-            }, options));
+            }, options);
 
-        return info;
+        if (node.auth && this.$auth) {
+            if (auth = this.$auth.$credentials) {
+                o.username = auth.username;
+                o.password = auth.password;
+            }
+            else {
+                return this.$auth.authRequired(function() {
+                    auth = _self.$auth.$credentials
+                    o.username = auth.username;
+                    o.password = auth.password;
+                    _self.$get(url, o);
+                });
+            }
+        }
+
+        return this.$get(url, o);
     };
 
     /**
@@ -325,6 +350,10 @@ apf.rpc = function(struct, tagName){
         delete this.$methods[name];
     };
 
+    this.$setAuth = function(amlNode) {
+        this.$auth = amlNode;
+    };
+
     /*
     this.addEventListener("DOMNodeInserted", function(e){
         var node = e.currentTarget;
@@ -355,8 +384,8 @@ apf.rpc = function(struct, tagName){
         //#ifdef __DEBUG
         if (!this[method])
             throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
-                "Could not find RPC function by name '" + method + "' in data \
-                instruction '" + options.instruction + "'"));
+                "Could not find RPC function by name '" + method + "' in data "
+              + "instruction '" + options.instruction + "'"));
         //#endif
         
         var props = this.$methods[method];
