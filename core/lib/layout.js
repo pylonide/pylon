@@ -30,8 +30,9 @@
  * Example:
  * This example shows 5 windows which have a layout defined in layout.xml.
  * <code>
- *  <a:appsettings layout="layout.xml:layout[1]" />
- *
+ *  <a:appsettings layout="[mdlLayouts::layout[1]]" />
+ *  <a:model id="mdlLayouts" src="layout.xml" />
+ *  
  *  <a:window title="Main Window" id="b1" />
  *  <a:window title="Tree Window" id="b2" />
  *  <a:window title="Window of Oppertunity" id="b3" />
@@ -78,34 +79,34 @@
  *    onafterselect  = "
  *      if(!this.selected || apf.layout.isLoadedXml(this.selected))
  *          return;
- *
+ *     
  *      apf.layout.saveXml();
  *      apf.layout.loadXml(this.selected);
  *    "
  *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
  *      <a:bindings>
- *          <a:caption select="@name" />
+ *          <a:caption match="[@name]" />
  *          <a:icon value="layout.png" />
- *          <a:each select="layout" />
+ *          <a:each match="[layout]" />
  *      </a:bindings>
  *      <a:actions>
- *          <a:rename select="." />
- *          <a:remove select="." />
+ *          <a:rename match="[.]" />
+ *          <a:remove match="[.]" />
  *      </a:actions>
  *  </a:list>
  *  <a:button
  *    onclick = "
  *      if (!lstLayouts.selected)
  *          return;
- *
+ *     
  *      var newLayout = apf.layout.getXml(document.body);
- *      newLayout.setAttribute("name", "New");
+ *      newLayout.setAttribute('name', 'New');
  *      apf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
  *      lstLayouts.select(newLayout, null, null, null, null, true);
  *      apf.layout.loadXml(newLayout);
  *      lstLayouts.startRename();
  *    ">
- *      Add Layout
+ *    Add Layout
  *  </a:button>
  * </code>
  *
@@ -205,7 +206,7 @@ apf.layout = {
      * Loads a layout using a data instruction.
      * Example:
      * <code>
-     *  apf.layout.$loadFrom("mdlLayout:layout[1]");
+     *  apf.layout.$loadFrom(%[mdlLayout::layout[1]]);
      * </code>
      * Remarks:
      * The aml elements referenced in the layout definition should exist when

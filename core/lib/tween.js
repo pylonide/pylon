@@ -236,12 +236,12 @@ apf.tween = {
      * start to an end value.
      * Example:
      * <code>
-     * apf.tween.single(myDiv, {
-     *     type : "left",
-     *     from : 10,
-     *     to   : 100,
-     *     anim : apf.tween.EASEIN
-     * });
+     *  apf.tween.single(myDiv, {
+     *      type : "left",
+     *      from : 10,
+     *      to   : 100,
+     *      anim : apf.tween.EASEIN
+     *  });
      * </code>
      * Example:
      * Multiple animations can be run after eachother
