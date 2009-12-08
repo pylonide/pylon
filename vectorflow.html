@@ -6,6 +6,12 @@
 		<title>Vector Flowchart</title>
         <script src="apf.js"></script>
         <script src="loader.js"></script>
+        <style type="text/css">
+            * {
+                padding: 0;
+                margin: 0;
+            }
+        </style> 
 	</head>
 	<body>
 	    <a:skin src="skins.xml" />
@@ -13,38 +19,38 @@
         <a:model id="mdlGraph">
             <data>
                 <block id="start" caption="start" type="circle"
-                    top="50" left="50" width="50" height="50">
-                    <connection ref="decision1" output="right" input="left" type="none-arrow" />
+                    top="80" left="80" width="80" height="80">
+                    <connection ref="decision1" output="right" input="left" type="arrow" />
                 </block>
                 <block id="decision1" caption="decision1" type="decision"
-                    top="150" left="200" width="100" height="100">
-                    <connection ref="block1" output="bottom" input="top" type="none-arrow" />
-                    <connection ref="block3" output="right" input="left" type="none-arrow" />
+                    top="160" left="200" width="120" height="120">
+                    <connection ref="block1" output="bottom" input="top" type="arrow" />
+                    <connection ref="block3" output="right" input="left" type="arrow" />
                 </block>
                 <block id="block1" caption="block1" type="rect"
-                    top="350" left="200" width="200" height="100">
-                    <connection ref="block2" output="bottom" input="top" type="none-arrow" />
+                    top="360" left="200" width="200" height="120">
+                    <connection ref="block2" output="bottom" input="top" type="arrow" />
                 </block>
                 <block id="block2" caption="block2" type="rect"
-                    top="550" left="200" width="150" height="100">
+                    top="560" left="200" width="160" height="120">
                     <connection ref="end" output="right" input="left" type="none-arrow" />
                 </block>
                 <block id="block3" caption="block3" type="rect"
-                    top="150" left="500" width="150" height="100">
-                    <connection ref="block4" output="bottom" input="top" type="none-arrow" />
+                    top="160" left="500" width="160" height="120">
+                    <connection ref="block4" output="bottom" input="top" type="arrow" />
                 </block>
                 <block id="block4" caption="block4" type="rect"
-                    top="350" left="500" width="150" height="100">
-                    <connection ref="circle2" output="bottom" input="top" type="none-arrow" />
+                    top="360" left="500" width="160" height="120">
+                    <connection ref="circle2" output="bottom" input="top" type="arrow" />
                 </block>
                 <block id="circle2" caption="circle" type="circle"
-                    top="450" left="500" width="50" height="50">
-                    <connection ref="end" output="bottom" input="top" type="none-arrow" />
+                    top="460" left="500" width="60" height="60">
+                    <connection ref="end" output="bottom" input="top" type="arrow" />
                 </block>
                 
                 
                 <block id="end" caption="end" type="circle"
-                    top="550" left="500" width="50" height="50">
+                    top="560" left="500" width="60" height="60">
                 </block>
             </data>
         </a:model>
@@ -60,5 +66,7 @@
                 <a:height value="[@height]" />
             </a:each>
         </a:vectorflow>
+        
+        <label for="status">Status</label><input type="text" id="status" value=""/>
 	</body>
 </html>
