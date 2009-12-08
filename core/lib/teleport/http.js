@@ -400,8 +400,12 @@ apf.http = function(){
             //#endif
             //end experimental
 
-            http.open(this.method || options.method || "GET", httpUrl,
-                async, options.username || null, options.password || null);
+            http.open(this.method || options.method || "GET", httpUrl, async);
+
+            if (options.username) {
+                http.setRequestHeader("Authorization", "Basic " 
+                    + apf.crypto.Base64.encode(options.username + ":" + options.password))
+            }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
             if (!apf.isWebkit)
