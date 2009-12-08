@@ -902,7 +902,12 @@ apf.window = function(){
         e = e || window.event;
 
         var p,
-            amlNode = apf.findHost(e.srcElement || e.target);
+            amlNode   = apf.findHost(e.srcElement || e.target),
+            cEditable = false
+              // #ifdef __WITH_CONTENTEDITABLE
+              || (amlNode && amlNode.hasFeature(apf.__CONTENTEDITABLE__))
+              // #endif
+            ;
 
         // #ifdef __WITH_POPUP
         if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId))
@@ -920,8 +925,8 @@ apf.window = function(){
             }
             else if ((p = apf.document.activeElement
               && apf.document.activeElement.$focusParent || lastFocusParent)
-                && p.visible && p.modal && amlNode.$focusParent != p) {
-                    apf.window.$focusLast(p, {mouse: true});
+              && p.visible && p.modal && amlNode.$focusParent != p) {
+                apf.window.$focusLast(p, {mouse: true});
             }
             else if (!amlNode && apf.document.activeElement) {
                 apf.window.$focusRoot();
@@ -933,15 +938,17 @@ apf.window = function(){
                     apf.window.$focus(amlNode);
             }
             else if (!amlNode.disabled && amlNode.focussable !== false) {
-                if (amlNode.$focussable === apf.KEYBOARD_MOUSE)
+                if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
                     apf.window.$focus(amlNode, {mouse: true});
+                }
                 else if (amlNode.canHaveChildren == 2) {
                     if (!apf.config.allowBlur || !apf.document.activeElement 
                       || apf.document.activeElement.$focusParent != amlNode)
                         apf.window.$focusLast(amlNode, {mouse: true});
                 }
-                else
+                else {
                     apf.window.$focusDefault(amlNode, {mouse: true});
+                }
             }
             else {
                 apf.window.$focusDefault(amlNode, {mouse: true});
@@ -979,7 +986,7 @@ apf.window = function(){
           ) && !ta[e.target.tagName]);
 
         if (canSelect) {
-            var amlNode = apf.findHost(e.target);
+            amlNode = apf.findHost(e.target);
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
             if (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.$allowSelect 
@@ -987,7 +994,7 @@ apf.window = function(){
                 canSelect = false;
         }
         
-        if (!canSelect) {
+        if (!canSelect && !cEditable) {
             if (e.preventDefault)
                 e.preventDefault();
             return false;
@@ -1108,8 +1115,7 @@ apf.window = function(){
     
     //@todo optimize this function
     apf.addListener(document, "keydown", this.$keydown = function(e){
-        if (!e)
-            e = event;
+        e = e || event;
 
         //#ifdef __WITH_DEBUG_WIN
         if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
@@ -1124,8 +1130,13 @@ apf.window = function(){
             apf.contextMenuKeyboard = true;
         // #endif
         
-        var isContentEditable = ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
-          || (e.srcElement && e.srcElement.isContentEditable);
+        var amlNode           = apf.findHost(e.srcElement || e.target),
+            isContentEditable = ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
+              || (e.srcElement && e.srcElement.isContentEditable)
+              // #ifdef __WITH_CONTENTEDITABLE
+              || (amlNode && amlNode.hasFeature(apf.__CONTENTEDITABLE__))
+              // #endif
+            ;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
