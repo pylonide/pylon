@@ -297,7 +297,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         //}
         
         return [left, top];
-    }; 
+    }
     
     //@todo code below might be deprecated one day
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
