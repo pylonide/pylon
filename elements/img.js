@@ -171,8 +171,32 @@ apf.img = function(struct, tagName){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
         this.oImage = this.$getLayoutNode("main", "image", this.$ext);
-        this.oImg = this.$int.getElementsByTagName("img")[0];
+        this.oImg   = this.$int.getElementsByTagName("img")[0];
+        if (this.localName == "preview") {
+            var _self = this;
+            this.$int.onclick = function() {
+                if (!_self.sPreview) return;
+                _self.$int.innerHTML = _self.sPreview;
+                this.onclick = null;
+            };
+        }
     };
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        var node,
+            val   = "",
+            i     = this.childNodes.length;
+
+        for (; i >= 0; --i) {
+            if ((node = this.childNodes[i]) && node.nodeName
+              && node.nodeName == "#cdata-section") {
+                val = node.nodeValue;
+                node.removeNode();
+            }
+        }
+
+        this.sPreview = val;
+    });
     
     this.$resize = function(){
         var diff = apf.getDiff(this.$ext);
@@ -197,6 +221,7 @@ apf.img = function(struct, tagName){
 }).call(apf.img.prototype = new apf.BaseSimple());
 
 apf.aml.setElement("img", apf.img);
+apf.aml.setElement("preview", apf.img);
 
 apf.aml.setElement("name", apf.BindingRule);
 apf.aml.setElement("image", apf.BindingRule);
