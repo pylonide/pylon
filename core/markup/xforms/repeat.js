@@ -42,7 +42,7 @@
  *  </a:model>
  *  
  *  <a:repeat id="rpExample" model="mdlExample" nodeset="item">
- *      <a:label ref="text()" />
+ *      <a:label value="[text()]" />
  *      <a:button>ok</a:button>
  *  </a:repeat>
  *

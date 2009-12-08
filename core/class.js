@@ -33,8 +33,8 @@
  * Let me give you an example to make it a bit straightforward. This example 
  * sets the visibility of the slider based on the state of the checkbox.
  * <code>
- * <a:slider visible="{myCheckbox.value}" />
- * <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
+ *  <a:slider visible="{myCheckbox.value}" />
+ *  <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
  * </code>
  *
  * Expressions:
@@ -370,7 +370,10 @@ apf.Class.prototype = new (function(){
      * Sets a dynamic property from a string.
      * The string used for this function is the same as used in AML to set a
      * dynamic property:
-     * <a:button visible="[rbTest.value == 'up']" />
+     * <code>
+     *  <a:button visible="{rbTest.value == 'up'}" />
+     *  <a:textbox id="rbTest" value="" />
+     * </code>
      *
      * @param  {String}  prop   the name of the property of this element to set
      *                          using a dynamic rule.
