@@ -264,33 +264,38 @@ apf.flash = (function(){
         delete options.context, delete options.htmlNode, delete options.property;
         
         var content = buildContent(options),
+            // using timeouts INSIDE the callback, because I explicitly want to
+            // wait for APF to finish drawing the elements, i.e. wait for DOM
+            // elements to be drawn.
             cb      = function() {
-                node.innerHTML = content;
-                obj[prop]      = getElement(options.id);
-                //console.log("flash movie loaded: ", _self.player);
-
                 setTimeout(function() {
-                    var fail = null;
-                    if (!obj[prop].parentNode) {
-                        fail = "File Uploader error: The movie has to be enabled "
-                             + "manually because of Flashblock. No browser refresh is required.";
-                    }
-                    else if (obj[prop].style.display == "none") {
-                        fail = "File Uploader error: Adblock Plus blocks or hides the "
-                             + "movie. Please enable it and refresh your browser.";
-                    }
-                    else if (!obj[prop].offsetWidth) {
-                        fail = "File Uploader error: The Flash movie failed to load. "
-                             + "Please check if the file exists and the path is correct.";
-                    }
+                    node.innerHTML = content;
+                    obj[prop]      = getElement(options.id);
+                    //console.log("flash movie loaded: ", _self.player);
 
-                    if (fail) {
-                        // #ifdef __DEBUG
-                        apf.console.error(fail, "audio");
-                        // #endif
-                        obj.dispatchEvent("error", {message: fail});
-                    }
-                }, 1000);
+                    setTimeout(function() {
+                        var fail = null;
+                        if (!obj[prop].parentNode) {
+                            fail = "File Uploader error: The movie has to be enabled "
+                                 + "manually because of Flashblock. No browser refresh is required.";
+                        }
+                        else if (obj[prop].style.display == "none") {
+                            fail = "File Uploader error: Adblock Plus blocks or hides the "
+                                 + "movie. Please enable it and refresh your browser.";
+                        }
+                        else if (!obj[prop].offsetWidth) {
+                            fail = "File Uploader error: The Flash movie failed to load. "
+                                 + "Please check if the file exists and the path is correct.";
+                        }
+
+                        if (fail) {
+                            // #ifdef __DEBUG
+                            apf.console.error(fail, "audio");
+                            // #endif
+                            obj.dispatchEvent("error", {message: fail});
+                        }
+                    }, 1000);
+                }, 200);
             };
 
         return apf.loaded ? cb() : apf.addEventListener("load", cb);

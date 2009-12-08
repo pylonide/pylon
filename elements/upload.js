@@ -99,6 +99,8 @@ apf.upload = function(struct, tagName){
 
     this.$playerId     = apf.flash.addPlayer(this);
     this.$useFlash     = apf.flash.isAvailable("9.0.0");
+    // might be overridden later by the 'model' prophandler:
+    this.$files        = new apf.upload.files();
 };
 
 (function(){
@@ -408,15 +410,13 @@ apf.upload = function(struct, tagName){
             case "selectSuccess":
                 //Function to execute when files were selected and validated successfully.
                 //param: successFiles
-                if (this.$files)
-                    this.$files.createMany(eventObj);
+                this.$files.createMany(eventObj);
                 break;
             case "selectFail":
                 //Function to execute when files were selected and failed validation.
                 //param: failFiles
                 //validation error values: duplicate, sizeLimitMin, sizeLimitMax
-                if (this.$files)
-                    this.$files.removeMany(eventObj);
+                this.$files.removeMany(eventObj);
                 break;
             case "fileStart":
                 //Function to execute when flash initialised the upload for a file.
@@ -438,13 +438,15 @@ apf.upload = function(struct, tagName){
             default:
                 break;
         }
+
+        this.setAttribute("value", this.$files.getValue());
     };
 
     /**** Private state handling methods ****/
 
     this.$initUploader = function() {
         this.$playerInited = true;
-        this.$player.initialize({
+        apf.flash.remote(this.$player, "initialize", {
             width          : this.width,
             height         : this.height,
             typeFilter     : this["type-filter"],
@@ -490,7 +492,7 @@ apf.upload = function(struct, tagName){
 
         var o   = this.rel.$ext,
             pos = apf.getAbsolutePosition(o);
-        this.$ext.style.top    = pos[0] + "px";
+        this.$ext.style.top    = pos[1] + "px";
         this.$ext.style.left   = pos[0] + "px";
         this.$ext.style.width  = o.offsetWidth + "px";
         this.$ext.style.height = o.offsetHeight + "px";
@@ -512,7 +514,7 @@ apf.upload = function(struct, tagName){
         this.setProperty("uploading", true);
 
         if (this.$useFlash) {
-            this.$player.start();
+            apf.flash.remote(this.$player, "start");
         }
         else {
             this.timer = setInterval('apf.lookup(' + this.$uniqueId + ').$updateProgress()', 800);
@@ -550,7 +552,7 @@ apf.upload = function(struct, tagName){
 
     this.$cancel = function(value){
         if (this.$useFlash) {
-            this.$player.stop();
+            apf.flash.remote(this.$player, "stop");
         }
         else {
             window.clearInterval(this.timer);
@@ -634,7 +636,7 @@ apf.upload = function(struct, tagName){
         var timer = setInterval(function() {
             var oNode = _self.rel ? self[_self.rel] : null;
 
-            _self.inpFile.onchange = function() { _self.browse(); };
+            _self.inpFile.onchange = function() {_self.browse();};
 
             if (oNode && oNode.$ext && oNode.$ext.offsetHeight) {
                 if (oNode.$ext.offsetWidth == 0 || oNode.$ext.offsetHeight == 0)
@@ -754,9 +756,10 @@ apf.upload.files = function(model) {
     if (typeof model == "string")
         model = apf.nameserver.get("model", model);
 
-    model.load("<files/>");
+    if (model)
+        model.load("<files/>");
 
-    var files = [],
+    var files = {},
         userProps = {"addDate":1, "creationDate":1, "extension":1, "id":1,
                      "modificationDate":1, "name":1, "size":1, "status":1,
                      "validationError":1
@@ -766,8 +769,10 @@ apf.upload.files = function(model) {
         if (!file || !file.id || files[file.id]) return null;
 
         files[file.id] = file;
-        file.xml = model.data.ownerDocument.createElement("file");
-        apf.xmldb.appendChild(model.data, file.xml);
+        if (model) {
+            file.xml = model.data.ownerDocument.createElement("file");
+            apf.xmldb.appendChild(model.data, file.xml);
+        }
 
         return this.update(file);
     };
@@ -795,7 +800,7 @@ apf.upload.files = function(model) {
             for (i in userProps)
                 file[i] = t[i];
         }
-        if (!file.xml) return null;
+        if (!model || !file.xml) return null;
 
         for (i in userProps) {
             if (typeof file[i] == "undefined") continue;
@@ -816,9 +821,9 @@ apf.upload.files = function(model) {
         if (!file || !file.id || !files[file.id]) return;
 
         file = files[file.id];
-        if (file.xml)
+        if (model && file.xml)
             apf.xmldb.removeChild(model.data, file.xml);
-        files.remove(file.id);
+        delete files[file.id];
     };
 
     this.removeMany = function(arr) {
@@ -828,6 +833,14 @@ apf.upload.files = function(model) {
             if (arr[i])
                 this.remove(arr[i]);
         }
+    };
+
+    this.getValue = function() {
+        var i,
+            a = [];
+        for (i in files)
+            a.push(files[i].name);
+        return a.join("|");
     };
 };
 
