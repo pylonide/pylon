@@ -159,10 +159,11 @@ apf.__TELEPORT__ = 1 << 28;
         var url = new apf.url(value);
 
         // do some extra startup/ syntax error checking
-        if (!url.host || !url.protocol)
+        if (!url.protocol) {
             throw new Error(apf.formatErrorString(0, this,
                 "Communication (Teleport) initialization error",
                 "Invalid server url provided."));
+        }
 
         this.$domain   = url.host;
         this.$rootPath = url.path;
