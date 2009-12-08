@@ -258,6 +258,7 @@ apf.$x = apf.$loader
         "core/baseclasses/contenteditable/list.js",
         "core/baseclasses/contenteditable/media.js",
         "core/baseclasses/contenteditable/printing.js",
+        //"core/baseclasses/contenteditable/spell.js",
         "core/baseclasses/contenteditable/search.js",
         "core/baseclasses/contenteditable/subsup.js",
         "core/baseclasses/contenteditable/tables.js",
@@ -366,9 +367,9 @@ apf.$x = apf.$loader
         
         //RPC extensions (all need rpc.js)
         "elements/rpc/xmlrpc.js",      // XML-RPC
-        //"rpc/soap.js",      // SOAP
+        "elements/rpc/soap.js",      // SOAP
         "elements/rpc/jsonrpc.js",     // JSON
-        //"rpc/jphp.js",      // JPHP
+        //"elements/rpc/jphp.js",      // JPHP
         "elements/rpc/cgi.js",         // CGI
         "elements/rpc/rest.js",        // REST
         "elements/rpc/yql.js",         // YQL
@@ -386,7 +387,7 @@ apf.$x = apf.$loader
         "elements/bindingdndrule.js",
         "elements/bindingloadrule.js",
         "elements/bindingcolumnrule.js",
-        //"bindingcolorrule.js",
+        //"elements/bindingcolorrule.js",
         "elements/bindingseriesrule.js",
         "elements/bindingeachrule.js",
         "processinginstructions/livemarkup.js"
