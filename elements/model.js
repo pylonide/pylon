@@ -711,10 +711,10 @@ apf.model = function(struct, tagName){
                 var oError;
 
                 oError = new Error(apf.formatErrorString(1032,
-                    _self, "Inserting xml data", "Could not load data \
-                    Instruction:" + instruction + "\n\
-                    Url: " + extra.url + "\n\
-                    Info: " + extra.message + "\n\n" + data));
+                    _self, "Inserting xml data", "Could not load data "
+                  + "Instruction:" + instruction + "\n"
+                  + "Url: " + extra.url + "\n"
+                  + "Info: " + extra.message + "\n\n" + data));
 
                 if (callback && callback.apply(this, arguments) === true)
                     return true;
@@ -899,10 +899,10 @@ apf.model = function(struct, tagName){
 
                 //#ifdef __DEBUG
                 oError = new Error(apf.formatErrorString(1032,
-                    _self, "Inserting xml data", "Could not insert data for \
-                    Instruction:" + instruction + "\n\
-                    Url: " + extra.url + "\n\
-                    Info: " + extra.message + "\n\n" + data));
+                    _self, "Inserting xml data", "Could not insert data for "
+                  + "Instruction:" + instruction + "\n"
+                  + "Url: " + extra.url + "\n"
+                  + "Info: " + extra.message + "\n\n" + data));
                 //#endif
 
                 if (extra.tpModule.retryTimeout(extra, state, 
@@ -915,8 +915,8 @@ apf.model = function(struct, tagName){
             //#ifdef __DEBUG
             if (!options.insertPoint) {
                 throw new Error(apf.formatErrorString(0, amlNode || _self,
-                    "Inserting data", "Could not determine insertion point for \
-                    instruction: " + instruction));
+                    "Inserting data", "Could not determine insertion point for "
+                  + "instruction: " + instruction));
             }
             //#endif
 
@@ -1006,8 +1006,8 @@ apf.model = function(struct, tagName){
         if (!xmlNode) {
             throw new Error(apf.formatErrorString(0, this, 
                 "Submitting model",
-                "Could not submit data, because no data was passed and the \
-                 model does not have data loaded."));
+                "Could not submit data, because no data was passed and the "
+              + "model does not have data loaded."));
         }
         //#endif
 
