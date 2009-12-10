@@ -16,44 +16,40 @@
 	<body>
 	    <a:skin src="skins.xml" />
         
-        <a:model id="mdlGraph">
-            <data>
-                <block id="start" caption="start" type="circle"
-                    top="80" left="80" width="80" height="80">
-                    <connection ref="decision1" output="right" input="left" type="arrow" />
-                </block>
-                <block id="decision1" caption="decision1" type="decision"
-                    top="160" left="200" width="120" height="120">
-                    <connection ref="block1" output="bottom" input="top" type="arrow" />
-                    <connection ref="block3" output="right" input="left" type="arrow" />
-                </block>
-                <block id="block1" caption="block1" type="rect"
-                    top="360" left="200" width="200" height="120">
-                    <connection ref="block2" output="bottom" input="top" type="arrow" />
-                </block>
-                <block id="block2" caption="block2" type="rect"
-                    top="560" left="200" width="160" height="120">
-                    <connection ref="end" output="right" input="left" type="none-arrow" />
-                </block>
-                <block id="block3" caption="block3" type="rect"
-                    top="160" left="500" width="160" height="120">
-                    <connection ref="block4" output="bottom" input="top" type="arrow" />
-                </block>
-                <block id="block4" caption="block4" type="rect"
-                    top="360" left="500" width="160" height="120">
-                    <connection ref="circle2" output="bottom" input="top" type="arrow" />
-                </block>
-                <block id="circle2" caption="circle" type="circle"
-                    top="460" left="500" width="60" height="60">
-                    <connection ref="end" output="bottom" input="top" type="arrow" />
-                </block>
-                
-                
-                <block id="end" caption="end" type="circle"
-                    top="560" left="500" width="60" height="60">
-                </block>
-            </data>
-        </a:model>
+<a:model id="mdlGraph">
+    <data>
+        <block id="start" type="circle" top="120" left="120" width="40" height="40">
+            <connection ref="decision1" output="right" input="left" type="arrow"/>
+        </block>
+        
+        <block id="decision1" type="decision" top="120" left="360" width="100" height="100">
+            <connection ref="block1a" output="right" input="left" type="arrow"/>
+            <connection ref="block2a" output="bottom" input="top" type="arrow"/>
+        </block>
+        
+        <block id="block1a" type="rect" top="120" left="600" width="120" height="80">
+            <connection ref="block1b" output="bottom" input="top" type="arrow"/>
+        </block>
+        <block id="block1b" type="rect" top="400" left="600" width="120" height="80">
+            <connection ref="block2d" output="bottom" input="left" type="arrow"/>
+        </block>
+
+        <block id="block2a" type="rect" top="300" left="360" width="120" height="80">
+            <connection ref="block2b" output="left" input="right" type="arrow"/>
+        </block>
+        <block id="block2b" type="rect" top="300" left="120" width="120" height="80">
+            <connection ref="block2c" output="bottom" input="top" type="arrow"/>
+        </block>
+        <block id="block2c" type="rect" top="480" left="120" width="120" height="80">
+            <connection ref="block2d" output="bottom" input="left" type="arrow"/>
+        </block>
+        <block id="block2d" type="rect" top="660" left="360" width="120" height="80">
+            <connection ref="end" output="right" input="top" type="arrow"/>
+        </block>
+
+        <block id="end" type="circle" top="720" left="600" width="40" height="40"/>
+    </data>
+</a:model>
         
         <a:vectorflow id="vg" width="800" height="800" model="mdlGraph">
             <a:each match="[block]">
@@ -68,5 +64,6 @@
         </a:vectorflow>
         
         <label for="status">Status</label><input type="text" id="status" value=""/>
+        
 	</body>
 </html>
