@@ -668,7 +668,7 @@ apf.upload = function(struct, tagName){
         this.$name = "upload" + this.$uniqueId;
         var _self = this;
         // first we try the Flash method:
-        this.noflash = this.getAttribute("noflash") == "true";
+        this.$useFlash = !this.getAttribute("noflash");
         if (this.$useFlash && !this["noflash"]) {
             this.$ext = this.$getExternal("main");//, null, function(oExt) {
             //console.dir(oExt);
@@ -699,6 +699,8 @@ apf.upload = function(struct, tagName){
             });
         }
         else {
+            this.width  = 'auto';
+            this.height = 'auto';
             //Build Main Skin
             this.$ext = this.$getExternal("main", null, function(oExt){
                 oExt.appendChild(oExt.ownerDocument.createElement("iframe"))
