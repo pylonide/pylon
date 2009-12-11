@@ -381,8 +381,8 @@ apf.xmldb = new (function(){
             undoObj.oldNode = oldNode;
             undoObj.xmlNode = newNode;
         }
-
-        oldNode.parentNode.replaceChild(newNode, oldNode);
+        var parentNode = oldNode.parentNode;
+        parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
 
         this.applyChanges("replacechild", newNode, undoObj);
