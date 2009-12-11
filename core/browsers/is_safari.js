@@ -105,11 +105,11 @@ apf.runSafari = function(){
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
         if (!s) {
-            s = xmlNode.serialize 
+            s = apf.html_entity_decode(xmlNode.serialize 
                 ? xmlNode.serialize(true)
                 : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
                     ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode));
+                    : serializer.serializeToString(xmlNode)));
         }
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode

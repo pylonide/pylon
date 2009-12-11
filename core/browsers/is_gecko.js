@@ -103,14 +103,13 @@ apf.runGecko = function(){
         var o = document.createElement("div");
 
         if (!s) {
-            s = xmlNode.serialize
+            s = apf.html_entity_decode(xmlNode.serialize
                 ? xmlNode.serialize(true)
                 : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
                     ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode));
+                    : serializer.serializeToString(xmlNode)));
         }
 
-        //apf.html_entity_decode(s)
         o.innerHTML = s.replace(/<([^>]+)\/>/g, "<$1></$1>");
 
         if (beforeNode)
