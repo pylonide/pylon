@@ -618,12 +618,35 @@ apf.tree = function(struct, tagName){
         
         if (this.$mode) {
             var elCheck = this.$getLayoutNode("item", "check");
-            elCheck.setAttribute("onmousedown",
-                "var o = apf.lookup(" + this.$uniqueId + ");\
-                o.checkToggle(this);\o.$skipSelect = true;");
-            
-            if (this.isChecked(xmlNode))
-                this.$setStyleClass(oItem, "checked");
+            if (elCheck) {
+                elCheck.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.checkToggle(this);\o.$skipSelect = true;");
+
+                if (this.isChecked(xmlNode))
+                    this.$setStyleClass(oItem, "checked");
+            }
+            else {
+                //#ifdef __DEBUG
+                throw new Error(apf.formatErrorString(0, this,
+                        "Could not find check attribute",
+                        'Maybe the attribute check is missing from your skin file:\
+                            <a:item\
+                              class        = "."\
+                              caption      = "label/u/text()"\
+                              icon         = "label"\
+                              openclose    = "span"\
+                              select       = "label"\
+                              check        = "label/b"\
+                              container    = "following-sibling::blockquote"\
+                            >\
+                                <div><span> </span><label><b> </b><u>-</u></label></div>\
+                                <blockquote> </blockquote>\
+                            </a:item>\
+                        '));
+                //#endif
+                return false;
+            }
         }
         
         var ocAction = this.opencloseaction || "ondblclick";
