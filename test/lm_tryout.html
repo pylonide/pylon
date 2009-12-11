@@ -215,7 +215,7 @@ parse: [x] += <node/>
 						
 						return pNode.insertBefore(xmlNode, beforeNode);
 					},
-					replaceNode:function(oldNode, newNode){
+					replaceNode:function(newNode, oldNode){
 						oldNode.parentNode.replaceChild(newNode, oldNode);
 						return newNode;
 					},

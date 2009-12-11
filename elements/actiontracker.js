@@ -1038,10 +1038,10 @@ apf.actiontracker.actions = {
 
         //Set Attribute
         if (!undo)
-            apf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
         //Undo Attribute Setting
         else
-            apf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
     },
 
     "addChildNode" : function(UndoObj, undo){

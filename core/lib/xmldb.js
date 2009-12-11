@@ -369,7 +369,7 @@ apf.xmldb = new (function(){
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
     this.replaceNode = 
-    apf.replaceNode  = function(oldNode, newNode, xpath, undoObj){
+    apf.replaceNode  = function(newNode, oldNode, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Apply Changes
@@ -789,6 +789,9 @@ apf.xmldb = new (function(){
         //This should copy recursive
         try {
             toNode.setAttribute(this.xmlListenTag, fromNode.getAttribute(this.xmlListenTag));
+        }
+        catch (e) {}
+        try {
             toNode.setAttribute(this.xmlIdTag, fromNode.getAttribute(this.xmlIdTag));
         }
         catch (e) {}

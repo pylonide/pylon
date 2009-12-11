@@ -2085,10 +2085,10 @@ apf.lm_exec = new (function(){
                 throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
                     "Cannot append broken XML.\nxpath:"+x+"\nvalue:"+v));
             if(c.tagName != "_apflmlist_"){
-                return apf.xmldb.replaceNode( n, c );
+                return apf.xmldb.replaceNode( c, n );
             }else{
                 c = c.childNodes;
-                apf.xmldb.replaceNode( n, n = c[0] );
+                apf.xmldb.replaceNode( n = c[0], n );
                 for(var i = 0, j = c.length;i<j;i++)
                     n = apf.xmldb.appendChild( n.parentNode, c[0], n.nextSibling );
                 return n;
@@ -2114,7 +2114,7 @@ apf.lm_exec = new (function(){
 
                     c.getAttributeNode(v.nodeName);
                 }else
-                    apf.xmldb.replaceNode(n, v);
+                    apf.xmldb.replaceNode(v, n);
             }
         }
         return v;

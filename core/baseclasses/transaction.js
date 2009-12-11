@@ -183,7 +183,7 @@ apf.Transaction = function(){
                     ? this.dataParent.parent.getActionTracker()
                     : null;//self[this.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
                 
-                this.$transactionSubject.$executeAction("replaceNode", [this.$originalNode, this.$transactionNode],
+                this.$transactionSubject.$executeAction("replaceNode", [this.$transactionNode, this.$originalNode],
                     "update", this.$transactionNode);
     
                 this.$at = at;
