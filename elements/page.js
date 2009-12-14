@@ -393,7 +393,7 @@ apf.page = function(struct, tagName){
         if (this.fake)
             return;
 
-        if (this.$ext && this.$ext.parentNode)
+        if (this.$ext)
             this.$ext.parentNode.removeChild(this.$ext); //@todo mem leaks?
 
         this.$ext = this.parentNode.$getExternal("page",
