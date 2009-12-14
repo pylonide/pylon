@@ -57,7 +57,7 @@ apf.runSafari = function(){
     //#endif
     
     //#ifdef __PARSER_XPATH
-    
+
     if (apf.isWebkit) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =

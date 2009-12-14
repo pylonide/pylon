@@ -424,7 +424,7 @@ apf.XPath = {
             case "last":
                 return arg1 ? arg1[arg1.length-1] : null;
             case "local-name":
-                return xmlNode ? xmlNode.tagName : contextNode.tagName;//[apf.TAGNAME]
+                return (xmlNode ? xmlNode.tagName : contextNode.tagName).split(":").pop();//[apf.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":
@@ -602,7 +602,8 @@ apf.CodeCompilation = function(code){
                     return "apf.XPath.selectNodeExtended('"
                         + value.replace(/'/g, "\\'") + "', htmlNode)";
                 }
-            });
+            })
+            .replace(/, \)/g, ")");
     };
 };
 
