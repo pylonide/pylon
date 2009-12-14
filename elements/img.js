@@ -94,6 +94,10 @@ apf.img = function(struct, tagName){
     this.$init(tagName || "img", apf.NODE_VISIBLE, struct);
 };
 
+apf.preview = function(struct, tagName){
+    this.$init(tagName || "preview", apf.NODE_VISIBLE, struct);
+};
+
 (function(){
     //#ifdef __WITH_CONVENIENCE_API
     
@@ -150,8 +154,9 @@ apf.img = function(struct, tagName){
         if (this.oImg) {
             this.oImg.style.display = value ? "block" : "none";
             
-            if (value)
-                this.$resize();
+            //RLD: disabled lines below for the preview element. the image is probably not loaded yet.
+            //if (value)
+                //this.$resize();
         }
     };
     
@@ -220,8 +225,10 @@ apf.img = function(struct, tagName){
     }
 }).call(apf.img.prototype = new apf.BaseSimple());
 
+apf.preview.prototype = apf.img.prototype;
+
 apf.aml.setElement("img", apf.img);
-apf.aml.setElement("preview", apf.img);
+apf.aml.setElement("preview", apf.preview);
 
 apf.aml.setElement("name", apf.BindingRule);
 apf.aml.setElement("image", apf.BindingRule);

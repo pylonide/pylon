@@ -1369,7 +1369,7 @@ apf.window = function(){
         
                     //#ifdef __WITH_FOCUS
                     //Set the default selected element
-                    if (!apf.document.activeElement)
+                    if (!apf.document.activeElement && !apf.config.allowBlur)
                         apf.window.focusDefault();
                     //#endif
 
