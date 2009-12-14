@@ -753,8 +753,13 @@ apf.BaseTab = function(){
             return;
 
         if (!e.$beforeNode) {
-            if (this.lastChild)
-                this.lastChild.$last(true);
+            var lastChild;
+            if (lastChild = this.lastChild) {
+                if (lastChild.nodeType != 1)
+                    lastChild = lastChild.previousSibling;
+                if (lastChild)
+                    lastChild.$last(true);
+            }
             amlNode.$last();
         }
 
