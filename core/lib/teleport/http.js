@@ -271,7 +271,7 @@ apf.http = function(){
         var async = (options.async
             || typeof options.async == "undefined" || apf.isOpera);
 
-        //#ifdef __SUPPORT_SAFARI
+        //#ifdef __SUPPORT_WEBKIT
         if (apf.isWebkit)
             url = apf.html_entity_decode(url);
         //#endif

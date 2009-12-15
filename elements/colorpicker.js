@@ -229,7 +229,7 @@ apf.colorpicker = function(struct, tagName){
     };
 
     this.movePointer = function(e){
-        e = e || window.event;
+        e = e || event;
 
         var ty = this.pHolder.ty;
         if ((e.clientY - ty >= 0) && (e.clientY - ty
@@ -262,7 +262,7 @@ apf.colorpicker = function(struct, tagName){
         }
 
         this.container.onmousedown = function(e){
-            e = e || window.event;
+            e = e || event;
 
             this.active = true;
             if (e.srcElement == this) {
@@ -280,16 +280,17 @@ apf.colorpicker = function(struct, tagName){
         }
 
         this.container.onmouseup = function(e){
+            e = e || event;
             this.active               = false;
-            _self.point.style.top     = event.offsetY - _self.point.offsetHeight - 2;
-            _self.point.style.left    = event.offsetX - _self.point.offsetWidth - 2;
+            _self.point.style.top     = e.offsetY - _self.point.offsetHeight - 2;
+            _self.point.style.left    = e.offsetX - _self.point.offsetWidth - 2;
             _self.point.style.display = "block";
 
             _self.change(_self.tbHexColor.value);
         }
 
         this.container.onmousemove = function(e){
-            e = e || window.event;
+            e = e || event;
             if (this.active) {
                 if (e.offsetX >= 0 && e.offsetX <= 256
                   && e.offsetY >= 0 && e.offsetY <= 256) {
@@ -327,10 +328,11 @@ apf.colorpicker = function(struct, tagName){
         this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
         this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
 
-        this.tbHexColor          = this.$getLayoutNode("main", "hex", this.$ext);
+        this.tbHexColor  = this.$getLayoutNode("main", "hex", this.$ext);
+        var _self = this;
         this.tbHexColor.onchange = function(){
             _self.setValue(this.value, "RGBHEX");
-        }
+        };
 
         this.shower = this.$getLayoutNode("main", "shower", this.$ext);
 
@@ -347,7 +349,7 @@ apf.colorpicker = function(struct, tagName){
         var nodes = this.$ext.getElementsByTagName("input");
         for (var i = 0; i < nodes.length; i++) {
             nodes[i].onselectstart = function(e){
-                e = e || window.event;
+                e = e || event;
                 e.cancelBubble = true;
             };
         }

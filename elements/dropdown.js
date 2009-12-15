@@ -224,7 +224,7 @@ apf.dropdown = function(struct, tagName){
 
     //@todo apf3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
-        //#ifdef __SUPPORT_SAFARI
+        //#ifdef __SUPPORT_WEBKIT
         this.oLabel.innerHTML = value || this["initial-message"] || "";
         /* #else
         this.oLabel.nodeValue = value || this["initial-message"] || "";//nodeValue
@@ -389,7 +389,7 @@ apf.dropdown = function(struct, tagName){
         });
         this.oLabel = this.$getLayoutNode("main", "label", this.$ext);
         
-        //#ifdef __SUPPORT_SAFARI
+        //#ifdef __SUPPORT_WEBKIT
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif

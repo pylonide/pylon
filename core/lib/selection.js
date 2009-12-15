@@ -36,8 +36,14 @@ apf.selection = function(oWin, oDoc, editor) {
     oDoc = oDoc || window.document;
     this.current = null;
 
-    var csLock,
-        vfocus = (editor && typeof editor.$visualFocus == "function"),
+    var FUNC  = "function",
+        UNDEF = "undefined",
+        CHAR  = "character",
+        TEXT  = "Text",
+        CTRL  = "Control",
+        NONE  = "None",
+        csLock,
+        vfocus = (editor && typeof editor.$visualFocus == FUNC),
         _self  = this;
 
     /**
@@ -46,9 +52,7 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {Selection}
      */
     this.get = function() {
-        return oDoc.selection
-            ? oDoc.selection
-            : oWin.getSelection()
+        return apf.w3cRange ? oWin.getSelection() : oDoc.selection;
     };
 
     /**
@@ -60,7 +64,11 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {Range}
      */
     this.set = function() {
-        if (!apf.ieIE || !this.current) return null;
+        if (!this.current) return null;
+        if (apf.w3cRange) {
+            this.moveToBookmark(this.current);
+            return this.current;
+        }
 
         try {
             if (vfocus)
@@ -85,17 +93,23 @@ apf.selection = function(oWin, oDoc, editor) {
      * At the moment, this function is very IE specific and is used to make sure
      * that there's a correct selection object available at all times.
      *
+     * @param {Boolean} [w3cToo] Also cache the selection for browsers that support
+     *                           the w3c range spec
      * @type {void}
      */
-    this.cache = function() {
-        if (!apf.isIE) return null;
+    this.cache = function(w3cToo) {
+        if (apf.w3cRange) {
+            if (w3cToo)
+                this.current = this.getBookmark();
+            return this;
+        }
 
         var oSel = oDoc.selection;
-        _self.current      = oSel.createRange();
-        _self.current.type = oSel.type;
+        this.current      = oSel.createRange();
+        this.current.type = oSel.type;
 
-        if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
-            csLock = setTimeout(_self.cache, 0);
+        if (this.current.type == TEXT && this.current.text == "" && !csLock) {
+            csLock = setTimeout(this.cache, 0);
         }
         else {
             clearTimeout(csLock);
@@ -131,9 +145,9 @@ apf.selection = function(oWin, oDoc, editor) {
         // This can occur when the editor is placed in a hidden container
         // element on Gecko. Or on IE when there was an exception
         if (!range)
-            range = apf.isIE
-                ? oDoc.body.createTextRange()
-                : oDoc.createRange();
+            range = apf.w3cRange
+                ? oDoc.createRange()
+                : oDoc.body.createTextRange();
 
         return range;
     };
@@ -146,7 +160,7 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {void}
      */
     this.setRange = function(range) {
-        if (!apf.isIE) {
+        if (apf.w3cRange) {
             var oSel = this.get();
 
             if (oSel) {
@@ -165,257 +179,401 @@ apf.selection = function(oWin, oDoc, editor) {
         return this;
     };
 
+    var activeEl,
+        _inline  = "BR|IMG|HR|INPUT",
+        _block   = "P|BUTTON|TEXTAREA|SELECT|DIV|H[1-6]|ADDRESS|PRE|OL|UL|LI|TABLE|TBODY|TR|DT|DE|TD|SUB|SUP",
+        _form    = "SELECT|BUTTON|TEXTAREA",
+        reBlock  = new RegExp("^(?:" + _block  + ")$", "i"),
+        reForm   = new RegExp("^(?:" + _form   + ")$", "i"),
+        reInline = new RegExp("^(?:" + _inline + ")$", "i");
+
+    this.inline  = _inline;
+    this.block   = _block;
+    this.form    = _form;
+
+    function trimNl(str) {
+        return (apf.isOpera || apf.isIE) ? str : str.replace(/\r\n/g, " ");
+    }
+
+    function getText(node) {
+        return String(apf.isIE ? node.nodeType == 3 ? node.nodeValue : node.innerText : node.textContent);
+    }
+    
+    function getHtml(node) {
+        return String(node.nodeType == 3 ? apf.isIE ? node.nodeValue : node.textContent : node.innerHTML);
+    }
+
+    function textContent(node, o) {
+        var cn,
+            sp       = 0,
+            str      = "",
+            i        = 0,
+            l        = node.childNodes.length;
+        for (; i < l; i++) {
+            cn = node.childNodes[i];
+            if (reForm.test(cn.nodeName)) {
+                str += "<->" + (apf.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</->";
+            }
+            else {
+                if (reBlock.test(cn.nodeName)) {
+                    str += "<+>" + (apf.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</+>";
+                }
+                else {
+                    if (reInline.test(cn.nodeName)) {
+                        str += "<>";
+                    }
+                    else {
+                        if (cn.nodeName == "SPAN" && (sp = _4.attr(cn, "scaytid")))
+                            str += "<" + sp + ">" + trimNl(getHtml(cn)) + "</>";
+                        else
+                            str += trimNl(getHtml(cn));
+                    }
+                }
+            }
+        }
+        return str;
+    }
+
+    function getParent(node, eltype, attr, root) {
+        var k;
+        root = root || this.containerNode;
+        eltype = eltype ? new RegExp("^(?:" + eltype + ")$") : null;
+        while (node && node != root) {
+            if (eltype && eltype.test(node.nodeName.toUpperCase())) {
+                return node;
+            }
+            if (attr) {
+                for (k in attr) {
+                    if (node.getAttribute(k) !== null && attr[k] === null)
+                        return node;
+                    if ((attr[k] !== null && node.getAttribute(k) !== null
+                      && !(node.getAttribute(k) === false)) ? !attr[k] : attr[k]) {
+                        return node;
+                    }
+                }
+            }
+            node = node.parentNode;
+        }
+        return false;
+    }
+
     /**
      * Returns a bookmark location for the current selection. This bookmark
      * object can then be used to restore the selection after some content
      * modification to the document.
      *
-     * @param  {Boolean}    [type] State if the bookmark should be simple or not.
-     *                             Default is complex.
-     * @return {Object}            Bookmark object, use moveToBookmark with this
-     *                             object to restore the selection.
+     * @param  {Boolean}    [type]     State if the bookmark should be simple or not.
+     *                                 Default is complex.
+     * @param  {Function}   [callback] function used to retrieve a custom reference node
+     * @return {Object}                Bookmark object, use moveToBookmark with this
+     *                                 object to restore the selection.
      */
-    this.getBookmark = function(type) {
-        var range    = this.getRange(),
-            viewport = apf.getViewPort(oWin);
+    this.getBookmark = function(type, callback) {
+        var ch    = -16777215,
+            range = this.getRange(),
+            vp    = apf.getViewPort(oWin),
+            c     = oDoc.body,
+            o     = {
+                scrollX : vp.x,
+                scrollY : vp.y,
+                collapse: 0,
+                start   : 0
+            },
+            sel = this.get();
 
-        // Simple bookmark fast but not as persistent
-        if (type == 'simple')
-            return {range : range, scrollX : viewport.x, scrollY : viewport.y};
-
-        var oEl, sp, bp, iLength,
-            oRoot = oDoc.body;
-
-        // Handle IE
-        if (apf.isIE) {
-            // Control selection
+        activeEl = null;
+        if (type == "simple") {
+            o.rng = range;
+            return o;
+        }
+        if (!apf.w3cRange) {
             if (range.item) {
-                oEl = range.item(0);
+                var e = range.item(0),
+                    n = c.getElementsByTagName(e.nodeName),
+                    i = 0,
+                    l = n.length;
+                for (; i < l; i++) {
+                    if (e == n[i])
+                        return !(sp = i);
+                }
+                return apf.extend(o, {
+                    tag  : e.nodeName,
+                    index: sp
+                });
+            }
+            var tr, bp, sp, tr1;
+            tr = range.duplicate();
+            tr.moveToElementText(c);
+            tr.collapse(true);
+            bp = Math.abs(tr.move(CHAR, ch));
+            tr = range.duplicate();
+            tr.collapse(true);
+            sp = Math.abs(tr.move(CHAR, ch));
+            tr = range.duplicate();
+            tr.collapse(false);
+            var offset = 0;
+            tr1 = tr.duplicate();
+            tr1.moveEnd(CHAR, 1);
+            tr1.collapse(false);
+            var parN = tr1.parentElement();
+            if (reBlock.test(parN.nodeName)) {
+                if (getParent(tr.parentElement(), _block, null, c) != parN)
+                    activeEl = parN;
+            }
+            return apf.extend(o, {
+                start : sp - bp - offset,
+                length: Math.abs(tr.move(CHAR, ch)) - sp
+            });
+        }
+        var p = sel.anchorNode; //getParentElement()
+        while (p && (p.nodeType != 1))
+            p = p.parentNode;
+        if (p && p.nodeName == "IMG") {
+            return o;
+        }
+        if (!sel)
+            return null;
 
-                var aNodes = oDoc.getElementsByTagName(oEl.nodeName);
-                for (var i = 0; i < aNodes.length; i++) {
-                    if (oEl == aNodes[i]) {
-                        sp = i;
+        var w,
+            sc     = range.startContainer,
+            an     = sel.anchorNode,
+            custom = callback ? callback(an) : null;
+        if (sel.isCollapsed) {
+            o.collapse = 1;
+            p = getParent(an, _block) || c;
+            if (an.nodeType == 3) {
+                w = oDoc.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+                while (n = w.nextNode()) {
+                    if (n == an) {
+                        o.start = o.start + sel.anchorOffset;
                         break;
                     }
+                    o.start += trimNl(n.nodeValue || "").length;
                 }
-                return {
-                    tag     : oEl.nodeName,
-                    index   : sp,
-                    scrollX : viewport.x,
-                    scrollY : viewport.y
-                };
             }
-
-            // Text selection
-            var tRange = oDoc.body.createTextRange();
-            tRange.moveToElementText(oRoot);
-            tRange.collapse(true);
-            bp = Math.abs(tRange.move('character', -0xFFFFFF));
-
-            tRange = range.duplicate();
-            tRange.collapse(true);
-            sp = Math.abs(tRange.move('character', -0xFFFFFF));
-
-            tRange = range.duplicate();
-            tRange.collapse(false);
-            iLength = Math.abs(tRange.move('character', -0xFFFFFF)) - sp;
-
-            return {
-                start   : sp - bp,
-                length  : iLength,
-                scrollX : viewport.x,
-                scrollY : viewport.y
-            };
-        }
-
-        // Handle W3C
-        oEl      = this.getSelectedNode();
-        var oSel = this.get();
-
-        if (!oSel)
-            return null;
-
-        // Image selection
-        if (oEl && oEl.nodeName == 'IMG') {
-            return {
-                scrollX : viewport.x,
-                scrollY : viewport.y
-            };
-        }
-
-        // Text selection
-        function getPos(sn, en) {
-            var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false),
-                n, p = 0, d = {};
-
-            while ((n = w.nextNode()) != null) {
-                if (n == sn)
-                    d.start = p;
-                if (n == en) {
-                    d.end = p;
-                    return d;
+            else {
+                if (an != p) {
+                    w = oDoc.createTreeWalker(p, NodeFilter.SHOW_ALL, null, false);
+                    while (n = w.nextNode()) {
+                        if (n == an)
+                            break;
+                        o.start += trimNl(n.nodeValue || "").length;
+                    }
                 }
-                p += (n.nodeValue || '').trim().length;
+                for (i = 0, l = range.startOffset; i < l; i++)
+                    o.start += parseInt(String(sc.childNodes[i].textContent).length);
             }
-            return null;
-        }
-
-        var wb = 0, wa = 0;
-
-        // Caret or selection
-        if (oSel.anchorNode == oSel.focusNode && oSel.anchorOffset == oSel.focusOffset) {
-            oEl = getPos(oSel.anchorNode, oSel.focusNode);
-            if (!oEl)
-                return {scrollX : viewport.x, scrollY : viewport.y};
-            // Count whitespace before
-            (oSel.anchorNode.nodeValue || '').trim().replace(/^\s+/, function(a) {
-                wb = a.length;
+            o.end = o.start;
+            if (!custom) {
+                o.content = sc.textContent || sc.innerHTML;
+                try {
+                    if (range.startOffset == 0 && sc.previousSibling
+                      && (/IMG|BR|INPUT/.test(sc.previousSibling.nodeName))) {
+                        o.br = sc.previousSibling;
+                    }
+                    if (sc.childNodes[range.startOffset - 1]
+                      && (/IMG|BR|INPUT/.test(sc.childNodes[range.startOffset - 1].nodeName))) {
+                        o.br = sc.childNodes[range.startOffset - 1];
+                    }
+                }
+                catch(e) {}
+            }
+            if (custom && range.startOffset == 0) {
+                n = custom.previousSibling;
+                while (n && ((n.nodeType == 3 && n.textContent == "")
+                  || (n.nodeType != 3 && n.innerHTML == ""))) {
+                    if (n && (/IMG|BR|INPUT/.test(n.nodeName))) {
+                        o.br = n;
+                        o.br2 = n.nextSibling;
+                        break;
+                    }
+                    n = n.previousSibling;
+                }
+            }
+            apf.extend(o, {
+                block : p,
+                node  : sc,
+                offset: range.startOffset
             });
-
-            return {
-                start  : Math.max(oEl.start + oSel.anchorOffset - wb, 0),
-                end    : Math.max(oEl.end + oSel.focusOffset - wb, 0),
-                scrollX: viewport.x,
-                scrollY: viewport.y,
-                begin  : oSel.anchorOffset - wb == 0
-            };
+            return o;
         }
-        else {
-            oEl = getPos(range.startContainer, range.endContainer);
-            if (!oEl)
-                return {scrollX : viewport.x, scrollY : viewport.y};
-
-            return {
-                start  : Math.max(oEl.start + range.startOffset - wb, 0),
-                end    : Math.max(oEl.end + range.endOffset - wa, 0),
-                scrollX: viewport.x,
-                scrollY: viewport.y,
-                begin  : range.startOffset - wb == 0
-            };
+        var s = [];
+        p = 0;
+        w = oDoc.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
+        while ((n = w.nextNode()) != null) {
+            if (n == sc)
+                s[0] = p;
+            if (n == range.endContainer) {
+                s[1] = p;
+                break;
+            }
+            p += trimNl(n.nodeValue || "").length;
         }
-    }
+        apf.extend(o, {
+            start: s[0] + range.startOffset,
+            end  : s[1] + range.endOffset,
+            block: c
+        });
+        return o;
+    };
 
     /**
      * Restores the selection to the specified bookmark.
      *
-     * @param {Object} bookmark Bookmark to restore selection from.
+     * @param {Object}   b Bookmark to restore selection from.
      * @return {Boolean} true/false if it was successful or not.
      */
-    this.moveToBookmark = function(bmark) {
-        var range = this.getRange(), oSel = this.get(), sd, nvl, nv;
+    this.moveToBookmark = function(b) {
+        var crt,
+            sel = this.get(),
+            c   = oDoc.body,
+            rng = this.getRange();
 
-        var oRoot = oDoc.body;
-        if (!bmark)
+        function getPos(sp, ep) {
+            var n, par, nv, nvl, o,
+                p = 0,
+                d = {},
+                k = -1,
+                w = oDoc.createTreeWalker(b.block, NodeFilter.SHOW_TEXT, null, false);
+            while (n = w.nextNode()) {
+                nv  = n.nodeValue || "";
+                nvl = trimNl(nv).length;
+                p  += nvl;
+                if (b.collapse) {
+                    if (p >= sp)
+                        par = getParent(n, _block) || c;
+                    if (p == sp)
+                        k = par == b.block ? 1 : 0;
+                    if (k == -1 && p > sp || k == 1) {
+                        d.endNode   = d.startNode = n;
+                        d.endOffset = d.startOffset = sp - (p - nvl);
+                        return d;
+                    }
+                }
+                else {
+                    if (p >= sp && !d.startNode) {
+                        o = sp - (p - nvl);
+                        d.startNode = n;
+                        d.startOffset = sp - (p - nvl);
+                    }
+                    if (p >= ep) {
+                        d.endNode = n;
+                        d.endOffset = ep - (p - nvl);
+                        return d;
+                    }
+                }
+            }
+            return null;
+        }
+        
+        if (!b)
             return false;
 
-        oWin.scrollTo(bmark.scrollX, bmark.scrollY);
-
-        // Handle explorer
-        if (apf.isIE) {
-            // Handle simple
-            if (range = bmark.range) {
+        if (!apf.w3cRange) {
+            oDoc.body.setActive();
+            if (crt = b.rng) {
                 try {
-                    range.select();
+                    crt.select();
                 }
-                catch (ex) {}
+                catch(ex) {}
                 return true;
             }
-
-            if (vfocus)
-                editor.$visualFocus();
-            else
-                oWin.focus();
-
-            // Handle control bookmark
-            if (bmark.tag) {
-                range = oRoot.createControlRange();
-                var aNodes = oDoc.getElementsByTagName(bmark.tag);
-                for (var i = 0; i < aNodes.length; i++) {
-                    if (i == bmark.index)
-                        range.addElement(aNodes[i]);
+            if (b.tag) {
+                crt = c.createControlRange();
+                var n = oDoc.getElementsByTagName(b.tag),
+                    i = 0,
+                    l = n.length;
+                for (; i < l; i++) {
+                    if (i == b.index)
+                        crt.addElement(n[i]);
                 }
             }
             else {
-                // Try/catch needed since this operation breaks when the editor
-                // is placed in hidden divs/tabs
                 try {
-                    // Incorrect bookmark
-                    if (bmark.start < 0)
+                    if (b.start < 0) {
                         return true;
-                    range = oSel.createRange();
-                    range.moveToElementText(oRoot);
-                    range.collapse(true);
-                    range.moveStart('character', bmark.start);
-                    range.moveEnd('character', bmark.length);
+                    }
+                    crt = sel.createRange();
+                    if (activeEl) {
+                        crt.moveToElementText(activeEl);
+                        crt.moveStart(CHAR, -2);
+                        crt.expand(word);
+                        crt.collapse(false);
+                    }
+                    else {
+                        crt.moveToElementText(c);
+                        crt.collapse(true);
+                        crt.moveStart(CHAR, b.start);
+                        crt.moveEnd(CHAR, b.length);
+                    }
                 }
-                catch (ex2) {
+                catch(e) {
                     return true;
                 }
             }
             try {
-                range.select();
+                crt.select();
             }
-            catch (ex) {} // Needed for some odd IE bug
+            catch(ex) {}
             return true;
         }
-
-        // Handle W3C
-        if (!oSel)
+        if (!sel)
             return false;
 
-        // Handle simple
-        if (bmark.range) {
-            oSel.removeAllRanges();
-            oSel.addRange(bmark.range);
+        crt = rng.cloneRange();
+        if (b.rng) {
+            sel.removeAllRanges();
+            sel.addRange(b.rng);
         }
-        else if (typeof bmark.start != "undefined" && typeof bmark.end != "undefined") {
-            function getPos(sp, ep) {
-                var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false)
-                var n, p = 0, d = {}, o, wa, wb;
-
-                while ((n = w.nextNode()) != null) {
-                    wa  = wb = 0;
-                    nv  = n.nodeValue || '';
-                    nvl = nv.trim().length;
-                    p += nvl;
-                    if (p >= sp && !d.startNode) {
-                        o = sp - (p - nvl);
-                        // Fix for odd quirk in FF
-                        if (bmark.begin && o >= nvl)
-                            continue;
-                        d.startNode = n;
-                        d.startOffset = o + wb;
-                    }
-                    if (p >= ep) {
-                        d.endNode = n;
-                        d.endOffset = ep - (p - nvl) + wb;
-                        return d;
-                    }
+        else {
+            if (typeof b.node != UNDEF) {
+                var a = false;
+                if ((b.node.nodeType == 3 && b.node.parentNode != null 
+                  && b.node.textContent == b.content) || (b.node.nodeType != 3
+                  && b.node.innerHTML == b.content)) {
+                    crt.setStart(b.node, b.offset);
+                    crt.collapse(true);
+                    a = true;
                 }
-                return null;
-            };
-
-            try {
-                sd = getPos(bmark.start, bmark.end);
-                if (sd) {
-                    range = oDoc.createRange();
-                    range.setStart(sd.startNode, sd.startOffset);
-                    range.setEnd(sd.endNode, sd.endOffset);
-                    oSel.removeAllRanges();
-                    oSel.addRange(range);
+                if (typeof b.br != UNDEF && (/IMG|BR|INPUT/.test(b.br.nodeName))) {
+                    if (b.br.nextSibling) {
+                        crt.selectNode(b.br.nextSibling);
+                        crt.collapse(true);
+                    }
+                    else {
+                        crt.selectNode(b.br);
+                        crt.collapse(false);
+                    }
+                    a = true;
                 }
-
-                if (!apf.isOpera) {
-                    if (vfocus)
-                        editor.$visualFocus();
-                    else
-                        oWin.focus();
+                if (a) {
+                    if (!apf.isOpera)
+                        sel.removeAllRanges();
+                    sel.addRange(crt);
+                    c.focus();
+                    oWin.scrollTo(b.scrollX, b.scrollY);
+                    return;
                 }
             }
-            catch (ex) {}
+            if (typeof b.start != UNDEF && typeof b.end != UNDEF) {
+                try {
+                    var sd = getPos(b.start, b.end);
+                    if (sd) {
+                        crt.setStart(sd.startNode, sd.startOffset);
+                        crt.setEnd(sd.endNode, sd.endOffset);
+                        oWin.scrollTo(b.scrollX, b.scrollY);
+                        if (!apf.isOpera)
+                            sel.removeAllRanges();
+                        sel.addRange(crt);
+                    }
+                }
+                catch(ex) {
+                    apf.console.error(ex);
+                }
+            }
+            return;
         }
-    }
+    };
 
     /**
      * Retrieve the contents of the currently active selection/ range as a
@@ -435,7 +593,7 @@ apf.selection = function(oWin, oDoc, editor) {
         if (this.isCollapsed())
             return "";
         
-        if (typeof range.htmlText != "undefined")
+        if (typeof range.htmlText != UNDEF)
             return range.htmlText;
 
         
@@ -458,7 +616,7 @@ apf.selection = function(oWin, oDoc, editor) {
             if (n)
                 oNode.appendChild(n);
         }
-        else if (typeof range.item != "undefined" || typeof range.htmlText != "undefined")
+        else if (typeof range.item != UNDEF || typeof range.htmlText != UNDEF)
             oNode.innerHTML = range.item ? range.item(0).outerHTML : range.htmlText;
         else
             oNode.innerHTML = range.toString();
@@ -571,7 +729,7 @@ apf.selection = function(oWin, oDoc, editor) {
                   && range.startContainer.nodeType == 1
                   && styleObjNodes[range.startContainer
                        .childNodes[range.startOffset].nodeName.toLowerCase()]) {
-                    type = 'Control';
+                    type = CTRL;
                 }
             }
             return type;
@@ -626,12 +784,12 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.getParentNode = function() {
         switch (this.getType()) {
-            case "Control" :
+            case CTRL :
                 if (apf.isIE)
                     return this.getSelectedNode().parentElement;
                 else
                     return this.getSelectedNode().parentNode;
-            case "None" :
+            case NONE :
                 return;
             default :
                 var oSel = this.get();
@@ -753,7 +911,7 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.hasAncestorNode = function(nodeTagName) {
         var oContainer, range = this.getRange();
-        if (this.getType() == "Control" || !apf.isIE) {
+        if (this.getType() == CTRL || !apf.isIE) {
             oContainer = this.getSelectedNode();
             if (!oContainer && !apf.isIE) {
                 try {
@@ -788,7 +946,7 @@ apf.selection = function(oWin, oDoc, editor) {
         var oNode, i, range = this.getRange();
         nodeTagName = nodeTagName.toUpperCase();
         if (apf.isIE) {
-            if (this.getType() == "Control") {
+            if (this.getType() == CTRL) {
                 for (i = 0; i < range.length; i++) {
                     if (range(i).parentNode) {
                         oNode = range(i).parentNode;
@@ -824,7 +982,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.remove = function() {
         var oSel = this.get(), i;
         if (apf.isIE) {
-            if (oSel.type.toLowerCase() != "none")
+            if (oSel.type != NONE)
                 oSel.clear();
         }
         else if (oSel) {

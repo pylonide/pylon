@@ -128,7 +128,7 @@ apf.ContentEditable.plugin("fontstyle", function() {
         getStyles(oEditor);
 
         var oNode = oEditor.$selection.getSelectedNode();
-        while (oNode.nodeType != 1) // we need a block element
+        while (oNode && oNode.nodeType != 1) // we need a block element
             oNode = oNode.parentNode;
 
         var oCurrent;
@@ -375,9 +375,9 @@ apf.ContentEditable.plugin("blockformat", function() {
                 && aFormats.contains(oNode.parentNode.tagName.toLowerCase())),*/
             tagName  = oNode.nodeType == 1 ? oNode.tagName.toLowerCase() : "";
         
-        while (!tagName.match(blocksRE) && tagName != "body") {
+        while (tagName && !tagName.match(blocksRE) && tagName != "body") {
             oNode   = oNode.parentNode;
-            tagName = oNode.tagName.toLowerCase();
+            tagName = (oNode.tagName || "").toLowerCase();
         }
         if (tagName.match(blocksRE)) {//bCurrent || bParent) {
             var sBlock = blocksMap[tagName];

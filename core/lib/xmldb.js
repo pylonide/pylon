@@ -850,7 +850,7 @@ apf.xmldb = new (function(){
 
         //Remove Listen Nodes
         for (var k = 0; k < xmlDocLut.length; k++) {
-            //#ifdef __SUPPORT_SAFARI
+            //#ifdef __SUPPORT_WEBKIT
             if (!xmlDocLut[k]) continue;
             //#endif
 

@@ -137,6 +137,7 @@
  * @attribute {String}  waiting-state   the id of the state element which is activated when the user is waiting while the application is logging in.
  * @attribute {String}  logout-state    the id of the state element which is activated when the user is logged out.
  * @attribute {String}  model           the id of the model element which gets the data loaded given at login success.
+ * @attribute {String}  remember        whether to remember the login credentials after the first successful login attempt. Will only be used i.c.w. RPC
  * @allowchild service
  * @define service  Element specifying a server to log into.
  * @attribute {String} name     the unique identifier of the service
@@ -150,9 +151,10 @@
 apf.auth = function(struct, tagName){
     this.$init(tagName || "auth", apf.NODE_HIDDEN, struct);
 
-    this.$services = {};
-    this.$cache    = {};
-    this.$queue    = [];
+    this.$services    = {};
+    this.$cache       = {};
+    this.$queue       = [];
+    this.$credentials = null;
 };
 
 apf.aml.setElement("auth", apf.auth);
@@ -162,6 +164,7 @@ apf.aml.setElement("auth", apf.auth);
     this.$loggedIn   = false;
     this.$needsLogin = false;
     this.$autoStart  = true;
+    this.$hasHost    = false;
 
     /**
      * Indicates the state of the log in process.
@@ -179,32 +182,39 @@ apf.aml.setElement("auth", apf.auth);
     }, this.$attrExcludePropBind);
     
     this.$booleanProperties["autostart"] = true;
+    this.$booleanProperties["remember"]  = true;
 
     this.$supportedProperties.push("login", "logout", "fail-state", "error-state",
-        "login-state", "logout-state", "waiting-state", "window", "autostart");
+        "login-state", "logout-state", "waiting-state", "window", "autostart",
+        "remember");
 
     this.$propHandlers["login"]         = 
     this.$propHandlers["login-state"]   = function(value){
         this.$services["default"] = value ? this : null;
         this.$needsLogin          = value ? true : false;
-    }
+    };
     
     this.register = function(node){
         this.$services[node.name] = node;
         this.$needsLogin = true;
-    }
+    };
     
     this.unregister = function(node){
         var prop;
         delete this.$services[node.name];
         if (!(prop in this.$services))
             this.$needsLogin = false;
-    }
+    };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.inited = true;
 
-        if (this.$autoStart) {
+        if (this.parentNode && this.parentNode.$setAuth) {
+            this.parentNode.$setAuth(this);
+            this.$hasHost = true;
+        }
+
+        if (this.$autoStart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
                 _self.authRequired();
@@ -244,6 +254,7 @@ apf.aml.setElement("auth", apf.auth);
             }
         }
     }
+    
     this.addEventListener("loginfail",  failFunction);
     this.addEventListener("logoutfail", failFunction);
 
@@ -296,30 +307,47 @@ apf.aml.setElement("auth", apf.auth);
 
         this.inProcess = 1; //Logging in
 
-        var pos = 0, len = 0;
-        var _self = this;
-        var doneCallback = function (){
-            if (len != ++pos)
-                return;
+        var pos = 0,
+            len = 0,
+            _self = this,
+            doneCallback = function() {
+                if (len != ++pos)
+                    return;
 
-            _self.inProcess = 0; //Idle
-            _self.$loggedIn  = true;
-            _self.clearQueue();
+                _self.inProcess = 0; //Idle
+                _self.$loggedIn  = true;
+                _self.clearQueue();
 
-            if (callback)
-                callback();
+                if (callback)
+                    callback();
+            };
+
+        if (this.$hasHost) { // child of Teleport element
+            this.$credentials  = options;
+            callback           = this.$hostCallback;
+            this.$hostCallback = null;
+            len                = 1;
+            doneCallback();
+            this.dispatchEvent("loginsuccess", {
+                state   : 1,
+                data    : null,
+                bubbles : true
+            });
+            if (!this.remember)
+                this.$credentials = null;
         }
-
-        if (!options.service) {
-            var s = options.$services || this.$services;
-            for (var name in s) {
-                len++;
-                this.$do(name, options, "in", null, doneCallback);
+        else {
+            if (!options.service) {
+                var s = options.$services || this.$services;
+                for (var name in s) {
+                    len++;
+                    this.$do(name, options, "in", null, doneCallback);
+                }
             }
-        }
-        else if (options.service) {
-            len = 1;
-            this.$do(options.service, options, "in", null, doneCallback);
+            else if (options.service) {
+                len = 1;
+                this.$do(options.service, options, "in", null, doneCallback);
+            }
         }
     };
 
@@ -353,8 +381,8 @@ apf.aml.setElement("auth", apf.auth);
     };
 
     this.$do = function(service, options, type, isRelogin, callback){
-        var xmlNode = this.$services[service];
-        var _self   = options.userdata = this;
+        var xmlNode = this.$services[service],
+            _self   = options.userdata = this;
 
         //#ifdef __WITH_OFFLINE
         options.ignoreOffline = true; //We don't want to be cached by apf.offline
@@ -478,9 +506,9 @@ apf.aml.setElement("auth", apf.auth);
             //#ifdef __DEBUG
             //Dunno what's up, lets tell the developer
             else
-                apf.console.warn("Unable to retry queue item after \
-                    successfull logging in. It seems the protocol that sent \
-                    the message doesn't allow it.");
+                apf.console.warn("Unable to retry queue item after "
+                  + "successfull logging in. It seems the protocol that sent "
+                  + "the message doesn't allow it.");
             //#endif
         }
 
@@ -528,6 +556,11 @@ apf.aml.setElement("auth", apf.auth);
             var result = false;
         }
         else if (this.inProcess != 1) { //If we're not already logging in
+            if (this.$hasHost && typeof options == "function") { //inside Teleport element
+                if (this.$credentials)
+                    return options();
+                this.$hostCallback = options;
+            }
             /*
                 Apparently our credentials aren't valid anymore,
                 or retry is turned off. If this event returns false

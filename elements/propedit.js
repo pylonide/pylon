@@ -1046,7 +1046,7 @@ apf.convertIframe = function(iframe, preventSelect){
         apf.importClass(apf.runNonIe, true, win);
         
     //Load Browser Specific Code
-    // #ifdef __SUPPORT_SAFARI
+    // #ifdef __SUPPORT_WEBKIT
     if (this.isSafari) 
         this.importClass(apf.runSafari, true, win);
     // #endif
