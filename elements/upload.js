@@ -127,7 +127,7 @@ apf.upload = function(struct, tagName){
     this["allow-duplicates"] = false;
     this["time-limit"]       = apf.isLinux ? 0 : 30;
     this.noflash             = false;
-
+    this.timeout             = 100000;
     this.$player             = null;
     this.$playerInited       = false;
     this.$focussable         = false;
