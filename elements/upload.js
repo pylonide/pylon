@@ -223,7 +223,7 @@ apf.upload = function(struct, tagName){
      * </code>
      */
     this.$supportedProperties.push("value", "target", "method", "progress", "uploading",
-        "rel", "bgswitch", "rel", "file-type", "multiple", "queued", "policyfile",
+        "rel", "bgswitch", "file-type", "multiple", "queued", "policyfile",
         "data", "merge-data", "fieldname", "filesize-min", "filesize-max",
         "allow-duplicates", "time-limit", "model");
 
@@ -634,7 +634,7 @@ apf.upload = function(struct, tagName){
         if (apf.isIE) return;
         
         var timer = setInterval(function() {
-            var oNode = _self.rel ? self[_self.rel] : null;
+            var oNode = _self.rel ? _self.rel : null;
 
             _self.inpFile.onchange = function() {_self.browse();};
 
