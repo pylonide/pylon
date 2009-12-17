@@ -1,4 +1,4 @@
-// #ifdef __PARSER_XPATH || __SUPPORT_SAFARI || __SUPPORT_IE && __WITH_PRESENTATION
+// #ifdef __PARSER_XPATH || __SUPPORT_WEBKIT || __SUPPORT_IE && __WITH_PRESENTATION
 apf.runXpath = function(){
 
 /**
