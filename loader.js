@@ -354,12 +354,12 @@ apf.$x = apf.$loader
         
         "elements/webdav.js",
     
-        "elements/xmpp.js"             // XMPP class providing the XMPP comm layer
+        "elements/xmpp.js",             // XMPP class providing the XMPP comm layer
         /*
         "elements/repeat.js",
-        "elements/submitform.js",
-        "elements/markupedit.js",
-        "elements/validation"*/
+        "elements/submitform.js",*/
+        "elements/markupedit.js"
+        /*"elements/validation"*/
     )
     .wait()
     .script(
