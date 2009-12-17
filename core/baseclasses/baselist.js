@@ -614,12 +614,12 @@ apf.BaseList = function(){
                  if (!o.hasFeature(apf.__DRAGDROP__) || o.mode != "normal" || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
-                var o = apf.lookup(' + this.$uniqueId + ');'
+                var o = apf.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
-                + 'if (o.hasFeature(apf.__RENAME__) && this.dorename && o.mode == "normal")\
-                    o.startDelayedRename(event);'
+                'if (o.hasFeature(apf.__RENAME__) && this.dorename && o.mode == "normal")\
+                    o.startDelayedRename(event);' +
                 // #endif
-                + 'this.dorename = false;\
+                'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.mode == "normal" && o.hasFeature(apf.__DRAGDROP__))\
