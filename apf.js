@@ -546,7 +546,7 @@ var apf = {
         apf.console.info("Starting Ajax.org Platform Application...");
         apf.console.warn("This is a debug build of Ajax.org Platform; be aware "
             + "that\nexecution speed of this build is <strong>several times</strong> "
-            + "slower than arelease build\nof Ajax.org Platform.");
+            + "slower than a release build\nof Ajax.org Platform.");
         //#endif
 
         //mozilla root detection
@@ -565,8 +565,8 @@ var apf = {
         if (this.isIE) apf.runIE();
             //this.importClass(apf.runIE, true, self);
         // #endif
-        // #ifdef __SUPPORT_SAFARI
-        if (apf.isWebkit) apf.runSafari();
+        // #ifdef __SUPPORT_WEBKIT
+        if (apf.isWebkit) apf.runWebkit();
             //this.importClass(apf.runSafari, true, self);
         // #endif
         // #ifdef __SUPPORT_OPERA
@@ -2133,7 +2133,7 @@ if (!apf.basePath) {
         apf.basePath = "./";
 }
 
-if (location.protocol == "file:" && !(/a/.__proto__=="//" || /source/.test((/a/.toString+"")))) {
+if (location.protocol == "file:" && !apf.isGecko && !apf.isWebkit) {
     (function(global){
         // constants used for compression optimization
         var sUNDEF                = "undefined",
