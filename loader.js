@@ -90,12 +90,13 @@ apf.$x = apf.$loader
         
         "core/lib/draw.js",
         
-        "core/browsers/is_gecko.js",
-        "core/browsers/is_ie.js",
-        "core/browsers/is_opera.js",
-        "core/browsers/is_safari.js",
+        "core/browsers/gecko.js",
+        "core/browsers/ie.js",
+        "core/browsers/iphone.js",
+        "core/browsers/opera.js",
+        "core/browsers/webkit.js",
         "core/browsers/non_ie.js",
-        "core/browsers/is_gears.js",
+        "core/browsers/gears.js",
         
         "core/markup/domparser.js"
     )
