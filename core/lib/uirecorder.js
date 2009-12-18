@@ -9,7 +9,7 @@ apf.uirecorder = {
     isPlaying   : false,
     isRecording : false,
     inited      : false,
-
+    
     init : function() {
         if (apf.uirecorder.inited)
             return;
@@ -28,16 +28,23 @@ apf.uirecorder = {
                     e.srcElement || e.target, apf.extend({}, e)]);
             }
         }*/
-       
+        apf.uirecorder.curEvtObj = null;
+        
         /* Form events support */
         document.documentElement.onselect = function(e) {
             if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onselect",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onselect",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onselect",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
         
         document.documentElement.onchange = function(e) {
@@ -45,9 +52,15 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onchange",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onchange",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onchange",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
         
         document.documentElement.onsubmit = function(e) {
@@ -55,9 +68,15 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onsubmit",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onsubmit",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onsubmit",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
         
         document.documentElement.onreset = function(e) {
@@ -65,9 +84,15 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onreset",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onreset",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onreset",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
        
         /* User interface events support */
@@ -76,9 +101,15 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onfocus",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onfocus",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onfocus",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
 
         document.documentElement.onblur = function(e) {
@@ -86,20 +117,23 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.curEvtObj = {
+                name : "onblur",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            //apf.uirecorder.eventCaptured(apf.uirecorder.curEvtObj);
             
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onblur",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            /*apf.uirecorder.actionStack.push([new Date().getTime(), "onblur",
+                e.srcElement || e.target, apf.extend({}, e)]);*/
         }
 
         /* Mouse events support */
         document.documentElement.onclick = function(e) {
             if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
-
             e = e || event;
-//apf.console.info("recording... onclick - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onclick",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            apf.uirecorder.captureAction("click", e);
         }
         
         document.documentElement.ondblclick = function(e) {
@@ -107,39 +141,43 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-//apf.console.info("recording... ondblclick - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "ondblclick",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            apf.uirecorder.captureAction("dblclick", e);
         }
         
         document.documentElement.onmousedown = function(e) {
             if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
-
             e = e || event;
-//apf.console.info("recording... onmousedown - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onmousedown",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            
+            var htmlElement = e.srcElement || e.target;
+            var amlNode     = apf.findHost(htmlElement);
+            var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+            apf.uirecorder.curEvtObj = {
+                name : "onmousedown",
+                target : htmlElement,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY,amlNode : amlNode,xmlNode : xmlNode && xmlNode.tagName || "none"}
+            }
         }
         
+        var timer;
         document.documentElement.onmouseup = function(e) {
             if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
 
             e = e || event;
-//apf.console.info("recording... onmouseup - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseup",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            apf.uirecorder.curEvtObj = {
+                name : "onmouseup",
+                target : e.srcElement || e.target,
+                properties: {clientX: e.clientX, clientY: e.clientY, offsetX: e.offsetX, offsetY: e.offsetY}
+            }
+            
         }
         
         document.documentElement.onmousemove = function(e) {
             if (apf.uirecorder.isPlaying || !apf.uirecorder.isRecording)
                 return;
-            
+
             e = e || event;
-//apf.console.info("recording... onmousemove - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onmousemove",
-                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmouseover = function(e) {
@@ -147,9 +185,6 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-//apf.console.info("recording... onmouseover - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseover",
-                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onmouseout = function(e) {
@@ -157,9 +192,6 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-//apf.console.info("recording... onmouseout - "+e.clientX+" "+e.clientY);
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onmouseout",
-                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         /* Keyboard events support for all browsers */
@@ -168,9 +200,7 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-            
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeyup",
-                e.srcElement || e.target, apf.extend({}, e)]);
+            apf.uirecorder.captureAction("keypress", e, e.keyCode);
         }
         
         document.documentElement.onkeydown = function(e) {
@@ -178,9 +208,6 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-            
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeydown",
-                e.srcElement || e.target, apf.extend({}, e)]);
         }
         
         document.documentElement.onkeypress = function(e) {
@@ -188,9 +215,6 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-            
-            apf.uirecorder.actionStack.push([new Date().getTime(), "onkeypress",
-                e.srcElement || e.target, apf.extend({}, e)]);
         }
 
         var mEvents = ["DOMSubtreeModified", "DOMNodeInserted", "DOMNodeRemoved", "DOMNodeRemovedFromDocument",
@@ -232,23 +256,6 @@ apf.uirecorder = {
                     return;
     
                 e = e || event;
-    
-                /* scropt for checking marginTop */
-                /*var el = e.srcElement || e.target;
-    
-                while (el != document.body && el.scrollHeight == el.offsetHeight) {
-                    apf.console.info("Searching..."+el.id+" "+el.scrollHeight+" "+parseInt(el.style.height));
-                    el = el.parentNode || el.parentElement;
-                }
-
-                apf.console.info("scroll"+el.scrollTop);*/
-
-                apf.uirecorder.actionStack.push([
-                    new Date().getTime(),
-                    "DOMMouseScroll",
-                    e.target,
-                    apf.extend({}, apf.uirecorder.createMouseWheelEvent(e))
-                ]);
             }, false);
         }
         else {
@@ -258,13 +265,6 @@ apf.uirecorder = {
                     return;
 
                 e = e || event;
-
-                apf.uirecorder.actionStack.push([
-                    new Date().getTime(),
-                    "onmousewheel",
-                    e.srcElement,
-                    apf.extend({}, apf.uirecorder.createMouseWheelEvent(e))
-                ]);
             };
         }
     },
@@ -326,6 +326,119 @@ apf.uirecorder = {
         apf.uirecorder.isPlaying   = false;
         apf.uirecorder.playStack   = [];
         apf.uirecorder.actionStack = [];
+    },
+    prevActionObj   : null,
+    actionList      : [],
+    eventList       : [],
+    initDone        : false,
+    ignoreEvents    : {"blur": 1, "focus": 1},
+    captureEvent    : function(eventName, e) {
+        // ignore event from ignoreEvents list
+//        if (apf.uirecorder.ignoreEvents[eventName]) return;
+
+        // collect mouse events
+        /*
+        if ("mouse".indexOf(eventName) == 0)
+            apf.uirecorder.eventList.mouse.push(eventName);
+        */
+         
+        //if (eventName != "focus" && eventName != "blur" && e)
+//        var htmlElement = e.srcElement || e.target;
+//        var amlNode     = apf.findHost(htmlElement);
+//        var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+        var target = e.amlNode || e.toElement || e.relatedNode || e.currentTarget;
+/* 
+        var obj = {
+            name        : eventName,
+            target      : target.name,
+        }
+*/
+        var targetName = (target) 
+            ? (target.name || target.tagName) 
+                ? target.name || target.tagName 
+                : (target.root) 
+                    ? "apf" 
+                    : (target.$at && target.$at.name)
+                        ? target.$at.name
+                        : undefined
+            : undefined;
+        if (targetName == undefined && eventName != "keyup") debugger;
+/*
+        if (!apf.uirecorder.eventList[obj.target]) apf.uirecorder.eventList[obj.target] = [];
+        apf.uirecorder.eventList[obj.target].push(obj);
+*/
+        if (!apf.uirecorder.eventList[targetName]) apf.uirecorder.eventList[targetName] = [];
+        
+        // prevent duplicate events
+        if (apf.uirecorder.eventList[targetName][apf.uirecorder.eventList[targetName].length-1] != eventName) 
+            apf.uirecorder.eventList[targetName].push(eventName);
+    },
+    captureAction : function(eventName, e, value) {
+            var changed = false;
+            
+        //setTimeout(function() {
+            var htmlElement = e.srcElement || e.target;
+            var amlNode     = apf.findHost(htmlElement);
+            var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+
+            // loop throught eventList en look for actions
+            var interaction = [];
+            for (objName in apf.uirecorder.eventList) {
+                if (typeof apf.uirecorder.eventList[objName] == "object" && apf.uirecorder.eventList[objName].length) {
+                    if (apf.uirecorder.eventList[objName].indexOf("resizestart") > -1 && apf.uirecorder.eventList[objName].indexOf("resize") > -1 && apf.uirecorder.eventList[objName].indexOf("resizestart") < apf.uirecorder.eventList[objName].indexOf("resize")) {
+                        interaction.push(objName + " resized");
+                    }
+                    if (apf.uirecorder.eventList[objName].indexOf("close") > -1) {
+                        interaction.push(objName + " closed");
+                    }
+                    if (apf.uirecorder.eventList[objName].indexOf("drag") > -1) {
+                        interaction.push(objName + " dragged");
+                    }
+                    if (apf.uirecorder.eventList[objName].indexOf("click") > -1) {
+                        interaction.push(objName + " clicked");
+                    }
+                    if (apf.uirecorder.eventList[objName].indexOf("beforestatechange") > -1 && apf.uirecorder.eventList[objName].indexOf("afterstatechange") > -1 && apf.uirecorder.eventList[objName].indexOf("beforestatechange") < apf.uirecorder.eventList[objName].indexOf("afterstatechange")) {
+                        interaction.push(objName + " state changed (but what?)");
+                    }
+                }
+            }
+            
+            // reset eventList
+            apf.uirecorder.eventList = [];
+            
+            var actionObj = {
+                name        : eventName
+            }
+            
+            if (htmlElement)                        actionObj.htmlElement = htmlElement;
+            if (amlNode)                            actionObj.amlNode     = amlNode;
+            if (xmlNode)                            actionObj.xmlNode     = xmlNode;
+            if (apf.uirecorder.eventList)           actionObj.events      = apf.uirecorder.eventList;
+            if (value)                              actionObj.value       = (eventName == "keypress") ? String.fromCharCode(value.toString()) : value;
+
+            // check previous action object
+            if (apf.uirecorder.prevActionObj) {
+                if (eventName == apf.uirecorder.prevActionObj.name && eventName == "keypress") {
+                    apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].value += String.fromCharCode(value.toString());
+                    changed = true;
+                }
+            }
+            
+            if (eventName == "keypress") {
+                interaction.push("Type text '" + htmlElement.value + "' in " + amlNode.id);
+            }
+
+            if (interaction.length)                 actionObj.interaction = interaction;
+                
+            if (!changed)
+                // add object to actionList
+                apf.uirecorder.actionList.push(actionObj)
+            else
+                // overwrite previous object
+                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1] = actionObj;
+                
+            apf.uirecorder.prevActionObj = actionObj;
+        //}, 50);
     }
 };
 
