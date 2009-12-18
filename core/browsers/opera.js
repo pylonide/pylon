@@ -25,23 +25,8 @@
  * @private
  */
 apf.runOpera = function (){
-    /*var setTimeoutOpera = window.setTimeout;
-    var lookupOperaCall = [];
-    window.setTimeout = function(call, time){
-        if (typeof call == "string") 
-            return setTimeoutOpera(call, time);
-        return setTimeoutOpera("lookupOperaCall["
-            + (lookupOperaCall.push(call) - 1) + "]()", time);
-    }*/
-    
-    //HTMLHtmlElement = document.createElement("html").constructor;
-    //HTMLElement = {};
-    //HTMLElement.prototype = HTMLHtmlElement.apf.__proto__.apf.__proto__;
-    //HTMLDocument = Document = document.constructor;
-    var x = new DOMParser();
-    XMLDocument = DOMParser.constructor;
-    //Element = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
-    x = null;
+    if (apf.runNonIe)
+        apf.runNonIe();
     
     /* ***************************************************************************
      XML Serialization
@@ -51,14 +36,14 @@ apf.runOpera = function (){
     //Node.xml
     /*Node.prototype.serialize = function(){
      return (new XMLSerializer()).serializeToString(this);
-     }*/
+     }
     //Node.xml
     
-    Node.prototype.serialize        = 
+    Node.prototype.serialize        =
     XMLDocument.prototype.serialize =
     Element.prototype.serialize     = function(){
         return (new XMLSerializer()).serializeToString(this);
-    };
+    };*/
     
     //#ifdef __PARSER_XPATH
     
@@ -87,8 +72,10 @@ apf.runOpera = function (){
         
         if (doc.selectNodes) 
             return doc.selectNodes(sExpr, this);
-        else 
-            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", "Method selectNodes is only supported by XML Nodes"));
+        else {
+            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", 
+                "Method selectNodes is only supported by XML Nodes"));
+        }
     };
     
     //XMLDocument.selectSingleNode
@@ -108,24 +95,30 @@ apf.runOpera = function (){
             doc.selectNodes = HTMLDocument.prototype.selectNodes;
         }
         
-        if (doc.selectSingleNode) 
+        if (doc.selectSingleNode) {
             return doc.selectSingleNode(sExpr, this);
-        else 
-            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+        }
+        else {
+            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", 
+                "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+        }
     };
     
     //#endif
     
     var serializer = new XMLSerializer();
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var frag = document.createDocumentFragment();
-        for (var node, a = [], i = 0, l = nodeList.length; i < l; i++) {
+        var node,
+            frag = document.createDocumentFragment(),
+            i    = 0,
+            l    = nodeList.length
+        for (; i < l; i++) {
             if (!(node = nodeList[i])) continue;
             frag.appendChild(node);
         }
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag)));//.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/<([^>]+)\/>/g, "<$1></$1>");
+            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
     };
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
@@ -139,14 +132,10 @@ apf.runOpera = function (){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", s);//apf.html_entity_decode
+            : "beforeend", s.replace(/<([^>]+)\/>/g, "<$1></$1>"));
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
-    
-    if (apf.runNonIe)
-        apf.runNonIe();
-        //apf.importClass(apf.runNonIe, true, self);
-}
+};
 
 // #endif

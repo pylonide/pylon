@@ -49,7 +49,7 @@ apf.XhtmlElement = function(struct, tagName){
 
         if (this.$aml) {
             this.$ext = 
-            this.$int = apf.insertHtmlNode(this.$aml.serialize 
+            this.$int = apf.insertHtmlNode(this.$aml.serialize
                 ? this.$aml 
                 : this.$aml.cloneNode(false), pHtmlNode);
         }
