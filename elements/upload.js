@@ -718,7 +718,7 @@ apf.upload = function(struct, tagName){
                 var data = "";
                 try {
                     data = apf.html_entity_decode(_self.oFrame.contentWindow
-                        .document.body.innerHTML.replace(/<PRE>|<\/PRE>/g, ""));
+                        .document.body.innerHTML.replace(/<PRE>|<\/PRE>/ig, ""));
                 }
                 catch(e){}
 
