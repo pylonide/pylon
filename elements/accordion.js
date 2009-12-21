@@ -190,11 +190,14 @@ apf.accordion = function(struct, tagName){
     }
     
     this.lastOpened = [];
+    
+    /**
+     * Only one opening action can be run in time
+     */
+    this.inprogress = false;
 };
 
 (function() {
-    //this.$appendedBars = 0;
-
     this.$booleanProperties["multiexpand"]  = true;
     this.$booleanProperties["startexpanded"] = true;
     
@@ -262,9 +265,11 @@ apf.accordion = function(struct, tagName){
     this.slideDown = function(id) {
         var id2 = null;
 
-        if (!this.bars[id]) {
+        if (!this.bars[id] || this.inprogress) {
             return;
         }
+        
+        this.inprogress = true;
 
         var bar = this.bars[id];
         
@@ -303,19 +308,16 @@ apf.accordion = function(struct, tagName){
                 bar2.htmlBody.style.display = "none";
                 
                 if (this.$dir == "horizontal") {
-                    bar.htmlBody.style.width = "auto";
                     bar2.htmlBody.style.width = "auto";
                 }
-
-                this.bars[id].opened = true;
             }
-            else {
-                if (this.$dir == "horizontal") {
-                    bar.htmlBody.style.width = "auto";
-                }
-
-                this.bars[id].opened = true;
+            
+            if (this.$dir == "horizontal") {
+                bar.htmlBody.style.width = "auto";
             }
+            
+            this.bars[id].opened = true;
+            this.inprogress = false;
         }
         else {
             var _self = this;
@@ -346,8 +348,9 @@ apf.accordion = function(struct, tagName){
                         //Slide down
                         _self.$setStyleClass(bar.htmlNode, "active", [""]);
         
-                        if (_self.$dir == "horizontal")
+                        if (_self.$dir == "horizontal") {
                             bar.htmlBody.style.width = "auto";
+                        }
         
                         _self.bars[id].opened = true;
                         
@@ -355,10 +358,12 @@ apf.accordion = function(struct, tagName){
                         _self.$setStyleClass(bar2.htmlNode, "", ["active"]);
                         bar2.htmlBody.style.display = "none";
         
-                        if (_self.$dir == "horizontal")
+                        if (_self.$dir == "horizontal") {
                             bar2.htmlBody.style.width = "auto";
+                        }
         
                         _self.bars[id2].opened = false;
+                        _self.inprogress = false;
                     }
                 });
             }
@@ -380,10 +385,13 @@ apf.accordion = function(struct, tagName){
                             //_self.slideDown(id);
                         //}
 
-                        if (_self.$dir == "horizontal")
+                        if (_self.$dir == "horizontal") {
                             bar.htmlBody.style.width = "auto";
+                        }
 
                         _self.bars[id].opened = true;
+                        
+                        _self.inprogress = false;
                     }
                 });
             }
@@ -396,9 +404,11 @@ apf.accordion = function(struct, tagName){
      * @param {Mixed} id   id of title
      */
     this.slideUp = function(id) {
-        if (!this.bars[id]) {
+        if (!this.bars[id] || this.inprogress) {
             return;
         }
+        
+        this.inprogress = true;
 
         var bar = this.bars[id];
 
@@ -411,6 +421,7 @@ apf.accordion = function(struct, tagName){
                 bar.htmlBody.style.width = "auto";
     
             this.bars[id].opened = false;
+            this.inprogress = false;
         }
         else {
             var _self = this;
@@ -433,6 +444,7 @@ apf.accordion = function(struct, tagName){
                         bar.htmlBody.style.width = "auto";
     
                     _self.bars[id].opened = false;
+                    _self.inprogress = false;
                 }
             });
         }
