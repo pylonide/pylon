@@ -207,7 +207,8 @@ apf.slider = function(struct, tagName){
                 o = this.$getLayoutNode("marker");
                 pos = Math.max(0, (i * (1 / (count))));
                 //alert(prop + ":" + (pos * size) + "px");
-                o.setAttribute("style", prop + ":" + (pos * size) + "px");
+                apf.console.info(prop + ":" + Math.round(pos * size) + "px");
+                o.setAttribute("style", prop + ":" + Math.round(pos * size) + "px");
                 nodes.push(o);
             }
             apf.insertHtmlNodes(nodes, this.oMarkers);
@@ -343,13 +344,12 @@ apf.slider = function(struct, tagName){
                 : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
-            max = (this.oContainer.offsetWidth
-                - apf.getWidthDiff(this.oContainer))
-                - this.oKnob.offsetWidth;
+            max = this.$ext.offsetWidth - this.oKnob.offsetWidth;
             min = parseInt(apf.getBox(
                 apf.getStyle(this.oContainer, "padding"))[3]);
 
             offset = (((max - min) * multiplier) + min);
+
             if (animate) {
                 apf.tween.single(this.oKnob, {
                     type    : 'left',
