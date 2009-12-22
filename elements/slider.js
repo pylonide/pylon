@@ -199,14 +199,14 @@ apf.slider = function(struct, tagName){
                 count = (max - this.min) / this.step,
                 prop  = this.$dir == "horizontal" ? "left" : "top",
                 size  = this.$dir == "horizontal"
-                    ? this.$ext.offsetWidth - this.oKnob.offsetWidth
+                    ? this.$ext.offsetWidth - this.oKnob.offsetWidth 
+                      - apf.getWidthDiff(this.oContainer)
                     : this.$ext.offsetHeight - this.oKnob.offsetHeight;
 
             for (i = 0; i < count + 1; i++) {
                 this.$getNewContext("marker");
                 o = this.$getLayoutNode("marker");
                 pos = Math.max(0, (i * (1 / (count))));
-                //alert(prop + ":" + (pos * size) + "px");
                 o.setAttribute("style", prop + ":" + Math.round(pos * size) + "px");
                 nodes.push(o);
             }
@@ -223,7 +223,8 @@ apf.slider = function(struct, tagName){
         var pos, i,
             prop = this.$dir == "horizontal" ? "left" : "top",
             size = this.$dir == "horizontal"
-                ? this.$ext.offsetWidth - this.oKnob.offsetWidth
+                ? this.$ext.offsetWidth - this.oKnob.offsetWidth 
+                  - apf.getWidthDiff(this.oContainer)
                 : this.$ext.offsetHeight - this.oKnob.offsetHeight,
             nodes = this.oMarkers.getElementsByTagName("U");//small hack
         for (i = nodes.length - 1; i >= 0; i--) {
