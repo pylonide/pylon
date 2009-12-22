@@ -207,7 +207,6 @@ apf.slider = function(struct, tagName){
                 o = this.$getLayoutNode("marker");
                 pos = Math.max(0, (i * (1 / (count))));
                 //alert(prop + ":" + (pos * size) + "px");
-                apf.console.info(prop + ":" + Math.round(pos * size) + "px");
                 o.setAttribute("style", prop + ":" + Math.round(pos * size) + "px");
                 nodes.push(o);
             }
