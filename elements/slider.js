@@ -344,7 +344,9 @@ apf.slider = function(struct, tagName){
                 : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
-            max = this.$ext.offsetWidth - this.oKnob.offsetWidth;
+            max = (this.oContainer.offsetWidth
+                - apf.getWidthDiff(this.oContainer))
+                - this.oKnob.offsetWidth;
             min = parseInt(apf.getBox(
                 apf.getStyle(this.oContainer, "padding"))[3]);
 
