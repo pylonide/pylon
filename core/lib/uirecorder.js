@@ -10,15 +10,33 @@ apf.uirecorder = {
     isRecording : false,
     inited      : false,
     
+    initialState: {},
     init : function() {
         if (apf.uirecorder.inited)
             return;
 
         apf.uirecorder.inited = true;
 
-        debugger;
         // record initial state
-        
+        for (var amlNode, props, i = 0, l = apf.all.length; i < l; i++) {
+            amlNode = apf.all[i]; 
+            
+            // ignore nodes without supportedProperties
+            if (!amlNode.$supportedProperties || amlNode.$supportedProperties.length === 0 || !amlNode.ownerDocument) continue;
+            
+             
+            id = apf.xmlToXpath(amlNode); //(amlNode.id || "") + "_" + amlNode.localName + apf.xmlToXpath(amlNode) + "_" + amlNode.serialize(); //uniqueness: id, localName + position in the tree (apf.getXpathFromNode - in lib/xml.js), serialized state (serialize())
+            
+            props = [];
+            for (var j = 0, jl = amlNode.$supportedProperties.length; j < jl; j++) { //width, height, span, columns, ...
+                props.push({
+                    name    : amlNode.$supportedProperties[j], 
+                    value   : amlNode[amlNode.$supportedProperties[j]]
+                });
+            }
+            
+            apf.uirecorder.initialState[id] = props;
+        }
         
         /* Support for various events listed in dEvents array */
         /*for (var i = 0, l = dEvents.length; i < l; i++) {
@@ -347,6 +365,7 @@ apf.uirecorder = {
         if (apf.uirecorder.ignoreEvents[eventName]) return;
         
         //if (eventName == "updatestart") debugger;
+        /*
         var target = (e.currentTarget) 
             ? e.currentTarget 
             : (e.srcElement)
@@ -356,33 +375,43 @@ apf.uirecorder = {
                     : null;
         
         if (!target) debugger;
-        var htmlElement = target.$pHtmlNode || target;
-
-        var amlNode     = e.amlNode || e.currentTarget || apf.findHost(htmlElement);
+        */
+        var htmlElement, amlNode;
+        if (e.htmlEvent || e.srcElement || e.target) {
+            htmlElement = e.htmlEvent.srcElement || e.htmlEvent.target || e.srcElement || e.target;
+            amlNode     = apf.findHost(htmlElement);
+        }
+        else if (e.amlNode && e.amlNode.$aml) {
+            amlNode = e.amlNode;
+//            targetName = amlNode.id || amlNode.localName + amlNode.$uniqueId.toString();
+        }
+        else if (e.currentTarget) {
+            if (e.currentTarget.localName) {
+                if ("actiontracker|model".indexOf(e.currentTarget.localName) == -1)
+                    amlNode = e.currentTarget;
+                else
+                    targetName == e.currentTarget.localName;
+            }
+            else if (e.currentTarget.all && e.currentTarget.root === true)
+                targetName = "apf";
+        }
+        
+        if (amlNode)
+            targetName = apf.xmlToXpath(amlNode); //amlNode.id || amlNode.localName + amlNode.$uniqueId.toString();
+            
+        if (!targetName) debugger;
+        
         //var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
 
         var eventObj = {
             name        : eventName,
-            htmlElement : htmlElement,
             amlNode     : amlNode,
             //xmlNode     : xmlNode,
             value       : e.value,
             event       : e
         }
 
-        
-        var targetName = (amlNode && (!amlNode.root || typeof (amlNode.root) == "object") && amlNode.id || amlNode.localName + amlNode.$uniqueId.toString())
-            ? amlNode.id || amlNode.localName + amlNode.$uniqueId.toString()
-            : target.$at
-                ? "actiontracker"
-                : (amlNode && amlNode.root) 
-                    ? "apf" 
-                    : (amlNode)
-                        ? amlNode.id || amlNode.localName + amlNode.$uniqueId
-                        : null;
-
         if (!targetName) debugger; 
-//        if (targetName == undefined && eventName != "keyup") debugger;
 
         if (!apf.uirecorder.eventList[targetName]) apf.uirecorder.eventList[targetName] = [];
         // prevent duplicate events
@@ -390,9 +419,13 @@ apf.uirecorder = {
             apf.uirecorder.eventList[targetName].push(eventObj);
     },
     captureAction : function(eventName, e, value) {
-            var htmlElement = e.srcElement || e.target;
-            var amlNode     = apf.findHost(htmlElement);
-            var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+            if (eventName == "keypress") {
+                var htmlElement = e.srcElement || e.target;
+                var amlNode     = apf.findHost(htmlElement);
+                //var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+            }
+            
+//if (!amlNode) debugger;
             
             setTimeout(function() {
                 var changed = false;
@@ -400,10 +433,11 @@ apf.uirecorder = {
                 // loop throught eventList en look for actions
                 var interaction = [];
                 for (objName in apf.uirecorder.eventList) {
+                    //if (objName.indexOf("actiontracker") == 0) debugger;
                     if (typeof apf.uirecorder.eventList[objName] === "object" && apf.uirecorder.eventList[objName].length) {
                         for (var name, i = 0, l = apf.uirecorder.eventList[objName].length; i < l; i++) {
                             name    = apf.uirecorder.eventList[objName][i].name;
-                            aml = apf.uirecorder.eventList[objName][i].amlNode;
+                            aml     = apf.uirecorder.eventList[objName][i].amlNode;
                             
                             if (name === "resize") {
                                 interaction.push(aml.localName + " '" + objName + "' resized");
@@ -416,7 +450,7 @@ apf.uirecorder = {
                             }
                             else if (name === "click") {
                                 if (aml.localName == "button")
-                                    interaction.push(aml.localName + " '" + objName + "' pressed");
+                                    interaction.push(aml.localName + " '" + objName + " (" + aml.caption + ")" + "' pressed");
                                 //else
                                     //interaction.push(amlNode.localName + " '" + objName + "' clicked");
                             }
@@ -428,12 +462,19 @@ apf.uirecorder = {
                             else if (name === "prop.visible" && apf.uirecorder.eventList[objName][i].value) { // && amlNode.localName == "page"
                                 interaction.push(aml.localName + " '" + aml.caption + "' opened");
                             }
-                            else if (name == "updatestart") {
-                                debugger;
-                                // compare new with old model
-                                aml.$model.data
-                                //xmlContext
+                            else if (name === "updatestart") {
+                                interaction.push(aml.localName + " '" + objName + "' updated (updatestart)");
                             }
+                            else if (name === "xmlupdate") {
+                                
+                            }
+
+                            else if (name === "afteradd") {
+                                interaction.push("Data added to " + aml.localName + " '" + objName + "' ");
+                            }
+                            
+                            // sortcolumn [columnName]
+                            // 
                         }
                     }
                 }
@@ -458,7 +499,7 @@ apf.uirecorder = {
                 }
                 
                 if (eventName == "keypress") {
-                    interaction.push("Change text to '" + htmlElement.value + "' in " + (amlNode.id || amlNode.localName + amlNode.$uniqueId.toString()));
+                    interaction.push("Change text to '" + htmlElement.value + "' in " + apf.xmlToXpath(amlNode));
                 }
     
                 if (interaction.length)                 actionObj.interaction = interaction;
@@ -474,7 +515,7 @@ apf.uirecorder = {
     
                 // reset eventList
                 apf.uirecorder.eventList = [];
-            }, 100);
+            }, 200);
     }
 };
 
