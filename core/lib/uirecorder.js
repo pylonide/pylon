@@ -164,7 +164,7 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
-            apf.uirecorder.captureAction("dblclick", e);
+            //apf.uirecorder.captureAction("dblclick", e);
         }
         
         document.documentElement.onmousedown = function(e) {
@@ -201,6 +201,7 @@ apf.uirecorder = {
                 return;
 
             e = e || event;
+            apf.uirecorder.captureAction("mousemove", e);
         }
         
         document.documentElement.onmouseover = function(e) {
@@ -327,12 +328,64 @@ apf.uirecorder = {
     play : function() {
         apf.uirecorder.isRecording = false;
         apf.uirecorder.isPlaying   = true;
-        apf.uirecorder.playStack   = apf.uirecorder.actionStack.slice(0);
+        //apf.uirecorder.playStack   = apf.uirecorder.actionStack.slice(0);
 
+        apf.uirecorder.playList = apf.uirecorder.actionList.slice(0);
+        apf.uirecorder.playNextFrame();
+        
+        /*
         if (apf.uirecorder.playStack.length)
             playFrame();
+        */
     },
-
+    /*
+     * play next action frame
+     */
+    playActions : {"mousemove":1, "click":1},
+    playList : [],
+    playNextFrame : function() {
+        if (!apf.uirecorder.isPlaying) return;
+        if (!apf.uirecorder.playList.length) {
+            apf.uirecorder.stop();
+            return;
+        }
+        var cursor = document.getElementById("cursor");
+        var action = apf.uirecorder.playList.shift();
+        
+        if (apf.uirecorder.playActions[action.name]) {
+            if (action.name == "mousemove") {
+                apf.tween.multi(cursor, {
+                   steps: 40,
+                   tweens : [
+                        {type : "top",  from : action.start.clientY, to : action.end.clientY},
+                        {type : "left", from : action.start.clientX, to : action.end.clientX}
+                   ],
+                   onfinish : apf.uirecorder.playNextFrame
+                });
+                return;
+            }
+            else if (action.name == "click") {
+                setTimeout(function() {
+                    debugger;
+                    //dispatch click event;
+                    cursor.setAttribute("class", "click");
+                }, 200);
+                setTimeout(function() {
+                    cursor.setAttribute("class", "");
+                }, 400);
+                setTimeout(function() {
+                    apf.uirecorder.playNextFrame();
+                }, 600);
+                return;
+            }
+        }
+        else {
+            apf.uirecorder.playNextFrame();
+            return;
+        }
+    },
+    
+    
     /**
      * Stop recording and playing
      */
@@ -388,14 +441,18 @@ apf.uirecorder = {
         else if (e.currentTarget) {
             if (e.currentTarget.localName) {
                 if ("actiontracker|model".indexOf(e.currentTarget.localName) == -1)
-                    amlNode = e.currentTarget;
+                    amlNode = (e.currentTarget.ownerDocument) 
+                        ? e.currentTarget 
+                        : (e.currentTarget.host)
+                            ? e.currentTarget.host
+                            : null;
                 else
                     targetName == e.currentTarget.localName;
             }
             else if (e.currentTarget.all && e.currentTarget.root === true)
                 targetName = "apf";
         }
-        
+        if (amlNode && !amlNode.ownerDocument) debugger;
         if (amlNode)
             targetName = apf.xmlToXpath(amlNode); //amlNode.id || amlNode.localName + amlNode.$uniqueId.toString();
             
@@ -418,16 +475,39 @@ apf.uirecorder = {
         if (apf.uirecorder.eventList[targetName][apf.uirecorder.eventList[targetName].length-1] != eventName) 
             apf.uirecorder.eventList[targetName].push(eventObj);
     },
+    mouseMovement : {},
     captureAction : function(eventName, e, value) {
-            if (eventName == "keypress") {
+            if (eventName == "keypress" || eventName == "click") {
                 var htmlElement = e.srcElement || e.target;
                 var amlNode     = apf.findHost(htmlElement);
-                //var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+                var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
+            }
+            
+            // get mouse positions
+            if (e.clientX) {
+                var mouse = {
+                    clientX : e.clientX,
+                    clientY : e.clientY,
+                    offsetX : e.offsetX,
+                    offsetY : e.offsetY
+                };
+            }
+            
+            // capture mouse movement
+            if (eventName == "mousemove" && (apf.uirecorder.prevActionObj && apf.uirecorder.prevActionObj.name != "mousemove")) {
+                apf.uirecorder.mouseMovement.start = mouse;
+            }
+            else if (eventName == "mousemove" && (apf.uirecorder.prevActionObj && apf.uirecorder.prevActionObj.name == "mousemove")) {
+                apf.uirecorder.mouseMovement.end = mouse;
+            }
+            if (eventName == "mousemove") {
+                if (!apf.uirecorder.mouseMovement.values) apf.uirecorder.mouseMovement.values = [];
+                apf.uirecorder.mouseMovement.values.push(mouse);
             }
             
 //if (!amlNode) debugger;
             
-            setTimeout(function() {
+//            setTimeout(function() {
                 var changed = false;
                 
                 // loop throught eventList en look for actions
@@ -478,7 +558,9 @@ apf.uirecorder = {
                         }
                     }
                 }
-
+                if (eventName == "mousemove" && apf.uirecorder.mouseMovement.start && apf.uirecorder.mouseMovement.end)
+                    interaction.push("Moved mouse cursor from (" + apf.uirecorder.mouseMovement.start.clientX + ", " + apf.uirecorder.mouseMovement.start.clientY + ") to (" + apf.uirecorder.mouseMovement.end.clientX + ", " + apf.uirecorder.mouseMovement.end.clientY + ")");
+                    
                 var actionObj = {
                     name        : eventName
                 }
@@ -496,14 +578,22 @@ apf.uirecorder = {
                         apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].value += String.fromCharCode(value.toString());
                         changed = true;
                     }
+                    if (eventName == apf.uirecorder.prevActionObj.name && eventName == "mousemove") {
+                        //apf.uirecorder.mouseMovement.end    = mouse;
+                        actionObj.start                     = apf.uirecorder.mouseMovement.start;
+                        actionObj.end                       = apf.uirecorder.mouseMovement.end;
+                        changed                             = true;
+                    }
                 }
+                if (apf.uirecorder.mouseMovement.values)    actionObj.values = apf.uirecorder.mouseMovement.values;
                 
                 if (eventName == "keypress") {
                     interaction.push("Change text to '" + htmlElement.value + "' in " + apf.xmlToXpath(amlNode));
                 }
     
                 if (interaction.length)                 actionObj.interaction = interaction;
-                    
+                if (amlNode)                            actionObj.amlNode = amlNode;
+                if (xmlNode)                            actionObj.xmlNode = xmlNode;
                 if (!changed)
                     // add object to actionList
                     apf.uirecorder.actionList.push(actionObj)
@@ -515,7 +605,7 @@ apf.uirecorder = {
     
                 // reset eventList
                 apf.uirecorder.eventList = [];
-            }, 200);
+//            }, 200);
     }
 };
 
