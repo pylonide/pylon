@@ -404,5 +404,5 @@ apf.scrollbar = function(struct, tagName){
         };
     }
 }).call(apf.scrollbar.prototype = new apf.Presentation());
-
+apf.aml.setElement("scrollbar", apf.scrollbar);
 //#endif
