@@ -341,7 +341,7 @@ apf.uirecorder = {
     /*
      * play next action frame
      */
-    playActions : {"mousemove":1, "click":1},
+    playActions : {"mousemove":1, "click":1, "keypress":1},
     playList : [],
     playNextFrame : function() {
         if (!apf.uirecorder.isPlaying) return;
@@ -366,17 +366,25 @@ apf.uirecorder = {
             }
             else if (action.name == "click") {
                 setTimeout(function() {
-                    debugger;
-                    //dispatch click event;
                     cursor.setAttribute("class", "click");
                 }, 200);
                 setTimeout(function() {
+                    //dispatch click event;
+                    if (action.amlNode)
+                        if (action.amlNode.onclick)
+                            action.amlNode.onclick();
+                        else
+                            action.amlNode.dispatchEvent("click");
                     cursor.setAttribute("class", "");
                 }, 400);
                 setTimeout(function() {
                     apf.uirecorder.playNextFrame();
                 }, 600);
                 return;
+            }
+            else if (action.name == "keypress") {
+                action.htmlElement.value = action.value;
+                apf.uirecorder.playNextFrame();
             }
         }
         else {
@@ -416,7 +424,7 @@ apf.uirecorder = {
     captureEvent    : function(eventName, e) {
         // ignore event from ignoreEvents list
         if (apf.uirecorder.ignoreEvents[eventName]) return;
-        
+        //if (eventName == "click") debugger;
         //if (eventName == "updatestart") debugger;
         /*
         var target = (e.currentTarget) 
@@ -464,10 +472,12 @@ apf.uirecorder = {
             name        : eventName,
             amlNode     : amlNode,
             //xmlNode     : xmlNode,
-            value       : e.value,
             event       : e
         }
-
+        //if (eventName == "click") debugger;
+        //if (htmlElement)    eventObj.htmlElement    = htmlElement;
+        if (e.value)        eventObj.value          = value;
+        
         if (!targetName) debugger; 
 
         if (!apf.uirecorder.eventList[targetName]) apf.uirecorder.eventList[targetName] = [];
@@ -494,16 +504,21 @@ apf.uirecorder = {
             }
             
             // capture mouse movement
-            if (eventName == "mousemove" && (apf.uirecorder.prevActionObj && apf.uirecorder.prevActionObj.name != "mousemove")) {
+            if (eventName == "mousemove" && (apf.uirecorder.prevActionObj && apf.uirecorder.prevActionObj.name == "click")) {
                 apf.uirecorder.mouseMovement.start = mouse;
             }
             else if (eventName == "mousemove" && (apf.uirecorder.prevActionObj && apf.uirecorder.prevActionObj.name == "mousemove")) {
                 apf.uirecorder.mouseMovement.end = mouse;
             }
+            else if (eventName == "mousemove") {
+                return;
+            }
+            /*
             if (eventName == "mousemove") {
                 if (!apf.uirecorder.mouseMovement.values) apf.uirecorder.mouseMovement.values = [];
                 apf.uirecorder.mouseMovement.values.push(mouse);
             }
+            */
             
 //if (!amlNode) debugger;
             
@@ -565,7 +580,7 @@ apf.uirecorder = {
                     name        : eventName
                 }
                 
-                //if (htmlElement)                        actionObj.htmlElement = htmlElement;
+                if (htmlElement)                        actionObj.htmlElement = htmlElement;
                 //if (amlNode)                            actionObj.amlNode     = amlNode;
                 //if (xmlNode)                            actionObj.xmlNode     = xmlNode;
 
@@ -575,7 +590,7 @@ apf.uirecorder = {
                 // check previous action object
                 if (apf.uirecorder.prevActionObj) {
                     if (eventName == apf.uirecorder.prevActionObj.name && eventName == "keypress") {
-                        apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].value += String.fromCharCode(value.toString());
+                        actionObj.value = htmlElement.value;//apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].value + String.fromCharCode(value.toString());
                         changed = true;
                     }
                     if (eventName == apf.uirecorder.prevActionObj.name && eventName == "mousemove") {
@@ -585,7 +600,7 @@ apf.uirecorder = {
                         changed                             = true;
                     }
                 }
-                if (apf.uirecorder.mouseMovement.values)    actionObj.values = apf.uirecorder.mouseMovement.values;
+                //if (apf.uirecorder.mouseMovement.values)    actionObj.values = apf.uirecorder.mouseMovement.values;
                 
                 if (eventName == "keypress") {
                     interaction.push("Change text to '" + htmlElement.value + "' in " + apf.xmlToXpath(amlNode));
