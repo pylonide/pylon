@@ -395,10 +395,14 @@ apf.calendar = function(struct, tagName){
 
                     paddingBT = Math.ceil((height - this.$getFontSize(cell))*0.5);
                     
-                    cell.style.width         = Math.max(cWidthf, 0) + "px";
+                    cell.style.width         = (Math.max(cWidthf, 0) - (apf.isIE || apf.isChrome ? 1 : 0)) + "px";
                     cell.style.height        = (height - (2 * paddingBT - cDiff[1]))+ "px";
                     cell.style.paddingTop    = (paddingBT > 0 ? paddingBT + 1 : 0) + "px";
                     cell.style.paddingBottom = (paddingBT > 0 ? paddingBT - 1 : 0) + "px";
+                    if (apf.isIE || apf.isChrome) {
+                        cell.style.paddingLeft = (parseInt(cell.style.paddingLeft || 0) + 2) + "px";
+                    }
+                    
                 }
 
                 row.style.paddingLeft = pl + "px";
