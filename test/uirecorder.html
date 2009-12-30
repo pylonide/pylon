@@ -20,6 +20,7 @@
                 width: auto;
                 left: 16px;
                 font-size: 12px;
+                color: #00F;
             }
             #cursor.click {
                 background: transparent url("images/cursor_r.png") no-repeat;
@@ -213,12 +214,18 @@
             Play
         </a:button>
 
-        <a:list 
-            id="listEvent" each="[event]" caption="[text()]" model="mdlEvent"
-            left="850"
-            width="400"
-            height="600"
-        />
+        <a:tree 
+            id              = "treeEvent" 
+            model           = "mdlEvent"
+            left            = "300"
+            width           = "300"
+            height          = "600"
+            startcollapsed  = "false"
+        >
+            <a:each match="[element|event]">
+                <a:caption match="[@caption]" />
+            </a:each>
+        </a:tree>
         <a:model id="mdlEvent">
             <data></data>
         </a:model>
@@ -227,16 +234,14 @@
         <a:tree 
             id              = "treeAction"
             model           = "mdlAction" 
-            width           = "400"
-            onafterselect   = "showAction(this)"
+            width           = "300"
+            height          = "600"
+            onafterselect   = "selectAction()"
             multiselect     = "true" 
         >
-            <a:each match="[action|grouped]">
+            <a:each match="[action]">
                 <a:caption match="[@caption]" />
             </a:each>
-            <!--
-            <a:each match="[grouped]" caption="[text()]"/>\
-            -->
         </a:tree>
         <a:model id="mdlAction">
             <data></data>
@@ -249,16 +254,17 @@
           padding   = "5"
           width     = "400"
         >
-            <a:label>Realtime</a:label>
+            <a:label>Movement</a:label>
             <a:dropdown 
-                id="realtimeTb" 
-                value="[property/@value]"
-                initial-message="Select"
+                id              = "dropdownMovement" 
+                value           = "[property/@value]"
+                initial-message = "Select"
+                disabled        = "true"
             >
-                 <a:item value="true">true</a:item>
-                 <a:item value="false">false</a:item>
+                 <a:item value="realtime">realtime</a:item>
+                 <a:item value="lineair">lineair</a:item>
             </a:dropdown>
-            <a:button onclick="saveProperties()">Save</a:button>
+            <a:button onclick="saveProperties()" disabled="{dropdownMovement.disabled}">Save</a:button>
         </a:table>
 <!--
         <a:datagrid 
@@ -282,14 +288,9 @@
         </a:datagrid>
 -->
         <a:script>//<!--
-        
-            function action1() {
-            
-            }
-            
             mdlEventData = apf.getXml("<data />");
             mdlActionData = apf.getXml("<data />");
-
+/*
             function getEvents() {
                 mdlActionData = apf.getXml("<data />");
 
@@ -362,7 +363,7 @@
                 mdlAction.load(mdlActionData.xml);
                 //apf.uirecorder.eventList.all = [];
             }
-            
+
             apf.addEventListener("eventcapture", function(e){
                 var eventNode = mdlActionData.ownerDocument.createElement("event");
                 eventNode.appendChild(mdlActionData.ownerDocument.createTextNode(e.event.name + ": " + e.event.target));
@@ -387,7 +388,6 @@
                     }
 
                     // check for objects
-/*
                     var objsNode = mdlEventData.ownerDocument.createElement("objects");
                     objsNode.appendChild(mdlEventData.ownerDocument.createTextNode("objects"));
                     
@@ -411,7 +411,7 @@
                         objsNode.appendChild(objNode);
                     }
                     actionNode.appendChild(objsNode);
-*/
+
                     // events fired during action
                     for (var eventNode, i = 0, l = e.eventList.length; i < l; i++) {
                         eventNode = mdlEventData.ownerDocument.createElement("event");
@@ -447,6 +447,7 @@
                     mdlAction.load(mdlActionData.xml);
                 }
             });
+*/            
 
             // start capturing events
             function record(){
@@ -465,130 +466,173 @@
                 recBtn.setAttribute('disabled', apf.uirecorder.isRecording);
                 stopBtn.setAttribute('disabled', !apf.uirecorder.isRecording);
                 
+                loadActionList();
+                //debugger;
+            }
+            
+            function loadActionList() {
                 // get action list
                 mdlActionData = apf.getXml("<data />");
                 for (var prevActionName, action, actionNode, groupedNode, childNode, propertyNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
                     action = apf.uirecorder.actionList[i];
-                    if (action.name == prevActionName && action.name == "mousemove") {
-                        if (!actionNode.selectSingleNode("grouped")) {
-                            groupedNode = mdlEventData.ownerDocument.createElement("grouped");
-                            groupedNode.setAttribute("caption", "grouped");
-                            //groupedNode.appendChild(mdlActionData.ownerDocument.createTextNode("grouped"));
-                            actionNode.appendChild(groupedNode);
-                        }
-                        childNode = mdlEventData.ownerDocument.createElement("action");
-                        childNode.setAttribute("x", action.event.clientX);
-                        childNode.setAttribute("y", action.event.clientY);
-                        childNode.setAttribute("type", action.name);
-                        childNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
-                        //childNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
 
-                        actionNode.setAttribute("endX", action.event.clientX);
-                        actionNode.setAttribute("endY", action.event.clientY);
+                    actionNode = mdlEventData.ownerDocument.createElement("action");
+                    actionNode.setAttribute("x", action.event.clientX);
+                    actionNode.setAttribute("y", action.event.clientY);
+                    actionNode.setAttribute("type", action.name);
+                    actionNode.setAttribute("index", i);
+                    actionNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
+                    //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
 
-                        groupedNode.appendChild(childNode);
+                    if (action.name == "mousemove") {
+                        propertyNode = mdlEventData.ownerDocument.createElement("property");
+                        propertyNode.setAttribute("name", "movement");
+                        propertyNode.setAttribute("value", action.movement);
+                        //propertyNode.appendChild(mdlActionData.ownerDocument.createTextNode("true"));
+                        actionNode.appendChild(propertyNode);
                     }
-                    else {
-                        actionNode = mdlEventData.ownerDocument.createElement("action");
-                        actionNode.setAttribute("x", action.event.clientX);
-                        actionNode.setAttribute("y", action.event.clientY);
-                        actionNode.setAttribute("type", action.name);
-                        actionNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
-                        //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
 
-                        if (action.name == "mousemove") {
-                            propertyNode = mdlEventData.ownerDocument.createElement("property");
-                            propertyNode.setAttribute("name", "realtime");
-                            propertyNode.setAttribute("value", "true");
-                            //propertyNode.appendChild(mdlActionData.ownerDocument.createTextNode("true"));
-                            actionNode.appendChild(propertyNode);
-                        }
-
-                        mdlActionData.appendChild(actionNode);
-                        prevActionName = action.name;
-                    }
+                    mdlActionData.appendChild(actionNode);
+                    prevActionName = action.name;
                 }
 
-                mdlAction.load(mdlActionData.xml);
+                mdlAction.load(mdlActionData.xml);            
             }
             
-            function showAction(tree) {
-                var items = tree.selection;
-                if (items.length == 1)
-                    treeAction.select(items[0]);
-
+            function selectAction() {
+                showActions();
+                loadEventList();
+            }
+            
+            function showActions() {    
+                var items = treeAction.selection;
+                
                 var cursor = document.getElementById("cursor");
                 var cursorMsg = document.getElementById("cursorMsg");
                 
                 var previewActions = document.getElementById("previewActions");
                 previewActions.innerHTML = "";
-                for (var item, it = 0, il = items.length; it < il; it++) {
-                    item = items[it];
-                    
-                    if (item.getAttribute("type") == "mousemove") {
-                        var grouped;
+
+                var enableDropdown = true;
+                for (var item, ii = 0, il = items.length; ii < il; ii++) {
+                    item = items[ii];
+                    action = apf.uirecorder.actionList[item.getAttribute("index")];
+                    if (action.name != "mousemove") {
+                        enableDropdown = false;
+                    }
+                    if (action.name == "mousemove") {
+                        var grouped = [];
+                        var firstAction = action;
                         
-                        // realtime movement
-                        if (grouped = item.selectSingleNode("grouped")) {
-                            for (var trail, div, i = 0, l = grouped.childNodes.length - 1; i < l; i = i + 10) {
-                                trail = grouped.childNodes[i];
-                                
-                                // create new trailpoint
-                                div = document.createElement("div");
-                                div.setAttribute("class", "trail");
-                                div.style.top = trail.getAttribute("y") + "px";
-                                div.style.left = trail.getAttribute("x") + "px"; 
-                                div.style.opacity = i / grouped.childNodes.length;
-                                previewActions.appendChild(div);
-                            }
-                            cursor.style.top = trail.getAttribute("y") + "px";
-                            cursor.style.left = trail.getAttribute("x") + "px";
-                            cursorMsg.innerHTML = trail.getAttribute("type") + " (" + trail.getAttribute("x") + ", " + trail.getAttribute("y") + ")";
+                        var movement = item.selectSingleNode("property[@name='movement']").getAttribute("value");
+                        var trailIncr = 5;//(movement == "realtime") ? 5 : 1;
+                        
+                        for (var ci = 0, cl = firstAction[movement].length; ci < cl; ci++) {
+                            action = firstAction[movement][ci];
+                            if (action.name != "mousemove") break;
+                            grouped.push(action);
                         }
-                        // lineair movement
-                        else {
-                            var numTrails = 20;
-                            for (var trail, div, i = 0, l = numTrails; i < l; i++) {
-                                var x = parseInt(item.getAttribute("x")) + parseInt((item.getAttribute("endX") - item.getAttribute("x"))*i/(numTrails-1));
-                                var y = parseInt(item.getAttribute("y")) + parseInt((item.getAttribute("endY") - item.getAttribute("y"))*i/(numTrails-1));
-                                
-                                // create new trailpoint
-                                div = document.createElement("div");
-                                div.setAttribute("class", "trail");
-                                div.style.top = y + "px";
-                                div.style.left = x + "px"; 
-                                div.style.opacity = i / (numTrails-1);
-                                previewActions.appendChild(div);
-                            }
-                            cursor.style.top = y + "px";
-                            cursor.style.left = x + "px";
-                            cursorMsg.innerHTML = item.getAttribute("type") + " (" + x + ", " + y + ")";
+                        
+                        for (var gi = 0, gl = grouped.length; gi < gl; gi += trailIncr) {
+                            action = grouped[gi];
+                            // create new trailpoint
+                            div = document.createElement("div");
+                            div.setAttribute("class", "trail");
+                            div.style.top = action.event.clientY + "px";
+                            div.style.left = action.event.clientX + "px"; 
+                            div.style.opacity = gi / grouped.length;
+                            previewActions.appendChild(div);
                         }
+    
+                        cursor.style.top = action.event.clientY + "px";
+                        cursor.style.left = action.event.clientX + "px";
+                        cursorMsg.innerHTML = action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")";
                     } 
                     else if (item.getAttribute("type") == "click") {
-                        cursor.style.top = item.getAttribute("y") + "px";
-                        cursor.style.left = item.getAttribute("x") + "px";
-                        cursorMsg.innerHTML = item.getAttribute("type") + " (" + item.getAttribute("x") + ", " + item.getAttribute("y") + ")";
+                        cursor.style.top = action.event.clientY + "px";
+                        cursor.style.left = action.event.clientX + "px";
+                        cursorMsg.innerHTML = action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")";
+                    }
+                }
+                
+                dropdownMovement.setProperty("disabled", !enableDropdown);
+            }
+
+            function loadActionList() {
+                // get action list
+                mdlActionData = apf.getXml("<data />");
+                for (var prevActionName, action, actionNode, groupedNode, childNode, propertyNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+                    action = apf.uirecorder.actionList[i];
+
+                    actionNode = mdlEventData.ownerDocument.createElement("action");
+                    actionNode.setAttribute("x", action.event.clientX);
+                    actionNode.setAttribute("y", action.event.clientY);
+                    actionNode.setAttribute("type", action.name);
+                    actionNode.setAttribute("index", i);
+                    actionNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
+                    //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
+
+                    if (action.name == "mousemove") {
+                        propertyNode = mdlEventData.ownerDocument.createElement("property");
+                        propertyNode.setAttribute("name", "movement");
+                        propertyNode.setAttribute("value", action.movement);
+                        //propertyNode.appendChild(mdlActionData.ownerDocument.createTextNode("true"));
+                        actionNode.appendChild(propertyNode);
+                    }
+
+                    mdlActionData.appendChild(actionNode);
+                    prevActionName = action.name;
+                }
+
+                mdlAction.load(mdlActionData.xml);            
+            }
+
+            function loadEventList() {
+                var items = treeAction.selection;
+                if (items.length > 1) return;
+                
+                var item = items[0];
+                var eventList = apf.uirecorder.actionList[item.getAttribute("index")].eventList;
+                mdlEventData = apf.getXml("<data />");
+                var elementNode;
+                for (var elementName in eventList) {
+                    if (typeof eventList[elementName] != "object") continue;
+                    
+                    elementNode = mdlEventData.ownerDocument.createElement("element");
+                    elementNode.setAttribute("caption", elementName);
+ 
+                    for (var eventNode, i = 0, l = eventList[elementName].length; i < l; i++) {
+                        var event = eventList[elementName][i];
+                        eventNode = mdlEventData.ownerDocument.createElement("event");
+                        eventNode.setAttribute("caption", event.name);
+                        elementNode.appendChild(eventNode);
                     }
                     
-                    
-                 }
+                    mdlEventData.appendChild(elementNode);
+                }
+                mdlEvent.load(mdlEventData.xml);
             }
             
             function saveProperties() {
-                var item = treeAction.selected;
-                //debugger;
+                var items = treeAction.selection;
                 
-                var propertyNode = item.selectSingleNode("//property[@name='realtime']");
-                //debugger;
-                apf.xmldb.setAttribute(propertyNode, "value", realtimeTb.value);
-                if (item.selectSingleNode("grouped"))
-                    apf.xmldb.removeNode(item.selectSingleNode("grouped"));
-                //mdlAction.load(mdlActionData.xml);
-                
-                treeAction.clearSelection();
-                treeAction.select(item);
-                //apf.xmldb.setAttribute(items[i], "realtime", "false");
+                for (var item, i = 0, l = items.length; i < l; i++) {
+                    item = items[i];
+                    
+                    if (item.getAttribute("type") != "mousemove") continue;
+                    
+                    var propertyNode = item.selectSingleNode("property[@name='movement']");
+                    apf.xmldb.setAttribute(propertyNode, "value", dropdownMovement.value);
+    
+                    if (dropdownMovement.value === "lineair")
+                        apf.uirecorder.addLineairMovement(item.getAttribute("index"));
+                    apf.uirecorder.actionList[item.getAttribute("index")].movement = dropdownMovement.value;
+    
+                    //loadActionList();
+                    //treeAction.clearSelection();
+                    //treeAction.select(item);
+                }
+                showActions();
             }
             
             function clear() {
