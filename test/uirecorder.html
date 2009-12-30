@@ -1,0 +1,614 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>UIRecorder</title>
+        <script src="../apf.js"></script>
+        <script src="../loader.js"></script>
+        <style type="text/css">
+            #cursor {
+                position: absolute;
+                left: -9999px;
+                width: auto;
+                height: 21px;
+                background: transparent url("images/cursor_w.png") no-repeat;
+            }
+            #cursor #cursorMsg {
+                position: relative;
+                display: block;
+                width: auto;
+                left: 16px;
+                font-size: 12px;
+            }
+            #cursor.click {
+                background: transparent url("images/cursor_r.png") no-repeat;
+            }
+            #cursor.text {
+                background: transparent url("images/cursor_text.png") no-repeat;
+            }
+            #previewActions {
+            }
+            .trail {
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background: #F00;
+            }
+        </style>
+	</head>
+	<body>
+	    <a:skin src="../skins.xml" />
+        
+<a:model id="mdlItems">
+    <items>
+        <item>
+            <name>John Doe</name>
+            <subject>About those important documents.</subject>
+            <message>I would really like them back!</message>
+        </item>
+    </items>
+</a:model>
+
+<a:actions id="actExample">
+    <a:add>
+        <item />
+    </a:add>
+    <a:update />
+</a:actions>
+
+<a:button 
+  caption = "Add"
+  right   = "10" 
+  top     = "10"
+  onclick = "popupWindow.begin('add')" />
+<a:button id="btn1"
+  caption  = "Undo"
+  right    = "10"
+  top      = "40"
+  disabled = "{!atTransTest1.undolength}" 
+  onclick  = "atTransTest1.undo()" />
+<a:button id="btn2"
+  caption  = "Redo"
+  right    = "10"
+  top      = "70"
+  disabled = "{!atTransTest1.redolength}" 
+  onclick  = "atTransTest1.redo()" />
+
+<a:label height="20">Double click on an item to edit it</a:label>
+<a:datagrid 
+  id      = "dgItems" 
+  width   = "525" 
+  height  = "100" 
+  model   = "mdlItems" 
+  actions = "actExample"
+  actiontracker ="atTransTest1"
+  onafterchoose = "popupWindow.show()">
+    <a:each match="[item]">
+        <a:column type="icon" value="note.png" width="18"/>
+        <a:column caption="Name" value="[name]" width="30%"/>
+        <a:column caption="Subject" value="[subject]" width="70%"/>
+    </a:each>
+</a:datagrid>
+
+<a:window 
+  id          = "popupWindow" 
+  transaction = "true"
+  kbclose     = "true"
+  popout      = "true"
+  buttons     = "min|max|close" 
+  width       = "300" 
+  height      = "300" 
+  center      = "true"
+  minwidth    = "300" 
+  minheight   = "290"
+  resizable   = "true"
+  realtime    = "true" 
+  title       = "Message" 
+  icon        = "note.png" 
+  model       = "{dgItems.selected}">
+    <a:table 
+      columns = "80, *" 
+      margin  = "10 10 10 10" 
+      padding = "5" 
+      bottom  = "35" 
+      top     = "0">
+        <a:label>Name</a:label>
+        <a:textbox value="[name]" id="txt"
+          required   = "true" 
+          invalidmsg = "Missing name;The name field is required" />
+        <a:label>Subject</a:label>
+        <a:textbox value="[subject]" />
+        <a:label span="*">Message</a:label>
+        <a:textarea value="[message]" 
+            height = "*" 
+            span   = "*"/>
+    </a:table>
+    
+    <a:button 
+      action  = "ok"
+      default = "true"
+      right   = "170"
+      bottom  = "10"
+      width   = "75">OK</a:button>
+        
+    <a:button 
+      action  = "cancel"
+      right   = "90"
+      bottom  = "10"
+      width   = "75">Cancel</a:button>
+    
+    <a:button 
+      action   = "apply"
+      right    = "10"
+      bottom   = "10"
+      width    = "75"
+      disabled = "{!popupWindow.undolength}">Apply</a:button>
+</a:window>
+<!--
+        <a:window  
+            id          = "window1"
+            buttons     = "min|max|close"
+            title       = "Window"
+            visible     = "true"
+            resizable   = "true" 
+            width       = "200"
+            height      = "190"
+            minwidth    = "170"
+            minheight   = "150"> 
+        </a:window>
+
+        <a:textbox id="textbox1"></a:textbox>
+
+        <a:window id="tabWindow" 
+          visible = "true" 
+          width   = "400" 
+          height  = "150" 
+          title   = "Simple Tab" 
+          icon    = "application_view_icons.png">
+            <a:tab id="tabs" anchors="10 10 10 10"> 
+                <a:page id="page1" caption="General"> 
+                    <a:checkbox>Example</a:checkbox> 
+                    <a:button>Example</a:button> 
+                </a:page> 
+                <a:page id="page2" caption="Advanced"> 
+                    <a:checkbox>Test checkbox</a:checkbox> 
+                    <a:checkbox>Test checkbox</a:checkbox> 
+                    <a:checkbox>Test checkbox</a:checkbox> 
+                </a:page> 
+                <a:page id="page3" caption="Ajax.org"> 
+                    <a:checkbox>This ok?</a:checkbox> 
+                    <a:checkbox>This better?</a:checkbox> 
+                </a:page> 
+            </a:tab> 
+        </a:window>
+
+        <a:button id="action1Btn" onclick="action1()" 
+          bottom="50" left="10">
+            Action 1
+        </a:button>
+-->
+        <a:button id="recBtn" onclick="record()" 
+          bottom="10" left="10">
+            Record
+        </a:button>
+
+        <a:button id="stopBtn" onclick="stop()" disabled="true" 
+          bottom="10" left="130">
+            Stop
+        </a:button>
+
+        <a:button id="clrBtn" onclick="clear()" 
+          bottom="10" left="250">
+            Clear
+        </a:button>
+
+        <a:button id="getEventsBtn" onclick="getEvents()" 
+          bottom="10" left="370">
+            Get Events
+        </a:button>
+
+        <a:button id="playBtn" onclick="play()" 
+          bottom="10" left="490">
+            Play
+        </a:button>
+
+        <a:list 
+            id="listEvent" each="[event]" caption="[text()]" model="mdlEvent"
+            left="850"
+            width="400"
+            height="600"
+        />
+        <a:model id="mdlEvent">
+            <data></data>
+        </a:model>
+
+
+        <a:tree 
+            id              = "treeAction"
+            model           = "mdlAction" 
+            width           = "400"
+            onafterselect   = "showAction(this)"
+            multiselect     = "true" 
+        >
+            <a:each match="[action|grouped]">
+                <a:caption match="[@caption]" />
+            </a:each>
+            <!--
+            <a:each match="[grouped]" caption="[text()]"/>\
+            -->
+        </a:tree>
+        <a:model id="mdlAction">
+            <data></data>
+        </a:model>
+
+        <a:table id ="tableTest"
+          columns   = "50, *"
+          model     = "{treeAction.selected}"
+          margin    = "40 10 40 10" 
+          padding   = "5"
+          width     = "400"
+        >
+            <a:label>Realtime</a:label>
+            <a:dropdown 
+                id="realtimeTb" 
+                value="[property/@value]"
+                initial-message="Select"
+            >
+                 <a:item value="true">true</a:item>
+                 <a:item value="false">false</a:item>
+            </a:dropdown>
+            <a:button onclick="saveProperties()">Save</a:button>
+        </a:table>
+<!--
+        <a:datagrid 
+          width     = "400" 
+          height    = "200" 
+          id        = "datagridProperties"
+          model     = "{treeAction.selected}"
+        >
+            <a:each match="[property]"> 
+                <a:column 
+                  caption = "Property" 
+                  value   = "[@name]"
+                  width   = "100%" /> 
+                <a:column
+                  caption = "Value" 
+                  width   = "180" 
+                  value   = "[@value]">
+                </a:column>
+            </a:each> 
+            <a:actions /> 
+        </a:datagrid>
+-->
+        <a:script>//<!--
+        
+            function action1() {
+            
+            }
+            
+            mdlEventData = apf.getXml("<data />");
+            mdlActionData = apf.getXml("<data />");
+
+            function getEvents() {
+                mdlActionData = apf.getXml("<data />");
+
+                // loop throught user actions like click
+                for (var action, actionNode, propNode, interactionNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+                    
+
+                    if (apf.uirecorder.actionList[i].interaction && apf.uirecorder.actionList[i].interaction.length && apf.uirecorder.actionList[i].interaction.length == 1)
+                        action = apf.uirecorder.actionList[i].interaction[0];
+                    else if (apf.uirecorder.actionList[i].interaction && apf.uirecorder.actionList[i].interaction.length && apf.uirecorder.actionList[i].interaction.length > 1)
+                        action = apf.uirecorder.actionList[i].interaction[0] + " (more actions...)";
+                    else
+                        action = "no action recorded";
+                    
+                    actionNode = mdlEventData.ownerDocument.createElement("action");    
+                    actionNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].name + ": " + action));
+
+                    // loop through properties
+                    for (var propName in apf.uirecorder.actionList[i]) {
+                        if (propName != "events" && propName != "interaction") {
+                            propNode = mdlEventData.ownerDocument.createElement("property");
+                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + apf.uirecorder.actionList[i][propName]));
+                        }
+                        else if (propName == "events") {
+                            propNode = mdlEventData.ownerDocument.createElement("property");
+                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName));
+                            
+                            // loop through objects
+                            for (var objName in apf.uirecorder.actionList[i].events) {
+                                if (typeof apf.uirecorder.actionList[i].events[objName] == "object" && apf.uirecorder.actionList[i].events[objName].length) {
+                                    objNode = mdlEventData.ownerDocument.createElement("object");
+                                    objNode.appendChild(mdlEventData.ownerDocument.createTextNode(objName));
+                                
+                                    // loop through events
+                                    for (var eventNode, j = 0, jl = apf.uirecorder.actionList[i].events[objName].length; j < jl; j++) {
+                                        //if (apf.uirecorder.actionList[i].events[objName][j]) {
+                                            eventNode = mdlEventData.ownerDocument.createElement("event");
+                                            if (!apf.uirecorder.actionList[i].events[objName][j].value)
+                                                eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].events[objName][j].name));
+                                            else
+                                                eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].events[objName][j].name + ": " + apf.uirecorder.actionList[i].events[objName][j].value));
+                                                
+                                            objNode.appendChild(eventNode);
+                                        //}
+                                    }
+                                    propNode.appendChild(objNode);
+                                }
+                            }
+                        }
+                        else if (propName == "interaction") {
+                            if (!apf.uirecorder.actionList[i].interaction) continue;
+                            propNode = mdlEventData.ownerDocument.createElement("property");
+                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName));
+                            
+                            // loop through interactions
+                            for (var j = 0, jl = apf.uirecorder.actionList[i].interaction.length; j < jl; j++) {
+                                interactionNode = mdlEventData.ownerDocument.createElement("interaction");
+                                interactionNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].interaction[j]));
+                                propNode.appendChild(interactionNode);
+                            }
+                        }
+                        
+                        actionNode.appendChild(propNode);
+                    }
+                    
+                    
+                    mdlActionData.appendChild(actionNode);
+                }
+
+                mdlAction.load(mdlActionData.xml);
+                //apf.uirecorder.eventList.all = [];
+            }
+            
+            apf.addEventListener("eventcapture", function(e){
+                var eventNode = mdlActionData.ownerDocument.createElement("event");
+                eventNode.appendChild(mdlActionData.ownerDocument.createTextNode(e.event.name + ": " + e.event.target));
+                
+                mdlEventData.appendChild(eventNode);
+                mdlEvent.load(mdlEventData.xml);
+            });
+            
+            apf.addEventListener("actioncapture", function(e){
+                // record actions based on ui events like click, drag
+                if (e.action) {
+                    var actionNode = mdlActionData.ownerDocument.createElement("action");
+                    actionNode.setAttribute("id", e.id);
+                    actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(e.id + ". " + e.action + " (" + e.target + ")"));
+
+                    // object actions
+                    for (var objActionNode, i = 0, l = e.objActionList.length; i < l; i++) {
+                        objActionNode = mdlEventData.ownerDocument.createElement("action");
+                        objActionNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.objActionList[i]));
+
+                        actionNode.appendChild(objActionNode);
+                    }
+
+                    // check for objects
+/*
+                    var objsNode = mdlEventData.ownerDocument.createElement("objects");
+                    objsNode.appendChild(mdlEventData.ownerDocument.createTextNode("objects"));
+                    
+                    var objNode, typeNode, propNode;
+                    for (var objName in e.objectList) {
+                        objNode = mdlEventData.ownerDocument.createElement("object");
+                        objNode.appendChild(mdlEventData.ownerDocument.createTextNode(objName));
+                        
+                        for (var typeName in e.objectList[objName]) {
+                            typeNode = mdlEventData.ownerDocument.createElement("property");
+                            typeNode.appendChild(mdlEventData.ownerDocument.createTextNode(typeName));
+
+                            for (var propName in e.objectList[objName][typeName]) {
+                                propNode = mdlEventData.ownerDocument.createElement("property");
+                                propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + e.objectList[objName][typeName][propName]));
+                                typeNode.appendChild(propNode);
+                            } 
+                            objNode.appendChild(typeNode);
+                        }
+                        
+                        objsNode.appendChild(objNode);
+                    }
+                    actionNode.appendChild(objsNode);
+*/
+                    // events fired during action
+                    for (var eventNode, i = 0, l = e.eventList.length; i < l; i++) {
+                        eventNode = mdlEventData.ownerDocument.createElement("event");
+                        eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.eventList[i].name));
+
+                        var propNode;
+                        // check for target
+                        if (e.eventList[i].target) {
+                            propNode = mdlEventData.ownerDocument.createElement("property");
+                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode("target: " + e.eventList[i].target));
+                            eventNode.appendChild(propNode);
+                        }
+                        
+                        // check for events
+                        for (var propName in e.eventList[i].properties) {
+                            propNode = mdlEventData.ownerDocument.createElement("property");
+                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + e.eventList[i].properties[propName]));
+                            eventNode.appendChild(propNode);
+                        }
+
+                        actionNode.appendChild(eventNode);
+                    }
+
+                    // all events fired during action
+                    for (var eventNode, i = 0, l = e.allEventsList.length; i < l; i++) {
+                        eventNode = mdlEventData.ownerDocument.createElement("event");
+                        eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.allEventsList[i]));
+
+                        actionNode.appendChild(eventNode);
+                    }
+
+                    mdlActionData.appendChild(actionNode);
+                    mdlAction.load(mdlActionData.xml);
+                }
+            });
+
+            // start capturing events
+            function record(){
+                //start recording user actions
+                apf.uirecorder.record();
+        
+                recBtn.setAttribute('disabled', apf.uirecorder.isRecording);
+                stopBtn.setAttribute('disabled', !apf.uirecorder.isRecording);
+            }
+
+            // stop capturing events
+            function stop(){
+                //start recording user actions
+                apf.uirecorder.stop();
+        
+                recBtn.setAttribute('disabled', apf.uirecorder.isRecording);
+                stopBtn.setAttribute('disabled', !apf.uirecorder.isRecording);
+                
+                // get action list
+                mdlActionData = apf.getXml("<data />");
+                for (var prevActionName, action, actionNode, groupedNode, childNode, propertyNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+                    action = apf.uirecorder.actionList[i];
+                    if (action.name == prevActionName && action.name == "mousemove") {
+                        if (!actionNode.selectSingleNode("grouped")) {
+                            groupedNode = mdlEventData.ownerDocument.createElement("grouped");
+                            groupedNode.setAttribute("caption", "grouped");
+                            //groupedNode.appendChild(mdlActionData.ownerDocument.createTextNode("grouped"));
+                            actionNode.appendChild(groupedNode);
+                        }
+                        childNode = mdlEventData.ownerDocument.createElement("action");
+                        childNode.setAttribute("x", action.event.clientX);
+                        childNode.setAttribute("y", action.event.clientY);
+                        childNode.setAttribute("type", action.name);
+                        childNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
+                        //childNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
+
+                        actionNode.setAttribute("endX", action.event.clientX);
+                        actionNode.setAttribute("endY", action.event.clientY);
+
+                        groupedNode.appendChild(childNode);
+                    }
+                    else {
+                        actionNode = mdlEventData.ownerDocument.createElement("action");
+                        actionNode.setAttribute("x", action.event.clientX);
+                        actionNode.setAttribute("y", action.event.clientY);
+                        actionNode.setAttribute("type", action.name);
+                        actionNode.setAttribute("caption", action.name + " (" + action.event.clientX + ", " + action.event.clientY + ")");
+                        //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
+
+                        if (action.name == "mousemove") {
+                            propertyNode = mdlEventData.ownerDocument.createElement("property");
+                            propertyNode.setAttribute("name", "realtime");
+                            propertyNode.setAttribute("value", "true");
+                            //propertyNode.appendChild(mdlActionData.ownerDocument.createTextNode("true"));
+                            actionNode.appendChild(propertyNode);
+                        }
+
+                        mdlActionData.appendChild(actionNode);
+                        prevActionName = action.name;
+                    }
+                }
+
+                mdlAction.load(mdlActionData.xml);
+            }
+            
+            function showAction(tree) {
+                var items = tree.selection;
+                if (items.length == 1)
+                    treeAction.select(items[0]);
+
+                var cursor = document.getElementById("cursor");
+                var cursorMsg = document.getElementById("cursorMsg");
+                
+                var previewActions = document.getElementById("previewActions");
+                previewActions.innerHTML = "";
+                for (var item, it = 0, il = items.length; it < il; it++) {
+                    item = items[it];
+                    
+                    if (item.getAttribute("type") == "mousemove") {
+                        var grouped;
+                        
+                        // realtime movement
+                        if (grouped = item.selectSingleNode("grouped")) {
+                            for (var trail, div, i = 0, l = grouped.childNodes.length - 1; i < l; i = i + 10) {
+                                trail = grouped.childNodes[i];
+                                
+                                // create new trailpoint
+                                div = document.createElement("div");
+                                div.setAttribute("class", "trail");
+                                div.style.top = trail.getAttribute("y") + "px";
+                                div.style.left = trail.getAttribute("x") + "px"; 
+                                div.style.opacity = i / grouped.childNodes.length;
+                                previewActions.appendChild(div);
+                            }
+                            cursor.style.top = trail.getAttribute("y") + "px";
+                            cursor.style.left = trail.getAttribute("x") + "px";
+                            cursorMsg.innerHTML = trail.getAttribute("type") + " (" + trail.getAttribute("x") + ", " + trail.getAttribute("y") + ")";
+                        }
+                        // lineair movement
+                        else {
+                            var numTrails = 20;
+                            for (var trail, div, i = 0, l = numTrails; i < l; i++) {
+                                var x = parseInt(item.getAttribute("x")) + parseInt((item.getAttribute("endX") - item.getAttribute("x"))*i/(numTrails-1));
+                                var y = parseInt(item.getAttribute("y")) + parseInt((item.getAttribute("endY") - item.getAttribute("y"))*i/(numTrails-1));
+                                
+                                // create new trailpoint
+                                div = document.createElement("div");
+                                div.setAttribute("class", "trail");
+                                div.style.top = y + "px";
+                                div.style.left = x + "px"; 
+                                div.style.opacity = i / (numTrails-1);
+                                previewActions.appendChild(div);
+                            }
+                            cursor.style.top = y + "px";
+                            cursor.style.left = x + "px";
+                            cursorMsg.innerHTML = item.getAttribute("type") + " (" + x + ", " + y + ")";
+                        }
+                    } 
+                    else if (item.getAttribute("type") == "click") {
+                        cursor.style.top = item.getAttribute("y") + "px";
+                        cursor.style.left = item.getAttribute("x") + "px";
+                        cursorMsg.innerHTML = item.getAttribute("type") + " (" + item.getAttribute("x") + ", " + item.getAttribute("y") + ")";
+                    }
+                    
+                    
+                 }
+            }
+            
+            function saveProperties() {
+                var item = treeAction.selected;
+                //debugger;
+                
+                var propertyNode = item.selectSingleNode("//property[@name='realtime']");
+                //debugger;
+                apf.xmldb.setAttribute(propertyNode, "value", realtimeTb.value);
+                if (item.selectSingleNode("grouped"))
+                    apf.xmldb.removeNode(item.selectSingleNode("grouped"));
+                //mdlAction.load(mdlActionData.xml);
+                
+                treeAction.clearSelection();
+                treeAction.select(item);
+                //apf.xmldb.setAttribute(items[i], "realtime", "false");
+            }
+            
+            function clear() {
+                mdlActionData = apf.getXml("<data />");
+                mdlAction.load(mdlActionData.xml);
+                mdlEventData = apf.getXml("<data />");
+                mdlEvent.load(mdlEventData.xml);
+            }
+            
+            function play() {
+                apf.uirecorder.play();
+            }
+
+        //--></a:script>
+
+        <div id="status">
+            
+        </div>
+        
+        <div id="previewActions" />
+        <div id="cursor"><span id="cursorMsg">Message</span></div>
+	</body>
+</html>
