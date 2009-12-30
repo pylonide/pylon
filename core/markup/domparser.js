@@ -42,13 +42,24 @@ apf.DOMParser.prototype = new (function(){
     this.preserveWhiteSpace = true; //@todo apf3.0 whitespace issue
     
     this.$shouldWait = 0;
+
+    // privates
+    var RE     = [
+            /\<\!(DOCTYPE|doctype)[^>]*>/,
+            /&nbsp;/g,
+            /<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g
+        ],
+        XPATH  = "//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]",
+        DOMINS = "DOMNodeInsertedIntoDocument",
+        DEF    = "@default",
+        ID     = "id";
     
     this.parseFromString = function(xmlStr, mimeType, options){
         var xmlNode;
         if (this.caseInsensitive) {
             //replace(/&\w+;/, ""). replace this by something else
-            var str = xmlStr.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
-              .replace(/<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g, //.replace(/^[\r\n\s]*/, "")
+            var str = xmlStr.replace(RE[0], "").replace(RE[1], " ")
+              .replace(RE[2], //.replace(/^[\r\n\s]*/, "")
                 function(m){ return m.toLowerCase(); });
         
             /* @todo apf3.0 integrate this
@@ -62,7 +73,7 @@ apf.DOMParser.prototype = new (function(){
             //#ifdef __WITH_EXPLICIT_LOWERCASE
             xmlNode = apf.getXmlDom(str, null, this.preserveWhiteSpace || apf.debug).documentElement;
             var i, l,
-                nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
+                nodes = xmlNode.selectNodes(XPATH);
             // Case insensitive support
             for (i = 0, l = nodes.length; i < l; i++) {
                 (nodes[i].ownerElement || nodes[i].selectSingleNode(".."))
@@ -150,7 +161,7 @@ apf.DOMParser.prototype = new (function(){
                 //Store high prio nodes for prio insertion
                 if (newNode.$parsePrio) {
                     if (newNode.$parsePrio == "001") {
-                        newNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+                        newNode.dispatchEvent(DOMINS); //{relatedParent : nodes[j].parentNode}
                         continue;
                     }
                         
@@ -177,7 +188,7 @@ apf.DOMParser.prototype = new (function(){
         for (i = 0, l = prios.length; i < l; i++) {
             nodes = nodelist[prios[i]];
             for (j = 0, l2 = nodes.length; j < l2; j++)
-                nodes[j].dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+                nodes[j].dispatchEvent(DOMINS); //{relatedParent : nodes[j].parentNode}
         }
 
         if (this.$shouldWait)
@@ -218,21 +229,21 @@ apf.DOMParser.prototype = new (function(){
                 for (j = 0, l2 = nodes.length; j < l2; j++) {
                     if (!(node = nodes[j]).parentNode || node.$amlLoaded) //@todo generalize this using compareDocumentPosition
                         continue;
-                    nodes[j].dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+                    nodes[j].dispatchEvent(DOMINS); //{relatedParent : nodes[j].parentNode}
                 }
             }
         }
         
         //instead of $amlLoaded use something more generic see compareDocumentPosition
         if (!options.ignoreSelf && !amlNode.$amlLoaded)
-            amlNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+            amlNode.dispatchEvent(DOMINS); //{relatedParent : nodes[j].parentNode}
 
         //Recursively signal non prio nodes
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!(node = nodes[i]).$parsePrio && !node.$amlLoaded)
-                    node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
+                    node.dispatchEvent(DOMINS); //{relatedParent : nodes[j].parentNode}
                 
                 //Create children
                 if (!node.render && (nNodes = node.childNodes).length)
@@ -286,20 +297,20 @@ apf.DOMParser.prototype = new (function(){
                 var els = apf.namespaces[namespaceURI].elements;
 
                 //#ifdef __DEBUG
-                if (!(els[nodeName] || els["@default"])) {
+                if (!(els[nodeName] || els[DEF])) {
                     throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
                 }
                 //#endif
                 
-                o = new (els[nodeName] || els["@default"])(null, nodeName);
+                o = new (els[nodeName] || els[DEF])(null, nodeName);
                 
                 o.prefix       = prefix || "";
                 o.namespaceURI = namespaceURI;
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
         
                 if (xmlNode) {
-                    if (id = xmlNode.getAttribute("id"))
-                        o.$propHandlers["id"].call(o, o.id = id);
+                    if (id = xmlNode.getAttribute(ID))
+                        o.$propHandlers[ID].call(o, o.id = id);
 
                     //attributes
                     var attr = xmlNode.attributes, n;

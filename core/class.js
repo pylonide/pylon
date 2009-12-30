@@ -220,6 +220,15 @@
 apf.Class = function(){};
 
 apf.Class.prototype = new (function(){
+    // privates
+    var FUN   = "function",
+        OBJ   = "object",
+        UNDEF = "undefined",
+        SEL   = "selected|selection"
+        PROP  = "prop.",
+        MODEL = "model",
+        VALUE = "value";
+
     this.$regbase   = 0;
     /**
      * Tests whether this object has implemented a {@link term.baseclass baseclass}.
@@ -232,7 +241,7 @@ apf.Class.prototype = new (function(){
     this.$initStack    = [];
     this.$bufferEvents = [];
     this.$init = function(callback, nodeFunc, struct){
-        if (typeof callback == "function" || callback === true) {
+        if (typeof callback == FUN || callback === true) {
             this.$bufferEvents = this.$bufferEvents.slice();
             
             if (callback === true)
@@ -307,7 +316,7 @@ apf.Class.prototype = new (function(){
         if (!fParsed)
             return bObject.$handlePropSet(bProp, this[myProp]);
 
-        var eventName = "prop." + myProp, eFunc, isBeingCalled, isLang;
+        var eventName = PROP + myProp, eFunc, isBeingCalled, isLang;
         (this.$eventsStack[eventName] || (this.$eventsStack[eventName] = [])).push(eFunc = function(e){
             if (isBeingCalled) //Prevent circular refs
                 return;
@@ -384,7 +393,7 @@ apf.Class.prototype = new (function(){
         var exclNr = this.$attrExcludePropBind[prop],
             options;
         //@todo apf3.0, please generalize this - cache objects, seems slow
-        if ("selected|selection".indexOf(prop) > -1) {
+        if (SEL.indexOf(prop) > -1) {
             options = {
                 xpathmode : 2,
                 parsecode : true
@@ -401,7 +410,7 @@ apf.Class.prototype = new (function(){
         var fParsed = apf.lm.compile(pValue, options);
 
         //Special case for model due to needed extra signalling
-        if (prop == "model")
+        if (prop == MODEL)
             (this.$modelParsed = fParsed).instruction = pValue
 
         //if it's only text return setProperty()
@@ -422,13 +431,14 @@ apf.Class.prototype = new (function(){
         //#endif
 
         //if there's prop binding: Add generated function to each obj/prop in the list
-        var matches = exclNr && exclNr != 3 && prop != "model" ? {} : fParsed.props, //@todo apf3.0 sign of broken abstraction, please fix this with a bit mask
+        var matches = exclNr && exclNr != 3 && prop != MODEL ? {} : fParsed.props, //@todo apf3.0 sign of broken abstraction, please fix this with a bit mask
             found   = false,
+            _self   = this,
             o, node, bProp, p;
 
         for (p in matches) {
             //#ifdef __SUPPORT_SAFARI2
-            if (typeof matches[p] == "function")
+            if (typeof matches[p] == FUN)
                 continue;
             //#endif
 
@@ -444,7 +454,6 @@ apf.Class.prototype = new (function(){
                             + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
                     }
                     else {
-                        var _self = this;
                         apf.queue.add(prop + ":" + this.$uniqueId, function(){
                             _self.$clearDynamicProperty(prop);
                             _self.$setDynamicProperty(prop, pValue, true);
@@ -453,7 +462,7 @@ apf.Class.prototype = new (function(){
                     continue;
                 }
 
-                if (typeof node != "object" || !node.$regbase) {
+                if (typeof node != OBJ || !node.$regbase) {
                     bProp = o[1];
                     node  = self[o[0]];
                 }
@@ -472,7 +481,6 @@ apf.Class.prototype = new (function(){
                         + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
                 }
                 else {
-                    var _self = this;
                     apf.queue.add(prop + ":" + this.$uniqueId, function(){
                         _self.$clearDynamicProperty(prop);
                         _self.$setDynamicProperty(prop, pValue, true);
@@ -508,7 +516,6 @@ apf.Class.prototype = new (function(){
             
             try {
                 if (fParsed.asyncs) { //if async
-                    var _self = this;
                     return fParsed.call(this, this.xmlRoot, function(value){
                         _self.setProperty(prop, value, true);
     
@@ -551,14 +558,14 @@ apf.Class.prototype = new (function(){
         apf.language.removeProperty(this, prop);
         //#endif
         
-        if (prop == "model")
+        if (prop == MODEL)
             this.$modelParsed = null;
         
         //Remove any bounds if relevant
         var f, i, l, h = this.$funcHandlers[prop];
-        if (h && typeof h != "function") {
+        if (h && typeof h != FUN) {
             for (i = 0, l = h.length; i < l; i++) {
-                (f = h[i]).amlNode.removeEventListener("prop." + f.prop, f.handler);
+                (f = h[i]).amlNode.removeEventListener(PROP + f.prop, f.handler);
             }
             delete this.$funcHandlers[prop];
         }
@@ -571,7 +578,7 @@ apf.Class.prototype = new (function(){
      * {@link https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
      */
     this.watch = function(propName, callback){
-        var eventName = "prop." + propName,
+        var eventName = PROP + propName,
             wrapper   = function(e){
                 callback.call(this, propName, e.oldvalue, e.value);
             };
@@ -585,7 +592,7 @@ apf.Class.prototype = new (function(){
      * Removes a listener to listen for changes to a certain property. 
      */
     this.unwatch = function(propName, callback){
-        var list, eventName = "prop." + propName;
+        var list, eventName = PROP + propName;
         if (!(list = this.$eventsStack[eventName]))
             return;
         
@@ -621,19 +628,19 @@ apf.Class.prototype = new (function(){
     this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
         var s, r, arr, e, i, l,
             oldvalue = this[prop],
-            isChanged = (typeof value == "object")
-                ? value != (typeof oldvalue == "object" ? oldvalue : null)
+            isChanged = (typeof value == OBJ)
+                ? value != (typeof oldvalue == OBJ ? oldvalue : null)
                 : String(oldvalue) !== String(value),
-            eventName = "prop." + prop;//@todo prop event should be called too;
+            eventName = PROP + prop;//@todo prop event should be called too;
         
         //Check if property has changed
         if (isChanged) {
             if (!forceOnMe) { //Recursion protection
                 //Check if this property is bound to data
-                if (this.xmlRoot && typeof value != "object" 
+                if (this.xmlRoot && typeof value != OBJ
                   && (!(s = this.$attrExcludePropBind[prop]))// || s == 2
                   && (r = (this.$attrBindings && this.$attrBindings[prop] 
-                  || prop != "value" && this.$bindings[prop] && this.$bindings[prop][0]))) {
+                  || prop != VALUE && this.$bindings[prop] && this.$bindings[prop][0]))) {
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
@@ -644,9 +651,9 @@ apf.Class.prototype = new (function(){
                     }
                 }
                 //#ifdef __WITH_OFFLINE_STATE_REALTIME
-                else if (typeof apf.offline != "undefined") {
+                else if (typeof apf.offline != UNDEF) {
                     if (apf.loaded && apf.offline.state.enabled) {
-                        apf.offline.state.set(this, prop, typeof value == "object"
+                        apf.offline.state.set(this, prop, typeof value == OBJ
                             ? value.name
                             : value);
                     }
@@ -771,14 +778,14 @@ apf.Class.prototype = new (function(){
                 if (arr = this.$captureStack[eventName]) {
                     for (i = 0, l = arr.length; i < l; i++) {
                         rValue = arr[i].call(this, e || (e = new apf.AmlEvent(eventName, options)));
-                        if (typeof rValue != "undefined")
+                        if (typeof rValue != UNDEF)
                             result = rValue;
                     }
                 }
             }
             
             if (options && options.captureOnly) {
-                return e && typeof e.returnValue != "undefined" ? e.returnValue : result;
+                return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
             }
             else {
                 if (this["on" + eventName]) {
@@ -791,7 +798,7 @@ apf.Class.prototype = new (function(){
                         if (!arr[i]) continue;
                         rValue = arr[i].call(this, e 
                             || (e = new apf.AmlEvent(eventName, options)));
-                        if (typeof rValue != "undefined")
+                        if (typeof rValue != UNDEF)
                             result = rValue;
                     }
                 }
@@ -803,7 +810,7 @@ apf.Class.prototype = new (function(){
             rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e 
                 || (e = new apf.AmlEvent(eventName, options)));
 
-            if (typeof rValue != "undefined")
+            if (typeof rValue != UNDEF)
                 result = rValue;
         }
         //#endif
@@ -825,7 +832,7 @@ apf.Class.prototype = new (function(){
             apf.queue.empty();
         }
 
-        return e && typeof e.returnValue != "undefined" ? e.returnValue : result;
+        return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
     };
 
     /**
@@ -887,7 +894,7 @@ apf.Class.prototype = new (function(){
      */
     this.destroy = function(deep, clean){
         //Remove from apf.all
-        if (typeof this.$uniqueId == "undefined" && this.nodeType != 2)
+        if (typeof this.$uniqueId == UNDEF && this.nodeType != 2)
             return;
         
         this.$amlLoaded    = false;
@@ -954,9 +961,9 @@ apf.Class.prototype = new (function(){
             h = this.$funcHandlers[prop];
             
             //Remove any bounds if relevant
-            if (h && typeof h != "function") {
+            if (h && typeof h != FUN) {
                 for (i = 0, l = h.length; i < l; i++) {
-                    (f = h[i]).amlNode.removeEventListener("prop." + f.prop, f.handler);
+                    (f = h[i]).amlNode.removeEventListener(PROP + f.prop, f.handler);
                 }
             }
         }*/
