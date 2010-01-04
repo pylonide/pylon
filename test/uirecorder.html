@@ -10,14 +10,14 @@
             body {
                 overflow: hidden;
             }
-            #cursor {
+            .cursor {
                 position: absolute;
                 left: -9999px;
                 width: auto;
                 height: 21px;
                 background: transparent url("images/cursor_w.png") no-repeat;
             }
-            #cursor #cursorMsg {
+            .cursor .cursorMsg {
                 position: relative;
                 display: block;
                 width: auto;
@@ -25,13 +25,14 @@
                 font-size: 12px;
                 color: #00F;
             }
-            #cursor.click {
+            .cursor.click {
                 background: transparent url("images/cursor_r.png") no-repeat;
             }
-            #cursor.text {
+            .cursor.text {
                 background: transparent url("images/cursor_text.png") no-repeat;
             }
             #previewActions {
+                z-index: 9999999999;
             }
             .trail {
                 position: absolute;
@@ -292,7 +293,25 @@
         <!--
         <a:textbox id="textbox1"></a:textbox>
         -->
-        <input type="text" id="textbox1"></input>
+        <a:textbox left="600"></a:textbox>
+        
+        <a:label>PlaySpeed</a:label>
+        <a:dropdown 
+            id              = "dropdownPlaySpeed" 
+            value           = "1"
+            onslideup       = "changeSpeed()"
+        >
+            <a:item value="0.5">0.5</a:item>
+            <a:item value="1.0">1.0</a:item>
+            <a:item value="1.5">1.5</a:item>
+            <a:item value="2.0">2.0</a:item>
+            <a:item value="3.0">3.0</a:item>
+            <!--
+            <a:item value="4.0">4.0</a:item>
+            <a:item value="5.0">5.0</a:item>
+            -->
+        </a:dropdown>
+
 
 <!--
         <a:datagrid 
@@ -318,167 +337,10 @@
         <a:script>//<!--
             mdlEventData = apf.getXml("<data />");
             mdlActionData = apf.getXml("<data />");
-/*
-            function getEvents() {
-                mdlActionData = apf.getXml("<data />");
-
-                // loop throught user actions like click
-                for (var action, actionNode, propNode, interactionNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
-                    
-
-                    if (apf.uirecorder.actionList[i].interaction && apf.uirecorder.actionList[i].interaction.length && apf.uirecorder.actionList[i].interaction.length == 1)
-                        action = apf.uirecorder.actionList[i].interaction[0];
-                    else if (apf.uirecorder.actionList[i].interaction && apf.uirecorder.actionList[i].interaction.length && apf.uirecorder.actionList[i].interaction.length > 1)
-                        action = apf.uirecorder.actionList[i].interaction[0] + " (more actions...)";
-                    else
-                        action = "no action recorded";
-                    
-                    actionNode = mdlEventData.ownerDocument.createElement("action");    
-                    actionNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].name + ": " + action));
-
-                    // loop through properties
-                    for (var propName in apf.uirecorder.actionList[i]) {
-                        if (propName != "events" && propName != "interaction") {
-                            propNode = mdlEventData.ownerDocument.createElement("property");
-                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + apf.uirecorder.actionList[i][propName]));
-                        }
-                        else if (propName == "events") {
-                            propNode = mdlEventData.ownerDocument.createElement("property");
-                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName));
-                            
-                            // loop through objects
-                            for (var objName in apf.uirecorder.actionList[i].events) {
-                                if (typeof apf.uirecorder.actionList[i].events[objName] == "object" && apf.uirecorder.actionList[i].events[objName].length) {
-                                    objNode = mdlEventData.ownerDocument.createElement("object");
-                                    objNode.appendChild(mdlEventData.ownerDocument.createTextNode(objName));
-                                
-                                    // loop through events
-                                    for (var eventNode, j = 0, jl = apf.uirecorder.actionList[i].events[objName].length; j < jl; j++) {
-                                        //if (apf.uirecorder.actionList[i].events[objName][j]) {
-                                            eventNode = mdlEventData.ownerDocument.createElement("event");
-                                            if (!apf.uirecorder.actionList[i].events[objName][j].value)
-                                                eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].events[objName][j].name));
-                                            else
-                                                eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].events[objName][j].name + ": " + apf.uirecorder.actionList[i].events[objName][j].value));
-                                                
-                                            objNode.appendChild(eventNode);
-                                        //}
-                                    }
-                                    propNode.appendChild(objNode);
-                                }
-                            }
-                        }
-                        else if (propName == "interaction") {
-                            if (!apf.uirecorder.actionList[i].interaction) continue;
-                            propNode = mdlEventData.ownerDocument.createElement("property");
-                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName));
-                            
-                            // loop through interactions
-                            for (var j = 0, jl = apf.uirecorder.actionList[i].interaction.length; j < jl; j++) {
-                                interactionNode = mdlEventData.ownerDocument.createElement("interaction");
-                                interactionNode.appendChild(mdlEventData.ownerDocument.createTextNode(apf.uirecorder.actionList[i].interaction[j]));
-                                propNode.appendChild(interactionNode);
-                            }
-                        }
-                        
-                        actionNode.appendChild(propNode);
-                    }
-                    
-                    
-                    mdlActionData.appendChild(actionNode);
-                }
-
-                mdlAction.load(mdlActionData.xml);
-                //apf.uirecorder.eventList.all = [];
-            }
-
-            apf.addEventListener("eventcapture", function(e){
-                var eventNode = mdlActionData.ownerDocument.createElement("event");
-                eventNode.appendChild(mdlActionData.ownerDocument.createTextNode(e.event.name + ": " + e.event.target));
-                
-                mdlEventData.appendChild(eventNode);
-                mdlEvent.load(mdlEventData.xml);
-            });
-            
-            apf.addEventListener("actioncapture", function(e){
-                // record actions based on ui events like click, drag
-                if (e.action) {
-                    var actionNode = mdlActionData.ownerDocument.createElement("action");
-                    actionNode.setAttribute("id", e.id);
-                    actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(e.id + ". " + e.action + " (" + e.target + ")"));
-
-                    // object actions
-                    for (var objActionNode, i = 0, l = e.objActionList.length; i < l; i++) {
-                        objActionNode = mdlEventData.ownerDocument.createElement("action");
-                        objActionNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.objActionList[i]));
-
-                        actionNode.appendChild(objActionNode);
-                    }
-
-                    // check for objects
-                    var objsNode = mdlEventData.ownerDocument.createElement("objects");
-                    objsNode.appendChild(mdlEventData.ownerDocument.createTextNode("objects"));
-                    
-                    var objNode, typeNode, propNode;
-                    for (var objName in e.objectList) {
-                        objNode = mdlEventData.ownerDocument.createElement("object");
-                        objNode.appendChild(mdlEventData.ownerDocument.createTextNode(objName));
-                        
-                        for (var typeName in e.objectList[objName]) {
-                            typeNode = mdlEventData.ownerDocument.createElement("property");
-                            typeNode.appendChild(mdlEventData.ownerDocument.createTextNode(typeName));
-
-                            for (var propName in e.objectList[objName][typeName]) {
-                                propNode = mdlEventData.ownerDocument.createElement("property");
-                                propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + e.objectList[objName][typeName][propName]));
-                                typeNode.appendChild(propNode);
-                            } 
-                            objNode.appendChild(typeNode);
-                        }
-                        
-                        objsNode.appendChild(objNode);
-                    }
-                    actionNode.appendChild(objsNode);
-
-                    // events fired during action
-                    for (var eventNode, i = 0, l = e.eventList.length; i < l; i++) {
-                        eventNode = mdlEventData.ownerDocument.createElement("event");
-                        eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.eventList[i].name));
-
-                        var propNode;
-                        // check for target
-                        if (e.eventList[i].target) {
-                            propNode = mdlEventData.ownerDocument.createElement("property");
-                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode("target: " + e.eventList[i].target));
-                            eventNode.appendChild(propNode);
-                        }
-                        
-                        // check for events
-                        for (var propName in e.eventList[i].properties) {
-                            propNode = mdlEventData.ownerDocument.createElement("property");
-                            propNode.appendChild(mdlEventData.ownerDocument.createTextNode(propName + ": " + e.eventList[i].properties[propName]));
-                            eventNode.appendChild(propNode);
-                        }
-
-                        actionNode.appendChild(eventNode);
-                    }
-
-                    // all events fired during action
-                    for (var eventNode, i = 0, l = e.allEventsList.length; i < l; i++) {
-                        eventNode = mdlEventData.ownerDocument.createElement("event");
-                        eventNode.appendChild(mdlEventData.ownerDocument.createTextNode(e.allEventsList[i]));
-
-                        actionNode.appendChild(eventNode);
-                    }
-
-                    mdlActionData.appendChild(actionNode);
-                    mdlAction.load(mdlActionData.xml);
-                }
-            });
-*/            
 
             // start capturing events
             function record(){
+                document.getElementById("previewActions").innerHTML = "";
                 //start recording user actions
                 apf.uirecorder.record();
         
@@ -510,15 +372,15 @@
             function showActions() {    
                 var items = treeAction.selection;
                 
-                var cursor = document.getElementById("cursor");
-                var cursorMsg = document.getElementById("cursorMsg");
-                
                 var previewActions = document.getElementById("previewActions");
                 previewActions.innerHTML = "";
-
                 var enableDdMovement = true;
                 var enableDdClickPos = true;
                 for (var item, ii = 0, il = items.length; ii < il; ii++) {
+                    var cursor = createCursor();
+                    var cursorMsg = cursor.getElementsByTagName("span")[0];
+                    document.getElementById("previewActions").appendChild(cursor);
+                
                     item = items[ii];
                     action = apf.uirecorder.actionList[item.getAttribute("index")];
                     if (action.name != "mousemove") {
@@ -530,14 +392,17 @@
                     if (action.name == "mousemove") {
                         var grouped = [];
                         var firstAction = action;
-                        
-                        var movement = item.selectSingleNode("property[@name='movement']").getAttribute("value");
-                        var trailIncr = 10;
-                        
-                        for (var ci = 0, cl = firstAction[movement].length; ci < cl; ci++) {
+
+                        var movement = action.movement;
+                        var trailIncr = 1;
+                        var prevAction;
+                        for (var ci = 0, cl = firstAction[movement].length-1; ci < cl; ci++) {
                             action = firstAction[movement][ci];
-                            if (action.name != "mousemove") break;
+//                            if (prevAction && (action.x < prevAction.x - 5 || action.x > prevAction.x + 5)) debugger;
+                            if (action.name != "mousemove") debugger;
                             grouped.push(action);
+                            
+                            prevAction = action;
                         }
                         
                         for (var gi = 0, gl = grouped.length; gi < gl; gi += trailIncr) {
@@ -553,11 +418,13 @@
     
                         cursor.style.top = action.y + "px";
                         cursor.style.left = action.x + "px";
-                        cursorMsg.innerHTML = action.name + " (" + action.x + ", " + action.y + ")";
+                        cursor.setAttribute("class", "cursor");
+                        cursorMsg.innerHTML = action.name + " (" + firstAction.x + ", " + firstAction.y + ") to (" + action.x + ", " + action.y + ")";
                     } 
                     else if (item.getAttribute("type") == "click") {
                         cursor.style.top = action.y + "px";
                         cursor.style.left = action.x + "px";
+                        cursor.setAttribute("class", "cursor click");
                         cursorMsg.innerHTML = action.name + " (" + action.x + ", " + action.y + ")";
                     }
                 }
@@ -567,6 +434,19 @@
                 btnSave.setProperty("disabled", !enableDdMovement && !enableDdClickPos);
             }
 
+            //<div class="cursor"><span class="cursorMsg">Message</span></div>
+            function createCursor() {
+                var cursor = document.createElement("div");
+                cursor.setAttribute("class", "cursor");
+                
+                var cursorMsg = document.createElement("span");
+                cursorMsg.setAttribute("class", "cursorMsg");
+                
+                cursor.appendChild(cursorMsg);
+                
+                return cursor;
+            }
+            
             function loadActionList() {
                 // get action list
                 mdlActionData = apf.getXml("<data />");
@@ -578,7 +458,14 @@
                     actionNode.setAttribute("y", action.y);
                     actionNode.setAttribute("type", action.name);
                     actionNode.setAttribute("index", i);
-                    actionNode.setAttribute("caption", action.name + " (" + action.x + ", " + action.y + ")");
+                    
+                    caption = (["mousemove","click"].indexOf(action.name) > -1) 
+                        ? action.name + " (" + action.x + ", " + action.y + ")" 
+                        : action.name == "keypress"
+                            ? action.name + " (" + action.value + ")"
+                            : action.name;
+                            
+                    actionNode.setAttribute("caption", caption);
                     //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
 
                     if (action.name == "mousemove") {
@@ -601,10 +488,8 @@
                 mdlAction.load(mdlActionData.xml);            
             }
             
-
-
-
             function loadEventList() {
+                if (!treeAction.selection.length) return;
                 var items = treeAction.selection;
                 if (items.length > 1) return;
                 
@@ -656,7 +541,10 @@
                     //treeAction.clearSelection();
                     //treeAction.select(item);
                 }
+                
                 showActions();
+                apf.uirecorder.setPlayList();
+                loadActionXml();
             }
             
             function clear() {
@@ -667,12 +555,15 @@
             }
             
             function play() {
-                document.getElementById("textbox1").value = "";
                 apf.uirecorder.play(textareaXml.value);
             }
 
             function createXml() {
                 apf.uirecorder.createPlayList();
+            }
+            
+            function changeSpeed() {
+                apf.uirecorder.playSpeed = dropdownPlaySpeed.value;
             }
         //--></a:script>
 
@@ -681,6 +572,8 @@
         </div>
         
         <div id="previewActions" />
-        <div id="cursor"><span id="cursorMsg">Message</span></div>
+        <!--
+        <div class="cursor"><span class="cursorMsg">Message</span></div>
+        -->
 	</body>
 </html>
