@@ -832,6 +832,21 @@ apf.Class.prototype = new (function(){
             apf.queue.empty();
         }
 
+        //#ifdef __WITH_UIRECORDER
+        if (apf.uirecorder) {
+            if (eventName != "debug") { // && eventName != "DOMNodeInsertedIntoDocument"
+                //apf.console.info("Event: " + eventName + " called.");
+                if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
+                    if (apf.uirecorder.isRecording) // only capture events when recording
+                        apf.uirecorder.captureEvent(eventName, e || options);
+                }
+                // when eventName == "load" all elements are loaded and drawn
+                if (eventName == "load")
+                    apf.uirecorder.isLoaded = true;
+            }
+        }
+        //#endif
+        
         return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
     };
 

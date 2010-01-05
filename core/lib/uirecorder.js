@@ -20,8 +20,7 @@ apf.uirecorder = {
 
         // record initial state
         for (var amlNode, id, props, i = 0, l = apf.all.length; i < l; i++) {
-            amlNode = apf.all[i]; 
-            
+            amlNode = apf.all[i];
             // ignore nodes without supportedProperties
             if (!amlNode.$supportedProperties || amlNode.$supportedProperties.length === 0 || !amlNode.ownerDocument) continue;
             
@@ -29,18 +28,17 @@ apf.uirecorder = {
             id = apf.xmlToXpath(amlNode); //(amlNode.id || "") + "_" + amlNode.localName + apf.xmlToXpath(amlNode) + "_" + amlNode.serialize(); //uniqueness: id, localName + position in the tree (apf.getXpathFromNode - in lib/xml.js), serialized state (serialize())
             
             props = [];
-            // record data (models)
-            if (amlNode.data) {
-                props.push({
-                    name    : "data", 
-                    value   : amlNode.data
-                });
+            // set save point on models
+            if (amlNode.localName === "model") {
+                amlNode.savePoint();
             }
             for (var j = 0, jl = amlNode.$supportedProperties.length; j < jl; j++) { //width, height, span, columns, ...
-                props.push({
-                    name    : amlNode.$supportedProperties[j], 
-                    value   : amlNode[amlNode.$supportedProperties[j]]
-                });
+                if (amlNode[amlNode.$supportedProperties[j]] != undefined) {
+                    props.push({
+                        name    : amlNode.$supportedProperties[j], 
+                        value   : amlNode[amlNode.$supportedProperties[j]]
+                    });
+                }
             }
             
             apf.uirecorder.initialState[id] = props;
@@ -249,37 +247,27 @@ apf.uirecorder = {
         apf.uirecorder.isPlaying   = true;
 
         // restore initial state
-        /*
         for (var amlNode, id, props, i = 0, l = apf.all.length; i < l; i++) {
             amlNode = apf.all[i];
-            
+            // ignore controls neccessary for controlling uirecorder  
+            if (["uirecorderXml","dropdownPlaySpeed"].indexOf(amlNode.id) > -1) continue;
+
             if (!amlNode.$supportedProperties || amlNode.$supportedProperties.length === 0 || !amlNode.ownerDocument) continue;
             id = apf.xmlToXpath(amlNode)
-            //if (apf.uirecorder.initialState.indexOf(id) == -1) continue;
-                
-            for (var p = 0, pl = apf.uirecorder.initialState[id].length; p < pl; p++) {
-                property = apf.uirecorder.initialState[id].name;
-                value    = apf.uirecorder.initialState[id].value;
-                amlNode[property] = value;
-            }
-        }
-        */
-
-/*        
-        // create playList
-        apf.uirecorder.playList = [];
-        for (var action, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
-            action = apf.uirecorder.actionList[i];
-            apf.uirecorder.playList.push(action);
             
-            if (action.name == "mousemove") {
-                for (var mi = 0, ml = action[action.movement].length; mi < ml; mi++) {
-                    apf.uirecorder.playList.push(action[action.movement][mi]);
+            // ignore if no initial state is recorded
+            if (!apf.uirecorder.initialState[id]) continue;
+
+            //if (amlNode.localName === "model")
+                //amlNode.reset();
+
+            for (var p = 0, pl = apf.uirecorder.initialState[id].length; p < pl; p++) {
+                if (amlNode[apf.uirecorder.initialState[id][p].name] != apf.uirecorder.initialState[id][p].value) {
+                    amlNode.setProperty(apf.uirecorder.initialState[id][p].name, apf.uirecorder.initialState[id][p].value);
                 }
             }
         }
-*/
-
+        
         // generateXml
         apf.uirecorder.startPlaying(playList);
     },
@@ -294,6 +282,7 @@ apf.uirecorder = {
         var playList = [];
         for (var action, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
+            action.index = i;
             playList.push(action);
             
             if (action.name == "mousemove") {
@@ -304,13 +293,13 @@ apf.uirecorder = {
         }
         
         var actionsXml = apf.getXml('<actions />');
-        var properties = ["name", "time", "x", "y", "value", "target"];
+        var properties = ["index", "name", "time", "movement", "x", "y", "value", "target"];
         for (var action, actionNode, i = 0, l = playList.length; i < l; i++) {
             action = playList[i];
             
             actionNode = actionsXml.ownerDocument.createElement("action");
             for (var propNode, p = 0, pl = properties.length; p < pl; p++) {
-                if (action[properties[p]])
+                if (action[properties[p]] != undefined)
                     actionNode.setAttribute(properties[p], action[properties[p]]);
                 /*
                 propNode = actionsXml.ownerDocument.createElement(properties[p]);
@@ -318,8 +307,9 @@ apf.uirecorder = {
                 actionNode.appendChild(propNode);
                 */
             }
-            actionsXml.appendChild(actionNode); 
+            actionsXml.appendChild(actionNode);
         }
+        
         return actionsXml;
     },
     
@@ -366,7 +356,7 @@ apf.uirecorder = {
             target      : apf.xmlToXpath(amlNode)
         }
         
-        if (!actionObj.y) debugger;
+        //if (actionObj.y == undefined || actionObj.y == null) debugger;
         
         var ignoreKeys = {16: 1}; // 16 = shift
         var specialKeys = {8: "backspace"};
@@ -376,7 +366,7 @@ apf.uirecorder = {
             //actionObj.target = htmlElement.id; 
         }
         else if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") {
-            actionObj.movement = "realtime";
+            actionObj.movement = "realtime"; //realtime, lineair, //connect
             actionObj.realtime = [];
         }
         else if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
@@ -387,14 +377,21 @@ apf.uirecorder = {
             actionObj.clickpos = "position";
         }
         
-//        setTimeout(function() {
-//        }, 200);
-        actionObj.eventList = apf.uirecorder.eventList;
-        
-        if (eventName != "mousemove" || (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove"))
-            apf.uirecorder.actionList.push(actionObj);
+        if (eventName !== "mousemove") {
+            //setTimeout(function() {
+                actionObj.eventList = apf.uirecorder.eventList;
+                apf.uirecorder.actionList.push(actionObj);
+                apf.uirecorder.eventList = [];
+            //}, 100);
+        }
+        else {
+            actionObj.eventList = apf.uirecorder.eventList;
 
-        apf.uirecorder.eventList = [];
+            if (eventName != "mousemove" || (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove"))
+                apf.uirecorder.actionList.push(actionObj);
+    
+            apf.uirecorder.eventList = [];
+        }
     },
     
     /**
@@ -435,19 +432,17 @@ apf.uirecorder = {
             apf.uirecorder.playList = [];
             for (var action, actionObj, i = 0, l = actionsXml.childNodes.length; i < l; i++) {
                 action = actionsXml.childNodes[i];
-                
-                // ignore first action if it's a click, probably click on Record button
-                if(i == 0 && action.getAttribute("name") == "click") continue;
-                
+
                 actionObj = {};
                 
                 // @todo loop throught attributes
-                if (action.getAttribute("name"))    actionObj.name    = action.getAttribute("name");
-                if (action.getAttribute("time"))    actionObj.time    = action.getAttribute("time");
-                if (action.getAttribute("x"))       actionObj.x       = action.getAttribute("x");
-                if (action.getAttribute("y"))       actionObj.y       = action.getAttribute("y");
-                if (action.getAttribute("target"))  actionObj.target  = action.getAttribute("target");
-                if (action.getAttribute("value"))   actionObj.value   = action.getAttribute("value");
+                if (action.getAttribute("name"))        actionObj.name      = action.getAttribute("name");
+                if (action.getAttribute("time"))        actionObj.time      = action.getAttribute("time");
+                if (action.getAttribute("movement"))    actionObj.movement  = action.getAttribute("movement");
+                if (action.getAttribute("x"))           actionObj.x         = action.getAttribute("x");
+                if (action.getAttribute("y"))           actionObj.y         = action.getAttribute("y");
+                if (action.getAttribute("target"))      actionObj.target    = action.getAttribute("target");
+                if (action.getAttribute("value"))       actionObj.value     = action.getAttribute("value");
                 apf.uirecorder.playList.push(actionObj);
             }
         }
@@ -456,7 +451,7 @@ apf.uirecorder = {
             apf.uirecorder.stop();
             return;
         }
-
+//debugger;
         document.getElementById("previewActions").innerHTML = "";
         var cursor = apf.uirecorder.createCursor();
         var cursorMsg = cursor.getElementsByTagName("span")[0];
@@ -464,6 +459,11 @@ apf.uirecorder = {
         
         var elapsedTime = 0;
 
+        // ignore first click, probably click on Record button
+        if (apf.uirecorder.playList[0].name == "click") {
+            apf.uirecorder.playList.shift();
+        }
+        
         var interval = setInterval(function() {
             elapsedTime = new Date().getTime() - apf.uirecorder.startPlayTime;
             for (var action, amlNode, i = 0; i < apf.uirecorder.playList.length; i++) {
@@ -502,6 +502,8 @@ apf.uirecorder = {
                             }
                             //amlNode.$focus();
                         }
+                        cursorMsg.innerHTML = action.name + " (" + action.value + ")";
+                        
                         apf.uirecorder.playList.splice(i, 1);
                         i--;
                     }
@@ -540,9 +542,9 @@ apf.uirecorder = {
                         "keyup":1,"slidedown":1,
                         "beforechange":1, "afterchange":1
                         },
-    captureEvent    : function(eventName, e) {
+    captureEvent : function(eventName, e) {
         // ignore event from ignoreEvents list
-        if (apf.uirecorder.ignoreEvents[eventName] || e.noCapture) return;
+        if (e.noCapture) return; //apf.uirecorder.ignoreEvents[eventName] || 
         
         /*
         if (!apf.uirecorder.eventList[eventName]) apf.uirecorder.eventList[eventName] = [];
@@ -567,10 +569,18 @@ apf.uirecorder = {
         else if (e.$aml && e.localName && e.ownerDocument) {
             amlNode = e;
         }
+        else if (e.currentTarget && e.currentTarget.$aml) {
+            amlNode = e.currentTarget;
+        }
         else if (e.scrElement || e.target) {
-            debugger;
+            //debugger;
+        }
+        else {
+            //debugger;
         }
         
+        if (e.amlNode)
+            amlNode = e.amlNode;
         
         //if (!htmlElement && !amlNode) debugger;
         
@@ -589,57 +599,10 @@ apf.uirecorder = {
             if (!apf.uirecorder.eventList[targetName]) apf.uirecorder.eventList[targetName] = [];
             apf.uirecorder.eventList[targetName].push(eventObj);
         }
-        return;
-        
-        if (e.noCapture) return;
-        var htmlElement, amlNode;
-        if (e.htmlEvent || e.srcElement || e.target) {
-            htmlElement = (e.htmlEvent) 
-            ?  e.htmlEvent.srcElement || e.htmlEvent.target
-            :  e.srcElement || e.target;
-            amlNode     = apf.findHost(htmlElement);
+        else {
+            if (!apf.uirecorder.eventList["unknown target"]) apf.uirecorder.eventList["unknown target"] = [];
+            apf.uirecorder.eventList["unknown target"].push(eventObj);
         }
-        else if (e.amlNode && e.amlNode.$aml) {
-            amlNode = e.amlNode;
-        }
-        else if (e.currentTarget) {
-            if (e.currentTarget.localName) {
-                if ("actiontracker|model".indexOf(e.currentTarget.localName) == -1)
-                    amlNode = (e.currentTarget.ownerDocument) 
-                        ? e.currentTarget 
-                        : (e.currentTarget.host)
-                            ? e.currentTarget.host
-                            : null;
-                else
-                    targetName == e.currentTarget.localName;
-            }
-            else if (e.currentTarget.all && e.currentTarget.root === true)
-                targetName = "apf";
-        }
-        if (amlNode && !amlNode.ownerDocument) debugger;
-        if (amlNode)
-            targetName = apf.xmlToXpath(amlNode); //amlNode.id || amlNode.localName + amlNode.$uniqueId.toString();
-            
-        if (!targetName) debugger;
-        
-        //var xmlNode     = apf.xmldb.findXmlNode(htmlElement, amlNode);
-
-        var eventObj = {
-            name        : eventName,
-            amlNode     : amlNode,
-            //xmlNode     : xmlNode,
-            event       : e
-        }
-        //if (eventName == "click") debugger;
-        //if (htmlElement)    eventObj.htmlElement    = htmlElement;
-        if (e.value)        eventObj.value          = value;
-        
-        if (!targetName) debugger; 
-
-        if (!apf.uirecorder.eventList[targetName]) apf.uirecorder.eventList[targetName] = [];
-        // prevent duplicate events
-        if (apf.uirecorder.eventList[targetName][apf.uirecorder.eventList[targetName].length-1] != eventName) 
-            apf.uirecorder.eventList[targetName].push(eventObj);
     },
     prevMousePos : null,
     

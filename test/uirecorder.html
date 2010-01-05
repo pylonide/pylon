@@ -16,6 +16,7 @@
                 width: auto;
                 height: 21px;
                 background: transparent url("images/cursor_w.png") no-repeat;
+                z-index: 99999;
             }
             .cursor .cursorMsg {
                 position: relative;
@@ -32,7 +33,6 @@
                 background: transparent url("images/cursor_text.png") no-repeat;
             }
             #previewActions {
-                z-index: 9999999999;
             }
             .trail {
                 position: absolute;
@@ -203,18 +203,8 @@
             Stop
         </a:button>
 
-        <a:button id="clrBtn" onclick="clear()" 
-          bottom="10" left="250">
-            Clear
-        </a:button>
-
-        <a:button id="getEventsBtn" onclick="createXml()" 
-          bottom="10" left="370">
-            Create XML
-        </a:button>
-
         <a:button id="playBtn" onclick="play()" 
-          bottom="10" left="490">
+          bottom="10" left="250">
             Play
         </a:button>
 
@@ -283,7 +273,7 @@
         </a:table>
         
         <a:textarea
-            id="textareaXml"
+            id="uirecorderXml"
             top = "150"
             right = "50"
             width = "500"
@@ -297,15 +287,15 @@
         
         <a:label>PlaySpeed</a:label>
         <a:dropdown 
-            id              = "dropdownPlaySpeed" 
-            value           = "1"
+            id              = "dropdownPlaySpeed"
+            initial-message = "normal" 
             onslideup       = "changeSpeed()"
         >
-            <a:item value="0.5">0.5</a:item>
-            <a:item value="1.0">1.0</a:item>
-            <a:item value="1.5">1.5</a:item>
-            <a:item value="2.0">2.0</a:item>
-            <a:item value="3.0">3.0</a:item>
+            <a:item value="0.5">half</a:item>
+            <a:item value="1">normal</a:item>
+            <a:item value="2">double</a:item>
+            <a:item value="5">times 5</a:item>
+            <a:item value="10">times 10</a:item>
             <!--
             <a:item value="4.0">4.0</a:item>
             <a:item value="5.0">5.0</a:item>
@@ -344,8 +334,9 @@
                 //start recording user actions
                 apf.uirecorder.record();
         
-                recBtn.setAttribute('disabled', apf.uirecorder.isRecording);
-                stopBtn.setAttribute('disabled', !apf.uirecorder.isRecording);
+                recBtn.setAttribute('disabled', true);
+                playBtn.setAttribute('disabled', true);
+                stopBtn.setAttribute('disabled', false);
             }
 
             // stop capturing events
@@ -353,8 +344,9 @@
                 //start recording user actions
                 apf.uirecorder.stop();
         
-                recBtn.setAttribute('disabled', apf.uirecorder.isRecording);
-                stopBtn.setAttribute('disabled', !apf.uirecorder.isRecording);
+                recBtn.setAttribute('disabled', false);
+                playBtn.setAttribute('disabled', false);
+                stopBtn.setAttribute('disabled', true);
                 
                 loadActionList();
                 loadActionXml();
@@ -362,7 +354,7 @@
             }
             
             function loadActionXml() {
-                textareaXml.setProperty("value", apf.uirecorder.actionsXml.xml);
+                uirecorderXml.setProperty("value", apf.uirecorder.actionsXml.xml);
             }
             function selectAction() {
                 showActions();
@@ -502,16 +494,16 @@
                     if (typeof eventList[elementName] != "object") continue;
                     
                     elementNode = mdlEventData.ownerDocument.createElement("element");
-                    caption = (action.amlNode && action.amlNode.localName == "button") ? elementName + " (" + action.amlNode.caption + ")" : elementName; 
+                    caption = (eventList[elementName][0].amlNode && eventList[elementName][0].amlNode.caption) ? elementName + " (" + eventList[elementName][0].amlNode.caption + ")" : elementName;
                     elementNode.setAttribute("caption", caption);
- 
+                    
                     for (var eventNode, i = 0, l = eventList[elementName].length; i < l; i++) {
                         var event = eventList[elementName][i];
                         eventNode = mdlEventData.ownerDocument.createElement("event");
                         eventNode.setAttribute("caption", event.name);
                         elementNode.appendChild(eventNode);
                     }
-                    
+ 
                     mdlEventData.appendChild(elementNode);
                 }
                 mdlEvent.load(mdlEventData.xml);
@@ -555,13 +547,13 @@
             }
             
             function play() {
-                apf.uirecorder.play(textareaXml.value);
+                apf.uirecorder.play(uirecorderXml.value);
+                
+                recBtn.setAttribute('disabled', true);
+                playBtn.setAttribute('disabled', true);
+                stopBtn.setAttribute('disabled', false);
             }
 
-            function createXml() {
-                apf.uirecorder.createPlayList();
-            }
-            
             function changeSpeed() {
                 apf.uirecorder.playSpeed = dropdownPlaySpeed.value;
             }
