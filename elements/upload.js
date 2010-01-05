@@ -648,8 +648,8 @@ apf.upload = function(struct, tagName){
                 _self.inpFile.style.position = oNode.$ext.style.position;
                 _self.inpFile.style.width    = oNode.$ext.offsetWidth  + "px";
                 _self.inpFile.style.height   = oNode.$ext.offsetHeight + "px";
-                _self.inpFile.style.top      = oNode.$ext.offsetTop    + "px";
-                _self.inpFile.style.left     = oNode.$ext.offsetLeft   + "px";
+                _self.inpFile.style.top      = (oNode.$ext.offsetTop - 20)    + "px";
+                _self.inpFile.style.left     = (oNode.$ext.offsetLeft - 8)   + "px";
                 // @todo: resize/ move on browser resize
                 
                 clearInterval(timer);
