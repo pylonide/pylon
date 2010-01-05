@@ -482,13 +482,13 @@ apf.slideshow = function(struct, tagName){
         if (this.inuse) {
             this.lastChoose = this.current;
             this.$showLast();
-            
+
             return;
         }
 
         if (this.play)
             clearInterval(this.tmrPlay);
-            
+        
         this.$setSiblings();
         this.inuse = true;
 
@@ -498,6 +498,9 @@ apf.slideshow = function(struct, tagName){
             from  : 1,
             to    : 0
         });
+        
+        //Hack for Chrome
+        this.oTitle.style.display = "block";
         
         apf.tween.single(this.oTitle, {
             steps    : 3,
