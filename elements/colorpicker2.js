@@ -96,7 +96,8 @@ apf.colorpicker = function(struct, tagName){
 
     this.$restoreOriginal = function() {
         this.$change(c.hexToHSB(this.value));
-        this.oCustomColor.style.backgroundColor = "#" + this.value;
+        this.oCustomColor.style.backgroundColor = 
+            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
     };
 
     this.$change = function(hsb) {
