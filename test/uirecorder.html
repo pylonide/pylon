@@ -255,13 +255,14 @@
                 initial-message = "Select"
                 disabled        = "true"
             >
+                 <a:item value="connect">connect</a:item>
                  <a:item value="realtime">realtime</a:item>
                  <a:item value="lineair">lineair</a:item>
             </a:dropdown>
             <a:label>Click position</a:label>
             <a:dropdown 
-                id              = "dropdownClickPos" 
-                value           = "[property[@name='clickpos']/@value]"
+                id              = "dropdownClickTarget" 
+                value           = "[property[@name='clicktarget']/@value]"
                 initial-message = "Select"
                 disabled        = "true"
             >
@@ -361,13 +362,13 @@
                 loadEventList();
             }
             
-            function showActions() {    
+            function showActions() {
                 var items = treeAction.selection;
                 
                 var previewActions = document.getElementById("previewActions");
                 previewActions.innerHTML = "";
                 var enableDdMovement = true;
-                var enableDdClickPos = true;
+                var enableDdClickTarget = true;
                 for (var item, ii = 0, il = items.length; ii < il; ii++) {
                     var cursor = createCursor();
                     var cursorMsg = cursor.getElementsByTagName("span")[0];
@@ -378,8 +379,9 @@
                     if (action.name != "mousemove") {
                         enableDdMovement = false;
                     }
-                    if (action.name != "click") {
-                        enableDdClickPos = false;
+
+                    if (action.name != "click" || action.target == "") {
+                        enableDdClickTarget = false;
                     }
                     if (action.name == "mousemove") {
                         var grouped = [];
@@ -422,8 +424,8 @@
                 }
                 
                 dropdownMovement.setProperty("disabled", !enableDdMovement);
-                dropdownClickPos.setProperty("disabled", !enableDdClickPos);
-                btnSave.setProperty("disabled", !enableDdMovement && !enableDdClickPos);
+                dropdownClickTarget.setProperty("disabled", !enableDdClickTarget);
+                btnSave.setProperty("disabled", !enableDdMovement && !enableDdClickTarget);
             }
 
             //<div class="cursor"><span class="cursorMsg">Message</span></div>
@@ -468,8 +470,8 @@
                     }
                     else if (action.name == "click") {
                         propertyNode = mdlEventData.ownerDocument.createElement("property");
-                        propertyNode.setAttribute("name", "clickpos");
-                        propertyNode.setAttribute("value", action.clickpos);
+                        propertyNode.setAttribute("name", "clicktarget");
+                        propertyNode.setAttribute("value", action.clicktarget);
                         actionNode.appendChild(propertyNode);
                     }
 
@@ -490,13 +492,29 @@
                 var eventList = action.eventList;
                 mdlEventData = apf.getXml("<data />");
                 var elementNode, caption;
+
+                // display list of actions
                 for (var elementName in eventList) {
                     if (typeof eventList[elementName] != "object") continue;
-                    
+
+                    var actionList = apf.uirecorder.getActions(elementName, eventList[elementName]);
+                    if (actionList.length) {
+                        for (var actionNode, i = 0, l = actionList.length; i < l; i++) {
+                            actionNode = mdlEventData.ownerDocument.createElement("event");
+                            actionNode.setAttribute("caption", actionList[i]);
+                            mdlEventData.appendChild(actionNode);
+                        }
+                    }
+                }
+
+                // display list of events grouped by elements for debugging
+                for (var elementName in eventList) {
+                    if (typeof eventList[elementName] != "object") continue;
+
                     elementNode = mdlEventData.ownerDocument.createElement("element");
                     caption = (eventList[elementName][0].amlNode && eventList[elementName][0].amlNode.caption) ? elementName + " (" + eventList[elementName][0].amlNode.caption + ")" : elementName;
                     elementNode.setAttribute("caption", caption);
-                    
+                                        
                     for (var eventNode, i = 0, l = eventList[elementName].length; i < l; i++) {
                         var event = eventList[elementName][i];
                         eventNode = mdlEventData.ownerDocument.createElement("event");
@@ -524,10 +542,10 @@
                         apf.uirecorder.actionList[item.getAttribute("index")].movement = dropdownMovement.value;
                     }
                     else if (item.getAttribute("type") == "click") {
-                        var propertyNode = item.selectSingleNode("property[@name='clickpos']");
-                        apf.xmldb.setAttribute(propertyNode, "value", dropdownClickPos.value);
-        
-                        apf.uirecorder.actionList[item.getAttribute("index")].clickpos = dropdownClickPos.value;
+                        var propertyNode = item.selectSingleNode("property[@name='clicktarget']");
+                        apf.xmldb.setAttribute(propertyNode, "value", dropdownClickTarget.value);
+
+                        apf.uirecorder.setClickTarget(item.getAttribute("index"), dropdownClickTarget.value);
                     } 
                     //loadActionList();
                     //treeAction.clearSelection();
