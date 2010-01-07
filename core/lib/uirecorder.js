@@ -427,6 +427,9 @@ apf.uirecorder = {
                 case "close":
                     actionList.push((eventList[i].amlNode.id || elementName) + " closed");
                     break;
+                case "drag":
+                    actionList.push((eventList[i].amlNode.id || elementName) + " dragged");
+                    break;
                 case "afteradd":
                     actionList.push("Data added to " + (eventList[i].amlNode.id || elementName));
                     break;
@@ -442,43 +445,6 @@ apf.uirecorder = {
         return actionList;
     },
     
-    /*
-     *                             if (name === "resize") {
-                                interaction.push(aml.localName + " '" + objName + "' resized");
-                            }
-                            else if (name === "close") {
-                                interaction.push(aml.localName + " '" + objName + "' closed");
-                            }
-                            else if (name === "drag") {
-                                interaction.push(aml.localName + " '" + objName + "' dragged");
-                            }
-                            else if (name === "click") {
-                                if (aml.localName == "button")
-                                    interaction.push(aml.localName + " '" + objName + " (" + aml.caption + ")" + "' pressed");
-                                //else
-                                    //interaction.push(amlNode.localName + " '" + objName + "' clicked");
-                            }
-                            else if (name === "prop.visible" && apf.uirecorder.eventList[objName][i].value) { // && amlNode.localName == "page"
-                                interaction.push(aml.localName + " '" + aml.caption + "' opened");
-                            }
-                            else if (name === "updatestart") {
-                                interaction.push(aml.localName + " '" + objName + "' updated (updatestart)");
-                            }
-                            else if (name === "xmlupdate") {
-                                
-                            }
-
-                            else if (name === "afteradd") {
-                                interaction.push("Data added to " + aml.localName + " '" + objName + "' ");
-                            }
-                            
-                            else if (name === "afterstatechange") {
-                                interaction.push("Change state of " + aml.localName + " '" + objName + "' to '" + apf.uirecorder.eventList[objName][i].event.to.value + "' ");
-                            }
-                            // sortcolumn [columnName]
-                            // 
-
-     */
     /**
      * Add lineair movement to mousemove action
      */
@@ -508,7 +474,7 @@ apf.uirecorder = {
     /**
      * Play recorded actions
      */
-    playSpeed       : 1, // multiplier compared to normal speed
+    playSpeed       : 1, // multiplier compared to realtime speed
     startPlaying    : function(actionsXml) {
         if (!apf.uirecorder.isPlaying) return;
 
