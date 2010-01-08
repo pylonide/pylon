@@ -578,11 +578,6 @@ apf.http = function(){
             var url = args[0], query = "";
             if (!options.method)
                 options.method = method.toUpperCase();
-            if (options.method != "GET") {
-                var split = url.split("?");
-                url       = split.shift(),
-                query     = split.join("?");
-            }
             
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(

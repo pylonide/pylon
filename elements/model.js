@@ -770,7 +770,7 @@ apf.model = function(struct, tagName){
     this.load = function(xmlNode, options){
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<") {
-                if (xmlNode.substr(0, 5) == "<!DOC")
+                if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 xmlNode = apf.getXmlDom(xmlNode, null, true).documentElement; //@todo apf3.0 whitespace issue
             }
