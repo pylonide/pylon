@@ -843,6 +843,23 @@ apf.model = function(struct, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //@todo optimize by only doing this for add, sync etc actions
         
+        //#ifdef __WITH_UIRECORDER
+            if (apf.uirecorder) {
+                if (apf.uirecorder.isLoaded && apf.uirecorder.isRecording) {// only capture events when recording
+                    if (this.ownerDocument && this.$aml)
+                        apf.uirecorder.captureModelChange({
+                            action      : action,
+                            amlNode     : this,
+                            xmlNode     : xmlNode,
+                            listenNode  : listenNode,
+                            UndoObj     : UndoObj
+                        }); 
+                    //debugger;
+                        
+                }
+            }
+        //#endif
+        
         var p, b;
         for (var id in this.$listeners) {
             if (xmlNode = this.data.selectSingleNode(this.$amlNodes[id].xpath || ".")) {

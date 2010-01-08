@@ -635,6 +635,17 @@ apf.Class.prototype = new (function(){
         
         //Check if property has changed
         if (isChanged) {
+            //#ifdef __WITH_UIRECORDER
+            if (apf.uirecorder) {
+                if (apf.uirecorder.isLoaded && apf.uirecorder.isRecording) {// only capture events when recording
+                    if (this.ownerDocument && this.$aml)
+                        apf.uirecorder.capturePropertyChange(this, prop, value); 
+                    //debugger;
+                        
+                }
+            }
+            //#endif
+            
             if (!forceOnMe) { //Recursion protection
                 //Check if this property is bound to data
                 if (this.xmlRoot && typeof value != OBJ
@@ -838,7 +849,7 @@ apf.Class.prototype = new (function(){
                 //apf.console.info("Event: " + eventName + " called.");
                 if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
                     if (apf.uirecorder.isRecording) // only capture events when recording
-                        apf.uirecorder.captureEvent(eventName, e || options);
+                        apf.uirecorder.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
                 }
                 // when eventName == "load" all elements are loaded and drawn
                 if (eventName == "load")

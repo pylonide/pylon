@@ -210,17 +210,17 @@
 
         <a:tree 
             id              = "treeEvent" 
-            model           = "mdlEvent"
-            left            = "300"
+            model           = "mdlDetail"
+            left            = "500"
             width           = "300"
             height          = "600"
             startcollapsed  = "false"
         >
-            <a:each match="[element|event]">
+            <a:each match="[element|detailType|detail]">
                 <a:caption match="[@caption]" />
             </a:each>
         </a:tree>
-        <a:model id="mdlEvent">
+        <a:model id="mdlDetail">
             <data></data>
         </a:model>
 
@@ -228,10 +228,11 @@
         <a:tree 
             id              = "treeAction"
             model           = "mdlAction" 
-            width           = "300"
+            width           = "500"
             height          = "600"
             onafterselect   = "selectAction()"
             multiselect     = "true" 
+            startcollapsed  = "false"
         >
             <a:each match="[action]">
                 <a:caption match="[@caption]" />
@@ -303,6 +304,60 @@
             -->
         </a:dropdown>
 
+<a:table columns="300, 200" cellheight="150" padding="10" left="830" top="200">
+    <a:datagrid>
+        <a:each match="[watch]">
+            <a:column 
+              caption = "Company" 
+              value   = "[@company]" 
+              width   = "50%">
+            </a:column>
+            <a:column 
+              caption = "Type" 
+              value   = "[@type]" 
+              width   = "50%">
+            </a:column>
+
+            <a:drag match="[watch]" />
+            <a:drop 
+              match  = "[watch]" 
+              target = "[watch]" 
+              action = "insert-before" />
+            <a:drop 
+              match  = "[watch]" 
+              target = "[data]" 
+              action = "list-append" />
+        </a:each>
+        <a:model>
+            <data>
+                <wacht company="Alfex" type="man's" />
+                <watch company="Anonimo" type="woman's" />
+                <watch company="Atlantic" type="man's" />
+                <watch company="Axcent" type="woman's" />
+                <watch company="Aviator" type="man's" />
+                <watch company="Bulova" type="man's" />
+                <watch company="Candino" type="man's" />
+                <watch company="Citizen" type="man's" />
+                <watch company="Diesel" type="man's" />
+                <watch company="Jaguar" type="man's" />
+                <watch company="Lotus" type="man's" />
+                <watch company="Seiko" type="man's" />
+            </data>
+        </a:model>
+    </a:datagrid>
+    <a:list drag="true" drop="true">
+        <a:each match="[watch]">
+            <a:caption match="[@company]"></a:caption>
+            <a:icon value="clock.png"></a:icon>
+        </a:each>
+        <a:model>
+            <data>
+                <watch company="Casio" type="GShock" />
+                <watch company="Casio" type="Edifice" />
+            </data>
+        </a:model>
+    </a:list>
+</a:table>
 
 <!--
         <a:datagrid 
@@ -326,7 +381,7 @@
         </a:datagrid>
 -->
         <a:script>//<!--
-            mdlEventData = apf.getXml("<data />");
+            mdlDetailData = apf.getXml("<data />");
             mdlActionData = apf.getXml("<data />");
 
             // start capturing events
@@ -359,7 +414,7 @@
             }
             function selectAction() {
                 showActions();
-                loadEventList();
+                loadDetailsList();
             }
             
             function showActions() {
@@ -444,10 +499,10 @@
             function loadActionList() {
                 // get action list
                 mdlActionData = apf.getXml("<data />");
-                for (var prevActionName, action, actionNode, groupedNode, childNode, propertyNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+                for (var action, actionNode, groupedNode, childNode, propertyNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
                     action = apf.uirecorder.actionList[i];
 
-                    actionNode = mdlEventData.ownerDocument.createElement("action");
+                    actionNode = mdlDetailData.ownerDocument.createElement("action");
                     actionNode.setAttribute("x", action.x);
                     actionNode.setAttribute("y", action.y);
                     actionNode.setAttribute("type", action.name);
@@ -463,68 +518,85 @@
                     //actionNode.appendChild(mdlActionData.ownerDocument.createTextNode(action.name));
 
                     if (action.name == "mousemove") {
-                        propertyNode = mdlEventData.ownerDocument.createElement("property");
+                        propertyNode = mdlDetailData.ownerDocument.createElement("property");
                         propertyNode.setAttribute("name", "movement");
                         propertyNode.setAttribute("value", action.movement);
                         actionNode.appendChild(propertyNode);
                     }
                     else if (action.name == "click") {
-                        propertyNode = mdlEventData.ownerDocument.createElement("property");
+                        propertyNode = mdlDetailData.ownerDocument.createElement("property");
                         propertyNode.setAttribute("name", "clicktarget");
                         propertyNode.setAttribute("value", action.clicktarget);
                         actionNode.appendChild(propertyNode);
                     }
 
+                    // display list of actions
+                    if (action.detailList) {
+                        var detailList = action.detailList;
+                        for (var elementName in detailList) {
+                            if (typeof detailList[elementName] != "object") continue;
+        
+                            var actionList = apf.uirecorder.getActions(elementName, detailList[elementName]);
+                            if (actionList.length) {
+                                for (var actionResNode, ai = 0, al = actionList.length; ai < al; ai++) {
+                                    actionResNode = mdlDetailData.ownerDocument.createElement("action");
+                                    actionResNode.setAttribute("caption", actionList[ai]);
+                                    actionNode.appendChild(actionResNode);
+                                }
+                            }
+                        }
+                    }
+                    
                     mdlActionData.appendChild(actionNode);
-                    prevActionName = action.name;
                 }
 
                 mdlAction.load(mdlActionData.xml);            
             }
             
-            function loadEventList() {
+            function loadDetailsList() {
                 if (!treeAction.selection.length) return;
                 var items = treeAction.selection;
                 if (items.length > 1) return;
-                
                 var item = items[0];
                 var action = apf.uirecorder.actionList[item.getAttribute("index")];
-                var eventList = action.eventList;
-                mdlEventData = apf.getXml("<data />");
-                var elementNode, caption;
+                var detailList = action.detailList;
+                mdlDetailData = apf.getXml("<data />");
 
-                // display list of actions
-                for (var elementName in eventList) {
-                    if (typeof eventList[elementName] != "object") continue;
+                // active element
+                var rootNode = mdlDetailData.ownerDocument.createElement("element");
+                rootNode.setAttribute("caption", "apf");
+                var activeElNode = mdlDetailData.ownerDocument.createElement("detail");
+                activeElNode.setAttribute("caption", "activeElement: " + action.activeElement || "none");
+                rootNode.appendChild(activeElNode);
+                mdlDetailData.appendChild(rootNode);
+                
+                var elementNode, caption, detailTypeNode;
 
-                    var actionList = apf.uirecorder.getActions(elementName, eventList[elementName]);
-                    if (actionList.length) {
-                        for (var actionNode, i = 0, l = actionList.length; i < l; i++) {
-                            actionNode = mdlEventData.ownerDocument.createElement("event");
-                            actionNode.setAttribute("caption", actionList[i]);
-                            mdlEventData.appendChild(actionNode);
-                        }
-                    }
-                }
+                for (var elementName in detailList) {
+                    if (typeof detailList[elementName] != "object") continue;
 
-                // display list of events grouped by elements for debugging
-                for (var elementName in eventList) {
-                    if (typeof eventList[elementName] != "object") continue;
-
-                    elementNode = mdlEventData.ownerDocument.createElement("element");
-                    caption = (eventList[elementName][0].amlNode && eventList[elementName][0].amlNode.caption) ? elementName + " (" + eventList[elementName][0].amlNode.caption + ")" : elementName;
+                    elementNode = mdlDetailData.ownerDocument.createElement("element");
+                    caption = (detailList[elementName].amlNode && detailList[elementName].amlNode.caption) ? elementName + " (" + detailList[elementName].amlNode.caption + ")" : elementName;
                     elementNode.setAttribute("caption", caption);
-                                        
-                    for (var eventNode, i = 0, l = eventList[elementName].length; i < l; i++) {
-                        var event = eventList[elementName][i];
-                        eventNode = mdlEventData.ownerDocument.createElement("event");
-                        eventNode.setAttribute("caption", event.name);
-                        elementNode.appendChild(eventNode);
+
+
+                    for (var detailType in detailList[elementName]) {
+                        if (["events","properties","data"].indexOf(detailType) == -1) continue;
+                        detailTypeNode = mdlDetailData.ownerDocument.createElement("detailType");
+                        detailTypeNode.setAttribute("caption", detailType);
+                    
+                        for (var detail, detailNode, i = 0, l = detailList[elementName][detailType].length; i < l; i++) {
+                            detail = detailList[elementName][detailType][i];
+                            detailNode = mdlDetailData.ownerDocument.createElement("detail");
+                            detailNode.setAttribute("caption", detail.name + ": " + (detail.value || detail.event || detail.xmlNode));
+                            detailTypeNode.appendChild(detailNode);
+                        }
+                        
+                        elementNode.appendChild(detailTypeNode);
                     }
- 
-                    mdlEventData.appendChild(elementNode);
+                    mdlDetailData.appendChild(elementNode);
                 }
-                mdlEvent.load(mdlEventData.xml);
+                mdlDetail.load(mdlDetailData.xml);
             }
             
             function saveProperties() {
@@ -560,8 +632,8 @@
             function clear() {
                 mdlActionData = apf.getXml("<data />");
                 mdlAction.load(mdlActionData.xml);
-                mdlEventData = apf.getXml("<data />");
-                mdlEvent.load(mdlEventData.xml);
+                mdlDetailData = apf.getXml("<data />");
+                mdlDetail.load(mdlDetailData.xml);
             }
             
             function play() {
