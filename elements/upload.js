@@ -39,7 +39,7 @@
  *    target    = "../api/UploadPicture.asp"
  *    ontimeout = "alert('It seems the server went away')"
  *    oncancel  = "alert('Could not upload logo')"
- *    onreceive = "lstImages.add(arguments[0])" />
+ *    onuploaded = "lstImages.add(arguments[0])" />
  *
  *  <a:button caption="Browse file..." onclick="uplMain.browse()" 
  *    disabled="{uplMain.uploading}" />
@@ -524,7 +524,7 @@ apf.upload = function(struct, tagName){
     };
 
     /**
-     * @event receive Fires when the upload succeeded, was cancelled or failed.
+     * @event uploaded Fires when the upload succeeded, was cancelled or failed.
      *   object:
      *   {String} data the data that was returned by the upload post.
      */
@@ -542,7 +542,7 @@ apf.upload = function(struct, tagName){
 
         this.data = data;
 
-        this.dispatchEvent("receive", {
+        this.dispatchEvent("uploaded", {
             data: data
         });
 
@@ -658,8 +658,8 @@ apf.upload = function(struct, tagName){
     };
 
     /**
-     * @event beforereceive Fires before data is received.
-     *   cancelable: Prevents the data from being received.
+     * @event beforeuploaded Fires before data is uploaded.
+     *   cancelable: Prevents the data from being uploaded.
      *   object:
      *   {String} data the data that was returned by the upload post.
      *   {HTMLFrameElement} frame the iframe serving as the target to the form post.
@@ -722,7 +722,7 @@ apf.upload = function(struct, tagName){
                 }
                 catch(e){}
 
-                var hasFailed = _self.dispatchEvent("beforereceive", {
+                var hasFailed = _self.dispatchEvent("beforeuploaded", {
                     data  : data,
                     frame : _self.oFrame
                 }) === false;
