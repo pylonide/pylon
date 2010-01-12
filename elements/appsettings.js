@@ -33,7 +33,7 @@
  * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
  * @see element.contextmenu
  * @attribute {Boolean} allow-select            whether general text in the application can be selected.
- * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element
+ * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element. Defaults to true.
  * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
  * @see term.action
  * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.

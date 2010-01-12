@@ -914,16 +914,16 @@ apf.window = function(){
             apf.popup.forceHide();
         // #endif
 
-        if (amlNode) { //@todo check this for documentElement apf3.0
-            //#ifdef __WITH_FOCUS
-            //Make sure the user cannot leave a modal window
-            if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
-              && apf.config.allowBlur && amlNode.canHaveChildren != 2) {
-                lastFocusParent = null;
-                if (apf.document.activeElement)
-                    apf.document.activeElement.blur();
-            }
-            else if ((p = apf.document.activeElement
+        //#ifdef __WITH_FOCUS
+        //Make sure the user cannot leave a modal window
+        if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
+          && apf.config.allowBlur && amlNode.canHaveChildren != 2) {
+            lastFocusParent = null;
+            if (apf.document.activeElement)
+                apf.document.activeElement.blur();
+        }
+        else if (amlNode) { //@todo check this for documentElement apf3.0
+            if ((p = apf.document.activeElement
               && apf.document.activeElement.$focusParent || lastFocusParent)
               && p.visible && p.modal && amlNode.$focusParent != p) {
                 apf.window.$focusLast(p, {mouse: true});
