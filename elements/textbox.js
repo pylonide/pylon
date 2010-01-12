@@ -507,21 +507,21 @@ apf.textbox  = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
             var mask = this.getAttribute("mask");
-            if ("secret|password".indexOf(this.localName) > -1)
-                this.$aml.setAttribute("type", "password"); //@todo apf3.0 test this (dependency on $aml should be removed)
+
             if ((typeof mask == "string" && mask.toLowerCase() == "password")
-              || this.getAttribute("type") == "password") {
-                this.$aml.removeAttribute("mask"); //@todo apf3.0 test this (dependency on $aml should be removed)
+              || "secret|password".indexOf(this.localName) > -1) {
+                this.type == "password";
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
+            
             //#ifdef __WITH_HTML5
             else if (this.localName == "email") {
-                this.datatype = "apf:email";
-                this.$propHandlers["datatype"].call(this, "apf:email", "datatype");
+                this.datatype = (this.prefix ? this.prefix + ":" : "") + "email";
+                this.$propHandlers["datatype"].call(this, this.datatype, "datatype");
             }
             else if (this.localName == "url") {
-                this.datatype = "apf:url";
-                this.$propHandlers["datatype"].call(this, "apf:url", "datatype");
+                this.datatype = (this.prefix ? this.prefix + ":" : "") + "url";
+                this.$propHandlers["datatype"].call(this, this.datatype, "datatype");
             }
             //#endif
 
@@ -531,6 +531,9 @@ apf.textbox  = function(struct, tagName){
         });
         this.$int    = this.$getLayoutNode("main", "input", this.$ext);
         this.$button = this.$getLayoutNode("main", "button", this.$ext);
+        
+        if (this.type == "password")
+            this.$propHandlers["type"].call(this, "password");
 
         if (!apf.hasContentEditable && "input|textarea".indexOf(this.$int.tagName.toLowerCase()) == -1) {
             var node  = this.$int;

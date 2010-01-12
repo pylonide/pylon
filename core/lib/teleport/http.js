@@ -508,7 +508,9 @@ apf.http = function(){
                     }
                     else {
                         window.onerror = oldWinOnerror;
-                        return oldWinOnerror.apply(window, arguments);
+                        
+                        if (oldWinOnerror)
+                            return oldWinOnerror.apply(window, arguments);
                     }
                 }
                 http.send(data);
