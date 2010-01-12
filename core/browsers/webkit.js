@@ -87,6 +87,8 @@ apf.runWebkit = function(){
         apf.importClass(apf.runXslt,  true, self);
     }
     
+    // #endif
+    
     var serializer = new XMLSerializer();
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
         var node,
@@ -119,11 +121,8 @@ apf.runWebkit = function(){
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
 
-    // #endif
-    
     if (apf.runNonIe)
         apf.runNonIe();
-    //apf.importClass(apf.runNonIe, true, self);
 };
 
 // #endif

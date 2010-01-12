@@ -987,13 +987,22 @@ apf.window = function(){
 
         if (canSelect) {
             amlNode = apf.findHost(e.target);
-            //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-              && !amlNode.$allowSelect 
-              && !amlNode.getElementsByTagNameNS(apf.ns.xhtml, "*").length)
-                canSelect = false;
+            
+            if (amlNode){
+                var isContentEditable = ta[(e.srcElement || e.target).tagName]
+                    && !(e.srcElement || e.target).disabled
+                    || (e.srcElement && e.srcElement.isContentEditable)
+                    || amlNode.$isContentEditable
+                    && amlNode.$isContentEditable(e) && !amlNode.disabled;
+            
+                //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
+                if (!isContentEditable && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+                  && !amlNode.$allowSelect 
+                  && !amlNode.getElementsByTagNameNS(apf.ns.xhtml, "*").length)
+                    canSelect = false;
+            }
         }
-        
+       
         if (!canSelect && !cEditable) {
             if (e.preventDefault)
                 e.preventDefault();
@@ -1449,11 +1458,13 @@ apf.window = function(){
         document.onkeyup       =
         document.onkeydown     = null
 
-        document.body.onmousedown =
-        document.body.onmousemove =
-        document.body.onmouseup   = null;
+        if (document.body) {
+            document.body.onmousedown =
+            document.body.onmousemove =
+            document.body.onmouseup   = null;
 
-        document.body.innerHTML = "";
+            document.body.innerHTML = "";
+        }
     };
 };
 apf.window.prototype = new apf.Class().$init();
