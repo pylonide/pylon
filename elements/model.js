@@ -845,8 +845,8 @@ apf.model = function(struct, tagName){
         
         //#ifdef __WITH_UIRECORDER
             if (apf.uirecorder) {
-                if (apf.uirecorder.isLoaded && apf.uirecorder.isRecording) {// only capture events when recording
-                    if (this.ownerDocument && this.$aml)
+                if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
+                    if (this.ownerDocument && this.$aml) {
                         apf.uirecorder.captureModelChange({
                             action      : action,
                             amlNode     : this,
@@ -854,8 +854,8 @@ apf.model = function(struct, tagName){
                             listenNode  : listenNode,
                             UndoObj     : UndoObj
                         }); 
+                    }
                     //debugger;
-                        
                 }
             }
         //#endif

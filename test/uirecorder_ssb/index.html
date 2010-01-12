@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <script src="../../apf.js"></script>
+        <script src="../../loader.js"></script>
+	</head>
+	<body>
+	    <a:skin src="../../skins.xml" />
+
+        <a:bar id="uir_bar"></a:bar>
+        <a:window
+            id = "uir_windowControls"
+            title = "Controls"
+            buttons = "min"
+            top = "20"
+            right = "20"
+            width = "200"
+            height = "200"
+            visible = "{!uir_windowStop.visible}"
+        >
+            <a:button id="uir_btnPlay" onclick="play()">Play</a:button>
+            <a:button id="uir_btnTest" onclick="play(true)">Test</a:button>
+            <a:button id="uir_btnRecord" onclick="record()">Record</a:button>
+            <a:label>Speed</a:label>
+            <a:dropdown id="uir_ddRealtime" value="realtime">
+                <a:item value="realtime">realtime</a:item>
+                <a:item value="max">max</a:item>
+            </a:dropdown>
+        </a:window>
+
+        <a:window
+            id = "uir_windowStop"
+            title = "Controls"
+            top = "20"
+            right = "20"
+            width = "200"
+            height = "80"
+            visible = "{(uir_btnRecord.disabled)}"
+        >
+            <a:button id="uir_btnStop" onclick="stop()">Stop</a:button>
+
+        </a:window>        
+        <a:window 
+            id="uir_windowTests"
+            title = "Tests"
+            buttons = "min"
+            bottom = "20"
+            right = "20"
+            width = "300"
+            height = "250"
+            visible = "true"
+        >
+            <a:list
+                id = "uir_listTests"
+                model = "uir_mdlTests"
+            >
+                <a:each match="[test]">
+                    <a:caption value="[@name] ([@status])" />
+                </a:each>
+            </a:list>
+            
+            <a:model 
+                id="uir_mdlTests" />
+        </a:window>
+        
+        <a:script>//<!--
+            var o3 = window.external.o3;
+            var hostWnd = o3.window;
+            //hostWnd.showButtons = false;
+            hostWnd.showButtons = true;
+            hostWnd.caption = "APF 3 UIRecorder"  
+            hostWnd.x = 0;
+            hostWnd.y = 0;
+            hostWnd.height = 800;
+            hostWnd.width = 1200;     
+            //hostWnd.minimize();        
+            hostWnd.restore();
+            
+            uir_bar.replaceMarkup('markup.xml');
+            
+            function play(isTest) {
+                uir_btnPlay.setAttribute("disabled", true);
+
+                // @todo wait for uir_bar markup is processed
+                o3.wait(100);
+                if (isTest)
+                    apf.uirecorder.test();
+                for (var test, testStatus, startTime, i = 0, l = apf.uirecorder.testListXml.childNodes.length; i < l; i++) { //prevTime = 0, 
+                    uir_bar.replaceMarkup('markup.xml');
+                    test = apf.uirecorder.testListXml.childNodes[i];
+                    startTime = new Date().getTime();
+/*
+                    apf.xmldb.setAttribute(apf.uirecorder.testListXml.childNodes[i], "status", "playing");
+                    uir_mdlTests.load(apf.uirecorder.testListXml.xml);
+                    testStatus = "success";
+*/
+
+                    // loop through actions
+                    for (var elapsedTime, action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
+                        action = test.childNodes[ai];
+                        
+                        if (uir_ddRealtime.value === "realtime") {
+                            elapsedTime = new Date().getTime() - startTime;
+                            o3.wait((parseInt(action.getAttribute("time"))-elapsedTime)/10);
+                            
+                            //o3.wait((parseInt(action.getAttribute("time"))-prevTime)/20);
+                            //prevTime = parseInt(action.getAttribute("time"));
+                        }
+                        o3.mouseTo(parseInt(action.getAttribute("x")) + hostWnd.clientX, parseInt(action.getAttribute("y")) + hostWnd.clientY, hostWnd);
+                        
+                        if (action.getAttribute("name") === "click") {
+                            o3.mouseLeftClick();
+                        }
+                    }
+/*                    
+                    apf.xmldb.setAttribute(apf.uirecorder.testListXml.childNodes[i], "status", testStatus);
+                    uir_mdlTests.load(apf.uirecorder.testListXml.xml);
+*/                    
+                    uir_btnPlay.setAttribute("disabled", false);
+
+                    if (isTest)
+                        apf.uirecorder.saveResults();
+                }
+                
+                if (isTest) {
+                    apf.uirecorder.stop();
+                    debugger;
+                }
+            }
+            
+            function record() {
+                uir_bar.replaceMarkup('markup.xml');
+                apf.uirecorder.record();
+                
+                uir_windowTests.setProperty("visible", false);
+                uir_btnRecord.setAttribute("disabled", true);
+            }
+            
+            function stop() {
+                apf.uirecorder.stop();
+                
+                uir_windowTests.setProperty("visible", true);
+                uir_btnPlay.setAttribute("disabled", false);
+                uir_btnRecord.setAttribute("disabled", false);
+
+                uir_mdlTests.load(apf.uirecorder.testListXml.xml);
+            }
+        //--></a:script>
+	</body>
+	<script>
+	         
+	    /*
+        document.getElementById("firstname").focus();        
+        
+	o3.sendKeyEvent("[SHIFT]abrakadabra");
+	o3.wait(100);
+	o3.sendKeyEvent("\tabrakadabra");
+        o3.mouseTo(50 + hostWnd.clientX,250 + hostWnd.clientY,hostWnd);
+        o3.mouseLeftClick();
+*/
+
+	</script>
+</html>
