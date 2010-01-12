@@ -265,39 +265,11 @@ apf.propedit    = function(struct, tagName){
     this.$columns = ["50%", "50%"];
     this.$propHandlers["columns"] = function(value){
         this.$columns = value && value.splitSafe(",") || ["50%", "50%"];
-        return;
         
-        if (!found) { //@todo removal???
-            this.$isFixedGrid = true;
-            this.$setStyleClass(this.$ext, "fixed");
-            
-            if (this.$useiframe)
-                this.$setStyleClass(this.oDoc.documentElement, "fixed");
+        if (this.$headings) {
+            this.$headings[0].setProperty("width", this.$columns[0]);
+            this.$headings[1].setProperty("width", this.$columns[1]);
         }
-        
-        //@todo
-        if (fixed > 0 && !this.$isFixedGrid) {
-            var vLeft = fixed + 5;
-            
-            //first column has total -1 * fixed margin-left. - 5
-            //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
-            //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
-            this.$cssRules.push(["." + this.$baseCSSname + " .row" + this.$uniqueId,
-                "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
-        
-            //headings and records have same padding-right
-            this.$int.style.paddingRight  =
-            this.$head.style.paddingRight = vLeft + "px";
-        }
-        
-        //Activate CSS Rules
-        importStylesheet(this.$cssRules, window);
-        
-        this.$fixed = fixed;
-        this.$first = 0;
-
-        if (this.$useiframe)
-            importStylesheet(this.$cssRules, this.oWin);
     }
     
     function scrollIntoView(){
@@ -786,11 +758,11 @@ apf.propedit    = function(struct, tagName){
                 //@todo copy all non-known properties of the prop element
 
                 if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                    info.caption   = "[text()]";
+                    info.eachvalue = "[@value]";
                     info.each      = "item";
                     info.model     = "{apf.xmldb.getElementById('" 
                         + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
-                    info.caption   = "[text()]";
-                    info.eachvalue = "[@value]";
                 }
 
                 oEditor = this.$editors[editor] = new constr(info);
