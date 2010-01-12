@@ -264,8 +264,8 @@ apf.propedit    = function(struct, tagName){
     
     this.$columns = ["50%", "50%"];
     this.$propHandlers["columns"] = function(value){
-        return;
         this.$columns = value && value.splitSafe(",") || ["50%", "50%"];
+        return;
         
         if (!found) { //@todo removal???
             this.$isFixedGrid = true;
@@ -635,8 +635,9 @@ apf.propedit    = function(struct, tagName){
         var docId = this.documentId = apf.xmldb.getXmlDocId(p);
         
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(xmlNode, this);
-        
+        apf.xmldb.addNodeListener(xmlNode, this); //@todo apf3 potential cleanup problem
+        apf.xmldb.addNodeListener(this.xmlRoot, this);
+
         var _self = this, doc = p.ownerDocument;
         (function walk(nodes, parent, depth){
             for (var u, s, cell, sLid, pnode, html, node, i = 0, l = nodes.length; i < l; i++) {
@@ -677,7 +678,7 @@ apf.propedit    = function(struct, tagName){
 
                     cell = html.appendChild(_self.$setStyleClass(_self.$getLayoutNode("cell"), h.$className));
                     apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
-                        ((apf.lm.compile(node.getAttribute("value"), {nostring: true}))(xmlNode) || "") || ""); //@todo for IE but seems not a good idea
+                        ((apf.lm.compile(node.getAttribute("value"), {nostring: true}))(_self.xmlRoot) || "") || ""); //@todo for IE but seems not a good idea
                     
                     if ((s = node.selectNodes("prop")).length) {
                         pnode = html.appendChild(doc.createElement("blockquote"));
@@ -699,7 +700,7 @@ apf.propedit    = function(struct, tagName){
         
         apf.insertHtmlNodes(output, this.$int);
         
-        this.setProperty("root", xmlNode);
+        this.setProperty("root", this.xmlRoot); //or xmlNode ??
         
         //@todo select the first one
         this.select(this.$findHtmlNode(
@@ -998,15 +999,14 @@ apf.propedit    = function(struct, tagName){
 
             _self.select(target);
         }
-        
+    };
+    
+    this.$loadAml = function(x){
         //Create two columns
         this.$headings = [
             new apf.BindingColumnRule().$draw(this, "Property", this.$columns[0], "first"),
             new apf.BindingColumnRule().$draw(this, "Value", this.$columns[1])
         ];
-    };
-    
-    this.$loadAml = function(x){
     };
     
     this.$destroy = function(){

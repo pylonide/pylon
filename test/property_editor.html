@@ -8,6 +8,8 @@
     </head>
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
 
         <a:model id="mdlProps">
            <props>
@@ -166,7 +168,7 @@
         
         <a:propedit id="pe2" columns="35%,65%" model="{btnProp}" width="880" height="200" /-->
         
-        <a:propedit id="pe2" columns2="35%,65%" model="mdlData" 
+        <a:propedit id="pe" columns="35%,65%" model="mdlData" 
             properties="[mdlProps::folder]" width="300" height="500" />
         
         <a:dropdown>

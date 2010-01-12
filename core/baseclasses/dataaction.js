@@ -343,7 +343,7 @@ apf.DataAction = function(){
             return; //hack
 
         //#ifdef __DEBUG
-        apf.console.info("Executing action '" + action + "' for " + this.name
+        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
                          + " [" + (this.localName || "") + "]");
         //#endif
 
