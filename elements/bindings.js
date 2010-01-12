@@ -149,7 +149,7 @@ apf.ruleList.prototype = {
             if (!rule.match) 
                 return rule;
 
-            func = rule.cmatch || rule.compile("match");
+            func = rule.cmatch || rule.compile("match", {injectself: true, xpathmode: 2});
             if (func && func(xmlNode))
                 return rule;
         }
