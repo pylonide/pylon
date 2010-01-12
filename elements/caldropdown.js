@@ -85,8 +85,6 @@
  */
 
 apf.caldropdown = function(struct, tagName){
-    this.$init(tagName || "caldropdown", apf.NODE_VISIBLE, struct);
-    
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -135,6 +133,7 @@ apf.caldropdown = function(struct, tagName){
                         {name : "December",  number : 31}]
     };
     
+    this.$init(tagName || "caldropdown", apf.NODE_VISIBLE, struct);
 };
 
 (function() {
