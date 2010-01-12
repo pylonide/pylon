@@ -29,10 +29,13 @@
  * 
  * @param {String}  name     cookie name
  * @param {String}  value    cookie value
- * @param {Date}    expire   expire date in the GMT format
+ * @param {Date}    expire   expire date representing the number of milliseconds
+ *                           since 1 January 1970 00:00:00 UTC.
  * @param {String}  path     path name
  * @param {String}  domain   domain name
- * @param {Boolean} secure   cookie may benefit all the documents and CGI programs meet the requirements as to the path and domain compatibility
+ * @param {Boolean} secure   cookie may benefit all the documents and CGI programs
+ *                           meet the requirements as to the path and domain
+ *                           compatibility
  *     Possible values:
  *     true   may benefit
  *     false  can not benefit
