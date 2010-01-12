@@ -218,7 +218,7 @@ apf.getData = function(instruction, options){
             return fParsed(options.xmlNode, gCallback, options);
     }
     //jslt fetching data
-    else if ((fParsed.asyncs || fParsed.models) && (chr == "[" || chr == "{")) {
+    else if ((chr == "[" || chr == "{")) { //(fParsed.asyncs || fParsed.models) && 
         return fParsed(options.xmlNode, gCallback, options);
     }
     //url

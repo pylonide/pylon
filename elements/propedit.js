@@ -741,7 +741,7 @@ apf.propedit    = function(struct, tagName){
             
             return;
         }
-        
+
         if (this.$selected)
             this.$setStyleClass(this.$selected, "", ["selected"]);
 
@@ -750,7 +750,7 @@ apf.propedit    = function(struct, tagName){
         
         if (this.$lastEditor) {
             //this.$lastEditor[0].$blur();
-            this.$lastEditor[0].hide();
+            this.$lastEditor[0].setProperty("visible", false);
             
             var nodes = this.$lastEditor[1].childNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
@@ -824,7 +824,7 @@ apf.propedit    = function(struct, tagName){
                     + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
                     + "]");
 
-                oEditor.show();
+                oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
             }
             

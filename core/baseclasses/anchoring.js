@@ -195,12 +195,12 @@ apf.Anchoring = function(){
     function visibleHandler(e){
         if (!(this.$rule_header || this.$rule_v || this.$rule_h))
             return;
-                
+
         if (e.value) {
             if (this.$rule_v || this.$rule_h) {
                 var rules = this.$rule_header + "\n" + this.$rule_v + "\n" + this.$rule_h;
                 l.setRules(this.$pHtmlNode, this.$uniqueId + "_anchors", rules);
-                this.$ext.style.display = "none";
+                //this.$ext.style.display = "none";
                 l.queue(this.$pHtmlNode, this);
             }
             l.processQueue();

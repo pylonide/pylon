@@ -1835,6 +1835,7 @@ apf.debugwin = {
 
     errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
+
         var e = message 
             ? {
                 message : message.indexOf("aml file") > -1
@@ -1847,7 +1848,7 @@ apf.debugwin = {
         if (!isForced) {
             apf.console.error("[line " + linenr + "] " + message
                 .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
-                .replace(/\n/g, "<br />"));
+                .replace(/\n/g, "\n<br />"));
         }
 
         apf.debugwin.show(e, filename, linenr);
