@@ -98,7 +98,7 @@ apf.caldropdown = function(struct, tagName){
     this.autoselect    = false;
     this.multiselect   = false;
 
-    this.outputFormat  = null;
+    this.outputFormat  = "yyyy-mm-dd";
     this.captionFormat = "yyyy-mm-dd";
 
     this.$sliderHeight = 0;
@@ -180,13 +180,7 @@ apf.caldropdown = function(struct, tagName){
      *     ss     seconds, leading zero for single-digit seconds
      */
     this.$propHandlers["output-format"] = function(value) {
-        if (this.value) {
-            var c = this.$calVars;
-            this.setProperty("value", new Date(c.year, c.month, c.day, c.hours,
-                c.minutes, c.seconds).format(this.outputFormat = value));
-        }
-        else
-            this.outputFormat = value;
+        this.outputFormat = value;
     }
 
     /**
@@ -224,9 +218,9 @@ apf.caldropdown = function(struct, tagName){
 
     this.$propHandlers["value"] = function(value) {
         var c = this.$calVars;
-        if (!this.outputFormat) {
-            c.temp = value;
-            return;
+        
+        if (this.getAttribute("output-format") !== null && this.getAttribute("output-format") != this.outputFormat) {
+            this.outputFormat = this.getAttribute("output-format");
         }
 
         if (!value) {
