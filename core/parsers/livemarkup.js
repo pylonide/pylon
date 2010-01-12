@@ -430,8 +430,8 @@ apf.lm = new (function(){
         cc_fc_async_o  = "var _f=function(_n,_c,_w,_cr,_a){",
         cc_fc_opt_o    = "var _f=function(_n,_w,_cr,){",
         cc_fc_o        = "var _f=function(_n,_cr){",
-        cc_fe_async_o  = "var _f=function(event,_n,_c,_w,_a){",
-        cc_fe_opt_o    = "var _f=function(event,_n,_w){",
+        cc_fe_async_o  = "var _f=function(event,_c,_w,_a,_n){",
+        cc_fe_opt_o    = "var _f=function(event,_w,_n){",
         cc_fe_o        = "var _f=function(event,_n){",
         cc_f_c         = "}",
         cc_f_match_o   = "var _f=function(_m){",
@@ -2310,7 +2310,7 @@ apf.lm_exec = new (function(){
 
         if (!obj.exec)
             return  _a.ret[i]=(func)?obj[func].apply(obj,args):obj.apply(obj,args);
-
+		
         if(_w && _w._pc){
             _w._pc = {
                 obj:obj,
