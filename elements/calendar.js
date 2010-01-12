@@ -400,7 +400,7 @@ apf.calendar = function(struct, tagName){
                     cell.style.paddingTop    = (paddingBT > 0 ? paddingBT + 1 : 0) + "px";
                     cell.style.paddingBottom = (paddingBT > 0 ? paddingBT - 1 : 0) + "px";
                     if (apf.isIE || apf.isChrome) {
-                        cell.style.paddingLeft = (parseInt(cell.style.paddingLeft || 0) + 2) + "px";
+                        cell.style.paddingLeft = (parseInt(cell.style.paddingLeft || 0) + 1) + "px";
                     }
                     
                 }
