@@ -645,12 +645,13 @@ apf.caldropdown = function(struct, tagName){
                     : "1px 2px 1px 0";
 
                 this.$setStyleClass(cells[j], "", ["weekend", "disabled",
-                    "active", "prev", "next"]);
+                    "active", "prev", "next", "weeknumber"]);
 
                 if ((z - 1) % 8 == 0) {
                     cells[j].innerHTML = w_weeks
                         - Math.ceil((c.months[c.month].number + c.dayNumber) / 7)
                         + 1 + (z - 1) / 8;
+                    this.$setStyleClass(cells[j], "weeknumber");
                 }
                 else {
                     y++;
