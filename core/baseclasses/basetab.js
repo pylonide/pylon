@@ -650,7 +650,7 @@ apf.BaseTab = function(){
      */
     this.scrollIntoView = function(oPage) {
         bAnimating = false;
-        if (!this.ready || !this.$hasButtons || !this.oScroller)
+        if (!this.ready || !this.$hasButtons || !this.oScroller || !oPage.$drawn)
             return;
         bAnimating = true;
         if (this.$buttons.offsetWidth < this.$ext.offsetWidth)

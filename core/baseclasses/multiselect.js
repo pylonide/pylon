@@ -656,8 +656,9 @@ apf.MultiSelect = function(){
         }
 
         if (typeof xmlNode != "object") {
-            var str = xmlNode;
-            xmlNode = apf.xmldb.getNodeById(xmlNode);
+            var str = xmlNode; xmlNode = null;
+            if (typeof xmlNode == "string")
+                xmlNode = apf.xmldb.getNodeById(str);
 
             //Select based on the value of the xml node
             if (!xmlNode) {
@@ -1289,8 +1290,8 @@ apf.MultiSelect = function(){
             return;
         }
         
-        if (value || this["default"])
-            this.select(value || this["default"]);
+        if (!apf.isNot(value) || this["default"])
+            this.select(String(value) || this["default"]);
     }
     
     /**
