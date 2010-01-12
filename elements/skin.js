@@ -148,6 +148,13 @@ apf.aml.setElement("skin", apf.skin);
             xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
                 .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "")
                 .replace(/xmlns\=\"[^"]*\"/g, "");
+            
+            if (!xmlString) {
+                throw new Error(apf.formatErrorString(0, _self,
+                    "Loading skin",
+                    "Empty skin file. Maybe the file does not exist?", _self));
+            }
+            
             var xmlNode = apf.getXml(xmlString);//apf.getAmlDocFromString(xmlString);
             
             // #ifdef __DEBUG
@@ -155,9 +162,9 @@ apf.aml.setElement("skin", apf.skin);
             // #endif
             
             if (!xmlNode) {
-                throw new Error(apf.formatErrorString(0, null,
+                throw new Error(apf.formatErrorString(0, _self,
                     "Loading skin",
-                    "Could not parse skin. Maybe the file does not exist?", node));
+                    "Could not parse skin. Maybe the file does not exist?", _self));
             }
             
             xmlNode.setAttribute("filename", extra.url);

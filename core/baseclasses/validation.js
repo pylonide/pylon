@@ -339,6 +339,20 @@ apf.Validation = function(){
      * @attribute  {String}   checkequal   the id of the element to check if it has the same value as this element.
      * @attribute  {String}   invalidmsg   the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
      * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
+     * @attribute  {String}   validtest    the instruction on how to test for success. This attribute is generally used to check the value on the server.
+     * Example:
+     * This example shows how to check the username on the server. In this case
+     * comm.loginCheck is an async rpc function that checks the availability of the
+     * username. If it exists it will return 0, otherwise 1. The value variable
+     * contains the current value of the element (in this case the textbox). It
+     * can be used as a convenience variable.
+     * <pre class="code">
+     *  <a:label>Username</a:label>
+     *  <a:textbox
+     *    validtest  = "{comm.loginCheck(value) == 1}"
+     *    pattern    = "/^[a-zA-Z0-9_\-. ]{3,20}$/"
+     *    invalidmsg = "Invalid username;Please enter a valid username." />
+     * </pre>
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
@@ -355,7 +369,8 @@ apf.Validation = function(){
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
-        pattern : 1
+        pattern : 1,
+        validtest : 3
     }, this.$attrExcludePropBind);
 
     this.$booleanProperties["required"] = true;
@@ -432,9 +447,8 @@ apf.Validation = function(){
             if(typeof rvCache[value] == "boolean") return rvCache[value];
             if(rvCache[value] == -1) return true;
             rvCache[value] = -1;
-            
-            var instr = this.getAttribute('validtest').split("==");
-            apf.getData(instr[0], {
+
+            apf.getData(this.validtest, {
                xmlNode : this.xmlRoot,
                value   : this.getValue(),
                callback : function(data, state, extra){
@@ -455,7 +469,7 @@ apf.Validation = function(){
                       }
                   }
 
-                  rvCache[value] = instr[1] ? data == instr[1] : apf.isTrue(data);
+                  rvCache[value] = apf.isTrue(data);//instr[1] ? data == instr[1] : apf.isTrue(data);
                   
                   if(!rvCache[value]){
                     if (!_self.hasFocus())
@@ -466,9 +480,9 @@ apf.Validation = function(){
             });
             
             return true;
-        }
+        };
         
-        this.$vOptions.custom = "apf.lookup(" + this.$uniqueId + ").$checkRemoteValidation()";
+        (this.$vOptions || (this.$vOptions = {})).custom = "apf.lookup(" + this.$uniqueId + ").$checkRemoteValidation()";
         delete this.$vOptions.isValid;
     };
 };

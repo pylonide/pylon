@@ -506,6 +506,10 @@ apf.http = function(){
                         _self.receive(id);
                         return true;
                     }
+                    else {
+                        window.onerror = oldWinOnerror;
+                        return oldWinOnerror.apply(window, arguments);
+                    }
                 }
                 http.send(data);
                 window.onerror = oldWinOnerror;
