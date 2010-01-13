@@ -287,7 +287,8 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         
         var box  = o.getBoundingClientRect(), 
             top  = box.top,
-            left = box.left;
+            left = box.left,
+            corr = (apf.isIE && apf.isIE < 8);
 
         /*if (refParent != document.body) {
             var pos = apf.getAbsolutePosition(refParent);
@@ -296,15 +297,11 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         }*/
         
         if (!(apf.isIE && o == document.documentElement)) {
-            left += document.body.scrollLeft || document.documentElement.scrollLeft;
-            top  += document.body.scrollTop  || document.documentElement.scrollTop;
-        }
-        if (apf.isIE && apf.isIE < 8) {
-            left -= 2;
-            top  -= 2;
+            left += document.body.scrollLeft || document.documentElement.scrollLeft || 0;
+            top  += document.body.scrollTop  || document.documentElement.scrollTop  || 0;
         }
 
-        return [left, top];
+        return [left - (corr ? 2 : 0), top - (corr ? 2 : 0)];
     }
     
     //@todo code below might be deprecated one day
