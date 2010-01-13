@@ -115,8 +115,6 @@ apf.caldropdown = function(struct, tagName){
         numberOfDays : null,
         dayNumber    : null,
         
-        temp         : null,
-
         days         : ["Sunday", "Monday", "Tuesday", "Wednesday",
                         "Thursday", "Friday", "Saturday"],
         months       : [{name : "January",   number : 31},
@@ -218,9 +216,10 @@ apf.caldropdown = function(struct, tagName){
 
     this.$propHandlers["value"] = function(value) {
         var c = this.$calVars;
+        var outputFormat = this.getAttribute("output-format");
         
-        if (this.getAttribute("output-format") !== null && this.getAttribute("output-format") != this.outputFormat) {
-            this.outputFormat = this.getAttribute("output-format");
+        if (outputFormat !== null && outputFormat != this.outputFormat) {
+            this.outputFormat = outputFormat;
         }
 
         if (!value) {
@@ -928,7 +927,7 @@ apf.caldropdown = function(struct, tagName){
             }
         }
         else {
-            date = Date.parse(c.temp || this.value, this.outputFormat);
+            date = Date.parse(this.value, this.outputFormat);
             c.day   = date.getDate();
             c.month = date.getMonth();
             c.year  = date.getFullYear();
