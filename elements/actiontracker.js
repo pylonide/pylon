@@ -871,8 +871,8 @@ apf.UndoData = function(settings, at){
         this.state = undo ? "restoring" : "saving";
 
         //#ifdef __DEBUG
-        if (!options || options._pc === true) {//@todo test if this ever happens
-            throw new Error("Error in data instruction:" + dataInstruction);
+        if (!options || options._pc === true) {
+            throw new Error("Error in data instruction:" + dataInstruction); //@todo apf3.0 turn this into a proper apf error
         }
         //#endif
         
@@ -880,7 +880,7 @@ apf.UndoData = function(settings, at){
             return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode}, 
                 this, callback);
         }
-
+        
         //options._precall = false;
         options.callback = function(data, state, extra){
             extra.amlNode = _self.amlNode;
@@ -924,7 +924,9 @@ apf.UndoData = function(settings, at){
         //#endif
 
         apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
-        //options._pc = -1; //if this is set then it overwrites the values set by livemarkup
+        
+        if (options._pc === true)
+            options._pc = -1; //if this is set then it overwrites the values set by livemarkup
         
         return this;
     };

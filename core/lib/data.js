@@ -179,7 +179,7 @@ apf.getData = function(instruction, options){
             simplexpath : true
           })
         : {str: instruction, type: 2}); 
-    
+
     //@todo hack because we're not using compileNode.. an imperfection..
     if (fParsed.type == 3){// parsed != "string" && (l = (x = parsed[1]).length)) {
         if (fParsed.xpaths[0]) { //fParsed.asyncs) {
@@ -225,6 +225,9 @@ apf.getData = function(instruction, options){
         if (fParsed.type == 1 || fParsed.type == 3) {
             var callback2 = callback;
             callback = options.callback = function(data, state, extra){
+                if (options._pc === true)
+                    return;
+                
                 if (state != apf.SUCCESS)
                     return callback2.apply(this, arguments);
 
@@ -241,6 +244,9 @@ apf.getData = function(instruction, options){
             fParsed(options.xmlNode, gCallback, options);
         }
         else {
+            if (options._pc === true)
+                return;
+            
             var url = instruction.split(" "), method = "get";
             if (url.length > 1 && url[0].length < 10) {
                 method = url.shift();
