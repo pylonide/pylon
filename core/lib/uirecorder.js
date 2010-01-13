@@ -299,12 +299,12 @@ apf.uirecorder = {
         if (targetName) {
             if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
                 amlNode     : amlNode,
-                event       : [],
-                property    : [],
+                events       : [],
+                properties    : [],
                 data        : []
             };
             
-            apf.uirecorder.detailList[targetName].property.push(propObj);
+            apf.uirecorder.detailList[targetName].properties.push(propObj);
         }
     },
     captureModelChange : function(params) {
@@ -321,12 +321,14 @@ apf.uirecorder = {
      */
     save : function(type) {
         var id;
-        if (type === "test" && !apf.uirecorder.testListXml) {
-            apf.uirecorder.testListXml = apf.getXml("<testList />");
+        if (type === "test") {
+            if (!apf.uirecorder.testListXml)
+                apf.uirecorder.testListXml = apf.getXml("<testList />");
             id = parseInt(apf.uirecorder.testListXml.childNodes.length) + 1;
         }
-        else if (type === "results" && !apf.uirecorder.resultListXml) {
-            apf.uirecorder.resultListXml = apf.getXml("<resultList />");
+        else if (type === "results") {
+            if (!apf.uirecorder.resultListXml)
+                apf.uirecorder.resultListXml = apf.getXml("<resultList />");
             id = parseInt(apf.uirecorder.resultListXml.childNodes.length) + 1;
         }
         
@@ -335,7 +337,7 @@ apf.uirecorder = {
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
         testXml.setAttribute("status", "untested");        
 
-        var detailTypes = ["event", "property", "data"];
+        var detailTypes = {"events": "event", "properties": "property", "data": "data"};
         for (var action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
             aNode = testXml.ownerDocument.createElement("action");
@@ -352,18 +354,20 @@ apf.uirecorder = {
                     eNode = testXml.ownerDocument.createElement("element");
                     eNode.setAttribute("name", elementName);
                     
-                    for (var ti = 0, tl = detailTypes.length; ti < tl; ti++) {
-                        if (action.detailList[elementName][detailTypes[ti]].length) {
-                            for (var item, iNode, vNode, di = 0, dl = action.detailList[elementName][detailTypes[ti]].length; di < dl; di++) {
-                                item = action.detailList[elementName][detailTypes[ti]][di];
-                                iNode = testXml.ownerDocument.createElement(detailTypes[ti]);
+                    for (var type in detailTypes) {
+                        if (action.detailList[elementName][type].length) {
+                            dNode = testXml.ownerDocument.createElement(type)
+                            for (var item, iNode, vNode, di = 0, dl = action.detailList[elementName][type].length; di < dl; di++) {
+                                item = action.detailList[elementName][type][di];
+                                iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
                                 if (typeof item.value === "string")
                                     iNode.appendChild(testXml.ownerDocument.createTextNode(item.value));
                                 else
                                     iNode.appendChild(testXml.ownerDocument.createTextNode("[object]"))
-                                eNode.appendChild(iNode);
+                                dNode.appendChild(iNode);
                             }
+                            eNode.appendChild(dNode);
                         }
                     }
                     aNode.appendChild(eNode);
