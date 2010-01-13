@@ -272,30 +272,38 @@ apf.getPositionedParent = function(o){
  */
 apf.getAbsolutePosition = function(o, refParent, inclSelf){
     if ("getBoundingClientRect" in document.documentElement) { 
-        if (apf.doesNotIncludeMarginInBodyOffset && o == document.body) { 
+        if (apf.doesNotIncludeMarginInBodyOffset && o == document.body) {
             return [
-                o.offsetLeft + (parseFloat(apf.getStyle(o, apf.descPropJs ? "marginLeft" : "margin-top")) || 0),
-                o.offsetTop  + (parseFloat(apf.getStyle(o, apf.descPropJs ? "marginTop" : "margin-top")) || 0)
+                o.offsetLeft + (parseFloat(apf.getStyle(o, apf.descPropJs
+                    ? "marginLeft"
+                    : "margin-top")) || 0),
+                  + (o.scrollLeft || 0),
+                o.offsetTop  + (parseFloat(apf.getStyle(o, apf.descPropJs
+                    ? "marginTop"
+                    : "margin-top")) || 0)
+                  + (o.scrollTop || 0)
             ];
-        } 
+        }
         
         var box  = o.getBoundingClientRect(), 
             top  = box.top,
             left = box.left;
 
-        if (refParent && false) {
-            if (refParent != document.body) {
-                var pos = apf.getAbsolutePosition(refParent);
-                top -= pos[1];
-                left -= pos[0];
-            }
+        /*if (refParent != document.body) {
+            var pos = apf.getAbsolutePosition(refParent);
+            top -= pos[1];
+            left -= pos[0];
+        }*/
+        
+        if (!(apf.isIE && o == document.documentElement)) {
+            left += document.body.scrollLeft || document.documentElement.scrollLeft;
+            top  += document.body.scrollTop  || document.documentElement.scrollTop;
         }
-        
-        //if (apf.isIE) {
-            left += document.documentElement.scrollLeft - (apf.isIE && apf.isIE < 8 ? 2 : 0);
-            top  += document.documentElement.scrollTop - (apf.isIE && apf.isIE < 8 ? 2 : 0);
-        //}
-        
+        if (apf.isIE && apf.isIE < 8) {
+            left -= 2;
+            top  -= 2;
+        }
+
         return [left, top];
     }
     
@@ -327,7 +335,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
             var q = o.previousSibling;
             while (q) {
                 if (q.nodeType == 1) {
-                    var fl = apf.getStyle(q, "styleFloat");
+                    fl = apf.getStyle(q, "styleFloat");
                     if (fl == "left") {
                         wt -= parseInt(apf.getStyle(o, "marginLeft")) 
                             || 0;//-1 * (o.parentNode.offsetWidth - o.offsetWidth)/2; //assuming auto
@@ -348,7 +356,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
             : parseInt(bh) || 0) + o.offsetTop;
 
         //Scrolling
-        if (o != refParent && (o.tagName != "HTML" || o.ownerDocument != document)) {
+        if (!apf.isGecko && o != refParent && (o.tagName != "HTML" || o.ownerDocument != document)) {
             wt -= o.scrollLeft;
             ht -= o.scrollTop;
         }
