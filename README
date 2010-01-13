@@ -1,15 +1,15 @@
-  JPF - Javeline Platform
+  APF - Ajax.org Platform
   ========================================
 
-  JPF[1] introduces you to writing Rich Internet Applications (RIA's) using
+  APF[1] introduces you to writing Rich Internet Applications (RIA's) using
 Ajax. Giving you and your users the best of both worlds, your web applications
 run in a browser, yet look and feel like compiled desktop applications.
-Connecting to external data sources can be done by using Javeline TelePort.
+Connecting to external data sources can be done by using Ajax.org TelePort.
 
   License
   =======
 
-  Javeline Platform is licensed under the terms of the GNU Lesser General 
+  Ajax.org Platform is licensed under the terms of the GNU Lesser General
 Public License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
@@ -17,9 +17,9 @@ this distribution for details.
   ===============
   
   Javeline Platform comes in two flavors. Debug and Release. These contain all
-that is JPF. For a project you only need a subset of JPF. Usually resulting in
+that is APF. For a project you only need a subset of APF. Usually resulting in
 a zipped download of 100KB or less. The up and coming packager application will 
-help packaging JPF for your project.
+help packaging APF for your project.
 
   Hints on Usage
   ==============
