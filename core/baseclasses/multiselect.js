@@ -1006,8 +1006,15 @@ apf.MultiSelect = function(){
     /**
      * @private
      */
-    this.$setTempSelected = function(xmlNode, ctrlKey, shiftKey){
+    this.$setTempSelected = function(xmlNode, ctrlKey, shiftKey, down){
         clearTimeout(this.timer);
+
+        if (this.$bindings.selectable) {
+            while (xmlNode && !this.$getDataNode("selectable", xmlNode)) {
+                xmlNode = this.getNextTraverseSelected(xmlNode, !down);
+            }
+            if (!xmlNode) return;
+        }
 
         if (!this.multiselect)
             ctrlKey = shiftKey = false;
@@ -1586,7 +1593,7 @@ apf.MultiSelect = function(){
     // Select Bind class
     // #ifdef __WITH_DATABINDING
     this.addEventListener("beforeselect", function(e){
-        if (this.$applyBindRule("select", e.xmlNode, ".") === false)
+        if (this.$bindings.selectable && !this.$getDataNode("selectable", e.selected))
             return false;
     }, true);
     // #endif

@@ -1029,7 +1029,7 @@ apf.tree = function(struct, tagName){
                 break;
             case 36:
                 //HOME
-                this.$setTempSelected (this.getFirstTraverseNode(), false, shiftKey);
+                this.$setTempSelected(this.getFirstTraverseNode(), false, shiftKey);
                 oExt.scrollTop = 0;
                 return false;
             case 35:
@@ -1038,7 +1038,7 @@ apf.tree = function(struct, tagName){
                 while (!this.isCollapsed(lastNode))
                     lastNode = this.getLastTraverseNode(lastNode);
                 
-                this.$setTempSelected (lastNode, false, shiftKey);    
+                this.$setTempSelected(lastNode, false, shiftKey, true);
                 oExt.scrollTop = oExt.scrollHeight;
                 return false;
             case 37:
@@ -1103,7 +1103,7 @@ apf.tree = function(struct, tagName){
                     sNode = this.getTraverseParent(node);
 
                 if (sNode && sNode.nodeType == 1)
-                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey, true);
                 else
                     return false;
                 
@@ -1144,7 +1144,7 @@ apf.tree = function(struct, tagName){
                 }
 
                 if (sNode && sNode.nodeType == 1)
-                   this.$setTempSelected (sNode, ctrlKey, shiftKey);
+                   this.$setTempSelected(sNode, ctrlKey, shiftKey);
                 else
                     return false;
                     

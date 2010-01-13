@@ -288,7 +288,7 @@ apf.BaseList = function(){
 
                 node   = this.getNextTraverseSelected(node, false);
                 if (node)
-                    this.$setTempSelected(node, ctrlKey, shiftKey);
+                    this.$setTempSelected(node, ctrlKey, shiftKey, true);
                 else
                     return;
 
@@ -318,7 +318,7 @@ apf.BaseList = function(){
 
                 node      = this.getNextTraverseSelected(node, false, items);
                 if (node)
-                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                    this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
 
@@ -406,7 +406,7 @@ apf.BaseList = function(){
                 if (!node)
                     node = this.getFirstTraverseNode();
                 if (node)
-                    this.$setTempSelected (node, ctrlKey, shiftKey);
+                    this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
 

@@ -235,7 +235,7 @@ apf.aml.setElement("icon",      apf.BindingRule);
 apf.aml.setElement("image",     apf.BindingRule);
 apf.aml.setElement("caption",   apf.BindingRule);
 apf.aml.setElement("css",       apf.BindingRule);
-apf.aml.setElement("select",    apf.BindingRule);
+apf.aml.setElement("selectable",    apf.BindingRule);
 apf.aml.setElement("value",     apf.BindingRule);
 apf.aml.setElement("src",       apf.BindingRule);
 apf.aml.setElement("collapsed", apf.BindingRule);
