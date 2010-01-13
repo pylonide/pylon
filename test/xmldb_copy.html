@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="trunk/apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins.xml" media-path="images/" icon-path="icns/" />
+        
+       <a:list id="myList">
+            <a:bindings>
+                <a:caption match="[@name]" />
+                <a:value match="[@id]" />
+                <a:icon>[@type].png</a:icon>
+                <a:each match="[product]" />
+            </a:bindings>
+            <a:model>
+                <products>
+                    <product name="Soundblaster" type="audio" id="product10" />
+                    <product name="Teapot" type="3d" id="product13" />
+                    <product name="Coprocessor" type="chips" id="product15" />
+                    <product name="Keyboard" type="input" id="product17" />
+                    <product name="Diskdrive" type="storage" id="product20" />
+                </products>
+            </a:model>
+        </a:list>
+        
+        <a:script><![CDATA[
+            apf.onload = function() {
+                var xmlNode = apf.xmldb.copy(myList.selected);
+                xmlNode.setAttribute("name", "New product");
+                myList.add(xmlNode);
+                myList.select(xmlNode);
+                myList.startRename();
+            }
+        ]]></a:script>
+
+    </body>
+</html>
