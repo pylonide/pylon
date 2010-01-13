@@ -33,13 +33,14 @@ apf.plane = {
             this.plane.style.zIndex     = 100000000;
             this.plane.style.left       = 0;
             this.plane.style.top        = 0;
+            //this.plane.style.backgroundColor = "red";
         }
     },
 
     lastCursor : null,
     show : function(o, dontAppend, copyCursor){
         this.init();
-        
+
         var plane    = this.plane;
         this.current = o;
         //o.parentNode.appendChild(plane);
@@ -54,13 +55,13 @@ apf.plane = {
         
         var pWidth = (plane.parentNode == document.body
             ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetWidth - 2
+                ? document.documentElement.offsetWidth - (apf.isIE < 8 ? 2 : 4)
                 : window.innerWidth)
             : plane.parentNode.offsetWidth);
 
         var pHeight = (plane.parentNode == document.body
             ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetHeight - 2
+                ? document.documentElement.offsetHeight - (apf.isIE < 8 ? 2 : 4)
                 : window.innerHeight)
             : plane.parentNode.offsetHeight);
         
