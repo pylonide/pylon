@@ -1297,7 +1297,7 @@ apf.MultiSelect = function(){
             return;
         }
         
-        if (!apf.isNot(value) || this["default"])
+        if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
     }
     

@@ -418,13 +418,13 @@ apf.DragDrop = function(){
 
         //copy convenience variables
         var context = {
-                internal : apf.DragServer.dragdata.host == this,
-                ctrlKey  : event.ctrlKey,
-                keyCode  : event.keyCode
-            },
-            //@todo apf3.0 below should actually be compileNode with with_options
-            ifcopy = rule && rule.copy;//.getAttribute("copy");
-        
+              internal : apf.DragServer.dragdata.host == this,
+              ctrlKey  : event.ctrlKey,
+              keyCode  : event.keyCode
+          },
+          //@todo apf3.0 below should actually be compileNode with with_options
+          ifcopy = rule && rule.copy;//.getAttribute("copy");
+
         if (ifcopy) {
             ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
