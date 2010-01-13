@@ -24,7 +24,7 @@
         </a:each>
         <a:model>
             <data>
-                <wacht company="Alfex" type="man's" />
+                <watch company="Alfex" type="man's" />
                 <watch company="Anonimo" type="woman's" />
                 <watch company="Atlantic" type="man's" />
                 <watch company="Axcent" type="woman's" />
@@ -52,3 +52,5 @@
         </a:model>
     </a:list>
 </a:table>
+
+<a:textbox id="tb1"></a:textbox>

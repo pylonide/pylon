@@ -4,20 +4,25 @@
   xmlns="http://www.w3.org/1999/xhtml">
 	<head>
         <script src="../../apf.js"></script>
-        <script src="../../loader.js"></script>
+        <style>
+            html{overflow:hidden}
+        </style>
 	</head>
 	<body>
 	    <a:skin src="../../skins.xml" />
 
-        <a:bar id="uir_bar"></a:bar>
+        <a:defaults for="window"
+            draggable = "false"
+            dockable  = "true"
+            dock      = "true" />
+
+        <a:bar id="uir_bar" skin="basic" style="border:1px solid gray" align="left-splitter" height="70%"></a:bar>
         <a:window
             id = "uir_windowControls"
             title = "Controls"
             buttons = "min"
-            top = "20"
-            right = "20"
+            align="right-splitter"
             width = "200"
-            height = "200"
             visible = "{!uir_windowStop.visible}"
         >
             <a:button id="uir_btnRecord" onclick="record()">Record</a:button>
@@ -34,28 +39,25 @@
         <a:window
             id = "uir_windowStop"
             title = "Controls"
-            top = "20"
-            right = "20"
+            align="right-splitter"
             width = "200"
-            height = "80"
-            visible = "{(uir_btnRecord.disabled)}"
+            visible = "{uir_btnRecord.disabled}"
         >
             <a:button id="uir_btnStop" onclick="stop()">Stop</a:button>
-
+    
         </a:window>        
         <a:window 
             id="uir_windowTests"
             title = "Tests"
             buttons = "min"
-            bottom = "20"
-            right = "20"
-            width = "300"
-            height = "250"
+            align="right-splitter"
+            height = "40%"
             visible = "false"
         >
             <a:list
                 id = "uir_listTests"
                 model = "uir_mdlTests"
+                anchors = "0 0 0 0"
             >
                 <a:each match="[test]">
                     <a:caption value="[@name] ([@status])" />
@@ -70,10 +72,7 @@
             id="uir_windowChanges"
             title = "Changes"
             buttons = "min"
-            bottom = "20"
-            right = "340"
-            width = "1200"
-            height = "250"
+            align="left-splitter"
             visible = "false"
         >
             <a:datagrid
