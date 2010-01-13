@@ -876,7 +876,7 @@ apf.UndoData = function(settings, at){
         }
         //#endif
         
-        if (options == -2) {
+        if (options._pc == -2) {
             return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode}, 
                 this, callback);
         }
@@ -924,7 +924,7 @@ apf.UndoData = function(settings, at){
         //#endif
 
         apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
-        options._pc = -1;
+        //options._pc = -1; //if this is set then it overwrites the values set by livemarkup
         
         return this;
     };

@@ -171,15 +171,14 @@ apf.getData = function(instruction, options){
     }
     
     if (!options) options = {}; //@todo optimize?
-
     var fParsed = options.fParsed || (instruction.indexOf("{") > -1 || instruction.indexOf("[") > -1
         ? apf.lm.compile(instruction, {
             withopt     : true, 
-            precall     : options._pc, //for the actiontracker
+            precall     : options._pc == -1 ? false : options._pc, //for the actiontracker
             alwayscb    : true, 
             simplexpath : true
           })
-        : {str: instruction, type: 2}); //str, with_options, precalc, always_callback, one_xpath_bail
+        : {str: instruction, type: 2}); 
     
     //@todo hack because we're not using compileNode.. an imperfection..
     if (fParsed.type == 3){// parsed != "string" && (l = (x = parsed[1]).length)) {
