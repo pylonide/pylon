@@ -23,8 +23,13 @@
                 <a:icon>[@type].png</a:icon> 
                 <a:each match="[product]" /> 
             </a:bindings> 
-            <a:add set="{comm.addProduct()}"> 
+            <!--a:add set="{comm.addProduct()}"> 
                 <product name="new item" type="" /> 
+            </a:add--> 
+            <a:add 
+              set  = "addproduct.php?xml=%[.]" 
+              undo = "remove.php?id=[@id]">
+                <product name="New product" id="product66" /> 
             </a:add> 
             <a:model> 
                 <products> 
@@ -37,5 +42,6 @@
             </a:model> 
         </a:list> 
         <a:button action="add" target="myList">Add new product</a:button>
+        <a:button action="undo" target="myList">Undo</a:button>
     </body>
 </html>
