@@ -172,6 +172,9 @@ apf.spinner = function(struct, tagName){
         this.$setStyleClass(this.oInput, "focus");
         this.$setStyleClass(this.$buttonPlus, "plusFocus");
         this.$setStyleClass(this.$buttonMinus, "minusFocus");
+        
+        if (this.oLeft)
+            this.$setStyleClass(this.oLeft, "leftFocus");
     };
 
     this.$blur = function(e) {
@@ -181,6 +184,10 @@ apf.spinner = function(struct, tagName){
         this.$setStyleClass(this.oInput, "", ["focus"]);
         this.$setStyleClass(this.$buttonPlus, "", ["plusFocus"]);
         this.$setStyleClass(this.$buttonMinus, "", ["minusFocus"]);
+        
+        if (this.oLeft)
+            this.$setStyleClass(this.oLeft, "" ["leftFocus"]);
+        
         this.focused = false;
     };
 
@@ -228,6 +235,7 @@ apf.spinner = function(struct, tagName){
         this.oInput       = this.$getLayoutNode("main", "input",       this.$ext);
         this.$buttonPlus  = this.$getLayoutNode("main", "buttonplus",  this.$ext);
         this.$buttonMinus = this.$getLayoutNode("main", "buttonminus", this.$ext);
+        this.oLeft = this.$getLayoutNode("main", "left", this.$ext);
 
         //#ifdef __WITH_WINDOW_FOCUS
         apf.sanitizeTextbox(this.oInput);
