@@ -1038,13 +1038,7 @@ apf.DataBinding = function(){
                 if (eachBinds[prop]) {
                     throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
                 }
-                else
                 //#endif
-                
-                if (prop == "sort") {
-                    //@todo 
-                    return;
-                }
             }
             //#endif
         }

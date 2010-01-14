@@ -1075,6 +1075,28 @@ apf.MultiselectBinding = function(){
      */
     this.$propHandlers["tooltip"]  = this.$handleBindingRule;
 
+    //#ifdef __WITH_SORTING
+    /**
+     * @attribute {String} sort the xpath statement that selects the sortable value.
+     * Example:
+     * <code>
+     *  <a:list sort="[@name]" each="[person]" />
+     * </code>
+     * @see  element.each.attribute.sort
+     */
+    this.$propHandlers["sort"] = function(value){
+        if (value) {
+            this.$sort = new apf.Sort()
+            this.$sort.set({
+                getValue : apf.lm.compile(value)
+            });
+        }
+        else {
+            this.$sort = null;
+        }
+    }
+    //#endif
+
     /**
      * @attribute {String} select the xpath statement that determines whether
      * this node is selectable.

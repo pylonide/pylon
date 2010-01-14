@@ -42,7 +42,7 @@ apf.Sort = function(xmlNode){
         if (clear) settings = {};
 
         settings.order     = xmlNode.order;
-        settings.getValue  = xmlNode.csort || xmlNode.compile("sort");
+        settings.getValue  = xmlNode.csort || xmlNode.$compile("sort");
         settings.getNodes  = self[xmlNode["nodes-method"]];
 
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
@@ -88,8 +88,10 @@ apf.Sort = function(xmlNode){
         
         apf.extend(settings, struct);
 
-        if (struct.order && !settings.ascending)
-            settings.ascending = struct.order.indexOf("desc") == -1;
+        if (!settings.ascending)
+            settings.ascending = struct.order 
+                ? struct.order.indexOf("desc") == -1
+                : true;
         
         settings.order = null;
         
