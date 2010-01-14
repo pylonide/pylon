@@ -363,7 +363,7 @@ apf.actiontracker = function(struct, tagName){
                 return false;
             }
             else {
-                change.call(this, undoStack.length - 1, true, undo);
+                change.call(this, undoStack.length - 1, true, undo, rollback);
                 i++;
             }
         }
@@ -431,8 +431,9 @@ apf.actiontracker = function(struct, tagName){
                     "Error sending action to the server:\n"
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
                     + extra.message));
-                
-                if ((extra.amlNode || apf).dispatchEvent("error", apf.extend({
+
+                if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
+                  .dispatchEvent("error", apf.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -1065,7 +1066,7 @@ apf.actiontracker.actions = {
             apf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
         //Remove Child Node
         else
-            apf.xmldb.removeNode(q[1]);
+            apf.xmldb.removeNode(UndoObj.xmlNode);//q[1]
     },
 
     "moveNode" : function(UndoObj, undo){

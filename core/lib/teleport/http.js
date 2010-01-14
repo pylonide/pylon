@@ -495,6 +495,31 @@ apf.http = function(){
                 http.setRequestHeader(name, options.headers[name]);
         }
 
+        function handleError(){
+            var msg = self.navigator.onLine
+                ? "File or Resource not available " + url
+                : "Browser is currently working offline";
+
+            //#ifdef __DEBUG
+            apf.console.warn(msg, "teleport");
+            //#endif
+
+            var state = self.navigator && navigator.onLine
+                ? apf.ERROR
+                : apf.TIMEOUT;
+
+            // File not found
+            var noClear = options.callback ? options.callback(null, state, {
+                userdata : options.userdata,
+                http     : http,
+                url      : url,
+                tpModule : _self,
+                id       : id,
+                message  : msg
+            }) : false;
+            if(!noClear) _self.clearQueueItem(id);
+        }
+
         function send(isLocal){
             var hasError;
 
@@ -503,7 +528,8 @@ apf.http = function(){
                 window.onerror = function(){
                     if (arguments.caller.callee == send) {
                         window.onerror = oldWinOnerror;
-                        _self.receive(id);
+                        //_self.receive(id);
+                        setTimeout(function(){handleError();});
                         return true;
                     }
                     else {
@@ -526,29 +552,7 @@ apf.http = function(){
             }
 
             if (hasError) {
-                var msg = window.navigator.onLine
-                    ? "File or Resource not available " + url
-                    : "Browser is currently working offline";
-
-                //#ifdef __DEBUG
-                apf.console.warn(msg, "teleport");
-                //#endif
-
-                var state = self.navigator && navigator.onLine
-                    ? apf.ERROR
-                    : apf.TIMEOUT;
-
-                // File not found
-                var noClear = options.callback ? options.callback(null, state, {
-                    userdata : options.userdata,
-                    http     : http,
-                    url      : url,
-                    tpModule : this,
-                    id       : id,
-                    message  : msg
-                }) : false;
-                if(!noClear) this.clearQueueItem(id);
-
+                handleError();
                 return;
             }
         }
