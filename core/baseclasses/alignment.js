@@ -158,7 +158,7 @@ apf.Alignment = function(){
      */
     this.$enableAlignment = function(purge){
         this.$alignmentEnabled = true;
-        
+
         var buildParent = "vbox|hbox".indexOf(this.parentNode.tagName) == -1
             && !this.parentNode.pData;
 

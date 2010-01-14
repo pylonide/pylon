@@ -23,36 +23,28 @@
           title   = "Controls"
           buttons = "min"
           align   ="right-splitter"
-          width   = "200"
-          visible2 = "{!uir_windowStop.visible}">
-            <a:button id="uir_btnRecord" onclick="uir_btnRecord.disable()">Record</a:button>
-            <a:button id="uir_btnPlay" onclick="play()" disabled="true">Play</a:button>
-            <a:button id="uir_btnTest" onclick="play(true)" disabled="true">Test</a:button>
-            <a:button id="uir_btnClear" onclick="clearTests()" disabled="true">Clear</a:button>
-            <a:label>Speed</a:label>
-            <a:dropdown id="uir_ddRealtime" value="realtime">
-                <a:item value="realtime">realtime</a:item>
-                <a:item value="max">max</a:item>
-            </a:dropdown>
-        </a:window>
-
-        <a:window
-          id      = "uir_windowStop"
-          title   = "Controls"
-          align   = "right-splitter"
-          width   = "200"
-          visible = "false"
-          visible2 = "{uir_btnRecord.disabled}">
-            <a:button id="uir_btnStop" onclick="uir_btnRecord.enable()">Stop</a:button>
+          width   = "200">
+            <a:bar skin="basic" visible="{!uir_btnRecord.disabled}">
+                <a:button id="uir_btnRecord" onclick="uir_btnRecord.disable()">Record</a:button>
+                <a:button id="uir_btnPlay" onclick="play()" disabled="true">Play</a:button>
+                <a:button id="uir_btnTest" onclick="play(true)" disabled="true">Test</a:button>
+                <a:button id="uir_btnClear" onclick="clearTests()" disabled="true">Clear</a:button>
+                <a:label>Speed</a:label>
+                <a:dropdown id="uir_ddRealtime" value="realtime">
+                    <a:item value="realtime">realtime</a:item>
+                    <a:item value="max">max</a:item>
+                </a:dropdown>
+            </a:bar>
+            <a:button id="uir_btnStop" visible = "{uir_btnRecord.disabled}" 
+                onclick="uir_btnRecord.enable()">Stop</a:button>
         </a:window>
 
         <a:window 
-            id="uir_windowTests"
-            title = "Tests"
+            id      = "uir_windowTests"
+            title   = "Tests"
             buttons = "min"
-            align="right-splitter"
-            height = "40%"
-            visible2 = "false">
+            align   = "right-splitter"
+            height  = "40%">
             <a:list
                 id = "uir_listTests"
                 model = "uir_mdlTests"

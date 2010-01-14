@@ -464,7 +464,7 @@ apf.AmlWindow = function(struct, tagName){
                 this.$ext.className = cls;
             }
         }
-        else if (apf.isFalse(value)) {
+        else { //if (apf.isFalse(value)) 
             //this.setProperty("visible", false);
             if (this.oCover)
                 this.oCover.style.display = "none";
@@ -481,6 +481,8 @@ apf.AmlWindow = function(struct, tagName){
                 apf.window.moveNext(true, this, true);//go backward to detect modals
 
             this.dispatchEvent("close");
+            
+            this.visible = false;
         }
 
         wasVisible = value;
