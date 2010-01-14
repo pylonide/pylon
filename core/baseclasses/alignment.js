@@ -261,7 +261,7 @@ apf.Alignment = function(){
     };
 
     function remove(e){
-        if (e && (e.$doOnlyAdmin || e.currentTarget == this))
+        if (e && (e.$doOnlyAdmin || e.currentTarget != this))
             return;
 
         if (this.aData) {

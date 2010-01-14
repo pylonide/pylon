@@ -404,10 +404,10 @@ apf.AmlElement = function(struct, tagName){
 
         var include = new apf.XiInclude();
         include.setAttribute("href", amlDefNode);
-        if (options.clear)
+        if (options && options.clear)
             include.setAttribute("clear", true);
         include.options  = options;
-        include.callback = options.callback;
+        include.callback = options && options.callback;
         this.appendChild(include);
     };
     
@@ -521,7 +521,7 @@ apf.AmlElement = function(struct, tagName){
                 for (i = 0, l = d.length; i < l; i++) {
                     a = attr.getNamedItem((di = d[i]).nodeName);
                     if (a) {
-                        if (a.specified) 
+                        if (a.value)//specified 
                             continue;
                         
                         a.$setValue(di.nodeValue);
