@@ -208,6 +208,8 @@ apf.uirecorder = {
     stop : function() {
         if (apf.uirecorder.isRecording)
             apf.uirecorder.save("test");
+        if (apf.uirecorder.isTesting)
+            apf.uirecorder.checkResults();
         apf.uirecorder.isRecording = false;
         apf.uirecorder.isPlaying   = false;
         apf.uirecorder.isTesting   = false;
@@ -228,6 +230,10 @@ apf.uirecorder = {
      */
     load : function(file) {
         uir_bar.replaceMarkup(file);
+        
+        if (apf.uirecorder.isRecording || apf.uirecorder.isPlaying || apf.uirecorder.isTesting) {
+            apf.uirecorder.captureAction("loadMarkup");
+        }
     },
     
     /**
@@ -237,49 +243,102 @@ apf.uirecorder = {
     keypresses : {
         
     },
+    actionObjects : [],
     captureAction : function(eventName, e, value) {
-        var htmlElement = e.srcElement || e.target;
-        var amlNode     = apf.findHost(htmlElement);
+        var htmlElement = (e) ? e.srcElement || e.target : null;
+        var amlNode     = (htmlElement) ? apf.findHost(htmlElement) : null;
         
         // ignore interaction with uirecorder controls
-        if (amlNode.id && amlNode.id.indexOf("uir") == 0) return;
+        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
 
         // time in ms when action is executed
         var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var actionObj = {
             time        : time,
-            name        : eventName,
-            htmlElement : htmlElement,
-            amlNode     : amlNode,
-            x           : e.clientX,
-            y           : e.clientY
+            name        : eventName
         }
+        
+        if (htmlElement) actionObj.htmlElement  = htmlElement;
+        if (amlNode) actionObj.amlNode          = amlNode;
+        if (e && e.clientX) actionObj.x         = e.clientX;
+        if (e && e.clientY) actionObj.y         = e.clientY;
+
         if (eventName != "mousemove") {
             actionObj.detailList = apf.uirecorder.detailList;
-            apf.uirecorder.detailList = {}
+            apf.uirecorder.detailList = {};
         }
         // get keypress value
         if (eventName === "keypress") {
             actionObj.value = value;
-            /*
-            if (value && apf.uirecorder.keypresses[value]) {
-                
-            }
-            else {
-                value = String
-            }
-            */
         }
         apf.uirecorder.actionList.push(actionObj);
-        /*
-        setTimeout(function() {
-            
-        });
-        */
+        //actionObj.activeElement = apf.xmlToXpath(apf.activeElement);
+        
+        var index = apf.uirecorder.actionObjects.length;
+        apf.uirecorder.actionObjects.push(actionObj);
+        var timeout = 200;
+        if (eventName == "loadMarkup") timeout = 200;
+        if (eventName != "mousemove") {
+            setTimeout(function(){
+                apf.uirecorder.setDelayedDetails(index); 
+                index = null;
+            }, timeout);
+        }
+    },
+    setDelayedDetails : function(index) {
+        for (var elementName in apf.uirecorder.detailList) {
+            if (!apf.uirecorder.actionObjects[index].detailList) apf.uirecorder.actionObjects[index].detailList = {};
+            if (!apf.uirecorder.actionObjects[index].detailList[elementName]) apf.uirecorder.actionObjects[index].detailList[elementName] = {
+                amlNode     : apf.uirecorder.detailList[elementName].amlNode,
+                events      : [],
+                properties  : [],
+                data        : []
+            };
+
+            apf.uirecorder.actionObjects[index].detailList[elementName].events = apf.uirecorder.actionObjects[index].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
+            apf.uirecorder.actionObjects[index].detailList[elementName].properties = apf.uirecorder.actionObjects[index].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
+            apf.uirecorder.actionObjects[index].detailList[elementName].data = apf.uirecorder.actionObjects[index].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
+        
+        }
+        apf.uirecorder.detailList = {};
+        apf.uirecorder.actionObjects[index].activeElement = apf.xmlToXpath(apf.activeElement);
     },
     detailList : {},
     captureEvent : function(eventName, e) {
-        //if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
+        if (!e || e.noCapture) return; 
+        
+        var amlNode;
+        if (eventName != "movefocus")
+            amlNode = e.amlNode || e.currentTarget;
+        else
+            amlNode = e.toElement;
+        
+        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
+        if (!amlNode || !amlNode.ownerDocument || !amlNode.$aml) {
+            return;
+        }
+        
+        var targetName;
+        if (amlNode)
+            targetName = apf.xmlToXpath(amlNode);
+            
+        var eventObj = {
+            name        : eventName,
+            //amlNode     : amlNode,
+            //xmlNode     : xmlNode,
+            event       : e
+        }
+        
+        if (targetName) {
+            if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+                amlNode     : amlNode,
+                events      : [],
+                properties  : [],
+                data        : []
+            };
+            
+            apf.uirecorder.detailList[targetName].events.push(eventObj);
+        }
     },
     capturePropertyChange : function(amlNode, prop, value) {
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
@@ -299,8 +358,8 @@ apf.uirecorder = {
         if (targetName) {
             if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
                 amlNode     : amlNode,
-                events       : [],
-                properties    : [],
+                events      : [],
+                properties  : [],
                 data        : []
             };
             
@@ -308,7 +367,27 @@ apf.uirecorder = {
         }
     },
     captureModelChange : function(params) {
-        //if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
+        if (params.amlNode && params.amlNode.id && params.amlNode.id.indexOf("uir") == 0) return;
+        if (params.amlNode)
+            targetName = apf.xmlToXpath(params.amlNode);
+
+        var dataObj = {
+            name        : params.action,
+            //amlNode     : amlNode,
+            //xmlNode     : xmlNode,
+            xmlNode     : params.xmlNode
+        }
+            
+        if (targetName) {
+            if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+                amlNode     : params.amlNode,
+                events      : [],
+                properties  : [],
+                data        : []
+            };
+            
+            apf.uirecorder.detailList[targetName].data.push(dataObj);
+        }
     },
 
     /**
@@ -319,14 +398,14 @@ apf.uirecorder = {
     /**
      * Save test / test results
      */
-    save : function(type) {
+    save : function(saveType) {
         var id;
-        if (type === "test") {
+        if (saveType === "test") {
             if (!apf.uirecorder.testListXml)
                 apf.uirecorder.testListXml = apf.getXml("<testList />");
             id = parseInt(apf.uirecorder.testListXml.childNodes.length) + 1;
         }
-        else if (type === "results") {
+        else if (saveType === "results") {
             if (!apf.uirecorder.resultListXml)
                 apf.uirecorder.resultListXml = apf.getXml("<resultList />");
             id = parseInt(apf.uirecorder.resultListXml.childNodes.length) + 1;
@@ -335,11 +414,12 @@ apf.uirecorder = {
         var testXml = apf.getXml("<test />");
         testXml.setAttribute("name", "test" + id);
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
-        testXml.setAttribute("status", "untested");        
+        testXml.setAttribute("status", "success");        
 
-        var detailTypes = {"events": "event", "properties": "property", "data": "data"};
+        var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
+            //if (action.name == "loadMarkup") continue;
             aNode = testXml.ownerDocument.createElement("action");
             aNode.setAttribute("name", action.name);
             aNode.setAttribute("x", action.x);
@@ -348,8 +428,16 @@ apf.uirecorder = {
             if (action.amlNode) aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
             if (action.value) aNode.setAttribute("value", action.value);
 
+            var eNode, iNode;
+            eNode = testXml.ownerDocument.createElement("element");
+            eNode.setAttribute("name", "apf");
+            iNode = testXml.ownerDocument.createElement("activeElement");
+            iNode.appendChild(testXml.ownerDocument.createTextNode(action.activeElement));
+            eNode.appendChild(iNode);
+            
+            aNode.appendChild(eNode);
+            
             if (action.detailList) {
-                var eNode;
                 for (var elementName in action.detailList) {
                     eNode = testXml.ownerDocument.createElement("element");
                     eNode.setAttribute("name", elementName);
@@ -357,7 +445,7 @@ apf.uirecorder = {
                     for (var type in detailTypes) {
                         if (action.detailList[elementName][type].length) {
                             dNode = testXml.ownerDocument.createElement(type)
-                            for (var item, iNode, vNode, di = 0, dl = action.detailList[elementName][type].length; di < dl; di++) {
+                            for (var item, vNode, di = 0, dl = action.detailList[elementName][type].length; di < dl; di++) {
                                 item = action.detailList[elementName][type][di];
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
@@ -373,77 +461,137 @@ apf.uirecorder = {
                     aNode.appendChild(eNode);
                 }
             }
-
             testXml.appendChild(aNode);
         }
 
         // reset actionList
         apf.uirecorder.actionList = [];
-        
-        if (type === "test")
+
+        if (saveType === "test") {
             apf.uirecorder.testListXml.appendChild(testXml);
-        else if (type === "results") {
+            apf.uirecorder.createChangesXml(apf.uirecorder.testListXml);
+        }
+        else if (saveType === "results") {
             apf.uirecorder.resultListXml.appendChild(testXml);
-            apf.uirecorder.createChangesXml();
+            apf.uirecorder.createChangesXml(apf.uirecorder.resultListXml);
         }
     },
     
-    /*
+    /**
+     * check test results 
+     */
+    checkResults : function() {
+        // loop through testListXml
+        // for each detail check if it exist in resultListXml
+            // check if value is the same
+    },
+    
+    /**
      * create xml based on testListXml and resultListXml
      */
     changesXml : null,
-    createChangesXml : function() {
-        var changesXml = apf.getXml("<changes />");
+    createChangesXml : function(xml) {
+        if (!apf.uirecorder.changesXml) apf.uirecorder.changesXml = apf.getXml("<changes />");
         
-        var xmlList = [apf.uirecorder.testListXml, apf.uirecorder.resultListXml];
-        
-        for (var xi = 0, xl = xmlList.length; xi < xl; xi++) {
-            for (var test, ti = 0, tl = xmlList[xi].childNodes.length; ti < tl; ti++) {
-                test = xmlList[xi].childNodes[ti];
+        var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
+        for (var test, ti = 0, tl = xml.childNodes.length; ti < tl; ti++) {
+            test = xml.childNodes[ti];
+            
+            // loop through actions
+            for (var action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
+                action = test.childNodes[ai];
                 
-                // loop through actions
-                for (var action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
-                    action = test.childNodes[ai];
-                    
-                    if (action.childNodes && action.childNodes.length) {
-                        for (var element, ei = 0, el = action.childNodes.length; ei < el; ei++) {
-                            element = action.childNodes[ei];
-                            
-                            for (var node, detail, di = 0, dl = element.childNodes.length; di < dl; di++) {
-                                detail = element.childNodes[di];
-
-                                if (node = changesXml.selectSingleNode("//change[test[text()='" + test.getAttribute("name") + "']][action[text()='" + action.getAttribute("name") + "']][element[text()='" + element.getAttribute("name") + "']][type[text()='" + detail.nodeName + "']][name[text()='" + detail.getAttribute("name") + "']]")) {
-                                    //debugger;
-                                    //node = changesXml.selectSingleNode("//change[test[text()='" + test.getAttribute("name") + "']][action[text()='" + action.getAttribute("name") + "']][element[text()='" + element.getAttribute("name") + "']][type[text()='" + detail.nodeName + "']][name[text()='" + detail.getAttribute("name") + "']]");
-                                    apf.xmldb.setTextNode(node.selectSingleNode("result"), detail.text);
-                                    //node.appendChild(changesXml.ownerDocument.createElement("result")).appendChild(changesXml.ownerDocument.createTextNode(detail.text));
-                                }
-                                else {
-                                    node = changesXml.ownerDocument.createElement("change");
-                                    node.appendChild(changesXml.ownerDocument.createElement("test")).appendChild(changesXml.ownerDocument.createTextNode(test.getAttribute("name")));
-                                    node.appendChild(changesXml.ownerDocument.createElement("action")).appendChild(changesXml.ownerDocument.createTextNode(action.getAttribute("name")));
-                                    node.appendChild(changesXml.ownerDocument.createElement("element")).appendChild(changesXml.ownerDocument.createTextNode(element.getAttribute("name")));
-                                    node.appendChild(changesXml.ownerDocument.createElement("type")).appendChild(changesXml.ownerDocument.createTextNode(detail.nodeName));
-                                    node.appendChild(changesXml.ownerDocument.createElement("name")).appendChild(changesXml.ownerDocument.createTextNode(detail.getAttribute("name")));
-                                    if (xmlList[xi] == apf.uirecorder.testListXml) {
-                                        node.appendChild(changesXml.ownerDocument.createElement("capture")).appendChild(changesXml.ownerDocument.createTextNode(detail.text));
-                                        node.appendChild(changesXml.ownerDocument.createElement("result")).appendChild(changesXml.ownerDocument.createTextNode("no result captured"));
+                if (action.childNodes && action.childNodes.length) {
+                    for (var element, ei = 0, el = action.childNodes.length; ei < el; ei++) {
+                        element = action.childNodes[ei];
+                        
+                        var details;
+                        for (var type in detailTypes) {
+                            if (element.selectSingleNode(type) && element.selectSingleNode(type).childNodes && element.selectSingleNode(type).childNodes.length) {
+                                for (var node, detail, di = 0, dl = element.selectSingleNode(type).childNodes.length; di < dl; di++) {
+                                    detail = element.selectSingleNode(type).childNodes[di];
+    
+                                    if (xml == apf.uirecorder.resultListXml) {
+                                        if (node = apf.uirecorder.changesXml.selectSingleNode("//change[test[text()='" + test.getAttribute("name") + "']][action[text()='" + action.getAttribute("name") + "']][element[text()='" + element.getAttribute("name") + "']][type[text()='" + detail.nodeName + "']][name[text()='" + detail.getAttribute("name") + "']]")) {
+                                            apf.xmldb.setTextNode(node.selectSingleNode("result"), detail.text);
+                                            continue;
+                                        }    
                                     }
-                                    else if (xmlList[xi] == apf.uirecorder.resultListXml) {
-                                        node.appendChild(changesXml.ownerDocument.createElement("capture")).appendChild(changesXml.ownerDocument.createTextNode("no result captured"));
-                                        node.appendChild(changesXml.ownerDocument.createElement("result")).appendChild(changesXml.ownerDocument.createTextNode(detail.text));
+                                    
+                                    node = apf.uirecorder.changesXml.ownerDocument.createElement("change");
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("test")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(test.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("action")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(action.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("element")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(element.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("type")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.nodeName));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("name")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.getAttribute("name")));
+                                    if (xml == apf.uirecorder.testListXml) {
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("capture")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.text));
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("result")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode("no result"));
                                     }
-                                }
-                                
-                                changesXml.appendChild(node);
+                                    else if (xml == apf.uirecorder.resultListXml) {
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("capture")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode("no result"));
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("result")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.text));
+                                    }
+                                    
+                                    apf.uirecorder.changesXml.appendChild(node);
+                                }                                    
                             }
                         }
                     }
                 }
-            }            
+            }
         }
-
-        apf.uirecorder.changesXml = changesXml;
+        
+        /*
+        var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
+        for (var test, ti = 0, tl = xml.childNodes.length; ti < tl; ti++) {
+            test = xml.childNodes[ti];
+            
+            // loop through actions
+            for (var action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
+                action = test.childNodes[ai];
+                
+                if (action.childNodes && action.childNodes.length) {
+                    for (var element, ei = 0, el = action.childNodes.length; ei < el; ei++) {
+                        element = action.childNodes[ei];
+                        
+                        var details;
+                        for (var type in detailTypes) {
+                            if (element.selectSingleNode(type) && element.selectSingleNode(type).childNodes && element.selectSingleNode(type).childNodes.length) {
+                                for (var node, detail, di = 0, dl = element.selectSingleNode(type).childNodes.length; di < dl; di++) {
+                                    detail = element.selectSingleNode(type).childNodes[di];
+    
+                                    if (xml == apf.uirecorder.resultListXml) {
+                                        if (node = apf.uirecorder.changesXml.selectSingleNode("//change[test[text()='" + test.getAttribute("name") + "']][action[text()='" + action.getAttribute("name") + "']][element[text()='" + element.getAttribute("name") + "']][type[text()='" + detail.nodeName + "']][name[text()='" + detail.getAttribute("name") + "']]")) {
+                                            apf.xmldb.setTextNode(node.selectSingleNode("result"), detail.text);
+                                            continue;
+                                        }    
+                                    }
+                                    
+                                    node = apf.uirecorder.changesXml.ownerDocument.createElement("change");
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("test")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(test.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("action")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(action.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("element")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(element.getAttribute("name")));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("type")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.nodeName));
+                                    node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("name")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.getAttribute("name")));
+                                    if (xml == apf.uirecorder.testListXml) {
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("capture")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.text));
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("result")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode("no result"));
+                                    }
+                                    else if (xml == apf.uirecorder.resultListXml) {
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("capture")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode("no result"));
+                                        node.appendChild(apf.uirecorder.changesXml.ownerDocument.createElement("result")).appendChild(apf.uirecorder.changesXml.ownerDocument.createTextNode(detail.text));
+                                    }
+                                    
+                                    apf.uirecorder.changesXml.appendChild(node);
+                                }                                    
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
     }
 };
 //#endif
