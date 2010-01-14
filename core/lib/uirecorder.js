@@ -446,3 +446,5 @@ apf.uirecorder = {
         apf.uirecorder.changesXml = changesXml;
     }
 };
+//#endif
+
