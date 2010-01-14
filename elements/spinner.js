@@ -100,13 +100,12 @@ apf.spinner = function(struct, tagName){
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
-        if (value) {
-            this.value = this.oInput.value = (value > this.max
-                ? this.max
-                : (value < this.min
-                    ? this.min
-                    : value));
-        }
+        
+        this.value = this.oInput.value = (value > this.max
+            ? this.max
+            : (value < this.min
+                ? this.min
+                : value));
     };
 
     this.$propHandlers["min"] = function(value) {
