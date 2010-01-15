@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="trunk/apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins2.xml" media-path="skinimg/" icon-path="icns/" />
+
+        <a:tree align="left" width="200" height="300">
+           <a:each match="[root|account|folder|mail]">
+                <a:caption match="[@name]" />
+                <a:drag match = "[folder|mail]" />
+                <a:drop match = "[folder]" 
+                        target = "[folder|account]"
+                        action="tree-append" />
+                <a:drop match = "[mail]" 
+                        target = "[folder|account]"
+                        action="tree-append" />
+            </a:each>
+            <a:model>
+                <data>
+                    <root name="Root">
+                        <account name="Account 1">
+                            <folder name="Folder 1">
+                                <mail name="Mail drag drop"></mail>
+                            </folder>
+                        </account>
+                    </root>
+                </data>
+            </a:model>
+        </a:tree>
+
+        <a:list bindings="bndDragdrop" align="right">
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                    <mail name="Mail 2"></mail>
+                    <mail name="Mail 3"></mail>
+                </data>
+            </a:model>
+        </a:list>
+     
+        <a:bindings id="bndDragdrop">
+            <a:caption match="[@name]" />
+            <a:each match="[mail]" />
+            <a:drag match = "[mail]" />
+            <a:drop
+              match = "[mail]"
+              action = "list-append" />
+        </a:bindings>
+
+
+        <!--a:tree align="left" width="200" height="300">
+           <a:each match="[root|account|folder|mail]">
+                <a:caption match="[@name]" />
+                <a:drag match = "[folder|mail]" />
+                <a:drop match = "[folder]" 
+                        target = "[folder|account]"
+                        action="tree-append" />
+                <a:drop match = "[mail]" 
+                        target = "[folder]"
+                        action="tree-append" />
+            </a:each>
+            <a:model>
+                <data>
+                    <root name="Root">
+                        <account name="Account 1">
+                            <folder name="Folder 1">
+                                <mail name="Mail drag drop"></mail>
+                            </folder>
+                        </account>
+                    </root>
+                </data>
+            </a:model>
+        </a:tree>
+        <a:list 
+          drag = "true"
+          drop = "true"
+          align   = "right" 
+          height  = "300" 
+          caption = "[@name]" 
+          each    = "[mail]">
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                    <mail name="Mail 2"></mail>
+                    <mail name="Mail 3"></mail>
+                </data>
+            </a:model>
+       </a:list-->
+
+        
+        <!--a:tree align="left" width="200">
+            <a:each match="[root|account|folder|mail]">
+                <a:caption match="[@name]" />
+                <a:drag match = "[folder]" />
+                <a:drop match = "[folder]" 
+                        target = "[folder|account]"
+                        action="tree-append" />
+                <a:drop match = "[mail]" 
+                        target = "[folder]"
+                        action="tree-append" />
+            </a:each>
+            <a:model>
+                <data>
+                    <root name="Root">
+                        <account name="Account 1">
+                            <folder name="Folder 1"></folder>
+                        </account>
+                    </root>
+                </data>
+            </a:model>
+        </a:tree>
+        <a:datagrid align="right">
+            <a:each match="[mail]">
+                <a:column 
+                  caption = "Name" 
+                  value   = "[@name]"
+                  width   = "100%" /> 
+                <a:drag match="[mail]" />
+            </a:each>
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                </data>
+            </a:model>
+        </a:datagrid-->
+        
+    </body>
+</html>
