@@ -125,6 +125,7 @@ apf.WinServer = {
  * @inherits apf.Docking
  * @inherits apf.Transaction
  *
+ * @event show          Fires when the window is opened.
  * @event close         Fires when the window is closed.
  * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
@@ -463,6 +464,10 @@ apf.AmlWindow = function(struct, tagName){
                 this.$ext.className = "rnd" + Math.random();
                 this.$ext.className = cls;
             }
+            var _self = this;
+            setTimeout(function() {
+                _self.dispatchEvent("show");
+            });
         }
         else { //if (apf.isFalse(value)) 
             //this.setProperty("visible", false);
