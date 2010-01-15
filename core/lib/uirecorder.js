@@ -228,6 +228,7 @@ apf.uirecorder = {
     /**
      * 
      */
+    markupLoaded : false,
     load : function(file) {
         uir_bar.replaceMarkup(file);
         
@@ -315,6 +316,7 @@ apf.uirecorder = {
         
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
         if (!amlNode || !amlNode.ownerDocument || !amlNode.$aml) {
+            //debugger;
             return;
         }
         
