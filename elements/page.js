@@ -279,11 +279,16 @@ apf.page = function(struct, tagName){
         if (this.disabled)
             return false;
 
+        this.$active = true;
+
         if (!this.$drawn) {
             var f;
             this.addEventListener("DOMNodeInsertedIntoDocument", f = function(e){
-                this.$activate();
                 this.removeEventListener("DOMNodeInsertedIntoDocument", f);
+                if (!this.$active)
+                    return;
+                    
+                this.$activate();
             });
             return;
         }
@@ -303,8 +308,6 @@ apf.page = function(struct, tagName){
                 apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
             //#endif
         }
-
-        this.$active = true;
 
         // #ifdef __WITH_DELAYEDRENDER
         if (this.$render)

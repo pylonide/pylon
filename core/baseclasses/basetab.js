@@ -131,7 +131,7 @@ apf.BaseTab = function(){
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
         if (!this.inited || apf.isNot(next)) return;
-        
+
         if (!callback) {
             callback = this.$lastCallback;
             delete this.$lastCallback;
@@ -244,6 +244,7 @@ apf.BaseTab = function(){
             this.$activepage.$deactivate();
 
         page.$activate();
+
         this.$activepage = page;
         //#ifdef __ENABLE_TABSCROLL
         this.scrollIntoView(page);
@@ -1031,7 +1032,7 @@ apf.BaseTab = function(){
         // #endif
 
 
-        if (!this.activePage && this.getAttribute("src")) {
+        if (!this.activepage && this.getAttribute("src")) {
             this.src = this.getAttribute("src");
             this.$propHandlers["activepage"].call(this);
         }
