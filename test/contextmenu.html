@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:menu id="mnuTest">
+           <a:item match="[pc[text()='PC1']]">Send an E-mail</a:item>
+           <a:item match="[pc[text()='PC2']]">Call Number</a:item>
+           <a:divider />
+           <a:item match="[pc[text()='PC2']]">Remove</a:item>
+           <a:divider />
+           <a:item>View Pictures</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuXY">
+           <a:item>Reboot</a:item>
+        </a:menu>
+        
+        <a:model id="mdlList"> 
+            <data> 
+                <pc>PC1</pc>
+                <pc>PC2</pc>
+                <mac>Mac1</mac> 
+                <mac>Mac2</mac> 
+            </data> 
+        </a:model> 
+
+        <a:list id="myList" each="[pc|mac]" caption="[text()]" width="200" model="mdlList"> 
+            <a:contextmenu menu="mnuXY" match="[mac]" />
+            <a:contextmenu menu="mnuTest" />
+        </a:list>
+    </body>
+</html>

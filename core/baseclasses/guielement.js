@@ -387,21 +387,21 @@ apf.GuiElement = function(){
                 ? this.selected
                 : this.xmlRoot;
 
-            var i, l, m, isRef, sel, menuId;
+            var i, l, m, isRef, sel, menuId, cm, result;
             for (i = 0, l = this.contextmenus.length; i < l; i++) {
-                isRef = (typeof this.contextmenus[i] == "string");
-                if (!isRef) {//@todo apf3.0 cache this statement
-                    m = this.contextmenus[i].getAttribute("match");
-                    if (m)
-                        sel = m.replace(apf.reMatchXpath, "$1self::");
-                    else sel = null;
+                isRef  = (typeof (cm = this.contextmenus[i]) == "string");
+                result = null;
+                if (!isRef && cm.match && xmlNode) {//@todo apf3.0 cache this statement
+                    result = (cm.cmatch || (cm.cmatch = apf.lm.compile(cm.match, {
+                        xpathmode  : 3,
+                        injectself : true
+                    })))(xmlNode)
                 }
 
-                if (isRef || xmlNode && xmlNode.selectSingleNode(sel || ".")
-                  || !xmlNode && !sel) {
+                if (isRef || xmlNode && result || !cm.match) { //!xmlNode && 
                     menuId = isRef
-                        ? this.contextmenus[i]
-                        : this.contextmenus[i].getAttribute("menu")
+                        ? cm
+                        : cm.menu
 
                     if (!self[menuId]) {
                         // #ifdef __DEBUG

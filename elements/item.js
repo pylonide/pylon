@@ -67,8 +67,13 @@ apf.item  = function(struct, tagName){
     this.implement(apf.ChildValue);
 
     /**** Properties and Attributes ****/
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        "match" : 1
+    }, this.$attrExcludePropBind);
 
-    this.$supportedProperties.push("submenu", "value", "select", "group", "icon",
+    this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption");
 
     /**

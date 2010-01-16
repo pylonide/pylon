@@ -48,6 +48,11 @@ apf.contextmenu = function(){
 (function(){
     this.$amlNodes = [];
     
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        "match" : 1
+    }, this.$attrExcludePropBind);
+    
     this.register = function(amlParent){
         if (!amlParent.contextmenus)
             amlParent.contextmenus = [];
@@ -62,5 +67,7 @@ apf.contextmenu = function(){
         this.register(this.parentNode);
     });
 }).call(apf.contextmenu.prototype = new apf.AmlElement());
+
+apf.aml.setElement("contextmenu", apf.contextmenu);
 
 // #endif

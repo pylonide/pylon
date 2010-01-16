@@ -289,6 +289,7 @@ apf.$x = apf.$loader
         "elements/collection.js",
         //"colorpicker.js",
         "elements/colorpicker2.js",
+        "elements/contextmenu.js",
         "elements/datagrid.js",
         "elements/defaults.js",
         "elements/divider.js",

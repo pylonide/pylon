@@ -213,12 +213,17 @@ apf.menu = function(struct, tagName){
         var last, i, node,
             nodes = this.childNodes,
             c     = 0,
-            l     = nodes.length
+            l     = nodes.length, result;
         for (i = 0; i < l; i++) {
             node = nodes[i];
             if (node.nodeType != 1) continue;
 
-            if (!node.select || !xmlNode || xmlNode.selectSingleNode(node.select)) {
+            result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = apf.lm.compile(node.match, {
+                xpathmode  : 3,
+                injectself : true
+            })))(xmlNode)
+
+            if (result) {
                 node.show();
 
                 if (node.localName == "divider") {
