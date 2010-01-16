@@ -483,7 +483,7 @@ apf.item  = function(struct, tagName){
                 }
                 p.each = (this.prefix ? this.prefix + ":" : "") + "item";
 
-                //@todo this is all an ugly hack
+                //@todo this is all an ugly hack (copied to baselist.js line 868)
                 p.$preventDataLoad = true;//@todo apf3.0 add remove for this
 
                 p.$initingModel = true;

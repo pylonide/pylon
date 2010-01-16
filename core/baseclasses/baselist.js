@@ -131,6 +131,10 @@ apf.BaseList = function(){
      * This example loads a list with items starting at 1980 and ending at 2050.
      * <code>
      *  <a:dropdown fill="1980-2050" />
+     *  <a:dropdown fill="red,green,blue,white" />
+     *  <a:dropdown fill="None,100-110,1000-1100" />
+     *  <a:dropdown fill="01-10" />
+     *  <a:dropdown fill="1-10" />
      * </code>
      */
     this.$propHandlers["fill"] = function(value){
@@ -846,35 +850,54 @@ apf.BaseList = function(){
 
     /**
      * Generates a list of items based on a string.
-     * @param {String} str the description of the items. A start and an end seperated by a -.
+     * @param {String} str the description of the items. Items are seperated by a comma (,). Ranges are specified by a start and end value seperated by a dash (-).
      * Example:
      * This example loads a list with items starting at 1980 and ending at 2050.
      * <code>
      *  lst.loadFillData("1980-2050");
+     *  lst.loadFillData("red,green,blue,white");
+     *  lst.loadFillData("None,100-110,1000-1100");
+     *  lst.loadFillData("1-10"); // 1 2 3 4 etc
+     *  lst.loadFillData("01-10"); //01, 02, 03, 04, etc
      * </code>
      */
     this.loadFillData = function(str){
-        var parts   = str.split("-"),
-            start   = parseInt(parts[0]),
-            end     = parseInt(parts[1]),
-            strData = [];
-
-        for (var i = start; i < end + 1; i++) {
-            strData.push("<item>" + (i + "")
-                .pad(Math.max(parts[0].length, parts[1].length), "0")
-              + "</item>");
+        var len, start, end, parts = str.splitSafe(","), data = [];
+        
+        for (var p, part, i = 0; i < parts.length; i++) {
+            if ((part = parts[i]).match(/^\d+-\d+$/)) {
+                p     = part.split("-");
+                start = parseInt(p[0]);
+                end   = parseInt(p[1]);
+                
+                if (p[0].length == p[1].length) {
+                    len = Math.max(p[0].length, p[1].length);
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + (j + "").pad(len, "0") + "</item>");
+                    }
+                }
+                else {
+                    for (var j = start; j < end + 1; j++) {
+                        data.push("<item>" + j + "</item>");
+                    }
+                }
+            }
+            else {
+                data.push("<item>" + part + "</item>");
+            }
         }
+        
+        //@todo this is all an ugly hack (copied from item.js line 486)
+        //this.$preventDataLoad = true;//@todo apf3.0 add remove for this
+        
+        this.$initingModel = true;
+        
+        this.each = "item";
+        this.$setDynamicProperty("caption", "[label/text()|@caption|text()]");
+        this.$setDynamicProperty("eachvalue", "[value/text()|@value|text()]");
+        this.$canLoadDataAttr = false;
 
-        //@todo apf3.x rewrite this
-        if (strData.length) {
-            var sNode = new apf.smartbinding(null,
-                apf.getXmlDom("<smartbindings xmlns='"
-                    + apf.ns.aml
-                    + "'><bindings><caption select='text()' /><value select='text()'/><each select='item' /></bindings><model><items>"
-                    + strData.join("") + "</items></model></smartbindings>")
-                  .documentElement);
-            apf.AmlParser.addToSbStack(this.$uniqueId, sNode);
-        }
+        this.load("<data>" + data.join("") + "</data>");
     };
 // #ifdef __WITH_MULTISELECT
 }).call(apf.BaseList.prototype = new apf.MultiSelect());
