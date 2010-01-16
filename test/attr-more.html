@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:model id="mdlSuggestions"> 
+            <suggestions> 
+                <question key="krant"> 
+                    <answer>Suggestion 1</answer> 
+                    <answer>Suggestion 2</answer> 
+                </question> 
+            </suggestions> 
+        </a:model> 
+        <a:label>Which newspapers do you read?</a:label> 
+        <a:list ref="krant" 
+          more = "caption:Add new suggestion" 
+          model = "[mdlSuggestions::question[@key='krant']]"> 
+            <a:bindings> 
+                <a:caption match="[text()]" /> 
+                <a:value match="[text()]" /> 
+                <a:each match="[answer]" /> 
+            </a:bindings> 
+            <a:actions> 
+                <a:rename match="[node()[@custom='1']]" /> 
+                <a:remove match="[node()[@custom='1']]" /> 
+                <a:add> 
+                    <answer custom="1">New Answer</answer> 
+                </a:add> 
+            </a:actions> 
+        </a:list>
+    </body>
+</html>

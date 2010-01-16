@@ -386,7 +386,7 @@ apf.MultiSelect = function(){
      * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
      * @return  {XMLElement} the added {@link term.datanode data node} or false on failure.
      */
-    this.add = function(xmlNode, pNode, beforeNode){
+    this.add = function(xmlNode, pNode, beforeNode, userCallback){
         var rule;
 
         if (this.$actions) {
@@ -480,10 +480,22 @@ apf.MultiSelect = function(){
             if (apf.isWebkit && pNode.ownerDocument != addXmlNode.ownerDocument)
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); 
 
+            //#ifdef __DEBUG
+            if (!pNode) {
+                throw new Error(apf.formatErrorString(0, amlNode,
+                    "Executing add action",
+                    "Missing parent node. You can only add nodes to a list if it\
+                     has data loaded. Unable to perform action."));
+            }
+            //#endif
+
             if (amlNode.$executeAction("appendChild",
               [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
               && amlNode.autoselect)
                 amlNode.select(addXmlNode);
+
+            if (userCallback)
+                userCallback.call(amlNode, addXmlNode);
 
             return addXmlNode;
         };

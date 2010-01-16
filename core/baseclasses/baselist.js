@@ -747,69 +747,70 @@ apf.BaseList = function(){
             }
         }
 
-        var addedNode = this.add(xmlNode);
-        this.select(addedNode, null, null, null, null, true);
-        this.$int.appendChild(this.moreItem);
-
-        var undoLastAction = function(){
-            this.getActionTracker().undo(this.autoselect ? 2 : 1);
-
-            this.removeEventListener("stoprename", undoLastAction);
-            this.removeEventListener("beforerename", removeSetRenameEvent);
-            this.removeEventListener("afterrename",  afterRename);
-        }
-        var afterRename = function(){
-            //this.select(addedNode);
-            this.removeEventListener("afterrename",  afterRename);
-        };
-        var removeSetRenameEvent = function(e){
-            this.removeEventListener("stoprename", undoLastAction);
-            this.removeEventListener("beforerename", removeSetRenameEvent);
-
-            //There is already a choice with the same value
-            var xmlNode = this.findXmlNodeByValue(e.args[1]);
-            if (xmlNode || !e.args[1]) {
-                if (e.args[1] && this.dispatchEvent("notunique", {
-                    value : e.args[1]
-                }) === false) {
-                    this.startRename();
-                    
-                    this.addEventListener("stoprename",   undoLastAction);
-                    this.addEventListener("beforerename", removeSetRenameEvent);
-                }
-                else {
-                    this.removeEventListener("afterrename", afterRename);
-                    
-                    this.getActionTracker().undo();//this.autoselect ? 2 : 1);
-                    if (!this.isSelected(xmlNode))
-                        this.select(xmlNode);
-                }
-                
-                return false;
+        this.add(xmlNode, null, null, function(addedNode){
+            this.select(addedNode, null, null, null, null, true);
+            this.$int.appendChild(this.moreItem);
+    
+            var undoLastAction = function(){
+                this.getActionTracker().undo(this.autoselect ? 2 : 1);
+    
+                this.removeEventListener("stoprename", undoLastAction);
+                this.removeEventListener("beforerename", removeSetRenameEvent);
+                this.removeEventListener("afterrename",  afterRename);
             }
-        };
-
-        this.addEventListener("stoprename",   undoLastAction);
-        this.addEventListener("beforerename", removeSetRenameEvent);
-        this.addEventListener("afterrename",  afterRename);
-
-        /*if (this.mode == "radio") {
-            this.moreItem.style.display = "none";
-            if (lastAddedMore)
-                this.removeEventListener("xmlupdate", lastAddedMore);
-
-            lastAddedMore = function(){
-                this.moreItem.style.display = addedNode.parentNode
-                    ? "none"
-                    : "block";
+            var afterRename = function(){
+                //this.select(addedNode);
+                this.removeEventListener("afterrename",  afterRename);
             };
-            this.addEventListener("xmlupdate", lastAddedMore);
-        }*/
-
-      
-        // #ifdef __WITH_RENAME
-        this.startDelayedRename({}, 1);
-        // #endif
+            var removeSetRenameEvent = function(e){
+                this.removeEventListener("stoprename", undoLastAction);
+                this.removeEventListener("beforerename", removeSetRenameEvent);
+    
+                //There is already a choice with the same value
+                var xmlNode = this.findXmlNodeByValue(e.args[1]);
+                if (xmlNode || !e.args[1]) {
+                    if (e.args[1] && this.dispatchEvent("notunique", {
+                        value : e.args[1]
+                    }) === false) {
+                        this.startRename();
+                        
+                        this.addEventListener("stoprename",   undoLastAction);
+                        this.addEventListener("beforerename", removeSetRenameEvent);
+                    }
+                    else {
+                        this.removeEventListener("afterrename", afterRename);
+                        
+                        this.getActionTracker().undo();//this.autoselect ? 2 : 1);
+                        if (!this.isSelected(xmlNode))
+                            this.select(xmlNode);
+                    }
+                    
+                    return false;
+                }
+            };
+    
+            this.addEventListener("stoprename",   undoLastAction);
+            this.addEventListener("beforerename", removeSetRenameEvent);
+            this.addEventListener("afterrename",  afterRename);
+    
+            /*if (this.mode == "radio") {
+                this.moreItem.style.display = "none";
+                if (lastAddedMore)
+                    this.removeEventListener("xmlupdate", lastAddedMore);
+    
+                lastAddedMore = function(){
+                    this.moreItem.style.display = addedNode.parentNode
+                        ? "none"
+                        : "block";
+                };
+                this.addEventListener("xmlupdate", lastAddedMore);
+            }*/
+    
+          
+            // #ifdef __WITH_RENAME
+            this.startDelayedRename({}, 1);
+            // #endif
+        });
     };
 
     /**** Selection ****/
