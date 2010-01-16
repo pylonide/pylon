@@ -252,7 +252,7 @@ apf.BaseTab = function(){
 
         //Loader support
         if (this.hideLoader) {
-            if (page.$rendered) {
+            if (page.$rendered !== false) {
                 this.hideLoader();
             }
             else {
@@ -263,9 +263,8 @@ apf.BaseTab = function(){
             }
         }
 
-debugger;
         if (!noEvent) {
-            if (page.$rendered)
+            if (page.$rendered !== false)
                 this.dispatchEvent("afterswitch", oEvent);
             else {
                 //Delayed rendering support
