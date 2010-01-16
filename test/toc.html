@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:vbox height="155" width="400" margin="10 0">
+            <a:toc id="toc"
+              represent = "tab" 
+              disabled  = "{tab.activepage == tab.length - 1}" />
+            
+            <a:pages id="tab" width="335" height="100">
+                <a:page caption="Personal Data">
+                    <a:table columns="80, *" height="19" padding="5">
+                        <a:label>Name</a:label><a:textbox></a:textbox>
+                        <a:label>Surname</a:label><a:textbox></a:textbox>
+                        <a:label>City</a:label><a:textbox></a:textbox>
+                        <a:label>Street</a:label><a:textbox></a:textbox>
+                    </a:table>
+                </a:page>
+                <a:page caption="Contact Data">
+                    <a:table columns="80, *" height="19" padding="5">
+                        <a:label>Mobile</a:label><a:textbox></a:textbox>
+                        <a:label>ICQ</a:label><a:textbox></a:textbox>
+                        <a:label>E-mail</a:label><a:textbox></a:textbox>
+                        <a:label>Skype</a:label><a:textbox></a:textbox>
+                    </a:table>
+                </a:page>
+                <a:page caption="Preferences">
+                    <a:table columns="180, 45, 45" height="19">
+                        <a:label>Save my login in browser</a:label>
+                        <a:radiobutton group="g1">Yes</a:radiobutton>
+                        <a:radiobutton group="g1">No</a:radiobutton>
+                        <a:label>Activate email notifications</a:label>
+                        <a:radiobutton group="g2">Yes</a:radiobutton>
+                        <a:radiobutton group="g2">No</a:radiobutton>
+                        <a:label>Show my status</a:label>
+                        <a:radiobutton group="g3">Yes</a:radiobutton>
+                        <a:radiobutton group="g3">No</a:radiobutton>
+                    </a:table>
+                </a:page>
+                <a:page caption="Finish" style="padding:10px">
+                    <h3>Congratulations</h3>Your account has been created. 
+                    <p>Complete Your profile and have a fun with meeting new friends.</p>
+                </a:page>
+            </a:pages>
+        </a:vbox>
+        
+        <a:hbox width="330" lean="right" height="44" margin="10 0">
+            <a:button id="prev" edge="5" width="80" 
+              disabled="{tab.activepage == 0}"
+              visible="{tab.activepage lt tab.length - 1}"
+              onclick="toc.gotoPage(tab.activepage-1)">Previous</a:button>
+            <a:button id="next" edge="5" width="80" 
+              visible="{tab.activepage lt tab.length - 2}"
+              onclick="toc.gotoPage(tab.activepage+1)">Next</a:button>
+            <a:button id="finish" edge="5" width="80" 
+              visible="{tab.activepage == tab.length - 2}"
+              onclick="toc.gotoPage(tab.activepage+1)">Finish</a:button>
+        </a:hbox>
+        
+        <a:button right="10" top="10"
+          onclick="toc.enable();tab.set(0)">Reset</a:button>
+    </body>
+</html>

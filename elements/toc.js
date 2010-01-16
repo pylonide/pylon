@@ -58,7 +58,7 @@ apf.toc = function(struct, tagName){
         var _self = this;
         setTimeout(function(){
             var amlNode = _self.$represent = self[value];
-            
+
             amlNode.addEventListener("afterswitch", function(e){
                 _self.$setActivePage(e.nextId);
             });

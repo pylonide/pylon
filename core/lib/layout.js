@@ -1703,7 +1703,7 @@ apf.layoutParser = function(parentNode, pMargin){
                     nodes[i]["calc" + g] = v.indexOf("%") > -1 ? "v.innerspace_"
                         + node.id + " * " + parseFloat(v)/100 : v
 
-                if (nodes[i].node)
+                if (nodes[i].node && nodes[i].xml.visible !== false)
                     nodes[i].oHtml.style.display = "block";
                 else
                     this.preparse(nodes[i]);

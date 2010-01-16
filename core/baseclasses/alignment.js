@@ -204,7 +204,10 @@ apf.Alignment = function(){
     
     function visibleHandler(e){
         if (!this.aData) return;
-        
+
+        if (!this.aData.hidden == e.value) //useless changing to same state
+            return;
+
         if (e.value) {
             if (this.aData.preshow() !== false)
                 this.$ext.style.display = "none";
@@ -215,6 +218,8 @@ apf.Alignment = function(){
             this.aData.prehide();
             this.$purgeAlignment();
         }
+        
+        apf.layout.processQueue(); //@todo apf3.0 might not be the best but fixes trunk/test/toc.html
     };
 
     /**

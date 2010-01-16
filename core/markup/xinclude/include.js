@@ -34,17 +34,17 @@ apf.aml.setElement("include", apf.XiInclude);
     this.$parsePrio = "002";
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    /*this.$attrExcludePropBind = apf.extend({
         href : 1,
         src  : 1
-    }, this.$attrExcludePropBind);
+    }, this.$attrExcludePropBind);*/
 
     this.$propHandlers["href"] = 
     this.$propHandlers["src"]  = function(value){
         if (typeof value != "string")
             return finish.call(this, value);
-        
-        this.$path = value.charAt(0) == "{"
+
+        this.$path = value.charAt(0) == "{" //@todo this shouldn't happen anymore
           ? value
           : apf.getAbsolutePath(apf.hostPath, value);
         
