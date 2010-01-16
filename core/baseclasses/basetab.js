@@ -259,7 +259,7 @@ apf.BaseTab = function(){
                 //Delayed rendering support
                 page.addEventListener("afterrender", function(){
                     this.parentNode.hideLoader();
-                 
+                 });
             }
         }
 

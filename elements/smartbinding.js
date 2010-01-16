@@ -623,11 +623,12 @@ apf.smartbinding = function(struct, tagName){
     this.$supportedProperties = ["bindings", "actions", "model"];
     this.$handlePropSet = function(prop, value, force){
         switch(prop) {
+            //@todo apf3 change this to use apf.setModel();
             case "model":
                 if (typeof value == "string")
                     value = apf.nameserver.get("model", value);
                 this.model          = apf.nameserver.register("model", this.name, value);
-                this.modelBaseXpath = xpath;
+                //this.modelBaseXpath = xpath;
                 
                 var amlNode;
                 for (var uniqueId in this.$bindNodes) {
@@ -679,6 +680,8 @@ apf.smartbinding = function(struct, tagName){
     this.add = function(node){
         for (var uId in this.$bindNodes)
             node.register(this.$bindNodes[uId]);
+        
+        this["$" + node.localName] = node;
     };
     
     this.remove = function(node){
@@ -789,7 +792,8 @@ apf.smartbinding = function(struct, tagName){
      * @addnode smartbinding, global
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        this.register(this.parentNode);
+        if (this.parentNode.hasFeature(apf.__DATABINDING__))
+            this.register(this.parentNode);
 
         //#ifdef __DEBUG
         apf.console.info(this.name

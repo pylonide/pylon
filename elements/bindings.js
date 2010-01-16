@@ -66,7 +66,7 @@ apf.bindings = function(struct, tagName){
     this.$smartbinding = null;
 
     this.register = function(amlNode){
-        if (amlNode.tagName == "smartbinding") {
+        if (amlNode.localName == "smartbinding") {
             this.$smartbinding = amlNode;
             this.$smartbinding.add(this); //Assuming only at init
             return;
