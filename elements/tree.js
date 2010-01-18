@@ -423,7 +423,7 @@ apf.tree = function(struct, tagName){
         if (!startcollapsed && !this.nocollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
-        var removeContainer = (!this.removecontainer || hasChildren);
+        var msg, removeContainer = (!this.removecontainer || hasChildren);
         
         //TEMP on for dynamic subloading
         if (!hasChildren || loadChildren)
@@ -437,9 +437,9 @@ apf.tree = function(struct, tagName){
           || loadChildren && (!this.$hasLoadStatus(xmlNode) 
           || this.$hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
-        /*else if (!hasTraverseNodes && this.$applyBindRule("empty", xmlNode)) {
-            this.$setClearMessage(container);
-        }*/
+        else if (!hasTraverseNodes && (msg = this.$applyBindRule("empty", xmlNode))) {
+            this.$setEmptyMessage(container, msg);
+        }
 
         if ((!htmlParentNode || htmlParentNode == this.$int) 
           && xmlParentNode == this.xmlRoot && !beforeNode) {
@@ -470,7 +470,7 @@ apf.tree = function(struct, tagName){
         
             if (htmlParentNode.style 
               && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
-                this.$removeClearMessage(htmlParentNode);
+                this.$removeEmptyMessage(htmlParentNode);
         
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
@@ -777,8 +777,9 @@ apf.tree = function(struct, tagName){
         if (xmlNode.parentNode != this.xmlRoot)
             this.$fixItem(xmlNode, htmlNode, true);
         
-        if (this.emptyMessage && !pContainer.childNodes.length)
-            this.$setClearMessage(pContainer);
+        var msg;
+        if (!pContainer.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
+            this.$setEmptyMessage(pContainer, msg);
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode, true);
@@ -815,7 +816,7 @@ apf.tree = function(struct, tagName){
         container  = this.$getLayoutNode("item", "container", htmlNode);
 
         if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
-            this.$removeClearMessage(pContainer);
+            this.$removeEmptyMessage(pContainer);
 
         pContainer.insertBefore(htmlNode, beforeNode);
         if (container)
@@ -826,8 +827,9 @@ apf.tree = function(struct, tagName){
             pContainer.style.height = "auto";
         }*/
         
-        if (this.emptyMessage && !oPHtmlNode.childNodes.length)
-            this.$setClearMessage(oPHtmlNode);
+        var msg;
+        if (!oPHtmlNode.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
+            this.$setEmptyMessage(oPHtmlNode, msg);
         
         if (this.openadd && pHtmlNode != this.$int && pContainer.style.display != "block") 
             this.slideOpen(pContainer, pHtmlNode, true);
@@ -1263,6 +1265,35 @@ apf.tree = function(struct, tagName){
             }
         }
     };
+    
+    this.$setEmptyMessage = function(htmlNode, msg){
+        this.$getNewContext("empty");
+        var xmlEmpty = this.$getLayoutNode("empty");
+        if (!xmlEmpty) return;
+
+        var empty = apf.insertHtmlNode(xmlEmpty, htmlNode);
+        var caption = this.$getLayoutNode("empty", "caption", empty);
+
+        if (caption)
+            apf.setNodeValue(caption, msg || "");
+        
+        if (htmlNode.style)
+            this.slideOpen(htmlNode, null, true);
+        else
+            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;");
+    }
+    
+    this.$removeEmptyMessage = function(htmlNode){
+        var cNode = htmlNode.firstChild;
+        do {
+            if (cNode.className == "message") { //@todo hack
+                htmlNode.removeChild(cNode);
+                return;
+            }
+            cNode = cNode.nextSibling;
+        }
+        while(cNode);
+    }
     
     /**** Init ****/
     
