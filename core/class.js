@@ -886,6 +886,10 @@ apf.Class.prototype = new (function(){
             stack[eventName] = [];
         if (stack[eventName].indexOf(callback) == -1)
             stack[eventName].unshift(callback);
+        
+        var f;
+        if (f = this.$eventsStack["$event." + eventName])
+            f[0].call(this, callback);
     };
 
     /**

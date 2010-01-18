@@ -376,6 +376,17 @@ apf.GuiElement = function(){
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
     });
+    
+    //#ifdef __WITH_LAYOUT
+    var f;
+    this.addEventListener("$event.resize", f = function(c){
+        apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
+            if (o) o.dispatchEvent('resize');", true);
+
+        apf.layout.queue(this.$ext);
+        this.removeEventListener("$event.resize", f);
+    });
+    //#endif
 
     //#ifdef __AMLCONTEXTMENU
     this.addEventListener("contextmenu", function(e){
