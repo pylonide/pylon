@@ -704,14 +704,14 @@ apf.webdav = function(struct, tagName){
             oHeaders["Depth"] = iDepth || "Infinity";
         if (sLock)
             oHeaders["If"] = "<" + sLock + ">";
-        var xml = '<?xml version="1.0" encoding="utf-8"?>\
-            <D:lockinfo xmlns:D="' + apf.webdav.NS.D + '">\
-                <D:lockscope><D:exclusive /></D:lockscope>\
-                <D:locktype><D:write /></D:locktype>\
-                <D:owner><D:href>'
-                + document.location.toString().escapeHTML() +
-                '</D:href></D:owner>\
-            </D:lockinfo>';
+        var xml = '<?xml version="1.0" encoding="utf-8"?>'
+                + '<D:lockinfo xmlns:D="' + apf.webdav.NS.D + '">'
+                +     '<D:lockscope><D:exclusive /></D:lockscope>'
+                +     '<D:locktype><D:write /></D:locktype>'
+                +     '<D:owner><D:href>'
+                +      document.location.toString().escapeHTML() +
+                +     '</D:href></D:owner>'
+                + '</D:lockinfo>';
         this.doRequest(registerLock, sPath, xml, oHeaders, true, callback);
         return newLock.call(this, sPath);
     };
@@ -861,10 +861,10 @@ apf.webdav = function(struct, tagName){
         // Note: caching is being done by an external model
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
-        var xml = '<?xml version="1.0" encoding="utf-8" ?>\
-                    <D:propfind xmlns:D="' + apf.webdav.NS.D + '">\
-                        <D:allprop />\
-                    </D:propfind>';
+        var xml = '<?xml version="1.0" encoding="utf-8" ?>'
+                + '<D:propfind xmlns:D="' + apf.webdav.NS.D + '">'
+                +       '<D:allprop />'
+                + '</D:propfind>';
         oHeaders = oHeaders || {};
         oHeaders["Depth"] = typeof iDepth != "undefined" ? iDepth : 1
         this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, callback);
@@ -910,7 +910,7 @@ apf.webdav = function(struct, tagName){
             break;
         }
         if (bHasProps) {
-            aOut.push('<D:set>\n');
+            aOut.push('<D:set>');
             for (ns in oPropsSet) {
                 for (i in oPropsSet[ns])
                     aOut.push('<D:prop>', oPropsSet[ns][i], '</D:prop>')
