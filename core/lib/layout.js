@@ -1862,13 +1862,14 @@ apf.layoutParser = function(parentNode, pMargin){
         //LEFT
         if (oItem.parent.hbox) {
             if (oItem.parent.isRight) {
-                if (!oNextSame)
+                if (!oNextSame) {
                     vleft.push("v.left_", oItem.parent.id, " + v.width_",
-                        oItem.parent.id, " - ", oItem.id, ".offsetWidth", null);
+                        oItem.parent.id, " - ", (oItem.node ? oItem.id + ".offsetWidth" : "v.width_" + oItem.id), null);
+                }
                 else {
                     if (oNextSame.node)
                         vleft.push(oNextSame.id, ".offsetLeft - ",
-                            oNextSame.edgeMargin, " - ", oItem.id, ".offsetWidth");
+                            oNextSame.edgeMargin, " - ", (oItem.node ? oItem.id + ".offsetWidth" : "v.width_" + oItem.id));
                     else
                         vleft.push("v.left_" + oNextSame.id, " - ", oNextSame.edgeMargin,
                             " - ", (oItem.node ? oItem.id + ".offsetWidth" : "v.width_" + oItem.id));
