@@ -334,10 +334,18 @@ apf.Anchoring = function(){
             var diff    = apf.getDiff(this.$ext);
             this.$hordiff     = diff[0];
             this.$verdiff     = diff[1];
-            this.$minheight    = Math.max(parseInt(this.$getOption("main", "minheight")) || 0, parseInt(this.getAttribute("minheight")) || 0) || 0;
-            this.$maxheight    = Math.min(parseInt(this.$getOption("main", "maxheight")) || 0, parseInt(this.getAttribute("maxheight")) || 100000) || 100000;
-            this.$minwidth     = Math.max(parseInt(this.$getOption("main", "minwidth")) || 0, parseInt(this.getAttribute("minwidth")) || 0) || 0;
-            this.$maxwidth     = Math.min(parseInt(this.$getOption("main", "maxwidth")) || 0, parseInt(this.getAttribute("maxwidth")) || 100000) || 100000;
+            if (this.$getOption) {
+                this.$minheight    = Math.max(parseInt(this.$getOption("main", "minheight")) || 0, parseInt(this.getAttribute("minheight")) || 0) || 0;
+                this.$maxheight    = Math.min(parseInt(this.$getOption("main", "maxheight")) || 0, parseInt(this.getAttribute("maxheight")) || 100000) || 100000;
+                this.$minwidth     = Math.max(parseInt(this.$getOption("main", "minwidth")) || 0, parseInt(this.getAttribute("minwidth")) || 0) || 0;
+                this.$maxwidth     = Math.min(parseInt(this.$getOption("main", "maxwidth")) || 0, parseInt(this.getAttribute("maxwidth")) || 100000) || 100000;
+            }
+            else {
+                this.$minheight    = 0;
+                this.$maxheight    = 100000;
+                this.$minwidth     = 0;
+                this.$maxwidth     = 100000;
+            }
             this.$rule_header = getRuleHeader.call(this);
             this.$parsed      = true;
         }
