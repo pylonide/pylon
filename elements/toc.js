@@ -136,11 +136,11 @@ apf.toc = function(struct, tagName){
 
         for (var isPast = true, i = 0; i < this.pages.length; i++) {
             if (this.pagelookup[active] == this.pages[i]) {
-                this.$setStyleClass(this.pages[i], "present", ["future", "past"]);
+                this.$setStyleClass(this.pages[i], "present", ["future", "past", "hover"]);
                 isPast = false;
             }
             else if (isPast) {
-                    this.$setStyleClass(this.pages[i], "past", ["future", "present"]);
+                    this.$setStyleClass(this.pages[i], "past", ["future", "present",]);
             }
             else {
                 this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
