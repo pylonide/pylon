@@ -335,6 +335,10 @@ var q = apf.q = {};
             var diff    = apf.getDiff(this.$ext);
             this.$hordiff     = diff[0];
             this.$verdiff     = diff[1];
+            this.$minheight    = Math.max(parseInt(this.$getOption("main", "minheight")) || 0, parseInt(this.getAttribute("minheight")) || 0) || 0;
+            this.$maxheight    = Math.min(parseInt(this.$getOption("main", "maxheight")) || 0, parseInt(this.getAttribute("maxheight")) || 100000) || 100000;
+            this.$minwidth     = Math.max(parseInt(this.$getOption("main", "minwidth")) || 0, parseInt(this.getAttribute("minwidth")) || 0) || 0;
+            this.$maxwidth     = Math.min(parseInt(this.$getOption("main", "maxwidth")) || 0, parseInt(this.getAttribute("maxwidth")) || 100000) || 100000;
             this.$rule_header = getRuleHeader.call(this);
             this.$parsed      = true;
         }
@@ -384,13 +388,16 @@ var q = apf.q = {};
             if (width) {
                 if (parseInt(width) != width) {
                     width = setPercentage(width, "pWidth");
-                    rules.push("oHtml.style.width = ("
-                        + width + " - " + this.$hordiff + ") + 'px'");
+                    rules.push("oHtml.style.width = Math.max(" + this.$minwidth 
+                        + ", Math.min(" + this.$maxwidth + ", "
+                        + width + " - " + this.$hordiff + ")) + 'px'");
                 }
                 else {
-                    this.$ext.style.width = (width > this.$hordiff
-                        ? width - this.$hordiff
-                        : 0) + "px";
+                    this.$ext.style.width = (width > this.$hordiff + this.$minwidth
+                        ? (width < this.$hordiff + this.$maxwidth
+                            ? width - this.$hordiff
+                            : this.$maxwidth)
+                        : this.$minwidth) + "px";
                 }
             }
 
@@ -432,13 +439,16 @@ var q = apf.q = {};
             if (height) {
                 if (parseInt(height) != height) {
                     height = setPercentage(height, "pHeight");
-                    rules.push("oHtml.style.height = (" + height + " - "
-                        + this.$verdiff + ") + 'px'");
+                    rules.push("oHtml.style.height = Math.max(" + this.$minheight 
+                        + ", Math.min(" + this.$maxheight + ", "
+                        + height + " - " + this.$verdiff + ")) + 'px'");
                 }
                 else {
-                    this.$ext.style.height = (height > this.$verdiff
-                        ? height - this.$verdiff
-                        : 0) + "px";
+                    this.$ext.style.height = (height > this.$verdiff + this.$minheight
+                        ? (height < this.$verdiff + this.$maxheight
+                            ? height - this.$verdiff
+                            : this.$maxheight)
+                        : this.$minheight) + "px";
                 }
             }
 

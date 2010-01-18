@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:tab>
+            <a:page caption="List Selection">
+                <a:frame caption="Select lists" width="650">
+                    <a:table columns="*" height="45" splitter="7">
+                       <a:checkbox
+                           id      = "list_2"
+                           values   = "2|0"
+                           checked   = "false"
+                           caption = ""
+                           ></a:checkbox>
+                       <a:table
+                          id="list_options_2"
+                          columns="75,100,75,50,100"
+                          width="400"
+                          disabled="{list_2.value == 0}"
+                          left="10"
+                          splitter="5"
+                          >
+                          <a:label for="ecount_2"># of Records</a:label>
+                          <a:textbox
+                             id="ecount_2"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "1000"
+                             />
+                          <a:checkbox
+                             id="erandom_2"
+                             values="1|0"
+                             checked="true">Random</a:checkbox>
+                          <a:label
+                             for="estart_2"
+                             disabled="{erandom_2.value == 1}"
+                             >Start from</a:label>
+                          <a:textbox
+                             id="estart_2"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "0"
+                             disabled="{erandom_2.value == 1}"
+                             />
+                       </a:table>
+                    </a:table>
+                    <a:table columns="*" height="45" splitter="7">
+                       <a:checkbox
+                       id      = "list_3"
+                       values   = "3|0"
+                       checked   = "false"
+                       caption = ""
+                       ></a:checkbox>
+                       <a:table
+                          id="list_options_3"
+                          columns="75,100,75,50,100"
+                          width="400"
+                          disabled="{list_3.value == 0}"
+                          left="10"
+                          splitter="5"
+                          >
+                          <a:label for="ecount_3"># of Records</a:label>
+                          <a:textbox
+                             id="ecount_3"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "1000"
+                             />
+                          <a:checkbox
+                             id="erandom_3"
+                             values="1|0"
+                             checked="true">Random</a:checkbox>
+                          <a:label
+                             for="estart_3"
+                             disabled="{erandom_3.value == 1}"
+                             >Start from</a:label>
+                    
+                          <a:textbox
+                             id="estart_3"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "0"
+                             disabled="{erandom_3.value == 1}"
+                             />
+                       </a:table>
+                    </a:table>
+                    <a:table columns="*" height="45" splitter="7">
+                       <a:checkbox
+                       id      = "list_4"
+                       values   = "4|0"
+                       checked   = "false"
+                       caption = ""
+                       >testing ***</a:checkbox>
+                       <a:table
+                          id="list_options_4"
+                          columns="75,100,75,50,100"
+                          width="400"
+                          disabled="{list_4.value == 0}"
+                          left="10"
+                          splitter="5"
+                          >
+                          <a:label for="ecount_4"># of Records</a:label>
+                          <a:textbox
+                             id="ecount_4"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "1000"
+                             />
+                          <a:checkbox
+                             id="erandom_4"
+                             values="1|0"
+                             checked="true">Random</a:checkbox>
+                    
+                          <a:label
+                             for="estart_4"
+                             disabled="{erandom_4.value == 1}"
+                             >Start from</a:label>
+                          <a:textbox
+                             id="estart_4"
+                             mask="00000000;;"
+                             minlength="1"
+                             maxlength="8"
+                             initial-message = "0"
+                             disabled="{erandom_4.value == 1}"
+                             />
+                       </a:table>
+                    </a:table>
+                </a:frame>
+            </a:page>
+            <a:page />
+        </a:tab>
+    </body>
+</html>
