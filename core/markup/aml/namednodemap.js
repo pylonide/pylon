@@ -73,7 +73,7 @@ apf.AmlNamedNodeMap = function(host){
         return this[i];
     };
 
-    if (apf.isIE < 8) {
+    if (apf.isIE && apf.isIE < 8) {
         this.length = 0;
         
         this.splice = function(pos, length){
@@ -88,14 +88,15 @@ apf.AmlNamedNodeMap = function(host){
             this[this.length++] = o;
             return this.length;
         }
-        
-        this.join = function(glue){
-            var x = [];
-            for (var i = 0, l = this.length; i < l; i++) {
+    }
+    
+    this.join = function(glue){
+        var x = [];
+        for (var e, a, i = 0, l = this.length; i < l; i++) {
+            if ((e = (a = this[i]).ownerElement) && !e.$inheritProperties[a.nodeName])
                 x.push(this[i]);
-            }
-            return x.join(glue);
         }
+        return x.join(glue);
     }
 }).call(apf.AmlNamedNodeMap.prototype = apf.isIE < 8 ? {} : []);
 // #endif
