@@ -180,6 +180,7 @@ apf.uirecorder = {
     startTime : 0,
     record : function() {
         apf.uirecorder.actionList = [];
+        apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
         apf.uirecorder.isRecording = true;
         apf.uirecorder.init();
@@ -188,6 +189,8 @@ apf.uirecorder = {
     /**
      * Stop recording and start playing
      */
+    curTestIdx : 0, 
+    curActionIdx : 0, 
     play : function() {
         // @todo see index.html
     },
@@ -196,7 +199,10 @@ apf.uirecorder = {
      * Start testing
      */
     test : function() {
+        apf.uirecorder.resultListXml = null;
+        
         apf.uirecorder.actionList = [];
+        apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
         apf.uirecorder.isTesting = true;
         apf.uirecorder.init();
@@ -206,13 +212,17 @@ apf.uirecorder = {
      * Stop recording and playing
      */
     stop : function() {
-        if (apf.uirecorder.isRecording)
+        if (apf.uirecorder.isRecording) {
+            apf.uirecorder.isRecording = false;
             apf.uirecorder.save("test");
-        if (apf.uirecorder.isTesting)
+        }
+        else if (apf.uirecorder.isTesting) {
+            apf.uirecorder.isTesting   = false;
             apf.uirecorder.checkResults();
-        apf.uirecorder.isRecording = false;
-        apf.uirecorder.isPlaying   = false;
-        apf.uirecorder.isTesting   = false;
+        }
+        else if (apf.uirecorder.isPlaying) {
+            apf.uirecorder.isPlaying   = false;
+        }
     },
     
     /**
@@ -229,12 +239,11 @@ apf.uirecorder = {
      * 
      */
     markupLoaded : false,
-    load : function(file) {
-        uir_bar.replaceMarkup(file);
-        
-        if (apf.uirecorder.isRecording || apf.uirecorder.isPlaying || apf.uirecorder.isTesting) {
-            apf.uirecorder.captureAction("loadMarkup");
-        }
+    load : function(file, callback) {
+        apf.uirecorder.markupLoaded = false;
+        uir_bar.replaceMarkup(file, {
+            callback : callback
+        });
     },
     
     /**
@@ -277,8 +286,8 @@ apf.uirecorder = {
         
         var index = apf.uirecorder.actionObjects.length;
         apf.uirecorder.actionObjects.push(actionObj);
-        var timeout = 200;
-        if (eventName == "loadMarkup") timeout = 200;
+        var timeout = 100;
+
         if (eventName != "mousemove") {
             setTimeout(function(){
                 apf.uirecorder.setDelayedDetails(index); 
@@ -302,7 +311,11 @@ apf.uirecorder = {
         
         }
         apf.uirecorder.detailList = {};
-        apf.uirecorder.actionObjects[index].activeElement = apf.xmlToXpath(apf.activeElement);
+
+        if (apf.activeElement && apf.activeElement.parentNode)
+            apf.uirecorder.actionObjects[index].activeElement = apf.xmlToXpath(apf.activeElement);
+        //else
+            //debugger;
     },
     detailList : {},
     captureEvent : function(eventName, e) {
@@ -321,9 +334,11 @@ apf.uirecorder = {
         }
         
         var targetName;
-        if (amlNode)
+        if (amlNode) {
+            if (!amlNode.parentNode) debugger;
             targetName = apf.xmlToXpath(amlNode);
-            
+        }
+        
         var eventObj = {
             name        : eventName,
             //amlNode     : amlNode,
@@ -344,9 +359,11 @@ apf.uirecorder = {
     },
     capturePropertyChange : function(amlNode, prop, value) {
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
-        if (amlNode)
+        if (amlNode) {
+            if (!amlNode.parentNode) debugger;
             targetName = apf.xmlToXpath(amlNode);
-        else
+        } 
+        else 
             debugger;
         
         
@@ -370,9 +387,10 @@ apf.uirecorder = {
     },
     captureModelChange : function(params) {
         if (params.amlNode && params.amlNode.id && params.amlNode.id.indexOf("uir") == 0) return;
-        if (params.amlNode)
+        if (params.amlNode) {
+            if (!params.amlNode.parentNode) debugger;
             targetName = apf.xmlToXpath(params.amlNode);
-
+        }
         var dataObj = {
             name        : params.action,
             //amlNode     : amlNode,
@@ -416,18 +434,20 @@ apf.uirecorder = {
         var testXml = apf.getXml("<test />");
         testXml.setAttribute("name", "test" + id);
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
-        testXml.setAttribute("status", "success");        
+        testXml.setAttribute("status", "@todo status");        
 
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
-            //if (action.name == "loadMarkup") continue;
             aNode = testXml.ownerDocument.createElement("action");
             aNode.setAttribute("name", action.name);
             aNode.setAttribute("x", action.x);
             aNode.setAttribute("y", action.y);
             aNode.setAttribute("time", action.time);
-            if (action.amlNode) aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
+            if (action.amlNode) {
+                if (!action.amlNode.parentNode) debugger;
+                aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
+            }
             if (action.value) aNode.setAttribute("value", action.value);
 
             var eNode, iNode;
@@ -471,11 +491,11 @@ apf.uirecorder = {
 
         if (saveType === "test") {
             apf.uirecorder.testListXml.appendChild(testXml);
-            apf.uirecorder.createChangesXml(apf.uirecorder.testListXml);
+            //apf.uirecorder.createChangesXml(apf.uirecorder.testListXml);
         }
         else if (saveType === "results") {
             apf.uirecorder.resultListXml.appendChild(testXml);
-            apf.uirecorder.createChangesXml(apf.uirecorder.resultListXml);
+            //apf.uirecorder.createChangesXml(apf.uirecorder.resultListXml);
         }
     },
     
