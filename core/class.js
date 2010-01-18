@@ -531,7 +531,7 @@ apf.Class.prototype = new (function(){
                 }
             }
             catch(e){
-                apf.console.warn("[331] Could not execute binding test: "
+                apf.console.warn("[331] Could not execute binding test or: "
                     + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
                 return;
             }
@@ -552,7 +552,7 @@ apf.Class.prototype = new (function(){
     this.$clearDynamicProperty = function(prop){
         if (this.$removeAttrBind)
             this.$removeAttrBind(prop);
-        
+
         //#ifdef __WITH_LANG_SUPPORT
         //@todo apf3.0
         apf.language.removeProperty(this, prop);

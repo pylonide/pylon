@@ -205,9 +205,10 @@ apf.language = {
                     }
                 }
                 catch(e){
-                    apf.console.warn("[275] Could not execute language update \n\n" 
-                        + e.message);
-                    return;
+                    apf.console.warn("[275] Could not execute language update for " 
+                        + prop + "\n\n" + e.message);
+                    continue;
+                    //return;
                 }
                 
                 amlNode.setProperty(prop, value, true);
@@ -235,7 +236,7 @@ apf.language = {
     },
     
     removeProperty : function(amlNode, prop){
-        delete (this.elements[amlNode.$unique] || false)[prop];
+        delete (this.elements[amlNode.$uniqueId] || false)[prop];
     },
     
     addBinding : function(amlNode){

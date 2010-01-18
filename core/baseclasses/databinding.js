@@ -1156,6 +1156,12 @@ apf.DataBinding = function(){
         this.$amlLoaded = true; //@todo this can probably be removed
         this.$checkLoadQueue();
     });
+    
+    // #ifdef __WITH_LANG_SUPPORT
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        apf.language.removeBinding(this);
+    });
+    // #endif
 
     /**
      * @attribute {String} model the name of the model to load data from or a

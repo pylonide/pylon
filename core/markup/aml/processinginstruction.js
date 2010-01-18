@@ -80,5 +80,9 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
         this.$setDynamicProperty("calcdata", this.data);
     }, true);
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        this.$clearDynamicProperty("calcdata");
+    });
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 // #endif

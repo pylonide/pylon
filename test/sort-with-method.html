@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:model id="mdlList"> 
+            <data> 
+                <item date="2009-11-12" deleted="0"></item> 
+                <item date="2009-11-11" deleted="0"></item> 
+                <item date="2009-11-10" deleted="1"></item> 
+                <item date="2009-11-09" deleted="1"></item> 
+                <item date="2009-11-08" deleted="1"></item> 
+            </data> 
+        </a:model> 
+
+        <a:script> 
+            function sth_compare(value, args, xmlNode) { 
+                alert(value); 
+                //Sort all folders together and all files and then sort on alphabet. 
+                return (xmlNode.tagName == "folder" ? 0 : 1) + value; 
+            } 
+        </a:script> 
+        
+        <a:list id="list" width="200" height="200" model="mdlList"> 
+            <a:each match="[item]" sort="[@date]" sort-method="sth_compare"> 
+                <a:caption match="[@date]" /> 
+            </a:each> 
+        </a:list>
+    </body>
+</html>
