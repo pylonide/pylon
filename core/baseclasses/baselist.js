@@ -597,7 +597,6 @@ apf.BaseList = function(){
         oItem.setAttribute("id", Lid);
 
         elSelect.setAttribute("onmouseover",   "apf.setStyleClass(this, 'hover');");
-        elSelect.setAttribute("onmouseout",    "apf.setStyleClass(this, '', ['hover']);");
         elSelect.setAttribute("onselectstart", "return false;");
         elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") + ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 
@@ -607,7 +606,8 @@ apf.BaseList = function(){
                 "o.stopRename();" +
                 // #endif
                 " o.choose()");
-            elSelect.setAttribute("onmouseout", "this.hasPassedDown = false;");
+            elSelect.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);\
+                this.hasPassedDown = false;");
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.$uniqueId + ');\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
@@ -630,6 +630,7 @@ apf.BaseList = function(){
                      o.select(this, event.ctrlKey, event.shiftKey)');
         } //@todo add DRAGDROP ifdefs
         else {
+            elSelect.setAttribute("onmouseout",    "apf.setStyleClass(this, '', ['hover']);");
             elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
                 + this.$uniqueId + '); o.choose()');
             elSelect.setAttribute(this.itemSelectEvent
