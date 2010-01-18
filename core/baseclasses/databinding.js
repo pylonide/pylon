@@ -416,8 +416,8 @@ apf.DataBinding = function(){
             if (this.$amlLoaded && !this.$attrBindings) {
                 apf.console.warn("Could not load data yet in " + (this.localName
                   ? this.localName + "[" + (this.name || "") + "]"
-                  : this.nodeName) + ". The loaded data is queued \
-                      until smartbinding rules are loaded or set manually.");
+                  : this.nodeName) + ". The loaded data is queued "
+                      + "until smartbinding rules are loaded or set manually.");
             }
             //#endif
 
@@ -431,8 +431,8 @@ apf.DataBinding = function(){
         if (!xmlNode && (!cacheId || !this.$isCached || !this.$isCached(cacheId))) {
             //#ifdef __DEBUG
             apf.console.warn("No xml root node was given to load in "
-                + this.localName + "[" + (this.name || '') + "]. Clearing any \
-                  loaded xml in this component");
+                + this.localName + "[" + (this.name || '') + "]. Clearing any "
+                + "loaded xml in this component");
             //#endif
 
             this.clear(noClearMsg);
