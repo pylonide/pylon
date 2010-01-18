@@ -23,9 +23,32 @@
 
 apf.XhtmlElement = function(struct, tagName){
     this.$init(tagName || true, apf.NODE_VISIBLE, struct);
+    
+    this.$xoe                = this.addEventListener;
+    this.addEventListener    = this.$xae;
+    this.removeEventListener = this.$xre;
+    
+    var _self = this;
+    this.$de = function(e){
+        _self.dispatchEvent(e.type, e);
+    }
 };
 
 (function(){
+    this.$xae = function(type, fn){
+        if (!this.$ext) return;
+
+        apf.addListener(this.$ext, type, this.$de);
+        this.$xoe.apply(this, arguments);
+    };
+    
+    this.$xre = function(type, fn) {
+        if (!this.$ext) return;
+        
+        apf.removeListener(this.$ext, type, this.$de);
+        apf.AmlElement.prototype.removeEventListener.apply(this, arguments);
+    }
+    
     this.$handlePropSet = function(name, value, force){
         if (this.$booleanProperties[name])
             value = apf.isTrue(value);
