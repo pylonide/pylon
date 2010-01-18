@@ -150,7 +150,7 @@ apf.popup = {
                     if (moveUp)
                         popup.style.top = (top - value - options.y) + "px";
                     else
-                        popup.scrollTop = 10000;//-1 * (i - steps - 1) * ((options.height || o.height) / steps);
+                        popup.scrollTop = -1 * (i - steps) * ((options.height || o.height) / steps);
                     popup.style.display = "block";
 
                     if (i >= steps) {
