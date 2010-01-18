@@ -419,8 +419,16 @@ apf.Validation = function(){
     //#ifdef __PARSER_XSD
     this.$propHandlers["datatype"]   =
     //#endif
+    
+    this.$propHandlers["pattern"]    = function(value, prop){
+        if (value.substr(0, 1) != "/")
+            value = "/" + value + "/";
+
+        (this.$vOptions || (this.$vOptions = {}))[prop] = value;
+        delete this.$vOptions.isValid;
+    };
+    
     this.$propHandlers["required"]   = 
-    this.$propHandlers["pattern"]    = 
     this.$propHandlers["custom"]     = 
     this.$propHandlers["min"]        = 
     this.$propHandlers["max"]        = 

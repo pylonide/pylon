@@ -437,8 +437,9 @@ apf.tree = function(struct, tagName){
           || loadChildren && (!this.$hasLoadStatus(xmlNode) 
           || this.$hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
-        else if (!hasTraverseNodes && this.$applyBindRule("empty", xmlNode))
+        /*else if (!hasTraverseNodes && this.$applyBindRule("empty", xmlNode)) {
             this.$setClearMessage(container);
+        }*/
 
         if ((!htmlParentNode || htmlParentNode == this.$int) 
           && xmlParentNode == this.xmlRoot && !beforeNode) {

@@ -231,13 +231,14 @@ apf.BindingRule = function(struct, tagName){
     });
 }).call(apf.BindingRule.prototype = new apf.AmlElement());
 
-apf.aml.setElement("icon",      apf.BindingRule);
-apf.aml.setElement("image",     apf.BindingRule);
-apf.aml.setElement("caption",   apf.BindingRule);
-apf.aml.setElement("css",       apf.BindingRule);
-apf.aml.setElement("selectable",    apf.BindingRule);
-apf.aml.setElement("value",     apf.BindingRule);
-apf.aml.setElement("src",       apf.BindingRule);
-apf.aml.setElement("collapsed", apf.BindingRule);
+apf.aml.setElement("icon",       apf.BindingRule);
+apf.aml.setElement("image",      apf.BindingRule);
+apf.aml.setElement("caption",    apf.BindingRule);
+apf.aml.setElement("css",        apf.BindingRule);
+apf.aml.setElement("selectable", apf.BindingRule);
+apf.aml.setElement("value",      apf.BindingRule);
+apf.aml.setElement("src",        apf.BindingRule);
+apf.aml.setElement("collapsed",  apf.BindingRule);
+apf.aml.setElement("empty",      apf.BindingRule);
 // #endif
 

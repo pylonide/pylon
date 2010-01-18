@@ -265,7 +265,7 @@ apf.table = function(struct, tagName){
             span = jNode.span;
             
             cellInfo = {
-                span    : span == "*" ? collength : parseInt(span) || 1,
+                span    : span == "*" ? collength - (c % collength) : parseInt(span) || 1,
                 m       : m,
                 height  : setPercentage(jNode.height, pHeight),
                 width   : jNode.width,

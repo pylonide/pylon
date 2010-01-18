@@ -338,9 +338,12 @@ apf.setModel = function(instruction, amlNode){
     //Complex data fetch (possibly async) - data is loaded only once. 
     //Potential property binding has to take of the rest
     apf.getData(instruction, {parsed: fParsed, callback: function(data, state, extra){
-        //@todo apf3.0 error handling
-        if (state != apf.SUCCESS)
-            throw new Error();
+        //@todo apf3.0 call onerror on amlNode
+        if (state != apf.SUCCESS) {
+            throw new Error(apf.formatErrorString(0, null,
+                "Loading new data", "Could not load data into model. \n\
+                instruction: '" + instruction + "'"));
+        }
         
         if (!data)
             return;

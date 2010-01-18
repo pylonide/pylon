@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<data>
+    <drive caption="Boot Disk (C:)" date="">
+        <folder caption="My Documents" fid="1" icon="folder_page.png" date="21-06-1980">
+            <folder caption="Assets" fid="2" date="21-06-1980">
+                <file filename="bach.wma" fid="2" date="21-06-1980" />
+                <file filename="escher.zip" fid="2" date="21-06-1980" />
+                <file filename="godel.doc" fid="2" date="21-06-1980" />
+                <file filename="Todo.txt" fid="2" date="21-06-1980" />
+            </folder>
+            <folder caption="Presentation" icon="folder_picture.png" fid="3" date="21-06-1980" >
+                <file filename="SmartBindings.ppt" fid="2" date="21-06-1980" />
+                <file filename="aboutus.doc" fid="2" date="21-06-1980" />
+            </folder>
+            <folder caption="Website" fid="4" date="21-06-1980" >
+                <folder caption="HTML files" fid="5" date="21-06-1980" >
+                    <file filename="Getting Started.html" fid="2" date="21-06-1980" />
+                </folder>
+                <file filename="Check this out.ppt" fid="1" date="21-06-1980" />
+                <file filename="Todo.txt" fid="2" date="21-06-1980" />
+                <file filename="Test.zip" fid="3" date="21-06-1980" />
+            </folder>
+            <folder caption="My Images" fid="6" date="21-06-1980">
+                <file filename="myself.jpg" fid="2" date="21-06-1980" />
+                <file filename="me.xls" fid="2" date="21-06-1980" />
+                <file filename="i.gif" fid="2" date="21-06-1980" />
+            </folder>
+            <folder caption="Development" icon="folder_wrench.png" fid="8" date="21-06-1980" >
+                <folder caption="Ajax" icon="folder_lightbulb.png" fid="9" >
+                    <file filename="Visitors.xls" fid="4" date="21-06-1980" />
+                    <file filename="Business Plan.doc" fid="5" date="21-06-1980" />
+                    <file filename="Test.zip" fid="6" date="21-06-1980" />
+                </folder>
+                <file filename="AboutCharts.pdf" fid="7" date="21-06-1980" />
+                <file filename="Test.html" fid="8" date="21-06-1980" />
+                <file filename="Test.zip" fid="9" date="21-06-1980" />
+            </folder>
+            <file filename="Project.xls" fid="10" date="21-06-1980" />
+            <file filename="UX.doc" fid="11" date="21-06-1980" />
+            <file filename="Example.wma" fid="12" date="21-06-1980" />
+            <file filename="Blah.jpg" fid="13" date="21-06-1980" />
+            <file filename="LogoDesign.psd" fid="14" date="21-06-1980" />
+        </folder>
+        <folder caption="Javeline Test Folder" fid="10" date="21-06-1980" />
+    </drive>
+</data>
