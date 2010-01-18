@@ -129,7 +129,7 @@ apf.popup = {
         // specific styling options.
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
         // #endif
-        
+
         if (options.animate) {
             if (options.animate == "fade") {
                 apf.tween.single(popup, {
@@ -142,7 +142,6 @@ apf.popup = {
             }
             else {
                 var iVal, steps = apf.isIE8 ? 5 : 7, i = 0;
-                
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
 

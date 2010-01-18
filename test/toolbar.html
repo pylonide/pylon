@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:menu id="menu5">
+            <a:item>About us</a:item>
+            <a:item>Help</a:item>
+        </a:menu>
+        
+        <a:menu id="menu6">
+            <a:item icon="email.png">Tutorials</a:item>
+            <a:item>Live Helps</a:item>
+            <a:divider></a:divider>
+            <a:item>Visit Ajax.org</a:item>
+            <a:item>Exit</a:item>
+        </a:menu>
+        
+        <a:window 
+          id          = "winMail"
+          contextmenu = "menu6"
+          width       = "300"
+          height      = "200" 
+          visible     = "true"
+          resizable   = "true" 
+          title       = "Mail message"
+          icon        = "clock.png">
+            <a:toolbar>
+                <a:menubar>
+                    <a:button submenu="menu6">File</a:button>
+                    <a:button submenu="menu5">Edit</a:button>
+                </a:menubar>
+            </a:toolbar>
+        </a:window>
+        
+        <a:bar height="2000" />
+    </body>
+</html>
