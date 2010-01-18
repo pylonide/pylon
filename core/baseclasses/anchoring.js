@@ -294,7 +294,6 @@ apf.Anchoring = function(){
     };
     //#endif
 
-var q = apf.q = {};
     this.$updateLayout = function(){
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH

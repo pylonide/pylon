@@ -187,6 +187,9 @@ apf.BindingColumnRule = function(struct, tagName){
         apf.setStyleRule("." + this.$className, "background", "#f3f3f3");
         apf.setStyleClass(this.$int, "ascending", ["descending", "ascending"]);
         
+        if (!pNode.length)
+            return;
+        
         pNode.resort({
             order : "ascending",
             xpath : this.cvalue2.xpaths[1]
@@ -210,6 +213,9 @@ apf.BindingColumnRule = function(struct, tagName){
             childNrTo   = hTo && apf.getChildNumber(hTo.$int);
 
         pNode.$head.insertBefore(hFrom.$int, hTo && hTo.$int || null);
+
+        if (!pNode.length)
+            return;
 
         var node, nodes = pNode.$int.childNodes;
         for (var i = 0; i < nodes.length; i++) {
@@ -316,7 +322,8 @@ apf.BindingColumnRule = function(struct, tagName){
             var pos   = apf.getAbsolutePosition(target),
                 sLeft = pNode.$head.scrollLeft;
             var d     = e.clientX - pos[0] + sLeft;
-            if (d < 4 || target.offsetWidth - d - 8 < 3) {
+            if (d < 4 || target.offsetWidth - d - 8 < 3
+              && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 && target.previousSibling || target;
                 
                 if (_self.$resizable) {
@@ -463,7 +470,8 @@ apf.BindingColumnRule = function(struct, tagName){
                 sLeft = pNode.$head.scrollLeft;
             var d = e.clientX - pos[0] + sLeft;
 
-            if (d < 4 || this.offsetWidth - d - pNode.$widthdiff < 3) {
+            if (d < 4 || this.offsetWidth - d - pNode.$widthdiff < 3 
+              && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 ? this.previousSibling : this;
                 pNode.$ext.style.cursor = t && _self.$resizable
                     ? "w-resize"
