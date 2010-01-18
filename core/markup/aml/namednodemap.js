@@ -73,7 +73,7 @@ apf.AmlNamedNodeMap = function(host){
         return this[i];
     };
 
-    if (apf.isIE && apf.isIE < 8) {
+    if (apf.isIE < 8) { //Only supported by IE8 and above
         this.length = 0;
         
         this.splice = function(pos, length){
