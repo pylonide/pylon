@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:tree model="filesystem.xml"> 
+            <a:bindings> 
+                <a:caption match="[@caption|@filename]" /> 
+                <a:icon match="[drive]" value="icoContact.png" /> 
+                <a:icon match="[file]" value="icoFolder.png" /> 
+                <a:empty match="[folder]" value="Drag a contact to this group." /> 
+                <a:each match="[drive|folder|file]" /> 
+            </a:bindings> 
+        </a:tree>
+    </body>
+</html>
