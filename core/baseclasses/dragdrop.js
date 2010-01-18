@@ -1219,10 +1219,8 @@ apf.MultiselectDragDrop = function() {
             this.$setStyleClass(oDrag, "draggrid");
             var nodes = sel.childNodes;
             var dragnodes = oDrag.childNodes;
-            for (var i = nodes.length - 1; i >= 0; i--) {
-                if (dragnodes[i].nodeType == 1)
-                    dragnodes[i].style.width = apf.getStyle(nodes[i], "width");
-            }
+            for (var i = nodes.length - 1; i >= 0; i--) 
+                dragnodes[i].style.width = apf.getStyle(nodes[i], "width");
             //@todo apf3.0 remove all the event handlers of the children.
             return (this.lastDragNode = oDrag);
         }

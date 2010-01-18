@@ -51,7 +51,7 @@ apf.StandardBinding = function(){
 
         //#ifdef __WITH_PROPERTY_BINDING
         var b, lrule, rule, bRules, bRule, value;
-        if (b = this.$cbindings) {
+        if (b = this.$bindings) {
 	        for (rule in b) {
 	            lrule = rule.toLowerCase();
 	            if (this.$supportedProperties.indexOf(lrule) > -1) {
@@ -127,7 +127,7 @@ apf.StandardBinding = function(){
 
         //#ifdef __WITH_PROPERTY_BINDING
         var b, lrule, rule, bRules, bRule, value;
-        if (b = this.$cbindings) {
+        if (b = this.$bindings) {
 	        for (rule in b) {
 	            lrule = rule.toLowerCase();
 	            if (this.$supportedProperties.indexOf(lrule) > -1) {
