@@ -30,13 +30,13 @@
  */
 apf.viewport = function(struct, tagName){
     this.$init(tagName || "viewport", apf.NODE_VISIBLE, struct);
+    
+    if (document.documentElement)
+        this.$ext = this.$int = document.documentElement.appendChild(document.createElement("div"));
 };
 
 (function(){
     this.$focussable = false;
-    
-    if (document.documentElement)
-        this.$ext = this.$int = document.documentElement.appendChild(document.createElement("div"));
     
     this.$draw = function(){
         if (!this.$ext)
