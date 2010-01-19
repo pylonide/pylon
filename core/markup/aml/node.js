@@ -370,7 +370,8 @@ apf.AmlNode = function(){
             }
         }
 
-        if ((this.ownerDocument || this).$domParser.$shouldWait)
+        var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
+        if (!doc || doc.$domParser.$shouldWait)
             return amlNode;
 
         if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
