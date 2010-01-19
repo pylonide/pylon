@@ -611,11 +611,10 @@ apf.DataBinding = function(){
      * @see baseclass.databinding.method.load
      * @private
      */
-    //@todo move this to multiselectbinding baseclass
     //@todo this function is call way too much for a single load of a tree
     //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
-        if (!this.hasFeature(apf.__MULTISELECT__) || !this.$int)
+        if (!this.$int)
             return;//@todo apf3.0
 
         if (this.clearSelection)

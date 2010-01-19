@@ -111,7 +111,7 @@ apf.text = function(struct, tagName){
             if (cacheObj)
                 cacheObj.contents += value;
             else
-                this.$container.insertAdjacentHTML("beforeend", value);
+                this.$int.insertAdjacentHTML("beforeend", value);
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
@@ -119,7 +119,7 @@ apf.text = function(struct, tagName){
             if (cacheObj)
                 cacheObj.contents = value;
             else
-                this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+                this.$int.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
 
         //Iframe bug fix for IE (leaves screen white);
@@ -153,7 +153,7 @@ apf.text = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        return this.$container.innerHTML;
+        return this.$int.innerHTML;
     };
     
     //#endif
@@ -167,25 +167,25 @@ apf.text = function(struct, tagName){
         switch (key) {
             case 33:
                 //PGUP
-                this.$container.scrollTop -= this.$container.offsetHeight;
+                this.$int.scrollTop -= this.$int.offsetHeight;
                 break;
             case 34:
                 //PGDN
-                this.$container.scrollTop += this.$container.offsetHeight;
+                this.$int.scrollTop += this.$int.offsetHeight;
                 break;
             case 35:
                 //END
-                this.$container.scrollTop = this.$container.scrollHeight;
+                this.$int.scrollTop = this.$int.scrollHeight;
                 break;
             case 36:
                 //HOME
-                this.$container.scrollTop = 0;
+                this.$int.scrollTop = 0;
                 break;
             case 38:
-                this.$container.scrollTop -= 10;
+                this.$int.scrollTop -= 10;
                 break;
             case 40:
-                this.$container.scrollTop += 10;
+                this.$int.scrollTop += 10;
                 break;
             default:
                 return;
@@ -243,14 +243,14 @@ apf.text = function(struct, tagName){
     this.$getCurrentFragment = function(){
         return {
             nodeType : 1,
-            contents : this.$container.innerHTML
+            contents : this.$int.innerHTML
         }
     };
 
     this.$setCurrentFragment = function(fragment){
-        this.$container.innerHTML = fragment.contents;
+        this.$int.innerHTML = fragment.contents;
         if (this.scrolldown)
-            this.$container.scrollTop = this.$container.scrollHeight;
+            this.$int.scrollTop = this.$int.scrollHeight;
     };
 
     this.$setClearMessage = this.$updateClearMessage = function(msg, className){
@@ -262,14 +262,14 @@ apf.text = function(struct, tagName){
 
         if (msg) {
             if (!this.height) {
-                if (this.$container.offsetHeight 
-                  && apf.getStyle(this.$container, "height") == "auto" 
+                if (this.$int.offsetHeight 
+                  && apf.getStyle(this.$int, "height") == "auto" 
                   && (this.$changedHeight = true))
-                    this.$container.style.height = (this.$container.offsetHeight 
-                      - apf.getHeightDiff(this.$container)) + "px";
-                this.$container.innerHTML = msg;
+                    this.$int.style.height = (this.$int.offsetHeight 
+                      - apf.getHeightDiff(this.$int)) + "px";
+                this.$int.innerHTML = msg;
             }
-            this.$lastMsg = this.$container.innerHTML;
+            this.$lastMsg = this.$int.innerHTML;
         }
     };
 
@@ -279,10 +279,10 @@ apf.text = function(struct, tagName){
             this.$lastClass = null;
         }
         
-        if (this.$container.innerHTML == this.$lastMsg) {
+        if (this.$int.innerHTML == this.$lastMsg) {
             if (this.$changedHeight && !(this.$changedHeight = false))
-                this.$container.style.height = "";
-            this.$container.innerHTML = ""; //clear if no empty message is supported
+                this.$int.style.height = "";
+            this.$int.innerHTML = ""; //clear if no empty message is supported
         }
     };
 
@@ -295,12 +295,12 @@ apf.text = function(struct, tagName){
         var _self = this;
 
         this.$ext = this.$getExternal();
-        this.$container = this.$getLayoutNode("main", "container", this.$ext);
+        this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
-        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.$container, "padding"))
+        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.$int, "padding"))
             this.$fixScrollBug();
 
-        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.$container;
+        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.$int;
 
         this.$scrolldown = true;
         this.oScroll.onscroll = function(){
@@ -314,9 +314,9 @@ apf.text = function(struct, tagName){
             }
         }, 60);
 
-        if (this.$container.tagName.toLowerCase() == "iframe") {
+        if (this.$int.tagName.toLowerCase() == "iframe") {
             if (apf.isIE) {
-                this.oIframe = this.$container;
+                this.oIframe = this.$int;
                 var iStyle = this.skin.selectSingleNode("iframe_style");
                 this.oIframe.contentWindow.document.write(
                     "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\
@@ -333,28 +333,28 @@ apf.text = function(struct, tagName){
                         </script>\
                     </head>\
                     <body oncontextmenu='return false'></body>");
-                this.$container = this.oIframe.contentWindow.document.body;
+                this.$int = this.oIframe.contentWindow.document.body;
             }
             else {
                 var node = document.createElement("div");
                 this.$ext.parentNode.replaceChild(node, this.$ext);
                 node.className = this.$ext.className;
-                this.$ext = this.$container = node;
+                this.$ext = this.$int = node;
             }
         }
         else {
-            this.$container.onselectstart = function(e){
+            this.$int.onselectstart = function(e){
                 (e ? e : event).cancelBubble = true;
             };
 
-            this.$container.oncontextmenu = function(e){
+            this.$int.oncontextmenu = function(e){
                 if (!this.host.contextmenus)
                     (e ? e : event).cancelBubble = true;
             };
 
-            this.$container.style.cursor = "";
+            this.$int.style.cursor = "";
 
-            this.$container.onmouseover = function(e){
+            this.$int.onmouseover = function(e){
                 if (!self.STATUSBAR) return;
                 if (!e)
                     e = event;
