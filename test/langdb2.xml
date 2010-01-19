@@ -1,0 +1,141 @@
+<groups>
+    <!-- For French -->
+    <french id="sub">
+        <group id="main">
+            <key id="text1">Textuele</key>
+            <key id="text2">Art</key>
+            <key id="text3">Bonjour</key>
+            <key id="text4">Adresse electronique *</key>
+            <key id="text5">Clicker</key>
+            <key id="text6">Nom</key>
+            <key id="text7">Voici les differentes variables de langue</key>
+            <key id="text8">french.png</key>
+            <key id="text9">French;French2;French3;French4;French5;French6;French7</key>
+            <key id="text10">French;lol epsum ipsum dolor</key>
+        </group>
+        <group id="calendar">
+            <key id="shortToday">F</key>
+            <key id="today">Dziś</key>
+            <key id="January">Styczeń</key>
+            <key id="February">Luty</key>
+            <key id="March">Marzec</key>
+            <key id="April">Kwiecień</key>
+            <key id="May">Maj</key>
+            <key id="June">Czerwiec</key>
+            <key id="July">Lipiec</key>
+            <key id="August">Sierpień</key>
+            <key id="September">Wrzesień</key>
+            <key id="October">Pażdziernik</key>
+            <key id="November">Listopad</key>
+            <key id="December">Grudzień</key>
+        </group>
+        <group id="slideshow">
+            <key id="loadmsg">French loadmsg</key>
+            <key id="defaulttitle">French def title</key>
+        </group>
+    </french>
+    <!-- For English -->
+    <english id="sub">
+        <group id="main">
+            <key id="text1">Text</key>
+            <key id="text2">Art</key>
+            <key id="text3">Good day</key>
+            <key id="text4">E-mail *</key>
+            <key id="text5">Click</key>
+            <key id="text6">Name</key>
+            <key id="text7">These are the language variables</key>
+            <key id="text8">english.png</key>
+            <key id="text9">English;English2;English3;English4;English5;English6;English7</key>
+            <key id="text10">English;lol epsum ipsum dolor</key>
+        </group>
+        <group id="calendar">
+            <key id="shortToday">T</key>
+            <key id="today">Today</key>
+            <key id="January">Styczeń</key>
+            <key id="February">Luty</key>
+            <key id="March">Marzec</key>
+            <key id="April">Kwiecień</key>
+            <key id="May">Maj</key>
+            <key id="June">Czerwiec</key>
+            <key id="July">Lipiec</key>
+            <key id="August">Sierpień</key>
+            <key id="September">Wrzesień</key>
+            <key id="October">Pażdziernik</key>
+            <key id="November">Listopad</key>
+            <key id="December">Grudzień</key>
+        </group>
+        <group id="slideshow">
+            <key id="loadmsg">Englishloadmsg</key>
+        </group>
+    </english>
+    <!-- For Dutch -->
+    <dutch id="sub">
+        <group id="main">
+            <key id="text1">Tekst</key>
+            <key id="text2">Kunst</key>
+            <key id="text3">Goedendag</key>
+            <key id="text4">Elektronische post *</key>
+            <key id="text5">Klik</key>
+            <key id="text6">Naam</key>
+            <key id="text7">Dit zijn taal variables</key>
+            <key id="text8">dutch.png</key>
+            <key id="text9">Dutch;Dutch2;Dutch3;Dutch4;Dutch5;Dutch6;Dutch7</key>
+            <key id="text10">Dutch;lol epsum ipsum dolor</key>
+        </group>
+        <group id="calendar">
+            <key id="shortToday">H</key>
+            <key id="today">Dziś</key>
+            <key id="January">Styczeń</key>
+            <key id="February">Luty</key>
+            <key id="March">Marzec</key>
+            <key id="April">Kwiecień</key>
+            <key id="May">Maj</key>
+            <key id="June">Czerwiec</key>
+            <key id="July">Lipiec</key>
+            <key id="August">Sierpień</key>
+            <key id="September">Wrzesień</key>
+            <key id="October">Pażdziernik</key>
+            <key id="November">Listopad</key>
+            <key id="December">Grudzień</key>
+        </group>
+        <group id="slideshow">
+            <key id="loadmsg">Dutch loadmsg</key>
+        </group>
+    </dutch>
+    <!-- For Polish -->
+    <polish id="sub">
+        <group id="main">
+            <key id="text1">Tekst</key>
+            <key id="text2">Sztuka</key>
+            <key id="text3">Dobrego dnia</key>
+            <key id="text4">Poczta elektroniczna *</key>
+            <key id="text5">Klick</key>
+            <key id="text6">Imię</key>
+            <key id="text7">To są zmienne językowe</key>
+            <key id="text8">polish.png</key>
+            <key id="text9">Polski;Polski2;Polski3;Polski4;Polski5;Polski6;Polski7</key>
+            <key id="text10">Polski;lol epsum ipsum dolor</key>
+        </group>
+        <group id="calendar">
+            <key id="shortToday">D</key>
+            <key id="today">Dziś</key>
+            <key id="January">Styczeń</key>
+            <key id="February">Luty</key>
+            <key id="March">Marzec</key>
+            <key id="April">Kwiecień</key>
+            <key id="May">Maj</key>
+            <key id="June">Czerwiec</key>
+            <key id="July">Lipiec</key>
+            <key id="August">Sierpień</key>
+            <key id="September">Wrzesień</key>
+            <key id="October">Pażdziernik</key>
+            <key id="November">Listopad</key>
+            <key id="December">Grudzień</key>
+        </group>
+        <group id="slideshow">
+            <key id="loadmsg">Polish loadmsg</key>
+            <key id="image">Zdjęcie</key>
+            <key id="of">z</key>
+        </group>
+    </polish>
+</groups>
