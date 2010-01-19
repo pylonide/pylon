@@ -381,11 +381,13 @@ apf.http = function(){
             
             // experimental for Firefox Cross Domain problem
             // http://ubiquity-xforms.googlecode.com/svn/wiki/CrossDomainSubmissionDeployment.wiki
-            //#ifdef __DEBUG && !__SUPPORT_GWT
+            //#ifdef __DEBUG
+            //#ifndef __SUPPORT_GWT
             try {
                 netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
             }
             catch (e) {
+            //#endif
             //#endif
                 //Currently we don't support html5 cross domain access
                 if (apf.hasHtml5XDomain
@@ -395,8 +397,10 @@ apf.http = function(){
                         this, "Communication error", "Url: " + httpUrl
                             + "\nReason: Same origin policy in effect"));
                   }
-            //#ifdef __DEBUG && !__SUPPORT_GWT
+            //#ifdef __DEBUG
+            //#ifndef __SUPPORT_GWT
             }
+            //#endif
             //#endif
             //end experimental
 
