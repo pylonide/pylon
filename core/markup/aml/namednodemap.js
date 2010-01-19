@@ -73,7 +73,7 @@ apf.AmlNamedNodeMap = function(host){
         return this[i];
     };
 
-    if (apf.isIE < 8) { //Only supported by IE8 and above
+    //if (apf.isIE < 8) { //Only supported by IE8 and above
         this.length = 0;
         
         this.splice = function(pos, length){
@@ -88,7 +88,7 @@ apf.AmlNamedNodeMap = function(host){
             this[this.length++] = o;
             return this.length;
         }
-    }
+    //}
     
     this.join = function(glue){
         var x = [];
@@ -98,5 +98,5 @@ apf.AmlNamedNodeMap = function(host){
         }
         return x.join(glue);
     }
-}).call(apf.AmlNamedNodeMap.prototype = apf.isIE < 8 ? {} : []);
+}).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 // #endif
