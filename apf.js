@@ -366,6 +366,10 @@ var apf = {
          */
         this.isAIR       = sAgent.indexOf("adobeair") != -1;
 
+        /* #ifdef __SUPPORT_GWT
+        this.isGWT       = true;
+        #endif */
+
         //#ifdef __DESKRUN
         try {
             //this.isDeskrun = window.external.shell.runtime == 2;
@@ -604,9 +608,11 @@ var apf = {
         this.oHttp = new this.http();
         //#endif
 
+        // #ifndef __SUPPORT_GWT
         // Load user defined includes
         this.Init.addConditional(this.parseAppMarkup, apf, ["body"]);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
+        // #endif
 
         //IE fix
         try {
@@ -620,9 +626,12 @@ var apf = {
         //#endif
 
         this.started = true;
+        
+        // #ifndef __SUPPORT_GWT
         // DOMReady already fired, so plz continue the loading and parsing
         if (this.load_done)
             this.execDeferred();
+        // #endif
 
         //try{apf.root = !window.opener || !window.opener.apf;}
         //catch(e){apf.root = false}
@@ -634,6 +643,15 @@ var apf = {
         }
         apf.require = apf.include;
         #endif*/
+        
+        /* #ifdef __SUPPORT_GWT
+        // Load user defined includes
+        //this.parseAppMarkup();
+        
+        //GWT
+        apf.initialize("<html xmlns:a='" + apf.ns.aml + "' xmlns='" + apf.ns.xhtml + "'><head /><body /></html>");
+        #endif */
+
     },
 
     nsqueue   : {},
@@ -1685,7 +1703,7 @@ var apf = {
         //Load current HTML document as 'second DOM'
         if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
             return apf.oHttp.get((apf.alternativeAml 
-              || document.body.getAttribute("xmlurl") 
+              || document.body && document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0], {
                 callback: function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
@@ -1723,15 +1741,19 @@ var apf = {
                             nodes[i].parentNode.removeChild(nodes[i]);
                     }
 
+                    // #ifndef __SUPPORT_GWT
                     document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+                    // #endif
 
                     apf.initialize(str);
 
                 }, ignoreOffline: true});
         }
         else {
+            // #ifndef __SUPPORT_GWT
             //might wanna make this variable based on layout loading...
             document.body.style.display = "block";
+            // #endif
 
             if (!self.ERROR_HAS_OCCURRED)
                 apf.initialize(docElement.outerHTML || docElement.xml);
@@ -1753,6 +1775,10 @@ var apf = {
         if (apf.initialized) return;
         apf.initialized = true;
         // #endif
+
+        /* #ifdef __SUPPORT_GWT
+        document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+        #endif */
 
         apf.console.info("Initializing...");
         clearInterval(apf.Init.interval);
@@ -1913,6 +1939,7 @@ var apf = {
         }
     },
 
+    // #ifndef __SUPPORT_GWT
     execDeferred: function() {
         // execute each function in the stack in the order they were added
         var len = apf.load_events.length;
@@ -2023,6 +2050,7 @@ var apf = {
             }
         }
     },
+    // #endif
     
     addListener : function(el, type, fn){
         if (el.addEventListener)

@@ -1355,7 +1355,9 @@ apf.window = function(){
         this.$domParser = new apf.DOMParser();
         this.document = apf.document = this.$domParser.parseFromString(strAml, 
           "text/xml", {
+            // #ifndef __SUPPORT_GWT
             timeout   : apf.config.initdelay,
+            // #endif
             callback  : function(doc){
                 //@todo apf3.0
 

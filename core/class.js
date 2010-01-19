@@ -276,9 +276,16 @@ apf.Class.prototype = new (function(){
         
         if (struct && struct.htmlNode) {
             this.$pHtmlNode = struct.htmlNode;
-            this.ownerDocument.$domParser.$continueParsing(this);
-            // #ifdef __WITH_QUEUE
-            apf.queue.empty();
+            
+            /* #ifdef __SUPPORT_GWT
+                var domParser = this.ownerDocument.$domParser;
+                this.ownerDocument.documentElement.appendChild(this);
+            #else */
+                this.ownerDocument.$domParser.$continueParsing(this);
+                
+                // #ifdef __WITH_QUEUE
+                apf.queue.empty();
+                // #endif
             // #endif
         }
         

@@ -1,3 +1,5 @@
+// #ifndef __SUPPORT_GWT
+
 //Conditional compilation workaround... (can this be improved??)
 if (document.all) {
     var oldWinError = window.onerror;
@@ -22,3 +24,5 @@ else*/
 
 //Start
 apf.start();
+
+// #endif

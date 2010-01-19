@@ -381,7 +381,7 @@ apf.http = function(){
             
             // experimental for Firefox Cross Domain problem
             // http://ubiquity-xforms.googlecode.com/svn/wiki/CrossDomainSubmissionDeployment.wiki
-            //#ifdef __DEBUG
+            //#ifdef __DEBUG && !__SUPPORT_GWT
             try {
                 netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
             }
@@ -395,7 +395,7 @@ apf.http = function(){
                         this, "Communication error", "Url: " + httpUrl
                             + "\nReason: Same origin policy in effect"));
                   }
-            //#ifdef __DEBUG
+            //#ifdef __DEBUG && !__SUPPORT_GWT
             }
             //#endif
             //end experimental
