@@ -61,7 +61,7 @@ apf.uirecorder = {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
-            apf.uirecorder.captureAction("click", e);
+            //apf.uirecorder.captureAction("click", e);
         }
         
         document.documentElement.ondblclick = function(e) {
@@ -198,8 +198,9 @@ apf.uirecorder = {
     /**
      * Start testing
      */
+    interval : null,
     test : function() {
-        apf.uirecorder.resultListXml = null;
+        //apf.uirecorder.resultListXml = null;
         
         apf.uirecorder.actionList = [];
         apf.uirecorder.detailList = {};
@@ -233,6 +234,16 @@ apf.uirecorder = {
         apf.uirecorder.isPlaying   = false;
         apf.uirecorder.isTesting   = false;
         apf.uirecorder.testListXml   = apf.getXml("<testList />");
+    },
+
+    /**
+     * Stop recording and playing, clear list of recorded actions
+     */
+    resetResults : function() {
+        apf.uirecorder.isRecording = false;
+        apf.uirecorder.isPlaying   = false;
+        apf.uirecorder.isTesting   = false;
+        apf.uirecorder.resultListXml   = apf.getXml("<resultList />");
     },
 
     /**
@@ -281,12 +292,36 @@ apf.uirecorder = {
         if (eventName === "keypress") {
             actionObj.value = value;
         }
-        apf.uirecorder.actionList.push(actionObj);
+        
+        // combine mousedown / mouseup to click
+        if (eventName == "mouseup" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousedown") {
+            actionObj.name = "click";
+            
+            // merge detailList of mousedown with current actionObj
+            for (var elementName in apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList) {
+                if (!actionObj.detailList) actionObj.detailList = {};
+                if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
+                    amlNode     : apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode,
+                    events      : [],
+                    properties  : [],
+                    data        : []
+                };
+    
+                actionObj.detailList[elementName].events = actionObj.detailList[elementName].events.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events);
+                actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties);
+                actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data);
+            }
+            // replace mousedown obj with new click obj
+            apf.uirecorder.actionList[apf.uirecorder.actionList.length-1] = actionObj;
+        }
+        else {
+            apf.uirecorder.actionList.push(actionObj);        
+        }
         //actionObj.activeElement = apf.xmlToXpath(apf.activeElement);
         
         var index = apf.uirecorder.actionObjects.length;
         apf.uirecorder.actionObjects.push(actionObj);
-        var timeout = 100;
+        var timeout = 500;
 
         if (eventName != "mousemove") {
             setTimeout(function(){
@@ -308,8 +343,8 @@ apf.uirecorder = {
             apf.uirecorder.actionObjects[index].detailList[elementName].events = apf.uirecorder.actionObjects[index].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
             apf.uirecorder.actionObjects[index].detailList[elementName].properties = apf.uirecorder.actionObjects[index].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
             apf.uirecorder.actionObjects[index].detailList[elementName].data = apf.uirecorder.actionObjects[index].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
-        
         }
+        
         apf.uirecorder.detailList = {};
 
         if (apf.activeElement && apf.activeElement.parentNode)
