@@ -108,15 +108,15 @@ apf.vbox = function(struct, tagName){
 
     /**** Init ****/
     
-    var isParentOfChain;
     this.$draw = function(){
-        isParentOfChain = !this.parentNode.tagName 
-          || "vbox|hbox".indexOf(this.parentNode.tagName) == -1;
+        this.$isParentOfChain = true;/*!this.parentNode.localName 
+          || "vbox|hbox".indexOf(this.parentNode.localName) == -1;*/
 
-        if (isParentOfChain) {
+        if (this.$isParentOfChain) {
             this.$int = 
             this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
             this.$int.style.minHeight = "1px";
+            this.$int.style.marginTop = "-1px";
            
             if ("absolute|relative".indexOf(apf.getStyle(this.$int, "position")) == -1)
                 this.$int.style.position = "relative";
@@ -132,7 +132,7 @@ apf.vbox = function(struct, tagName){
         var l     = apf.layout.get(this.$int || this.$pHtmlNode, apf.getBox(this.margin || "")),
             aData = apf.layout.parseXml(this, l, null, true);
 
-        if (isParentOfChain) {
+        if (this.$isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
 

@@ -231,7 +231,7 @@ apf.Alignment = function(){
         
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
-        if (this.$ext.style.display == "block" 
+        if (this.$ext && this.$ext.style.display == "block" 
           && !this.$ext.offsetHeight && !this.$ext.offsetWidth) {
             var _self      = this;
             var propChange = function (name, old, value){
@@ -278,7 +278,8 @@ apf.Alignment = function(){
                 this.parentNode.pData = null;
             }
 
-            this.$ext.style.display = "none";
+            if (this.$ext)
+                this.$ext.style.display = "none";
         }
     }
 
