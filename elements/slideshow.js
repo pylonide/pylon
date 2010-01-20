@@ -1274,13 +1274,13 @@ apf.slideshow = function(struct, tagName){
         var ww = apf.isIE
             ? document.documentElement.offsetWidth
             : window.innerWidth;
-        var bp = parseInt(apf.getStyle(_self.otPrevious, "width"));
-        var bn = parseInt(apf.getStyle(_self.otNext, "width"));
-        var ew = parseInt(apf.getStyle(_self.oEmpty, "width"));
+        var bp = parseInt(apf.getStyle(this.otPrevious, "width"));
+        var bn = parseInt(apf.getStyle(this.otNext, "width"));
+        var ew = parseInt(apf.getStyle(this.oEmpty, "width"));
         
         this.$oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
-        apf.setNodeValue(oEmpty, msg || "");
+        apf.setNodeValue(this.$oEmpty, msg || "");
 
         this.$oEmpty.setAttribute("id", "empty" + this.$uniqueId);
         this.$oEmpty.style.display = "block";
@@ -1291,7 +1291,7 @@ apf.slideshow = function(struct, tagName){
     this.$removeClearMessage = function() {
         if (!this.$oEmpty)
             this.$oEmpty = document.getElementById("empty" + this.$uniqueId);
-        if (this.$oEmpty && oEmpty.parentNode)
+        if (this.$oEmpty && this.$oEmpty.parentNode)
             this.$oEmpty.parentNode.removeChild(this.$oEmpty);
     };
 
