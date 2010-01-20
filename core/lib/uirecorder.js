@@ -294,14 +294,14 @@ apf.uirecorder = {
         }
         
         // combine mousedown / mouseup to click
-        if (eventName == "mouseup" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousedown") {
+        if (apf.uirecorder.actionList.length > 1 && eventName == "mouseup" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousedown") {
             actionObj.name = "click";
             
             // merge detailList of mousedown with current actionObj
             for (var elementName in apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList) {
                 if (!actionObj.detailList) actionObj.detailList = {};
                 if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
-                    amlNode     : apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode,
+                    amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
                     events      : [],
                     properties  : [],
                     data        : []
@@ -321,7 +321,7 @@ apf.uirecorder = {
         
         var index = apf.uirecorder.actionObjects.length;
         apf.uirecorder.actionObjects.push(actionObj);
-        var timeout = 500;
+        var timeout = 50;
 
         if (eventName != "mousemove") {
             setTimeout(function(){
@@ -334,7 +334,7 @@ apf.uirecorder = {
         for (var elementName in apf.uirecorder.detailList) {
             if (!apf.uirecorder.actionObjects[index].detailList) apf.uirecorder.actionObjects[index].detailList = {};
             if (!apf.uirecorder.actionObjects[index].detailList[elementName]) apf.uirecorder.actionObjects[index].detailList[elementName] = {
-                amlNode     : apf.uirecorder.detailList[elementName].amlNode,
+                amlNode     : (apf.uirecorder.detailList[elementName] && apf.uirecorder.detailList[elementName].amlNode) ? apf.uirecorder.detailList[elementName].amlNode : null,
                 events      : [],
                 properties  : [],
                 data        : []
@@ -353,6 +353,7 @@ apf.uirecorder = {
             //debugger;
     },
     detailList : {},
+    prevEvtName : "",
     captureEvent : function(eventName, e) {
         if (!e || e.noCapture) return; 
         
@@ -380,7 +381,37 @@ apf.uirecorder = {
             //xmlNode     : xmlNode,
             event       : e
         }
+        var value = null;
+        if (["beforeselect", "afterselect"].indexOf(eventName) > -1) {
+            /*
+            value = apf.xmlToXpath(e.selected);
+            targetName = value;
+            */
+            targetName = apf.xmlToXpath(e.selected);
+            value = "x";
+        }
+        else if (["dragstart", "dragdrop", "dragover", "dragout"].indexOf(eventName) > -1) {
+            var values = [];
+            if (e.data.length == 1) {
+                targetName = apf.xmlToXpath(e.data[0]);
+                value = "x";
+            }
+            else {    
+                for (var i = 0, l = e.data.length; i < l; i++) {
+                    values.push(apf.xmlToXpath(e.data[i]));
+                }
+                value = values.join(", ");
+            }
+        }
+        else if (eventName == "xmlupdate") {
+            value = e.action + ": " + e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
+            //debugger;
+        }
         
+        //if (eventName == "focus" || eventName == "blur") debugger;
+        if (value) 
+            eventObj.value = value;
+
         if (targetName) {
             if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
                 amlNode     : amlNode,
@@ -389,7 +420,17 @@ apf.uirecorder = {
                 data        : []
             };
             
-            apf.uirecorder.detailList[targetName].events.push(eventObj);
+            // repeating event
+            if (eventName != apf.uirecorder.prevEvtName || !apf.uirecorder.detailList[targetName].events.length) {
+                apf.uirecorder.detailList[targetName].events.push(eventObj);
+            }
+            else {
+                if (!apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls) 
+                    apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls = 1;
+                apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls++;
+            }
+            
+            apf.uirecorder.prevEvtName = eventName;
         }
     },
     capturePropertyChange : function(amlNode, prop, value) {
@@ -506,6 +547,15 @@ apf.uirecorder = {
                                 item = action.detailList[elementName][type][di];
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
+                                if (type == "events") {
+                                    if (item.calls || item.value) {
+                                        var caption = item.name; 
+                                        caption = (item.calls) ? caption + " (" + item.calls+ ")" : caption;
+                                        caption = (item.value) ? caption + ": " + item.value : caption;
+    
+                                        iNode.setAttribute("caption", caption);
+                                    }
+                                }
                                 if (typeof item.value === "string")
                                     iNode.appendChild(testXml.ownerDocument.createTextNode(item.value));
                                 else
