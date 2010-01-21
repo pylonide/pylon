@@ -852,11 +852,12 @@ apf.Class.prototype = new (function(){
 
         //#ifdef __WITH_UIRECORDER
         if (apf.uirecorder) {
-            if (eventName != "debug") { // && eventName != "DOMNodeInsertedIntoDocument"
-                //apf.console.info("Event: " + eventName + " called.");
+            if (["debug","DOMNodeRemoved","DOMNodeRemovedFromDocument"].indexOf(eventName) == -1) { // && eventName != "DOMNodeInsertedIntoDocument"
                 if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
-                    if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) // only capture events when recording
+                    apf.console.info("Event: " + eventName);
+                    if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
                         apf.uirecorder.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
+                    } 
                 }
                 // when eventName == "load" all elements are loaded and drawn
                 if (eventName == "load")
