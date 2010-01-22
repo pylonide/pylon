@@ -246,9 +246,9 @@ if (!self["JSON"]) {
             //Object
             0: function(o){
                 //XML support - NOTICE: Ajax.org Platform specific
-                if (o.nodeType && o.cloneNode)
+                if (o.nodeType && o.ownerDocument && o.cloneNode(true)) // was o.nodeType && o.cloneNode
                     return "apf.xmldb.getXml("
-                        + this.string(apf.getXmlString(o)) + ")";
+                        + JSON.stringify(apf.getXmlString(o)) + ")"; // was this.string()
 
                 //Normal JS object support
                 var str = [];
@@ -294,6 +294,11 @@ if (!self["JSON"]) {
                     q.push(JSON.stringify(a[i]));
 
                 return "[" + q.join(", ") + "]";
+            },
+            
+            // Method
+            7: function(f){
+                return;
             }
         };
 

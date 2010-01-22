@@ -370,6 +370,7 @@ apf.uirecorder = {
         //For new timeouts associated with the next action.
         var currentState = apf.uirecorder.current = {};
         self.setTimeout = function(f, ms){
+            debugger;
             //Record current mouseEvent
             apf.uirecorder.setTimeout(function(){
                 apf.uirecorder.runInContext(currentState, f);
@@ -430,24 +431,25 @@ apf.uirecorder = {
     prevEvtName : "",
     captureEvent : function(eventName, e) {
         if (!e || e.noCapture) return; 
-        
+
         var amlNode;
         if (eventName != "movefocus")
             amlNode = e.amlNode || e.currentTarget;
         else
             amlNode = e.toElement;
         
+        var targetName;
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
         if (!amlNode || !amlNode.ownerDocument || !amlNode.$aml) {
-            //debugger;
-            return;
+            //return;
         }
         
-        var targetName;
-        if (amlNode) {
-            if (!amlNode.parentNode) debugger;
+        if (amlNode && (amlNode.parentNode)) {
             targetName = apf.xmlToXpath(amlNode);
         }
+        
+        // apf
+        if (amlNode && amlNode.console && amlNode.extend && amlNode.all) targetName = "apf";
         
         var eventObj = {
             name        : eventName,
@@ -455,37 +457,45 @@ apf.uirecorder = {
             //xmlNode     : xmlNode,
             event       : e
         }
+
+        if (e.action) {
+            if (!eventObj.value) eventObj.value = {};
+            eventObj.value.action = e.action;
+        }
+
         var value = null;
         if (["beforeselect", "afterselect"].indexOf(eventName) > -1) {
-            /*
-            value = apf.xmlToXpath(e.selected);
-            targetName = value;
-            */
             targetName = apf.xmlToXpath(e.selected);
-            //value = "x";
         }
         else if (["dragstart", "dragdrop", "dragover", "dragout"].indexOf(eventName) > -1) {
             var values = [];
             if (e.data.length == 1) {
                 targetName = apf.xmlToXpath(e.data[0]);
-                //value = "x";
-            }
-            else {    
-                for (var i = 0, l = e.data.length; i < l; i++) {
-                    values.push(apf.xmlToXpath(e.data[i]));
-                }
-                value = values.join(", ");
             }
         }
         else if (eventName == "xmlupdate") {
-            value = e.action + ": " + e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
-            //debugger;
+            if (!eventObj.value) eventObj.value = {};
+            eventObj.value.xml = e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
+        }
+        else if (eventName == "keydown") {
+
+        }
+
+        if (amlNode) {
+            //value = apf.serialize(amlNode);
+        }
+
+        //if (eventName == "focus" || eventName == "blur") debugger;
+        //if (value) 
+            //eventObj.value = value;
+
+        if (!targetName) {
+            if (amlNode && amlNode.localName)
+                targetName = amlNode.localName
+            else
+                targetName = "trashbin";
         }
         
-        //if (eventName == "focus" || eventName == "blur") debugger;
-        if (value) 
-            eventObj.value = value;
-
         if (targetName) {
             if (apf.uirecorder.mouseoverEvents.indexOf(eventName) > -1) {
                 if (!apf.uirecorder.capturedEvents.mouseover[targetName]) apf.uirecorder.capturedEvents.mouseover[targetName] = {
@@ -524,6 +534,9 @@ apf.uirecorder = {
             }            
             apf.uirecorder.prevEvtName = eventName;
         }
+        else {
+            //debugger;
+        }
     },
     capturePropertyChange : function(amlNode, prop, value) {
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
@@ -533,8 +546,9 @@ apf.uirecorder = {
         } 
         else 
             debugger;
-        
-        
+
+        if (typeof value == "object" && value.length == 1) 
+            value = value[0];
         var propObj = {
             name        : prop,
             //amlNode     : amlNode,
@@ -559,13 +573,21 @@ apf.uirecorder = {
             if (!params.amlNode.parentNode) debugger;
             targetName = apf.xmlToXpath(params.amlNode);
         }
+
         var dataObj = {
-            name        : params.action,
+            name        : params.action
             //amlNode     : amlNode,
             //xmlNode     : xmlNode,
-            xmlNode     : params.xmlNode
         }
-            
+        if (params.amlNode) {
+            if (!dataObj.value) dataObj.value = {};
+                dataObj.value.amlNode = apf.serialize(params.amlNode).split("<").join("&lt;").split(">").join("&gt;");
+        }
+        if (params.xmlNode) {
+            if (!dataObj.value) dataObj.value = {};
+                dataObj.value.xmlNode = apf.serialize(params.xmlNode).split("<").join("&lt;").split(">").join("&gt;");
+        }
+        
         if (targetName) {
             if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
                 amlNode     : params.amlNode,
@@ -586,7 +608,7 @@ apf.uirecorder = {
     /**
      * Save test / test results
      */
-    save : function(saveType) {
+    save : function(saveType, testName) {
         var id;
         if (saveType == "test") {
             if (!apf.uirecorder.testListXml)
@@ -600,8 +622,8 @@ apf.uirecorder = {
         }
         
         var testXml = apf.getXml("<test />");
-        testXml.setAttribute("name", "test" + id);
-        //testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
+        testXml.setAttribute("name", testName || "test" + id);
+        testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
         testXml.setAttribute("status", "@todo status");        
 
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
@@ -645,15 +667,19 @@ apf.uirecorder = {
                                     if (item.calls || item.value) {
                                         var caption = item.name; 
                                         caption = (item.calls) ? caption + " (" + item.calls+ ")" : caption;
-                                        caption = (item.value) ? caption + ": " + item.value : caption;
+                                        //caption = (item.value) ? caption + ": " + item.value : caption;
     
                                         iNode.setAttribute("caption", caption);
                                     }
                                 }
-                                if (typeof item.value === "string")
-                                    iNode.appendChild(testXml.ownerDocument.createTextNode(item.value));
-                                else
-                                    iNode.appendChild(testXml.ownerDocument.createTextNode("[object]"))
+                                
+                                if (item.value) {
+                                    if (typeof item.value === "string")
+                                        iNode.appendChild(testXml.ownerDocument.createTextNode(item.value));
+                                    else {
+                                        iNode.appendChild(testXml.ownerDocument.createTextNode(apf.serialize(item.value).split("<").join("&lt;").split(">").join("&gt;")))
+                                    }
+                                }
                                 dNode.appendChild(iNode);
                             }
                             eNode.appendChild(dNode);
