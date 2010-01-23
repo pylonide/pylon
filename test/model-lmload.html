@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:rpc id="comm" protocol="cgi">
+            <a:method id="getData" url="filesystem.xml">
+                <a:variable name="user" />
+                <a:variable name="pass" />
+            </a:method>
+        </a:rpc>
+        
+        <a:model id="mdlTest" src="{var x = comm.getData(); x.replace(/Boot/, 'Test')}" />
+    </body>
+</html>

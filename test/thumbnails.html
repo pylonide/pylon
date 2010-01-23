@@ -26,6 +26,15 @@
                 <a:image match="[@src]" /> 
             </a:each> 
         </a:list> 
+        <a:list 
+          id     = "lstPics" 
+          skin   = "thumbnail" 
+          height = "200" 
+          width  = "400" 
+          model  = "mdlPictures"
+          each   = "[picture]"
+          name   = "[@title]"
+          image  = "[@src]" /> 
         <a:img 
           model = "{lstPics.selected}" 
           value = "[@src]" 

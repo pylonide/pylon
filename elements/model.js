@@ -958,7 +958,11 @@ apf.model = function(struct, tagName){
      * Inserts data in this model as a child of the currently loaded data.
      *
      * @param  {XMLElement} XMLRoot         the {@link term.datanode data node} to insert into this model.
-     * @param  {XMLElement} [parentXMLNode] the parent element for the inserted data.
+     * @param {Object}     options
+     *   Properties:
+     *   {XMLElement} insertPoint  the parent element for the inserted data.
+     *   {Boolean}    copyAttribute  wether the attributes of the merged element are copied.
+     *   {mixed}      <>           Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
