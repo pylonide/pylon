@@ -318,6 +318,9 @@ apf.model = function(struct, tagName){
         var prop, node, p = this.$propBinds[id], amlNode = apf.all[id];
         for (prop in p) {
             if (node = p[prop].root ? xmlNode.selectSingleNode(p[prop].root) : xmlNode) {
+                apf.xmldb.addNodeListener(xmlNode, amlNode, 
+                  "p|" + id + "|" + prop + "|" + this.$uniqueId);
+                
                 delete this.$proplisteners[id];
                 amlNode.$execProperty(prop, node);
             }
