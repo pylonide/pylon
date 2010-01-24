@@ -42,6 +42,7 @@ apf.extend(apf.config, {
     disableTabbing     : false,
     resourcePath       : null,
     initdelay          : true,
+    liveText           : false,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
     // #endif

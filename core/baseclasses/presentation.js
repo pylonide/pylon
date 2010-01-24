@@ -514,10 +514,10 @@ apf.Presentation = function(){
         var oExt = this.$getLayoutNode(tag);
         
         var node;
-        if (node = this.getAttributeNode("style"))
+        if (node = (aml || this).getAttributeNode("style"))
             oExt.setAttribute("style", node.nodeValue);
 
-        if (node = this.getAttributeNode("class"))
+        if (node = (aml || this).getAttributeNode("class"))
             this.$setStyleClass(oExt, (oldClass = node.nodeValue));
 
         if (func)
@@ -525,7 +525,7 @@ apf.Presentation = function(){
 
         oExt = apf.insertHtmlNode(oExt, pNode);
         oExt.host = this;
-        if (node = this.getAttributeNode("bgimage"))
+        if (node = (aml || this).getAttributeNode("bgimage"))
             oExt.style.backgroundImage = "url(" + apf.getAbsolutePath(
                 this.mediaPath, node.nodeValue) + ")";
 

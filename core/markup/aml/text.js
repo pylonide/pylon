@@ -79,7 +79,7 @@ apf.AmlText = function(isPrototype){
         var nodeValue = this.nodeValue;
 
         //@todo optimize for inside elements?
-        if (!this.parentNode.hasFeature(apf.__CHILDVALUE__) 
+        if (apf.config.liveText && !this.parentNode.hasFeature(apf.__CHILDVALUE__) 
           && (nodeValue.indexOf("{") > -1 || nodeValue.indexOf("[") > -1)) {
             
             //Convert to live markup pi

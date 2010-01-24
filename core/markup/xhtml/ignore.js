@@ -29,4 +29,5 @@ apf.XhtmlIgnoreElement.prototype = new apf.AmlElement();
 apf.xhtml.setElement("script",   apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("noscript", apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
+apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 // #endif

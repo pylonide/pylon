@@ -42,5 +42,6 @@ apf.style = function(struct, tagName){
 }).call(apf.style.prototype = new apf.AmlElement());
 
 apf.aml.setElement("style", apf.style);
+apf.xhtml.setElement("style",  apf.style);
 
 // #endif
