@@ -1061,7 +1061,7 @@ apf.DataBinding = function(){
             compile : apf.BindingRule.prototype.$compile,
             models  : []
         };
-if (prop == "calcdata") debugger;
+
         delete this.$propsUsingMainModel[prop];
         for (xpath, i = 0; i < paths.length; i+=2) {
             modelId = paths[i];

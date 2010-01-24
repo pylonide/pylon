@@ -183,7 +183,7 @@ apf.Transaction = function(){
                     ? this.dataParent.parent.getActionTracker()
                     : null;//self[this.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
                 
-                this.$transactionSubject.$executeAction("replaceNode", [this.$transactionNode, this.$originalNode],
+                this.$transactionSubject.$executeAction("replaceNode", [this.$originalNode, this.$transactionNode],
                     "update", this.$transactionNode);
     
                 this.$at = at;
@@ -514,6 +514,11 @@ apf.Transaction = function(){
     this.addEventListener("prop.model", function(e){
         return false;
     });
+    
+    //Prevent clear dynamic
+    this.clear = function(){
+        this.documentId = this.xmlRoot = this.cacheId = null;
+    }
 
     //No need to restart the transaction when the same node is loaded
     this.addEventListener("beforeload", function(e){
