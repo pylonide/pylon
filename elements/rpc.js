@@ -227,7 +227,7 @@ apf.rpc = function(struct, tagName){
 
         // Send the request
         var auth,
-            url  = apf.getAbsolutePath(apf.config.baseurl, this.url),
+            url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url),
             o    = apf.extend({
                 callback      : pCallback,
                 async         : node.async,
@@ -270,7 +270,7 @@ apf.rpc = function(struct, tagName){
 
         // Get Data
         var data = this.createMessage("multicall", [this.stack[this.url]]), //function of module
-            url  = apf.getAbsolutePath(apf.config.baseurl, this.url);
+            url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url);
         if (extradata) {
             for (var vars = [], i = 0; i < extradata.length; i++) {
                 vars.push(encodeURIComponent(extradata[i][0]) + "="

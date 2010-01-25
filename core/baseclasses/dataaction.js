@@ -234,13 +234,13 @@ apf.DataAction = function(){
                         if (curLock.stopped) //If the action has terminated we just let it go
                             return; //Do we want to take away the event from the developer??
     
+                        //Cancel the action, because we didnt get a lock
+                        fRollback.call(_self, xmlContext);
+                        
                         _self.dispatchEvent("lockfailed", apf.extend({
                             state   : extra.http.status,
                             bubbles : true
                         }, extra));
-    
-                        //Cancel the action, because we didnt get a lock
-                        fRollback.call(_self, xmlContext);
                     }
                 }
               });
