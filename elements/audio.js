@@ -35,13 +35,10 @@
  * 
  * @return {Audio} Returns a new audio
  * @type {Audio}
- * @inherits apf.Presentation
  * @inherits apf.Media
  * @constructor
  * @allowchild {text}
  * @addnode elements:audio
- * @attribute {String} class An additional className that will be assigned to
- * the main DOM node of this object to facilitate custom styles
  *
  * @link http://www.whatwg.org/specs/web-apps/current-work/#audio
  *
