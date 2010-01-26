@@ -100,9 +100,9 @@ apf.checkbox = function(struct, tagName){
             && value.toString() == this.$values[0].toString());
 
         if (value !== null && value.toString() == this.$values[0].toString())
-            this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         else
-            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
+            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
     };
 
     /**

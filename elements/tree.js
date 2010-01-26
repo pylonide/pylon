@@ -304,6 +304,7 @@ apf.tree = function(struct, tagName){
      * @private
      */
     this.slideOpen = function(container, xmlNode, immediate){
+        debugger;
         if (!xmlNode)
             xmlNode = this.selected;
         
