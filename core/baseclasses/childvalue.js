@@ -49,9 +49,11 @@ apf.ChildValue = function(){
     this.addEventListener("DOMNodeRemoved", f);
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (this.childNodes.length > 1 || this.firstChild 
+        if (!this.getElementsByTagNameNS(this.namespaceURI, "*").length 
+          && (this.childNodes.length > 1 || this.firstChild 
           && (this.firstChild.nodeType == 1 
-          || this.firstChild.nodeValue.trim().length)) {
+          || this.firstChild.nodeType != 7 
+          && this.firstChild.nodeValue.trim().length))) {
             //Get value from xml (could also serialize children, but that is slower
             var m = (this.$aml && this.$aml.xml || this.serialize()).match(/^[\s\S]*?>([\s\S]*)<[\s\S]*?$/),
                 v = m && m[1] || "";
