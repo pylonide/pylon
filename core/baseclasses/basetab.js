@@ -159,25 +159,31 @@ apf.BaseTab = function(){
                 page.insertMarkup(this.src, {
                     page     : next,
                     //@todo apf3.0 change callback arguments in xinclude
-                    callback : function(state, options){
-                        /*if (next == "404") {
-                            throw new Error(apf.formatErrorString(0, null,
+                    callback : function(options){
+                        if (!options.xmlNode) {
+                            var oError = new Error(apf.formatErrorString(0, null,
                                 "Loading new page", "Could not load new page: "
                                 + _self.src));
+                                
+                            _self.setProperty("loading", false);
+                            
+                            if (this.dispatchEvent("error", apf.extend({
+                                error   : oError,
+                                bubbles : true
+                            }, options)) === false)
+                                return true;
+                            
+                            throw oError;
                         }
-                        //check state
-
-                        //for errors:
-                        _self.set("404", callback);
-                        _self.setProperty("loading", false);*/
-
-                        //for success
-                        _self.setProperty("activepage", next);
-
-                        if (callback)
-                            callback();
-
-                        _self.setProperty("loading", false);
+                        else {
+                            //for success
+                            _self.setProperty("activepage", next);
+    
+                            if (callback)
+                                callback();
+    
+                            _self.setProperty("loading", false);
+                        }
                     }
                 });
                 return;

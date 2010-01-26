@@ -533,7 +533,7 @@ apf.http = function(){
                     if (arguments.caller.callee == send) {
                         window.onerror = oldWinOnerror;
                         //_self.receive(id);
-                        setTimeout(function(){handleError();});
+                        //setTimeout(function(){handleError();});
                         return true;
                     }
                     else {
@@ -667,7 +667,7 @@ apf.http = function(){
 
         extra.data = http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600 || http.status == 3) {
+        if (http.status >= 400 && http.status < 600 || http.status < 10 && http.status != 0) {
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
