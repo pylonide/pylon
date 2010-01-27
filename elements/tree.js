@@ -1285,6 +1285,9 @@ apf.tree = function(struct, tagName){
     
     this.$removeEmptyMessage = function(htmlNode){
         var cNode = htmlNode.firstChild;
+        if (!cNode)
+            return;
+
         do {
             if (cNode.className == "message") { //@todo hack
                 htmlNode.removeChild(cNode);
