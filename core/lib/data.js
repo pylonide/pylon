@@ -153,8 +153,20 @@ apf.getData = function(instruction, options){
     //Instruction type detection
     var result, chr = instruction.charAt(0), callback = options.callback;
 
-    //@todo rewrite this to work with jslt async
+    //#ifdef __DEBUG
     var gCallback  = function(data, state, extra){
+        var _self = this;
+        setTimeout(function(){
+            s2.call(_self, data, state, extra);
+        });
+    }
+    
+    var s2 = 
+    /* #else
+    var gCallback = 
+    #endif */
+
+    function(data, state, extra){
         var callback = options.callback
         
         if (state != apf.SUCCESS)
@@ -341,8 +353,9 @@ apf.setModel = function(instruction, amlNode){
         //@todo apf3.0 call onerror on amlNode
         if (state != apf.SUCCESS) {
             throw new Error(apf.formatErrorString(0, null,
-                "Loading new data", "Could not load data into model. \n\
-                instruction: '" + instruction + "'"));
+                "Loading new data", "Could not load data into model. \
+                \nMessage: " + extra.message + "\
+                \nInstruction: '" + instruction + "'"));
         }
         
         if (!data)

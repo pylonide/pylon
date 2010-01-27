@@ -1075,13 +1075,17 @@ apf.DataBinding = function(){
                     xpathmode: 5
                 })))(this.xmlRoot);
                 
-                model = m.model && m.model.nodeFunc && m.model;
-                if (model)
-                    xpath = m.xpath;
-                else {
-                    model = apf.xmldb.findModel(m.model);
-                    xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                //@todo apf3 this needs to be fixed in live markup
+                if (typeof m != "string") {
+                    model = m.model && m.model.nodeFunc && m.model;
+                    if (model)
+                        xpath = m.xpath;
+                    else {
+                        model = apf.xmldb.findModel(m.model);
+                        xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                    }
                 }
+                else model = null;
             }
             else model = null;
 
