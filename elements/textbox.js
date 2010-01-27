@@ -248,8 +248,12 @@ apf.textbox  = function(struct, tagName){
             if (apf.hasFocusBug)
                 this.$int.onblur();
             //#endif
-            this.$propHandlers["value"].call(this, value, null, true);
+            
+            //this.$propHandlers["value"].call(this, value, null, true);
         }
+        
+        if (!this.value)
+            this.clear();
     };
 
     /**

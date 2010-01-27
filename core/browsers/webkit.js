@@ -61,25 +61,17 @@ apf.runWebkit = function(){
     if (apf.isWebkit) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
-        XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){
-            return apf.XPath.selectNodes(sExpr, contextNode || this);
-        };
-        
-        //Element.selectNodes
-        Text.prototype.selectNodes    =
-        Element.prototype.selectNodes = function(sExpr, contextNode){
+        XMLDocument.prototype.selectNodes  = 
+        Text.prototype.selectNodes         =
+        Element.prototype.selectNodes      = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
         
         //XMLDocument.selectSingleNode
         HTMLDocument.prototype.selectSingleNode =
-        XMLDocument.prototype.selectSingleNode  = function(sExpr, contextNode){
-            return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
-        };
-        
-        //Element.selectSingleNode
-        Text.prototype.selectSingleNode    =
-        Element.prototype.selectSingleNode = function(sExpr, contextNode){
+        XMLDocument.prototype.selectSingleNode  = 
+        Text.prototype.selectSingleNode         =
+        Element.prototype.selectSingleNode      = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
