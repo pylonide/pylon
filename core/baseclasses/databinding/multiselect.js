@@ -348,20 +348,9 @@ apf.MultiselectBinding = function(){
 
         //This is not 100% correct, but good enough for now
 
-        //temp untill I fixed the XPath implementation
-        if (apf.isWebkit) {
-            var y = this.each.split("\|");
-            for (var i = 0; i < y.length; i++) {
-                x = xmlNode.selectSingleNode("ancestor::node()[("
-                    + y[i] + "/@" + apf.xmldb.xmlIdTag + "='" + id + "')]");
-                break;
-            }
-        }
-        else {
-            x = xmlNode.selectSingleNode("ancestor::node()[(("
-                + this.each + ")/@" + apf.xmldb.xmlIdTag + ")='"
-                + id + "']");
-        }
+        x = xmlNode.selectSingleNode("ancestor::node()[(("
+            + this.each + ")/@" + apf.xmldb.xmlIdTag + ")='"
+            + id + "']");
 
         if (id == "temp")
             xmlNode.removeAttribute(apf.xmldb.xmlIdTag);
