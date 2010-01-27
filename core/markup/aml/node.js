@@ -361,8 +361,10 @@ apf.AmlNode = function(){
             });
 
             //@todo this is a hack, a good solution should be found
+            var iframelist;
             var containsIframe = (amlNode.$ext && amlNode.$ext.nodeType == 1 
-              && amlNode.$ext.getElementsByTagName("iframe").length > 0);
+              && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
+              && apf.findHost(iframelist[0].parentNode) == amlNode);
 
             if (!noHtmlDomEdit && amlNode.$ext && !apf.isGecko && !containsIframe) {
                 amlNode.$pHtmlNode.insertBefore(amlNode.$ext,

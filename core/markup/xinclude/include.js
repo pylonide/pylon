@@ -65,6 +65,7 @@ apf.aml.setElement("include", apf.XiInclude);
         if (this.clear)
             this.parentNode.$int.innerHTML = "";
         
+        //@todo apf3.x the insertBefore seems like unnecessary overhead
         if (xmlNode) {
             var nodes = domParser.parseFromXml(xmlNode, {
                     doc: this.ownerDocument
