@@ -58,7 +58,8 @@ apf.runWebkit = function(){
     
     //#ifdef __PARSER_XPATH
     
-    if (apf.isWebkit) {
+    // #ifdef __DEPRECATED
+    if (false && apf.isWebkit) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = 
@@ -78,6 +79,52 @@ apf.runWebkit = function(){
         apf.importClass(apf.runXpath, true, self);
         apf.importClass(apf.runXslt,  true, self);
     }
+    //#endif
+    
+    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        if (sExpr.substr(0,2) == "//")
+            sExpr = "." + sExpr;
+        
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        }
+        catch(ex) {
+            try {
+                var oResult = this.evaluate("child::" + sExpr, (contextNode || this),
+                    this.createNSResolver(this.documentElement),
+                    7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+            }
+            catch(ex) {
+                throw new Error("XPath error: " + ex.message + "\nLine: " + ex.lineNumber  + "\nExpression: '" + sExpr + "'");
+            }
+        }
+        
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = nodeList.length - 1; i >= 0; i--) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+       return this.ownerDocument.selectNodes(sExpr, this);
+    };
+    
+    //XMLDocument.selectSingleNode
+    HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        var nodeList = this.selectNodes(sExpr, contextNode || null);
+        return nodeList[0] || null;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        return this.ownerDocument.selectSingleNode(sExpr, this);
+    };
     
     // #endif
     
