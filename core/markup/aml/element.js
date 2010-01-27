@@ -135,6 +135,14 @@ apf.AmlElement = function(struct, tagName){
          * </code>
          */
         "id": function(value){
+            //#ifdef __DEBUG
+            if (value == "apf") {
+                throw new Error(apf.formatErrorString(0, this, 
+                    "Setting Name of Element",
+                    "Cannot set name of element to 'apf'"));
+            }
+            //#endif
+            
             if (this.name == value)
                 return;
     
