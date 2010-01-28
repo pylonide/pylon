@@ -346,6 +346,8 @@ apf.Class.prototype = new (function(){
                             apf.language.addProperty(bObject, bProp, fParsed);
                         }
                         //#endif
+                        
+                        isBeingCalled = false;
                     }); 
                 }
                 else {
