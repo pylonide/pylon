@@ -28,7 +28,6 @@
  * @constructor
  * @baseclass
  *
- * @inherits apf.Presentation
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  *
