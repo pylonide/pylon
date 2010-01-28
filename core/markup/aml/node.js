@@ -366,7 +366,8 @@ apf.AmlNode = function(){
               && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
               && apf.findHost(iframelist[0].parentNode) == amlNode);
 
-            if (!noHtmlDomEdit && amlNode.$ext && !apf.isGecko && !containsIframe) {
+            //!apf.isGecko && 
+            if (!noHtmlDomEdit && amlNode.$ext && !containsIframe) {
                 amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
                     beforeNode && beforeNode.$ext || null);
             }
