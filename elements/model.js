@@ -316,6 +316,7 @@ apf.model = function(struct, tagName){
     
     this.$loadInAmlProp = function(id, xmlNode){
         var prop, node, p = this.$propBinds[id], amlNode = apf.all[id];
+        
         for (prop in p) {
             if (node = p[prop].root ? xmlNode.selectSingleNode(p[prop].root) : xmlNode) {
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
@@ -814,12 +815,12 @@ apf.model = function(struct, tagName){
         }
 
         this.data = xmlNode;
+        
+        for (var id in this.$amlNodes)
+            this.$loadInAmlNode(this.$amlNodes[id]);
 
         for (id in this.$propBinds)
             this.$loadInAmlProp(id, xmlNode);
-
-        for (var id in this.$amlNodes)
-            this.$loadInAmlNode(this.$amlNodes[id]);
 
         this.dispatchEvent("afterload", {xmlNode: xmlNode});
 
