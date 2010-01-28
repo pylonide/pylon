@@ -61,7 +61,6 @@
  * @addnode elements
  *
  * @inherits apf.StandardBinding
- * @inherits apf.Presentation
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%

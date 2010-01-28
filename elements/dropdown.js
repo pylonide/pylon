@@ -90,7 +90,6 @@
  * @addnode elements
  *
  * @inherits apf.BaseList
- * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%

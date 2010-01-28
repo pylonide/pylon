@@ -35,7 +35,6 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
  * @inherits apf.BaseButton
  */
 apf.submit  = function(struct, tagName){

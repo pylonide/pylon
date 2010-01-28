@@ -69,7 +69,6 @@
  * @author      
  * @version     %I%, %G%
  * 
- * @inherits apf.Presentation
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * @inherits apf.XForms

@@ -45,7 +45,6 @@
  *
  * @inherits apf.XForms
  * @inherits apf.StandardBinding
- * @inherits apf.Presentation
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
