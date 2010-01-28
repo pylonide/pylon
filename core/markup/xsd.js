@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
+//#ifdef __PARSER_XSD
 
 /**
  * Object creating the XML Schema namespace for the aml parser.

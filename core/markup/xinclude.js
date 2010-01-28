@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
+//#ifdef __PARSER_XINCLUDE
 
 /**
  * Object creating the XML Include namespace for the aml parser.
