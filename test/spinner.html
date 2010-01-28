@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="trunk/apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins.xml" media-path="images/" icon-path="icns/"></a:skin>
+
+<a target="_blank" href="http://screencast.com/t/NjA0YjEyNGM">Link to Screencast which presents this bug</a>
+
+        <a:model id="mdlSpinner1">
+            <overview page="1" pages="50" />
+        </a:model>
+        <a:table columns="150" padding="5">
+            <a:spinner 
+              id      = "sp7" 
+              min     = "0" 
+              value   = "1"
+              max     = "50"
+              
+              caption = "1 of 4">
+            </a:spinner>
+            <!--model="mdlSpinner1"-->
+            <a:slider 
+              min    = "0" 
+              max    = "50" 
+              height = "8"
+              value  = "{sp7.value}">
+            </a:slider>
+            <a:label value="{sp7.caption}"></a:label>
+        </a:table>
+    </body>
+</html>
