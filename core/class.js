@@ -277,10 +277,10 @@ apf.Class.prototype = new (function(){
         if (struct && struct.htmlNode) {
             this.$pHtmlNode = struct.htmlNode;
             
-            /* #ifdef __SUPPORT_GWT
+            /*#ifdef __SUPPORT_GWT
                 var domParser = this.ownerDocument.$domParser;
                 this.ownerDocument.documentElement.appendChild(this);
-            #else */
+            #else*/
                 this.ownerDocument.$domParser.$continueParsing(this);
                 
                 // #ifdef __WITH_QUEUE

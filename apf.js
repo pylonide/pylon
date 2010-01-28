@@ -366,9 +366,9 @@ var apf = {
          */
         this.isAIR       = sAgent.indexOf("adobeair") != -1;
 
-        /* #ifdef __SUPPORT_GWT
+        /*#ifdef __SUPPORT_GWT
         this.isGWT       = true;
-        #endif */
+        #endif*/
 
         //#ifdef __DESKRUN
         try {
@@ -644,13 +644,13 @@ var apf = {
         apf.require = apf.include;
         #endif*/
         
-        /* #ifdef __SUPPORT_GWT
+        /*#ifdef __SUPPORT_GWT
         // Load user defined includes
         //this.parseAppMarkup();
         
         //GWT
         apf.initialize("<html xmlns:a='" + apf.ns.aml + "' xmlns='" + apf.ns.xhtml + "'><head /><body /></html>");
-        #endif */
+        #endif*/
 
     },
 
@@ -1776,9 +1776,9 @@ var apf = {
         apf.initialized = true;
         // #endif
 
-        /* #ifdef __SUPPORT_GWT
+        /*#ifdef __SUPPORT_GWT
         document.body.style.display = "block"; //might wanna make this variable based on layout loading...
-        #endif */
+        #endif*/
 
         apf.console.info("Initializing...");
         clearInterval(apf.Init.interval);
