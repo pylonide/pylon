@@ -93,6 +93,9 @@
  * of when the server has timed out. When this timeout is reached the application 
  * will reload all it's data from the server and discard all offline rsb 
  * messages before reconnecting to the server.
+ *
+ * @attribute {String} transport the name of the teleport element that provides a
+ * bidirectional connection to (a pool of) other clients.
  * 
  * @see element.auth
  *
