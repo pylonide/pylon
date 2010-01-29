@@ -131,11 +131,7 @@ apf.aml.setElement("skin", apf.skin);
             }
             
             var newPart = apf.getXml('<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
-            //includeNode.parentNode.replaceChild(newPart, includeNode);
-            var nodes = newPart.childNodes;
-            for (var i = nodes.length - 1; i >= 0; i--) {
-                includeNode.parentNode.insertBefore(nodes[i], includeNode.nextSibling);
-            }
+            apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
             includeNode.parentNode.removeChild(includeNode);
             
             var includeNodes = $xmlns(newPart, "include", apf.ns.aml);

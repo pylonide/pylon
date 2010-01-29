@@ -180,7 +180,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     else
     // #endif
     {
-        beforeNode = apf.getNode(parentNode, [0]);
+        beforeNode = options.beforeNode || apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
 
         if (parentNode.ownerDocument.importNode) {
