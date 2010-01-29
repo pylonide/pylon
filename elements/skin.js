@@ -115,6 +115,48 @@ apf.aml.setElement("skin", apf.skin);
         }
     }
     
+    //#ifdef __WITH_SKIN_INCLUDES
+    function loadSkinInclude(includeNode, xmlNode, path) {
+        var _self = this;
+
+        //#ifdef __WITH_DATA
+        apf.getData(
+        /*#else
+        apf.oHttp.get(
+        #endif */
+          apf.getAbsolutePath(path, includeNode.getAttribute("src")), {
+          callback: function(xmlString, state, extra){
+            if (state != apf.SUCCESS) {
+                throw new Error("Could not load skin include");//@todo apf3.0 make this into a proper error
+            }
+            
+            var newPart = apf.getXml('<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
+            //includeNode.parentNode.replaceChild(newPart, includeNode);
+            var nodes = newPart.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                includeNode.parentNode.insertBefore(nodes[i], includeNode.nextSibling);
+            }
+            includeNode.parentNode.removeChild(includeNode);
+            
+            var includeNodes = $xmlns(newPart, "include", apf.ns.aml);
+            if (includeNodes.length) {
+                var path = apf.getDirname(extra.url);
+                for (var i = 0; i < includeNodes.length; i++) {
+                    loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
+                }
+            }
+            else if (!$xmlns(xmlNode, "include", apf.ns.aml).length) {
+                // #ifdef __DEBUG
+                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
+                // #endif
+                
+                finish.call(_self, xmlNode);
+            }
+          }
+        });
+    }
+    //#endif
+    
     function loadSkinFile(path){
         //#ifdef __DEBUG
         apf.console.info("Loading include file: " + path);
@@ -171,13 +213,25 @@ apf.aml.setElement("skin", apf.skin);
             }
             
             xmlNode.setAttribute("filename", extra.url);
-
-            // #ifdef __DEBUG
-            apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
-            // #endif
             
-            finish.call(_self, xmlNode); //@todo add recursive includes support here
-
+            //#ifdef __WITH_SKIN_INCLUDES
+            var includeNodes = $xmlns(xmlNode, "include", apf.ns.aml);
+            if (includeNodes.length) {
+                var path = apf.getDirname(extra.url);
+                for (var i = 0; i < includeNodes.length; i++) {
+                    loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
+                }
+                return;
+            }
+            else 
+            //#endif
+            {
+                // #ifdef __DEBUG
+                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
+                // #endif
+                
+                finish.call(_self, xmlNode);
+            }
           }, 
           async         : true,
           ignoreOffline : true
