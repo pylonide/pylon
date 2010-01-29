@@ -296,6 +296,7 @@ apf.$x = apf.$loader
         "elements/dropdown.js",
         "elements/editor.js",
         "elements/errorbox.js",
+        "elements/event.js",
         "elements/flashplayer.js",
         "elements/flowchart.js",
         "elements/frame.js",
