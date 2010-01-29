@@ -64,6 +64,9 @@ apf.skins = {
         if (xmlNode.getAttribute("id"))
             document.body.className += " " + xmlNode.getAttribute("id");
 
+        var names = name.split("|");
+        name = names[0];
+
         if (!this.skins[name] || name == "default") {
             this.skins[name] = {
                 base     : base,
@@ -73,6 +76,11 @@ apf.skins = {
                 templates: {},
                 originals: {},
                 xml      : xmlNode
+            }
+            
+            if (names.length > 1) {
+                for (var i = 0; i < names.length; i++)
+                    this.skins[names[i]] = this.skins[name];
             }
         }
         
