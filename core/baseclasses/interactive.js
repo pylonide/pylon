@@ -440,38 +440,8 @@ apf.Interactive = function(){
 
             doResize(e || event, true);
             
-            if (_self.setProperty) {
-                if (posAbs) {
-                    var htmlNode = _self.$ext;
-                    if (_self.right || _self.bottom) {
-                        var pHtmlNode = htmlNode.offsetParent;
-                        if (pHtmlNode.tagName == "BODY")
-                            pHtmlNode = document.documentElement;
-                    }
-
-                    if (_self.right && _self.right != _self.setProperty("right", 
-                          pHtmlNode.offsetWidth - htmlNode.offsetLeft 
-                          - htmlNode.offsetWidth)) {
-                        htmlNode.style.left = "";
-                    }
-                    
-                    if (_self.bottom && _self.bottom != _self.setProperty("bottom", 
-                          pHtmlNode.offsetHeight - htmlNode.offsetTop 
-                          - htmlNode.offsetHeight)) {
-                        htmlNode.style.top = "";
-                    }
-                
-                    if (l && (!_self.right || _self.left)) 
-                        _self.setProperty("left", l);
-                    if (t && (!_self.bottom || _self.top)) 
-                        _self.setProperty("top", t);
-                }
-                
-                if (w && (!_self.left || !_self.right)) 
-                    _self.setProperty("width", w + hordiff) 
-                if (h && (!_self.top || !_self.bottom)) 
-                    _self.setProperty("height", h + verdiff); 
-            }
+            if (_self.setProperty)
+                updateProperties();
             
             l = t = w = h = null;
 
@@ -491,6 +461,39 @@ apf.Interactive = function(){
             apf.window.$mousedown(e);
         
         return false;
+    }
+    
+    function updateProperties(){
+        if (posAbs) {
+            var htmlNode = _self.$ext;
+            if (_self.right || _self.bottom) {
+                var pHtmlNode = htmlNode.offsetParent;
+                if (pHtmlNode.tagName == "BODY")
+                    pHtmlNode = document.documentElement;
+            }
+
+            if (_self.right && _self.right != _self.setProperty("right", 
+                  pHtmlNode.offsetWidth - htmlNode.offsetLeft 
+                  - htmlNode.offsetWidth)) {
+                htmlNode.style.left = "";
+            }
+            
+            if (_self.bottom && _self.bottom != _self.setProperty("bottom", 
+                  pHtmlNode.offsetHeight - htmlNode.offsetTop 
+                  - htmlNode.offsetHeight)) {
+                htmlNode.style.top = "";
+            }
+        
+            if (l && (!_self.right || _self.left)) 
+                _self.setProperty("left", l);
+            if (t && (!_self.bottom || _self.top)) 
+                _self.setProperty("top", t);
+        }
+        
+        if (w && (!_self.left || !_self.right)) 
+            _self.setProperty("width", w + hordiff) 
+        if (h && (!_self.top || !_self.bottom)) 
+            _self.setProperty("height", h + verdiff); 
     }
     
     var min = Math.min, max = Math.max, lastTime;
@@ -554,6 +557,13 @@ apf.Interactive = function(){
                 max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
+        
+        //@todo apf3.0 this is execution wise inefficient
+        if (_self.parentNode.localName == "table") {
+            updateProperties();
+            apf.layout.processQueue();
+        }
+        
         //#ifdef __WITH_LAYOUT
         if (apf.hasSingleRszEvent)
             apf.layout.forceResize(_self.$int);
