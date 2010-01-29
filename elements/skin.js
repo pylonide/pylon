@@ -91,6 +91,9 @@ apf.aml.setElement("skin", apf.skin);
     function getSkin(path){
         var domParser = this.ownerDocument.$domParser;
         
+        if (!apf.skins.$first)
+            apf.skins.$first = this;
+        
         var defer = this.attributes.getNamedItem("defer");
         if (!defer || !apf.isTrue(defer.nodeValue)) {
             domParser.$shouldWait++;

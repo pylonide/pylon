@@ -75,7 +75,8 @@ apf.skins = {
                 xml      : xmlNode
             }
         }
-        if (!this.skins["default"])
+        
+        if (!this.skins["default"] && this.$first == refNode)
             this.skins["default"] = this.skins[name];
 
         var nodes = xmlNode.childNodes;
