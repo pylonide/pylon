@@ -651,7 +651,7 @@ apf.portal = function(struct, tagName){
 apf.aml.setElement("portal",    apf.portal);
 apf.aml.setElement("src",       apf.BindingRule);
 apf.aml.setElement("column",    apf.BindingRule);
-apf.aml.setElement("state",     apf.BindingRule);
+//apf.aml.setElement("state",     apf.BindingRule);
 apf.aml.setElement("draggable", apf.BindingRule);
 apf.aml.setElement("dockskin",  apf.BindingRule);
 apf.aml.setElement("buttons",   apf.BindingRule);
