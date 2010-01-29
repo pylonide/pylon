@@ -191,7 +191,7 @@ useful for blocks of HTML:
 
 #
 # var a = '<div class="button">\
-#            <a href="javascript:;" title="Click me">Click me</a>\
+#            <a href="#" title="Click me">Click me</a>\
 #          </div>';
 #
 
@@ -215,7 +215,7 @@ is aligned under the "=" operator:
 
 #
 # var a = '<div class="button">'
-#       + '  <a href="javascript:;" title="Click me">Click me</a>'
+#       + '  <a href="#" title="Click me">Click me</a>'
 #       + '</div>';
 #
 
@@ -224,7 +224,7 @@ be slower in most browsers today than using Arrays:
 
 #
 # var a = ['<div class="button">',
-#          '  <a href="javascript:;" title="Click me">Click me</a>',
+#          '  <a href="#" title="Click me">Click me</a>',
 #          '</div>'].join('');
 #
 
@@ -658,7 +658,8 @@ exception types:
   A. Links
   ========
 
-[1] We are using Jaw as a Javascript compiler/ pre-processor.
+[1] We are using O3 as a Javascript compiler/ pre-processor.
+    See http://www.ajax.org/#o3 for more information
 [2] http://en.wikipedia.org/wiki/Camelcase#Current_usage_in_computing - Wikipedia 
     entry for camelCase usage in computing
 [3] http://en.wikipedia.org/wiki/Hungarian_notation - Wikipedia entry for 
