@@ -54,7 +54,7 @@ apf.pager = function(struct, tagName){
     this.range      = 5;
     this.curpage    = 1;
     this.totalpages = 0;
-    this.autohide   = true;
+    this.autohide   = false;
     this.oEmpty     = null;
     
     //1 = force no bind rule, 2 = force bind rule
@@ -123,6 +123,29 @@ apf.pager = function(struct, tagName){
         }
     };
     
+    this.addEventListener("$clear", function(e){
+        return false;
+    });
+    
+    this.$setClearMessage = function(msg, type){
+        if (!this.$empty) {
+            this.$empty = this.$int.ownerDocument.createElement("span");
+            this.$setStyleClass(this.$empty, "loader");
+        }
+        
+        if (type == "loading") {
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Loading");
+            this.$int.appendChild(this.$empty);
+        }
+    }
+    
+    this.$removeClearMessage = function(){
+        if (this.$empty && this.$empty.parentNode) {
+            this.$empty.parentNode.removeChild(this.$empty);
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Loading"]);
+        }
+    }
+    
     this.$draw  = function() {
         this.$ext = this.$getExternal("main");
         this.$int = this.$getLayoutNode("main", "container",  this.$ext);
@@ -141,7 +164,7 @@ apf.pager = function(struct, tagName){
         
         if (!totalpages)
             return;
-        
+
         if (curpage != 1 || !this.autohide) {
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
@@ -197,18 +220,10 @@ apf.pager = function(struct, tagName){
         }
         
         apf.insertHtmlNodes(nodes, this.$int);
-    }
-    
-    this.$setClearMessage = function(msg, className) {
         
-    };
-    
-    this.$removeClearMessage = function() {
-        if (!this.oEmpty)
-            this.oEmpty = document.getElementById("empty" + this.$uniqueId);
-        if (this.oEmpty && this.oEmpty.parentNode)
-            this.oEmpty.parentNode.removeChild(this.oEmpty);
-    };
+        if (this.$empty)
+            this.$int.appendChild(this.$empty);
+    }
     
 // #ifdef __WITH_DATABINDING
 }).call(apf.pager.prototype = new apf.StandardBinding());

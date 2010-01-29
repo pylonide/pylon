@@ -43,8 +43,10 @@ apf.LiveMarkupPi = function(){
     }
     
     this.clear = function(msg){
-        this.$propHandlers["calcdata"].call(this, "<div class='loading'>Loading...</div>");
-        this.calcdata = "";
+        if (false && msg == "loading") {
+            this.$propHandlers["calcdata"].call(this, "<div class='loading'>Loading...</div>");
+            this.calcdata = "";
+        }
     }
 
     this.$propHandlers["calcdata"] = function(data){
