@@ -362,16 +362,19 @@ apf.queryNode = function(sExpr, contextNode){
  * @return {String} the found value, or empty string if none was found.
  */
 apf.getInheritedAttribute = function(xml, attr, func){
-    var result;
+    var result, avalue;
 
-    //@todo optimize this
+    //@todo optimize this and below
     if (xml.nodeValue != 1)
         xml = xml.parentNode;
 
     while (xml && (xml.nodeType != 1 || !(result = attr 
-      && xml.getAttribute(attr) || func && func(xml)))) {
+      && ((avalue = xml.getAttribute(attr)) || typeof avalue == "string") 
+      || func && func(xml)))) {
         xml = xml.parentNode;
     }
+    if (avalue == "")
+        return "";
 
     return !result && attr && apf.config
         ? apf.config[attr]

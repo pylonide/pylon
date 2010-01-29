@@ -43,7 +43,7 @@ apf.LiveMarkupPi = function(){
     }
     
     this.clear = function(msg){
-        if (false && msg == "loading") {
+        if (msg == "loading" && apf.getInheritedAttribute(this, "loading-message")) {
             this.$propHandlers["calcdata"].call(this, "<div class='loading'>Loading...</div>");
             this.calcdata = "";
         }
