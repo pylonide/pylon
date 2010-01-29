@@ -403,20 +403,6 @@ apf.notifier = function(struct, tagName){
         this.$ext.style.position = "absolute";
         this.$ext.style.zIndex   = 100000;
     };
-
-    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
-        var node,
-            nodes = this.childNodes;
-
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1)
-                continue;
-
-            if (node[apf.TAGNAME] == "event")
-                new apf.event("event", this.$pHtmlNode, null, true).loadAml(node, this);
-        }
-    });
 }).call(apf.notifier.prototype = new apf.Presentation());
 
 apf.aml.setElement("notifier", apf.notifier);
