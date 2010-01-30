@@ -286,6 +286,7 @@ apf.$x = apf.$loader
         "elements/caldropdown.js",
         "elements/chart.js",
         "elements/checkbox.js",
+        "elements/codeeditor.js", 
         "elements/collection.js",
         //"colorpicker.js",
         "elements/colorpicker2.js",

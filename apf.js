@@ -192,7 +192,7 @@ var apf = {
     crypto        : {}, //namespace
     config        : {},
     _GET          : {},
-    $asyncObjects : {},
+    $asyncObjects : {"apf.oHttp" : 1},
     
     /**
      * String specifying the basepath for loading apf from seperate files.

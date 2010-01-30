@@ -258,15 +258,11 @@ apf.Anchoring = function(){
                     + this.$ext.getAttribute("id") + "')") + ";\
             \
             var pWidth = " + (this.$pHtmlNode == this.$pHtmlDoc.body
-                ? (apf.isIE
-                    ? "document.documentElement.offsetWidth"
-                    : "window.innerWidth")
+                ? "apf.getWindowWidth()" //@todo only needed for debug?
                 : "oHtml.parentNode.offsetWidth") + ";\
             \
             var pHeight = " + (this.$pHtmlNode == this.$pHtmlDoc.body
-                ? (apf.isIE
-                    ? "document.documentElement.offsetHeight"
-                    : "window.innerHeight")
+                ? "apf.getWindowHeight()" //@todo only needed for debug?
                 : "oHtml.parentNode.offsetHeight") + ";\
             }catch(e){\
             }";

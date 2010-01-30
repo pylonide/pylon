@@ -592,13 +592,15 @@ apf.http = function(){
             var url = args[0], query = "";
             if (!options.method)
                 options.method = method.toUpperCase();
+            if (!options.callback)
+                options.callback = callback;
             
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
                 apf.getAbsolutePath(apf.config.baseurl, url), 
                 options.method == "GET" 
                     ? options 
-                    : apf.extend({data : query, callback : callback}, options)
+                    : apf.extend({data : query}, options)
             );
         }
     }

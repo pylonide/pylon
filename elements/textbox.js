@@ -127,7 +127,7 @@ apf.textbox  = function(struct, tagName){
      */
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
-    this.$supportedProperties.push("value", "mask", "initial",
+    this.$supportedProperties.push("value", "mask", "initial-message",
         "focusselect", "realtime", "type");
 
     /**

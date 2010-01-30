@@ -245,7 +245,7 @@ apf.scrollbar = function(struct, tagName){
         this.$slideFast   = this.$getLayoutNode("main", "slidefast", this.$ext);
         this.$btnUp       = this.$getLayoutNode("main", "btnup",     this.$ext)
         this.$btnDown     = this.$getLayoutNode("main", "btndown",   this.$ext);
-        
+
         this.$startPos    = false;
         
         this.$caret.ondragstart = function(){

@@ -903,7 +903,7 @@ apf.window = function(){
 
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target),
-            cEditable = false
+            cEditable = amlNode && amlNode.$editable
               // #ifdef __WITH_CONTENTEDITABLE
               || (amlNode && amlNode.hasFeature(apf.__CONTENTEDITABLE__))
               // #endif
@@ -1078,6 +1078,8 @@ apf.window = function(){
                 var el = e.srcElement || e.target;
                 while (el && el.scrollHeight <= el.offsetHeight)
                     el = el.parentNode;
+                
+                if (!el) return;
                 
                 if (el.nodeType == 9)
                     el = el.documentElement;
