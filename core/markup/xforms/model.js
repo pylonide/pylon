@@ -249,7 +249,7 @@ apf.XformsModelElement = function(struct, tagName){
                 .match(/^(?:urlencoded-post|get)$/) ? "native" : "xml";
             xSelectSubTree = sub.getAttribute("ref") || "/";//Bind support will come later
             instruction    = (sub.getAttribute("method")
-                .match(/post/) ? "url.post:" : "") + sub.getAttribute("action");
+                .match(/post/) ? "post " : "") + sub.getAttribute("action");
             var file       = sub.getAttribute("action");
 
             //set contenttype oRpc.contentType

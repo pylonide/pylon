@@ -58,7 +58,7 @@
  * format.
  * <code>
  *  get="http://www.bla.nl?blah=10&foo=[@bar]&example=[10+5]"
- *  set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
+ *  set="post http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
  * </code>
  *
  * @addenum rpc[@protocol]:rest
