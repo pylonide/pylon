@@ -49,7 +49,7 @@
  *            width  = "56" 
  *            height = "56" 
  *            lock   = "0">
- *              <connection ref="b1" output="3" input="3" />
+ *              <connection value="[b1]" output="3" input="3" />
  *          </block>
  *      </flowchart>
  *  </a:model>

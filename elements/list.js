@@ -245,7 +245,7 @@ apf.list      = function(struct, tagName){
      *      </suggestions>
      * </a:model>
      * <a:label>Which newspapers do you read?</a:label>
-     * <a:list ref="krant" 
+     * <a:list value="[krant]" 
      *   more  = "caption:Add new suggestion" 
      *   model = "[mdlSuggestions::question[@key='krant']]">
      *     <a:bindings>

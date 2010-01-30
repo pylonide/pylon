@@ -243,7 +243,7 @@ apf.XformsModelElement = function(struct, tagName){
         if (this.$submissions[instruction] || !instruction && this.$defSubmission) {
             sub = this.$submissions[instruction] || this.$defSubmission;
 
-            //<a:submission id="" ref="/" bind="" action="url" method="post|get|urlencoded-post" set="" />
+            //<a:submission id="" value="[/]" bind="" action="url" method="post|get|urlencoded-post" set="" />
             useComponents  = false;
             type           = sub.getAttribute("method")
                 .match(/^(?:urlencoded-post|get)$/) ? "native" : "xml";

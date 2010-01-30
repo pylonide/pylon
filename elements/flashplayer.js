@@ -49,7 +49,7 @@
  * Example:
  * A shorter way to write this is:
  * <code>
- *  <a:flashplayer ref="@src" />
+ *  <a:flashplayer value="[@src]" />
  * </code>
  */
 apf.flashplayer = function(struct, tagName){

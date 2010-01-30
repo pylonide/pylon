@@ -229,10 +229,10 @@ apf.XForms.prototype = new (function() {
             case "hint":
             default:
                 break;
-                /*  <upload ref="mail/attachment" mediatype="image/*">
+                /*  <upload value="[mail/attachment]" mediatype="image/*">
                       <label>Select image:</label>
-                      <filename ref="@filename" />
-                      <mediatype ref="@mediatype" />
+                      <filename value="[@filename]" />
+                      <mediatype value="[@mediatype]" />
                     </upload>
                 */
         }
