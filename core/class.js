@@ -649,8 +649,6 @@ apf.Class.prototype = new (function(){
                 if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                     if (this.ownerDocument && this.$aml)
                         apf.uirecorder.capturePropertyChange(this, prop, value); 
-                    //debugger;
-                        
                 }
             }
             //#endif
@@ -951,7 +949,6 @@ apf.Class.prototype = new (function(){
         if (!this.nodeFunc && this.nodeType != 2) { //If this is not a AmlNode, we're done.
             //Remove id from global js space
             try {
-                if ((this.id || this.name) == "apf") debugger;
                 if (this.id || this.name)
                     self[this.id || this.name] = null;
             }
@@ -1030,8 +1027,6 @@ apf.Class.prototype = new (function(){
         
         //Remove id from global js space
         try {
-            if ((this.id || this.name) == "apf") debugger;
-            
             if (this.id || this.name)
                 self[this.id || this.name] = null;
         }
