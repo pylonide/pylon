@@ -1251,6 +1251,8 @@ apf.slideshow = function(struct, tagName){
 
         this.$paint();
     }
+    
+    this.addEventListener("$clear", function(){return false});
 
     this.$destroy = function() {
         this.otNext.onmouseover =
