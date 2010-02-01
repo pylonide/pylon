@@ -169,9 +169,11 @@ apf.dropdown = function(struct, tagName){
             ? this.getTraverseNodes().length : this.childNodes.length); //@todo apf3.0 count element nodes
         
         this.oSlider.style.display = "block";
-        this.oSlider.style[apf.supportOverflowComponent
-            ? "overflowY"
-            : "overflow"] = "hidden";
+        if (!this.ignoreOverflow) {
+            this.oSlider.style[apf.supportOverflowComponent
+                ? "overflowY"
+                : "overflow"] = "hidden";
+        }
         
         this.oSlider.style.display = "";
 
