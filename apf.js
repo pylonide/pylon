@@ -556,9 +556,6 @@ var apf = {
      * </pre>
      *
      * @param {String}   url       the url that is accessed.
-     * @param {Function} callback  the handler that gets called whenever the
-     *                             request completes succesfully or with an error,
-     *                             or when the request times out.
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
@@ -570,6 +567,9 @@ var apf = {
      *   {Boolean} autoroute      whether the request can fallback to a server proxy.
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
+     *   {Function} callback      the handler that gets called whenever the
+     *                            request completes succesfully or with an error,
+     *                            or when the request times out.
      */
     ajax : function(){
         return this.oHttp.get.apply(this.oHttp, arguments);

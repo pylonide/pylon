@@ -188,9 +188,6 @@ apf.http = function(){
     /**
      * Makes an http request that receives xml
      * @param {String}   url       the url that is accessed.
-     * @param {Function} callback  the handler that gets called whenever the
-     *                             request completes succesfully or with an error,
-     *                             or when the request times out.
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
@@ -201,6 +198,9 @@ apf.http = function(){
      *   {Boolean} autoroute      whether the request can fallback to a server proxy.
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
+     *   {Function} callback      the handler that gets called whenever the
+     *                            request completes succesfully or with an error,
+     *                            or when the request times out.
      */
     this.getXml = function(url, callback, options){
         if (!options) options = {};
@@ -212,9 +212,6 @@ apf.http = function(){
     /**
      * Makes an http request.
      * @param {String}   url       the url that is accessed.
-     * @param {Function} callback  the handler that gets called whenever the
-     *                             request completes succesfully or with an error,
-     *                             or when the request times out.
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
@@ -226,6 +223,9 @@ apf.http = function(){
      *   {Boolean} autoroute      whether the request can fallback to a server proxy.
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
+     *   {Function} callback      the handler that gets called whenever the
+     *                            request completes succesfully or with an error,
+     *                            or when the request times out.
      */
     this.get = this.$get = function(url, options){
         if (!options)
