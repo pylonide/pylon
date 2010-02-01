@@ -125,7 +125,7 @@ apf.window = function(){
                 }
 
                 if (nopopup)
-                    apf.setTimeout(function(){
+                    $setTimeout(function(){
                         doPopup.call(apf.window)
                     }, 10);
                 else
@@ -136,7 +136,7 @@ apf.window = function(){
                 document.activeElement.blur();
                 document.body.focus();
                 apf.window.stopFlash = true;
-                apf.setTimeout(function(){
+                $setTimeout(function(){
                     doFlash.call(apf.window, true);
                     apf.window.stopFlash = false;
                 }, 10);
@@ -725,8 +725,8 @@ apf.window = function(){
         // #endif
         state += "a";
         clearTimeout(timer);
-        apf.setTimeout("window.focus();");
-        timer = apf.setTimeout(determineAction);
+        $setTimeout("window.focus();");
+        timer = $setTimeout(determineAction);
     };
 
     this.$focusfix2 = function(){
@@ -735,7 +735,7 @@ apf.window = function(){
         // #endif
         state += "b";
         clearTimeout(timer);
-        timer = apf.setTimeout(determineAction);
+        timer = $setTimeout(determineAction);
     };
 
     this.$blurfix = function(){
@@ -744,7 +744,7 @@ apf.window = function(){
         // #endif
         state += "c";
         clearTimeout(timer);
-        timer = apf.setTimeout(determineAction);
+        timer = $setTimeout(determineAction);
     };
 
     function determineAction(){
@@ -780,13 +780,13 @@ apf.window = function(){
         if (apf.hasFocusBug) {
             state += "d";
             clearTimeout(timer);
-            timer = apf.setTimeout(determineAction);
+            timer = $setTimeout(determineAction);
         }
         else {
             clearTimeout(iframeFixTimer)
             iframeFix.newState = "focus";
             //apf.console.warn("win-focus");
-            iframeFixTimer = apf.setTimeout(iframeFix, 10);
+            iframeFixTimer = $setTimeout(iframeFix, 10);
         }
     });
 
@@ -800,13 +800,13 @@ apf.window = function(){
         if (apf.hasFocusBug) {
             state += "e";
             clearTimeout(timer);
-            timer = apf.setTimeout(determineAction);
+            timer = $setTimeout(determineAction);
         }
         else {
             clearTimeout(iframeFixTimer)
             iframeFix.newState = "blur";
             //apf.console.warn("win-blur");
-            iframeFixTimer = apf.setTimeout(iframeFix, 10);
+            iframeFixTimer = $setTimeout(iframeFix, 10);
         }
     });
 
@@ -1387,7 +1387,7 @@ apf.window = function(){
                     //#endif
 
                     apf.loaded = true;
-                    apf.setTimeout(function() {
+                    $setTimeout(function() {
                         apf.dispatchEvent("load");
                     });
                 }

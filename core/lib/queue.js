@@ -32,7 +32,7 @@ apf.queue = {
     add : function(id, f){
         this.q[id] = f;
         if (!this.timer)
-            this.timer = apf.setTimeout("apf.queue.empty()");
+            this.timer = $setTimeout("apf.queue.empty()");
     },
     
     empty : function(prop){

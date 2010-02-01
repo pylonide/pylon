@@ -792,7 +792,7 @@ apf.MultiSelect = function(){
 
         if (this.delayedselect && (typeof ctrlKey == "boolean")){
             var _self = this;
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 _self.dispatchEvent("afterselect", {
                     selection   : _self.$valueList,
                     selected    : xmlNode,
@@ -1060,7 +1060,7 @@ apf.MultiSelect = function(){
             this.$select(this.$tempsel);
 
             var _self = this;
-            this.timer = apf.setTimeout(function(){
+            this.timer = $setTimeout(function(){
                 _self.$selectTemp();
             }, 400);
         }
@@ -1681,7 +1681,7 @@ apf.MultiSelect = function(){
             this.$chained = true;
             if (!e.force && (!this.dataParent || !this.dataParent.parent.$chained)) {
                 var _self = this;
-                apf.setTimeout(function(){
+                $setTimeout(function(){
                     //#ifdef __WITH_PROPERTY_BINDING
                     _self.setProperty("selected", combinedvalue || e.selected);
                     //#endif

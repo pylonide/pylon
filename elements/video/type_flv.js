@@ -345,7 +345,7 @@ apf.video.TypeFlv.prototype = {
                 this.onResize();
                 var node = this.oVideo.$int;
                 //#ifdef __WITH_LAYOUT
-                apf.setTimeout(function() {
+                $setTimeout(function() {
                     apf.layout.forceResize(node);
                 }, 1000);
                 //#endif
@@ -453,7 +453,7 @@ apf.video.TypeFlv.prototype = {
 
         if (this.validateInterval == null && this.inited) {
             var _this = this;
-            this.validateInterval = apf.setTimeout(function() {
+            this.validateInterval = $setTimeout(function() {
                 _this.validateNow();
             }, 100);
         }

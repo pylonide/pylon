@@ -56,7 +56,7 @@ apf.toc = function(struct, tagName){
      */
     this.$propHandlers["represent"] = function(value){
         var _self = this;
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             var amlNode = _self.$represent = self[value];
 
             amlNode.addEventListener("afterswitch", function(e){
@@ -110,7 +110,7 @@ apf.toc = function(struct, tagName){
             this.$represent.showLoader(true, nr); 
 
         var _self = this;
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             _self.$represent.set(nr);
         }, 1);
         //setTimeout("apf.lookup(" + this.$represent.$uniqueId + ").set(" + nr + ");", 1);
@@ -196,7 +196,7 @@ apf.toc = function(struct, tagName){
         //#ifdef __SUPPORT_GECKO
         if (apf.isGecko) {
             var tocNode = this;
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 tocNode.$ext.style.height = tocNode.$ext.offsetHeight + 1 + "px";
                 tocNode.$ext.style.height = tocNode.$ext.offsetHeight - 1 + "px";
             }, 10);

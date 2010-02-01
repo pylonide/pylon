@@ -708,7 +708,7 @@ apf.propedit    = function(struct, tagName){
     this.select = function(htmlNode){
         if (this.$selected == htmlNode) {
             /*var oEditor = this.$lastEditor[0];
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 oEditor.focus();
             });*/
             

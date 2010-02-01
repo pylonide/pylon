@@ -303,7 +303,7 @@ apf.http = function(){
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) {
                 if (async)
-                    return apf.setTimeout("apf.lookup(" + this.$uniqueId
+                    return $setTimeout("apf.lookup(" + this.$uniqueId
                         + ").receive(" + id + ");", 50);
                 else
                     return this.receive(id);
@@ -568,7 +568,7 @@ apf.http = function(){
         else {
             if (apf.loadsLocalFilesSync && location.protocol == "file:"
               && url.indexOf("http://") == -1) {
-                apf.setTimeout(function(){
+                $setTimeout(function(){
                     send.call(_self, true);
                 });
             }
@@ -634,7 +634,7 @@ apf.http = function(){
             }
             catch (e) {
                 var _self = this;
-                return apf.setTimeout(function(){
+                return $setTimeout(function(){
                     _self.receive(id)
                 }, 10);
             }
@@ -760,7 +760,7 @@ apf.http = function(){
         }
         catch (e) {
             var _self = this;
-            return apf.setTimeout(function(){
+            return $setTimeout(function(){
                 _self.$timeout(id)
             }, 10);
         }

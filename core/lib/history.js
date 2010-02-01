@@ -177,7 +177,7 @@ apf.history = {
 
         if (apf.isIE && !apf.isIE8 && !timed) {
             this.to_name = name;
-            return apf.setTimeout(function(){
+            return $setTimeout(function(){
                 apf.history.setHash(apf.history.to_name, true);
             }, 200);
         }
@@ -208,7 +208,7 @@ apf.history = {
             this.page = page;
             this.changingHash = true;
             clearTimeout(this.timer);
-            this.timer = apf.setTimeout(function(){
+            this.timer = $setTimeout(function(){
                 location.hash = page;
                 apf.history.changingHash = false;
             }, 1);

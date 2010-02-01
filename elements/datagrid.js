@@ -645,7 +645,7 @@ apf.datagrid    = function(struct, tagName){
             interval: this.$animSpeed,
             onfinish: function(container){
                 if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    apf.setTimeout(function(){
+                    $setTimeout(function(){
                         _self.$extend(xmlNode, container);
                     });
                     container.style.height = "auto";

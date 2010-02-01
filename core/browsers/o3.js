@@ -8,7 +8,7 @@ apf.runO3 = function(){
     document = o3.xml.parseFromString("<html><body /></html>", "text/xml");
     document.body = document.documentElement.firstChild;
 
-    apf.setTimeout = setInterval = function(a){
+    $setTimeout = setInterval = function(a){
         if (typeof a == "string") eval(a);
         else a();
         return 1;

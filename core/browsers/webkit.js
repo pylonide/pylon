@@ -29,7 +29,7 @@ apf.runWebkit = function(){
     if (!apf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
         self.lookupSafariCall = [];
-        apf.setTimeout = function(call, time){
+        $setTimeout = function(call, time){
             if (typeof call == "string") 
                 return setTimeoutSafari(call, time);
             return setTimeoutSafari("self.lookupSafariCall["

@@ -377,7 +377,7 @@ apf.uirecorder = {
         
         //@todo the code below possibly needs to be in a timeout
         
-        apf.setTimeout = function(f, ms){
+        $setTimeout = function(f, ms){
             //Record current mouseEvent
             apf.uirecorder.setTimeout(function(){
                 apf.uirecorder.runInContext(currentState, f);
@@ -390,7 +390,7 @@ apf.uirecorder = {
         /*var timeout = 50;
 
         if (eventName != "mousemove") {
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 apf.uirecorder.setDelayedDetails(index); 
                 index = null;
             }, timeout);

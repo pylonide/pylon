@@ -24,7 +24,7 @@
 apf.runIphone = function() {
     if (!apf.isIphone) return;
 
-    apf.setTimeout(function() {
+    $setTimeout(function() {
         // #ifdef __WITH_STYLE
         apf.importCssString(
            'html, body {\
@@ -85,7 +85,7 @@ apf.runIphone = function() {
         checkTimer          = null;
 
     apf.addDomLoadEvent(function() {
-        apf.setTimeout(checkOrientAndLocation, 0);
+        $setTimeout(checkOrientAndLocation, 0);
         checkTimer = setInterval(checkOrientAndLocation, 300);
     });
 
@@ -104,7 +104,7 @@ apf.runIphone = function() {
     if (typeof window.onorientationchange == "object") {
         window.onorientationchange = orientChangeHandler;
         hasOrientationEvent = true;
-        apf.setTimeout(orientChangeHandler, 0);
+        $setTimeout(orientChangeHandler, 0);
     }
 
     function checkOrientAndLocation() {
@@ -124,7 +124,7 @@ apf.runIphone = function() {
 
     function setOrientation(orient) {
         document.body.setAttribute("orient", orient);
-        apf.setTimeout("scrollTo(0,1)", 100);
+        $setTimeout("scrollTo(0,1)", 100);
     }
 
     /* register event listeners:
@@ -183,7 +183,7 @@ apf.runIphone = function() {
                 if (!e) return;
 
                 _touching = true;
-                apf.setTimeout(function() { _touching = false; });
+                $setTimeout(function() { _touching = false; });
                 if (typeof this.onmouseup == "function") {
                     this.onmouseup(e);
                     if (this != document)
@@ -269,7 +269,7 @@ apf.runIphone = function() {
         }
     };
 
-    apf.setTimeout(function() {
+    $setTimeout(function() {
         apf.addEventListener("hashchange", apf.iphone.nav.go);
         if (location.href.match(/#(.*)$/))
     		apf.history.init(decodeURI(RegExp.$1));

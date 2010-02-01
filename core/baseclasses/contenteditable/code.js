@@ -64,7 +64,7 @@ apf.ContentEditable.plugin("code", function() {
             
             propagateChange();
             
-            apf.setTimeout(function() {
+            $setTimeout(function() {
                 editor.$selection.set();
                 editor.$visualFocus();
             });
@@ -125,7 +125,7 @@ apf.ContentEditable.plugin("code", function() {
 
     function resumeChangeTimer() {
         if (!_self.editor.realtime || changeTimer !== null) return;
-        changeTimer = apf.setTimeout(function() {
+        changeTimer = $setTimeout(function() {
             clearTimeout(changeTimer);
             _self.editor.change(oPreview.value);
             changeTimer = null;

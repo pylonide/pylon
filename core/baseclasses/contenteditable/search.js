@@ -52,7 +52,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
         // prefill search box with selected text
         this.oSearch.value = this.editor.$selection.getContent();
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.oSearch.focus();
         });
         //return button id, icon and action:
@@ -126,7 +126,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
             // IE cannot show the selection anywhere else then where the cursor
             // is, so no show for them users...
             var _self = this;
-            apf.setTimeout(function() {
+            $setTimeout(function() {
                 _self.oSearch.focus();
             });
         }

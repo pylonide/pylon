@@ -94,7 +94,7 @@ apf.Rename = function(){
     
     function $afterselect(){
         var _self = this;
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             if (_self.hasFocus())
                 _self.startRename();
         }, 20);
@@ -139,7 +139,7 @@ apf.Rename = function(){
             return;
 
         clearTimeout(this.renameTimer);
-        this.renameTimer = apf.setTimeout('apf.lookup('
+        this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
 

@@ -84,7 +84,7 @@ apf.DelayedRender = function(){
             return;
 
         if (this["render-delay"] || usedelay)
-            apf.setTimeout("apf.lookup(" + this.$uniqueId + ").$renderparse()", 10);
+            $setTimeout("apf.lookup(" + this.$uniqueId + ").$renderparse()", 10);
         else
             this.$renderparse();
     };

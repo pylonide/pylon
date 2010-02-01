@@ -108,7 +108,7 @@ apf.Presentation = function(){
         if (!this.$skinTimer) {
             var _self = this;
             clearTimeout(this.$skinTimer);
-            this.$skinTimer = apf.setTimeout(function(){
+            this.$skinTimer = $setTimeout(function(){
                 changeSkin.call(_self, value);
                 delete _self.$skinTimer;
             });

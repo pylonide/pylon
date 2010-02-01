@@ -1216,7 +1216,7 @@ apf.layout = {
         this.qlist[id] = [oHtml, compile, [obj]];
 
         if (!this.timer)
-            this.timer = apf.setTimeout("apf.layout.processQueue()");
+            this.timer = $setTimeout("apf.layout.processQueue()");
     },
 
     processQueue : function(){

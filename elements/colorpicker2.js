@@ -84,7 +84,7 @@ apf.colorpicker = function(struct, tagName){
         clearTimeout(this.changeTimer);
         if (doChange) {
             var _self = this;
-            this.changeTimer = apf.setTimeout(function() {
+            this.changeTimer = $setTimeout(function() {
                 _self.$change();
             });
         }

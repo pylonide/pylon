@@ -51,7 +51,7 @@ apf.ContentEditable.pasteDialog = function(sName) {
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.oArea.focus();
         }, 100); // 100ms, because of the $focusfix code...
         //return button id, icon and action:

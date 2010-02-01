@@ -611,7 +611,7 @@ apf.slider = function(struct, tagName){
                     lastTime = new Date().getTime();
                 }
                 else {
-                    timer = apf.setTimeout(function(){
+                    timer = $setTimeout(function(){
                         _self.$propHandlers["value"].call(_self, knobValue, true);
                         lastTime = new Date().getTime();
                     }, 20);
@@ -645,7 +645,7 @@ apf.slider = function(struct, tagName){
                         - (_self.oBalloon.offsetWidth 
                         - _self.oKnob.offsetWidth)/2) + "px";
 
-                    apf.setTimeout(function(){
+                    $setTimeout(function(){
                         if (apf.isIE) {
                             _self.oBalloon.style.display = "none";
                         }

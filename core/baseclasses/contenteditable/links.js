@@ -52,7 +52,7 @@ apf.ContentEditable.plugin("link", function(){
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.oUrl.focus();
         });
         //return button id, icon and action:

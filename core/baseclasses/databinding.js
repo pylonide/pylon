@@ -1365,7 +1365,7 @@ apf.DataBinding = function(){
         //Optimize xmlroot position and set model async (unset the old one)
         //@todo apf3.0 is this timer necessary?
         //clearTimeout(this.$dbTimer);
-        //this.$dbTimer = apf.setTimeout(function(){
+        //this.$dbTimer = $setTimeout(function(){
             apf.setModel(value, this);
         //});
     };

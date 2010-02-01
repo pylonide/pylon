@@ -108,7 +108,7 @@ apf.ContentEditable.plugin("charmap", function() {
             //this.storeSelection();
             this.editor.$insertHtml(sCode, true);
             var _self = this;
-            apf.setTimeout(function() { //make sure the 'change' is notified to the smartbindings
+            $setTimeout(function() { //make sure the 'change' is notified to the smartbindings
                 // #ifdef __WITH_DATAACTION
                 _self.editor.change(_self.editor.getValue());
                 /* #else

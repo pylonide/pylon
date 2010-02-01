@@ -193,8 +193,6 @@ var apf = {
     config        : {},
     _GET          : {},
     $asyncObjects : {"apf.oHttp" : 1},
-    setTimeout    : setTimeout,
-    setInterval   : setInterval,
     
     /**
      * String specifying the basepath for loading apf from seperate files.
@@ -949,13 +947,13 @@ var apf = {
             clearTimeout(this.$timer);
             if (msg == this.$lastmsg) {
                 this.$lastmsgcount++;
-                this.$timer = apf.setTimeout(this.$detectSameMessage, 1000);
+                this.$timer = $setTimeout(this.$detectSameMessage, 1000);
                 return;
             }
 
             this.$detectSameMessage();
             this.$lastmsg = msg;
-            this.$timer = apf.setTimeout(this.$detectSameMessage, 1000);
+            this.$timer = $setTimeout(this.$detectSameMessage, 1000);
             
             //if (!apf.debug) return;
             if (!Number.prototype.toPrettyDigit) {
@@ -1971,7 +1969,7 @@ var apf = {
             }
 
             //#ifdef __WITH_LAYOUT
-            apf.setTimeout("apf.layout.forceResize();");
+            $setTimeout("apf.layout.forceResize();");
             // #endif
         }
         else
@@ -2046,7 +2044,7 @@ var apf = {
                         doc.documentElement.doScroll("left");
                     }
                     catch(ex) {
-                        apf.setTimeout(arguments.callee, 0);
+                        $setTimeout(arguments.callee, 0);
                         return;
                     }
                     // no exceptions anymore, so we can call the init!
@@ -2622,10 +2620,10 @@ else {
     		}
     		function createScriptTag(scriptentry,src,type,charset,onload,scriptText) {
     			var _script_which = scriptentry[sWHICH];
-    			fSETTIMEOUT(function() { // this apf.setTimeout waiting "hack" prevents a nasty race condition browser hang (IE) when the document.write("<script defer=true>") type dom-ready hack is present in the page
+    			fSETTIMEOUT(function() { // this $setTimeout waiting "hack" prevents a nasty race condition browser hang (IE) when the document.write("<script defer=true>") type dom-ready hack is present in the page
     				if ("item" in append_to[_script_which]) { // check if ref is still a live node list
     					if (!append_to[_script_which][0]) { // append_to node not yet ready
-    						fSETTIMEOUT(arguments.callee,25); // try again in a little bit -- note, will recall the anonymous functoin in the outer apf.setTimeout, not the parent createScriptTag()
+    						fSETTIMEOUT(arguments.callee,25); // try again in a little bit -- note, will recall the anonymous functoin in the outer $setTimeout, not the parent createScriptTag()
     						return;
     					}
     					append_to[_script_which] = append_to[_script_which][0]; // reassign from live node list ref to pure node ref -- avoids nasty IE bug where changes to DOM invalidate live node lists
@@ -2837,6 +2835,9 @@ else {
     	
     })(window);
 }
+
+var $setTimeout  = setTimeout;
+var $setInterval = setInterval;
 
 apf.$loader.script(apf.basePath + "loader.js");
 

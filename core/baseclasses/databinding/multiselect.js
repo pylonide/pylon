@@ -819,7 +819,7 @@ apf.MultiselectBinding = function(){
 
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             var _self = this;
-            this.$selectTimer.timer = apf.setTimeout(function(){
+            this.$selectTimer.timer = $setTimeout(function(){
                 _self.$checkSelection(_self.$selectTimer.nextNode);
                 _self.$selectTimer.nextNode = null;
             });

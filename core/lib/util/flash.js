@@ -268,12 +268,12 @@ apf.flash = (function(){
             // wait for APF to finish drawing the elements, i.e. wait for DOM
             // elements to be drawn.
             cb      = function() {
-                apf.setTimeout(function() {
+                $setTimeout(function() {
                     node.innerHTML = content;
                     obj[prop]      = getElement(options.id);
                     //console.log("flash movie loaded: ", _self.player);
 
-                    apf.setTimeout(function() {
+                    $setTimeout(function() {
                         var fail = null;
                         if (!obj[prop].parentNode) {
                             fail = "File Uploader error: The movie has to be enabled "

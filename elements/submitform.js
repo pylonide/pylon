@@ -166,7 +166,7 @@ apf.submitform = function(struct, tagName){
         nextpagenr = null;
 
         /*var amlNode = this;
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             amlNode.dispatchEvent("afterswitch", amlNode.activepagenr, nextpage);
         }, 1);*/
     };
@@ -341,7 +341,7 @@ apf.submitform = function(struct, tagName){
         var amlNode = this;
         oBtn.onclick = function(){
             amlNode.showLoader(true);
-            apf.setTimeout(function(){ amlNode[action](); }, 10);
+            $setTimeout(function(){ amlNode[action](); }, 10);
         };
 
         /*
@@ -622,7 +622,7 @@ apf.submitform = function(struct, tagName){
         var jNode = self[extra.userdata[0].getAttribute("element")];
         if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE) {
             jNode.$setStyleClass(jNode.$ext, "loaded", ["loading"]);
-            apf.setTimeout("var jNode = apf.lookup(" + jNode.$uniqueId + ");\
+            $setTimeout("var jNode = apf.lookup(" + jNode.$uniqueId + ");\
                 jNode.$setStyleClass(jNode.$ext, '', ['loading', 'loaded']);", 500);
         }
 

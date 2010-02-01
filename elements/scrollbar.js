@@ -268,7 +268,7 @@ apf.scrollbar = function(struct, tagName){
             
             apf.window.$mousedown();
             
-            _self.$timer = apf.setTimeout(function(){
+            _self.$timer = $setTimeout(function(){
                 _self.$timer = setInterval(function(){
                     _self.$curValue -= _self.$stepValue;
                     _self.setScroll();
@@ -289,7 +289,7 @@ apf.scrollbar = function(struct, tagName){
             
             apf.window.$mousedown();
             
-            _self.$timer = apf.setTimeout(function(){
+            _self.$timer = $setTimeout(function(){
                 _self.$timer = setInterval(function(){
                     _self.$curValue += _self.$stepValue;
                     _self.setScroll();
@@ -373,7 +373,7 @@ apf.scrollbar = function(struct, tagName){
                     - _self.$btnUp.offsetHeight) + "px";
                 
                 offset = e.offsetY;
-                _self.$timer = apf.setTimeout(function(){
+                _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.scrollDown(offset);
                     }, 20);
@@ -388,7 +388,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$slideFast.style.height = (_self.$caret.offsetTop - _self.$btnUp.offsetHeight) + "px";
                 
                 offset = e.offsetY;
-                _self.$timer = apf.setTimeout(function(){
+                _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.scrollUp(offset);
                     }, 20);

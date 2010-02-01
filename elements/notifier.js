@@ -321,7 +321,7 @@ apf.notifier = function(struct, tagName){
             interval : 10,
             onfinish : function(container) {
                 oNoti.style.filter = "";
-                apf.setTimeout(hideWindow, _self.timeout)
+                $setTimeout(hideWindow, _self.timeout)
             }
         });
 

@@ -167,7 +167,7 @@ apf.importCssString = function(cssString, doc, media){
 
         /*if(document.body){
             document.body.style.height = "100%";
-            apf.setTimeout('document.body.style.height = "auto"');
+            $setTimeout('document.body.style.height = "auto"');
         }*/
     }
 };

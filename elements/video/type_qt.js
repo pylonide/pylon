@@ -674,7 +674,7 @@ apf.video.TypeQT.prototype = {
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
-        this.pollTimer = apf.setTimeout(function() {
+        this.pollTimer = $setTimeout(function() {
             if (!_self.player) return;
             try {
                 _self.handleEvent({type: "qt_timechanged"});

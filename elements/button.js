@@ -518,7 +518,7 @@ apf.button  = function(struct, tagName){
         //#-endif
 
         var _self = this;
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             (apf.button.actions[action] || apf.K).call(_self);
         });
     });

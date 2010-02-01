@@ -50,7 +50,7 @@ apf.ContentEditable.plugin("image", function(){
         // @todo: auto-fill input with currently selected image url
         this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, 218, 47);
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.oUrl.focus();
         });
         //return button id, icon and action:

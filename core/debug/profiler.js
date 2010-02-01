@@ -156,7 +156,7 @@ apf.profiler = {
         if (this.isRunning) {
             if (this.startBusy) {
                 if (sName) this.startQueue.push(sName);
-                this.startQueueTimer = apf.setTimeout("apf.profiler.registerStart()", 200);
+                this.startQueueTimer = $setTimeout("apf.profiler.registerStart()", 200);
             }
             else {
                 this.startBusy = true;
@@ -200,7 +200,7 @@ apf.profiler = {
                     this.endQueue.push([sName, arguments.callee.caller.caller
                         ? arguments.callee.caller.caller.nameSelf
                         : null]);
-                this.endQueueTimer = apf.setTimeout("apf.profiler.registerEnd()", 200);
+                this.endQueueTimer = $setTimeout("apf.profiler.registerEnd()", 200);
             }
             else {
                 this.endBusy = true;

@@ -127,7 +127,7 @@ apf.editor = function(struct, tagName){
         var _self = this;
         
         if (apf.isIE) {
-            apf.setTimeout(function() {
+            $setTimeout(function() {
                 _self.$activeDocument.body.contentEditable = true;
             });
         }
@@ -198,7 +198,7 @@ apf.editor = function(struct, tagName){
      */
     function onPaste(e) {
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             var s = this.$activeDocument.body.innerHTML;
             if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
                 var o = _self.$plugins["pasteword"];
@@ -230,7 +230,7 @@ apf.editor = function(struct, tagName){
         var which  = e.which,
             button = e.button,
             _self  = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
             //#ifdef __WITH_FOCUS
             if (apf.document.activeElement != this) {
@@ -477,7 +477,7 @@ apf.editor = function(struct, tagName){
             // do the magic, make the editor editable.
             this.makeEditable();
 
-            apf.setTimeout(function() {
+            $setTimeout(function() {
                 _self.setProperty("state", apf.DISABLED);
             });
         });

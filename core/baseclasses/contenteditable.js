@@ -109,7 +109,7 @@ apf.ContentEditable = function() {
                 if (!o.lastTemplate) {
                     e.cancelBubble = true;
                     apf.window.$mousedown({srcElement: o.activeNode});
-                    apf.setTimeout(function(){
+                    $setTimeout(function(){
                         //@todo Mike. The cursor position is lost!!! Please help me!
                         _self.$selection.set();
                         if (o.activeNode)
@@ -117,7 +117,7 @@ apf.ContentEditable = function() {
                     }, 10);
                 }
                 else {
-                    apf.setTimeout(function(){
+                    $setTimeout(function(){
                         o.lastTemplate.childNodes[0].focus();
                     }, 100);
                     o.lastTemplate.childNodes[0].slideDown();
@@ -159,7 +159,7 @@ apf.ContentEditable = function() {
         this.state = parseInt(value); // make sure it's an int
         // the state has changed, update the button look/ feel
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.$notifyAllButtons(value);
             if (_self.$pluginsActive == "code")
                 _self.$notifyButton("code", apf.SELECTED);
@@ -236,7 +236,7 @@ apf.ContentEditable = function() {
         }
         else if (o.activeNode) {
             var node = o.activeNode;
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 //this.$selection.selectNode(node);
                 this.$selection.set();
                 if (node.parentNode) //@todo why?
@@ -531,14 +531,14 @@ apf.ContentEditable = function() {
             var lastPos = initTabStack().indexOf(oNode);//tabStack can be old...
             removeEditor(o.activeNode, true);
             oNode = initTabStack()[lastPos];
-            apf.setTimeout(function(){oNode.focus();}, 10);
+            $setTimeout(function(){oNode.focus();}, 10);
         }
 
         var _self = this;
 
         if (this.validityState && !this.validityState.valid) {
             oNode = initTabStack()[this.validityState.$lastPos];
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 oNode.focus();
                 _self.$selection.selectNode(oNode);
                 // @todo need to select all contents here?
@@ -735,7 +735,7 @@ apf.ContentEditable = function() {
         }
 
         if (callback)
-            apf.setTimeout(callback);
+            $setTimeout(callback);
     }
 
     function initTabStack() {
@@ -856,7 +856,7 @@ apf.ContentEditable = function() {
     function resumeChangeTimer() {
         var o = this.$edVars;
         if (!this.realtime || o.changeTimer !== null) return;
-        o.changeTimer = apf.setTimeout(function() {
+        o.changeTimer = $setTimeout(function() {
             clearTimeout(o.changeTimer);
             // #ifdef __WITH_DATAACTION
             this.change(this.getValue());
@@ -988,7 +988,7 @@ apf.ContentEditable = function() {
         #endif*/
 
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             //_self.$notifyAllButtons(); // @todo This causes pain, find out why
             if (!bNoSel)
                _self.$selection.set();
@@ -1496,10 +1496,10 @@ apf.ContentEditable = function() {
         if (apf.popup.isShowing(sCacheId))
             return;
 
-        // using apf.setTimeout here, because I want the popup to be shown AFTER the
+        // using $setTimeout here, because I want the popup to be shown AFTER the
         // event bubbling is complete. Another click handler further up the DOM
         // tree may call a apf.popup.forceHide();
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             apf.popup.show(sCacheId, {
                 x        : 0,
                 y        : 22,
@@ -1567,7 +1567,7 @@ apf.ContentEditable = function() {
 
         if (bNoFocus) return;
         var _self = this;
-        apf.setTimeout(function() {
+        $setTimeout(function() {
             _self.$selection.set();
             _self.$visualFocus();
         });

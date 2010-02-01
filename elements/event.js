@@ -42,7 +42,7 @@ apf.event = function(struct, tagName){
     this.$propHandlers["when"] = function(value) {
         if (this.$hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
             var _self = this;
-            apf.setTimeout(function() {
+            $setTimeout(function() {
                 _self.parentNode.popup(_self.message, _self.icon, _self);
             });
         }

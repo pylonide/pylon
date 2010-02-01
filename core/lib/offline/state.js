@@ -154,7 +154,7 @@ apf.offline.state = {
         
         var ns = this.namespace;
         clearTimeout(this.timeout[key]);
-        this.timeout[key] = apf.setTimeout(function(){
+        this.timeout[key] = $setTimeout(function(){
             storage.put(key, value, ns);
         }, 200);
     },

@@ -357,7 +357,7 @@ apf.video.TypeVlc.prototype = {
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
-        this.pollTimer = apf.setTimeout(function() {
+        this.pollTimer = $setTimeout(function() {
             if (!_self.player) return;
             _self.handleEvent(_self.player.input.state)
             _self.startPlayPoll();

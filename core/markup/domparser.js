@@ -195,7 +195,7 @@ apf.DOMParser.prototype = new (function(){
             return (docFrag || doc);
 
         if (options.timeout) {
-            apf.setTimeout(function(){
+            $setTimeout(function(){
                 _self.$continueParsing(amlNode, options);
             });
         }

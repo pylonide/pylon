@@ -171,7 +171,7 @@ apf.popup = {
                options.callback(popup);
         }
 
-        apf.setTimeout(function(){
+        $setTimeout(function(){
             apf.popup.last = cacheId;
         });
 
