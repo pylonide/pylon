@@ -1170,6 +1170,9 @@ apf.DragServer = {
     }
 };
 
+/**
+ * @private
+ */
 apf.MultiselectDragDrop = function() {
     /**** Drag & Drop ****/
     // #ifdef __WITH_DRAGDROP
@@ -1354,6 +1357,9 @@ apf.MultiselectDragDrop = function() {
     // #endif
 };
 
+/**
+ * @private
+ */
 apf.StandardDragDrop = function() {
     this.$showDragIndicator = function(sel, e){
         var x = e.offsetX + 22,
