@@ -1,4 +1,7 @@
 // #ifdef __PARSER_XPATH || __SUPPORT_WEBKIT || __SUPPORT_IE && __WITH_PRESENTATION
+/**
+ * @private
+ */
 apf.runXpath = function(){
 
 /**

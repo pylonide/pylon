@@ -20,6 +20,9 @@
  */
 
 // #ifdef __PARSER_XSLT
+/**
+ * @private
+ */
 apf.runXslt = function(){
     /**
      * @constructor

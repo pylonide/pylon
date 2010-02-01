@@ -1,4 +1,7 @@
 // #ifdef __SUPPORT_O3
+/**
+ * @private
+ */
 apf.runO3 = function(){
     //apf.importClass(runNonIe, true, self);
     

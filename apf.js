@@ -219,6 +219,9 @@ var apf = {
     //#endif
     
     availHTTP  : [],
+    /**
+     * @private
+     */
     releaseHTTP: function(http){
         if (apf.brokenHttpAbort) 
             return;
@@ -1359,6 +1362,9 @@ var apf = {
     parseStrategy : 0,
 
     //#ifdef __WITH_PARTIAL_AML_LOADING
+    /**
+     * @private
+     */
     parsePartialAml : function(docElement){
         //#ifdef __DEBUG
         apf.console.warn("The aml namespace definition wasn't found "
@@ -1980,6 +1986,9 @@ var apf = {
     },
 
     // #ifndef __SUPPORT_GWT
+    /**
+     * @private
+     */
     execDeferred: function() {
         // execute each function in the stack in the order they were added
         var len = apf.load_events.length;
@@ -1992,6 +2001,9 @@ var apf = {
     load_done  : false,
     load_init  : null,
 
+    /**
+     * @private
+     */
     addDomLoadEvent: function(func) {
         if (!this.$bdetect)
             this.browserDetect();
@@ -2092,6 +2104,9 @@ var apf = {
     },
     // #endif
     
+    /**
+     * @private
+     */
     addListener : function(el, type, fn){
         if (el.addEventListener)
             el.addEventListener(type, fn, false);
@@ -2100,6 +2115,9 @@ var apf = {
         return this;
     },
     
+    /**
+     * @private
+     */
     removeListener : function(el, type, fn){
         if (el.removeEventListener)
             el.removeEventListener(type, fn, false);

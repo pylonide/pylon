@@ -20,7 +20,9 @@
  */
 
 // #ifdef __SUPPORT_IPHONE
-
+/**
+ * @private
+ */
 apf.runIphone = function() {
     if (!apf.isIphone) return;
 

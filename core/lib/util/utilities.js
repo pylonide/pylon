@@ -75,6 +75,9 @@ apf.highlightCode = function(strCode){
     return strCode;//.replace(/&lt;/g, "&amp;lt;");
 }
 
+/**
+ * @private
+ */
 apf.convertAmlToJson = function(strCode){
     var xml = apf.getXml("<a:app xmlns:a='" + apf.ns.apf + "'>" + strCode + "</a:app>", null, true);
 

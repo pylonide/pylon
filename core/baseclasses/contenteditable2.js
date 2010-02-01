@@ -462,6 +462,9 @@ apf.Resize = function(){
 };
 apf.Resize.prototype = new apf.Class();
 
+/**
+ * @private
+ */
 apf.ElementDrawer = function (){
     var p1    = document.body.appendChild(document.createElement("div")),
         p2    = document.body.appendChild(document.createElement("div")),
@@ -546,6 +549,9 @@ apf.ElementDrawer = function (){
     };
 };
 
+/**
+ * @private
+ */
 apf.Selection = function(){};
 
 // #endif

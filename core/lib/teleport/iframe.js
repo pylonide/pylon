@@ -28,6 +28,9 @@
  * it's communication
  */
 apf.USEIFRAME = false;
+/**
+ * @private
+ */
 function runTpIframe(){
     function XMLHttpRequest(){
         this.$uniqueId = apf.all.push(this);
