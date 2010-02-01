@@ -268,8 +268,8 @@ apf.http = function(){
         }
         //#endif
 
-        var async = (options.async
-            || typeof options.async == "undefined" || apf.isOpera);
+        var async = options.async = (options.async
+            || typeof options.async == "undefined" || apf.isOpera || false);
 
         //#ifdef __SUPPORT_WEBKIT
         if (apf.isWebkit)
@@ -628,16 +628,18 @@ apf.http = function(){
             return false;
 
         // Test if HTTP object is ready
-        try {
-            if (http.status) {}
+        if (qItem.async) {
+            try {
+                if (http.status) {}
+            }
+            catch (e) {
+                var _self = this;
+                return apf.setTimeout(function(){
+                    _self.receive(id)
+                }, 10);
+            }
         }
-        catch (e) {
-            var _self = this;
-            return apf.setTimeout(function(){
-                _self.receive(id)
-            }, 10);
-        }
-
+        
         // #ifdef __DEBUG
         if (!qItem.options.hideLogMessage) {
             apf.console.info("[HTTP] Receiving [" + id + "]"
