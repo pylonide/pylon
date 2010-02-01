@@ -109,7 +109,7 @@ apf.selection = function(oWin, oDoc, editor) {
         this.current.type = oSel.type;
 
         if (this.current.type == TEXT && this.current.text == "" && !csLock) {
-            csLock = setTimeout(this.cache, 0);
+            csLock = apf.setTimeout(this.cache, 0);
         }
         else {
             clearTimeout(csLock);

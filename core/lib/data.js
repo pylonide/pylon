@@ -156,7 +156,7 @@ apf.getData = function(instruction, options){
     //#ifdef __DEBUG
     var gCallback  = function(data, state, extra){
         var _self = this;
-        setTimeout(function(){
+        apf.setTimeout(function(){
             s2.call(_self, data, state, extra);
         });
     }

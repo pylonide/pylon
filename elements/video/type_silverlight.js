@@ -367,7 +367,7 @@ apf.video.TypeSilverlight.prototype = {
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
-        this.pollTimer = setTimeout(function() {
+        this.pollTimer = apf.setTimeout(function() {
             if (_self.oVideo && !_self.oVideo.ready && _self.video.CanSeek)
                 _self.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
             _self.oVideo.$changeHook({

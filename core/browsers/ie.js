@@ -178,7 +178,7 @@ apf.runIE = function(){
 
         //Fix IE image loading bug
         if (apf.isIE < 7) {
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 var nodes = htmlNode.getElementsByTagName("*");
                 for (var s, i = 0, l = nodes.length; i < l; i++) {
                     if (s = nodes[i].getAttribute("find"))

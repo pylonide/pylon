@@ -297,7 +297,7 @@ apf.codeeditor = function(struct, tagName){
                 }
                 else {
                     clearTimeout(this.virtualVTimer);
-                    this.virtualVTimer = setTimeout(function(){
+                    this.virtualVTimer = apf.setTimeout(function(){
                         vp.change(Math.round(vp.length * pos), vp.limit, false);
                     }, 300);
                 }
@@ -410,7 +410,7 @@ apf.codeeditor = function(struct, tagName){
                     _self.change(value);
             }
             else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
-                setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
+                apf.setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
@@ -434,7 +434,7 @@ apf.codeeditor = function(struct, tagName){
                 _self.$button.style.display = this.value ? "block" : "none";
 
             if (_self.realtime) {
-                setTimeout(function(){
+                apf.setTimeout(function(){
                     var v;
                     if ((v = _self.getValue()) != _self.value)
                         _self.change(v); 

@@ -899,7 +899,7 @@ apf.BaseTab = function(){
             function startTimer(e, dir) {
                 clearTimeout(scrollTimer);
                 globalDir   = dir;
-                scrollTimer = setTimeout(function() {
+                scrollTimer = apf.setTimeout(function() {
                     keepScrolling = true;
                     _self.scroll(e, dir);
                 }, 500);

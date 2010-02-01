@@ -140,7 +140,7 @@ apf.extend(apf.config, {
             if (this.iePngFix) {
                 // run after the init() has finished, otherwise the body of the 
                 // document will still be empty, thus no elements found.
-                setTimeout(function() {
+                apf.setTimeout(function() {
                     apf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
                 });
             }
@@ -196,7 +196,7 @@ apf.extend(apf.config, {
             //#ifdef __DEBUG
             if (value) {
                 apf.addEventListener("load", function(){
-                    setTimeout("apf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    apf.setTimeout("apf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
                     apf.removeEventListener("load", arguments.callee);
                 });
             }

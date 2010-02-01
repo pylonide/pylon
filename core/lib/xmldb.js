@@ -698,7 +698,7 @@ apf.xmldb = new (function(){
         else if (runTimer) {
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
-            //notifyTimer = setTimeout(function(){
+            //notifyTimer = apf.setTimeout(function(){
                 //this.$hasQueue = true;
                 apf.xmldb.notifyQueued();
             //});

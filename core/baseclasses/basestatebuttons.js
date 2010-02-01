@@ -287,7 +287,7 @@ apf.BaseStateButtons = function(){
             else {
                 styleClass.push(this.$baseCSSname + "Min");
 
-                setTimeout(function(){
+                apf.setTimeout(function(){
                     apf.window.$focusLast(_self);
                 });
             }

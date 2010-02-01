@@ -54,7 +54,7 @@ apf.ContentEditable.plugin("anchor", function() {
         if (panelBody.style.visibility == "hidden")
             panelBody.style.visibility = "visible";
         var _self = this;
-        setTimeout(function() {
+        apf.setTimeout(function() {
             _self.oName.focus();
         });
         //return button id, icon and action:

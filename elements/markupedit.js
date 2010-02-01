@@ -204,7 +204,7 @@ apf.markupedit = function(struct, tagName){
             interval: this.animSpeed,
             onfinish: function(container){
                 if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    setTimeout(function(){
+                    apf.setTimeout(function(){
                         _self.$extend(xmlNode, container);
                     });
                     container.style.height = "auto";
@@ -632,7 +632,7 @@ apf.markupedit = function(struct, tagName){
         if (!oHtml.offsetHeight) return;
         
         apf.setStyleClass(oHtml, "highlight");
-        setTimeout(function(){
+        apf.setTimeout(function(){
             apf.tween.css(oHtml, "highlight", {
                 anim    : 0, 
                 steps   : 20, 

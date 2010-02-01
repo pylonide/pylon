@@ -33,13 +33,11 @@
  *        name        = "deleteProduct"
  *        url         = "http://example.com/products"
  *        http-method = "DELETE"
- *        receive     = "processDelete">
- *      </a:method>
+ *        receive     = "processDelete" />
  *      <a:method
  *        name        = "createProduct"
  *        url         = "http://example.com/products"
- *        http-method = "POST">
- *      </a:method>
+ *        http-method = "POST" />
  *  </a:rpc>
  *
  *  <a:script>

@@ -176,7 +176,7 @@ apf.item  = function(struct, tagName){
                         var btn = buttons[i];
                         btn.$setState("Over", {});
 
-                        setTimeout(function(){
+                        apf.setTimeout(function(){
                             btn.$setState("Out", {});
                         }, 200);
 
@@ -371,7 +371,7 @@ apf.item  = function(struct, tagName){
             else {
                 var _self = this;
                 clearTimeout(timer);
-                timer = setTimeout(function(){
+                timer = apf.setTimeout(function(){
                     _self.$submenu();
                     timer = null;
                 }, 200);

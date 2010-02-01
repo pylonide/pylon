@@ -465,7 +465,7 @@ apf.AmlWindow = function(struct, tagName){
                 this.$ext.className = cls;
             }
             var _self = this;
-            setTimeout(function() {
+            apf.setTimeout(function() {
                 _self.dispatchEvent("show");
             });
         }
@@ -726,7 +726,7 @@ apf.AmlWindow = function(struct, tagName){
             this.$ext.style.display = "none"; /* @todo temp done for project */
             
             var _self = this;
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 _self.setProperty("visible", true);
             });
         }

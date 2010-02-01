@@ -64,7 +64,7 @@ apf.offline.models = {
 
         if(!this.timer){
             var _self = this;
-            this.timer = setTimeout(function(){
+            this.timer = apf.setTimeout(function(){
                 _self.timer = null;
                 var models  = _self.models;
 

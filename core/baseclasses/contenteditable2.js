@@ -52,7 +52,7 @@ apf.ContentEditable2 = function() {
         
         if (!this.parentNode.isEditable) {
             //@todo Use new property events in apf3.0
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 apf.ContentEditable2.resize.grab(_self);
             });
         }

@@ -383,7 +383,7 @@ apf.uirecorder = {
         /*var timeout = 50;
 
         if (eventName != "mousemove") {
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 apf.uirecorder.setDelayedDetails(index); 
                 index = null;
             }, timeout);

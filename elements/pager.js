@@ -106,7 +106,7 @@ apf.pager = function(struct, tagName){
         }
         else {
             //@todo is this the best way to detect a model?
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 var model = _self.getModel(true);
                 if (model) {
                     model.$loadFrom(_self.pageload, {

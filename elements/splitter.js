@@ -464,7 +464,7 @@ apf.splitter = function(struct, tagName){
                 
             //Not a perfect hack, but ok, for now
             var _self = this;
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 this.$amlNode.init(_self.type,
                     _self.size, 
                     _self.min, 

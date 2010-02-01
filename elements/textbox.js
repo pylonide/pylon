@@ -496,7 +496,7 @@ apf.textbox  = function(struct, tagName){
 
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
-            setTimeout("var o = apf.lookup(" + this.$uniqueId + ");\
+            apf.setTimeout("var o = apf.lookup(" + this.$uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
         
@@ -584,7 +584,7 @@ apf.textbox  = function(struct, tagName){
                     _self.change(value);
             }
             else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
-                setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
+                apf.setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
@@ -598,7 +598,7 @@ apf.textbox  = function(struct, tagName){
             if (_self.oContainer) {
                 var oTxt    = _self;
                 var keyCode = e.keyCode;
-                setTimeout(function(){
+                apf.setTimeout(function(){
                     oTxt.fillAutocomplete(keyCode);
                 });
             }
@@ -620,7 +620,7 @@ apf.textbox  = function(struct, tagName){
                 _self.$button.style.display = this.value ? "block" : "none";
 
             if (_self.realtime) {
-                setTimeout(function(){
+                apf.setTimeout(function(){
                     var v;
                     if (!_self.mask && (v = _self.getValue()) != _self.value)
                         _self.change(v); 

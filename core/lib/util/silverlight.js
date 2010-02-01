@@ -178,7 +178,7 @@ apf.silverlight = (function() {
                 __onSilverlightInstalledCalled = true;
             }
             else {
-                setTimeout(WaitForInstallCompletion, 3000);
+                apf.setTimeout(WaitForInstallCompletion, 3000);
             }    
         }
     }

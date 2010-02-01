@@ -353,7 +353,7 @@ apf.video.TypeWmp.prototype = {
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
-        this.pollTimer = setTimeout(function() {
+        this.pollTimer = apf.setTimeout(function() {
             if (!_self.player || !_self.player.controls) return;
             _self.oVideo.$changeHook({
                 type        : "change",

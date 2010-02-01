@@ -50,7 +50,7 @@ apf.script = function(){
 (function(){
     this.$propHandlers["src"] = function(value){
         if (apf.isOpera) {
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 apf.window.loadCodeFile(apf.hostPath
                     + value);
             }, 1000);

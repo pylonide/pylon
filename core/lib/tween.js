@@ -310,7 +310,7 @@ apf.tween = {
                 return this;
             info.type = type || info.type;
             oHtml.style[info.type] = info.from + (apf.tween.needsPix[info.type] ? "px" : "");
-            setTimeout(function() {
+            apf.setTimeout(function() {
                 oHtml.style[info.type]       = info.to + (apf.tween.needsPix[info.type] ? "px" : "");
                 oHtml.style.webkitTransition = info.type + " " + ((info.steps
                     * info.interval) / 1000) + "s "
@@ -355,7 +355,7 @@ apf.tween = {
                     info.oneach(oHtml, info.userdata);
 
                 if (step < info.steps)
-                    timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
+                    timer = apf.setTimeout(function(){stepFunction(step + 1)}, info.interval);
                 else {
                     _self.current = null;
                     if (info.control)
@@ -509,7 +509,7 @@ apf.tween = {
                     info.oneach(oHtml, info.userdata);
 
                 if (step < info.steps)
-                    timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
+                    timer = apf.setTimeout(function(){stepFunction(step + 1)}, info.interval);
                 else {
                     _self.current = null;
                     if (info.control)

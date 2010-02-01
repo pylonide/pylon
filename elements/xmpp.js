@@ -1391,7 +1391,7 @@ apf.xmpp = function(struct, tagName){
 
         if (this.$serverVars[CONN] && !this.$listening) {
             var _self = this;
-            this.$listener = setTimeout(function() {
+            this.$listener = apf.setTimeout(function() {
                 _self.$listen();
             }, this.$pollTimeout || 0);
         }
@@ -1418,7 +1418,7 @@ apf.xmpp = function(struct, tagName){
         // start listening again...
         if (this.$serverVars[CONN] && !bNoListener) {
             var _self = this;
-            this.$listener = setTimeout(function() {
+            this.$listener = apf.setTimeout(function() {
                 _self.$listen();
             }, this.$pollTimeout || 0);
         }

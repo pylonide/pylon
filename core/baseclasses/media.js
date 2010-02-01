@@ -121,7 +121,7 @@ apf.Media = function(){
         if (this.duration <= 0 || !this.seek) return;
 
         var _self = this;
-        this.$posTimer = setTimeout(function() {
+        this.$posTimer = apf.setTimeout(function() {
             // first, check if the seek action doesn't go beyond the download
             // progress of the media element.
             if (value >= _self.progress)
@@ -508,7 +508,7 @@ apf.Media = function(){
         this.$sources.pushUnique(amlNode);
 
         var _self = this;
-        this.$amlTimer = setTimeout(function() {
+        this.$amlTimer = apf.setTimeout(function() {
             clearTimeout(_self.$amlTimer);
             _self.dispatchEvent("AMLMediaReady");
         });

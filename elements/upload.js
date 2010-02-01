@@ -517,7 +517,7 @@ apf.upload = function(struct, tagName){
         }
         else {
             this.timer = setInterval('apf.lookup(' + this.$uniqueId + ').$updateProgress()', 800);
-            this.timeout_timer = setTimeout('apf.lookup(' + this.$uniqueId + ').$timeout()', this.timeout);
+            this.timeout_timer = apf.setTimeout('apf.lookup(' + this.$uniqueId + ').$timeout()', this.timeout);
             this.form.submit();
         }
     };

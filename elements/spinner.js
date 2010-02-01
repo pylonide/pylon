@@ -263,7 +263,7 @@ apf.spinner = function(struct, tagName){
                 ow    = _self.$int.offsetWidth, oh = _self.$int.offsetHeight,
                 func  = function() {
                     clearTimeout(timer);
-                    timer = setTimeout(func, 10);
+                    timer = apf.setTimeout(func, 10);
                     if (!step)
                         return;
 
@@ -321,7 +321,7 @@ apf.spinner = function(struct, tagName){
             var value = (parseInt(_self.oInput.value) || 0) + 1,
                 func  = function() {
                     clearTimeout(timer);
-                    timer = setTimeout(func, 50);
+                    timer = apf.setTimeout(func, 50);
                     z++;
                     value += Math.pow(Math.min(200, z) / 10, 2) / 10;
                     value = Math.round(value);
@@ -346,7 +346,7 @@ apf.spinner = function(struct, tagName){
             var value = (parseInt(_self.oInput.value) || 0) - 1,
                 func  = function() {
                     clearTimeout(timer);
-                    timer = setTimeout(func, 50);
+                    timer = apf.setTimeout(func, 50);
                     z++;
                     value -= Math.pow(Math.min(200, z) / 10, 2) / 10;
                     value = Math.round(value);

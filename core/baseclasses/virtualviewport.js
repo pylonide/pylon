@@ -399,7 +399,7 @@ apf.VirtualViewport = function(){
         }
         else {
             clearTimeout(this.virtualVTimer);
-            this.virtualVTimer = setTimeout(function(){
+            this.virtualVTimer = apf.setTimeout(function(){
                 vp.change(Math.round((vp.length - vp.initialLimit) * pos), vp.limit, false);
             }, 300);
         }

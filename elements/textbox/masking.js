@@ -183,7 +183,7 @@ apf.textbox.masking = function(){
             e.returnValue = false;
             this.host.setValue(window.clipboardData.getData("Text") || "");
             //setPosition(lastPos);
-            setTimeout(function(){
+            apf.setTimeout(function(){
                 setPosition(lastPos);
             }, 1); //HACK good enough for now...
         };

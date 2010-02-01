@@ -178,7 +178,7 @@ apf.remote = function(struct, tagName){
         if (!apf.isO3) {
             // use a timeout to batch consecutive calls into one RSB call
             var _self = this;
-            this.queueTimer = setTimeout(function() {
+            this.queueTimer = apf.setTimeout(function() {
                 _self.processQueue(_self);
             });
         }
