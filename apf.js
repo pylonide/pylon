@@ -2173,6 +2173,9 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
     return xmlNode.getElementsByTagNameNS(xmlns, tag);
 };
 
+var $setTimeout  = setTimeout;
+var $setInterval = setInterval;
+
 document.documentElement.className += " has_apf";
 apf.browserDetect();
 apf.Init.run("apf");
@@ -2835,9 +2838,6 @@ else {
     	
     })(window);
 }
-
-var $setTimeout  = setTimeout;
-var $setInterval = setInterval;
 
 apf.$loader.script(apf.basePath + "loader.js");
 
