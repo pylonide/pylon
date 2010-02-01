@@ -87,7 +87,7 @@ apf.draw.vml = {
 	},
     initLayer : function(l , r){
   //      var vmlroot = r.vmlroot;
-        l.ds = 4;
+        l.ds = 1;
         l.dx = 0,l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;

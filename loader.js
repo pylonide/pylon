@@ -111,6 +111,8 @@ apf.$x = apf.$loader
         
         "core/lib/offline.js",
         "core/lib/storage.js",
+
+        "core/lib/uirecorder.js",
     
         "core/parsers/xpath.js",
         //"parsers/jslt_2.0.js",
@@ -353,7 +355,7 @@ apf.$x = apf.$loader
         "elements/param.js",
     
         "elements/video.js",
-        
+        "elements/vectorflow.js",
         
         "elements/webdav.js",
     

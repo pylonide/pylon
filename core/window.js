@@ -386,6 +386,10 @@ apf.window = function(){
             if (focusLoopDetect != aEl)
                 return false;
         }
+        
+        //#ifdef __WITH_UIRECORDER
+        //apf.console.log("Changed focus " + amlNode.serialize());
+        //#endif
 
         (apf.activeElement = this.document.activeElement = amlNode).focus(true, e);
 

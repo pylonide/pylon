@@ -755,9 +755,9 @@ apf.MultiSelect = function(){
             else {
                 if (this.$caret)
                     this.$deindicate(this.$caret);
-                this.$caret = this.$indicate(htmlNode);
+                this.$caret = this.$indicate(htmlNode, xmlNode);
 
-                this.$selected   = this.$select(htmlNode);
+                this.$selected   = this.$select(htmlNode, xmlNode);
                 this.selected    = xmlNode;
 
                 if (!fakeselect) {
@@ -946,7 +946,7 @@ apf.MultiSelect = function(){
                 if (!sel && selected == htmlNode)
                     sel = htmlNode;
 
-                this.$select(htmlNode);
+                this.$select(htmlNode, xmlNode);
                 this.$selectedList.push(htmlNode);
             }
             this.$valueList.push(xmlNode);

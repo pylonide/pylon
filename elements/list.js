@@ -63,6 +63,26 @@
  *      </a:bindings>
  *  </a:list>
  * </code>
+ *
+ * @event click Fires when a user presses a mouse button while over this element.
+ *
+ * @constructor
+ * @define list, select, select1, thumbnail
+ * @allowchild {smartbinding}
+ * @addnode elements
+ *
+ * @inherits apf.BaseList
+ * @inherits apf.Rename
+ *
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @version     %I%, %G%
+ * @since       0.4
+ */
+apf.list      = function(struct, tagName){
+    this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
+};
+
+/**
  * Example:
  * A small product search application using a list to display results.
  * <code>
@@ -79,10 +99,9 @@
  *      </data>
  *  </a:model>
  * 
- *  <a:list 
+ *  <a:thumbnail 
  *    model         = "mdlSearch"
  *    autoselect    = "false" 
- *    skin          = "thumbnail" 
  *    width         = "400"
  *    height        = "400"
  *    caching       = "false" 
@@ -92,7 +111,7 @@
  *          <a:image match="[@src]" />
  *          <a:each match="[item]" />
  *      </a:bindings>
- *  </a:list>
+ *  </a:thumbnail>
  * 
  *  <a:script>
  *      function search(){
@@ -100,20 +119,6 @@
  *      }
  *  </a:script>
  * </code>
- *
- * @event click Fires when a user presses a mouse button while over this element.
- *
- * @constructor
- * @define list, select, select1, thumbnail
- * @allowchild {smartbinding}
- * @addnode elements
- *
- * @inherits apf.BaseList
- * @inherits apf.Rename
- *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
- * @version     %I%, %G%
- * @since       0.4
  */
 apf.thumbnail = function(struct, tagName){
     this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
@@ -125,10 +130,6 @@ apf.select    = function(struct, tagName){
 
 apf.select1   = function(struct, tagName){
     this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
-};
-
-apf.list      = function(struct, tagName){
-    this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
 };
 
 (function(){

@@ -41,7 +41,7 @@ apf.vectorflow = function(struct, tagName){
 };
 
 (function(){
-    self = this;
+    this.self = this;
 
     this.nodes = {
         nodes: {}
@@ -58,6 +58,7 @@ apf.vectorflow = function(struct, tagName){
     this.bufferselect  = true;
     
     /**** Properties and Attributes ****/
+    this.$snapping = false;
     this.$viewport = {
         width: 800,             // width for viewport and layers
         height: 800,            // height for viewport and layers
@@ -67,13 +68,13 @@ apf.vectorflow = function(struct, tagName){
     };
     this.$grid = {
         cellW: 20,
-        cellH: 20,
-    }
+        cellH: 20
+    };
 
     this.$calculateGrid = function() {
         this.nodes["grid"] = [];
-        var width = this.$viewport.width + Math.abs(this.$viewport.offset.x);
-        var height = this.$viewport.height + Math.abs(this.$viewport.offset.y);
+        var width = this.$viewport.width;// + Math.abs(this.$viewport.offset.x);
+        var height = this.$viewport.height;// + Math.abs(this.$viewport.offset.y);
 
         var cellW = this.$grid.cellW * this.$viewport.zoom;
         var cellH = this.$grid.cellH * this.$viewport.zoom;
@@ -81,23 +82,21 @@ apf.vectorflow = function(struct, tagName){
         var numRows = height/cellH;
         var numCols = width/cellW;
         
-
         // horizontal lines
         for (var ri = 0, rl = numRows; ri < rl; ri++) {
             this.nodes["grid"].push({
                 type: "grid",
-                from: {x: 0, y: ri * cellH - Math.abs(this.$viewport.offset.y)}, 
-                to: {x: width - this.$viewport.offset.x, y: ri * cellH - Math.abs(this.$viewport.offset.y)}
+                from: {x: 0, y: ri * cellH + this.$viewport.offset.y}, 
+                to: {x: width + this.$viewport.offset.x, y: ri * cellH + this.$viewport.offset.y}
             })
         }
         
         // vertical lines
         for (var ci = 0, cl = numCols; ci < cl; ci++) {
-            
             this.nodes["grid"].push({
                 type: "grid",
-                from: {x: ci * cellW - Math.abs(this.$viewport.offset.x), y: 0}, 
-                to: {x: ci * cellW - Math.abs(this.$viewport.offset.x), y: height - this.$viewport.offset.y}
+                from: {x: ci * cellW + this.$viewport.offset.x, y: 0}, 
+                to: {x: ci * cellW + this.$viewport.offset.x, y: height + this.$viewport.offset.y}
             })
         }
     }
@@ -254,8 +253,8 @@ apf.vectorflow = function(struct, tagName){
             top:    {x: node.x, y: node.top, minLengthX: node.x, minLengthY: node.top - this.$minLineLength},
             left:   {x: node.left, y: node.y, minLengthX: node.left - this.$minLineLength, minLengthY: node.y},
             right:  {x: node.right, y: node.y, minLengthX: node.right + this.$minLineLength, minLengthY: node.y},
-            bottom: {x: node.x, y: node.bottom, minLengthX: node.x, minLengthY: node.bottom + this.$minLineLength},
-        }
+            bottom: {x: node.x, y: node.bottom, minLengthX: node.x, minLengthY: node.bottom + this.$minLineLength}
+        };
         
         return node;
     }
@@ -267,7 +266,7 @@ apf.vectorflow = function(struct, tagName){
         if (this.nodes["rect"]) blockNodes = blockNodes.concat(this.nodes["rect"]);
         if (this.nodes["decision"]) blockNodes = blockNodes.concat(this.nodes["decision"]);
         if (this.nodes["circle"]) blockNodes = blockNodes.concat(this.nodes["circle"]);
-        if (this.nodes["selection"]) blockNodes = blockNodes.concat(this.nodes["selection"]);
+        //if (this.nodes["selection"]) blockNodes = blockNodes.concat(this.nodes["selection"]);
 
         for (var node, i = 0, l = blockNodes.length; i < l; i++) {
             node = blockNodes[i];
@@ -696,37 +695,41 @@ apf.vectorflow = function(struct, tagName){
                 break;
             case 37:
                 //LEFT
+                this.$resetSelection();
                 for (var i = 0, l = this.$selectedNodes.length; i < l; i++) {
                     this.$selectedNodes[i].x -= this.$grid.cellW * multiplier;
                     this.$setPositions(this.$selectedNodes[i]);
-                    this.$setSelection(this.$selectedNodes[i]);
+                    this.$setSelection(this.$selectedNodes[i], true);
                 }
                 this.$drawLayers();
                 break;
             case 39:
                 //RIGHT
+                this.$resetSelection();
                 for (var i = 0, l = this.$selectedNodes.length; i < l; i++) {
                     this.$selectedNodes[i].x += this.$grid.cellW * multiplier;
                     this.$setPositions(this.$selectedNodes[i]);
-                    this.$setSelection(this.$selectedNodes[i]);
+                    this.$setSelection(this.$selectedNodes[i], true);
                 }
                 this.$drawLayers();
                 break;
             case 38:
                 //UP
+                this.$resetSelection();
                 for (var i = 0, l = this.$selectedNodes.length; i < l; i++) {
                     this.$selectedNodes[i].y -= this.$grid.cellH * multiplier;
                     this.$setPositions(this.$selectedNodes[i]);
-                    this.$setSelection(this.$selectedNodes[i]);
+                    this.$setSelection(this.$selectedNodes[i], true);
                 }
                 this.$drawLayers();
                 break;
             case 40:
                 //DOWN
+                this.$resetSelection();
                 for (var i = 0, l = this.$selectedNodes.length; i < l; i++) {
                     this.$selectedNodes[i].y += this.$grid.cellH * multiplier;
                     this.$setPositions(this.$selectedNodes[i]);
-                    this.$setSelection(this.$selectedNodes[i]);
+                    this.$setSelection(this.$selectedNodes[i], true);
                 }
                 this.$drawLayers();
                 break;
@@ -818,16 +821,20 @@ apf.vectorflow = function(struct, tagName){
         circle : {
             inherit:'shape',
             stroke:'black',
+//            weight:5,
+//            strokeopacity:0.5,
             fill:'red',
         $:1},
         rect : {
             inherit:'shape',
             stroke:'black',
+            opacity:0.6,
             fill:'blue',
         $:1},
         decision : {
             inherit:'shape',
             stroke:'black',
+            opacity:0.6,
             fill:'yellow',
         $:1},
         line : {
@@ -864,7 +871,7 @@ apf.vectorflow = function(struct, tagName){
         selection_lineConnect : {
             inherit:'shape',
             fill:'red',
-        $:1},
+        $:1}
     };
 
     this.$rootLayers = {
@@ -872,43 +879,43 @@ apf.vectorflow = function(struct, tagName){
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         grid: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         circle: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         rect: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         decision: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         line: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         text: {
             left: 0,
             top: 0,
             width: this.$viewport.width,
-            height: this.$viewport.height,
+            height: this.$viewport.height
         },
         selection_outline: {
             left: 0,
@@ -963,7 +970,7 @@ apf.vectorflow = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!self.$mouse) self.$mouse = {};
             self.$mouse.status = "mousedown";
-            
+
             if (!e) e = event;
 
             var resize = false;
@@ -977,11 +984,45 @@ apf.vectorflow = function(struct, tagName){
             self.$mouse.cur = {x: e.pageX, y: e.pageY};
             self.$mouse.start = {x: self.$mouse.cur.x, y:self.$mouse.cur.y};
 
-            
             if (self.$selectedNodes && self.$selectedNodes.length) {
+                self.$prevSelectedNodes = self.$selectedNodes;
+                
                 if (self.$selectedNodes.length == 1) {
                     self.$handlerNode = self.$getHandlerNode();
                 }
+                
+                if (!self.$handlerNode) {
+                    // select single node
+                    if (!self.$ctrlKey) {
+                        self.$selectedNodes = self.$setSelectedNodes();
+                        
+                        if (self.$selectedNodes.length == 1) {
+                            if (self.$prevSelectedNodes.indexOf(self.$selectedNodes[0]) == -1)
+                                self.$handlerNode = self.$getHandlerNode();
+                            else
+                                self.$selectedNodes = self.$prevSelectedNodes;
+                        }
+                    // select multiple nodes with CTRL + click
+                    } else {
+                        self.$selectedNodes = self.$setSelectedNodes(true, true);
+                    }
+                    
+                    if (!self.$selectedNodes.length) {
+                        //self.$resetSelection();
+                    }
+                }
+            }
+            else {
+                // select single node
+                if (!self.$ctrlKey) {
+                    self.$selectedNodes = self.$setSelectedNodes();
+                // select multiple nodes with CTRL + click
+                } else {
+                    self.$selectedNodes = self.$setSelectedNodes(true, true);
+                }
+            }
+
+            if (self.$selectedNodes.length) {
                 for (var i = 0, l = self.$selectedNodes.length; i < l; i++) {
                     self.$selectedNodes[i].diffX = self.$mouse.start.x - self.$selectedNodes[i].x;
                     self.$selectedNodes[i].diffY = self.$mouse.start.y - self.$selectedNodes[i].y;
@@ -1001,7 +1042,10 @@ apf.vectorflow = function(struct, tagName){
                     self.$viewport.mode = "move";
                 }
             }
-
+            
+            // redraw layers based on selection
+            self.$drawLayers();
+            
             self.$ext.onmousemove = function(e) {
                 if (!e) e = event;
                 
@@ -1014,7 +1058,7 @@ apf.vectorflow = function(struct, tagName){
                 
                 if ("mousedown|mousedrag".indexOf(self.$mouse.status) > -1) {
                     // drag minimum num of pixels to be considered draggin instead of clicking
-                    var minDragAmount = 10;
+                    var minDragAmount = 5;
                     if (Math.abs(self.$mouse.cur.x - self.$mouse.start.x) < minDragAmount && Math.abs(self.$mouse.cur.y - self.$mouse.start.y) < minDragAmount) {
                         return;
                     }
@@ -1024,22 +1068,23 @@ apf.vectorflow = function(struct, tagName){
                     if (self.$selectedNodes && self.$selectedNodes.length) {
                         if (self.$selectedNodes.length == 1 && self.$handlerNode) {
                             if (self.$handlerNode.handlerType == "resize") {
+                                
                                 // calculate width
-                                var newWidth;
-                                if ('bottomright|topright'.indexOf(self.$handlerNode.id) > -1) {
-                                    newWidth = Math.round((self.$mouse.cur.x - self.$viewport.offset.x - self.$selectedNodes[0].left - 20)/self.$grid.cellH)*self.$grid.cellH;
+                                var newWidth = 0;
+                                if (self.$handlerNode.id.indexOf('right') > -1) {
+                                    newWidth = (self.$snapping) ? Math.round((self.$mouse.cur.x - self.$viewport.offset.x - self.$selectedNodes[0].left)/self.$grid.cellH)*self.$grid.cellH : self.$mouse.cur.x - self.$viewport.offset.x - self.$selectedNodes[0].left;
                                 }
-                                else if ('bottomleft|topleft'.indexOf(self.$handlerNode.id) > -1) {
-                                    newWidth = Math.round((self.$selectedNodes[0].right - self.$selectedNodes[0].left + (self.$selectedNodes[0].left - self.$mouse.cur.x - self.$viewport.offset.x))/self.$grid.cellH)*self.$grid.cellH;
+                                else if (self.$handlerNode.id.indexOf('left') > -1) {
+                                    newWidth = (self.$snapping) ? Math.round((self.$selectedNodes[0].right - self.$selectedNodes[0].left + (self.$selectedNodes[0].left - self.$mouse.cur.x - self.$viewport.offset.x))/self.$grid.cellH)*self.$grid.cellH : self.$selectedNodes[0].right - self.$selectedNodes[0].left + (self.$selectedNodes[0].left - self.$mouse.cur.x - self.$viewport.offset.x);
                                 }
         
                                 // calculate height
                                 var newHeight;
-                                if ('bottomleft|bottomright'.indexOf(self.$handlerNode.id) > -1) {
-                                    newHeight = Math.round((self.$mouse.cur.y - self.$viewport.offset.y - self.$selectedNodes[0].top - 20)/self.$grid.cellH)*self.$grid.cellH;
+                                if (self.$handlerNode.id.indexOf('bottom') > -1) {
+                                    newHeight = (self.$snapping) ? Math.round((self.$mouse.cur.y - self.$viewport.offset.y - self.$selectedNodes[0].top)/self.$grid.cellH)*self.$grid.cellH : self.$mouse.cur.y - self.$viewport.offset.y - self.$selectedNodes[0].top;
                                 }
-                                else if ('topleft|topright'.indexOf(self.$handlerNode.id) > -1) {
-                                    newHeight = Math.round((self.$selectedNodes[0].bottom - self.$selectedNodes[0].top + (self.$selectedNodes[0].top - self.$mouse.cur.y - self.$viewport.offset.y))/self.$grid.cellH)*self.$grid.cellH;
+                                else if (self.$handlerNode.id.indexOf('top') > -1) {
+                                    newHeight = (self.$snapping) ? Math.round((self.$selectedNodes[0].bottom - self.$selectedNodes[0].top + (self.$selectedNodes[0].top - self.$mouse.cur.y - self.$viewport.offset.y))/self.$grid.cellH)*self.$grid.cellH : self.$selectedNodes[0].bottom - self.$selectedNodes[0].top + (self.$selectedNodes[0].top - self.$mouse.cur.y - self.$viewport.offset.y);
                                 }
         
                                 // if circle, half width and height
@@ -1061,21 +1106,24 @@ apf.vectorflow = function(struct, tagName){
                                 }
        
                                 // set width
-                                self.$selectedNodes[0].width = newWidth;
-                                //if (self.$selectedNodes[0].width < 10)
-                                    //self.$selectedNodes[0].width = 10;
-                                if (self.$handlerNode.id.indexOf('left') > -1)
-                                    self.$selectedNodes[0].left = self.$mouse.cur.x;
-                                self.$selectedNodes[0].right = self.$selectedNodes[0].left + newWidth;
+                                if (newWidth) {
+                                    self.$selectedNodes[0].width = newWidth;
+                                    if (self.$selectedNodes[0].width < 20)
+                                        self.$selectedNodes[0].width = 20;
+                                    if (self.$handlerNode.id.indexOf('left') > -1)
+                                        self.$selectedNodes[0].left = self.$mouse.cur.x;
+                                    self.$selectedNodes[0].right = self.$selectedNodes[0].left + newWidth;
+                                }
                                 
                                 // set height
-                                self.$selectedNodes[0].height = newHeight;
-                                //if (self.$selectedNodes[0].height < 10)
-                                    //self.$selectedNodes[0].height = 10;
-                                if (self.$handlerNode.id.indexOf('top') > -1)
-                                    self.$selectedNodes[0].top = self.$mouse.cur.y;
-                                self.$selectedNodes[0].bottom = self.$selectedNodes[0].top + newHeight;
-        
+                                if (newHeight) {
+                                    self.$selectedNodes[0].height = newHeight;
+                                    if (self.$selectedNodes[0].height < 20)
+                                        self.$selectedNodes[0].height = 20;
+                                    if (self.$handlerNode.id.indexOf('top') > -1)
+                                        self.$selectedNodes[0].top = self.$mouse.cur.y;
+                                    self.$selectedNodes[0].bottom = self.$selectedNodes[0].top + newHeight;
+                                }
         
                                 self.$setPositions(self.$selectedNodes[0]);
                                 
@@ -1120,8 +1168,8 @@ apf.vectorflow = function(struct, tagName){
                                 
                                 if (!connectorFound) {
                                     self.$selectedNodes[0].status = "";
-                                    var snapX = Math.round((self.$mouse.cur.x)/self.$grid.cellW)*self.$grid.cellW - self.$viewport.offset.x;
-                                    var snapY = Math.round((self.$mouse.cur.y)/self.$grid.cellH)*self.$grid.cellH - self.$viewport.offset.y;
+                                    var snapX = (self.$snapping) ? Math.round((self.$mouse.cur.x)/self.$grid.cellW)*self.$grid.cellW - self.$viewport.offset.x : self.$mouse.cur.x;
+                                    var snapY = (self.$snapping) ? Math.round((self.$mouse.cur.y)/self.$grid.cellH)*self.$grid.cellH - self.$viewport.offset.y : self.$mouse.cur.y;
     
                                     if (self.$handlerNode.id == 'from') {
                                         self.$selectedNodes[0].startPoint.x = snapX;//mouseX;
@@ -1142,13 +1190,14 @@ apf.vectorflow = function(struct, tagName){
                             for (var node, i = 0, l = self.$selectedNodes.length; i < l; i++) {
                                 node = self.$selectedNodes[i];
     
-                                var snapX = Math.round((self.$mouse.cur.x - node.diffX)/self.$grid.cellW)*self.$grid.cellW;
-                                var snapY = Math.round((self.$mouse.cur.y - node.diffY)/self.$grid.cellH)*self.$grid.cellH;
-        
+                                var snapX = (self.$snapping) ? Math.round((self.$mouse.cur.x - node.diffX)/self.$grid.cellW)*self.$grid.cellW : self.$mouse.cur.x - node.diffX;
+                                var snapY = (self.$snapping) ? Math.round((self.$mouse.cur.y - node.diffY)/self.$grid.cellH)*self.$grid.cellH : self.$mouse.cur.y - node.diffY;
+
                                 node.x = snapX; //self.$mouse.cur.x - diffX
                                 node.y = snapY; //self.$mouse.cur.y - diffY
+                                
                                 self.$setPositions(node);
-                                //self.$setSelection(node, true);
+                                self.$setSelection(node, true);
                             }
                         }
                     }
@@ -1159,14 +1208,14 @@ apf.vectorflow = function(struct, tagName){
                             // reset selection box, redraw on every mousemove
                             self.$resetSelection();
                             self.$selection = {
-                                type: "selection",
+                                type: "selection_outline",
                                 top: Math.min(self.$mouse.start.y, self.$mouse.cur.y),
                                 left: Math.min(self.$mouse.start.x, self.$mouse.cur.x),
                                 width: Math.abs(self.$mouse.cur.x - self.$mouse.start.x),
                                 height: Math.abs(self.$mouse.cur.y - self.$mouse.start.y) 
                             }
                             // redraw Selection
-                            self.nodes['selection'].push(self.$selection);
+                            self.nodes['selection_outline'].push(self.$selection);
                         }
                         else if (self.$viewport.mode == "move") {
                             diffX = self.$mouse.cur.x - self.$mouse.start.x; 
@@ -1175,40 +1224,30 @@ apf.vectorflow = function(struct, tagName){
                             self.$viewport.offset.x = parseInt(self.$viewport.offset.curX + diffX)
                             self.$viewport.offset.y = parseInt(self.$viewport.offset.curY + diffY);
                             self.$calculateGrid();
-                            self.$drawLayers();
+                            //self.$drawLayers();
                         }
                     }
                     
-                    self.$drawLayers();                    
+                    self.$drawLayers();
                 }
             }
         }
         
         
         this.$ext.onmouseup = function(e) {
-            if (!self.$ctrlKey) {
-                if (self.$selection) {
-                    self.$resetSelection();
-                    self.$selectedNodes = self.$setSelectedNodes(true);
-                    self.$selection = null;
-                    self.$drawLayers();
-                }
-                else {
-                    self.$selectedNodes = self.$setSelectedNodes();
-                }
-            } else {
-                self.$selectedNodes = self.$setSelectedNodes(true, true);
+            if (self.$mouse.status == "mousedrag" && self.$selectedNodes && self.$selectedNodes.length) {
+                self.$mouse.status = "mouseup";
+                return;
             }
-
-            if (!self.$selectedNodes.length) {
-                self.$resetSelection();
-            }
-            
-            // redraw layers based on selection
-            self.$drawLayers();
-
 
             self.$mouse.status = "mouseup";
+
+            if (self.$selection) {
+                self.$resetSelection();
+                self.$selectedNodes = self.$setSelectedNodes(true);
+                self.$selection = null;
+                self.$drawLayers();
+            }
         }
         
         this.$ext.onmouseout = function(e) {
@@ -1263,7 +1302,9 @@ apf.vectorflow = function(struct, tagName){
     
     this.$getHandlerNode = function() {
         var nodesToCheck = [];
-        if (this.nodes["selection"]) nodesToCheck = nodesToCheck.concat(this.nodes["selection"]);
+        
+        if (this.nodes["selection_resize"]) nodesToCheck = nodesToCheck.concat(this.nodes["selection_resize"]);
+        if (this.nodes["selection_lineConnect"]) nodesToCheck = nodesToCheck.concat(this.nodes["selection_lineConnect"]);
         
         this.$handlerNode = null;
         for (var check, i = 0, l = nodesToCheck.length; i < l; i++) {
@@ -1294,7 +1335,7 @@ apf.vectorflow = function(struct, tagName){
 
             check = (!this.$selection) 
                 ? this.$mouse.cur.x > node.left + this.$viewport.offset.x && this.$mouse.cur.x < node.right + this.$viewport.offset.x && this.$mouse.cur.y > node.top + this.$viewport.offset.y && this.$mouse.cur.y < node.bottom + this.$viewport.offset.y 
-                : (node.left + this.$viewport.offset.x > this.$selection.left) && (node.top + self.$viewport.offset.y > this.$selection.top) && (node.right + self.$viewport.offset.x < this.$selection.left + this.$selection.width) && (node.bottom + self.$viewport.offset.y < this.$selection.top + this.$selection.height);
+                : (node.left + this.$viewport.offset.x > this.$selection.left) && (node.top + this.$viewport.offset.y > this.$selection.top) && (node.right + this.$viewport.offset.x < this.$selection.left + this.$selection.width) && (node.bottom + this.$viewport.offset.y < this.$selection.top + this.$selection.height);
 
             // check all nodes but lines
             if ('line'.indexOf(node.type) == -1) {
@@ -1310,7 +1351,7 @@ apf.vectorflow = function(struct, tagName){
                     if (!line.arrowLine) {
                         checkLine = (!this.$selection) 
                             ? this.$mouse.cur.x > line.left + this.$viewport.offset.x && this.$mouse.cur.x < line.right + this.$viewport.offset.x && this.$mouse.cur.y > line.top + this.$viewport.offset.y && this.$mouse.cur.y < line.bottom + this.$viewport.offset.y 
-                            : (line.left + self.$viewport.offset.x > this.$selection.left) && (line.top + self.$viewport.offset.y > this.$selection.top) && (line.right + self.$viewport.offset.x < this.$selection.left + this.$selection.width) && (line.bottom + self.$viewport.offset.y < this.$selection.top + this.$selection.height);
+                            : (line.left + this.$viewport.offset.x > this.$selection.left) && (line.top + this.$viewport.offset.y > this.$selection.top) && (line.right + this.$viewport.offset.x < this.$selection.left + this.$selection.width) && (line.bottom + this.$viewport.offset.y < this.$selection.top + this.$selection.height);
                         if (checkLine) {
                             selected.push(node);
                             this.$setSelection(node, multi);
@@ -1335,6 +1376,7 @@ apf.vectorflow = function(struct, tagName){
             this.$resetSelection();
         }
         
+        /*
         var box = null;
         if ('decision|rect'.indexOf(node.type) > -1) {
             box = {
@@ -1356,9 +1398,9 @@ apf.vectorflow = function(struct, tagName){
         }
 
         if (box) {
-            //this.nodes["selection"].push(box);
+            this.nodes["selection"].push(box);
         }
-        
+        */
         var hWidth = 10, hHeight = 10;
         
         if (node.type != "selection") {
@@ -1369,17 +1411,23 @@ apf.vectorflow = function(struct, tagName){
                 var left = node.left - hWidth + this.$viewport.offset.x;
                 var bottom = node.bottom + this.$viewport.offset.y;
                 var right = node.right + this.$viewport.offset.x;
-    
+                var hCentre = node.left + node.width/2 + this.$viewport.offset.x;
+                var vCentre = node.top + node.height/2 + this.$viewport.offset.y;
+                
+                if (node.type == 'circle') {
+                    hCentre += node.width/2;
+                    vCentre += node.height/2;
+                }
                 handlerType = "selection_resize";
                 handlers = [
-                    {handlerType: "resize", type: handlerType, id: "topleft", width: hWidth, height: hHeight, top: top, left: left, right: left+hWidth, bottom: top+hHeight }, //topleft 
-    //                {type: "selection", id: "top", width: hWidth, height: hHeight, top: top, left: left + node.width/2 + hWidth/2, right: left + node.width/2 + hWidth/2 + hWidth, bottom: top+hHeight  }, //top
-                    {handlerType: "resize", type: handlerType, id: "topright", width: hWidth, height: hHeight, top: top, left: right, right: right+hWidth, bottom: top+hHeight }, //topright
-    //                {type: "selection", id: "right", width: hWidth, height: hHeight, top: top + node.height/2 + hWidth/2, left: right, right: right+hWidth, bottom: top + node.height/2 + hHeight}, //right
-                    {handlerType: "resize", type: handlerType, id: "bottomright", width: hWidth, height: hHeight, top: bottom, left: right, right: right+hWidth, bottom: bottom+hHeight }, //bottomright
-    //                {type: "selection", id: "bottom", width: hWidth, height: hHeight, top: top, left: left + hWidth/2 }, //bottom
-                    {handlerType: "resize", type: handlerType, id: "bottomleft", width: hWidth, height: hHeight, top: bottom, left: left, right: left+hWidth, bottom: bottom+hHeight } //bottomleft
-    //                {type: "selection", id: "left", width: hWidth, height: hHeight, top: top + node.height/2, left: left }  //left
+                    {handlerType: "resize", type: handlerType, id: "topleft", width: hWidth, height: hHeight, top: top, left: left, right: left+hWidth, bottom: top+hHeight },
+                    {handlerType: "resize", type: handlerType, id: "top", width: hWidth, height: hHeight, top: top, left: hCentre - hWidth/2, right: hCentre + hWidth/2, bottom: top + hHeight }, 
+                    {handlerType: "resize", type: handlerType, id: "topright", width: hWidth, height: hHeight, top: top, left: right, right: right+hWidth, bottom: top+hHeight },
+                    {handlerType: "resize", type: handlerType, id: "right", width: hWidth, height: hHeight, top: vCentre - hHeight/2, left: right, right: right+hWidth, bottom: vCentre + hHeight/2 }, 
+                    {handlerType: "resize", type: handlerType, id: "bottomright", width: hWidth, height: hHeight, top: bottom, left: right, right: right+hWidth, bottom: bottom+hHeight },
+                    {handlerType: "resize", type: handlerType, id: "bottom", width: hWidth, height: hHeight, top: bottom, left: hCentre - hWidth/2, right: hCentre + hWidth/2, bottom: bottom + hHeight }, 
+                    {handlerType: "resize", type: handlerType, id: "bottomleft", width: hWidth, height: hHeight, top: bottom, left: left, right: left+hWidth, bottom: bottom+hHeight },
+                    {handlerType: "resize", type: handlerType, id: "left", width: hWidth, height: hHeight, top: vCentre - hHeight/2, left: left, right: left-hWidth, bottom: vCentre + hHeight/2 }
                 ];
             }
             else {
