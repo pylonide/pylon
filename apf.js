@@ -193,6 +193,8 @@ var apf = {
     config        : {},
     _GET          : {},
     $asyncObjects : {"apf.oHttp" : 1},
+    setTimeout    : setTimeout,
+    setInterval   : setInterval,
     
     /**
      * String specifying the basepath for loading apf from seperate files.

@@ -370,7 +370,7 @@ apf.uirecorder = {
         //For new timeouts associated with the next action.
         var currentState = apf.uirecorder.current = {};
         self.setTimeout = function(f, ms){
-            debugger;
+            alert(0);
             //Record current mouseEvent
             apf.uirecorder.setTimeout(function(){
                 apf.uirecorder.runInContext(currentState, f);
