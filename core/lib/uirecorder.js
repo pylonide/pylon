@@ -276,7 +276,8 @@ apf.uirecorder = {
         var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var actionObj = {
             time        : time,
-            name        : eventName
+            name        : eventName,
+            detailList  : {}
         }
         
         if (htmlElement) actionObj.htmlElement  = htmlElement;
@@ -286,19 +287,25 @@ apf.uirecorder = {
 
         // assign all details to first mousemove action obj in the serie
         if (apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
-            for (var elementName in apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList) {
-                if (!actionObj.detailList) actionObj.detailList = {};
-                if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
+            //actionObj.detailList = apf.uirecorder.detailList;
+            //apf.uirecorder.detailList = {};
+            debugger;
+            //debugger;
+            for (var elementName in apf.uirecorder.detailList) {
+                //if (!actionObj.detailList) actionObj.detailList = {};
+
+                if (!apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName]) apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName] = {
                     amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
                     events      : [],
                     properties  : [],
                     data        : []
                 };
-    
-                actionObj.detailList[elementName].events = actionObj.detailList[elementName].events.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events);
-                actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties);
-                actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data);
+
+                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
+                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
+                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
             }
+            apf.uirecorder.detailList = {};
             actionObj.ignore = "true";
         }
         else {
@@ -361,16 +368,16 @@ apf.uirecorder = {
         var index = apf.uirecorder.actionObjects.length;
         apf.uirecorder.actionObjects.push(actionObj);
         
+        //For new timeouts associated with the next action.
+        var currentState = apf.uirecorder.current = {};
+
         //For all the running timeouts
         apf.uirecorder.current.actionObj = actionObj;
         apf.uirecorder.current.index     = index;
         
         //@todo the code below possibly needs to be in a timeout
         
-        //For new timeouts associated with the next action.
-        var currentState = apf.uirecorder.current = {};
-        self.setTimeout = function(f, ms){
-            alert(0);
+        apf.setTimeout = function(f, ms){
             //Record current mouseEvent
             apf.uirecorder.setTimeout(function(){
                 apf.uirecorder.runInContext(currentState, f);
@@ -396,7 +403,10 @@ apf.uirecorder = {
         
         //Set the new stuff on the past action
         //this.current = state;
-        f();
+        if (typeof f == "string")
+            apf.exec(f)
+        else
+            f();
         apf.uirecorder.setDelayedDetails(state.index);
         //this.current = current;
     },

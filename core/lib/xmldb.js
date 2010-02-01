@@ -595,10 +595,6 @@ apf.xmldb = new (function(){
     var notifyQueue = {}, notifyTimer;
     this.$hasQueue = false;
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
-        //#ifdef __WITH_UIRECORDER
-        //apf.console.log("Changed xml node " + xmlNode.xml.substr(100) + "\n with action: " + action + " and arguments " + (undoObj && undoObj.args));
-        //#endif
-        
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && apf.offline.models.enabled
           && apf.offline.models.realtime) {
