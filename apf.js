@@ -538,7 +538,7 @@ var apf = {
     /**
      * Sends and retrieves data from remote locations over http.
      * Example:
-     * <pre class="code">
+     * <code>
      *  var content = apf.ajax("http://www.ajax.org", {
      *      method   : "POST",
      *      data     : "<data />",
@@ -551,7 +551,7 @@ var apf = {
      *      }
      *  });
      *  alert(content);
-     * </pre>
+     * </code>
      *
      * @param {String}   url       the url that is accessed.
      * @param {Object}   options   the options for the http request
