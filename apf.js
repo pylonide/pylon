@@ -309,8 +309,9 @@ var apf = {
          */
         this.isGecko3     = this.isGecko && (function x(){})[-5] == "x";
         this.isGecko35    = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
-        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|gecko)\/([\d\.]+)/i)[1]) : -1;
-        
+        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
+        this.versionFF    = this.isGecko ? parseFloat(sAgent.match(/(?:firefox)\/([\d\.]+)/i)[1]) : -1;
+
         var found;
         /**
          * Specifies whether the application is running in the Internet Explorer browser, any version.

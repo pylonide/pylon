@@ -135,8 +135,8 @@ apf.dropdown = function(struct, tagName){
         this.containerHeight = value
             ? (Math.min(this.maxitems || 100, value) * this.itemHeight)
             : 10;
-        if (this.containerHeight > 20)
-            this.containerHeight = Math.ceil(this.containerHeight * 0.9);
+        /*if (this.containerHeight > 20)
+            this.containerHeight = Math.ceil(this.containerHeight * 0.9);*/
     };
     
     /**** Public methods ****/
