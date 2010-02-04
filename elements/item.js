@@ -222,7 +222,7 @@ apf.item  = function(struct, tagName){
     }
 
     /**
-     * @attribute {Boolean} checked whether the item is selected.
+     * @attribute {Boolean} selected whether the item is selected.
      */
     this.$propHandlers["selected"] = function(value){
         if (this.localName != "radio")

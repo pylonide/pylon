@@ -265,13 +265,15 @@ apf.uirecorder = {
      */
     actionList      : [],
     actionObjects : [],
+    firstMousemoveObj : null,
     captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement) ? apf.findHost(htmlElement) : null;
-        
+//if (eventName == "mouseup") debugger;
         // ignore interaction with uirecorder controls
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
-
+        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") return;
+//        if (amlNode.id == "uir_bar") amlNode = null;
+        
         // time in ms when action is executed
         var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var actionObj = {
@@ -285,45 +287,27 @@ apf.uirecorder = {
         if (e && e.clientX) actionObj.x         = e.clientX;
         if (e && e.clientY) actionObj.y         = e.clientY;
 
-        // assign all details to first mousemove action obj in the serie
-        if (apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
-            //actionObj.detailList = apf.uirecorder.detailList;
-            //apf.uirecorder.detailList = {};
-            debugger;
-            //debugger;
-            for (var elementName in apf.uirecorder.detailList) {
-                //if (!actionObj.detailList) actionObj.detailList = {};
-
-                if (!apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName]) apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName] = {
-                    amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
-                    events      : [],
-                    properties  : [],
-                    data        : []
-                };
-
-                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
-                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
-                apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
-            }
-            apf.uirecorder.detailList = {};
-            actionObj.ignore = "true";
-        }
-        else {
-            actionObj.detailList = apf.uirecorder.detailList;
-            apf.uirecorder.detailList = {};
-        }
-        
         // get keypress value
         if (eventName === "keypress") {
             actionObj.value = value;
         }
+
+        // detect first mousemove action in serie
+        if ((apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") || apf.uirecorder.actionList.length == 0) {
+            apf.uirecorder.firstMousemoveObj = actionObj;
+        }
         
         // combine mousedown / mouseup to click
+        /*
         if (apf.uirecorder.actionList.length > 1 && eventName == "mouseup" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousedown") {
             actionObj.name = "click";
             
             // merge detailList of mousedown with current actionObj
             for (var elementName in apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList) {
+                //actionObj.delayTime = actionObj.time;
+                actionObj.time = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].time;
+
+                
                 if (!actionObj.detailList) actionObj.detailList = {};
                 if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
                     amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
@@ -336,43 +320,51 @@ apf.uirecorder = {
                 actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties);
                 actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data);
             }
-            apf.uirecorder.detailList = {};
-            
             // replace mousedown obj with new click obj
             apf.uirecorder.actionList[apf.uirecorder.actionList.length-1] = actionObj;
         }
         
-        else if (apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
+        else 
+        */
+       var index, delayObj;
+        if (apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
             for (var elementName in apf.uirecorder.detailList) {
-                if (!actionObj.detailList) actionObj.detailList = {};
-                if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
-                    amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
+                if (!apf.uirecorder.firstMousemoveObj.detailList) apf.uirecorder.firstMousemoveObj.detailList = {};
+                if (!apf.uirecorder.firstMousemoveObj.detailList[elementName]) apf.uirecorder.firstMousemoveObj.detailList[elementName] = {
+                    amlNode     : apf.uirecorder.detailList[elementName].amlNode,
                     events      : [],
                     properties  : [],
                     data        : []
                 };
     
-                actionObj.detailList[elementName].events = actionObj.detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
-                actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
-                actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
+                apf.uirecorder.firstMousemoveObj.detailList[elementName].events = apf.uirecorder.firstMousemoveObj.detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
+                apf.uirecorder.firstMousemoveObj.detailList[elementName].properties = apf.uirecorder.firstMousemoveObj.detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
+                apf.uirecorder.firstMousemoveObj.detailList[elementName].data = apf.uirecorder.firstMousemoveObj.detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
             }
             apf.uirecorder.detailList = {};
-            
+            actionObj.ignore = "true";
             apf.uirecorder.actionList.push(actionObj);
+
+            delayObj = apf.uirecorder.firstMousemoveObj;
+            index = apf.uirecorder.firstMousemoveObj.index;
         }
         else {
+            actionObj.detailList = apf.uirecorder.detailList;
+            apf.uirecorder.detailList = {};
             apf.uirecorder.actionList.push(actionObj);
+
+            delayObj = actionObj;
+            index = actionObj.index = apf.uirecorder.actionObjects.length;
         }
         //actionObj.activeElement = apf.xmlToXpath(apf.activeElement);
 
-        var index = apf.uirecorder.actionObjects.length;
         apf.uirecorder.actionObjects.push(actionObj);
         
         //For new timeouts associated with the next action.
         var currentState = apf.uirecorder.current = {};
 
         //For all the running timeouts
-        apf.uirecorder.current.actionObj = actionObj;
+        apf.uirecorder.current.actionObj = delayObj;
         apf.uirecorder.current.index     = index;
         
         //@todo the code below possibly needs to be in a timeout
@@ -411,6 +403,11 @@ apf.uirecorder = {
         //this.current = current;
     },
     setDelayedDetails : function(index) {
+        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
+        
+        // if object is mousemove delayTime is possibly set multiple times, take time with highest number
+        if (!apf.uirecorder.actionObjects[index].delayTime || time > apf.uirecorder.actionObjects[index].delayTime)
+            apf.uirecorder.actionObjects[index].delayTime = time;
         for (var elementName in apf.uirecorder.detailList) {
             if (!apf.uirecorder.actionObjects[index].detailList) apf.uirecorder.actionObjects[index].detailList = {};
             if (!apf.uirecorder.actionObjects[index].detailList[elementName]) apf.uirecorder.actionObjects[index].detailList[elementName] = {
@@ -440,28 +437,35 @@ apf.uirecorder = {
     mouseoverEvents : ["dragover", "dragout"],
     prevEvtName : "",
     captureEvent : function(eventName, e) {
+        apf.console.info("event " + eventName + " dispatched");
         if (!e || e.noCapture) return; 
 
-        var amlNode;
-        if (eventName != "movefocus")
-            amlNode = e.amlNode || e.currentTarget;
-        else
+        var amlNode = e.amlNode || e.currentTarget;
+        if (eventName == "movefocus")
             amlNode = e.toElement;
-        
+        else if (eventName == "DOMNodeRemoved")
+            amlNode = e.relatedNode;
+                    
         var targetName;
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
+        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") return;
         if (!amlNode || !amlNode.ownerDocument || !amlNode.$aml) {
             //return;
         }
         
-        if (amlNode && (amlNode.parentNode)) {
+        if (amlNode && (amlNode.parentNode) && amlNode != "uir_bar") {
             targetName = apf.xmlToXpath(amlNode);
+        }
+        if (amlNode && amlNode.id == "uir_bar" && e.htmlEvent) {
+            var htmlElement = e.htmlEvent.srcElement;
+            targetName = ("&lt;" + htmlElement.tagName + "&gt; " + htmlElement.id) || "&lt;" + htmlElement.tagName + "&gt;";
         }
         
         // apf
         if (amlNode && amlNode.console && amlNode.extend && amlNode.all) targetName = "apf";
         
+        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var eventObj = {
+            time        : time,
             name        : eventName,
             //amlNode     : amlNode,
             //xmlNode     : xmlNode,
@@ -488,7 +492,7 @@ apf.uirecorder = {
             eventObj.value.xml = e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
         }
         else if (eventName == "keydown") {
-
+            
         }
 
         if (amlNode) {
@@ -559,7 +563,10 @@ apf.uirecorder = {
 
         if (typeof value == "object" && value.length == 1) 
             value = value[0];
+        
+        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var propObj = {
+            time        : time,
             name        : prop,
             //amlNode     : amlNode,
             //xmlNode     : xmlNode,
@@ -584,7 +591,9 @@ apf.uirecorder = {
             targetName = apf.xmlToXpath(params.amlNode);
         }
 
+        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var dataObj = {
+            time        : time,
             name        : params.action
             //amlNode     : amlNode,
             //xmlNode     : xmlNode,
@@ -637,15 +646,22 @@ apf.uirecorder = {
         testXml.setAttribute("status", "@todo status");        
 
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
-        for (var action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+        for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
             aNode = testXml.ownerDocument.createElement("action");
             aNode.setAttribute("name", action.name);
             aNode.setAttribute("x", action.x);
             aNode.setAttribute("y", action.y);
             aNode.setAttribute("time", action.time);
-            if (action.ignore) aNode.setAttribute("ignore", action.ignore);
-            
+            aNode.setAttribute("delayTime", action.delayTime);
+
+            if (action.ignore) { 
+                aNode.setAttribute("ignore", action.ignore);
+                //prevNode.setAttribute("delayTime", action.delayTime);
+            }
+            else {
+                prevNode = aNode;
+            }
             if (action.amlNode) {
                 if (!action.amlNode.parentNode) debugger;
                 aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
@@ -674,14 +690,16 @@ apf.uirecorder = {
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
                                 if (type == "events") {
-                                    if (item.calls || item.value) {
+                                    if (item.calls) {
                                         var caption = item.name; 
-                                        caption = (item.calls) ? caption + " (" + item.calls+ ")" : caption;
+                                        caption = (item.calls) ? caption + " (" + item.calls+ "x)" : caption;
                                         //caption = (item.value) ? caption + ": " + item.value : caption;
-    
-                                        iNode.setAttribute("caption", caption);
-                                    }
+                                   }
+                                   iNode.setAttribute("caption", caption || item.name);
                                 }
+
+                                // time
+                                iNode.setAttribute("time", item.time);
                                 
                                 if (item.value) {
                                     if (typeof item.value === "string")
