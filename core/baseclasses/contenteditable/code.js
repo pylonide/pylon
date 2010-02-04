@@ -264,7 +264,7 @@ apf.ContentEditable.plugin("code", function() {
     }
 
     function protect(outer, opener, data, closer) {
-        return opener + "apf.___JPFpd___" + protectedData.push(data) + closer;
+        return opener + "apf.___APFpd___" + protectedData.push(data) + closer;
     }
 
     function format(sHtml) {

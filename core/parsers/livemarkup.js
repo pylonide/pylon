@@ -1483,7 +1483,7 @@ apf.lm = new (function(){
     };
 
     function handleError(e, last_line, part){
-        // TODO: make a proper JPF exception with this information:
+        // TODO: make a proper APF exception with this information:
         if (e.t) {
             throw new Error(apf.formatErrorString(0, null,
                 "Parsing live markup source",

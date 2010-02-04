@@ -33,7 +33,7 @@ apf.storage.modules['air.file'] = {
         this.FileStream = window.runtime.flash.filesystem.FileStream;
         this.FileMode = window.runtime.flash.filesystem.FileMode;
         
-        this.storagePath = "__JPF_" + (apf.config.name
+        this.storagePath = "__APF_" + (apf.config.name
             ? apf.config.name.toUpperCase()
             : "STORAGE") + "/";
 

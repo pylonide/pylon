@@ -36,7 +36,7 @@ apf.storage.modules['air.sql'] = {
         this.SQLConnection = window.runtime.flash.data.SQLConnection;
         this.SQLStatement  = window.runtime.flash.data.SQLStatement;
         
-        this.table_name = "__JPF_" + (apf.config.name
+        this.table_name = "__APF_" + (apf.config.name
             ? apf.config.name.toUpperCase()
             : "STORAGE");
 

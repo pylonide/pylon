@@ -803,7 +803,7 @@ apf.UndoData = function(settings, at){
         //#ifdef __WITH_LOCKING
         if (this.timestamp) {
             options.actionstart = this.timestamp;
-            options.headers     = {"X-JPF-ActionStart": this.timestamp};
+            options.headers     = {"X-APF-ActionStart": this.timestamp};
         }
         //#endif
 
