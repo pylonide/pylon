@@ -263,7 +263,7 @@ apf.editor = function(struct, tagName){
     /**** Focus Handling ****/
 
     /**
-     * Fix for focus handling to mix 'n match nicely with other JPF elements
+     * Fix for focus handling to mix 'n match nicely with other APF elements
      *
      * @param {Event} e
      * @type  {void}
@@ -314,7 +314,7 @@ apf.editor = function(struct, tagName){
     };
 
     /**
-     * Fix for focus/ blur handling to mix 'n match nicely with other JPF
+     * Fix for focus/ blur handling to mix 'n match nicely with other APF
      * elements
      *
      * @param {Event} e
@@ -485,7 +485,7 @@ apf.editor = function(struct, tagName){
 
     /**
      * Takes care of setting the proper size of the editor after a resize event
-     * was fired through the JPF layout manager
+     * was fired through the APF layout manager
      * @see object.layout
      * 
      * @type {void}

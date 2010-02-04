@@ -38,8 +38,8 @@
  * </code>
  *
  * Expressions:
- * The use of { and } tell Ajax.org Platform(JPF) that the visible property will 
- * be bound. By specifying myCheckbox.value JPF knows that the value of 
+ * The use of { and } tell Ajax.org Platform(APF) that the visible property will 
+ * be bound. By specifying myCheckbox.value APF knows that the value of 
  * myCheckbox should be retrieved for this property. Whenever the checkbox 
  * changes, the slider will show or hide.
  *

@@ -759,7 +759,7 @@ apf.webdav = function(struct, tagName){
      * and caches that info for reuse.
      * 
      * @param {XmlDocument} data  Actual XML data, received from the server
-     * @param {Number}      state Internal - JPF defined - state of the request
+     * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
      * @type  {void}
      * @private
@@ -941,7 +941,7 @@ apf.webdav = function(struct, tagName){
      * and caches that info for reuse.
      *
      * @param {XmlDocument} data     Actual XML data, received from the server
-     * @param {Number}      state    Internal - JPF defined - state of the request
+     * @param {Number}      state    Internal - APF defined - state of the request
      * @param {Object}      extra    Simple object that contains additional request data
      * @param {Function}    callback Function to be executed when all the property packets have been parsed
      * @type  {void}

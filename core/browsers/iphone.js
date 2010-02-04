@@ -283,7 +283,7 @@ apf.runIphone = function() {
 
     // make sure that document event link to mouse events already. Since the
     // document object on top of the event bubble chain, it will probably also
-    // be hooked by other JPF elements.
+    // be hooked by other APF elements.
     //apf.iphone.linkEvents(document);
     document.ontouchstart = function(evt) {
         if (!evt.touches || evt.touches.length != 1) return;

@@ -146,7 +146,7 @@ apf.audio = function(struct, tagName){
     };
 
     /**
-     * Checks if a specified playerType is supported by JPF or not...
+     * Checks if a specified playerType is supported by APF or not...
      *
      * @param {String} [playerType]
      * @type {Boolean}
