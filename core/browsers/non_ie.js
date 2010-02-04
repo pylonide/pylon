@@ -323,7 +323,8 @@ apf.runNonIe = function (){
             xmlParser = xmlParser.parseFromString(message, "text/xml");
 
             //#ifdef __WITH_JSON2XML
-            if (xmlParser.documentElement.tagName == "parsererror" && apf.xmldb
+            //xmlParser.documentElement.tagName == "parsererror"
+            if (xmlParser.getElementsByTagName("parsererror").length && apf.xmldb
               && apf.isJson(message)) {
                 try {
                     xmlParser = apf.json2Xml(message, noError);
@@ -347,7 +348,8 @@ apf.runNonIe = function (){
     };
     
     apf.xmlParseError = function(xml){
-        if (xml.documentElement.tagName == "parsererror") {
+        //if (xml.documentElement.tagName == "parsererror") {
+        if (xml.getElementsByTagName("parsererror").length) { 
             var str     = xml.documentElement.firstChild.nodeValue.split("\n"),
                 linenr  = str[2].match(/\w+ (\d+)/)[1],
                 message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1"),
