@@ -865,7 +865,8 @@ apf.caldropdown = function(struct, tagName){
                         var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                         this.$setStyleClass(btn, buttons[i]);
                         if (buttons[i] !== "status") {
-                            btn.setAttribute("onmousedown", 'apf.findHost(this).' + buttons[i] + '()');
+                            btn.setAttribute("onmousedown", 'apf.findHost(this).' + buttons[i] + '();apf.setStyleClass(this, "down");');
+                            btn.setAttribute("onmouseup", 'apf.setStyleClass(this, "", ["down"]);');
                             btn.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
                             btn.setAttribute("onmouseout",  'apf.setStyleClass(this, "", ["hover"]);');
                         }
