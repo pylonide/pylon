@@ -945,7 +945,7 @@ apf.caldropdown = function(struct, tagName){
         apf.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
 
-        if (apf.caldropdown.cache && apf.caldropdown.cache.refcount) {
+        if (apf.caldropdown.cache) {
             if (apf.caldropdown.cache.refcount == 0)
                 apf.caldropdown.cache = null;
             else
