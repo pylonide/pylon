@@ -21,6 +21,10 @@ apf.uirecorder = {
 
         apf.uirecorder.inited = true;
 
+        //document.attachEvent("onmousedown", function() {
+            //alert("click");
+        //});
+        
         /* Form events support */
         document.documentElement.onselect = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
@@ -66,20 +70,30 @@ apf.uirecorder = {
             e = e || event;
             //apf.uirecorder.captureAction("click", e);
         }
-        
+
         document.documentElement.ondblclick = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
         
+/*
+        document.attachEvent("onmousedown", function(e) {
+            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+                return;
+            e = e || event;
+            apf.uirecorder.captureAction("mousedown", e);
+            
+        });
+*/      
+
         document.documentElement.onmousedown = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             apf.uirecorder.captureAction("mousedown", e);
         }
-        
+
         document.documentElement.onmouseup = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
@@ -181,7 +195,10 @@ apf.uirecorder = {
      * Initiate user interface recorder and start recording
      */
     startTime : 0,
-    record : function() {
+    curTestFile : "",
+
+    record : function(file) {
+        apf.uirecorder.curTestFile = file;
         apf.uirecorder.actionList = [];
         apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
@@ -202,7 +219,8 @@ apf.uirecorder = {
      * Start testing
      */
     interval : null,
-    test : function() {
+    test : function(file) {
+        apf.uirecorder.curTestFile = file;
         //apf.uirecorder.resultListXml = null;
         apf.uirecorder.actionList = [];
         apf.uirecorder.detailList = {};
@@ -254,7 +272,7 @@ apf.uirecorder = {
      */
     markupLoaded : false,
     load : function(file, callback) {
-        apf.uirecorder.markupLoaded = false;
+        //apf.uirecorder.markupLoaded = false;
         uir_bar.replaceMarkup(file, {
             callback : callback
         });
@@ -269,6 +287,7 @@ apf.uirecorder = {
     captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement) ? apf.findHost(htmlElement) : null;
+
 //if (eventName == "mouseup") debugger;
         // ignore interaction with uirecorder controls
         if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") return;
@@ -437,7 +456,7 @@ apf.uirecorder = {
     mouseoverEvents : ["dragover", "dragout"],
     prevEvtName : "",
     captureEvent : function(eventName, e) {
-        apf.console.info("event " + eventName + " dispatched");
+        //apf.console.info("event " + eventName + " dispatched");
         if (!e || e.noCapture) return; 
 
         var amlNode = e.amlNode || e.currentTarget;
@@ -489,7 +508,11 @@ apf.uirecorder = {
         }
         else if (eventName == "xmlupdate") {
             if (!eventObj.value) eventObj.value = {};
-            eventObj.value.xml = e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
+            if (eventObj.value.xml)
+                eventObj.value.xml = e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
+            if (eventObj.value.action)
+                eventObj.value.action = eventObj.value.action;
+                
         }
         else if (eventName == "keydown") {
             
@@ -641,6 +664,7 @@ apf.uirecorder = {
         }
         
         var testXml = apf.getXml("<test />");
+        testXml.setAttribute("file", apf.uirecorder.curTestFile);
         testXml.setAttribute("name", testName || "test" + id);
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
         testXml.setAttribute("status", "@todo status");        
