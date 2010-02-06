@@ -426,7 +426,7 @@ apf.Interactive = function(){
         document.onmousemove = resizeMove;
         document.onmouseup   = function(e){
             document.onmousemove = document.onmouseup = null;
-            
+
             //#ifdef __WITH_PLANE
             if (posAbs)
                 apf.plane.hide();
@@ -467,19 +467,19 @@ apf.Interactive = function(){
         if (posAbs) {
             var htmlNode = _self.$ext;
             if (_self.right || _self.bottom) {
-                var pHtmlNode = htmlNode.offsetParent;
+                /*var pHtmlNode = htmlNode.offsetParent;
                 if (pHtmlNode.tagName == "BODY")
-                    pHtmlNode = document.documentElement;
+                    pHtmlNode = document.documentElement;*/
             }
 
             if (_self.right && _self.right != _self.setProperty("right", 
-                  pHtmlNode.offsetWidth - htmlNode.offsetLeft 
+                  apf.getWindowWidth() - htmlNode.offsetLeft 
                   - htmlNode.offsetWidth)) {
                 htmlNode.style.left = "";
             }
             
             if (_self.bottom && _self.bottom != _self.setProperty("bottom", 
-                  pHtmlNode.offsetHeight - htmlNode.offsetTop 
+                  apf.getWindowHeight() - htmlNode.offsetTop 
                   - htmlNode.offsetHeight)) {
                 htmlNode.style.top = "";
             }

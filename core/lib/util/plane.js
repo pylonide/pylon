@@ -54,15 +54,11 @@ apf.plane = {
         }
         
         var pWidth = (plane.parentNode == document.body
-            ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetWidth - (apf.isIE < 8 ? 2 : 4)
-                : window.innerWidth)
+            ? apf.getWindowWidth()
             : plane.parentNode.offsetWidth);
 
         var pHeight = (plane.parentNode == document.body
-            ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetHeight - (apf.isIE < 8 ? 2 : 4)
-                : window.innerHeight)
+            ? apf.getWindowHeight()
             : plane.parentNode.offsetHeight);
         
         if (copyCursor) {

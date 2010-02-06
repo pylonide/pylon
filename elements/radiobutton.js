@@ -276,6 +276,8 @@ apf.radiobutton = function(struct, tagName){
     this.$check = function(visually){
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         this.checked = true;
+        if (!visually)
+            this.setProperty("checked", true);
         if (this.oInput)
             this.oInput.checked = true;
         this.doBgSwitch(2);
@@ -284,6 +286,7 @@ apf.radiobutton = function(struct, tagName){
     this.$uncheck = function(){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
         this.checked = false;
+        this.setProperty("checked", false);
         if (this.oInput)
             this.oInput.checked = false;
         this.doBgSwitch(1);

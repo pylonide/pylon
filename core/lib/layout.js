@@ -989,7 +989,7 @@ apf.layout = {
         //#ifdef __WITH_ALIGN_TEMPLATES
         var n = aData.children;
         for (var f = false, i = 0; i < n.length; i++) {
-            if (n[i].template == "bottom") {
+            if (n[i].template == "bottom" && n[i - 1]) {
                 if (n[i].splitter) {
                     n[i - 1].splitter = n[i].splitter;
                     n[i].splitter = null;
