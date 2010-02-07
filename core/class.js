@@ -486,8 +486,9 @@ apf.Class.prototype = new (function(){
 
             if (!node) {
                 if (arguments[2]) {
-                    apf.console.warn("[287] Could not execute binding test : "
-                        + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
+                    //+ pValue.replace(/</g, "&lt;").replace(/ +/g, " ").substr(0, 200) + "..." + "\n\n" 
+                    apf.console.log("[287] Could not execute binding test : "
+                        + "Object '" + o[0] + "' does not exist for which a property bind could be made (" + p + ")");
                 }
                 else {
                     apf.queue.add(prop + ":" + this.$uniqueId, function(){

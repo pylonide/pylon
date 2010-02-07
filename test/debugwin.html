@@ -17,10 +17,18 @@
                 color: #2c78bd;
             }
             
+            .netview{
+                border : 1px solid #c3c3c3;
+                padding : 30px 5px 5px 5px;
+            }
+            
             .reqview{
-                margin-top : 25px;
                 padding : 5px;
+                margin : -5px;
                 border-top : 1px solid #c3c3c3;
+                overflow :auto;
+                width : 100%;
+                height : 100%;
             }
             
             .reqview .head {
@@ -543,9 +551,9 @@ Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
                     </a:model>
                     
                     <a:list align="left-splitter" width="200" />
-                    <a:bar skin="basic" align="middle-splitter" style="border:1px solid #c3c3c3;overflow:auto;" model="mdlRequest">
+                    <a:bar skin="basic" align="middle-splitter" class="netview" model="mdlRequest">
                         <a:label left="10" top="5" right="85"><strong>Request: </strong> {[text()].split("\n")[0]}</a:label>
-                        <a:dropdown id="ddRequestView" right="3" top="3" width="80" value="Webforms" autoselect2="true">
+                        <a:dropdown id="ddRequestView" right="3" top="3" width="80" autoselect="true">
                             <a:item>Headers</a:item>
                             <a:item>Raw</a:item>
                             <a:item>Textview</a:item>
@@ -554,72 +562,76 @@ Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
                         </a:dropdown>
                         <div class="reqview"><?lm
                             var type = ddRequestView.value;
-                            var body = [text()];
-                            if (!body)
-                                return;
-                                
-                            switch(type.toLowerCase()) {
-                                case "headers":
-                                    var h = body.split("\n\n")[0];
-                                    var hs = h.split("\n"); var p = hs.shift();
-                                    for (var t, i = 0; i < hs.length; i++) {
-                                        p = hs[i].split(":"), t = p.shift();
-                                        <div class="head"><strong>{t}: </strong><span>{
-                                            if (t == "Cookie"){
-                                                <br />
-                                                var aCookie = p.join(":").splitSafe(";");
-                                                for (var j = 0; j < aCookie.length; j++) {
-                                                    var aCrumb = aCookie[j].split("=");
-                                                    <div class="head cookie">
-                                                        <strong>{aCrumb.shift()}: </strong>
-                                                        <span>{unescape(aCrumb.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")}</span>
-                                                    </div>
+                            
+                            function showNetInfo(type){
+                                var body = [text()];
+                                if (!body)
+                                    return;
+                                    
+                                switch(type.toLowerCase()) {
+                                    case "headers":
+                                        var h = body.split("\n\n")[0];
+                                        var hs = h.split("\n"); var p = hs.shift();
+                                        for (var t, i = 0; i < hs.length; i++) {
+                                            p = hs[i].split(":"), t = p.shift();
+                                            <div class="head"><strong>{t}: </strong><span>{
+                                                if (t == "Cookie"){
+                                                    <br />
+                                                    var aCookie = p.join(":").splitSafe(";");
+                                                    for (var j = 0; j < aCookie.length; j++) {
+                                                        var aCrumb = aCookie[j].split("=");
+                                                        <div class="head cookie">
+                                                            <strong>{aCrumb.shift()}: </strong>
+                                                            <span>{unescape(aCrumb.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")}</span>
+                                                        </div>
+                                                    }
                                                 }
-                                            }
-                                            else
-                                                unescape(p.join(":")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
-                                        }</span></div>
-                                    }
-                                break;
-                                case "raw":
-                                    <div class="raw">{
-                                        body.replace(/ /g, "&nbsp;")
-                                            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-                                            .replace(/</g, "&lt;")
-                                            .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
-                                            .replace(/\n/g, "<br />");
-                                    }</div>
-                                break;
-                                case "textview":
-                                    <div class="textview">{
-                                        body.split("\n\n")[1].replace(/ /g, "&nbsp;")
-                                            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-                                            .replace(/</g, "&lt;")
-                                            .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
-                                            .replace(/\n/g, "<br />");
-                                    }</div>
-                                break;
-                                case "webforms":
-                                    var h = body.split("\n\n")[1];
-                                    var hs = h.split("&"); var p = hs.shift();
-                                    for (var t, i = 0; i < hs.length; i++) {
-                                        p = hs[i].split("=");
-                                        <div class="head"><strong>{p.shift()}: </strong><span>{
+                                                else
+                                                    unescape(p.join(":")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                            }</span></div>
+                                        }
+                                    break;
+                                    case "raw":
+                                        <div class="raw">{
+                                            body.replace(/ /g, "&nbsp;")
+                                                .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                                .replace(/</g, "&lt;")
+                                                .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                                .replace(/\n/g, "<br />");
+                                        }</div>
+                                    break;
+                                    case "textview":
+                                        <div class="textview">{
+                                            body.split("\n\n")[1].replace(/ /g, "&nbsp;")
+                                                .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                                .replace(/</g, "&lt;")
+                                                .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                                .replace(/\n/g, "<br />");
+                                        }</div>
+                                    break;
+                                    case "webforms":
+                                        var h = body.split("\n\n")[1];
+                                        var hs = h.split("&"); var p = hs.shift();
+                                        for (var t, i = 0; i < hs.length; i++) {
+                                            p = hs[i].split("=");
+                                            <div class="head"><strong>{p.shift()}: </strong><span>{
                                                 unescape(p.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
-                                        }</span></div>
-                                    }
-                                break;
-                                case "xml":
-                                    <div class="textview">{
-                                        apf.highlightXml(apf.formatXml(body.split("\n\n")[1]))
-                                            .replace(/\n/g, "<br />") || "Content is not valid xml";
-                                    }</div>
-                                break;
+                                            }</span></div>
+                                        }
+                                    break;
+                                    case "xml":
+                                        <div class="textview">{
+                                            apf.highlightXml(apf.formatXml(body.split("\n\n")[1]))
+                                                .replace(/\n/g, "<br />") || "Content is not valid xml";
+                                        }</div>
+                                    break;
+                                }
                             }
+                            showNetInfo(type);
                         ?></div>
                     </a:bar>
-                    <a:bar skin="basic" align="right" style="border:1px solid #c3c3c3;overflow:auto;">
-                        <a:label left="10" top="5" right="85"><strong>Response: </strong>HTTP/1.1 502 Fiddler - Connection Failed</a:label>
+                    <a:bar skin="basic" align="right" class="netview" model="mdlRequest2">
+                        <a:label left="10" top="5" right="85"><strong>Response: </strong>{[text()].split("\n")[0]}</a:label>
                         <a:dropdown id="ddResponseView" right="3" top="3" width="80" autoselect="true" maxitems="10">
                             <a:item>Headers</a:item>
                             <a:item>Raw</a:item>
@@ -628,9 +640,10 @@ Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
                             <a:item>Webview</a:item>
                             <a:item>XML</a:item>
                         </a:dropdown>
-                        <?lm
-                        
-                        ?>
+                        <div class="reqview"><?lm
+                            var type = ddResponseView.value;
+                            apf.showNetInfo(type);
+                        ?></div>
                     </a:bar>
                 </a:page>
                 <a:page caption="Storage">
