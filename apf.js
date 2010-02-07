@@ -592,9 +592,7 @@ var apf = {
 
         //#ifdef __DEBUG
         apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("This is a debug build of Ajax.org Platform; be aware "
-            + "that\nexecution speed of this build is <strong>several times</strong> "
-            + "slower than a release build\nof Ajax.org Platform.");
+        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
         //#endif
 
         //mozilla root detection
@@ -875,7 +873,7 @@ var apf = {
                 messages : {}
             },
 
-            info  : {
+            log   : {
                 icon     : "bullet_green.png",
                 color    : "black",
                 messages : {}
@@ -928,6 +926,8 @@ var apf = {
         },
 
         cache : [],
+        history : [],
+        typeLut : {time: "log", repeat: "log"},
         $lastmsg : "",
         $lastmsgcount : 0,
 
@@ -1000,13 +1000,11 @@ var apf = {
                 + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
+            //deprecated
             if (!subtype)
                 subtype = "default";
 
-            if (!this.data[type].messages[subtype])
-                this.data[type].messages[subtype] = [];
-
-            this.data[type].messages[subtype].push(msg);
+            this.history.push([this.typeLut[type] || type, msg]);
 
             if (this.win && !this.win.closed)
                 this.showWindow(msg);
@@ -1017,7 +1015,21 @@ var apf = {
             this.debugInfo.push(msg);
 
             if (apf.dispatchEvent)
-                apf.dispatchEvent("debug", {message: msg});
+                apf.dispatchEvent("debug", {message: msg, type: type});
+        },
+        
+        clear : function(){
+            this.history = [];
+        },
+        
+        getAll : function(err, wrn, log) {
+            var hash = {"error": err, "warn": wrn, "log": log};
+            var out = [];
+            for (var i = 0, l = this.history.length; i < l; i++) {
+                if (hash[this.history[i][0]])
+                    out.push(this.history[i][1]);
+            }
+            return out.join("");
         },
         //#endif
 
@@ -1053,7 +1065,7 @@ var apf = {
          */
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.info(msg, subtype, data);
+            this.write(msg, "log", subtype, data);
             //#endif
         },
 
@@ -1066,7 +1078,7 @@ var apf = {
          */
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "info", subtype, data);
+            this.log(msg, subtype, data);
             //#endif
         },
 

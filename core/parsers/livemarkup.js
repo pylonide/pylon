@@ -1861,7 +1861,7 @@ apf.lm = new (function(){
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
 apf.lm_exec = new (function(){
-    var wlvl = 3; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
+    var wlvl = 2; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
 
     //warning functions
     this.setWarnLevel = function(lvl){
@@ -1869,11 +1869,11 @@ apf.lm_exec = new (function(){
     };
 
     function wxpath(x, t){
-        apf.console.warn("Live Markup warning in " + t + ", no results for xpath: '" + x + "'");
+        apf.console.log("Live Markup warning in " + t + ", no results for xpath: '" + x + "'");
     }
 
     function wnode(x, t){
-        apf.console.warn("Live Markup warning in " + t + ", xpath on null node: '" + x + "'");
+        apf.console.log("Live Markup warning in " + t + ", xpath on null node: '" + x + "'");
     }
 
     function wmodel(m, x, t){

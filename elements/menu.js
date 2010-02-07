@@ -254,16 +254,27 @@ apf.menu = function(struct, tagName){
         this.visible = false;
         this.show();
 
-        var bodyPos = apf.getAbsolutePosition(document.body);
-        apf.popup.show(this.$uniqueId, {
-            x            : x - bodyPos[0], 
-            y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
-            animate      : noanim || !this.anim ? false : "fade",
-            ref          : this.$ext.offsetParent,
-            allowTogether: openMenuId,
-            autoCorrect  : false
-        });
-
+        if (x === null) {
+            apf.popup.show(this.$uniqueId, {
+                x            : 0, 
+                y            : opener.$ext.offsetHeight, 
+                animate      : noanim || !this.anim ? false : "fade",
+                ref          : opener.$ext,
+                allowTogether: openMenuId
+            });
+        }
+        else {
+            var bodyPos = apf.getAbsolutePosition(document.body);
+            apf.popup.show(this.$uniqueId, {
+                x            : x - bodyPos[0], 
+                y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
+                animate      : noanim || !this.anim ? false : "fade",
+                ref          : this.$ext.offsetParent,
+                allowTogether: openMenuId,
+                autoCorrect  : false
+            });
+        }
+        
         var lastFocus      =
         apf.menu.lastFocus = opener && opener.$focussable === true
             ? opener
