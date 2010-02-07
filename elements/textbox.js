@@ -401,7 +401,7 @@ apf.textbox  = function(struct, tagName){
             this.blur();
         }
         
-        if (this.dispatchEvent("keydown", {
+        /*if (this.dispatchEvent("keydown", {
             keyCode   : key,
             ctrlKey   : ctrlKey,
             shiftKey  : shiftKey,
@@ -425,7 +425,7 @@ apf.textbox  = function(struct, tagName){
             range.pasteHTML(text.replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;"));
 
             return false;
-        }
+        }*/
     };
 
     var fTimer;

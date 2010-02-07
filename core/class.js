@@ -788,9 +788,10 @@ apf.Class.prototype = new (function(){
             result = false;
         }
         else {
+            //@todo rewrite this and all dependencies to match w3c
             if (!e || !e.currentTarget) {
-                if (!(options || (options = {})).currentTarget)
-                    options.currentTarget = this;
+                //if (!(options || (options = {})).currentTarget)
+                    (options || (options = {})).currentTarget = this;
 
                 //Capture support
                 if (arr = this.$captureStack[eventName]) {

@@ -603,7 +603,8 @@ var apf = {
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
-        apf.debugwin.init();
+        if (apf.$debugwin)
+            apf.$debugwin.start();
         //#endif
 
         //Load Browser Specific Code
@@ -878,6 +879,12 @@ var apf = {
                 color    : "black",
                 messages : {}
             },
+            
+            custom   : {
+                icon     : "bullet_green.png",
+                color    : "black",
+                messages : {}
+            },
 
             warn  : {
                 icon     : "error.png",
@@ -975,13 +982,16 @@ var apf = {
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
 
-            msg = (!nodate ? "[" + date + "] " : "")
+            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
                     + String(msg)
-                        .replace(/ /g, "&nbsp;")
-                        .replace(/\n/g, "\n<br />")
+                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
+                            if (tag) return tag;
+                            return "&nbsp;";
+                        })
+                        //.replace(/\n/g, "\n<br />")
                         .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = apf.debugwin
-                ? (apf.debugwin.resPath || "{imgpath}")
+            var sPath = apf.$debugwin && apf.$debugwin.resPath
+                ? apf.$debugwin.resPath
                 : apf.basePath + "core/debug/resources/";
 
             if (data) {
@@ -1023,7 +1033,7 @@ var apf = {
         },
         
         getAll : function(err, wrn, log) {
-            var hash = {"error": err, "warn": wrn, "log": log};
+            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
             var out = [];
             for (var i = 0, l = this.history.length; i < l; i++) {
                 if (hash[this.history[i][0]])
@@ -1158,7 +1168,7 @@ var apf = {
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = ["---- APF Error ----"];
+        var str = [];
         if (amlContext) {
             if (amlContext.nodeType == 9)
                 amlContext = amlContext.documentElement;
@@ -1212,7 +1222,7 @@ var apf = {
             str.push(outputname + ": " + output);
         if (amlContext)
             str.push("\n===\n" + amlStr);
-        
+
         return (apf.lastErrorMessage = str.join("\n"));
         /*#else
         apf.lastErrorMessage = message;

@@ -8,7 +8,223 @@
                 background : white;
                 overflow : hidden;
             }
+            
+            .xmlhl{
+                color : #333;
+            }
+            .xmlhl:hover{
+                text-decoration : underline;
+                color: #2c78bd;
+            }
+            
+            .reqview{
+                margin-top : 25px;
+                padding : 5px;
+                border-top : 1px solid #c3c3c3;
+            }
+            
+            .reqview .head {
+                padding : 2px;
+            }
+            
+            .reqview .head strong{
+                width : 150px;
+                float : left;
+                text-align : right;
+            }
+            .reqview .cookie strong{
+                width : 85px;
+            }
+            
+            .reqview .head span{
+                display : block;
+                margin : 0 0 0 155px;
+                word-wrap : break-word;
+            }
+            .reqview .cookie span{
+                margin : 0 0 0 90px;
+            }
+            
+            .raw{
+                font-size : 8pt;
+                font-family : Courier New;
+                white-space : nowrap;
+            }
+            
+            .textview{
+                font-size : 8pt;
+                font-family: "Lucida Grande", Verdana;
+                white-space : nowrap;
+                padding : 5px;
+            }
         </style>
+        <script>//<!--
+            apf.$debugwin = {
+                showtime    : apf.getcookie("apfdebug_console_date") !== "false",
+                nativedebug : apf.getcookie("apfdebug_debugger") == "true",
+                
+                cache : [],
+            
+                init : function(){
+                    this.updateLog();
+                    apf.addEventListener("debug", this.debugHandler);
+                    
+                    apf.importCssString(".console_date{display:inline}");
+                    
+                    txtCode.setValue(apf.getcookie("jsexec") || "");
+                    itmShowtime.setAttribute("checked", this.showtime);
+                    itmDebug.setAttribute("checked", this.nativedebug);
+                },
+                
+                start : function(){
+                    window.onerror = this.nativedebug ? null : this.errorHandler;
+                },
+            
+                errorHandler : function(message, filename, linenr, isForced){
+                    if (!message) message = "";
+            
+                    var e = message 
+                        ? {
+                            message : message.indexOf("aml file") > -1
+                                ? message
+                                : "js file: [line: " + linenr + "] "
+                                    + apf.removePathContext(apf.hostPath, filename) + "\n" + message
+                        }
+                        : null;
+            
+                    if (!isForced) {
+                        apf.console.error("Error on line " + linenr + "\n" + message
+                            .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
+                            .replace(/\n/g, "\n<br />"));
+                    }
+
+                    return true;
+                },
+                
+                updateLog : function(){
+                    console.clear();
+                    console.setValue(apf.console.getAll(
+                        btnError.value,
+                        btnWarn.value,
+                        btnLog.value
+                    ))
+                },
+                
+                debugHandler : function(e){
+                    if ((self["btn" + e.type.uCaseFirst()] || btnLog).value || e.type == "custom")
+                        console.setValue(e.message);
+                },
+                
+                showAmlNode : function(node){
+                    tabDebug.set(1);
+                    pgBrowse.set(0);
+                    
+                    //find in markupeditor, if not there, show in showObject
+                },
+                
+                showObject : function(obj){
+                    tabDebug.set(1);
+                    pgBrowse.set(2);
+                },
+                
+                showXmlNode : function(xml){
+                    tabDebug.set(1);
+                    pgBrowse.set(1);
+                },
+                
+                jRunCode : function(code){
+                    apf.setcookie("jsexec", code);
+
+                    apf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
+                        + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "\n<br />") + "</div></span>", "custom", null, null, null, true);
+
+                    var doIt = function(){
+                        var x = eval(code);
+            
+                        if (x === null)
+                            x = "null";
+                        else if (x === undefined)
+                            x = "undefined";
+            
+                        try {
+                            var str;
+                            if (x.nodeType && (x.nodeType == 1 || x.nodeType == 7)) {
+                                if (x.serialize) //aml
+                                    str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showAmlNode(apf.all[" 
+                                        + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
+                                else if (x.style) //html
+                                    str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
+                                else
+                                    str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.cache[" 
+                                        + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
+                                        + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
+
+                                apf.console.write(str, "custom", null, null, null, true);
+                            }
+                            else if (typeof x == "object") {
+                                var out = [x.toString(), "{"];
+                                for (prop in x) {
+                                    if (out.length == 5) {
+                                        out.push("more...");
+                                        break;
+                                    }
+                                    if (typeof x[prop] != "function" && typeof x[prop] != "object" && x[prop] && prop.substr(0,1) != "$")
+                                        out.push(prop + "=" + x[prop] + ", ");
+                                }
+                                apf.console.write("<a class='xmlhl' style='font-weight:bold;font-size:7pt;color:green'>" + out.join(" ") + " }</a>", "custom", null, null, null, true);
+                            }
+                            else {
+                                str = x.toString();
+                            
+                                apf.console.write(str
+                                    .replace(/</g, "&lt;")
+                                    .replace(/\n/g, "\n<br />"), "custom", null, null, null, true);
+                            }
+                        }catch(e){
+                            apf.console.write(x
+                                ? "Could not serialize object: " + e.message
+                                : x, "error", null, null, null, true);
+                        }
+                    }
+            
+                    if (apf.$debugwin.nativedebug)
+                        doIt();
+                    else {
+                        try{
+                            doIt();
+                        }
+                        catch(e) {
+                            apf.console.write(e.message, "error", null, null, null, true);
+                        }
+                    }
+                },
+            
+                consoleTextHandler: function(e) {
+                    if (e.keyCode == 9) {
+                        txtCode.focus();
+                        e.cancelBubble = true;
+                        return false;
+                    }
+                    else if(e.keyCode == 13 && e.ctrlKey) {
+                        apf.$debugwin.jRunCode(e.currentTarget.value);
+                        return false;
+                    }
+                },
+                
+                setShowTime : function(c){
+                    apf.setcookie("apfdebug_console_date", c);
+                    apf.setStyleRule('.console_date', 'display', c ? 'inline' : 'none');
+                    this.showtime = c;
+                },
+                
+                setNativeDebug : function(c){
+                    apf.setcookie("apfdebug_debugger", c);
+                    this.nativedebug = c;
+                    window.onerror = this.nativedebug ? null : this.errorHandler;
+                }
+            }
+            apf.$debugwin.start();
+        //--></script>
     </head>
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
@@ -193,10 +409,12 @@
         <a:model id="mdlData">
             <folder caption="My Documents" priority="4" align="left-splitter-3" />
         </a:model>
-    
+        
         <a:menu id="mnuOptions">
-            <a:check>Show time</a:check>
-            <a:check>Use browser debugger</a:check>
+            <!--a:item visible="false">Search in docs</a:item>
+            <a:divider /-->
+            <a:check id="itmShowtime" onclick="apf.$debugwin.setShowTime(this.checked);">Show time</a:check>
+            <a:check id="itmDebug" onclick="apf.$debugwin.setNativeDebug(this.checked);">Use browser debugger</a:check>
             <a:divider />
             <a:item>Copy log</a:item>
         </a:menu>
@@ -206,7 +424,7 @@
             
         </a:bar>
         <a:bar height="300" align="bottom-splitter" skin="basic" style="border-top:1px solid #c3c3c3;overflow:hidden;">
-            <a:tab anchors="2 -1 0 0" skin="demos_lowtab" activepage2="docs">
+            <a:tab id="tabDebug" anchors="2 -1 0 0" skin="demos_lowtab" activepage="net">
                 <a:page caption="Console" >
                     <a:text id="console" align="left" scrolldown="true" behavior="addonly" contextmenu="mnuOptions" focussable="true" style="border-right:1px solid #c3c3c3" />
                     <a:toolbar align="left-splitter" height="27" style="border-width:1px 1px 0 0;border-style:solid;border-color:#c3c3c3;">
@@ -226,10 +444,10 @@
                             <a:button submenu="mnuOptions">Options</a:button>
                         </a:bar>
                     </a:toolbar>
-                    <a:textarea align="right" width="30%"/>
+                    <a:textarea id="txtCode" realtime="true" align="right" width="30%" onkeydown="return apf.$debugwin.consoleTextHandler(event)" />
                     <a:toolbar align="right" height="26" style="border-width:0 0 0 1px;border-style:solid;border-color:#c3c3c3;">
                         <a:bar>
-                            <a:button tooltip="Run the code (Ctrl-Enter)">Execute as {stLM.checked ? 'Live Markup' : 'JavaScript'}</a:button>
+                            <a:button onclick="apf.$debugwin.jRunCode(txtCode.value);" tooltip="Run the code (Ctrl-Enter)">Execute as {stLM.checked ? 'Live Markup' : 'JavaScript'}</a:button>
                             <a:radiobutton style="float:right" id="stLM" skin="toolbarradio" icon="movie.png" group="codetype" state="true">Live Markup</a:radiobutton>
                             <a:radiobutton style="float:right" skin="toolbarradio" icon="image.png" group="codetype" state="true" checked="true">Javascript</a:radiobutton>
                             <!--a:textbox visible="{stLM.checked}" left="170" top="3" right="10"/-->
@@ -258,7 +476,162 @@
                         </a:page>
                     </a:pages>
                 </a:page>
-                <a:page caption="Net">
+                <a:page caption="Net" id="net">
+                    <a:toolbar align="top" height="25">
+                        <a:bar>
+                            <a:button state="true" value="true">AML</a:button>
+                            <a:button state="true" value="true">Script</a:button>
+                            <a:button state="true" value="true">Rpc</a:button>
+                            <a:button state="true" value="true">Xmpp</a:button>
+                            <a:button state="true" value="true">WebDav</a:button>
+                            <a:button state="true" value="true">Http</a:button>
+                            <a:divider />
+                            <a:button submenu="mnuOptions">Options</a:button>
+                        </a:bar>
+                    </a:toolbar>
+                    
+                    <a:model id="mdlRequest">
+                        <request><![CDATA[POST http://www.facebook.com/ajax/chat/buddy_list.php HTTP/1.1
+Host: www.facebook.com
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.78 Safari/532.5
+Referer: http://www.facebook.com/?ref=home
+Content-Length: 179
+Origin: http://www.facebook.com
+X-SVN-Rev: 217423
+Content-Type: application/x-www-form-urlencoded
+Accept: */*
+Accept-Encoding: gzip,deflate,sdch
+Cookie: c_user=754710322; datr=1265201908-4a6b5629c3417767636f1150f0709809cf22ed27c516435db43cb; h_user=AAAAAQAQElMVPrC99uiKyA9cBDj8MQAAAA-LlazXs99-jcJBHSuUJoY-; lxe=ruben%40javeline.nl; lxr=1; sid=2; cur_max_lag=2; locale=en_US; x-referer=http%3A%2F%2Fwww.facebook.com%2F%3Fref%3Dhome%23%2F%3Fref%3Dhome; xs=ef36421f015123e636108e39f3de0f33; presence=DJ265583382G70H1_2c1_2c1_2c1_2c1L754710322MF265577852358WMblcMsndPBbloMbvtP265577819BctMsbPBtA_7bQBfAnullBuctMsA0QBblADacA9V265583382Z405BlcPBcvrADrA0.92BtsP265577762QQQ
+Accept-Language: nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+
+user=754710322&popped_out=false&force_render=false&buddy_list=1&notifications=0&post_form_id=f198deec143ef999047ebce40e3b9b21&fb_dtsg=t5ua1&post_form_id_source=AsyncRequest&__a=1]]></request>
+                    </a:model>
+                    
+                    <a:model id="mdlRequest2">
+                        <request><![CDATA[GET http://0.channel70.facebook.com/x/513141991/false/p_754710322=0 HTTP/1.1
+Host: 0.channel70.facebook.com
+Proxy-Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.78 Safari/532.5
+Referer: http://0.channel70.facebook.com/iframe/10?r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2Fz5KPU%2Fhash%2Ff92tjc5l.js&r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2FzB10H%2Fhash%2F6ds4u498.js&r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2Fz3UNY%2Fhash%2Favqxpbgi.js&r=http%3A%2F%2Fstatic.ak.fbcdn.net%2Frsrc.php%2FzEGYW%2Fhash%2Fe9dp1jt1.js&r=http%3A%2F%2Fstatic.ak.fbcdn.net%2Frsrc.php%2Fz3X0I%2Fhash%2F88vbtxjn.js&r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2Fz8XFY%2Fhash%2Fascg7v9y.js&r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2Fz9NW0%2Fhash%2F5lode4eb.js&r=http%3A%2F%2Fb.static.ak.fbcdn.net%2Frsrc.php%2Fz78V8%2Fhash%2F73gunvuy.js
+Accept: */*
+Accept-Encoding: gzip,deflate,sdch
+Cookie: c_user=754710322; datr=1265201908-4a6b5629c3417767636f1150f0709809cf22ed27c516435db43cb; h_user=AAAAAQAQElMVPrC99uiKyA9cBDj8MQAAAA-LlazXs99-jcJBHSuUJoY-; lxe=ruben%40javeline.nl; lxr=1; sid=2; cur_max_lag=2; locale=en_US; x-referer=http%3A%2F%2Fwww.facebook.com%2Fhome.php%3Ffilter%3Dlf%23%2Fhome.php%3Ffilter%3Dh; xs=c3c79c5d2d780203fa5d2f9ef739c394; presence=DJ265574441G70H1_2c0_2c0_2c0_2c0_2c0_2c0_2c0_2c0_2c1L754710322MriA3000QBstateADpMutP265570503878WMblcMsndPBbloMbvtP265544486BctMsbPBtA_7bQBfAnullBuctMsA0QBblADacP4V265574441Z466BlcPBcvrADrA0.86BtsP265537942QQQ
+Accept-Language: nl-NL,nl;q=0.8,en-US;q=0.6,en;q=0.4
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+
+<?xml version="1.0"?>
+<data>
+    <drive caption="Boot Disk (C:)" date="">
+        <folder caption="My Documents" fid="1" icon="folder_page.png" date="21-06-1980">
+            <folder caption="Assets" fid="2" date="21-06-1980">
+                <file filename="bach.wma" fid="2" date="21-06-1980" />
+                <file filename="escher.zip" fid="2" date="21-06-1980" />
+                <file filename="godel.doc" fid="2" date="21-06-1980" />
+                <file filename="Todo.txt" fid="2" date="21-06-1980" />
+            </folder>
+            <folder caption="Presentation" icon="folder_picture.png" fid="3" date="21-06-1980" >
+                <file filename="SmartBindings.ppt" fid="2" date="21-06-1980" />
+                <file filename="aboutus.doc" fid="2" date="21-06-1980" />
+            </folder>
+            <file filename="LogoDesign.psd" fid="14" date="21-06-1980" />
+        </folder>
+        <folder caption="Javeline Test Folder" fid="10" date="21-06-1980" />
+    </drive>
+</data>]]></request>
+                    </a:model>
+                    
+                    <a:list align="left-splitter" width="200" />
+                    <a:bar skin="basic" align="middle-splitter" style="border:1px solid #c3c3c3;overflow:auto;" model="mdlRequest">
+                        <a:label left="10" top="5" right="85"><strong>Request: </strong> {[text()].split("\n")[0]}</a:label>
+                        <a:dropdown id="ddRequestView" right="3" top="3" width="80" value="Webforms" autoselect2="true">
+                            <a:item>Headers</a:item>
+                            <a:item>Raw</a:item>
+                            <a:item>Textview</a:item>
+                            <a:item>Webforms</a:item>
+                            <a:item>XML</a:item>
+                        </a:dropdown>
+                        <div class="reqview"><?lm
+                            var type = ddRequestView.value;
+                            var body = [text()];
+                            if (!body)
+                                return;
+                                
+                            switch(type.toLowerCase()) {
+                                case "headers":
+                                    var h = body.split("\n\n")[0];
+                                    var hs = h.split("\n"); var p = hs.shift();
+                                    for (var t, i = 0; i < hs.length; i++) {
+                                        p = hs[i].split(":"), t = p.shift();
+                                        <div class="head"><strong>{t}: </strong><span>{
+                                            if (t == "Cookie"){
+                                                <br />
+                                                var aCookie = p.join(":").splitSafe(";");
+                                                for (var j = 0; j < aCookie.length; j++) {
+                                                    var aCrumb = aCookie[j].split("=");
+                                                    <div class="head cookie">
+                                                        <strong>{aCrumb.shift()}: </strong>
+                                                        <span>{unescape(aCrumb.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")}</span>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                                unescape(p.join(":")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                        }</span></div>
+                                    }
+                                break;
+                                case "raw":
+                                    <div class="raw">{
+                                        body.replace(/ /g, "&nbsp;")
+                                            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                            .replace(/</g, "&lt;")
+                                            .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                            .replace(/\n/g, "<br />");
+                                    }</div>
+                                break;
+                                case "textview":
+                                    <div class="textview">{
+                                        body.split("\n\n")[1].replace(/ /g, "&nbsp;")
+                                            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                            .replace(/</g, "&lt;")
+                                            .replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                            .replace(/\n/g, "<br />");
+                                    }</div>
+                                break;
+                                case "webforms":
+                                    var h = body.split("\n\n")[1];
+                                    var hs = h.split("&"); var p = hs.shift();
+                                    for (var t, i = 0; i < hs.length; i++) {
+                                        p = hs[i].split("=");
+                                        <div class="head"><strong>{p.shift()}: </strong><span>{
+                                                unescape(p.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                        }</span></div>
+                                    }
+                                break;
+                                case "xml":
+                                    <div class="textview">{
+                                        apf.highlightXml(apf.formatXml(body.split("\n\n")[1]))
+                                            .replace(/\n/g, "<br />") || "Content is not valid xml";
+                                    }</div>
+                                break;
+                            }
+                        ?></div>
+                    </a:bar>
+                    <a:bar skin="basic" align="right" style="border:1px solid #c3c3c3;overflow:auto;">
+                        <a:label left="10" top="5" right="85"><strong>Response: </strong>HTTP/1.1 502 Fiddler - Connection Failed</a:label>
+                        <a:dropdown id="ddResponseView" right="3" top="3" width="80" autoselect="true" maxitems="10">
+                            <a:item>Headers</a:item>
+                            <a:item>Raw</a:item>
+                            <a:item>Textview</a:item>
+                            <a:item>Imageview</a:item>
+                            <a:item>Webview</a:item>
+                            <a:item>XML</a:item>
+                        </a:dropdown>
+                        <?lm
+                        
+                        ?>
+                    </a:bar>
                 </a:page>
                 <a:page caption="Storage">
                 </a:page>
@@ -272,28 +645,10 @@
         </a:bar>
         
         <a:script>//<!--
-            apf.$debugwin = {
-                init : function(){
-                    this.updateLog();
-                    apf.addEventListener("debug", this.debugHandler);
-                },
-                
-                updateLog : function(){
-                    console.clear();
-                    console.setValue(apf.console.getAll(
-                        btnError.value,
-                        btnWarn.value,
-                        btnLog.value
-                    ))
-                },
-                
-                debugHandler : function(e){
-                    if ((self["btn" + e.type.uCaseFirst()] || btnLog).value)
-                        console.setValue(e.message);
-                }
-            }
-            
             apf.$debugwin.init();
         //--></a:script>
+        
+        <a:model id="mdl" src="http://www.ajax.org" />
+        <a:model src="http://www.example.com" />
     </body>
 </html>

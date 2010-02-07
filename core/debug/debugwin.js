@@ -1724,7 +1724,7 @@ apf.debugwin = {
         apf.setcookie("jsexec", code);
 
         apf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
-            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "\n<br />") + "</div></span>", "info", null, null, null, true);
+            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "\n<br />") + "</div></span>", "log", null, null, null, true);
 
         var doIt = function(){
             var x = eval(code);
@@ -1748,7 +1748,7 @@ apf.debugwin = {
                 
                 apf.console.write(str
                     .replace(/</g, "&lt;")
-                    .replace(/\n/g, "\n<br />"), "info", null, null, null, true);
+                    .replace(/\n/g, "\n<br />"), "log", null, null, null, true);
             }catch(e){
                 apf.console.write(x
                     ? "Could not serialize object"
@@ -1818,6 +1818,7 @@ apf.debugwin = {
     },
 
     toggleDebugger : function(checked){
+        return;
         this.useDebugger = checked;
 
         if (apf.setcookie)
@@ -1846,14 +1847,14 @@ apf.debugwin = {
             : null;
 
         if (!isForced) {
-            apf.console.error("[line " + linenr + "] " + message
+            apf.console.error("Error on line " + linenr + "\n" + message
                 .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
                 .replace(/\n/g, "\n<br />"));
         }
 
-        apf.debugwin.show(e, filename, linenr);
+        //apf.debugwin.show(e, filename, linenr);
 
-        return true;
+        //return true;
     },
 
     activate : function(msg){
