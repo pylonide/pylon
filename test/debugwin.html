@@ -432,7 +432,7 @@
             
         </a:bar>
         <a:bar height="300" align="bottom-splitter" skin="basic" style="border-top:1px solid #c3c3c3;overflow:hidden;">
-            <a:tab id="tabDebug" anchors="2 -1 0 0" skin="demos_lowtab" activepage="net">
+            <a:tab id="tabDebug" anchors="2 -1 0 0" skin="demos_lowtab" activepage2="net">
                 <a:page caption="Console" >
                     <a:text id="console" align="left" scrolldown="true" behavior="addonly" contextmenu="mnuOptions" focussable="true" style="border-right:1px solid #c3c3c3" />
                     <a:toolbar align="left-splitter" height="27" style="border-width:1px 1px 0 0;border-style:solid;border-color:#c3c3c3;">
@@ -551,7 +551,7 @@ Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
                     </a:model>
                     
                     <a:list align="left-splitter" width="200" />
-                    <a:bar skin="basic" align="middle-splitter" class="netview" model="mdlRequest">
+                    <a:bar skin="basic" align="middle-splitter" class="netview" model="mdlRequest2">
                         <a:label left="10" top="5" right="85"><strong>Request: </strong> {[text()].split("\n")[0]}</a:label>
                         <a:dropdown id="ddRequestView" right="3" top="3" width="80" autoselect="true">
                             <a:item>Headers</a:item>
@@ -650,7 +650,7 @@ Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
                 </a:page>
                 <!--a:page caption="Profiler">
                 </a:page-->
-                <a:page caption="Docs" id="docs" render="runtime">
+                <a:page caption="Docs" id="docs" render2="runtime">
                     <!-- this needs to be implemented using an include from ajax.org and a fallback locally -->
                     <a:include src="docs.xml" />
                 </a:page>
