@@ -68,8 +68,9 @@ apf.label = function(struct, tagName){
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        apf.DataAction,
         //#endif
+        apf.ChildValue
     );
 
     var _self = this;

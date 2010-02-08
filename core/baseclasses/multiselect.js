@@ -400,7 +400,7 @@ apf.MultiSelect = function(){
                 else {
                     var rules = this.$actions["add"];
                     for (var i = 0, l = rules.length; i < l; i++) {
-                        if (rules[i][2].getAttribute("type") == xmlNode) {
+                        if (rules[i].getAttribute("type") == xmlNode) {
                             xmlNode = null;
                             rule = rules[i];
                             break;
@@ -1308,9 +1308,11 @@ apf.MultiSelect = function(){
             delete this.$lastValue;
             return;
         }
-        
+
         if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
+        else
+            this.clearSelection();
     }
     
     /**
@@ -1355,6 +1357,13 @@ apf.MultiSelect = function(){
             this.selected = null;
             return;
         }
+        
+        //#ifdef __DEBUG
+        if (prop == "selection" && (this.getAttribute("selection") || "*").substr(0, 1) != "*"){
+            apf.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
+                + ") should select multiple nodes. Please prefix xpath query with a * (ex.: *[item]).");
+        }
+        //#endif
 
         if (this.$isSelecting) {
             this.selection = this.$valueList;
@@ -1386,15 +1395,35 @@ apf.MultiSelect = function(){
                         pNode = selNodes[0].parentNode;
                     }
                     else {
-                        var model = apf.nameserver.get("model", c.cvalue.xpaths[0]),
+                        var model, path;
+                        if (c.cvalue.xpaths[0] == "#" || c.cvalue.xpaths[1] == "#") {
+                            var m = (c.cvalue3 || (c.cvalue3 = apf.lm.compile(c.value, {
+                                xpathmode: 5
+                            })))(this.xmlRoot);
+                            
+                            model = m.model && m.model.nodeFunc && m.model;
+                            if (model)
+                                path = m.xpath;
+                            else if (m.model) {
+                                model = apf.xmldb.findModel(m.model);
+                                path = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                            }
+                            else {
+                                //No selection - nothing to do
+                            }
+                        }
+                        else {
+                            model = apf.nameserver.get("model", c.cvalue.xpaths[0]);
                             path  = c.cvalue.xpaths[1];
-                        if (!model.data) {
+                        }
+
+                        if (!model || !model.data) {
                             this.$isSelecting = false;
                             return false;
                         }
                         
                         pNode = model.queryNode(path.replace(/\/[^\/]+$|^[^\/]*$/, "") || ".");
-                        
+
                         if (!pNode)
                             throw new Error("Missing parent node"); //@todo apf3.0 make this into a proper error
                     }
@@ -1544,7 +1573,7 @@ apf.MultiSelect = function(){
                 }
                 
                 //this[prop] = null; //???
-                this.selectList(selList);
+                this.selectList(selList, true); //@todo noEvent to distinguish between user actions and not user actions... need to rethink this
                 return false;
             }
             

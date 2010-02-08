@@ -372,7 +372,7 @@ apf.table = function(struct, tagName){
             rowheight[fillRow] = "rowh" + fillRow;
         }
         
-        if (!needcalc)
+        if (!needcalc && !this.aData)
             this.$ext.style.height = (total + ((rowheight.length-1) * this.padding) + margin[0] + margin[2]) + "px";
         
         //Set column start position

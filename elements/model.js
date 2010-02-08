@@ -223,20 +223,6 @@ apf.model = function(struct, tagName){
         };
         amlNode.$model = this;
 
-        var p, node, list = amlNode.$propsUsingMainModel;
-        for (var prop in list) {
-            p = this.$bindXmlProperty(amlNode, prop, 
-                    list[prop].xpath, list[prop].optimize);
-            
-            if (this.data) {
-                if (node = p.root || p.listen ? this.data.selectSingleNode(p.root || p.listen) : this.data) {
-                    amlNode.$execProperty(prop, node);
-                }
-                else
-                    this.$waitForXml(amlNode, prop);
-            }
-        }
-
         if (typeof amlNode.noloading == "undefined"
           && amlNode.$setInheritedAttribute 
           && !amlNode.$setInheritedAttribute("noloading"))
@@ -254,6 +240,20 @@ apf.model = function(struct, tagName){
         else { //@experimental
             if (amlNode.clear)
                 amlNode.clear("empty");
+        }
+
+        var p, node, list = amlNode.$propsUsingMainModel;
+        for (var prop in list) {
+            p = this.$bindXmlProperty(amlNode, prop, 
+                    list[prop].xpath, list[prop].optimize);
+            
+            if (this.data) {
+                if (node = p.root || p.listen ? this.data.selectSingleNode(p.root || p.listen) : this.data) {
+                    amlNode.$execProperty(prop, node);
+                }
+                else
+                    this.$waitForXml(amlNode, prop);
+            }
         }
 
         return this;

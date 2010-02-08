@@ -471,7 +471,7 @@ apf.Class.prototype = new (function(){
                     continue;
                 }
 
-                if (typeof node != OBJ || !node.$regbase) {
+                if (!node || typeof node != OBJ || !node.$regbase) {
                     bProp = o[1];
                     node  = self[o[0]];
                 }
@@ -693,7 +693,7 @@ apf.Class.prototype = new (function(){
         
         //Optimized event calling
         if (arr = this.$eventsStack[eventName]) {
-            for (i = 0, l = arr.length; i < l; i++) {
+            /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
                     value    : value, 
@@ -701,6 +701,13 @@ apf.Class.prototype = new (function(){
                 }))) === false) {
                     e.returnValue = false;
                 }
+            }*/
+            if (this.dispatchEvent(eventName, {
+                prop     : prop, 
+                value    : value, 
+                oldvalue : oldvalue
+            }) === false) {
+                e.returnValue = false;
             }
         }
         
@@ -784,7 +791,7 @@ apf.Class.prototype = new (function(){
 
         e = options && options.name ? options : e;
 
-        if (this.disabled && !allowEvents[eventName]) {
+        if (this.disabled && !allowEvents[eventName] && false) {
             result = false;
         }
         else {

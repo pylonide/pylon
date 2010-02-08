@@ -1080,9 +1080,27 @@ apf.DataBinding = function(){
                     model = m.model && m.model.nodeFunc && m.model;
                     if (model)
                         xpath = m.xpath;
-                    else {
+                    else if (m.model) {
                         model = apf.xmldb.findModel(m.model);
                         xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                    }
+                    else {
+                        //wait until model becomes available
+                        this.addEventListener("prop." + prop, function(e){
+                            var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
+                                xpathmode: 5
+                            })))(this.xmlRoot);
+                            
+                            if (m.model) {
+                                this.removeEventListener("prop." + prop, arguments.callee);
+                                var _self = this;
+                                setTimeout(function(){
+                                    _self.$clearDynamicProperty(prop);
+                                    _self.$setDynamicProperty(prop, expression);
+                                }, 10);
+                            }
+                        });
+                        continue;
                     }
                 }
                 else model = null;

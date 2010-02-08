@@ -71,7 +71,7 @@ apf.AmlText = function(isPrototype){
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var pHtmlNode;
-        if (!(pHtmlNode = this.parentNode.$int)) 
+        if (!(pHtmlNode = this.parentNode.$int) || this.parentNode.hasFeature(apf.__CHILDVALUE__)) 
             return;
 
         this.$amlLoaded = true;

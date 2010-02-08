@@ -102,7 +102,7 @@ apf.getStyleRule = function(name, type, stylesheet, win){
  * @returns {HTMLElement}
  */
 apf.setStyleClass = function(oHtml, className, exclusion, special){
-    if (!oHtml || this.disabled)
+    if (!oHtml) // || this.disabled
         return;
 
     //#ifdef __DEBUG

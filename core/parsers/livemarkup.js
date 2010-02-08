@@ -1864,7 +1864,7 @@ apf.lm = new (function(){
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
 apf.lm_exec = new (function(){
-    var wlvl = 3; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
+    var wlvl = 0; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
 
     //warning functions
     this.setWarnLevel = function(lvl){

@@ -938,7 +938,7 @@ apf.MultiselectBinding = function(){
         }
 
         //@todo apf3.0 find a better heuristic (portal demo)
-        if (false && this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
+        if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
                 _self.reload();
