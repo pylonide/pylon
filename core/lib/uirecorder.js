@@ -157,6 +157,17 @@ apf.uirecorder = {
                     return;
     
                 e = e || event;
+
+                var delta = null;
+                if (e.wheelDelta) {
+                    delta = e.wheelDelta / 120;
+                    if (apf.isOpera)
+                        delta *= -1;
+                }
+                else if (e.detail)
+                    delta = -e.detail / 3;
+                
+                apf.uirecorder.captureAction("mousescroll", e, delta);
             }, false);
         }
         else {
@@ -166,6 +177,17 @@ apf.uirecorder = {
                     return;
 
                 e = e || event;
+
+                var delta = null;
+                if (e.wheelDelta) {
+                    delta = e.wheelDelta / 120;
+                    if (apf.isOpera)
+                        delta *= -1;
+                }
+                else if (e.detail)
+                    delta = -e.detail / 3;
+                    
+                apf.uirecorder.captureAction("mousescroll", e, delta);
             };
         }
     },
@@ -200,7 +222,7 @@ apf.uirecorder = {
     record : function(file) {
         apf.uirecorder.curTestFile = file;
         apf.uirecorder.actionList = [];
-        apf.uirecorder.detailList = {};
+        //apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
         apf.uirecorder.isRecording = true;
         apf.uirecorder.init();
@@ -245,6 +267,7 @@ apf.uirecorder = {
         else if (apf.uirecorder.isPlaying) {
             apf.uirecorder.isPlaying   = false;
         }
+        apf.uirecorder.detailList = {};
     },
     
     /**
@@ -306,13 +329,22 @@ apf.uirecorder = {
         if (e && e.clientX) actionObj.x         = e.clientX;
         if (e && e.clientY) actionObj.y         = e.clientY;
 
-        // get keypress value
-        if (eventName === "keypress") {
+        if (value) {
             actionObj.value = value;
         }
 
+        // collect events before first ui action
+        if (apf.uirecorder.actionList.length == 0) {
+            actionObj.name = "init";
+            actionObj.detailList = apf.uirecorder.detailList;
+            apf.uirecorder.detailList = {};
+            apf.uirecorder.actionList.push(actionObj);
+            return;
+        }
+            
+                
         // detect first mousemove action in serie
-        if ((apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") || apf.uirecorder.actionList.length == 0) {
+        if ((apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") || apf.uirecorder.actionList.length == 1) {
             apf.uirecorder.firstMousemoveObj = actionObj;
         }
         
@@ -346,7 +378,7 @@ apf.uirecorder = {
         else 
         */
        var index, delayObj;
-        if (apf.uirecorder.actionList.length > 0 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
+        if (apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
             for (var elementName in apf.uirecorder.detailList) {
                 if (!apf.uirecorder.firstMousemoveObj.detailList) apf.uirecorder.firstMousemoveObj.detailList = {};
                 if (!apf.uirecorder.firstMousemoveObj.detailList[elementName]) apf.uirecorder.firstMousemoveObj.detailList[elementName] = {
@@ -390,6 +422,7 @@ apf.uirecorder = {
         
         $setTimeout = function(f, ms){
             //Record current mouseEvent
+            if (!ms) ms = 0;
             apf.uirecorder.setTimeout(function(){
                 apf.uirecorder.runInContext(currentState, f);
             }, ms);
@@ -454,7 +487,7 @@ apf.uirecorder = {
         "mouseover" : {}
     },
     mouseoverEvents : ["dragover", "dragout"],
-    prevEvtName : "",
+    lastEventObj    : {},
     captureEvent : function(eventName, e) {
         //apf.console.info("event " + eventName + " dispatched");
         if (!e || e.noCapture) return; 
@@ -532,7 +565,6 @@ apf.uirecorder = {
             else
                 targetName = "trashbin";
         }
-        
         if (targetName) {
             if (apf.uirecorder.mouseoverEvents.indexOf(eventName) > -1) {
                 if (!apf.uirecorder.capturedEvents.mouseover[targetName]) apf.uirecorder.capturedEvents.mouseover[targetName] = {
@@ -542,7 +574,7 @@ apf.uirecorder = {
                     data        : []
                 };
                 // repeating event
-                if (eventName != apf.uirecorder.prevEvtName || !apf.uirecorder.capturedEvents.mouseover[targetName].events.length) {
+                if (!(targetName == apf.uirecorder.lastEventObj.target && eventName == apf.uirecorder.lastEventObj.name) || !apf.uirecorder.capturedEvents.mouseover[targetName].events.length) {
                     apf.uirecorder.capturedEvents.mouseover[targetName].events.push(eventObj);
                 }
                 else {
@@ -560,7 +592,7 @@ apf.uirecorder = {
                 };
                 
                 // repeating event
-                if (eventName != apf.uirecorder.prevEvtName || !apf.uirecorder.detailList[targetName].events.length) {
+                if (!(targetName == apf.uirecorder.lastEventObj.target && eventName == apf.uirecorder.lastEventObj.name) || !apf.uirecorder.detailList[targetName].events.length) {
                     apf.uirecorder.detailList[targetName].events.push(eventObj);
                 }
                 else {
@@ -568,8 +600,13 @@ apf.uirecorder = {
                         apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls = 1;
                     apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls++;
                 }
-            }            
-            apf.uirecorder.prevEvtName = eventName;
+            }
+            apf.uirecorder.lastEventObj = {
+                targetName  : targetName,
+                amlNode     : amlNode,
+                name        : eventName,
+                event       : e
+            };
         }
         else {
             //debugger;
@@ -714,8 +751,8 @@ apf.uirecorder = {
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
                                 if (type == "events") {
+                                    var caption = item.name;
                                     if (item.calls) {
-                                        var caption = item.name; 
                                         caption = (item.calls) ? caption + " (" + item.calls+ "x)" : caption;
                                         //caption = (item.value) ? caption + ": " + item.value : caption;
                                    }
