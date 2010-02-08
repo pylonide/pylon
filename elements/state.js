@@ -103,8 +103,8 @@ apf.StateServer = {
  *   <a:teleport>
  *       <a:rpc id="comm" protocol="cgi">
  *           <a:method name="login" url="http://localhost/login.php">
- *               <a:variable name="username" />
- *               <a:variable name="password" />
+ *               <a:param name="username" />
+ *               <a:param name="password" />
  *           </a:method>
  *           <a:method name="logout" url="http://localhost/logout.php" />
  *       </a:rpc>
