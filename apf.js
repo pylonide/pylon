@@ -592,7 +592,9 @@ var apf = {
 
         //#ifdef __DEBUG
         apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
+        apf.console.warn("This is a debug build of Ajax.org Platform; be aware "
+            + "that\nexecution speed of this build is <strong>several times</strong> "
+            + "slower than a release build\nof Ajax.org Platform.");
         //#endif
 
         //mozilla root detection
@@ -603,8 +605,7 @@ var apf = {
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
-        if (apf.$debugwin)
-            apf.$debugwin.start();
+        apf.debugwin.init();
         //#endif
 
         //Load Browser Specific Code
@@ -874,13 +875,7 @@ var apf = {
                 messages : {}
             },
 
-            log   : {
-                icon     : "bullet_green.png",
-                color    : "black",
-                messages : {}
-            },
-            
-            custom   : {
+            info  : {
                 icon     : "bullet_green.png",
                 color    : "black",
                 messages : {}
@@ -933,8 +928,6 @@ var apf = {
         },
 
         cache : [],
-        history : [],
-        typeLut : {time: "log", repeat: "log"},
         $lastmsg : "",
         $lastmsgcount : 0,
 
@@ -982,16 +975,13 @@ var apf = {
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
 
-            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
+            msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg)
-                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
-                            if (tag) return tag;
-                            return "&nbsp;";
-                        })
-                        //.replace(/\n/g, "\n<br />")
+                        .replace(/ /g, "&nbsp;")
+                        .replace(/\n/g, "\n<br />")
                         .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = apf.$debugwin && apf.$debugwin.resPath
-                ? apf.$debugwin.resPath
+            var sPath = apf.debugwin
+                ? (apf.debugwin.resPath || "{imgpath}")
                 : apf.basePath + "core/debug/resources/";
 
             if (data) {
@@ -1010,11 +1000,13 @@ var apf = {
                 + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
-            //deprecated
             if (!subtype)
                 subtype = "default";
 
-            this.history.push([this.typeLut[type] || type, msg]);
+            if (!this.data[type].messages[subtype])
+                this.data[type].messages[subtype] = [];
+
+            this.data[type].messages[subtype].push(msg);
 
             if (this.win && !this.win.closed)
                 this.showWindow(msg);
@@ -1025,21 +1017,7 @@ var apf = {
             this.debugInfo.push(msg);
 
             if (apf.dispatchEvent)
-                apf.dispatchEvent("debug", {message: msg, type: type});
-        },
-        
-        clear : function(){
-            this.history = [];
-        },
-        
-        getAll : function(err, wrn, log) {
-            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
-            var out = [];
-            for (var i = 0, l = this.history.length; i < l; i++) {
-                if (hash[this.history[i][0]])
-                    out.push(this.history[i][1]);
-            }
-            return out.join("");
+                apf.dispatchEvent("debug", {message: msg});
         },
         //#endif
 
@@ -1075,7 +1053,7 @@ var apf = {
          */
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "log", subtype, data);
+            this.info(msg, subtype, data);
             //#endif
         },
 
@@ -1088,7 +1066,7 @@ var apf = {
          */
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.log(msg, subtype, data);
+            this.write(msg, "info", subtype, data);
             //#endif
         },
 
@@ -1168,7 +1146,7 @@ var apf = {
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = [];
+        var str = ["---- APF Error ----"];
         if (amlContext) {
             if (amlContext.nodeType == 9)
                 amlContext = amlContext.documentElement;
@@ -1222,7 +1200,7 @@ var apf = {
             str.push(outputname + ": " + output);
         if (amlContext)
             str.push("\n===\n" + amlStr);
-
+        
         return (apf.lastErrorMessage = str.join("\n"));
         /*#else
         apf.lastErrorMessage = message;

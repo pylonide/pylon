@@ -67,7 +67,7 @@ apf.markupedit = function(struct, tagName){
         apf.DataAction,
         //#endif
         apf.Rename,
-        //apf.MultiSelect,
+        apf.MultiSelect,
         apf.Cache
     );
 
@@ -1174,7 +1174,7 @@ apf.markupedit = function(struct, tagName){
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).call(apf.markupedit.prototype = new apf.MultiSelect());
+}).call(apf.markupedit.prototype = new apf.GuiElement());
 
-apf.aml.setElement("markupedit", apf.markupedit);
+apf.aml.setElement("markupdit", apf.markupedit);
 // #endif

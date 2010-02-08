@@ -36,8 +36,6 @@ apf.AmlEvent = function(name, data){
 };
 
 apf.AmlEvent.prototype = {
-    $event : true,
-    
     // #ifdef __WITH_EVENT_BUBBLING
     bubbles : false,
     cancelBubble : false,

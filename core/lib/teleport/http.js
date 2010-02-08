@@ -131,7 +131,7 @@ apf.http = function(){
         this.$uniqueId = apf.all.push(this) - 1;
 
     this.toString = this.toString || function(){
-        return "[Ajax.org Teleport Component : (" + (this.localName || "http") + ")]";
+        return "[Ajax.org Teleport Component : (HTTP)]";
     };
 
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE

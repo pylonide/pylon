@@ -486,9 +486,8 @@ apf.Class.prototype = new (function(){
 
             if (!node) {
                 if (arguments[2]) {
-                    //+ pValue.replace(/</g, "&lt;").replace(/ +/g, " ").substr(0, 200) + "..." + "\n\n" 
-                    apf.console.log("[287] Could not execute binding test : "
-                        + "Object '" + o[0] + "' does not exist for which a property bind could be made (" + p + ")");
+                    apf.console.warn("[287] Could not execute binding test : "
+                        + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
                 }
                 else {
                     apf.queue.add(prop + ":" + this.$uniqueId, function(){
@@ -789,10 +788,9 @@ apf.Class.prototype = new (function(){
             result = false;
         }
         else {
-            //@todo rewrite this and all dependencies to match w3c
             if (!e || !e.currentTarget) {
-                //if (!(options || (options = {})).currentTarget)
-                    (options || (options = {})).currentTarget = this;
+                if (!(options || (options = {})).currentTarget)
+                    options.currentTarget = this;
 
                 //Capture support
                 if (arr = this.$captureStack[eventName]) {

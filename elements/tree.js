@@ -736,11 +736,9 @@ apf.tree = function(struct, tagName){
             var iconURL = this.$applyBindRule("icon", xmlNode);
             if (iconURL) {
                 if (elIcon.tagName.match(/^img$/i))
-                    elIcon.setAttribute("src", 
-                        apf.getAbsolutePath(this.iconPath, iconURL));
+                    elIcon.setAttribute("src", this.iconPath + iconURL);
                 else
-                    elIcon.setAttribute("style", "background-image:url(" + 
-                        apf.getAbsolutePath(this.iconPath, iconURL) + ")");
+                    elIcon.setAttribute("style", "background-image:url(" + this.iconPath + iconURL + ")");
             }
         }
 
@@ -853,10 +851,9 @@ apf.tree = function(struct, tagName){
             iconURL = this.$applyBindRule("icon", xmlNode);
         if (elIcon && iconURL) {
             if (elIcon.tagName && elIcon.tagName.match(/^img$/i))
-                elIcon.src = apf.getAbsolutePath(this.iconPath, iconURL);
+                elIcon.src = this.iconPath + iconURL;
             else
-                elIcon.style.backgroundImage = "url(" + 
-                    apf.getAbsolutePath(this.iconPath, iconURL) + ")";
+                elIcon.style.backgroundImage = "url(" + this.iconPath + iconURL + ")";
         }
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);

@@ -119,7 +119,7 @@ apf.popup = {
                   : p.offsetHeight + p.scrollTop);
 
             popup.style.top = (moveUp 
-                ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
+                ? (top - (options.height || o.height || o.content.offsetHeight))
                 : top) + "px"
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
@@ -147,7 +147,7 @@ apf.popup = {
 
                     popup.style.height = value + "px";
                     if (moveUp)
-                        popup.style.top = (top - value - (options.y || 0)) + "px";
+                        popup.style.top = (top - value - options.y) + "px";
                     else
                         popup.scrollTop = -1 * (i - steps) * ((options.height || o.height) / steps);
                     popup.style.display = "block";
