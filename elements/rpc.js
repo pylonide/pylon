@@ -36,14 +36,14 @@
  *      <a:method 
  *        name    = "searchProduct" 
  *        receive = "processSearch">
- *          <a:variable name="search" />
- *          <a:variable name="page" />
- *          <a:variable name="textbanner" value="1" />
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
  *      </a:method>
  *      <a:method 
  *        name = "loadProduct">
- *          <a:variable name="id" />
- *          <a:variable name="search_id" />
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
  *      </a:method>
  *  </a:rpc>
  *
@@ -90,15 +90,15 @@
  *        name    = "searchProduct"
  *        url     = "http://example.com/search.php"
  *        receive = "processSearch">
- *          <a:variable name="search" />
- *          <a:variable name="page" />
- *          <a:variable name="textbanner" value="1" />
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
  *      </a:method>
  *      <a:method
  *        name = "loadProduct"
  *        url  = "http://example.com/show-product.php">
- *          <a:variable name="id" />
- *          <a:variable name="search_id" />
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
  *      </a:method>
  *  </a:rpc>
  *
@@ -120,14 +120,14 @@
  *      <a:method 
  *        name    = "searchProduct" 
  *        receive = "processSearch">
- *          <a:variable name="search" />
- *          <a:variable name="page" />
- *          <a:variable name="textbanner" value="1" />
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
  *      </a:method>
  *      <a:method 
  *        name = "loadProduct">
- *          <a:variable name="id" />
- *          <a:variable name="search_id" />
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
  *      </a:method>
  *  </a:rpc>
  *
