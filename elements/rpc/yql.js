@@ -32,12 +32,12 @@
  *      <a:method
  *        name        = "flickr"
  *        query       = "SELECT * FROM flickr WHERE text='{keywords}'">
- *          <a:variable name="keywords"/>
+ *          <a:param name="keywords"/>
  *      </a:method>
  *      <a:method
  *        name        = "weather"
  *        query       = "SELECT * FROM weather.forecast WHERE location={location}">
- *          <a:variable name="location"/>
+ *          <a:param name="location"/>
  *      </a:method>
  *  </a:rpc>
  *

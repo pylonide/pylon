@@ -23,9 +23,41 @@
 
 /**
  * Baseclass for rpc in teleport. Modules are available for
- * {@link teleport.soap SOAP}, {@link teleport.xmlrpc XML-RPC}, 
- * {@link teleport.cgi CGI}, {@link teleport.jsonrpc JSON-RPC} 
- * and several proprietary protocols.
+ * SOAP, XML-RPC, CGI, JSON-RPC and several proprietary protocols.
+ *
+ * Example:
+ * Ajax.org Markup Language
+ * <code>
+ *  <a:rpc id="comm" 
+ *    protocol    = "soap" 
+ *    url         = "http://example.com/show-product.php" 
+ *    soap-prefix = "m" 
+ *    soap-xmlns  = "http://example.com">
+ *      <a:method 
+ *        name    = "searchProduct" 
+ *        receive = "processSearch">
+ *          <a:variable name="search" />
+ *          <a:variable name="page" />
+ *          <a:variable name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method 
+ *        name = "loadProduct">
+ *          <a:variable name="id" />
+ *          <a:variable name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ *
  * Example:
  * This example shows an rpc element using the xmlrpc protocol. It contains
  * two methods which can be called. The return of the first method is handled
@@ -37,6 +69,66 @@
  *        receive = "processSearch" />
  *      <a:method
  *        name = "loadProduct" />
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ *
+ * Example:
+ * Ajax.org Markup Language
+ * <code>
+ *  <a:rpc id="comm" protocol="cgi">
+ *      <a:method
+ *        name    = "searchProduct"
+ *        url     = "http://example.com/search.php"
+ *        receive = "processSearch">
+ *          <a:variable name="search" />
+ *          <a:variable name="page" />
+ *          <a:variable name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method
+ *        name = "loadProduct"
+ *        url  = "http://example.com/show-product.php">
+ *          <a:variable name="id" />
+ *          <a:variable name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ *
+ * Example:
+ * Ajax.org Markup Language
+ * <code>
+ *  <a:rpc id="comm" protocol="jsonrpc">
+ *      <a:method 
+ *        name    = "searchProduct" 
+ *        receive = "processSearch">
+ *          <a:variable name="search" />
+ *          <a:variable name="page" />
+ *          <a:variable name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method 
+ *        name = "loadProduct">
+ *          <a:variable name="id" />
+ *          <a:variable name="search_id" />
+ *      </a:method>
  *  </a:rpc>
  *
  *  <a:script>
