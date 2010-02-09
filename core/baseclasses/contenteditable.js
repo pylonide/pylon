@@ -1330,9 +1330,9 @@ apf.ContentEditable = function() {
                         plugin = this.$addPlugin(item);
                         // #ifdef __DEBUG
                         if (!plugin)
-                            apf.console.error("Plugin '" + item + "' can not \
-                                               be found and/ or instantiated.",
-                                               "editor");
+                            apf.console.error("Plugin '" + item + "' can not "
+                                            + "be found and/ or instantiated.",
+                                              "editor");
                         // #endif
                         bIsPlugin = true;
                     }
@@ -1359,11 +1359,9 @@ apf.ContentEditable = function() {
                     oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
                         + this.$uniqueId + "].$buttonClick(event, this, true);");
                     oButton.setAttribute("onmouseover", 
-                        "var o = apf.all[" + this.$uniqueId + "]\
-                         o.$setStyleClass(this, 'hover', null, true);");
+                        "apf.all[" + this.$uniqueId + "].$setStyleClass(this, 'hover', null, true);");
                     oButton.setAttribute("onmouseout", 
-                        "var o = apf.all[" + this.$uniqueId + "]\
-                         o.$setStyleClass(this, '', ['hover'], true);");
+                        "apf.all[" + this.$uniqueId + "].$setStyleClass(this, '', ['hover'], true);");
 
                     oButton.setAttribute("type", item);
                 }
