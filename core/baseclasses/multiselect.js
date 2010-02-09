@@ -625,8 +625,13 @@ apf.MultiSelect = function(){
      *   {Array}       selection an array of {@link term.datanode data node} that are selected.
      *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
-    this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
-        if (!this.selectable || this.disabled) return;
+    this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
+        if (!this.selectable || userAction && this.disabled) return;
+        
+        if (fakeselect == -1) {
+	      	fakeselect = false;
+	      	userAction = true;
+        }
 
         if (this.$skipSelect) {
             this.$skipSelect = false;
@@ -829,8 +834,8 @@ apf.MultiSelect = function(){
      *   object:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
      */
-    this.choose = function(xmlNode){
-        if (!this.selectable || this.disabled) return;
+    this.choose = function(xmlNode, userAction){
+        if (!this.selectable || userAction && this.disabled) return;
 
         if (this.dispatchEvent("beforechoose", {xmlNode : xmlNode}) === false)
             return false;
@@ -851,8 +856,8 @@ apf.MultiSelect = function(){
      * @param {Boolean} [singleNode] whether to only deselect the indicated node
      * @param {Boolean} [noEvent]    whether to not call any events
      */
-    this.clearSelection = function(noEvent){
-        if (!this.selectable || this.disabled || !this.$valueList.length)
+    this.clearSelection = function(noEvent, userAction){
+        if (!this.selectable || userAction && this.disabled || !this.$valueList.length)
             return;
 
         if (!noEvent) {
@@ -901,8 +906,8 @@ apf.MultiSelect = function(){
      * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
      */
     //@todo I think there are missing events here?
-    this.selectList = function(xmlNodeList, noEvent, selected){
-        if (!this.selectable || this.disabled) return;
+    this.selectList = function(xmlNodeList, noEvent, selected, userAction){
+        if (!this.selectable || userAction && this.disabled) return;
 
         if (this.dispatchEvent("beforeselect", {
             selection   : xmlNodeList,
@@ -1084,9 +1089,9 @@ apf.MultiSelect = function(){
      * Selects all the {@link term.eachnode each nodes} of this element
      *
      */
-    this.selectAll = function(){
+    this.selectAll = function(userAction){
         if (!this.multiselect || !this.selectable
-          || this.disabled || !this.xmlRoot)
+          || userAction && this.disabled || !this.xmlRoot)
             return;
 
         var nodes = this.$isTreeArch

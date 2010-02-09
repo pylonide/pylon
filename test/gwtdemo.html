@@ -72,7 +72,7 @@
                     }
                 
                     var q = query.join(" and ");
-                    trContacts.setAttribute("each", "[group[contact[" + q + "]]|contact[" + q + "]]");
+                    trContacts.setAttribute("each", "[group[.//contact[" + q + "]]|contact[" + q + "]]");
                 }
             }
         //--></a:script>
@@ -157,7 +157,8 @@
                 <a:textbox value="[@lastname]" />
                     
                 <a:label>Age</a:label>
-                <a:dropdown fill="I am not telling you,18-99" value="[{trContacts.selected}::@age]" />
+                <a:dropdown fill="I am not telling you,18-99" 
+                            value="[{trContacts.selected}::@age]" />
                     
                 <a:label>Address</a:label>
                 <a:textarea value="[@address]" height="50" />
@@ -168,7 +169,7 @@
                     <a:item value="-">Somewhere else, test</a:item>
                 </a:dropdown>
             </a:table>
-            
+
             <a:list id="lstRights"
               class     = "white"
               width     = "100"
@@ -180,8 +181,7 @@
               each      = "[right]"
               caption   = "[text()]"
               icon      = "Baseclasses.png"
-              checked   = "[@checked]"
-              selection = "*[{[{trContacts.selected}::@inherit] == 1 ? trContacts.selected.parentNode : trContacts.selected}::right]"
+              selection = "*[{trContacts.selected}::self::contact[@inherit=1]/../right|right]"
               onbeforeselect = "
                 if ([{trContacts.selected}::@inherit] == 1) {
                     if (confirm('These rights are currently inherited. Do you want to set custom rights?')) {

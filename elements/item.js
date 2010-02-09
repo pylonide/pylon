@@ -537,7 +537,7 @@ apf.item  = function(struct, tagName){
         this.$ext = this.$getExternal(this.$isLeechingSkin
           ? "item" //this.localName 
           : "main", null, function($ext){
-            var o = 'apf.lookup(' + this.$uniqueId + ')';
+            var o = 'var o = apf.lookup(' + this.$uniqueId + '); if (o.disabled) return; o';
             $ext.setAttribute("onmouseup",   o + '.$up(event)');
             $ext.setAttribute("onmousemove", o + '.$over(event)');
             $ext.setAttribute("onmouseout",  o + '.$out(event)');

@@ -78,7 +78,10 @@ apf.pager = function(struct, tagName){
      * @param {Number} pageDelta   length of jump which should be done between
      *                             current page and new selected page
      */
-    this.gotoPage = function(pageNr, pageDelta) {
+    this.gotoPage = function(pageNr, pageDelta, userAction) {
+        if (userAction && this.disabled)
+            return;
+        
         var lastCurpage = this.curpage;
         this.curpage    = pageNr || this.curpage + pageDelta;
         if (lastCurpage != this.curpage)
@@ -173,7 +176,7 @@ apf.pager = function(struct, tagName){
             
             if (curpage != 1) {
                 btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                    + ").gotoPage(null, -1)");
+                    + ").gotoPage(null, -1, true)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -195,7 +198,7 @@ apf.pager = function(struct, tagName){
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = i;
             btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                + ").gotoPage(" + i + ")");
+                + ").gotoPage(" + i + ", null, true)");
             nodes.push(btn);
             
             if (i == curpage)
@@ -210,7 +213,7 @@ apf.pager = function(struct, tagName){
             
             if (curpage != totalpages) {
                 btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                    + ").gotoPage(null, 1)");
+                    + ").gotoPage(null, 1, true)");
             }
             else {
                 this.$setStyleClass(btn, "disabled");

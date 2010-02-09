@@ -58,8 +58,8 @@ apf.MultiCheck = function(){
      * @event  aftercheck  Fires after a check is made
      *
      */
-    this.check = function(xmlNode){ 
-        if (this.disabled || this.checkedList.indexOf(xmlNode) > -1)
+    this.check = function(xmlNode, userAction){ 
+        if (userAction && this.disabled || this.checkedList.indexOf(xmlNode) > -1)
             return;
         
         if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
@@ -123,8 +123,8 @@ apf.MultiCheck = function(){
      * @event  afteruncheck  Fires after a uncheck is made
      *
      */
-    this.uncheck = function(xmlNode){
-        if (this.disabled || this.checkedList.indexOf(xmlNode) == -1)
+    this.uncheck = function(xmlNode, userAction){
+        if (userAction && this.disabled || this.checkedList.indexOf(xmlNode) == -1)
             return;
         
         // #ifdef __WITH_MULTICHECK_TREE
@@ -153,7 +153,10 @@ apf.MultiCheck = function(){
      * @param {mixed}   xmlNode      the identifier to determine the selection.
      *
      */
-    this.checkToggle = function(xmlNode){
+    this.checkToggle = function(xmlNode, userAction){
+        if (userAction && this.disabled)
+            return;
+        
         if (xmlNode.style) {
             var htmlNode = xmlNode,
                 id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
@@ -183,13 +186,13 @@ apf.MultiCheck = function(){
      *   object:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
      */
-    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent){
+    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
         //if (apf.isIE < 8)
         if (!xmlNodeList.indexOf)
             xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
             //@todo is this need for ie8 and/or other browsers
         
-        if (this.disabled) return;
+        if (userAction && this.disabled) return;
         
         if (!noEvent && this.dispatchEvent("beforecheck", {
             list : xmlNodeList
@@ -371,8 +374,8 @@ apf.MultiCheck = function(){
      * Checks all the {@link term.eachnode each nodes} of this element
      *
      */
-    this.checkAll = function(){
-        if (!this.multicheck || this.disabled || !this.xmlRoot)
+    this.checkAll = function(userAction){
+        if (!this.multicheck || userAction && this.disabled || !this.xmlRoot)
             return;
 
         var nodes = this.$isTreeArch

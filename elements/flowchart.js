@@ -314,7 +314,10 @@ apf.flowchart = function(struct, tagName){
     };
     // #endif
 
-    this.$beforeRename = function(e) {
+    this.$beforeRename = function(e, userAction) {
+        if (userAction && this.disabled)
+            return;
+        
         e = e || event;
         var target = e.srcElement || e.target;
         this.$selectCaption(target);
@@ -958,7 +961,7 @@ apf.flowchart = function(struct, tagName){
 
         if (elCaption)
             elCaption.setAttribute("ondblclick", 'apf.lookup(' + this.$uniqueId
-                + ').$beforeRename(event); return false;');
+                + ').$beforeRename(event, true); return false;');
 
         this.nodes.push(block);
 

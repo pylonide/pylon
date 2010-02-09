@@ -310,10 +310,11 @@ apf.upload = function(struct, tagName){
     /**
      * Opens the browse window which allows the user to choose a file to upload.
      */
-    this.browse = function(){
+    this.browse = function(userAction){
         // 'browse' action not available when the control is disabled, or when
         // using Flash Uploader:
-        if (this.disabled || this.$useFlash || !this.$ext.parentNode.offsetHeight) //@todo apf3.0
+        if (this.$useFlash || !this.$ext.parentNode.offsetHeight 
+          || userAction && this.disabled) //@todo apf3.0 
             return;
 
         this.inpFile.click();
@@ -635,7 +636,7 @@ apf.upload = function(struct, tagName){
         var timer = setInterval(function() {
             var oNode = _self.rel ? _self.rel : null;
 
-            _self.inpFile.onchange = function() {_self.browse();};
+            _self.inpFile.onchange = function() {_self.browse(true);};
 
             if (oNode && oNode.$ext && oNode.$ext.offsetHeight) {
                 if (oNode.$ext.offsetWidth == 0 || oNode.$ext.offsetHeight == 0)

@@ -529,9 +529,12 @@ apf.textbox  = function(struct, tagName){
             }
             //#endif
 
-            oExt.setAttribute("onmousedown", "this.host.dispatchEvent('mousedown', {htmlEvent : event});");
-            oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
-            oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
+            oExt.setAttribute("onmousedown", "if (!this.host.disabled) \
+                this.host.dispatchEvent('mousedown', {htmlEvent : event});");
+            oExt.setAttribute("onmouseup",   "if (!this.host.disabled) \
+                this.host.dispatchEvent('mouseup', {htmlEvent : event});");
+            oExt.setAttribute("onclick",     "if (!this.host.disabled) \
+                this.host.dispatchEvent('click', {htmlEvent : event});");
         });
         this.$int    = this.$getLayoutNode("main", "input", this.$ext);
         this.$button = this.$getLayoutNode("main", "button", this.$ext);
@@ -572,7 +575,7 @@ apf.textbox  = function(struct, tagName){
         this.$int.onkeydown = function(e){
             e = e || window.event;
             
-            if (this.disabled) {
+            if (this.host.disabled) {
                 e.returnValue = false;
                 return false;
             }
@@ -613,6 +616,9 @@ apf.textbox  = function(struct, tagName){
         this.$int.onkeyup = function(e){
             if (!e)
                 e = event;
+                
+            if (this.host.disabled)
+                return false;
 
             var keyCode = e.keyCode;
             

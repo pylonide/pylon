@@ -80,8 +80,8 @@ apf.toc = function(struct, tagName){
      * Navigates to a page of the represented element.
      * @param {Number} nr the child number of the page to activate.
      */
-    this.gotoPage = function(nr){
-        if (this.disabled) return false;
+    this.gotoPage = function(nr, userAction){
+        if (userAction && this.disabled) return false;
 
         if (this.$represent.isValid && !this.$represent.testing) {
             var i, test,
@@ -119,7 +119,7 @@ apf.toc = function(struct, tagName){
     /**** Private Methods ****/
     
     this.$setActivePage = function(active){
-        if (this.disabled) return false;
+        //if (this.disabled) return false;
 
         //Find previous known index and make sure it has known indexes after
         if (!this.pagelookup[active]) {
@@ -165,9 +165,9 @@ apf.toc = function(struct, tagName){
             this.$setStyleClass(oPage, "page" + i);
             
             oPage.setAttribute("onmouseover", 'apf.lookup(' + this.$uniqueId 
-                + ').$setStyleClass(this, "hover", null);');
+                + ').$setStyleClass(this, "hover", null, true);');
             oPage.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId 
-                + ').$setStyleClass(this, "", ["hover"]);');
+                + ').$setStyleClass(this, "", ["hover"], true);');
             
             if(!pages[i].getAttribute("caption")){
                 // #ifdef __DEBUG
@@ -181,7 +181,7 @@ apf.toc = function(struct, tagName){
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
-                    apf.lookup(" + this.$uniqueId + ").gotoPage(" + i + ");\
+                    apf.lookup(" + this.$uniqueId + ").gotoPage(" + i + ", true);\
                 });");
             p.push(apf.insertHtmlNode(oPage, this.$int));
             l[i] = p[p.length - 1];

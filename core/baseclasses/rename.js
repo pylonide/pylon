@@ -134,8 +134,9 @@ apf.Rename = function(){
      * intended or a dragdrop operation.
      *
      */
-    this.startDelayedRename = function(e, time){
-        if (e && (e.button == 2 || e.ctrlKey || e.shiftKey))
+    this.startDelayedRename = function(e, time, userAction){
+        if (e && (e.button == 2 || e.ctrlKey || e.shiftKey) 
+          || userAction && this.disabled)
             return;
 
         clearTimeout(this.renameTimer);
@@ -148,10 +149,11 @@ apf.Rename = function(){
      * of the item that can be renamed by the user.
      *
      */
-    this.startRename = function(force, startEmpty){
+    this.startRename = function(force, startEmpty, userAction){
         if (!force && (this.renaming || !this.canrename 
           || !this.$startAction("rename", this.caret 
-          || this.selected, this.stopRename)))
+          || this.selected, this.stopRename))
+          || userAction && this.disabled)
             return false;
 
         if (!this.hasFocus())

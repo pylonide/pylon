@@ -143,7 +143,7 @@ apf.BaseButton = function(){
     };
 
     this.$updateState = function(e, strEvent) {
-        if (this.disabled || e.reset) {
+        if (e.reset) { //this.disabled || 
             this.refKeyDown   = 0;
             this.refMouseDown = 0;
             this.mouseOver    = false;
@@ -167,7 +167,7 @@ apf.BaseButton = function(){
         this.$ext.onmousedown = function(e) {
             e = e || window.event;
 
-            if (_self.$notfromext && (e.srcElement || e.target) == this)
+            if (_self.disabled || _self.$notfromext && (e.srcElement || e.target) == this)
                 return;
 
             _self.refMouseDown = 1;
@@ -179,7 +179,7 @@ apf.BaseButton = function(){
             e = e || window.event;
             //if (e)  e.cancelBubble = true;
 
-            if (!force && (!_self.mouseOver || !_self.refMouseDown))
+            if (_self.disabled || !force && (!_self.mouseOver || !_self.refMouseDown))
                 return;
 
             _self.refMouseDown = 0;
@@ -202,7 +202,7 @@ apf.BaseButton = function(){
         };
 
         this.$ext.onmousemove = function(e) {
-            if (!_self.mouseOver) {
+            if (!_self.mouseOver && !_self.disabled) {
                 e = e || window.event;
 
                 if (_self.$notfromext && (e.srcElement || e.target) == this)
@@ -218,7 +218,7 @@ apf.BaseButton = function(){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (this == tEl || apf.isChildOf(this, tEl))
+            if (_self.disabled || this == tEl || apf.isChildOf(this, tEl))
                 return;
 
             _self.mouseOver    = false;

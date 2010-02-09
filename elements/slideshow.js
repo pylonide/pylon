@@ -854,6 +854,9 @@ apf.slideshow = function(struct, tagName){
         
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {
+            if (_self.disabled)
+                return;
+                
             if ((this.className || "").indexOf("ssprevious") != -1)
                 _self.$Previous();
             else if ((this.className || "").indexOf("ssnext") != -1)
@@ -862,34 +865,43 @@ apf.slideshow = function(struct, tagName){
         
         var tmrThumbButton = null;
         this.otPrevious.onmousedown = function(e) {
+            if (_self.disabled)
+                return;
+                
             tmrThumbButton = setInterval(function() {
                 _self.$tPrevious();
             }, 50);
         };
 
         this.otNext.onmousedown = function(e) {
+            if (_self.disabled)
+                return;
+                
             tmrThumbButton = setInterval(function() {
                 _self.$tNext();
             }, 50);
         };
 
         this.otNext.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otNext, "ssnhover");
+            _self.$setStyleClass(_self.otNext, "ssnhover", null, true);
         };
 
         this.otPrevious.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "ssphover");
+            _self.$setStyleClass(_self.otPrevious, "ssphover", null, true);
         }
 
         this.otNext.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otNext, "", ["ssnhover"]);
+            _self.$setStyleClass(_self.otNext, "", ["ssnhover"], true);
         };
 
         this.otPrevious.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "", ["ssphover"]);
+            _self.$setStyleClass(_self.otPrevious, "", ["ssphover"], true);
         };
         
         this.oPlay.onclick = function(e) {
+            if (_self.disabled)
+                return;
+            
             if (_self.tmrPlay) {
                 _self.$stop();
                 _self.$setStyleClass(_self.oPlay, "", ["ssstop"]);
@@ -920,6 +932,9 @@ apf.slideshow = function(struct, tagName){
         };
 
         this.oImage.onmouseover = function(e) {
+            if (_self.disabled)
+                return;
+            
             _self.inuse = true;
             
             var e = e || event;
@@ -1010,6 +1025,9 @@ apf.slideshow = function(struct, tagName){
         };
 
         this.oImage.onmouseout = function(e) {
+            if (_self.disabled)
+                return;
+            
             _self.inuse = false;
             clearInterval(_self.tmrZoom);
             clearInterval(_self.tmrHoverDelay);
@@ -1025,7 +1043,8 @@ apf.slideshow = function(struct, tagName){
         
         var SafariChromeFix = false;
         apf.addEventListener("mousescroll", function(e) {
-            if (!_self.xmlRoot || _self.$ext.style.display == "none")
+            if (!_self.xmlRoot || _self.$ext.style.display == "none"
+              || _self.disabled)
                 return;
             
             e = e || event;
@@ -1060,6 +1079,9 @@ apf.slideshow = function(struct, tagName){
         
         apf.addEventListener("onkeydown", function(e) {
             e = (e || event);
+            
+            if (_self.disabled)
+                return;
             
             //39 - Right Arrow
             //37 - Left Arrow

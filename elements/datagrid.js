@@ -596,8 +596,8 @@ apf.datagrid    = function(struct, tagName){
     /**
      * @private
      */
-    this.slideToggle = function(htmlNode, force){
-        if (this.noCollapse) 
+    this.slideToggle = function(htmlNode, force, userAction){
+        if (this.noCollapse || userAction && this.disabled) 
             return;
         
         //var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag); // unused?
@@ -761,9 +761,9 @@ apf.datagrid    = function(struct, tagName){
         oRow.setAttribute("id", sLid);
         oRow.setAttribute("class", "row" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
         
-        oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose();'
-            + (this.$withContainer ? 'o.slideToggle(this);' : '')
-            + (this.celledit && !this.namevalue ? 'o.startRename();' : ''));
+        oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose(null, true);'
+            + (this.$withContainer ? 'o.slideToggle(this, null, true);' : '')
+            + (this.celledit && !this.namevalue ? 'o.startRename(null, null, true);' : ''));
         
         if (this.hasFeature(apf.__DRAGDROP__)) {
             oRow.setAttribute("onmouseout", 'this.hasPassedDown = false;');
@@ -772,7 +772,7 @@ apf.datagrid    = function(struct, tagName){
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey);'
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -780,12 +780,12 @@ apf.datagrid    = function(struct, tagName){
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey);');
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
         } //@todo add DRAGDROP ifdefs
         else {
             oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
                 var wasSelected = o.$selected == this;\
-                o.select(this, event.ctrlKey, event.shiftKey);'
+                o.select(this, event.ctrlKey, event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
         }
         

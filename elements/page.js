@@ -253,8 +253,8 @@ apf.page = function(struct, tagName){
     };
 
     this.$deactivate = function(fakeOther){
-        if (this.disabled)
-            return false;
+        //if (this.disabled)
+            //return false;
 
         this.$active = false
 
@@ -276,8 +276,8 @@ apf.page = function(struct, tagName){
     };
 
     this.$activate = function(){
-        if (this.disabled)
-            return false;
+        //if (this.disabled)
+            //return false;
 
         this.$active = true;
 
@@ -355,14 +355,15 @@ apf.page = function(struct, tagName){
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
                 'var page = apf.lookup(' + this.$uniqueId + ');\
+                 if (page.disabled) return;\
                  page.parentNode.set(page);\
                  page.canHaveChildren = 2;');
             elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
                 + this.parentNode.$uniqueId + ');if(apf.lookup(' + this.$uniqueId
-                + ') != o.$activepage) o.$setStyleClass(this, "over");');
+                + ') != o.$activepage) o.$setStyleClass(this, "over", null, true);');
             elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
                 + this.parentNode.$uniqueId + ');\
-                  o.$setStyleClass(this, "", ["over"]);\
+                  o.$setStyleClass(this, "", ["over"], true);\
                   var page = apf.lookup(' + this.$uniqueId + ');\
                   page.canHaveChildren = true;');
 

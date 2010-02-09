@@ -146,8 +146,10 @@ apf.dropdown = function(struct, tagName){
      * or closes it using a slide effect.
      * @private
      */
-    this.slideToggle = function(e){
+    this.slideToggle = function(e, userAction){
         if (!e) e = event;
+        if (userAction && this.disabled)
+            return;
 
         if (this.isOpen)
             this.slideUp();
@@ -370,22 +372,22 @@ apf.dropdown = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
             oExt.setAttribute("onmouseover", 'var o = apf.lookup(' + this.$uniqueId
-                + ');o.$setStyleClass(o.$ext, o.$baseCSSname + "Over");');
+                + ');o.$setStyleClass(o.$ext, o.$baseCSSname + "Over", null, true);');
             oExt.setAttribute("onmouseout", 'var o = apf.lookup(' + this.$uniqueId
-                + ');if(o.isOpen) return;o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"]);');
+                + ');if(o.isOpen) return;o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"], true);');
             
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'apf.lookup('
-                    + this.$uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event, true);');
             }
             
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
-                    + this.$uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event, true);');
             }
         });
         this.oLabel = this.$getLayoutNode("main", "label", this.$ext);

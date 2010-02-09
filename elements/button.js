@@ -420,8 +420,8 @@ apf.button  = function(struct, tagName){
     };
 
     this.$setState = function(state, e, strEvent){
-        if (this.disabled)
-            return;
+        //if (this.disabled)
+            //return;
 
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;

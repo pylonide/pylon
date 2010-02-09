@@ -194,7 +194,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     this.$setState = function(state, e, strEvent){
-        if (this.disabled) return;
+        //if (this.disabled) return;
 
         this.$doBgSwitch(this.states[state]);
         this.$setStyleClass(this.$ext, (state != "Out" ? this.$baseCSSname + state : ""),

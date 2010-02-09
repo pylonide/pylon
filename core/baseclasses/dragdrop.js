@@ -530,6 +530,9 @@ apf.DragDrop = function(){
         var _self = this;
 
         this.$ext[apf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
+            if (_self.disabled)
+                return;
+            
             e = e || window.event;
             // #ifdef __SUPPORT_IPHONE
             if (apf.isIphone) {
@@ -575,12 +578,15 @@ apf.DragDrop = function(){
         };
 
         this.$ext[apf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
-            if (this.host.dragging != 1) return;
+            if (this.host.dragging != 1 || _self.disabled) return;
         };
 
         // #ifdef __SUPPORT_IPHONE
         if (apf.isIphone) {
             this.$ext.ontouchend = this.$ext.ontouchcancel = function(){
+                if (_self.disabled)
+                    return;
+                
                 this.host.dragging = 0;
             };
         }
@@ -588,6 +594,9 @@ apf.DragDrop = function(){
         //#endif
         {
             this.$ext.onmouseup = function(){
+                if (_self.disabled)
+                    return;
+                    
                 this.host.dragging = 0;
             };
 

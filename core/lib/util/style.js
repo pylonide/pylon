@@ -101,8 +101,8 @@ apf.getStyleRule = function(name, type, stylesheet, win){
  * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
  * @returns {HTMLElement}
  */
-apf.setStyleClass = function(oHtml, className, exclusion, special){
-    if (!oHtml) // || this.disabled
+apf.setStyleClass = function(oHtml, className, exclusion, userAction){
+    if (!oHtml || userAction && this.disabled)
         return;
 
     //#ifdef __DEBUG

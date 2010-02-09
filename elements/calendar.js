@@ -632,7 +632,10 @@ apf.calendar = function(struct, tagName){
      * @param {Number}   nr     day number
      * @param {String}   type   class name of html representation of selected cell
      */
-    this.selectDay = function(nr, type) {
+    this.selectDay = function(nr, type, userAction) {
+        if (userAction && this.disabled)
+            return;
+        
         var c        = this.$calVars,
             newMonth = type == "prev"
                 ? c.currentMonth
@@ -719,17 +722,17 @@ apf.calendar = function(struct, tagName){
                             "if (this.className.indexOf('disabled') > -1 "
                             + "|| this.className.indexOf('active') > -1) "
                             + "return; apf.lookup(" + this.$uniqueId 
-                            + ").$setStyleClass(this, 'hover');");
+                            + ").$setStyleClass(this, 'hover', null, true);");
                         oCell.setAttribute("onmouseout", 
                             "var o = apf.lookup(" + this.$uniqueId 
-                            + ").$setStyleClass(this, '', ['hover']);");
+                            + ").$setStyleClass(this, '', ['hover'], true);");
                         oCell.setAttribute("onmousedown", 
                             "var o = apf.lookup(" + this.$uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
-                            + "o.selectDay(this.innerHTML, 'prev');}"
+                            + "o.selectDay(this.innerHTML, 'prev', true);}"
                             + " else if (this.className.indexOf('next') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'next');}"
-                            + " else {o.selectDay(this.innerHTML);}");
+                            + "o.selectDay(this.innerHTML, 'next', true);}"
+                            + " else {o.selectDay(this.innerHTML, null, true);}");
                     }
                     oRow.appendChild(oCell);
                 }
@@ -745,9 +748,10 @@ apf.calendar = function(struct, tagName){
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
                     if (buttons[i] !== "status")
-                        btn.setAttribute("onmousedown", 'apf.lookup('
-                                         + this.$uniqueId + ').'
-                                         + buttons[i] + '()');
+                        btn.setAttribute("onmousedown", 'var o = apf.lookup('
+                                         + this.$uniqueId + '); \
+                                            if (!o.disabled) \
+                                                o.' + buttons[i] + '()');
                 }
             }
 

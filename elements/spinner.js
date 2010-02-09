@@ -158,7 +158,7 @@ apf.spinner = function(struct, tagName){
     };
 
     this.$focus = function(e) {
-        if (!this.$ext || this.disabled || this.focused)
+        if (!this.$ext || this.focused) //this.disabled || 
             return;
 
         //#ifdef __WITH_WINDOW_FOCUS
@@ -222,11 +222,14 @@ apf.spinner = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmousedown",
-                'this.host.dispatchEvent("mousedown", {htmlEvent : event});');
+                'if (!this.host.disabled) \
+                    this.host.dispatchEvent("mousedown", {htmlEvent : event});');
             oExt.setAttribute("onmouseup",
-                'this.host.dispatchEvent("mouseup", {htmlEvent : event});');
+                'if (!this.host.disabled) \
+                    this.host.dispatchEvent("mouseup", {htmlEvent : event});');
             oExt.setAttribute("onclick",
-                'this.host.dispatchEvent("click", {htmlEvent : event});');
+                'if (!this.host.disabled) \
+                    this.host.dispatchEvent("click", {htmlEvent : event});');
         });
 
         this.$int         = this.$getLayoutNode("main", "container",   this.$ext);

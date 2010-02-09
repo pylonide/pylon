@@ -354,8 +354,10 @@ apf.caldropdown = function(struct, tagName){
      * Toggles the visibility of the container with the calendar. It opens
      * or closes container using a slide effect.
      */
-    this.slideToggle = function(e) {
+    this.slideToggle = function(e, userAction) {
         if (!e) e = event;
+        if (userAction && !this.disabled)
+            return;
 
         if (this.isOpen)
             this.slideUp();
@@ -780,24 +782,24 @@ apf.caldropdown = function(struct, tagName){
         this.$ext = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmouseover", 
                 'var o = apf.lookup(' + this.$uniqueId + ');\
-                 o.$setStyleClass(o.$ext, o.$baseCSSname + "Over");');
+                 o.$setStyleClass(o.$ext, o.$baseCSSname + "Over", null, true);');
             oExt.setAttribute("onmouseout", 
                 'var o = apf.lookup('+ this.$uniqueId + ');\
                  if (o.isOpen) return;\
-                 o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"]);');
+                 o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"], true);');
 
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown",
-                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event);');
+                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
             }
 
             //Label
             var oLabel  = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
-                    + this.$uniqueId + ').slideToggle(event);');
+                    + this.$uniqueId + ').slideToggle(event, true);');
             }
         });
         this.oLabel     = this.$getLayoutNode("main", "label", this.$ext);
@@ -834,14 +836,17 @@ apf.caldropdown = function(struct, tagName){
                         var oCell = this.$getLayoutNode("cell");
                         if (j > 0) {
                             oCell.setAttribute("onmouseout",
-                                "apf.setStyleClass(this, '', ['hover']);");
+                                "apf.lookup(" + this.$uniqueId 
+                                + ").$setStyleClass(this, '', ['hover'], true);");
                             oCell.setAttribute("onmouseover",
                                 "if (this.className.indexOf('disabled') > -1 \
                                    || this.className.indexOf('active') > -1) \
                                      return;\
-                                 apf.setStyleClass(this, 'hover');");
+                                 apf.lookup(" + this.$uniqueId 
+                                 + ").$setStyleClass(this, 'hover', null, true);");
                             oCell.setAttribute("onmousedown",
-                                "var o = apf.findHost(this);\
+                                "var o = apf.lookup(" + this.$uniqueId + ");\
+                                 if (o.disabled) return;\
                                  if (this.className.indexOf('prev') > -1) \
                                      o.selectDay(this.innerHTML, 'prev');\
                                  else if (this.className.indexOf('next') > -1) \
@@ -865,10 +870,15 @@ apf.caldropdown = function(struct, tagName){
                         var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                         this.$setStyleClass(btn, buttons[i]);
                         if (buttons[i] !== "status") {
-                            btn.setAttribute("onmousedown", 'apf.findHost(this).' + buttons[i] + '();apf.setStyleClass(this, "down");');
-                            btn.setAttribute("onmouseup", 'apf.setStyleClass(this, "", ["down"]);');
-                            btn.setAttribute("onmouseover", 'apf.setStyleClass(this, "hover");');
-                            btn.setAttribute("onmouseout",  'apf.setStyleClass(this, "", ["hover"]);');
+                            btn.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId 
+                                + '); if (o.disabled) return; o.' 
+                                + buttons[i] + '();apf.setStyleClass(this, "down");');
+                            btn.setAttribute("onmouseup", 'apf.lookup(' + this.$uniqueId 
+                                + ').$setStyleClass(this, "", ["down"], true);');
+                            btn.setAttribute("onmouseover", 'apf.lookup(' + this.$uniqueId 
+                                + ').$setStyleClass(this, "hover", null, true);');
+                            btn.setAttribute("onmouseout",  'apf.lookup(' + this.$uniqueId 
+                                + ').$setStyleClass(this, "", ["hover"], true);');
                         }
                     }
                 }

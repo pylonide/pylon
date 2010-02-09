@@ -596,9 +596,11 @@ apf.BaseList = function(){
 
         oItem.setAttribute("id", Lid);
 
-        elSelect.setAttribute("onmouseover",   "apf.setStyleClass(this, 'hover');");
+        elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
+        	+ "); o.$setStyleClass(this, 'hover', null, true);");
         elSelect.setAttribute("onselectstart", "return false;");
-        elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") + ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
+        elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
+        	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 
         if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
             elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
@@ -606,7 +608,8 @@ apf.BaseList = function(){
                 "o.stopRename();" +
                 // #endif
                 " o.choose()");
-            elSelect.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);\
+            elSelect.setAttribute("onmouseout", "var o = apf.lookup(" + this.$uniqueId + ");\
+            	  o.$setStyleClass(this, '', ['hover'], true);\
                 this.hasPassedDown = false;");
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.$uniqueId + ');\
@@ -616,26 +619,26 @@ apf.BaseList = function(){
                  if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || o.mode != "normal" || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey)');
+                     o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
                 'if (o.hasFeature(apf.__RENAME__) && this.dorename && o.mode == "normal")\
-                    o.startDelayedRename(event);' +
+                    o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.mode == "normal" && o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey)');
+                     o.select(this, event.ctrlKey, event.shiftKey, -1)');
         } //@todo add DRAGDROP ifdefs
         else {
             elSelect.setAttribute("onmouseout",    "apf.setStyleClass(this, '', ['hover']);");
             elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
-                + this.$uniqueId + '); o.choose()');
+                + this.$uniqueId + '); o.choose(null, true)');
             elSelect.setAttribute(this.itemSelectEvent
                 || "onmousedown", 'var o = apf.lookup(' + this.$uniqueId
-                + '); o.select(this, event.ctrlKey, event.shiftKey)');
+                + '); o.select(this, event.ctrlKey, event.shiftKey, -1)');
         }
 
         //Setup Nodes Identity (Look)
@@ -702,11 +705,11 @@ apf.BaseList = function(){
 
             Item.setAttribute("class", "more");
             elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId
-                + ');o.clearSelection();o.$setStyleClass(this, "more_down");');
+                + ');o.clearSelection();o.$setStyleClass(this, "more_down", null, true);');
             elSelect.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId
-                + ').$setStyleClass(this, "", ["more_down"]);');
+                + ').$setStyleClass(this, "", ["more_down"], true);');
             elSelect.setAttribute("onmouseup", 'apf.lookup(' + this.$uniqueId
-                + ').startMore(this)');
+                + ').startMore(this, true)');
 
             if (elCaption)
                 apf.setNodeValue(elCaption,
@@ -727,7 +730,10 @@ apf.BaseList = function(){
      * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
      * @see element.list.attribute.more
      */
-    this.startMore = function(o){
+    this.startMore = function(o, userAction){
+        if (userAction && this.disabled)
+            return;
+
         this.$setStyleClass(o, "", ["more_down"]);
 
         var xmlNode;

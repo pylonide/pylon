@@ -783,7 +783,7 @@ apf.Class.prototype = new (function(){
      *   {Boolean} captureOnly whether only the captured event handlers should be executed
      * @return {mixed} return value of the event
      */
-    var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
+    //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue, i, l;
 
@@ -791,10 +791,10 @@ apf.Class.prototype = new (function(){
 
         e = options && options.name ? options : e;
 
-        if (this.disabled && !allowEvents[eventName] && false) {
+        /*if (this.disabled && !allowEvents[eventName]) {
             result = false;
         }
-        else {
+        else {*/
             if (!e || !e.currentTarget) {
                 if (!(options || (options = {})).currentTarget)
                     options.currentTarget = this;
@@ -828,7 +828,7 @@ apf.Class.prototype = new (function(){
                     }
                 }
             }
-        }
+        //}
         
         //#ifdef __WITH_EVENT_BUBBLING
         if ((e && e.bubbles && !e.cancelBubble || options && options.bubbles) && this != apf) {

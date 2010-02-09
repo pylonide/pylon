@@ -267,8 +267,8 @@ apf.tree = function(struct, tagName){
     /**
      * @private
      */
-    this.slideToggle = function(htmlNode, force, immediate){
-        if (this.nocollapse)
+    this.slideToggle = function(htmlNode, force, immediate, userAction){
+        if (this.nocollapse || userAction && this.disabled)
             return;
         
         if (!htmlNode)
@@ -590,15 +590,13 @@ apf.tree = function(struct, tagName){
         //@todo this should use dispatchEvent, and be moved to oExt
         oItem.setAttribute("onmouseover",
             "var o = apf.lookup(" + this.$uniqueId + ");\
-            if (o.onmouseover) o.onmouseover(event, this);\
-            apf.setStyleClass(this, 'hover');");
+            o.$setStyleClass(this, 'hover', null, true);");
         oItem.setAttribute("onmouseout",
             "var o = apf.lookup(" + this.$uniqueId + ");\
-            if (o.onmouseout) o.onmouseout(event, this);\
-            apf.setStyleClass(this, '', ['hover']);");
-        oItem.setAttribute("onmousedown",
+            o.$setStyleClass(this, '', ['hover'], true);");
+        /*oItem.setAttribute("onmousedown",
             "var o = apf.lookup(" + this.$uniqueId + ");\
-            if (o.onmousedown) o.onmousedown(event, this);");
+            if (o.onmousedown) o.onmousedown(event, this);");*/
         
         //Set open/close skin class & interaction
         this.$setStyleClass(this.$getLayoutNode("item", "class"), treeState[state]).setAttribute(apf.xmldb.htmlIdTag, Lid);
@@ -610,8 +608,7 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("onmousedown",
                 "if (this.getAttribute('children') == false) return;\
                 var o = apf.lookup(" + this.$uniqueId + ");\
-                o.slideToggle(this);\
-                if (o.onmousedown) o.onmousedown(event, this);\
+                o.slideToggle(this, null, null, true);\
                 apf.cancelBubble(event, o);");
             
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
@@ -622,7 +619,7 @@ apf.tree = function(struct, tagName){
             if (elCheck) {
                 elCheck.setAttribute("onmousedown",
                     "var o = apf.lookup(" + this.$uniqueId + ");\
-                    o.checkToggle(this);\o.$skipSelect = true;");
+                    o.checkToggle(this, true);\o.$skipSelect = true;");
 
                 if (this.isChecked(xmlNode))
                     this.$setStyleClass(oItem, "checked");
@@ -658,12 +655,12 @@ apf.tree = function(struct, tagName){
             if (ocAction != "ondblclick") {
                 elIcon.setAttribute(ocAction, 
                   "var o = apf.lookup(" + this.$uniqueId + ");" +
-                   (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey);" : "") +
-                   (true ? "o.slideToggle(this);" : ""));
+                   (ocAction == "onmousedown" ? "o.select(this, event.ctrlKey, event.shiftKey, -1);" : "") +
+                   (true ? "o.slideToggle(this, null, null, true);" : ""));
             }
             if (ocAction != "onmousedown") {
                 elIcon.setAttribute("onmousedown", 
-                  "apf.lookup(" + this.$uniqueId + ").select(this, event.ctrlKey, event.shiftKey);");
+                  "apf.lookup(" + this.$uniqueId + ").select(this, event.ctrlKey, event.shiftKey, -1);");
             }
             
             elIcon.setAttribute("ondblclick", 
@@ -672,7 +669,7 @@ apf.tree = function(struct, tagName){
               //#ifdef __WITH_RENAME
               "o.stopRename();" + 
               //#endif
-              (true && !ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
+              (true && !ocAction == "ondblclick" ? "o.slideToggle(this, null, null, true);" : "") +
               "apf.cancelBubble(event,o);");
         }
 
@@ -690,32 +687,32 @@ apf.tree = function(struct, tagName){
                  if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey);';
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);';
             
             elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;' + (elSelect.getAttribute("onmouseout") || ""));
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.$uniqueId + ');'
                 // #ifdef __WITH_RENAME
                 + 'if (this.dorename && !o.mode)\
-                    o.startDelayedRename(event);' +
+                    o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, event.ctrlKey, event.shiftKey);');
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);');
         }
         else 
         //#endif 
         {
-            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey);";
+            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey, -1);";
         }
         
         if (ocAction != "ondblclick") {
             elSelect.setAttribute(ocAction, 
               "var o = apf.lookup(" + this.$uniqueId + ");" +
                (ocAction == "onmousedown" ? strMouseDown : "") +
-               (true ? "o.slideToggle(this);" : ""));
+               (true ? "o.slideToggle(this, null, null, true);" : ""));
         }
         if (ocAction != "onmousedown") {
             elSelect.setAttribute("onmousedown", 
@@ -728,7 +725,7 @@ apf.tree = function(struct, tagName){
           //#ifdef __WITH_RENAME
           "o.stopRename();this.dorename=false;" + 
           //#endif
-          (ocAction == "ondblclick" ? "o.slideToggle(this);" : "") +
+          (ocAction == "ondblclick" ? "o.slideToggle(this, null, null, true);" : "") +
           "apf.cancelBubble(event,o);");
         
         //Setup Nodes Identity (Look)

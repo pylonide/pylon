@@ -117,9 +117,9 @@ apf.palette = function(struct, tagName){
         
         if (oContainer == this.oCustom) {
             oItem.setAttribute("onmousedown", "apf.lookup(" 
-                + this.$uniqueId + ").$doCustom(this)");
+                + this.$uniqueId + ").$doCustom(this, null, true)");
             oItem.setAttribute("ondblclick", "apf.lookup(" 
-                + this.$uniqueId + ").$doCustom(this, true)");
+                + this.$uniqueId + ").$doCustom(this, true, true)");
         }
         else 
             oItem.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId 
@@ -139,7 +139,10 @@ apf.palette = function(struct, tagName){
      *   object:
      *   {HTMLElement} htmlNode the rectangle in the palette to be filled.
      */
-    this.$doCustom = function(oItem, force_create){
+    this.$doCustom = function(oItem, force_create, userAction){
+        if (userAction && this.disabled)
+            return;
+        
         if (force_create || oItem.style.backgroundColor == "#ffffff") {
             this.dispatchEvent("createcustom", {
                 htmlNode: oItem

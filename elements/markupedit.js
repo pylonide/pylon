@@ -437,7 +437,7 @@ apf.markupedit = function(struct, tagName){
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         elValue.setAttribute("aname", name);
-        elValue.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
+        elValue.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "apf.selectTextHtml(this);\
             event.cancelBubble=true;\

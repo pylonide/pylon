@@ -1205,7 +1205,10 @@ apf.ContentEditable = function() {
      * @param {DOMElement} oButton
      * @type  {void}
      */
-    this.$buttonClick = function(e, oButton) {
+    this.$buttonClick = function(e, oButton, userAction) {
+        if (userAction && this.disabled)
+            return;
+        
         if (this.$selection)
             this.$selection.cache();
 
@@ -1350,9 +1353,13 @@ apf.ContentEditable = function() {
                     }
 
                     oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
-                        + this.$uniqueId + "].$buttonClick(event, this);");
-                    oButton.setAttribute("onmouseover", "apf.setStyleClass(this, 'hover');");
-                    oButton.setAttribute("onmouseout", "apf.setStyleClass(this, '', ['hover']);");
+                        + this.$uniqueId + "].$buttonClick(event, this, true);");
+                    oButton.setAttribute("onmouseover", 
+                        "var o = apf.all[" + this.$uniqueId + "]\
+                         o.$setStyleClass(this, 'hover', null, true);");
+                    oButton.setAttribute("onmouseout", 
+                        "var o = apf.all[" + this.$uniqueId + "]\
+                         o.$setStyleClass(this, '', ['hover'], true);");
 
                     oButton.setAttribute("type", item);
                 }
