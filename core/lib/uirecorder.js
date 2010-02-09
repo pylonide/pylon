@@ -233,14 +233,184 @@ apf.uirecorder = {
      */
     curTestIdx : 0, 
     curActionIdx : 0, 
-    play : function() {
-        // @todo see index.html
+    play : function(saveResults) {
+        apf.uirecorder.saveResults = saveResults
+        var timer = 3;
+        uir_windowStartTest.setProperty("visible", true);
+        uir_windowStartTest.setProperty("title", "Starting test in..." + timer);
+        
+        var interval = setInterval(function() {
+            timer -= 1;
+            if (timer == 0) {
+                clearInterval(interval);
+                uir_windowStartTest.setProperty("visible", false);
+                if (apf.uirecorder.saveResults) {
+                    apf.uirecorder.resetResults();
+                }
+                
+                apf.uirecorder.curTestIdx = 0;
+                apf.uirecorder.curActionIdx = 0;
+                //uir_btnPlay.setAttribute("disabled", true);
+                uir_windowChanges.setProperty("visible", false);
+    
+                apf.uirecorder.load(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"), function() {
+                    //var timeout = setTimeout(function() {
+                        apf.uirecorder.playTest();
+                        //clearTimeout(timeout);
+                    //}, 2000);
+                });
+            }
+            else {
+                uir_windowStartTest.setProperty("title", "Starting test in..." + timer);
+            }
+        }, 1000);
     },
+    playTest : function() {
+        if (apf.uirecorder.saveResults)
+            apf.uirecorder.test(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"));
 
+        apf.uirecorder.playAction();
+    },
+    testDelay : 0,
+    playAction : function() {
+        //apf.console.info("playAction: " + apf.uirecorder.curActionIdx);
+        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
+        var action = test.childNodes[apf.uirecorder.curActionIdx];
+        var elapsedTime = 0;
+        
+        // realtime movement
+        if (uir_ddRealtime.value == "realtime") {
+            var interval = setInterval(function() {
+                elapsedTime = new Date().getTime() - apf.uirecorder.startTime;
+                if (action.getAttribute("time") <= elapsedTime - apf.uirecorder.testDelay) {
+                    clearInterval(interval);
+                    apf.uirecorder.execAction();
+                }
+            }, 1);
+        }
+        // max movement
+        else if (uir_ddRealtime.value == "max") {
+            apf.uirecorder.execAction();
+        }
+    },
+    
+    // check if currect action has certain events during testing
+    checkEvents : {
+        "beforeload": "afterload"
+    },
+    beforeDelay : 0,
+    execAction : function() {
+        //apf.console.info("execAction: " + apf.uirecorder.curActionIdx);
+        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
+        var action = test.childNodes[apf.uirecorder.curActionIdx];
+
+        o3.mouseTo(
+            parseInt(action.getAttribute("x")) + hostWnd.clientX, 
+            parseInt(action.getAttribute("y")) + hostWnd.clientY, 
+            hostWnd
+        );
+        
+        if (action.getAttribute("name") === "click") {
+            o3.mouseLeftClick();
+        }
+        else if (action.getAttribute("name") === "keypress") {
+            o3.sendKeyEvent(action.getAttribute("value"));
+        }
+        else if (action.getAttribute("name") === "mousedown") {
+            o3.mouseLeftDown();
+        }
+        else if (action.getAttribute("name") === "mouseup") {
+            o3.mouseLeftUp();
+        }
+
+        var delayCheck = false;
+        if (apf.uirecorder.saveResults) {
+            for (var ce in apf.uirecorder.checkEvents) {
+                if (action.selectNodes("element[events[event[@name='" + ce + "']]]")) {
+                    var matches = action.selectNodes("element[events[event[@name='" + ce + "']]]");
+                    if (matches.length) {
+                        for (var targetName, mi = 0, ml = matches.length; mi < ml; mi++) {
+                            targetName = matches[mi].getAttribute("name");
+                            if (targetName.indexOf("html[1]") == 0) {
+                                delayCheck = true;
+                                apf.uirecorder.beforeDelay = new Date().getTime();
+
+                                var amlNode = apf.document.selectSingleNode(targetName.substr(8));
+                                if (!amlNode) debugger;
+                                apf.console.info("addEventListener added to " + targetName + ": " + apf.uirecorder.checkEvents[ce]);
+                                amlNode.addEventListener(apf.uirecorder.checkEvents[ce], apf.uirecorder.waitForEvent);
+                            }
+                            else {
+                                //debugger;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!delayCheck) {
+            apf.uirecorder.testCheck();
+        } 
+    },
+    waitForEvent : function(e) {
+        apf.console.info("testCheck: " + apf.uirecorder.curActionIdx);
+        e.currentTarget.removeEventListener(e.name, apf.uirecorder.waitForEvent);
+        
+        //(apf.xmlToXpath(this) || amlNode.id) 
+        apf.console.info("event fired: " + e.name);
+        
+        apf.uirecorder.testCheck(apf.uirecorder.saveResults);
+        apf.uirecorder.testdelay += new Date().getTime() - apf.uirecorder.beforeDelay;
+        
+        // @todo temp solution for multiple beforeload/afterload checks
+        //return;
+    },
+    testCheck : function() {
+        //apf.console.info("testCheck: " + apf.uirecorder.curActionIdx);
+        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
+        var action = test.childNodes[apf.uirecorder.curActionIdx];
+
+        // play next action
+        if (test.childNodes.length > apf.uirecorder.curActionIdx+1) {
+            apf.uirecorder.curActionIdx++;
+            apf.uirecorder.playAction();
+        }
+        else {
+            apf.uirecorder.stop();
+
+            // save test results
+            if (apf.uirecorder.saveResults) {
+                apf.uirecorder.save("results", test.getAttribute("name"));
+            }
+
+            // play next test
+            if (uir_listTests.selection.length > apf.uirecorder.curTestIdx+1) {
+                apf.uirecorder.curTestIdx++;
+                apf.uirecorder.load(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"), function() {
+                    
+                    // short delay to prevent capturing the loading of the elements in markup.xml
+                    //var timeout = setTimeout(function() {
+                        apf.uirecorder.curActionIdx = 0;
+                        apf.uirecorder.playTest();
+                        //clearTimeout(timeout);
+                    //}, 2000);
+                });
+            }
+            // all tests done
+            else {
+                if (apf.uirecorder.saveResults) {
+                    //uir_mdlChanges.load(apf.uirecorder.testListXml.xml);
+                    uir_mdlChanges2.load(apf.uirecorder.resultListXml.xml);
+                    uir_windowChanges.setProperty("visible", true);
+                }
+            }
+        }
+    },
+    
     /**
      * Start testing
      */
-    interval : null,
     test : function(file) {
         apf.uirecorder.curTestFile = file;
         //apf.uirecorder.resultListXml = null;
@@ -248,6 +418,8 @@ apf.uirecorder = {
         apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
         apf.uirecorder.isTesting = true;
+        apf.uirecorder.testDelay = 0;
+        apf.uirecorder.curActionIdx = 0;
         apf.uirecorder.init();
     },
     
@@ -418,8 +590,7 @@ apf.uirecorder = {
         apf.uirecorder.current.actionObj = delayObj;
         apf.uirecorder.current.index     = index;
         
-        //@todo the code below possibly needs to be in a timeout
-        
+        // delayed capturing of events
         $setTimeout = function(f, ms){
             //Record current mouseEvent
             if (!ms) ms = 0;
@@ -427,18 +598,6 @@ apf.uirecorder = {
                 apf.uirecorder.runInContext(currentState, f);
             }, ms);
         }
-        
-        //setInterval
-
-        
-        /*var timeout = 50;
-
-        if (eventName != "mousemove") {
-            $setTimeout(function(){
-                apf.uirecorder.setDelayedDetails(index); 
-                index = null;
-            }, timeout);
-        }*/
     },
     runInContext : function(state, f){
         //Put everything until now on the current action
@@ -488,32 +647,34 @@ apf.uirecorder = {
     },
     mouseoverEvents : ["dragover", "dragout"],
     lastEventObj    : {},
+    testEventList   : {},
     captureEvent : function(eventName, e) {
         //apf.console.info("event " + eventName + " dispatched");
         if (!e || e.noCapture) return; 
-
+        
         var amlNode = e.amlNode || e.currentTarget;
         if (eventName == "movefocus")
             amlNode = e.toElement;
         else if (eventName == "DOMNodeRemoved")
             amlNode = e.relatedNode;
+        
+        // ignore uir_bar and debugwin
+        if ((amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") || (amlNode && amlNode.localName && amlNode.localName == "debugwin")) return;
                     
         var targetName;
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") return;
-        if (!amlNode || !amlNode.ownerDocument || !amlNode.$aml) {
-            //return;
-        }
-        
+        // aml element
         if (amlNode && (amlNode.parentNode) && amlNode != "uir_bar") {
             targetName = apf.xmlToXpath(amlNode);
         }
-        if (amlNode && amlNode.id == "uir_bar" && e.htmlEvent) {
+        // html element
+        else if (amlNode && amlNode.id == "uir_bar" && e.htmlEvent) {
             var htmlElement = e.htmlEvent.srcElement;
             targetName = ("&lt;" + htmlElement.tagName + "&gt; " + htmlElement.id) || "&lt;" + htmlElement.tagName + "&gt;";
         }
-        
         // apf
-        if (amlNode && amlNode.console && amlNode.extend && amlNode.all) targetName = "apf";
+        else if (amlNode && amlNode.console && amlNode.extend && amlNode.all) { 
+            targetName = "apf";
+        }
         
         var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
         var eventObj = {
@@ -607,6 +768,13 @@ apf.uirecorder = {
                 name        : eventName,
                 event       : e
             };
+            
+            // create event list during playback or testing
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isTesting) {
+                if (!apf.uirecorder.testEventList[targetName]) apf.uirecorder.testEventList[targetName] = [];
+                if (apf.uirecorder.testEventList[targetName].indexOf(eventName) == -1)
+                    apf.uirecorder.testEventList[targetName].push(eventName);
+            }
         }
         else {
             //debugger;
@@ -723,7 +891,7 @@ apf.uirecorder = {
             else {
                 prevNode = aNode;
             }
-            if (action.amlNode) {
+            if (action.amlNode && action.amlNode.localName != "debugwin") {
                 if (!action.amlNode.parentNode) debugger;
                 aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
             }
