@@ -46,7 +46,6 @@ apf.ContentEditable.plugin("emotions", function() {
             this.editor       = editor;
 
             // parse smiley images, or 'emotions'
-            debugger;
             var node,
                 oNode = editor.$getPluginOption("emotions"),
                 i     = 0,
