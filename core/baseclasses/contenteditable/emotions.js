@@ -44,9 +44,9 @@ apf.ContentEditable.plugin("emotions", function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor       = editor;
-            this.emotionsPath = editor.$getPluginOption("emotions", "path");
 
             // parse smiley images, or 'emotions'
+            debugger;
             var node,
                 oNode = editor.$getPluginOption("emotions"),
                 i     = 0,
@@ -56,6 +56,7 @@ apf.ContentEditable.plugin("emotions", function() {
                 if (node.nodeType == 3 || node.nodeType == 4)
                     this.emotions = node.nodeValue.splitSafe(",");
             }
+            this.emotionsPath = oNode.getAttribute("path") || "";
 
             apf.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
@@ -103,9 +104,8 @@ apf.ContentEditable.plugin("emotions", function() {
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
                 emotions[i], '" href="javascript:;" onmousedown="apf.lookup(',
-                this.$uniqueId, ').submit(event);">\
-                <img border="0" src="', path, "/smiley-", emotions[i], '.gif" />\
-                </a>');
+                this.$uniqueId, ').submit(event);"><img border="0" src="', path,
+                "/smiley-", emotions[i], '.gif" /></a>');
             if (i % this.colspan == rowLen)
                 aHtml.push("</div>");
         }
