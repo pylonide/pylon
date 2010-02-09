@@ -55,7 +55,7 @@ apf.ContentEditable = function() {
     this.$pluginsTypes   = {};
     this.$pluginsKeys    = [];
     this.$pluginsActive  = null;
-    this.$pluginsOn      = ["pasteword", "tablewizard"];
+    this.$pluginsOn      = ["pasteword", "tablewizard"];//, "spell"];
     this.$nativeCommands = ["bold", "italic", "underline", "strikethrough",
                             "justifyleft", "justifycenter", "justifyright",
                             "justifyfull", "removeformat", "cut", "copy",
@@ -167,7 +167,7 @@ apf.ContentEditable = function() {
     };
 
     this.$propHandlers["plugins"] = function(value){
-        this.$pluginsOn = value && value.splitSafe(value) || null;
+        this.$pluginsOn = value && value.splitSafe(",") || null;
         if (this.$pluginsOn && this.$pluginsOn.length) {
             for (var i = 0, l = this.$pluginsOn.length; i < l; i++)
                 this.$addPlugin(this.$pluginsOn[i]);
@@ -186,6 +186,9 @@ apf.ContentEditable = function() {
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (typeof this.realtime == "undefined")
             this.$setInheritedAttribute("realtime");
+
+        if (typeof this.plugins == "undefined")
+            this.$propHandlers["plugins"].call(this, this.$pluginsOn.join(","));
     });
 
     this.$edVars = {
@@ -392,7 +395,7 @@ apf.ContentEditable = function() {
                         found = true;
                 }
                 if (found) {
-                    apf.AbstractEvent.stop(e.htmlEvent || e);
+                    apf.stopEvent(e.htmlEvent || e);
                     if (this.realtime)
                         // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
@@ -428,7 +431,7 @@ apf.ContentEditable = function() {
         if (code == 9 || isDone) {
             if (o.bStandalone) {
                 if (listBehavior.call(this, e.htmlEvent || e)) {
-                    apf.AbstractEvent.stop(e.htmlEvent || e);
+                    apf.stopEvent(e.htmlEvent || e);
                     return false;
                 }
             }
@@ -600,8 +603,9 @@ apf.ContentEditable = function() {
             oNode.style.height = (oNode.scrollHeight - apf.getHeightDiff(oNode) + 2) + "px";
 
             rule.$template.childNodes[0].onblur = function(e){
-                if (e.toElement && e.toElement != _self)
+                if (e.toElement && e.toElement != _self) {
                     _self.dispatchEvent("blur");
+                }
                 else {
                     if (e.toElement)
                         o.skipFocusOnce = true;
@@ -614,14 +618,14 @@ apf.ContentEditable = function() {
             rule.$template.childNodes[0].onafterchange = function(){
                 //skipFocusOnce = true;
                 //_self.focus();
-            }
+            };
             rule.$template.childNodes[0].onkeydown = function(e){
                 if (e.keyCode == 9) {
                     e.currentTarget = null;
                     _self.dispatchEvent("keydown", e, true);
                     return false;
                 }
-            }
+            };
             rule.$template.childNodes[0].setValue(apf.queryValue(xmlNode));
             //rule.$template.childNodes[0].focus(); //@todo general focus problem for subchildren
             o.lastTemplate = rule.$template;
@@ -1630,12 +1634,12 @@ apf.ContentEditable = function() {
     }
 };
 
-apf.ON             = 1;
-apf.OFF            = 0;
-apf.DISABLED       = -1;
-apf.VISIBLE        = 2;
-apf.HIDDEN         = 3;
-apf.SELECTED       = 4;
+apf.ON       = 1;
+apf.OFF      = 0;
+apf.DISABLED = -1;
+apf.VISIBLE  = 2;
+apf.HIDDEN   = 3;
+apf.SELECTED = 4;
 
 apf.ContentEditable.i18n = {
     "en_GB": {
@@ -1691,7 +1695,7 @@ apf.ContentEditable.i18n = {
         "paste_keyboardmsg": "Use %s on your keyboard to paste the text into the window.",
         "print": "Print document",
         "preview": "Preview document",
-        "scayt": "Turn spellcheck on/ off",
+        "spell": "Turn spellcheck on/ off",
         "search": "Search",
         "replace": "Search and Replace",
         "findnext": "Find next",
@@ -1756,7 +1760,7 @@ apf.ContentEditable.i18n = {
         "paste_keyboardmsg": "Gebruik %s op uw toetsenbord om tekst in dit scherm te plakken.",
         "print": "Printen",
         "preview": "Voorbeeldvertoning",
-        "scayt": "Spellingscontrole aan/ uit",
+        "spell": "Spellingscontrole aan/ uit",
         "search": "Zoeken",
         "replace": "Zoeken en vervangen",
         "findnext": "Volgende",

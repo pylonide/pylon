@@ -99,10 +99,10 @@ apf.ContentEditable.plugin("charmap", function() {
         "&#9002;","&#9674;","&#9824;","&#9827;","&#9829;","&#9830;"];
 
     this.submit = function(e) {
-        e = new apf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sCode = e.target.getAttribute("rel");
+        var el = e.target || e.srcElement;
+        while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+            el = el.parentNode;
+        var sCode = el.getAttribute("rel");
         if (sCode) {
             apf.popup.forceHide();
             //this.storeSelection();

@@ -711,7 +711,7 @@ apf.upload = function(struct, tagName){
                 this.form = apf.insertHtmlNode(this.$getLayoutNode("form"), this.$ext);
 
             this.oFrame = this.$ext.getElementsByTagName("iframe")[0];
-            apf.AbstractEvent.addListener(this.oFrame, "load", function(){
+            apf.addListener(this.oFrame, "load", function(){
                 if (!_self.uploading)
                     return;
 
@@ -733,7 +733,7 @@ apf.upload = function(struct, tagName){
                     _self.$done(data);
             });
 
-            apf.AbstractEvent.addListener(this.oFrame, "error", function(){
+            apf.addListener(this.oFrame, "error", function(){
                 if (!_self.uploading)
                     return;
 

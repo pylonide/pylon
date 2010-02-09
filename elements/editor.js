@@ -243,7 +243,7 @@ apf.editor = function(struct, tagName){
                 _self.$focus({});
         });
 
-        apf.AbstractEvent.stop(e);
+        apf.stopEvent(e);
     }
 
     /**
@@ -347,11 +347,11 @@ apf.editor = function(struct, tagName){
      */
     this.$addListeners = function() {
         var _self = this;
-        apf.AbstractEvent.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this, false));
-        //apf.AbstractEvent.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
-        apf.AbstractEvent.addListener(this.$activeDocument, "keyup", apf.window.$keyup);
-        apf.AbstractEvent.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
-        apf.AbstractEvent.addListener(this.$activeDocument, "mousedown", function(e){
+        apf.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this));
+        //apf.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
+        apf.addListener(this.$activeDocument, "keyup", apf.window.$keyup);
+        apf.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
+        apf.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
             //#ifdef __WITH_POPUP
@@ -360,14 +360,14 @@ apf.editor = function(struct, tagName){
             apf.window.$mousedown(e);
         });
 
-        apf.AbstractEvent.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this, false));
+        apf.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this));
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.AbstractEvent.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
-        apf.AbstractEvent.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
+        apf.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
+        apf.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
         //#endif
         this.$activeDocument.host = this;
 
-        apf.AbstractEvent.addListener(this.$activeDocument.body, "paste", onPaste.bindWithEvent(this, false));
+        apf.addListener(this.$activeDocument.body, "paste", onPaste.bindWithEvent(this));
     };
 
     //this.addEventListener("contextmenu", onContextmenu);

@@ -68,7 +68,6 @@ apf.ContentEditable.searchPlugin = function(sName) {
     };
 
     this.submit = function(e) {
-        //e = new apf.AbstractEvent(e || window.event);
         var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
         if (!val)
             return;

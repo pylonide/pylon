@@ -85,10 +85,10 @@ apf.ContentEditable.plugin("fonts", function() {
     };
 
     this.submit = function(e) {
-        e = new apf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sFont = e.target.getAttribute("rel");
+        var el = e.target || e.srcElement;
+        while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+            el = el.parentNode;
+        var sFont = el.getAttribute("rel");
         if (sFont) {
             apf.popup.forceHide();
             if (apf.isIE) {
@@ -194,10 +194,10 @@ apf.ContentEditable.plugin("fontsize", function() {
     };
 
     this.submit = function(e) {
-        e = new apf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sSize = e.target.getAttribute("rel");
+        var el = e.target || e.srcElement;
+        while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+            el = el.parentNode;
+        var sSize = el.getAttribute("rel");
         if (sSize) {
             apf.popup.forceHide();
             if (apf.isIE) {
@@ -221,10 +221,11 @@ apf.ContentEditable.plugin("fontsize", function() {
         panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var aHtml = [];
-
-        var aSizes = this.fontSizes;
-        for (var i = 0; i < aSizes.length; i++) {
+        var aHtml  = [],
+            aSizes = this.fontSizes,
+            i      = 0,
+            l      = aSizes.length;
+        for (; i < l; i++) {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], "pt;height:", sizeMap[aSizes[i]], "pt;line-height:",
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],

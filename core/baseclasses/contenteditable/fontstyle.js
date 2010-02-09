@@ -148,10 +148,10 @@ apf.ContentEditable.plugin("fontstyle", function() {
 
     this.submit = function(e, sStyle) {
         if (!sStyle) {
-            e = new apf.AbstractEvent(e || window.event);
-            while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-                e.target = e.target.parentNode;
-            sStyle = e.target.getAttribute("rel");
+            el = e.target || e.srcElement;
+            while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+                el = el.parentNode;
+            sStyle = el.getAttribute("rel");
         }
 
         if (sStyle) {
@@ -396,10 +396,10 @@ apf.ContentEditable.plugin("blockformat", function() {
 
     this.submit = function(e, sBlock) {
         if (!sBlock) {
-            e = new apf.AbstractEvent(e || window.event);
-            while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-                e.target = e.target.parentNode;
-            sBlock = e.target.getAttribute("rel");
+            var el = e.target || e.srcElement;
+            while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+                el = el.parentNode;
+            sBlock = el.getAttribute("rel");
         }
 
         if (sBlock) {

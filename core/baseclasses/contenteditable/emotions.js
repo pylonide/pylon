@@ -47,8 +47,11 @@ apf.ContentEditable.plugin("emotions", function() {
             this.emotionsPath = editor.$getPluginOption("emotions", "path");
 
             // parse smiley images, or 'emotions'
-            var i, node, oNode = editor.$getPluginOption("emotions");
-            for (i = 0; i < oNode.childNodes.length; i++) {
+            var node,
+                oNode = editor.$getPluginOption("emotions"),
+                i     = 0,
+                l     = oNode.childNodes.length;
+            for (; i < l; i++) {
                 node = oNode.childNodes[i];
                 if (node.nodeType == 3 || node.nodeType == 4)
                     this.emotions = node.nodeValue.splitSafe(",");
@@ -72,12 +75,12 @@ apf.ContentEditable.plugin("emotions", function() {
     };
 
     this.submit = function(e) {
-        e = new apf.AbstractEvent(e || window.event);
+        var el = e.target || e.srcElement;
         this.editor.$visualFocus();
-        var icon = e.target.getAttribute("rel");
+        var icon = el.getAttribute("rel");
         // @todo still iffy...
         if (!icon || icon == null)
-            icon = e.target.parentNode.getAttribute("rel");
+            icon = el.parentNode.getAttribute("rel");
         if (!icon) return;
         apf.popup.forceHide();
         this.editor.$insertHtml('<img src="' + this.emotionsPath
@@ -89,11 +92,13 @@ apf.ContentEditable.plugin("emotions", function() {
         panelBody = document.body.appendChild(document.createElement("div"));
         panelBody.className = "editor_popup";
         panelBody.style.display = "none";
-        var aHtml    = [];
-        var emotions = this.emotions;
-        var path     = this.emotionsPath;
-        var rowLen   = this.colspan - 1;
-        for (var i = 0; i < emotions.length; i++) {
+        var aHtml    = [],
+            emotions = this.emotions,
+            path     = this.emotionsPath,
+            rowLen   = this.colspan - 1,
+            i        = 0,
+            l        = emotions.length;
+        for (; i < l; i++) {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',

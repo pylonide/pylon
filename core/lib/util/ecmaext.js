@@ -169,7 +169,7 @@ Function.prototype.bindWithEvent = function() {
         if (!event)
             event = window.event;
         // #ifdef __WITH_ABSTRACTEVENT
-        if (ev !== false)
+        if (ev === true)
             event = new apf.AbstractEvent(event, window);
         // #endif
         return __method.apply(o, [event].concat(args)

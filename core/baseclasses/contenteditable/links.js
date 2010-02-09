@@ -122,7 +122,6 @@ apf.ContentEditable.plugin("link", function(){
             </div>\
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        //document.getElementById(idButton).onmousedown = this.submit.bindWithEvent(this);
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
@@ -196,8 +195,8 @@ apf.ContentEditable.plugin("unlink", function(){
     };
 
     this.queryState = function(editor) {
-        if (!editor.$selection)
-            console.dir(editor);
+        //if (!editor.$selection)
+        //    console.dir(editor);
         if (editor.$selection.getSelectedNode().tagName == "A")
             return apf.OFF;
 

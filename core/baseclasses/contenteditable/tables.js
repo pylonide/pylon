@@ -22,18 +22,22 @@
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
 apf.ContentEditable.plugin("table", function() {
-    this.name        = "table";
-    this.icon        = "table";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
-    this.hook        = "ontoolbar";
-    this.keyBinding  = "ctrl+alt+shift+t";
-    this.state       = apf.OFF;
+    this.name       = "table",
+    this.icon       = "table",
+    this.type       = apf.TOOLBARITEM,
+    this.subType    = apf.TOOLBARPANEL,
+    this.hook       = "ontoolbar",
+    this.keyBinding = "ctrl+alt+shift+t",
+    this.state      = apf.OFF;
 
-    var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
-        iCurrentX = 0,
-        iCurrentY = 0,
-        _self = this;
+    var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos,
+        iCurrentX   = 0,
+        iCurrentY   = 0,
+        _self       = this,
+        TABLE_SIZE  = 164,
+        CELL_SIZE   = 23,
+        GUTTER_SIZE = 4,
+        BUTTON_SIZE = 20;
 
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " dropdown_small";
@@ -57,8 +61,8 @@ apf.ContentEditable.plugin("table", function() {
 
         this.editor.$showPopup(this, this.$uniqueId, this.buttonNode);
         window.setTimeout(function() {
-            panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
-            panelBody.style.height = (oTableCont.offsetWidth + 20) + "px";
+            panelBody.style.width  = (oTableCont.offsetWidth + (GUTTER_SIZE * 2)) + "px",
+            panelBody.style.height = (oTableCont.offsetWidth + BUTTON_SIZE) + "px",
             oTablePos = apf.getAbsolutePosition(oTable);
         });
     };
@@ -99,7 +103,7 @@ apf.ContentEditable.plugin("table", function() {
             if (!bMorphing) return;
             e = new apf.AbstractEvent(e || window.event);
             // only morph the table when the mouse reaches beyond the table
-            if (e.client.x > oTablePos[0] + oTable.offsetWidth
+            if (e.client.x  > oTablePos[0] + oTable.offsetWidth
               || e.client.y > oTablePos[1] + oTable.offsetHeight)
                 morphTable(e);
             e.stop();
@@ -117,8 +121,8 @@ apf.ContentEditable.plugin("table", function() {
 
     function mouseUp(e) {
         if (bMorphing) {
-            bMorphing     = false;
-            oMorphCurrent = document.onmousemove = document.onmouseup = null;
+            bMorphing     = false,
+            oMorphCurrent = document.onmousemove = document.onmouseup = null,
             iMorphXCount  = iMorphYCount = 0;
             //apf.plane.hide();
         }
@@ -131,37 +135,37 @@ apf.ContentEditable.plugin("table", function() {
 
     function morphTable(e) {
         oMorphCurrent = e.client;
-        iMorphXCount  = (Math.floor((oMorphCurrent.x - oTablePos[0]) / 23) * 23) + 23;
+        iMorphXCount  = (Math.floor((oMorphCurrent.x - oTablePos[0]) / CELL_SIZE) * CELL_SIZE) + CELL_SIZE;
         if (iMorphXCount > oTable.offsetWidth) {
-            panelBody.style.width  = (iMorphXCount + 10) + "px";
-            oTableCont.style.width = (iMorphXCount + 4) + "px";
-            oTable.style.width     = (iMorphXCount) + "px";
+            panelBody.style.width  = (iMorphXCount + (BUTTON_SIZE / 2)) + "px",
+            oTableCont.style.width = (iMorphXCount + GUTTER_SIZE) + "px",
+            oTable.style.width     = (iMorphXCount) + "px",
             oTableSel.style.width  = (iMorphXCount) + "px";
         }
-        iMorphYCount = (Math.floor((oMorphCurrent.y - oTablePos[1]) / 23) * 23) + 23;
+        iMorphYCount = (Math.floor((oMorphCurrent.y - oTablePos[1]) / CELL_SIZE) * CELL_SIZE) + CELL_SIZE;
         if (iMorphYCount > oTable.offsetHeight) {
-            panelBody.style.height  = (iMorphYCount + 20) + "px";
-            oTableCont.style.height = (iMorphYCount + 4) + "px";
-            oTable.style.height     = (iMorphYCount) + "px";
+            panelBody.style.height  = (iMorphYCount + BUTTON_SIZE) + "px",
+            oTableCont.style.height = (iMorphYCount + GUTTER_SIZE) + "px",
+            oTable.style.height     = (iMorphYCount) + "px",
             oTableSel.style.height  = (iMorphYCount) + "px";
         }
     }
 
     function resetTableMorph() {
-        oTableCont.style.width = oTableCont.style.height = "164px";
-        oTableSel.style.width  = oTableSel.style.height  = "0px";
-        oTable.style.width     = oTable.style.height     = "160px";
+        oTableCont.style.width = oTableCont.style.height = TABLE_SIZE + "px",
+        oTableSel.style.width  = oTableSel.style.height  = "0px",
+        oTable.style.width     = oTable.style.height     = TABLE_SIZE - GUTTER_SIZE + "px";
     }
 
     var sCurrentCaption = "";
 
     function mouseOver(e) {
         if (typeof oTablePos == "undefined") return;
-        iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 23);
-        iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 23);
+        iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / CELL_SIZE);
+        iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / CELL_SIZE);
         if (iCurrentX > 0 && iCurrentY > 0) {
-            oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
-            oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
+            oTableSel.style.width  = Math.min((iCurrentX * CELL_SIZE), oTable.offsetWidth)  + "px";
+            oTableSel.style.height = Math.min((iCurrentY * CELL_SIZE), oTable.offsetHeight) + "px";
             var sCaption = iCurrentY + " x " + iCurrentX + " " 
                 + _self.editor.$translate("table_noun");
             if (sCurrentCaption != sCaption)
@@ -188,10 +192,10 @@ apf.ContentEditable.plugin("table", function() {
         panelBody.className = "editor_popup editor_tablepopup";
         panelBody.style.display = "none";
 
-        var idTableCont = "editor_" + this.$uniqueId + "_tablecont";
-        var idTableSel  = "editor_" + this.$uniqueId + "_tablesel";
-        var idTable     = "editor_" + this.$uniqueId + "_table";
-        var idStatus    = "editor_" + this.$uniqueId + "_table_status";
+        var idTableCont = "editor_" + this.$uniqueId + "_tablecont",
+            idTableSel  = "editor_" + this.$uniqueId + "_tablesel",
+            idTable     = "editor_" + this.$uniqueId + "_table",
+            idStatus    = "editor_" + this.$uniqueId + "_table_status";
         panelBody.innerHTML =
            '<div id="' + idTableCont + '" class="editor_paneltable_cont">\
                 <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
@@ -200,16 +204,16 @@ apf.ContentEditable.plugin("table", function() {
             <div id="' + idStatus + '" class="editor_paneltablecancel">' 
                 + this.editor.$translate("cancel") + '</div>';
 
-        oTableCont = document.getElementById(idTableCont);
-        oTableSel  = document.getElementById(idTableSel);
-        oTable     = document.getElementById(idTable);
-        oTable.onmousedown  = mouseDown.bindWithEvent(this);
-        oTable.onmouseup    = mouseUp.bindWithEvent(this);
-        oTable.onmousemove  = mouseOver.bindWithEvent(this);
-        oTable.onmouseout   = mouseOut.bindWithEvent(this);
-        oStatus = document.getElementById(idStatus);
-        oStatus.onmousedown = statusClick.bindWithEvent(this);
-        panelBody.onselectstart = function() { return false; };
+        oTableCont = document.getElementById(idTableCont),
+        oTableSel  = document.getElementById(idTableSel),
+        oTable     = document.getElementById(idTable),
+        oTable.onmousedown  = mouseDown.bindWithEvent(this, true),
+        oTable.onmouseup    = mouseUp.bindWithEvent(this, true),
+        oTable.onmousemove  = mouseOver.bindWithEvent(this, true),
+        oTable.onmouseout   = mouseOut.bindWithEvent(this, true),
+        oStatus = document.getElementById(idStatus),
+        oStatus.onmousedown = statusClick.bindWithEvent(this, true),
+        panelBody.onselectstart = function() { return false; },
         resetTableMorph();
 
         return panelBody;
@@ -219,12 +223,12 @@ apf.ContentEditable.plugin("table", function() {
         //oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc
         panelBody = oTableCont = oTableSel = oTable = oStatus = oTablePos
             = oDoc = null;
-        delete panelBody;
-        delete oTableCont;
-        delete oTableSel;
-        delete oTable;
-        delete oStatus;
-        delete oTablePos;
+        delete panelBody,
+        delete oTableCont,
+        delete oTableSel,
+        delete oTable,
+        delete oStatus,
+        delete oTablePos,
         delete oDoc;
     };
 });

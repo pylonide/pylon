@@ -208,9 +208,9 @@ apf.window = function(){
     this.loadAml = function(x){
         if (x[apf.TAGNAME] == "deskrun")
             this.loadDeskRun(x);
-        else {
+        /*else {
 
-        }
+        }*/
     };
 
     //#ifdef __DESKRUN
@@ -678,10 +678,10 @@ apf.window = function(){
             if (node) {
                 if (!node.$focussable) {
                     //#ifdef __DEBUG
-                    apf.console.warn("Invalid offline state detected. The \
-                                      application was probably changed in \
-                                      between sessions. Resetting offline state\
-                                      and rebooting.");
+                    apf.console.warn("Invalid offline state detected. The "
+                                   + "application was probably changed in "
+                                   + "between sessions. Resetting offline state "
+                                   + "and rebooting.");
                     //#endif
 
                     apf.offline.clear();

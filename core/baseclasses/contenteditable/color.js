@@ -139,10 +139,10 @@ apf.ContentEditable.colorPlugin = function(sName) {
     };
 
     this.submit = function(e) {
-        e = new apf.AbstractEvent(e || window.event);
-        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
-            e.target = e.target.parentNode;
-        var sColor = e.target.getAttribute("rel");
+        var el = e.target || e.srcElement;
+        while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
+            el = el.parentNode;
+        var sColor = el.getAttribute("rel");
         if (sColor) {
             apf.popup.forceHide();
 //            if (this.name == "backcolor" && apf.isGecko)

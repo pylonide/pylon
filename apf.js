@@ -2127,6 +2127,27 @@ var apf = {
         return this;
     },
 
+    stopEvent: function(e){
+        this.stopPropagation(e).preventDefault(e);
+        return false;
+    },
+
+    stopPropagation: function(e){
+        if (e.stopPropagation)
+            e.stopPropagation();
+        else
+            e.cancelBubble = true;
+        return this;
+    },
+
+    preventDefault: function(e){
+        if (e.preventDefault)
+            e.preventDefault();
+        else
+            e.returnValue = false;
+        return this;
+    },
+
     /* Destroy */
 
     /**
