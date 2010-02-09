@@ -100,7 +100,7 @@ apf.menu = function(struct, tagName){
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
         if (value) {
             this.$ext.style.display = "block";
-            if(this.opener.localName.indexOf('item') > -1)
+            if (this.opener && this.opener.localName.indexOf('item') > -1)
                 this.opener.parentNode.$showingSubMenu = this;
         }
         else {
