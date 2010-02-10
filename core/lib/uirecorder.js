@@ -322,6 +322,9 @@ apf.uirecorder = {
         else if (action.getAttribute("name") === "mouseup") {
             o3.mouseLeftUp();
         }
+        else if (action.getAttribute("name") === "mousescroll") {
+            o3.mouseWheel(action.getAttribute("value"));
+        }
 
         var delayCheck = false;
         if (apf.uirecorder.saveResults) {
@@ -337,8 +340,18 @@ apf.uirecorder = {
 
                                 var amlNode = apf.document.selectSingleNode(targetName.substr(8));
                                 if (!amlNode) debugger;
-                                apf.console.info("addEventListener added to " + targetName + ": " + apf.uirecorder.checkEvents[ce]);
-                                amlNode.addEventListener(apf.uirecorder.checkEvents[ce], apf.uirecorder.waitForEvent);
+                                
+                                // event already triggered, continue test
+                                if (apf.uirecorder.testEventList[targetName] && apf.uirecorder.testEventList[targetName].indexOf(apf.uirecorder.checkEvents[ce]) > -1) {
+                                    apf.console.info("event " + apf.uirecorder.checkEvents[ce] + " already called on " + targetName);
+                                    apf.uirecorder.testEventList[targetName].splice(apf.uirecorder.testEventList[targetName].indexOf(apf.uirecorder.checkEvents[ce]), 1);
+                                    apf.uirecorder.testCheck(apf.uirecorder.saveResults);
+                                }
+                                // event not triggered yet, add listener
+                                else {
+                                    apf.console.info("addEventListener added to " + targetName + ": " + apf.uirecorder.checkEvents[ce]);
+                                    amlNode.addEventListener(apf.uirecorder.checkEvents[ce], apf.uirecorder.waitForEvent);
+                                }
                             }
                             else {
                                 //debugger;
@@ -399,8 +412,8 @@ apf.uirecorder = {
             }
             // all tests done
             else {
-                if (apf.uirecorder.saveResults) {
-                    //uir_mdlChanges.load(apf.uirecorder.testListXml.xml);
+                if (apf.uirecorder.saveResults && uir_cbShowChanges.checked) {
+                    uir_mdlChanges.load(apf.uirecorder.testListXml.xml);
                     uir_mdlChanges2.load(apf.uirecorder.resultListXml.xml);
                     uir_windowChanges.setProperty("visible", true);
                 }
@@ -418,6 +431,7 @@ apf.uirecorder = {
         apf.uirecorder.detailList = {};
         apf.uirecorder.startTime = new Date().getTime();
         apf.uirecorder.isTesting = true;
+        apf.uirecorder.testEventList = {};
         apf.uirecorder.testDelay = 0;
         apf.uirecorder.curActionIdx = 0;
         apf.uirecorder.init();
@@ -649,7 +663,7 @@ apf.uirecorder = {
     lastEventObj    : {},
     testEventList   : {},
     captureEvent : function(eventName, e) {
-        //apf.console.info("event " + eventName + " dispatched");
+        apf.console.info("event " + eventName + " dispatched");
         if (!e || e.noCapture) return; 
         
         var amlNode = e.amlNode || e.currentTarget;
@@ -892,8 +906,8 @@ apf.uirecorder = {
                 prevNode = aNode;
             }
             if (action.amlNode && action.amlNode.localName != "debugwin") {
-                if (!action.amlNode.parentNode) debugger;
-                aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
+                if (action.amlNode.parentNode)
+                    aNode.setAttribute("target", apf.xmlToXpath(action.amlNode));
             }
             if (action.value) aNode.setAttribute("value", action.value);
 
