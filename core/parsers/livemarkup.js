@@ -142,7 +142,7 @@ apf.lm = new (function(){
             "self": 1
         },
         misc_tok = { // misc token lookup
-            ";":1, ",":2, "^":3, "!=":7, "=":4, "+=":4, "-=":4, "/=":4, "*=":4, "/":5, ":":6
+            ";":1, ",":2, "^":3, "=":4, "+=":4, "-=":4, "/=":4, "*=":4, "/":5, ":":6
         },
         xpath_lut_code = { // which autoxpath to use when doing macro({xpath})
             "~": "_val(_n,", "%": "_nod(_n,", "*": "_nods(_n,", "#": "_cnt(_n,", "$": "_lng("
@@ -301,6 +301,7 @@ apf.lm = new (function(){
         c_elemxpath,    // which xpath macro to use inside a ns'ed element
         c_statexpath,   // which xpath to use for the stateful value
         c_injectself,   // add self:: in some o_xpathpairs
+		c_propassign, 	// support property assigns
         // outputs
         o, ol,          // output and output len
         o_asyncs,       // number of async calls
@@ -523,21 +524,26 @@ apf.lm = new (function(){
                                     break;
                                 case 4: //'= += -= assignment macro mode
 									if(last_tok!='<' && last_tok!='>'){
-										if (!parse_mode)
+										// we should only switch to block when we are not in a ( ) scope
+										if (!parse_mode && o[scope-1]!='(')
 											switchToBlock(true);
 										o[ol++] = tok;
 										// lets scan in reverse to see if we have an output or a non-output
+
 										for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
 											|| o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
+
 										if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
-											ol -= 2;
-											while (is_out_space[o[ol]])
-												ol--;
-											w = last_tok;
-											o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
-											o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
-											o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
-											s[sl++] = ""; // notabene, this stored item is checked everywhere
+											if(c_propassign){
+												ol -= 2;
+												while (is_out_space[o[ol]])
+													ol--;
+												w = last_tok;
+												o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
+												o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
+												o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
+												s[sl++] = ""; // notabene, this stored item is checked everywhere
+											}
 										}
 										else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
 											if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
@@ -785,7 +791,7 @@ apf.lm = new (function(){
 
                         if (u && !s[sl-1]) // close = macro
                             o[ol-1]=="\n"&&(o[ol-1]=""),o[ol++]=")", o[ol++]="\n",v = 1,sl -=2;
-
+						
                         if (v && parse_mode) // inject output
                             o[ol++] = (nesting?cf_str_output:cf_mode_output), last_type = 0;
 
@@ -821,6 +827,9 @@ apf.lm = new (function(){
                                     scope = segment = ol, o_asyncs++;
                                 }
                                 else { // its a obj.prop() type call
+									if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
+										c_props[last_tok.slice(0,last_dot)] = 1;
+										
                                     s[sl++] = scope, s[sl++] = o[ol++] = tok,
                                     scope = segment = ol;
                                 }
