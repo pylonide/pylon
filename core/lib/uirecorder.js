@@ -15,6 +15,7 @@ apf.uirecorder = {
     current      : {},
     setTimeout   : self.setTimeout,
     
+    
     init : function() {
         if (apf.uirecorder.inited)
             return;
@@ -132,6 +133,17 @@ apf.uirecorder = {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
+
+            var validKeys = [37, 38, 39, 40, 27]; // arrowkeys, esc
+
+            var keycode = (e.keyCode) ? e.keyCode : e.which;
+
+            if (validKeys.indexOf(keycode) == -1) return;
+
+            if (e.shiftKey) keycode = "[SHIFT]" + keycode;
+            if (e.altKey)   keycode = "[ALT]" + keycode;
+            if (e.ctrlKey)  keycode = "[CTRL]" + keycode;
+            apf.uirecorder.captureAction("keypress", e, keycode);
         }
         
         document.documentElement.onkeypress = function(e) {
@@ -146,6 +158,9 @@ apf.uirecorder = {
                 character = String.fromCharCode(e.which);
             }
 
+            if (e.shiftKey) character = "[SHIFT]" + character;
+            if (e.altKey)   character = "[ALT]" + character;
+            if (e.ctrlKey)  character = "[CTRL]" + character;
             apf.uirecorder.captureAction("keypress", e, character);
         }
 
@@ -311,18 +326,28 @@ apf.uirecorder = {
         );
         
         if (action.getAttribute("name") === "click") {
+            //o3.wait(1);
             o3.mouseLeftClick();
         }
         else if (action.getAttribute("name") === "keypress") {
+            //o3.wait(1);
             o3.sendKeyEvent(action.getAttribute("value"));
         }
+        /*
+        else if (action.getAttribute("name") === "keydown") {
+            o3.sendKeyEvent(action.getAttribute("value"));
+        }
+        */
         else if (action.getAttribute("name") === "mousedown") {
+            //o3.wait(1);
             o3.mouseLeftDown();
         }
         else if (action.getAttribute("name") === "mouseup") {
+            //o3.wait(1);
             o3.mouseLeftUp();
         }
         else if (action.getAttribute("name") === "mousescroll") {
+            //o3.wait(1);
             o3.mouseWheel(action.getAttribute("value"));
         }
 
