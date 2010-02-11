@@ -828,7 +828,7 @@ apf.lm = new (function(){
                                 }
                                 else { // its a obj.prop() type call
 									if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
-										c_props[last_tok.slice(0,last_dot)] = 1;
+										o_props[last_tok.slice(0,last_dot)] = 1;
 										
                                     s[sl++] = scope, s[sl++] = o[ol++] = tok,
                                     scope = segment = ol;
