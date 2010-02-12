@@ -302,6 +302,7 @@ apf.lm = new (function(){
         c_statexpath,   // which xpath to use for the stateful value
         c_injectself,   // add self:: in some o_xpathpairs
 		c_propassign, 	// support property assigns
+		c_funcglobal,	// globalize function
         // outputs
         o, ol,          // output and output len
         o_asyncs,       // number of async calls
@@ -806,6 +807,12 @@ apf.lm = new (function(){
                                     if (last_tok == "function" || o[ol - 3] == "function" || o[ol - 4] == "function") {
                                         s[sl++] = scope, s[sl++] = "function", //func def
                                         o[ol++] = "(", scope = segment = ol;
+										//TODO! check the depth with which functions are made global
+										if(last_tok!="function" && c_funcglobal && sl==4){
+											o[v=(o[ol - 4] == "function")?(ol-4):(ol-5)] =
+												"var "+last_tok+" = self."+last_tok+" = function";
+											o[v+2] = "";
+										}
                                     }
                                     else { // its a call and not a new
                                         if (!call_exclusion[last_tok] && o[ol-3]!="new") {
@@ -1542,6 +1549,8 @@ apf.lm = new (function(){
      *   {Boolean} injectself  injects self:: to suitable xpaths
      *   {Boolean} event       its an event thats being compiled, results in no returnvalue for this function.
      *                         and the first argument is now an 'e' for the event object.
+     *   {Boolean} funcglobal  all functions defined in LM are made global
+
      *
      * @return  {Function} returns a function with extra properties
      *   Properties:
@@ -1577,14 +1586,15 @@ apf.lm = new (function(){
             key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.editable && 0x400) | (cfg.langedit && 0x800)
-                | (cfg.injectself && 0x1000) | (cfg.event && 0x2000)) + istr;
+                | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
 
         if (c = cache[key])
             return c;
 
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.editable ? 7:0;
-
+		c_funcglobal = cfg.funcglobal;
+		
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
