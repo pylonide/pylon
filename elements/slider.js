@@ -344,14 +344,15 @@ apf.slider = function(struct, tagName){
                 : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
-            max = (this.oContainer.offsetWidth
-                - apf.getWidthDiff(this.oContainer))
-                - this.oKnob.offsetWidth;
-            min = parseInt(apf.getBox(
-                apf.getStyle(this.oContainer, "padding"))[3]);
-
-            offset = (((max - min) * multiplier) + min);
-
+            max   = (this.max == 1000001) ? 1 : this.max;
+            var count = (max - this.min) / this.step;
+            var size  = this.$dir == "horizontal"
+                    ? this.$ext.offsetWidth - this.oKnob.offsetWidth 
+                      - apf.getWidthDiff(this.oContainer)
+                    : this.$ext.offsetHeight - this.oKnob.offsetHeight;
+            var pos = Math.max(0, (value * (1 / (count))));
+            offset = Math.round(pos * size) || 0;
+            
             if (animate) {
                 apf.tween.single(this.oKnob, {
                     type    : 'left',
@@ -583,9 +584,10 @@ apf.slider = function(struct, tagName){
                     //_self.value = -1; //reset value //@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
                     if (_self.slideDiscreet) {
                         this.$onlySetXml = true;//blrgh..
-                        var rValue = _self.change(Math.round(knobValue / _self.step)
-                            * _self.step);
+                        var rValue = _self.change(Math.round((knobValue / _self.step)
+                            * _self.step));
                         this.$onlySetXml = false;
+                        
                         if (rValue !== false) {
                             _self.$propHandlers["value"].call(_self, knobValue, 
                                 "value", true);
