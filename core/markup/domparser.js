@@ -256,7 +256,7 @@ apf.DOMParser.prototype = new (function(){
         
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
-        
+
         delete this.$parseContext;
     };
     

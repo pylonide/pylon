@@ -59,28 +59,7 @@ apf.aml.setElement("include", apf.XiInclude);
         loadIncludeFile.call(this, this.$path);
     };
     
-    function finish(xmlNode){
-        var domParser = this.ownerDocument.$domParser;
-
-        if (this.clear)
-            this.parentNode.$int.innerHTML = "";
-        
-        //@todo apf3.x the insertBefore seems like unnecessary overhead
-        if (xmlNode) {
-            var nodes = domParser.parseFromXml(xmlNode, {
-                    doc: this.ownerDocument
-                }).firstChild.childNodes,
-                pNode = this.parentNode,
-                node, i, l;
-            for (node, i = 0, l = nodes.length; i < l; i++) {
-                (node = nodes[i]).parentNode = null; //@todo a little hackery
-                pNode.insertBefore(node, this);
-            }
-        }
-
-        if (!this.defer)
-            domParser.$continueParsing.apply(domParser, this.$parseContext);
-            
+    function done(xmlNode) {
         if (this.callback) {
             this.callback({
                 xmlNode : xmlNode,
@@ -89,6 +68,43 @@ apf.aml.setElement("include", apf.XiInclude);
         }
         
         this.parentNode.removeChild(this);
+    }
+    
+    function finish(xmlNode){
+        var domParser = this.ownerDocument.$domParser;
+
+        if (this.clear)
+            this.parentNode.$int.innerHTML = "";
+        
+        //@todo apf3.x the insertBefore seems like unnecessary overhead
+        if (xmlNode) {
+            var _self = this;
+            var nodes = domParser.parseFromXml(xmlNode, {
+                doc      : this.ownerDocument
+            }).firstChild.childNodes;
+            
+            var pNode = this.parentNode, node, i, l;   
+            for (node, i = 0, l = nodes.length; i < l; i++) {
+                (node = nodes[i]).parentNode = null; //@todo a little hackery
+                pNode.insertBefore(node, this);
+            }
+            
+            if (!this.defer) {
+                (this.$parseContext[1] || (this.$parseContext[1] = {})).callback = function(){
+                    done.call(_self, xmlNode);
+                };
+                 
+                domParser.$continueParsing.apply(domParser, this.$parseContext);
+            }
+            else
+                done.call(this, xmlNode);
+        }
+        else {
+            if (!this.defer)
+                domParser.$continueParsing.apply(domParser, this.$parseContext);
+            
+            done.call(this, xmlNode);
+        }
     }
     
     function loadIncludeFile(path){
