@@ -106,9 +106,12 @@ apf.progressbar = function(struct, tagName){
         this.value = parseInt(value) || this.min;
 
         if (this.value >= this.max)
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running"]);
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running", this.$baseCSSname + "Half"]);
         else
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Running", [this.$baseCSSname + "Complete"]);
+            
+        if (this.value >= this.max / 2)
+            apf.setStyleClass(this.$ext, this.$baseCSSname + "Half", []);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
