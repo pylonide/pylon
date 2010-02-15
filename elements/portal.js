@@ -328,7 +328,10 @@ apf.portal = function(struct, tagName){
             oEmpty = apf.insertHtmlNode(xmlEmpty, this.$int);
         }
         else {
-            this.$int.appendChild(oEmpty);
+            if(!this.oInt.lastChild)
+                this.oInt.appendChild(oEmpty);
+            else
+                this.oInt.insertBefore(oEmpty, this.oInt.lastChild);
         }
         
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
