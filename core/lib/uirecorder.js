@@ -126,7 +126,10 @@ apf.uirecorder = {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
-            //apf.uirecorder.captureAction("keypress", e, e.keyCode);
+
+            var keycode = (e.keyCode) ? e.keyCode : e.which;
+
+            apf.uirecorder.captureAction("keyup", e, keycode);
         }
         
         document.documentElement.onkeydown = function(e) {
@@ -134,16 +137,17 @@ apf.uirecorder = {
                 return;
             e = e || event;
 
-            var validKeys = [37, 38, 39, 40, 27]; // arrowkeys, esc
+            //var validKeys = [37, 38, 39, 40, 27]; // arrowkeys, esc
 
             var keycode = (e.keyCode) ? e.keyCode : e.which;
 
-            if (validKeys.indexOf(keycode) == -1) return;
+            //if (validKeys.indexOf(keycode) == -1) return;
 
-            if (e.shiftKey) keycode = "[SHIFT]" + keycode;
-            if (e.altKey)   keycode = "[ALT]" + keycode;
-            if (e.ctrlKey)  keycode = "[CTRL]" + keycode;
-            apf.uirecorder.captureAction("keypress", e, keycode);
+            //if (e.shiftKey) keycode = "[SHIFT]" + keycode;
+            //if (e.altKey)   keycode = "[ALT]" + keycode;
+            //if (e.ctrlKey)  keycode = "[CTRL]" + keycode;
+
+            apf.uirecorder.captureAction("keydown", e, keycode);
         }
         
         document.documentElement.onkeypress = function(e) {
@@ -154,14 +158,20 @@ apf.uirecorder = {
             var character = "";
             if (e.keyCode) { // Internet Explorer
                 character = String.fromCharCode(e.keyCode);
-            } else if (e.which) { // W3C
+            } 
+            else if (e.which) { // W3C
                 character = String.fromCharCode(e.which);
             }
+            else {
+                character = e.keyCode
+            }
+           
 
             if (e.shiftKey) character = "[SHIFT]" + character;
             if (e.altKey)   character = "[ALT]" + character;
             if (e.ctrlKey)  character = "[CTRL]" + character;
-            apf.uirecorder.captureAction("keypress", e, character);
+            //alert(character);
+            //apf.uirecorder.captureAction("keypress", e, character);
         }
 
         /* Support for Mouse Scroll event */
@@ -258,10 +268,11 @@ apf.uirecorder = {
         uir_windowStartTest.setProperty("visible", true);
         uir_windowStartTest.setProperty("title", "Starting test in..." + timer);
         
-        var interval = setInterval(function() {
+        var intval = window.setInterval(function() {
             timer -= 1;
             if (timer == 0) {
-                clearInterval(interval);
+                window.clearInterval(intval);
+                intval = "";
                 uir_windowStartTest.setProperty("visible", false);
                 if (apf.uirecorder.saveResults) {
                     apf.uirecorder.resetResults();
@@ -292,21 +303,44 @@ apf.uirecorder = {
         apf.uirecorder.playAction();
     },
     testDelay : 0,
+    timeoutTimer : null,
     playAction : function() {
-        //apf.console.info("playAction: " + apf.uirecorder.curActionIdx);
+        apf.console.info("playAction: " + apf.uirecorder.curActionIdx);
         var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
         var action = test.childNodes[apf.uirecorder.curActionIdx];
-        var elapsedTime = 0;
+        //var elapsedTime = 0;
         
         // realtime movement
         if (uir_ddRealtime.value == "realtime") {
-            var interval = setInterval(function() {
-                elapsedTime = new Date().getTime() - apf.uirecorder.startTime;
-                if (action.getAttribute("time") <= elapsedTime - apf.uirecorder.testDelay) {
-                    clearInterval(interval);
-                    apf.uirecorder.execAction();
-                }
-            }, 1);
+            if (apf.uirecorder.timeoutTimer) {
+                clearTimeout(apf.uirecorder.timeoutTimer);
+                //apf.console.info("overwriting intvalTimer");
+            }
+            
+            var timeout = action.getAttribute("time")-(new Date().getTime() - apf.uirecorder.startTime + apf.uirecorder.testDelay);
+            if (timeout > 0) {
+                apf.uirecorder.timeoutTimer = setTimeout(function() {
+                    //if (apf.uirecorder.curTestIdx != null && apf.uirecorder.curActionIdx != null) {
+                        //var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
+                        //var action = test.childNodes[apf.uirecorder.curActionIdx];
+                        
+                        //elapsedTime = new Date().getTime() - apf.uirecorder.startTime;
+                        //if (action.getAttribute("time") <= elapsedTime - apf.uirecorder.testDelay) {
+                            //clearInterval(apf.uirecorder.intvalTimer);
+                            //apf.uirecorder.intvalTimer = null;
+                            apf.console.info("playAction (timeout)");
+                            
+                            apf.uirecorder.execAction();
+                            //if (test.childNodes.length == apf.uirecorder.curActionIdx+1)
+                                //debugger;
+                        //}
+                    //}
+                }, timeout);
+            }
+            else {
+                apf.console.info("playAction (!timeout)");
+                apf.uirecorder.execAction();
+            }
         }
         // max movement
         else if (uir_ddRealtime.value == "max") {
@@ -340,18 +374,19 @@ apf.uirecorder = {
        if (action.getAttribute("name") === "keypress") {
             o3.sendKeyEvent(action.getAttribute("value"));
         }
-        /*
         else if (action.getAttribute("name") === "keydown") {
-            o3.sendKeyEvent(action.getAttribute("value"));
+            o3.sendKeyDown(action.getAttribute("value"));
         }
-        */
+        else if (action.getAttribute("name") === "keyup") {
+            o3.sendKeyUp(action.getAttribute("value"));
+        }
         else if (action.getAttribute("name") === "mousedown") {
-            //if (uir_ddRealtime.value == "max") 
+            if (uir_ddRealtime.value == "max") 
             o3.wait(1);
             o3.mouseLeftDown();
         }
         else if (action.getAttribute("name") === "mouseup") {
-            //if (uir_ddRealtime.value == "max") 
+            if (uir_ddRealtime.value == "max") 
             o3.wait(1);
             o3.mouseLeftUp();
         }
@@ -360,7 +395,7 @@ apf.uirecorder = {
         }
 
         var delayCheck = false;
-        /*
+
         if (apf.uirecorder.saveResults) {
             for (var ce in apf.uirecorder.checkEvents) {
                 if (action.selectNodes("element[events[event[@name='" + ce + "']]]")) {
@@ -395,8 +430,8 @@ apf.uirecorder = {
                 }
             }
         }
-        */
 
+/*
         for (var ce in apf.uirecorder.checkEvents) {
             if (apf.uirecorder.testEventList[ce] && apf.uirecorder.testEventList[ce].length) {
                 for (var i = 0; i < apf.uirecorder.testEventList[ce].length; i++) {
@@ -415,7 +450,8 @@ apf.uirecorder = {
                     }
                 }
             }
-        }                
+        }
+*/
         //apf.uirecorder.testEventList = {};
         
         if (!delayCheck) {
@@ -423,12 +459,13 @@ apf.uirecorder = {
         } 
     },
     waitForEvent : function(e) {
-        apf.console.info("testCheck: " + apf.uirecorder.curActionIdx);
+        //apf.console.info("waitForEvent: " + apf.uirecorder.curActionIdx);
         e.currentTarget.removeEventListener(e.name, apf.uirecorder.waitForEvent);
         
         //(apf.xmlToXpath(this) || amlNode.id) 
         apf.console.info("event fired: " + e.name);
         
+        apf.console.info("testCheck (waitForEvent): " + apf.uirecorder.curActionIdx);
         apf.uirecorder.testCheck(apf.uirecorder.saveResults);
         apf.uirecorder.testdelay += new Date().getTime() - apf.uirecorder.beforeDelay;
         
@@ -436,18 +473,18 @@ apf.uirecorder = {
         //return;
     },
     testCheck : function() {
-        apf.console.info("testCheck: " + apf.uirecorder.curActionIdx);
         var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
         var action = test.childNodes[apf.uirecorder.curActionIdx];
 
         // play next action
         if (test.childNodes.length > apf.uirecorder.curActionIdx+1) {
             apf.uirecorder.curActionIdx++;
+            apf.console.info("playAction (testCheck): test.childNodes.length = " + test.childNodes.length + " apf.uirecorder.curActionIdx+1 = " + apf.uirecorder.curActionIdx+1);
             apf.uirecorder.playAction();
         }
         else {
             apf.uirecorder.stop();
-
+                
             // save test results
             if (apf.uirecorder.saveResults) {
                 apf.uirecorder.save("results", test.getAttribute("name"));
@@ -468,6 +505,15 @@ apf.uirecorder = {
             }
             // all tests done
             else {
+                //debugger;
+                // clear interval
+                if (apf.uirecorder.intvalTimer) {
+                    window.clearInterval(apf.uirecorder.intvalTimer);
+                    apf.uirecorder.intvalTimer = null;
+                }
+                
+                apf.uirecorder.curTestIdx = null;
+                apf.uirecorder.curActionIdx = null;
                 if (apf.uirecorder.saveResults && uir_cbShowChanges.checked) {
                     uir_mdlTests.load(apf.uirecorder.testListXml.xml);
                     uir_mdlChanges2.load(apf.uirecorder.resultListXml.xml);
@@ -553,9 +599,11 @@ apf.uirecorder = {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement) ? apf.findHost(htmlElement) : null;
 
-//if (eventName == "mouseup") debugger;
+if (eventName == "keyup") debugger;
         // ignore interaction with uirecorder controls
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") return;
+        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") {
+            return;
+        }
 //        if (amlNode.id == "uir_bar") amlNode = null;
         
         // time in ms when action is executed
@@ -577,6 +625,9 @@ apf.uirecorder = {
 
         // collect events before first ui action
         if (apf.uirecorder.actionList.length == 0) {
+            // reset all before init
+            //apf.uirecorder.detailList = {};
+            
             actionObj.name = "init";
             actionObj.detailList = apf.uirecorder.detailList;
             apf.uirecorder.detailList = {};
@@ -950,7 +1001,22 @@ apf.uirecorder = {
         testXml.setAttribute("name", testName || "test" + id);
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
         testXml.setAttribute("status", "@todo status");        
-
+/*
+        // remove last mousemove action from list
+        for (var action, i = apf.uirecorder.actionList.length-1; i > 0; i--) {
+            action = apf.uirecorder.actionList[i];
+            if (action.name == "mousemove" && action.ignore) {
+                apf.uirecorder.actionList.splice(i, 1);
+            }
+            else if (action.name == "mousemove") {
+                apf.uirecorder.actionList.splice(i, 1);
+                break;
+            }
+            else if (action.name != "mousemove") {
+                break;
+            }
+        }
+*/
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
