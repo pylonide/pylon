@@ -549,21 +549,21 @@ apf.BaseStateButtons = function(){
     
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown",
-            "var o = apf.all[" + this.$uniqueId + "]\
+            "var o = apf.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, 'down', null, true);\
              event.cancelBubble = true; \
              var o = apf.findHost(this).$ext;\
              if (o.onmousedown) o.onmousedown(event);\
              apf.window.$mousedown(event);");
         btn.setAttribute("onmouseup",
-            "var o = apf.all[" + this.$uniqueId + "]\
-             o.$setStyleClass(this, '', ['down'], true)");
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['down'], true);");
         btn.setAttribute("onmouseover",
-            "var o = apf.all[" + this.$uniqueId + "]\
-             o.$setStyleClass(this, 'hover', null, true)");
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, 'hover', null, true);");
         btn.setAttribute("onmouseout",
-            "var o = apf.all[" + this.$uniqueId + "]\
-             o.$setStyleClass(this, '', ['hover', 'down'], true)");
+            "var o = apf.all[" + this.$uniqueId + "];\
+             o.$setStyleClass(this, '', ['hover', 'down'], true);");
     }
     
     this.$initButtons = function(oExt){
