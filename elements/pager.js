@@ -177,6 +177,7 @@ apf.pager = function(struct, tagName){
             if (curpage != 1) {
                 btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
                     + ").gotoPage(null, -1, true)");
+                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -199,6 +200,7 @@ apf.pager = function(struct, tagName){
             this.$getLayoutNode("button", "caption").nodeValue = i;
             btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
                 + ").gotoPage(" + i + ", null, true)");
+            btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
             nodes.push(btn);
             
             if (i == curpage)
@@ -214,6 +216,7 @@ apf.pager = function(struct, tagName){
             if (curpage != totalpages) {
                 btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
                     + ").gotoPage(null, 1, true)");
+                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
             }
             else {
                 this.$setStyleClass(btn, "disabled");
