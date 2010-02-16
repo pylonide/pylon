@@ -757,6 +757,29 @@ apf.AmlWindow = function(struct, tagName){
             this.$ext.onmousemove = null;
         }
     };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $ext            : this.$ext,
+                // oTitle       : this.oTitle,
+                $oIcon          : this.oIcon
+                // oDrag        : this.oDrag,
+            }
+            
+            // set buttons
+            if (this.$buttons && this.$buttons.children && this.$buttons.children.length) {
+                for (var bi = 0, bl = this.$buttons.children.length; bi < bl; bi++) {
+                    this.$activeElements["$" + this.$buttons.children[bi].className.trim().split(" ")[0] + "Btn"] = this.$buttons.children[bi];
+                }
+            }
+        }
+
+        return this.$activeElements
+    }
+    //#endif
 }).call(apf.modalwindow.prototype = new apf.Presentation());
 
 apf.AmlWindow.prototype = apf.toolwindow.prototype = apf.modalwindow.prototype;

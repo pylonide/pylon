@@ -548,10 +548,11 @@ apf.BaseStateButtons = function(){
     };
     
     function setButtonEvents(btn){
+        //@todo can this cancelBubble just go?
+        //event.cancelBubble = true; \
         btn.setAttribute("onmousedown",
             "var o = apf.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, 'down', null, true);\
-             event.cancelBubble = true; \
              var o = apf.findHost(this).$ext;\
              if (o.onmousedown) o.onmousedown(event);\
              apf.window.$mousedown(event);");
