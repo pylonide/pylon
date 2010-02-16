@@ -668,7 +668,9 @@ apf.calendar = function(struct, tagName){
                         btn.setAttribute("onmousedown", 'var o = apf.lookup('
                                          + this.$uniqueId + '); \
                                             if (!o.disabled) \
-                                                o.' + buttons[i] + '()');
+                                                o.' + buttons[i] + '();\
+                                                apf.setStyleClass(this, "down");');
+                        btn.setAttribute("onmouseup", 'apf.setStyleClass(this, "", ["down"]);');
                 }
             }
 
