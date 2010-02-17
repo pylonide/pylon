@@ -763,7 +763,6 @@ apf.AmlWindow = function(struct, tagName){
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                $ext            : this.$ext,
                 // oTitle       : this.oTitle,
                 $oIcon          : this.oIcon
                 // oDrag        : this.oDrag,
