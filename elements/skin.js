@@ -130,7 +130,7 @@ apf.aml.setElement("skin", apf.skin);
                 throw new Error("Could not load skin include");//@todo apf3.0 make this into a proper error
             }
             
-            var newPart = apf.getXml('<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
+            var newPart = apf.getXml(xmlString);
             apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
             includeNode.parentNode.removeChild(includeNode);
             
