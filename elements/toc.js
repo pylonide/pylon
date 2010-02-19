@@ -135,15 +135,17 @@ apf.toc = function(struct, tagName){
         }
 
         for (var isPast = true, i = 0; i < this.pages.length; i++) {
+            this.$setStyleClass(this.pages[i], "", ["future", "past", "hover", "present"]);
+            
             if (this.pagelookup[active] == this.pages[i]) {
-                this.$setStyleClass(this.pages[i], "present", ["future", "past", "hover"]);
+                this.$setStyleClass(this.pages[i], "present", []);
                 isPast = false;
             }
             else if (isPast) {
-                    this.$setStyleClass(this.pages[i], "past", ["future", "present",]);
+                    this.$setStyleClass(this.pages[i], "past", []);
             }
             else {
-                this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
+                this.$setStyleClass(this.pages[i], "future", []);
             }
             
             if (i == this.pages.length - 1)
