@@ -344,7 +344,7 @@ apf.calendar = function(struct, tagName){
             w_dayInWeek    = w_firstYearDay.getDay(),
             w_days         = w_dayInWeek,
             c              = this.$calVars;
-
+apf.console.info(month+" "+year)
         c.currentMonth = month;
         c.currentYear  = year;
         
@@ -453,7 +453,7 @@ apf.calendar = function(struct, tagName){
                         z++;
                         if ((z - 1) % 8 == 0) {
                             cells[j].innerHTML = w_weeks 
-                                - Math.ceil((c.months[c.month].number + c.dayNumber) / 7)
+                                - Math.ceil((c.months[c.currentMonth].number + c.dayNumber) / 7)
                                 + 1 + (z - 1) / 8;
                             this.$setStyleClass(cells[j], "weeknumber");
                         }

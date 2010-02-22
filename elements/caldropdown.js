@@ -643,7 +643,7 @@ apf.caldropdown = function(struct, tagName){
 
                 if ((z - 1) % 8 == 0) {
                     cells[j].innerHTML = w_weeks
-                        - Math.ceil((c.months[c.month].number + c.dayNumber) / 7)
+                        - Math.ceil((c.months[c.currentMonth].number + c.dayNumber) / 7)
                         + 1 + (z - 1) / 8;
                     this.$setStyleClass(cells[j], "weeknumber");
                 }
