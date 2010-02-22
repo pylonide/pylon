@@ -431,6 +431,19 @@ apf.dropdown = function(struct, tagName){
         apf.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
     };
+
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $button       : this.$button
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 }).call(apf.dropdown.prototype = new apf.BaseList());
 
 apf.config.$inheritProperties["initial-message"] = 1;

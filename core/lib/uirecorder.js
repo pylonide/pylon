@@ -451,9 +451,10 @@ apf.uirecorder = {
             o3.mouseWheel(action.getAttribute("value"));
         }
 
-        // set checks
+        // set target checks
         if (action.getAttribute("name") != "mousemove") {
             if (action.getAttribute("htmlNode")) {
+                apf.console.info("action on htmlNode " + action.getAttribute("htmlNode") + " of " + action.getAttribute("amlNode"));
                 if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = {};
                 if (!apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx] = {};
                 apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx].htmlNode = 
@@ -461,6 +462,7 @@ apf.uirecorder = {
             }
         }
 
+        // set event checks
         var delayCheck = false;
         if (apf.uirecorder.isTesting) {
             for (var ce in apf.uirecorder.checkEvents) {
@@ -773,8 +775,8 @@ apf.uirecorder = {
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
-            
-            // search for active elements
+
+            // search for active elements in amlNodes
             if (amlNode && amlNode.$getActiveElements) {
                 var activeElements = amlNode.$getActiveElements();
                 if (activeElements) {
@@ -804,7 +806,18 @@ apf.uirecorder = {
                     }
                 }
             }
-
+            
+            // search for active elements in popup
+            /*
+            if (apf.popup.isShowing(apf.popup.last)) {
+                if (apf.isChildOf(apf.popup.cache[apf.popup.last].content, htmlElement, true)) {
+                    debugger;
+                    htmlNode = apf.popup.cache[apf.popup.last].content;
+                    htmlNodeName = "@todo popup";
+                }
+            }
+            */
+           
             // is multiselect widget
             // @todo generate name for multiselect htmlNode item
             if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
@@ -863,8 +876,9 @@ apf.uirecorder = {
             
                 
         // detect first mousemove action in serie
-        if ((apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") || apf.uirecorder.actionList.length == 1) {
-            apf.uirecorder.firstMousemoveObj = actionObj;
+        if (apf.uirecorder.actionList.length > 1 || apf.uirecorder.actionList.length == 1) {
+            if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove")
+                apf.uirecorder.firstMousemoveObj = actionObj;
         }
         
         // combine mousedown / mouseup to click
@@ -996,7 +1010,14 @@ apf.uirecorder = {
                 for (var prop in apf.uirecorder.checkList[testId][actionIdx]) {
                     switch (prop) {
                         case "htmlNode":
-                            if (!amlNode || (amlNode && amlNode.$getActiveElements && !amlNode.$getActiveElements()[apf.uirecorder.checkList[testId][actionIdx][prop]]) || (apf.uirecorder.checkList[testId][actionIdx][prop] == "$ext" && !amlNode.$ext)) {
+                            if (amlNode && amlNode.id && apf.uirecorder.checkList[testId][actionIdx][prop] == amlNode.id) {
+                                // no error
+                            }
+                            else if (!amlNode 
+                              || amlNode.$getActiveElements && !amlNode.$getActiveElements()[apf.uirecorder.checkList[testId][actionIdx][prop]] 
+                              || apf.uirecorder.checkList[testId][actionIdx][prop] == "$ext" && !amlNode.$ext
+                            ) {
+                                debugger;
                                 apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_ACTION_WRONG_TARGET, [eventName, apf.uirecorder.checkList[testId][actionIdx][prop]], testId, eventName);
 //                                apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_NODE_NOT_INIT, apf.uirecorder.checkList[testId][actionIdx][prop], testId, eventName);
                             }
@@ -1004,6 +1025,7 @@ apf.uirecorder = {
                                  && ( (htmlNodeName != "$ext" && htmlNodeName != apf.uirecorder.checkList[testId][actionIdx][prop]) 
                                   || (htmlNodeName == "$ext" && amlNode && apf.uirecorder.checkList[testId][actionIdx][prop] != (amlNode.id || apf.xmlToXpath(amlNode)))) 
                                     ) {
+                                debugger;
                                 apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_ACTION_WRONG_TARGET, [eventName, apf.uirecorder.checkList[testId][actionIdx][prop]], testId, eventName);
                             } 
                             break;

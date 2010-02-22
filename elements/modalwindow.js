@@ -776,7 +776,7 @@ apf.AmlWindow = function(struct, tagName){
             }
         }
 
-        return this.$activeElements
+        return this.$activeElements;
     }
     //#endif
 }).call(apf.modalwindow.prototype = new apf.Presentation());
