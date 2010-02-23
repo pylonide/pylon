@@ -271,6 +271,7 @@ apf.editor = function(struct, tagName){
     this.$focus = function(e){
         if (!this.$ext || this.$ext.disabled)
             return;
+        clearInterval(this.$fTimer);
 
         this.setProperty("state", (this.$pluginsActive == "code")
             ? apf.DISABLED
@@ -280,7 +281,7 @@ apf.editor = function(struct, tagName){
 
         var _self = this;
 
-        function delay(){
+        this.$fTimer = setInterval(function delay(){
             try {
                 if (!_self.$fTimer || document.activeElement != _self.$ext) {
                     _self.$visualFocus(true);
@@ -292,14 +293,7 @@ apf.editor = function(struct, tagName){
                 }
             }
             catch(e) {}
-        }
-
-        if (e && e.mouse && apf.isIE) {
-            clearInterval(this.$fTimer);
-            this.$fTimer = setInterval(delay, 1);
-        }
-        else
-            delay();
+        }, 1);
     };
 
     /**
@@ -467,8 +461,7 @@ apf.editor = function(struct, tagName){
             // setup layout rules:
             //@todo add this to $destroy
             apf.layout.setRules(this.$ext, this.$uniqueId + "_editor",
-                "var o = apf.all[" + this.$uniqueId + "];\
-                if (o) o.$resize()");
+                "var o = apf.all[" + this.$uniqueId + "];if (o) o.$resize()");
             apf.layout.queue(this.$ext);
             //#endif
 
