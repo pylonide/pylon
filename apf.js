@@ -435,7 +435,6 @@ var apf = {
         this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.supportCSSAnim            = apf.isWebkit && (apf.webkitRev > 525);//apf.isIphone;
         this.w3cRange                  = Boolean(window["getSelection"]);
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
@@ -444,6 +443,22 @@ var apf = {
         var t = document.createElement("div");
         this.hasContentEditable        = (typeof t.contentEditable == "string"
                                        || typeof t.contentEditable == "boolean");
+        // Try transform first for forward compatibility
+        var props   = ["transform", "OTransform", "KhtmlTransform", "MozTransform", "WebkitTransform"],
+            prefixR = ["", "O", "Khtml", "Moz", "Webkit"],
+            prefixC = ["", "o-", "khtml-", "moz-", "webkit-"],
+            events  = ["transitionend", "transitionend", "transitionend", "transitionend", "webkitTransitionEnd"],
+            i       = 0,
+            l       = 5;
+        this.supportCSSAnim            = false;
+        this.supportCSSTransition      = false;
+        for (; i < l && !this.supportCSSAnim; ++i) {
+            if (typeof t.style[props[i]] == "undefined") continue;
+            this.supportCSSAnim     = props[i];
+            this.runtimeStylePrefix = prefixR[i];
+            this.classNamePrefix    = prefixC[i];
+            this.cssAnimEvent       = events[i];
+        }
         t = null;
         delete t;
 
@@ -452,7 +467,7 @@ var apf = {
         this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !!document.createElement("canvas").getContext;
         this.supportCanvasText         = !!(this.supportCanvas
-            && typeof document.createElement("canvas").getContext("2d").fillText == "function")
+            && typeof document.createElement("canvas").getContext("2d").fillText == "function");
 
         this.hasVideo                  = !!document.createElement("video")["canPlayType"];
         this.hasAudio                  = !!document.createElement("audio")["canPlayType"];

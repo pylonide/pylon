@@ -118,6 +118,18 @@ apf.tween = {
         else
             oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
     },
+    transformscale: function(oHtml, value, obj) {
+        oHtml.style[obj.type] = "scale(" + parseFloat(value) + ")";
+    },
+    transformrotate: function(oHtml, value, obj) {
+        oHtml.style[obj.type] = "rotate(" + parseFloat(value) + "deg)";
+    },
+    transformvalscale: function(value) {
+        return "scale(" + parseFloat(value) + ")";
+    },
+    transformvalrotate: function(value) {
+        return "rotate(" + parseFloat(value) + "deg)";
+    },
 
     /** Linear tweening method */
     NORMAL: 0,
@@ -125,6 +137,175 @@ apf.tween = {
     EASEIN: 1,
     /** Ease-out tweening method */
     EASEOUT: 2,
+
+    linear: function(t, x_min, dx) {
+        return dx * t + x_min;
+    },
+    easeInQuad: function(t, x_min, dx) {
+        return dx * Math.pow(t, 2) + x_min;
+    },
+    easeOutQuad: function(t, x_min, dx) {
+        return -dx * t * (t - 2) + x_min;
+    },
+    easeInOutQuad: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * t * t + x_min;
+        return -dx / 2 * ((--t) * (t - 2) - 1) + x_min;
+    },
+    easeInCubic: function(t, x_min, dx) {
+        return dx * Math.pow(t, 3) + x_min;
+    },
+    easeOutCubic: function(t, x_min, dx) {
+        return dx * (Math.pow(t - 1, 3) + 1) + x_min;
+    },
+    easeInOutCubic: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * Math.pow(t, 3) + x_min;
+        return dx / 2 * (Math.pow(t - 2, 3) + 2) + x_min;
+    },
+    easeInQuart: function(t, x_min, dx) {
+        return dx * Math.pow(t, 4) + x_min;
+    },
+    easeOutQuart: function(t, x_min, dx) {
+        return -dx * (Math.pow(t - 1, 4) - 1) + x_min;
+    },
+    easeInOutQuart: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * Math.pow(t, 4) + x_min;
+        return -dx / 2 * (Math.pow(t - 2, 4) - 2) + x_min;
+    },
+    easeInQuint: function(t, x_min, dx) {
+        return dx * Math.pow(t, 5) + x_min;
+    },
+    easeOutQuint: function(t, x_min, dx) {
+        return dx * (Math.pow(t - 1, 5) + 1) + x_min;
+    },
+    easeInOutQuint: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * Math.pow(t, 5) + x_min;
+        return dx / 2 * (Math.pow(t - 2, 5) + 2) + x_min;
+    },
+    easeInSine: function(t, x_min, dx) {
+        return -dx * Math.cos(t * (Math.PI / 2)) + dx + x_min;
+    },
+    easeOutSine: function(t, x_min, dx) {
+        return dx * Math.sin(t * (Math.PI / 2)) + x_min;
+    },
+    easeInOutSine: function(t, x_min, dx) {
+        return -dx / 2 * (Math.cos(Math.PI * t) - 1) + x_min;
+    },
+    easeInExpo: function(t, x_min, dx) {
+        return (t == 0) ? x_min : dx * Math.pow(2, 10 * (t - 1)) + x_min;
+    },
+    easeOutExpo: function(t, x_min, dx) {
+        return (t == 1) ? x_min + dx : dx * (-Math.pow(2, -10 * t) + 1) + x_min;
+    },
+    easeInOutExpo: function(t, x_min, dx) {
+        if (t == 0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if ((t /= .5) < 1)
+            return dx / 2 * Math.pow(2, 10 * (t - 1)) + x_min;
+        return dx / 2 * (-Math.pow(2, -10 * --t) + 2) + x_min;
+    },
+    easeInCirc: function(t, x_min, dx) {
+        return -dx * (Math.sqrt(1 - t * t) - 1) + x_min;
+    },
+    easeOutCirc: function(t, x_min, dx) {
+        return dx * Math.sqrt(1 - (t -= 1) * t) + x_min;
+    },
+    easeInOutCirc: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return -dx / 2 * (Math.sqrt(1 - t * t) - 1) + x_min;
+        return dx / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + x_min;
+    },
+    easeInElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = .3,
+            a = dx;
+        if (t == 0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if (!a || a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else 
+            s = p / (2 * Math.PI) * Math.asin (dx / a);
+        return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p)) + x_min;
+    },
+    easeOutElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = .3,
+            a = dx;
+        if (t==0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if (a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else {
+            s = p / (2 * Math.PI) * Math.asin(dx / a);
+        }
+        return a * Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + dx + x_min;
+    },
+    easeInOutElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = 0,
+            a = dx;
+        if (t==0)
+            return x_min;
+        if ((t / 2) == 2)
+            return x_min + dx;
+        if (!p)
+            p = .3 * 1.5;
+        if (a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else {
+            s = p / (2 * Math.PI) * Math.asin(dx / a);
+        }
+        if (t < 1)
+            return -.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p)) + x_min;
+        return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p) * .5 + dx + x_min;
+    },
+    easeInBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        return dx * Math.pow(t, 2) * ((s + 1) * t - s) + x_min;
+    },
+    easeOutBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        return dx * ((t -= 1) * t * ((s + 1) * t + s) + 1) + x_min;
+    },
+    easeInOutBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        if ((t / 2) < 1)
+            return dx / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + x_min;
+        return dx / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + x_min;
+    },
+    easeInBounce: function(t, x_min, dx) {
+        return dx - apf.tween.easeOutBounce(1 - t, 0, dx) + x_min;
+    },
+    easeOutBounce: function(t, x_min, dx) {
+        if (t < (1 / 2.75))
+            return dx * (7.5625 * t * t) + x_min;
+        else if (t < (2 / 2.75))
+            return dx * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + x_min;
+        else if (t < (2.5 / 2.75))
+            return dx * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + x_min;
+        else
+            return dx * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + x_min;
+    },
+    easeInOutBounce: function(t, x_min, dx) {
+        if (t < 1 / 2)
+            return apf.tween.easeInBounce(t * 2, 0, dx) * .5 + x_min;
+        return apf.tween.easeOutBounce(t * 2 - 1, 0, dx) * .5 + dx * .5 + x_min;
+    },
 
     CSSTIMING: ["linear", "ease-in", "ease-out", "ease", "ease-in-out", "cubic-bezier"],
     CSSPROPS : {
@@ -141,8 +322,10 @@ apf.tween = {
         "scrollwidth" : false,
         "scrollheight": false,
         "fade"        : "opacity",
+        "opacity"     : "opacity",
         "bgcolor"     : "background-color",
-        "textcolor"   : "color"
+        "textcolor"   : "color",
+        "transform"   : "transform"
     },
 
     queue : {},
@@ -185,26 +368,35 @@ apf.tween = {
      * Calculates all the steps of an animation between a
      * begin and end value based on 3 tween strategies
      */
-    $calcSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var i, value;
-        var steps     = [fromValue]; //Compile steps
-        var step      = 0;
-        var scalex    = (toValue - fromValue) / ((Math.pow(nrOfSteps, 2)
-            + 2 * nrOfSteps + 1) / (4 * nrOfSteps));
+    $calcSteps : function(func, fromValue, toValue, nrOfSteps){
+        var value,
+            i      = 0,
+            l      = nrOfSteps - 1,
+            steps  = [fromValue];
 
-        for (i = 0; i < nrOfSteps; i++) {
-            if (!animtype && !value)
-                value = (toValue - fromValue) / nrOfSteps;
-            else if (animtype == 1)
-                value = scalex * Math.pow(((nrOfSteps - i)) / nrOfSteps, 3);
-            else if (animtype == 2)
-                value = scalex * Math.pow(i / nrOfSteps, 3);
-
-            steps.push(steps[steps.length - 1]
-                + value);// - (i == 0 ? 1 : 0));//Math.max(0, )
+        // backward compatibility...
+        if (typeof func == "number") {
+            if (!func)
+                func = apf.tween.linear;
+            else if (func == 1)
+                func = apf.tween.easeInCubic;
+            else if (func == 2)
+                func = apf.tween.easeOutCubic;
         }
-        steps[steps.length - 1] = toValue;// - 1;//Math.max(1, );
 
+        /*
+        func should have the following signature:
+        func(t, x_min, dx)
+        where 0 <= t <= 1, dx = x_max - x_min
+
+        easeInCubic: function(t, x_min, dx) {
+            return dx * pow(t, 3) + x_min;
+        }
+        */
+
+        for (i = 0; i < l; ++i)
+            steps.push(func(i / nrOfSteps, fromValue, toValue - fromValue));
+        steps.push(toValue);
         return steps;
     },
 
@@ -213,7 +405,8 @@ apf.tween = {
      * begin and end value for colors
      */
     $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var c = apf.color.colors,
+        var d2,
+            c = apf.color.colors,
             a = parseInt((c[fromValue]||fromValue).slice(1),16),
             b = parseInt((c[toValue]||toValue).slice(1),16),
             i = 0,
@@ -252,7 +445,10 @@ apf.tween = {
      * @param {Element}  oHtml the object to animate.
      * @param {Object}   info  the animation settings.
      *   Properties:
-     *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to apf.tween with the name of the property modifier. Default there are several handlers available.
+     *   {String}   type        the property to be animated. These are predefined
+     *                          property handlers and can be added by adding a
+     *                          method to apf.tween with the name of the property
+     *                          modifier. Default there are several handlers available.
      *      Possible values:
      *      left            Sets the left position
      *      right           Sets the right position
@@ -283,7 +479,7 @@ apf.tween = {
      *     {Boolean} stop       whether the animation should stop.
      */
     single : function(oHtml, info){
-        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
+        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
@@ -293,8 +489,12 @@ apf.tween = {
         if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
 
-        var useCSSAnim = (apf.supportCSSAnim && apf.tween.CSSPROPS[info.type]);
-        info.method = useCSSAnim ? info.type : apf.tween[info.type];
+        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && apf.tween.CSSPROPS[info.type]),
+            isTransform = (info.type == "transform");;
+
+        info.method = useCSSAnim ? info.type : isTransform
+            ? apf.tween["transform" + (info.subType || "scale")]
+            : apf.tween[info.type] || apf.tween.htmlcss;
 
         //#ifdef __DEBUG
         if (!info.method)
@@ -309,19 +509,34 @@ apf.tween = {
             if (type === false)
                 return this;
             info.type = type || info.type;
-            oHtml.style[info.type] = info.from + (apf.tween.needsPix[info.type] ? "px" : "");
+            if (isTransform) {
+                if (!info.subType)
+                    info.subType = "scale";
+                info.type = apf.supportCSSAnim;
+            }
+
+            var transform = (isTransform)
+                ? apf.tween["transformval" + (info.subType || "scale")]
+                : null;
+
+            oHtml.style[info.type] = isTransform
+                ? transform(info.from)
+                : info.from + (apf.tween.needsPix[info.type] ? "px" : "");
             $setTimeout(function() {
-                oHtml.style[info.type]       = info.to + (apf.tween.needsPix[info.type] ? "px" : "");
-                oHtml.style.webkitTransition = info.type + " " + ((info.steps
+                oHtml.style[info.type] = isTransform
+                    ? transform(info.to)
+                    : info.to + (apf.tween.needsPix[info.type] ? "px" : "");
+                oHtml.offsetTop; //force style recalc
+                oHtml.style[apf.cssPrefix + "Transition"] = info.type + " " + ((info.steps
                     * info.interval) / 1000) + "s "
                     + apf.tween.CSSTIMING[info.anim || 0];
                 var f = function() {
                     if (info.onfinish)
                         info.onfinish(oHtml, info.userdata);
-                    oHtml.style.webkitTransition = "";
-                    oHtml.removeEventListener('webkitTransitionEnd', f);
+                    oHtml.style[apf.cssPrefix + "Transition"] = "";
+                    oHtml.removeEventListener(apf.cssAnimEvent, f);
                 };
-                oHtml.addEventListener('webkitTransitionEnd', f);
+                oHtml.addEventListener(apf.cssAnimEvent, f);
             });
             return this;
         }
@@ -403,29 +618,38 @@ apf.tween = {
      *   Properties:
      *   {Number}   [steps]     the number of steps to divide the tween in
      *   {Number}   [interval]  the time between each step
-     *   {Number}   [anim]      the distribution of change between the step over the entire animation
+     *   {Number}   [anim]      the distribution of change between the step over
+     *                          the entire animation
      *   {Function} [onfinish]  a function that is called at the end of the animation
      *   {Function} [oneach]    a function that is called at each step of the animation
      *   {HTMLElement} [oHtml]  another html element to animate.
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
      *     {Boolean} stop       whether the animation should stop.
-     *   {Array}    [tweens]    a collection of simple objects specifying the single value animations that are to be executed simultaneously. (for the properties of these single tweens see the single tween method).
+     *   {Array}    [tweens]    a collection of simple objects specifying the single
+     *                          value animations that are to be executed simultaneously.
+     *                          (for the properties of these single tweens see the
+     *                          single tween method).
      */
     multi : function(oHtml, info){
-        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.NORMAL, control: {}}, info);
+        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
             oHtml = oHtml.$ext;
         }
 
-        var useCSSAnim  = apf.supportCSSAnim,
+        var animCSS, isTransform,
+            useCSSAnim  = apf.supportCSSAnim && apf.supportCSSTransition,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
-            cssAnim     = apf.tween.CSSTIMING[info.anim || 0];
+            cssAnim     = apf.tween.CSSTIMING[info.anim || 0],
+            steps       = [],
+            stepsTo     = [],
+            i           = 0,
+            l           = info.tweens.length;
 
-        for (var steps = [], stepsTo = [], i = 0; i < info.tweens.length; i++) {
+        for (; i < l; i++) {
             var data = info.tweens[i];
             
             if (data.oHtml && data.oHtml.nodeFunc > 100) {
@@ -433,11 +657,20 @@ apf.tween = {
                 data.oHtml = data.oHtml.$ext;
             }
 
-            useCSSAnim = (apf.supportCSSAnim && apf.tween.CSSPROPS[data.type]);
+            animCSS     = (useCSSAnim && apf.tween.CSSPROPS[data.type]);
+            isTransform = (data.type == "transform");
+            if (isTransform) {
+                if (!data.subType)
+                    data.subType = "scale";
+                data.type = apf.supportCSSAnim;
+            }
 
-            data.method = useCSSAnim
+            data.method = animCSS
                 ? data.type
-                : apf.tween[data.type] || apf.tween.htmlcss;
+                : isTransform
+                    ? apf.tween["transform" + (data.subType)]
+                    : apf.tween[data.type] || apf.tween.htmlcss;
+            
 
             //#ifdef __DEBUG
             if (!data.method)
@@ -447,14 +680,17 @@ apf.tween = {
                     + data.type + "'"));
             //#endif
 
-            if (useCSSAnim) {
-                var type = apf.tween.CSSPROPS[data.type];
+            if (animCSS) {
+                var type = isTransform ? data.type : apf.tween.CSSPROPS[data.type];
                 data.type = type || data.type;
+                var transform = apf.tween["transformval" + (data.subType)]
 
-                oHtml.style[data.type] = data.from
-                    + (apf.tween.needsPix[data.type] ? "px" : "");
-                stepsTo.push([data.type, data.to
-                    + (apf.tween.needsPix[data.type] ? "px" : "")]);
+                oHtml.style[data.type] = isTransform
+                    ? transform(data.from) 
+                    : data.from + (apf.tween.needsPix[data.type] ? "px" : "");
+                stepsTo.push([data.type, isTransform
+                    ? transform(data.to)
+                    : data.to + (apf.tween.needsPix[data.type] ? "px" : "")]);
                 steps.push(data.type + " " + cssDuration + "s " + cssAnim + " 0");
 
                 hasCSSAnims = true;
@@ -467,21 +703,21 @@ apf.tween = {
         }
 
         if (hasCSSAnims) {
-            oHtml.style.webkitTransition = steps.join(',');
+            oHtml.style[apf.cssPrefix + "Transition"] = steps.join(",");
+            oHtml.offsetTop; //force style recalc
             var count = 0,
                 f     = function() {
                     count++;
                     if (count == stepsTo.length) {
                         if (info.onfinish)
                             info.onfinish(oHtml, info.userdata);
-                        oHtml.style.webkitTransition = "";
-                        oHtml.removeEventListener('webkitTransitionEnd', f);
+                        oHtml.style[apf.cssPrefix + "Transition"] = "";
+                        oHtml.removeEventListener(apf.cssAnimEvent, f);
                     }
                 };
-            oHtml.addEventListener('webkitTransitionEnd', f);
+            oHtml.addEventListener(apf.cssAnimEvent, f, false);
             for (var k = 0, j = stepsTo.length; k < j; k++)
                 oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
-            // from here on, webkit will do the rest for us...
             return this;
         }
 
@@ -586,7 +822,7 @@ apf.tween = {
             for (j = rules.length - 1; j >= 0; j--) {
                 var rule = rules[j];
 
-                if (!rule.style || !rule.selectorText.match('\.' + className + '$'))
+                if (!rule.style || !rule.selectorText.match("\." + className + "$"))
                     continue;
 
                 for (style in rule.style) {
@@ -655,13 +891,15 @@ apf.tween = {
         "textIndent" : true
     },
 
-    cssProps : "|backgroundColor|backgroundPosition|color|width|filter|\
-                |height|left|top|bottom|right|fontSize|\
-                |letterSpacing|lineHeight|textIndent|opacity|\
-                |paddingLeft|paddingTop|paddingRight|paddingBottom|\
-                |borderLeftWidth|borderTopWidth|borderRightWidth|borderBottomWidth|\
-                |borderLeftColor|borderTopColor|borderRightColor|borderBottomColor|\
-                |marginLeft|marginTop|marginRight|marginBottom|"
+    cssProps : "|backgroundColor|backgroundPosition|color|width|filter"
+             + "|height|left|top|bottom|right|fontSize"
+             + "|letterSpacing|lineHeight|textIndent|opacity"
+             + "|paddingLeft|paddingTop|paddingRight|paddingBottom"
+             + "|borderLeftWidth|borderTopWidth|borderRightWidth|borderBottomWidth"
+             + "|borderLeftColor|borderTopColor|borderRightColor|borderBottomColor"
+             + "|marginLeft|marginTop|marginRight|marginBottom"
+             + "|transform|", // transforms are special and get special treatment
+    cssTransforms: "|scale|rotate|"
 };
 
 // #endif

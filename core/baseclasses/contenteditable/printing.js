@@ -53,7 +53,7 @@ apf.ContentEditable.plugin("preview", function(){
 
     this.execute = function(editor) {
         if (apf.printer)
-            apf.printer.preview(editor.getValue());
+            apf.printer.preview(editor.getValue()).show();
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

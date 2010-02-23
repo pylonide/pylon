@@ -25,20 +25,27 @@
  * @private
  */
 apf.printer = {
-    tagName  : "printer",
-    nodeFunc : apf.NODE_HIDDEN,
-    
+    tagName     : "printer",
+    nodeFunc    : apf.NODE_HIDDEN,
     lastContent : "",
     inited      : false,
+    panel       : null,
     
     init : function(aml){
+        if (this.inited) return this;
+        
         this.inited = true;
-        this.$aml    = aml;
+        this.$aml   = aml;
         
-        this.contentShower = document.body.appendChild(document.createElement("DIV"));
-        this.contentShower.id = "print_content"
-        
-        with (this.contentShower.style) {
+        this.panel = document.body.appendChild(document.createElement("div"));
+        this.panel.id = "print_content";
+        this.panel.onmousedown = function(){
+            apf.printer.hide();
+        };
+        with (this.panel.style) {
+            position        = "absolute";
+            top             = "0";
+            left            = "0";
             width           = "100%";
             height          = "100%";
             backgroundColor = "white";
@@ -46,10 +53,10 @@ apf.printer = {
         }
         
         apf.importCssString("#print_content{display:none}");
-        apf.importCssString((apf.hasCSSChildOfSelector
+        apf.importCssString(apf.hasCSSChildOfSelector
           ? "body #print_content{display:block} body>*{display:none}"
-          : "body #print_content, body #print_content *{display:block} body *{display:none}")
-            , "print");
+          : "body #print_content, body #print_content *{display:block} body *{display:none}",
+          document, "print");
 
         //body #print_content, body #print_content *{display:block} 
         
@@ -104,17 +111,35 @@ apf.printer = {
             // #endif
             apf.dispatchEvent("afterprint");
         };
+
+        return this;
     },
     
-    preview : function(strHtml){
-        if (!this.inited)
-            this.init();
+    preview : function(strHtml, show){
+        this.init();
         
         if (typeof strHtml != "string")
             strHtml = strHtml.outerHTML || strHtml.xml || strHtml.serialize();
         
         this.lastContent = strHtml;
-        this.contentShower.innerHTML = strHtml;
+        this.panel.innerHTML = strHtml;
+
+        if (show)
+            this.show();
+
+        return this;
+    },
+
+    show : function() {
+        if (!this.inited) return this;
+        this.panel.style.display = "block";
+        return this;
+    },
+
+    hide : function() {
+        if (!this.inited) return this;
+        this.panel.style.display = "none";
+        return this;
     }
 };
 
@@ -123,11 +148,8 @@ apf.printer = {
  * @param {String} strHtml the html to be printed.
  */
 apf.print = function(strHtml){
-    if (!apf.printer.inited)
-        apf.printer.init();
-    
-    apf.printer.preview(strHtml);
+    apf.printer.init().preview(strHtml);
     window.print();
-}
+};
 
 // #endif

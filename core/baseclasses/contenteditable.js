@@ -1629,7 +1629,7 @@ apf.ContentEditable = function() {
 
     this.edit = function(xmlNode, value) {
         this.$executeSingleValue("edit", "edit", xmlNode, value);
-    }
+    };
 };
 
 apf.ON       = 1;

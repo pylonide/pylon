@@ -265,7 +265,7 @@ apf.getPositionedParent = function(o){
 /**
  * Retrieves the absolute x and y coordinates, relative to the browsers
  * drawing area or the specified refParent.
- * @param {HTMLElement} oHtml       the element to check
+ * @param {HTMLElement} o           the element to check
  * @param {HTMLElement} [refParent] the reference parent
  * @param {Boolean}     [inclSelf]  whether to include the position of the element to check in the return value.
  * @returns {Array} the x and y coordinate of oHtml.
