@@ -25,27 +25,29 @@
  * The animation library that is used for the animations inside elements
  * @default_private
  */
-apf.tween = {
-    //Animation Modules
+apf.tween = (function(apf) {
+
+var modules = {
+        //Animation Modules
     left: function(oHtml, value){
-        oHtml.style.left = value + "px";
+        oHtml.style.left = value + PX;
     },
     right: function(oHtml, value){
         oHtml.style.left  = "";
-        oHtml.style.right = value + "px";
+        oHtml.style.right = value + PX;
     },
     top: function(oHtml, value){
-        oHtml.style.top = value + "px";
+        oHtml.style.top = value + PX;
     },
     bottom: function(oHtml, value){
         oHtml.style.top    = "";
-        oHtml.style.bottom = value + "px";
+        oHtml.style.bottom = value + PX;
     },
     width: function(oHtml, value, center){
-        oHtml.style.width = value + "px";
+        oHtml.style.width = value + PX;
     },
     height: function(oHtml, value, center){
-        oHtml.style.height = value + "px";
+        oHtml.style.height = value + PX;
     },
     scrollTop: function(oHtml, value, center){
         oHtml.scrollTop = value;
@@ -54,29 +56,29 @@ apf.tween = {
         oHtml.scrollLeft = value;
     },
     "height-rsz": function(oHtml, value, center){
-        oHtml.style.height = value + "px";
+        oHtml.style.height = value + PX;
         if (apf.hasSingleResizeEvent)
             window.onresize();
     },
     mwidth: function(oHtml, value, info) {
         var diff = apf.getDiff(oHtml);
-        oHtml.style.width = value + "px";
+        oHtml.style.width = value + PX;
         oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(apf.getStyle(oHtml,
-            "borderLeftWidth")) || diff[0]/2) + (info.margin || 0)) + "px";
+            "borderLeftWidth")) || diff[0]/2) + (info.margin || 0)) + PX;
     },
     mheight: function(oHtml, value, info) {
         var diff = apf.getDiff(oHtml);
-        oHtml.style.height = value + "px";
+        oHtml.style.height = value + PX;
         oHtml.style.marginTop = (-1 * value / 2 - (parseInt(apf.getStyle(oHtml,
-            "borderTopWidth")) || diff[1]/2) + (info.margin || 0)) + "px";
+            "borderTopWidth")) || diff[1]/2) + (info.margin || 0)) + PX;
     },
     scrollwidth: function(oHtml, value){
-        oHtml.style.width = value + "px";
+        oHtml.style.width = value + PX;
         oHtml.scrollLeft  = oHtml.scrollWidth;
     },
     scrollheight_old: function(oHtml, value){
         try {
-            oHtml.style.height = value + "px";
+            oHtml.style.height = value + PX;
             oHtml.scrollTop    = oHtml.scrollHeight;
         }
         catch (e) {
@@ -86,18 +88,18 @@ apf.tween = {
     scrollheight: function(oHtml, value, info){
         var diff = apf.getHeightDiff(oHtml),
             oInt = info.$int || oHtml;
-            
-        oHtml.style.height = Math.max((value + (info.diff || 0)), 0) + "px";
+
+        oHtml.style.height = Math.max((value + (info.diff || 0)), 0) + PX;
         oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff + (info.diff || 0);
     },
     scrolltop: function(oHtml, value){
-        oHtml.style.height = value + "px";
-        oHtml.style.top    = (-1 * value - 2) + "px";
+        oHtml.style.height = value + PX;
+        oHtml.style.top    = (-1 * value - 2) + PX;
         oHtml.scrollTop    = 0;//oHtml.scrollHeight - oHtml.offsetHeight;
     },
     clipright: function(oHtml, value, center){
         oHtml.style.clip       = "rect(auto, auto, auto, " + value + "px)";
-        oHtml.style.marginLeft = (-1 * value) + "px";
+        oHtml.style.marginLeft = (-1 * value) + PX;
     },
     fade: function(oHtml, value){
         if (apf.hasStyleFilters)
@@ -116,199 +118,34 @@ apf.tween = {
         if (apf.hasStyleFilters && obj.type == "filter")
             oHtml.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
         else
-            oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
+            oHtml.style[obj.type] = value + (obj.needsPx ? PX : "");
     },
     transformscale: function(oHtml, value, obj) {
-        oHtml.style[obj.type] = "scale(" + parseFloat(value) + ")";
+        oHtml.style[obj.type] = SCALEA + parseFloat(value) + SCALEB;
     },
     transformrotate: function(oHtml, value, obj) {
-        oHtml.style[obj.type] = "rotate(" + parseFloat(value) + "deg)";
+        oHtml.style[obj.type] = ROTATEA + parseFloat(value) + ROTATEB;
     },
     transformvalscale: function(value) {
-        return "scale(" + parseFloat(value) + ")";
+        return SCALEA + parseFloat(value) + SCALEB;
     },
     transformvalrotate: function(value) {
-        return "rotate(" + parseFloat(value) + "deg)";
-    },
+        return ROTATEA + parseFloat(value) + ROTATEB;
+    }
+};
 
-    /** Linear tweening method */
-    NORMAL: 0,
-    /** Ease-in tweening method */
-    EASEIN: 1,
-    /** Ease-out tweening method */
-    EASEOUT: 2,
-
-    linear: function(t, x_min, dx) {
-        return dx * t + x_min;
-    },
-    easeInQuad: function(t, x_min, dx) {
-        return dx * Math.pow(t, 2) + x_min;
-    },
-    easeOutQuad: function(t, x_min, dx) {
-        return -dx * t * (t - 2) + x_min;
-    },
-    easeInOutQuad: function(t, x_min, dx) {
-        if ((t /= .5) < 1)
-            return dx / 2 * t * t + x_min;
-        return -dx / 2 * ((--t) * (t - 2) - 1) + x_min;
-    },
-    easeInCubic: function(t, x_min, dx) {
-        return dx * Math.pow(t, 3) + x_min;
-    },
-    easeOutCubic: function(t, x_min, dx) {
-        return dx * (Math.pow(t - 1, 3) + 1) + x_min;
-    },
-    easeInOutCubic: function(t, x_min, dx) {
-        if ((t /= .5) < 1)
-            return dx / 2 * Math.pow(t, 3) + x_min;
-        return dx / 2 * (Math.pow(t - 2, 3) + 2) + x_min;
-    },
-    easeInQuart: function(t, x_min, dx) {
-        return dx * Math.pow(t, 4) + x_min;
-    },
-    easeOutQuart: function(t, x_min, dx) {
-        return -dx * (Math.pow(t - 1, 4) - 1) + x_min;
-    },
-    easeInOutQuart: function(t, x_min, dx) {
-        if ((t /= .5) < 1)
-            return dx / 2 * Math.pow(t, 4) + x_min;
-        return -dx / 2 * (Math.pow(t - 2, 4) - 2) + x_min;
-    },
-    easeInQuint: function(t, x_min, dx) {
-        return dx * Math.pow(t, 5) + x_min;
-    },
-    easeOutQuint: function(t, x_min, dx) {
-        return dx * (Math.pow(t - 1, 5) + 1) + x_min;
-    },
-    easeInOutQuint: function(t, x_min, dx) {
-        if ((t /= .5) < 1)
-            return dx / 2 * Math.pow(t, 5) + x_min;
-        return dx / 2 * (Math.pow(t - 2, 5) + 2) + x_min;
-    },
-    easeInSine: function(t, x_min, dx) {
-        return -dx * Math.cos(t * (Math.PI / 2)) + dx + x_min;
-    },
-    easeOutSine: function(t, x_min, dx) {
-        return dx * Math.sin(t * (Math.PI / 2)) + x_min;
-    },
-    easeInOutSine: function(t, x_min, dx) {
-        return -dx / 2 * (Math.cos(Math.PI * t) - 1) + x_min;
-    },
-    easeInExpo: function(t, x_min, dx) {
-        return (t == 0) ? x_min : dx * Math.pow(2, 10 * (t - 1)) + x_min;
-    },
-    easeOutExpo: function(t, x_min, dx) {
-        return (t == 1) ? x_min + dx : dx * (-Math.pow(2, -10 * t) + 1) + x_min;
-    },
-    easeInOutExpo: function(t, x_min, dx) {
-        if (t == 0)
-            return x_min;
-        if (t == 1)
-            return x_min + dx;
-        if ((t /= .5) < 1)
-            return dx / 2 * Math.pow(2, 10 * (t - 1)) + x_min;
-        return dx / 2 * (-Math.pow(2, -10 * --t) + 2) + x_min;
-    },
-    easeInCirc: function(t, x_min, dx) {
-        return -dx * (Math.sqrt(1 - t * t) - 1) + x_min;
-    },
-    easeOutCirc: function(t, x_min, dx) {
-        return dx * Math.sqrt(1 - (t -= 1) * t) + x_min;
-    },
-    easeInOutCirc: function(t, x_min, dx) {
-        if ((t /= .5) < 1)
-            return -dx / 2 * (Math.sqrt(1 - t * t) - 1) + x_min;
-        return dx / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + x_min;
-    },
-    easeInElastic: function(t, x_min, dx) {
-        var s = 1.70158,
-            p = .3,
-            a = dx;
-        if (t == 0)
-            return x_min;
-        if (t == 1)
-            return x_min + dx;
-        if (!a || a < Math.abs(dx)) {
-            a = dx;
-            s = p / 4;
-        }
-        else 
-            s = p / (2 * Math.PI) * Math.asin (dx / a);
-        return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p)) + x_min;
-    },
-    easeOutElastic: function(t, x_min, dx) {
-        var s = 1.70158,
-            p = .3,
-            a = dx;
-        if (t==0)
-            return x_min;
-        if (t == 1)
-            return x_min + dx;
-        if (a < Math.abs(dx)) {
-            a = dx;
-            s = p / 4;
-        }
-        else {
-            s = p / (2 * Math.PI) * Math.asin(dx / a);
-        }
-        return a * Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + dx + x_min;
-    },
-    easeInOutElastic: function(t, x_min, dx) {
-        var s = 1.70158,
-            p = 0,
-            a = dx;
-        if (t==0)
-            return x_min;
-        if ((t / 2) == 2)
-            return x_min + dx;
-        if (!p)
-            p = .3 * 1.5;
-        if (a < Math.abs(dx)) {
-            a = dx;
-            s = p / 4;
-        }
-        else {
-            s = p / (2 * Math.PI) * Math.asin(dx / a);
-        }
-        if (t < 1)
-            return -.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p)) + x_min;
-        return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p) * .5 + dx + x_min;
-    },
-    easeInBack: function(t, x_min, dx) {
-        var s = 1.70158;
-        return dx * Math.pow(t, 2) * ((s + 1) * t - s) + x_min;
-    },
-    easeOutBack: function(t, x_min, dx) {
-        var s = 1.70158;
-        return dx * ((t -= 1) * t * ((s + 1) * t + s) + 1) + x_min;
-    },
-    easeInOutBack: function(t, x_min, dx) {
-        var s = 1.70158;
-        if ((t / 2) < 1)
-            return dx / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + x_min;
-        return dx / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + x_min;
-    },
-    easeInBounce: function(t, x_min, dx) {
-        return dx - apf.tween.easeOutBounce(1 - t, 0, dx) + x_min;
-    },
-    easeOutBounce: function(t, x_min, dx) {
-        if (t < (1 / 2.75))
-            return dx * (7.5625 * t * t) + x_min;
-        else if (t < (2 / 2.75))
-            return dx * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + x_min;
-        else if (t < (2.5 / 2.75))
-            return dx * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + x_min;
-        else
-            return dx * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + x_min;
-    },
-    easeInOutBounce: function(t, x_min, dx) {
-        if (t < 1 / 2)
-            return apf.tween.easeInBounce(t * 2, 0, dx) * .5 + x_min;
-        return apf.tween.easeOutBounce(t * 2 - 1, 0, dx) * .5 + dx * .5 + x_min;
-    },
-
-    CSSTIMING: ["linear", "ease-in", "ease-out", "ease", "ease-in-out", "cubic-bezier"],
-    CSSPROPS : {
+var ID        = "id",
+    PX        = "px",
+    NUM       = "number",
+    TRANSVAL  = "transformval",
+    TRANSFORM = "transform",
+    SCALE     = "scale",
+    SCALEA    = "scale(",
+    ROTATEA   = "rotate(",
+    SCALEB    = ")",
+    ROTATEB   = "deg)",
+    CSSTIMING = ["linear", "ease-in", "ease-out", "ease", "ease-in-out", "cubic-bezier"],
+    CSSPROPS  = {
         "left"        : "left",
         "right"       : "right",
         "top"         : "top",
@@ -327,26 +164,28 @@ apf.tween = {
         "textcolor"   : "color",
         "transform"   : "transform"
     },
+    __pow   = Math.pow,
+    __round = Math.round,
 
-    queue : {},
+    queue = {},
 
-    current: null,
+    current= null,
 
-    setQueue : function(oHtml, stepFunction){
-        if (!oHtml.getAttribute("id"))
+    setQueue = function(oHtml, stepFunction){
+        if (!oHtml.getAttribute(ID))
             apf.setUniqueHtmlId(oHtml);
 
-        if (!this.queue[oHtml.getAttribute("id")])
-            this.queue[oHtml.getAttribute("id")] = [];
+        if (!queue[oHtml.getAttribute(ID)])
+            queue[oHtml.getAttribute(ID)] = [];
 
-        this.queue[oHtml.getAttribute("id")].push(stepFunction);
+        queue[oHtml.getAttribute(ID)].push(stepFunction);
 
-        if (this.queue[oHtml.getAttribute("id")].length == 1)
+        if (queue[oHtml.getAttribute(ID)].length == 1)
             stepFunction(0);
     },
 
-    nextQueue : function(oHtml){
-        var q = this.queue[oHtml.getAttribute("id")];
+    nextQueue = function(oHtml){
+        var q = queue[oHtml.getAttribute(ID)];
         if (!q) return;
 
         q.shift(); //Remove current step function
@@ -355,12 +194,12 @@ apf.tween = {
             q[0](0);
     },
 
-    clearQueue : function(oHtml, bStop){
-        var q = this.queue[oHtml.getAttribute("id")];
+    clearQueue = function(oHtml, bStop){
+        var q = queue[oHtml.getAttribute(ID)];
         if (!q) return;
 
-        if (bStop && this.current && this.current.control)
-            this.current.control.stop = true;
+        if (bStop && current && current.control)
+            current.control.stop = true;
         q.length = 0;
     },
 
@@ -368,14 +207,13 @@ apf.tween = {
      * Calculates all the steps of an animation between a
      * begin and end value based on 3 tween strategies
      */
-    $calcSteps : function(func, fromValue, toValue, nrOfSteps){
-        var value,
-            i      = 0,
-            l      = nrOfSteps - 1,
-            steps  = [fromValue];
+    calcSteps = function(func, fromValue, toValue, nrOfSteps){
+        var i     = 0,
+            l     = nrOfSteps - 1,
+            steps = [fromValue];
 
         // backward compatibility...
-        if (typeof func == "number") {
+        if (typeof func == NUM) {
             if (!func)
                 func = apf.tween.linear;
             else if (func == 1)
@@ -393,7 +231,6 @@ apf.tween = {
             return dx * pow(t, 3) + x_min;
         }
         */
-
         for (i = 0; i < l; ++i)
             steps.push(func(i / nrOfSteps, fromValue, toValue - fromValue));
         steps.push(toValue);
@@ -404,23 +241,22 @@ apf.tween = {
      * Calculates all the steps of an animation between a
      * begin and end value for colors
      */
-    $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
-        var d2,
-            c = apf.color.colors,
-            a = parseInt((c[fromValue]||fromValue).slice(1),16),
-            b = parseInt((c[toValue]||toValue).slice(1),16),
-            i = 0,
-            __round = Math.round,
-            out = [], d1;
-            
+    calcColorSteps = function(animtype, fromValue, toValue, nrOfSteps){
+        var d2, d1,
+            c   = apf.color.colors,
+            a   = parseInt((c[fromValue] || fromValue).slice(1), 16),
+            b   = parseInt((c[toValue] || toValue).slice(1), 16),
+            i   = 0,
+            out = [];
+
         for (; i < nrOfSteps; i++){
-            d1 = i / (nrOfSteps - 1), d2 = 1-d1;
-            out[out.length] = "#" + ("000000"+
-                ((__round((a&0xff)*d2+(b&0xff)*d1)&0xff)|
-                (__round((a&0xff00)*d2+(b&0xff00)*d1)&0xff00)|
-                (__round((a&0xff0000)*d2+(b&0xff0000)*d1)&0xff0000)).toString(16)).slice(-6);
+            d1 = i / (nrOfSteps - 1), d2 = 1 - d1;
+            out[out.length] = "#" + ("000000" +
+                ((__round((a & 0xff) * d2 + (b & 0xff) * d1) & 0xff) |
+                (__round((a & 0xff00) * d2 + (b & 0xff00) * d1) & 0xff00) |
+                (__round((a & 0xff0000) * d2 + (b & 0xff0000) * d1) & 0xff0000)).toString(16)).slice(-6);
         }
-        
+
         return out;
     },
 
@@ -478,23 +314,23 @@ apf.tween = {
      *     Properties:
      *     {Boolean} stop       whether the animation should stop.
      */
-    single : function(oHtml, info){
+    single = function(oHtml, info){
         info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
-            oHtml = oHtml.$ext;
+            oHtml     = oHtml.$ext;
         }
 
         if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
 
-        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && apf.tween.CSSPROPS[info.type]),
-            isTransform = (info.type == "transform");;
+        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
+            isTransform = (info.type == TRANSFORM);
 
         info.method = useCSSAnim ? info.type : isTransform
-            ? apf.tween["transform" + (info.subType || "scale")]
-            : apf.tween[info.type] || apf.tween.htmlcss;
+            ? modules[TRANSFORM + (info.subType || SCALE)]
+            : modules[info.type] || modules.htmlcss;
 
         //#ifdef __DEBUG
         if (!info.method)
@@ -505,31 +341,31 @@ apf.tween = {
         //#endif
 
         if (useCSSAnim) {
-            var type = apf.tween.CSSPROPS[info.type];
+            var type = CSSPROPS[info.type];
             if (type === false)
-                return this;
+                return apf.tween;
             info.type = type || info.type;
             if (isTransform) {
                 if (!info.subType)
-                    info.subType = "scale";
+                    info.subType = SCALE;
                 info.type = apf.supportCSSAnim;
             }
 
             var transform = (isTransform)
-                ? apf.tween["transformval" + (info.subType || "scale")]
+                ? modules[TRANSVAL + (info.subType || SCALE)]
                 : null;
 
             oHtml.style[info.type] = isTransform
                 ? transform(info.from)
-                : info.from + (apf.tween.needsPix[info.type] ? "px" : "");
+                : info.from + (needsPix[info.type] ? PX : "");
             $setTimeout(function() {
                 oHtml.style[info.type] = isTransform
                     ? transform(info.to)
-                    : info.to + (apf.tween.needsPix[info.type] ? "px" : "");
+                    : info.to + (needsPix[info.type] ? PX : "");
                 oHtml.offsetTop; //force style recalc
                 oHtml.style[apf.cssPrefix + "Transition"] = info.type + " " + ((info.steps
                     * info.interval) / 1000) + "s "
-                    + apf.tween.CSSTIMING[info.anim || 0];
+                    + CSSTIMING[info.anim || 0];
                 var f = function() {
                     if (info.onfinish)
                         info.onfinish(oHtml, info.userdata);
@@ -538,20 +374,18 @@ apf.tween = {
                 };
                 oHtml.addEventListener(apf.cssAnimEvent, f);
             });
-            return this;
+            return apf.tween;
         }
 
-        var timer,
-            steps        = info.color
-                ? apf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
-                : apf.tween.$calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
-            _self        = this,
+        var steps = info.color
+                ? calcColorSteps(info.anim, info.from, info.to, info.steps)
+                : calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
             stepFunction = function(step){
-                _self.current = info;
+                current = info;
                 if (info.control && info.control.stop) {
                     info.control.stop = false;
 
-                    apf.tween.clearQueue(oHtml);
+                    clearQueue(oHtml);
                     if (info.onstop)
                         info.onstop(oHtml, info.userdata);
                     return;
@@ -570,21 +404,20 @@ apf.tween = {
                     info.oneach(oHtml, info.userdata);
 
                 if (step < info.steps)
-                    timer = $setTimeout(function(){stepFunction(step + 1)}, info.interval);
-                else {
-                    _self.current = null;
-                    if (info.control)
-                        info.control.stopped = true;
-                    if (info.onfinish)
-                        info.onfinish(oHtml, info.userdata);
+                    return $setTimeout(function(){stepFunction(step + 1)}, info.interval);
 
-                    apf.tween.nextQueue(oHtml);
-                }
+                current = null;
+                if (info.control)
+                    info.control.stopped = true;
+                if (info.onfinish)
+                    info.onfinish(oHtml, info.userdata);
+
+                nextQueue(oHtml);
             };
 
-        this.setQueue(oHtml, stepFunction);
+        setQueue(oHtml, stepFunction);
 
-        return this;
+        return apf.tween;
     },
 
     /**
@@ -631,7 +464,7 @@ apf.tween = {
      *                          (for the properties of these single tweens see the
      *                          single tween method).
      */
-    multi : function(oHtml, info){
+    multi = function(oHtml, info){
         info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
 
         if (oHtml.nodeFunc > 100) {
@@ -643,7 +476,7 @@ apf.tween = {
             useCSSAnim  = apf.supportCSSAnim && apf.supportCSSTransition,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
-            cssAnim     = apf.tween.CSSTIMING[info.anim || 0],
+            cssAnim     = CSSTIMING[info.anim || 0],
             steps       = [],
             stepsTo     = [],
             i           = 0,
@@ -651,26 +484,26 @@ apf.tween = {
 
         for (; i < l; i++) {
             var data = info.tweens[i];
-            
+
             if (data.oHtml && data.oHtml.nodeFunc > 100) {
-                data.$int = data.oHtml.$int;
+                data.$int  = data.oHtml.$int;
                 data.oHtml = data.oHtml.$ext;
             }
 
-            animCSS     = (useCSSAnim && apf.tween.CSSPROPS[data.type]);
-            isTransform = (data.type == "transform");
+            animCSS     = (useCSSAnim && CSSPROPS[data.type]);
+            isTransform = (data.type == TRANSFORM);
             if (isTransform) {
                 if (!data.subType)
-                    data.subType = "scale";
+                    data.subType = SCALE;
                 data.type = apf.supportCSSAnim;
             }
 
             data.method = animCSS
                 ? data.type
                 : isTransform
-                    ? apf.tween["transform" + (data.subType)]
-                    : apf.tween[data.type] || apf.tween.htmlcss;
-            
+                    ? modules[TRANSFORM + (data.subType)]
+                    : modules[data.type] || modules.htmlcss;
+
 
             //#ifdef __DEBUG
             if (!data.method)
@@ -681,24 +514,24 @@ apf.tween = {
             //#endif
 
             if (animCSS) {
-                var type = isTransform ? data.type : apf.tween.CSSPROPS[data.type];
+                var type = isTransform ? data.type : CSSPROPS[data.type];
                 data.type = type || data.type;
-                var transform = apf.tween["transformval" + (data.subType)]
+                var transform = modules[TRANSVAL + (data.subType)]
 
                 oHtml.style[data.type] = isTransform
-                    ? transform(data.from) 
-                    : data.from + (apf.tween.needsPix[data.type] ? "px" : "");
+                    ? transform(data.from)
+                    : data.from + (needsPix[data.type] ? PX : "");
                 stepsTo.push([data.type, isTransform
                     ? transform(data.to)
-                    : data.to + (apf.tween.needsPix[data.type] ? "px" : "")]);
+                    : data.to + (needsPix[data.type] ? PX : "")]);
                 steps.push(data.type + " " + cssDuration + "s " + cssAnim + " 0");
 
                 hasCSSAnims = true;
             }
             else {
                 steps.push(data.color
-                    ? apf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
-                    : apf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
+                    ? calcColorSteps(info.anim, data.from, data.to, info.steps)
+                    : calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
             }
         }
 
@@ -706,29 +539,27 @@ apf.tween = {
             oHtml.style[apf.cssPrefix + "Transition"] = steps.join(",");
             oHtml.offsetTop; //force style recalc
             var count = 0,
-                f     = function() {
+                func  = function() {
                     count++;
                     if (count == stepsTo.length) {
                         if (info.onfinish)
                             info.onfinish(oHtml, info.userdata);
                         oHtml.style[apf.cssPrefix + "Transition"] = "";
-                        oHtml.removeEventListener(apf.cssAnimEvent, f);
+                        oHtml.removeEventListener(apf.cssAnimEvent, func);
                     }
                 };
-            oHtml.addEventListener(apf.cssAnimEvent, f, false);
+            oHtml.addEventListener(apf.cssAnimEvent, func, false);
             for (var k = 0, j = stepsTo.length; k < j; k++)
                 oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
-            return this;
+            return apf.tween;
         }
 
-        var timer,
-            tweens       = info.tweens,
-            _self        = this,
+        var tweens       = info.tweens,
             stepFunction = function(step){
-                _self.current = info;
+                current = info;
                 if (info.control && info.control.stop) {
                     info.control.stop = false;
-                    apf.tween.clearQueue(oHtml);
+                    clearQueue(oHtml);
                     if (info.onstop)
                         info.onstop(oHtml, info.userdata);
                     return;
@@ -745,21 +576,20 @@ apf.tween = {
                     info.oneach(oHtml, info.userdata);
 
                 if (step < info.steps)
-                    timer = $setTimeout(function(){stepFunction(step + 1)}, info.interval);
-                else {
-                    _self.current = null;
-                    if (info.control)
-                        info.control.stopped = true;
-                    if (info.onfinish)
-                        info.onfinish(oHtml, info.userdata);
+                    return $setTimeout(function(){stepFunction(step + 1)}, info.interval);
 
-                    apf.tween.nextQueue(oHtml);
-                }
+                current = null;
+                if (info.control)
+                    info.control.stopped = true;
+                if (info.onfinish)
+                    info.onfinish(oHtml, info.userdata);
+
+                nextQueue(oHtml);
             };
 
-        this.setQueue(oHtml, stepFunction);
+        setQueue(oHtml, stepFunction);
 
-        return this;
+        return apf.tween;
     },
 
     /**
@@ -784,7 +614,7 @@ apf.tween = {
      *     {Boolean} stop       whether the animation should stop.
      * @param {Boolean} remove whether the class is set or removed from the element or html element
      */
-    css : function(oHtml, className, info, remove){
+    css = function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];
 
         if (oHtml.nodeFunc > 100)
@@ -811,12 +641,13 @@ apf.tween = {
                 callback.apply(this, arguments);
         }
 
-        var onfinish  = info.onfinish;
-        var onstop    = info.onstop;
+        var onfinish  = info.onfinish,
+            onstop    = info.onstop;
         info.onfinish = function(){resetAnim(remove, onfinish);}
         info.onstop   = function(){resetAnim(!remove, onstop);}
 
-        var result, newvalue, curvalue, j, isColor, style, rules, i, tweens = {};
+        var result, newvalue, curvalue, j, isColor, style, rules, i,
+            tweens = {};
         for (i = 0; i < document.styleSheets.length; i++) {
             rules = document.styleSheets[i][apf.styleSheetRules];
             for (j = rules.length - 1; j >= 0; j--) {
@@ -826,7 +657,7 @@ apf.tween = {
                     continue;
 
                 for (style in rule.style) {
-                    if (!rule.style[style] || this.cssProps.indexOf("|" + style + "|") == -1)
+                    if (!rule.style[style] || cssProps.indexOf("|" + style + "|") == -1)
                         continue;
 
                     if (style == "filter") {
@@ -860,26 +691,26 @@ apf.tween = {
                                     ? curvalue
                                     : newvalue),
                         color   : isColor,
-                        needsPx : apf.tween.needsPix[style.toLowerCase()] || false
+                        needsPx : needsPix[style.toLowerCase()] || false
                     };
                 }
             }
         }
-        
+
         for (var prop in tweens)
             info.tweens.push(tweens[prop]);
 
         if (remove)
             apf.setStyleClass(oHtml, className);
 
-        return this.multi(oHtml, info);
-    },
-    
-    cssRemove : function(oHtml, className, info){
-        this.css(oHtml, className, info, true);
+        return multi(oHtml, info);
     },
 
-    needsPix : {
+    cssRemove = function(oHtml, className, info){
+        css(oHtml, className, info, true);
+    },
+
+    needsPix = {
         "left"       : true,
         "top"        : true,
         "bottom"     : true,
@@ -891,7 +722,7 @@ apf.tween = {
         "textIndent" : true
     },
 
-    cssProps : "|backgroundColor|backgroundPosition|color|width|filter"
+    cssProps = "|backgroundColor|backgroundPosition|color|width|filter"
              + "|height|left|top|bottom|right|fontSize"
              + "|letterSpacing|lineHeight|textIndent|opacity"
              + "|paddingLeft|paddingTop|paddingRight|paddingBottom"
@@ -899,7 +730,196 @@ apf.tween = {
              + "|borderLeftColor|borderTopColor|borderRightColor|borderBottomColor"
              + "|marginLeft|marginTop|marginRight|marginBottom"
              + "|transform|", // transforms are special and get special treatment
-    cssTransforms: "|scale|rotate|"
+    cssTransforms = "|scale|rotate|";
+
+return {
+    single: single,
+    multi: multi,
+    css: css,
+    clearQueue: clearQueue,
+    addModule: function(name, func, force) {
+        if (typeof name != "string" || typeof func != "function" || (modules[name] && !force))
+            return this;
+        modules[name] = func;
+        return this;
+    },
+    /** Linear tweening method */
+    NORMAL: 0,
+    /** Ease-in tweening method */
+    EASEIN: 1,
+    /** Ease-out tweening method */
+    EASEOUT: 2,
+
+    linear: function(t, x_min, dx) {
+        return dx * t + x_min;
+    },
+    easeInQuad: function(t, x_min, dx) {
+        return dx * __pow(t, 2) + x_min;
+    },
+    easeOutQuad: function(t, x_min, dx) {
+        return -dx * t * (t - 2) + x_min;
+    },
+    easeInOutQuad: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * t * t + x_min;
+        return -dx / 2 * ((--t) * (t - 2) - 1) + x_min;
+    },
+    easeInCubic: function(t, x_min, dx) {
+        return dx * Math.pow(t, 3) + x_min;
+    },
+    easeOutCubic: function(t, x_min, dx) {
+        return dx * (__pow(t - 1, 3) + 1) + x_min;
+    },
+    easeInOutCubic: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * __(t, 3) + x_min;
+        return dx / 2 * (__(t - 2, 3) + 2) + x_min;
+    },
+    easeInQuart: function(t, x_min, dx) {
+        return dx * __pow(t, 4) + x_min;
+    },
+    easeOutQuart: function(t, x_min, dx) {
+        return -dx * (__pow(t - 1, 4) - 1) + x_min;
+    },
+    easeInOutQuart: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * __pow(t, 4) + x_min;
+        return -dx / 2 * (__pow(t - 2, 4) - 2) + x_min;
+    },
+    easeInQuint: function(t, x_min, dx) {
+        return dx * __pow(t, 5) + x_min;
+    },
+    easeOutQuint: function(t, x_min, dx) {
+        return dx * (__pow(t - 1, 5) + 1) + x_min;
+    },
+    easeInOutQuint: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return dx / 2 * __pow(t, 5) + x_min;
+        return dx / 2 * (__pow(t - 2, 5) + 2) + x_min;
+    },
+    easeInSine: function(t, x_min, dx) {
+        return -dx * Math.cos(t * (Math.PI / 2)) + dx + x_min;
+    },
+    easeOutSine: function(t, x_min, dx) {
+        return dx * Math.sin(t * (Math.PI / 2)) + x_min;
+    },
+    easeInOutSine: function(t, x_min, dx) {
+        return -dx / 2 * (Math.cos(Math.PI * t) - 1) + x_min;
+    },
+    easeInExpo: function(t, x_min, dx) {
+        return (t == 0) ? x_min : dx * __pow(2, 10 * (t - 1)) + x_min;
+    },
+    easeOutExpo: function(t, x_min, dx) {
+        return (t == 1) ? x_min + dx : dx * (-__pow(2, -10 * t) + 1) + x_min;
+    },
+    easeInOutExpo: function(t, x_min, dx) {
+        if (t == 0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if ((t /= .5) < 1)
+            return dx / 2 * __pow(2, 10 * (t - 1)) + x_min;
+        return dx / 2 * (-__pow(2, -10 * --t) + 2) + x_min;
+    },
+    easeInCirc: function(t, x_min, dx) {
+        return -dx * (Math.sqrt(1 - t * t) - 1) + x_min;
+    },
+    easeOutCirc: function(t, x_min, dx) {
+        return dx * Math.sqrt(1 - (t -= 1) * t) + x_min;
+    },
+    easeInOutCirc: function(t, x_min, dx) {
+        if ((t /= .5) < 1)
+            return -dx / 2 * (Math.sqrt(1 - t * t) - 1) + x_min;
+        return dx / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + x_min;
+    },
+    easeInElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = .3,
+            a = dx;
+        if (t == 0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if (!a || a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else
+            s = p / (2 * Math.PI) * Math.asin (dx / a);
+        return -(a * __pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p)) + x_min;
+    },
+    easeOutElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = .3,
+            a = dx;
+        if (t == 0)
+            return x_min;
+        if (t == 1)
+            return x_min + dx;
+        if (a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else {
+            s = p / (2 * Math.PI) * Math.asin(dx / a);
+        }
+        return a * __pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + dx + x_min;
+    },
+    easeInOutElastic: function(t, x_min, dx) {
+        var s = 1.70158,
+            p = 0,
+            a = dx;
+        if (t == 0)
+            return x_min;
+        if ((t / 2) == 2)
+            return x_min + dx;
+        if (!p)
+            p = .3 * 1.5;
+        if (a < Math.abs(dx)) {
+            a = dx;
+            s = p / 4;
+        }
+        else {
+            s = p / (2 * Math.PI) * Math.asin(dx / a);
+        }
+        if (t < 1)
+            return -.5 * (a * __pow(2, 10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p)) + x_min;
+        return a * __pow(2, -10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p) * .5 + dx + x_min;
+    },
+    easeInBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        return dx * __pow(t, 2) * ((s + 1) * t - s) + x_min;
+    },
+    easeOutBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        return dx * ((t -= 1) * t * ((s + 1) * t + s) + 1) + x_min;
+    },
+    easeInOutBack: function(t, x_min, dx) {
+        var s = 1.70158;
+        if ((t / 2) < 1)
+            return dx / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + x_min;
+        return dx / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + x_min;
+    },
+    easeInBounce: function(t, x_min, dx) {
+        return dx - apf.tween.easeOutBounce(1 - t, 0, dx) + x_min;
+    },
+    easeOutBounce: function(t, x_min, dx) {
+        if (t < (1 / 2.75))
+            return dx * (7.5625 * t * t) + x_min;
+        else if (t < (2 / 2.75))
+            return dx * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + x_min;
+        else if (t < (2.5 / 2.75))
+            return dx * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + x_min;
+        else
+            return dx * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + x_min;
+    },
+    easeInOutBounce: function(t, x_min, dx) {
+        if (t < 1 / 2)
+            return apf.tween.easeInBounce(t * 2, 0, dx) * .5 + x_min;
+        return apf.tween.easeOutBounce(t * 2 - 1, 0, dx) * .5 + dx * .5 + x_min;
+    }
 };
+
+})(apf);
 
 // #endif

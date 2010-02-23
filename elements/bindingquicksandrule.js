@@ -29,34 +29,6 @@ apf.BindingQuicksandRule = function(struct, tagName){
 };
 
 (function(){
-    // get CSS path of the node
-    // indentifies the owner of the temporary container
-    // helping to clean it up after interrupted animation
-    function cssPath(node) {
-        var nodes = []
-        if ($(node).get(0) == undefined) {
-            return "";
-        }
-        var name = $(node).get(0).nodeName.toLowerCase();
-        if ($(node).attr("id"))
-            name += "#" + $(node).attr("id");
-        nodes.push(name);
-
-        var parents = []
-        while (! ($(node).get(0).nodeName.toLowerCase() == "html")) {
-            parents.push(node);
-            node = node.parent();
-        }
-
-        $(parents).each(function () {
-            name = $(this).get(0).nodeName.toLowerCase();
-            if ($(this).attr("id"))
-                name += "#" + $(this).attr("id");
-            nodes.push(name);
-        });
-        return nodes.reverse().join(" > ");
-    }
-
     function getFilteredNodes(pNode) {
         pNode = pNode || this.$parent;
         var attr, tmp,
@@ -121,7 +93,7 @@ apf.BindingQuicksandRule = function(struct, tagName){
                 }*/
             },
             options = {
-                steps: 40,
+                steps: 60,
                 anim: apf.tween.easeInOutQuad,
                 onfinish: postCallback,
                 // put false if you don't want the plugin to adjust height of container to fit all the items
