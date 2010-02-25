@@ -9,12 +9,8 @@ apf.uirecorder = {
     isTesting   : false,
     inited      : false,
     
-    playActions  : {"mousemove":1, "click":1, "keypress":1},
-    playList     : [],
-    initialState : {},
     current      : {},
     setTimeout   : self.setTimeout,
-    clearTimeout : self.clearTimeout,
     
     ERROR_NODE_NOT_VISIBLE      : "Element \"_VAL_\" is not visible.",
     ERROR_NODE_NOT_EXIST        : "Element \"_VAL_\" does not exist (anymore). AML Node is removed from the document or the id is changed/removed.",
@@ -28,114 +24,112 @@ apf.uirecorder = {
 
     WARNING_NO_ID               : "No id specified for element with xpath: \"_VAL_\". Using xpath now to determine corresponding element. Could fail if elements are added/removed.",
     
+    ERROR_SCRIPT_CRITICAL       : "A critical error has occurred: \"_VAL_\" in file: \"_VAL_\" on line \"_VAL_\"", 
+    
     init : function() {
         if (apf.uirecorder.inited)
             return;
 
         apf.uirecorder.inited = true;
-
-        window.onerror = function() {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+        
+        // Error handling
+        window.onerror = function(msg, url, line) {
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+                return;
+debugger;
+            apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_SCRIPT_CRITICAL, {
+                val     : [msg, url, line] 
+            }, true);
+        }
+        
+        apf.onerror = function() {
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             debugger;
-            // add to testResults object
         }
 
-        //document.attachEvent("onmousedown", function() {
-            //alert("click");
-        //});
         /* Form events support */
         document.documentElement.onselect = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
         
         document.documentElement.onchange = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
         
         document.documentElement.onsubmit = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
         
         document.documentElement.onreset = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
        
         /* User interface events support */
         document.documentElement.onfocus = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
 
         document.documentElement.onblur = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
 
         /* Mouse events support */
         document.documentElement.onclick = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             //apf.uirecorder.captureAction("click", e);
         }
 
         document.documentElement.ondblclick = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             apf.uirecorder.captureAction("dblClick", e);
         }
         
-/*
-        document.attachEvent("onmousedown", function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-            apf.uirecorder.captureAction("mousedown", e);
-            
-        });
-*/      
-
         document.documentElement.onmousedown = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             apf.uirecorder.captureAction("mousedown", e);
         }
 
         document.documentElement.onmouseup = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             apf.uirecorder.captureAction("mouseup", e);
         }
         
         document.documentElement.onmousemove = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
             apf.uirecorder.captureAction("mousemove", e);
         }
         
         document.documentElement.onmouseover = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
         
         document.documentElement.onmouseout = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
         }
@@ -143,7 +137,7 @@ apf.uirecorder = {
         /* Keyboard events support for all browsers */
         document.documentElement.onkeyup = function(e) {
             debugger;
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
 
@@ -153,7 +147,7 @@ apf.uirecorder = {
         }
         
         document.documentElement.onkeydown = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
 
@@ -171,7 +165,7 @@ apf.uirecorder = {
         }
         
         document.documentElement.onkeypress = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
 
@@ -198,7 +192,7 @@ apf.uirecorder = {
         if(document.addEventListener) {
             /* FF */
             document.addEventListener("DOMMouseScroll", function(e) {
-                if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                     return;
     
                 e = e || event;
@@ -218,7 +212,7 @@ apf.uirecorder = {
         else {
             /* IE */
             document.onmousewheel = function(e) {
-                if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
+                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                     return;
 
                 e = e || event;
@@ -275,6 +269,29 @@ apf.uirecorder = {
     },
     
     /**
+     * Pause test, call apf.uirecorder.resume() to resume test
+     */
+    isPaused : false,
+    pause : function() {
+        if (apf.uirecorder.isPaused) return
+
+        apf.console.info("pause on actionIdx:" + apf.uirecorder.curActionIdx);
+        
+        apf.uirecorder.isPaused = true;
+        apf.uirecorder.beforeDelay = new Date().getTime();
+    },
+    /**
+     * Resume paused test
+     */
+    resume : function() {
+        apf.uirecorder.resumed = true;
+        apf.uirecorder.isPaused = false;
+        apf.uirecorder.testDelay += new Date().getTime() - apf.uirecorder.beforeDelay;
+        apf.console.info("resume on actionIdx:" + apf.uirecorder.curActionIdx + ", delay = " + apf.uirecorder.testDelay);
+        apf.uirecorder.playAction();
+    },
+    
+    /**
      * Stop recording and start playing
      */
     curTestIdx : 0, 
@@ -328,6 +345,8 @@ apf.uirecorder = {
     testDelay : 0,
     timeoutTimer : null,
     playAction : function() {
+        if (apf.uirecorder.isPaused) return;
+        
         var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
         var action = test.childNodes[apf.uirecorder.curActionIdx];
         //var elapsedTime = 0;
@@ -337,8 +356,9 @@ apf.uirecorder = {
             if (apf.uirecorder.timeoutTimer) {
                 clearTimeout(apf.uirecorder.timeoutTimer);
             }
-            
-            var timeout = action.getAttribute("time")-(new Date().getTime() - apf.uirecorder.startTime + apf.uirecorder.testDelay);
+            //if (apf.uirecorder.resumed) debugger;
+            //var time = new Date().getTime();
+            var timeout = parseInt(action.getAttribute("time")) + apf.uirecorder.testDelay - (new Date().getTime() - apf.uirecorder.startTime);
             if (timeout > 0) {
                 apf.uirecorder.timeoutTimer = setTimeout(function() {
                     apf.uirecorder.execAction();
@@ -363,7 +383,7 @@ apf.uirecorder = {
     checkList : {},
     curRealActionIdx : 0,
     execAction : function() {
-        if (!apf.uirecorder.isTesting) return;
+        if (!apf.uirecorder.isTesting || apf.uirecorder.isPaused) return;
         
         var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
         var action = test.childNodes[apf.uirecorder.curActionIdx];
@@ -620,7 +640,7 @@ apf.uirecorder = {
 //if (e.name == "afterstatechange") debugger;
         //apf.console.info("testCheck (waitForEvent): " + apf.uirecorder.curActionIdx);
         apf.uirecorder.testCheck();
-        apf.uirecorder.testdelay += new Date().getTime() - apf.uirecorder.beforeDelay;
+        apf.uirecorder.testDelay += new Date().getTime() - apf.uirecorder.beforeDelay;
     },
     testResultsXml : null,
     testCheck : function(playNext) {
@@ -643,14 +663,6 @@ apf.uirecorder = {
                 apf.uirecorder.saveTest("results", test.getAttribute("name"));
             }
 
-            // set test successful message
-            if (test.childNodes.length == apf.uirecorder.curActionIdx+1) {
-                if (!apf.uirecorder.testResults.notice[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("name")]) apf.uirecorder.testResults.notice[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("name")] = [];
-                apf.uirecorder.testResults.notice[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("name")].push({
-                    message: "Test successful"
-                });
-            }
-            
             // play next test
             if (uir_listTests.selection.length > apf.uirecorder.curTestIdx+1) {
                 apf.uirecorder.curTestIdx++;
@@ -675,7 +687,7 @@ apf.uirecorder = {
                     uir_windowTestResults.setProperty("visible", true);
                 }
                 
-                // generate testResults xml
+// generate testResults xml
                 var xml = apf.getXml("<testResults />");
                 var types = ["error", "warning", "notice"];
                 var resultNode;
@@ -724,6 +736,11 @@ apf.uirecorder = {
                 }
 
                 apf.uirecorder.testResultsXml = xml;
+
+                // save results in file "testlog.xml"
+                apf.uirecorder.saveFile("testResults");
+                
+
                 // set testResults model
                 uir_mdlTestResults.load(apf.uirecorder.testResultsXml.xml);
                 
@@ -797,12 +814,10 @@ apf.uirecorder = {
             apf.uirecorder.isRecording = false;
             apf.uirecorder.saveTest("test");
         }
-        else if (apf.uirecorder.isTesting) {
-            apf.uirecorder.isTesting   = false;
-        }
-        else if (apf.uirecorder.isPlaying) {
-            apf.uirecorder.isPlaying   = false;
-        }
+        apf.uirecorder.isTesting   = false;
+        apf.uirecorder.isPlaying   = false;
+        apf.uirecorder.isPaused   = false;
+        
         apf.uirecorder.detailList = {};
     },
     
@@ -866,21 +881,6 @@ apf.uirecorder = {
                 var activeElements = amlNode.$getActiveElements();
                 if (activeElements) {
                     for (var name in activeElements) {
-/*
-                        // check for buttons
-                        if (name == "buttons") {
-                            for (var i = 0, l = activeElements[name].children.length; i < l; i++) {
-                                if (apf.isChildOf(activeElements[name].children[i], htmlElement, true)) {
-                                    amlNode["$" + activeElements[name].children[i].className.trim().split(" ")[0] + "Btn"] = activeElements[name].children[i];
-                                    //alert("button found: " + "$" + activeElements[name][i].className.trim().split(" ")[0]);
-                                    htmlNode = "$" + activeElements[name].children[i].className.trim().split(" ")[0] + "Btn";
-                                    break;
-                                }
-                            }
-                        }
-                        else 
-*/
-
                         if (apf.isChildOf(activeElements[name], htmlElement, true)) {
                             //amlNode[name] = activeElements[name];
                             //alert("activeElement found: " + i);
@@ -1077,11 +1077,18 @@ apf.uirecorder = {
         apf.uirecorder.current.actionIdx = apf.uirecorder.curCheckActionIdx;
 
         // delayed capturing of events
+        var recursion = false;
         $setTimeout = function(f, ms){
+            if (recursion)
+                return;
+            
             //Record current mouseEvent
-            if (!ms) ms = 0;
-            apf.uirecorder.setTimeout(function(){
+            if (!ms) ms = null;
+            return apf.uirecorder.setTimeout(function(){
+                //apf.console.info("setTimeout");
+                recursion = true;
                 apf.uirecorder.runInContext(currentState, f);
+                recursion = false;
             }, ms);
         }
 
@@ -1091,18 +1098,18 @@ apf.uirecorder = {
             apf.uirecorder.curCheckActionIdx++;
         }
     },
-    
     runInContext : function(state, f){
         //Put everything until now on the current action
         //var current = this.current;
-        apf.uirecorder.setDelayedDetails(this.current.index);
-        
+        apf.uirecorder.setDelayedDetails(this.current.index, this.current.eventName, this.current.actionIdx);
+       
         //Set the new stuff on the past action
         //this.current = state;
         if (typeof f == "string")
             apf.exec(f)
         else
             f();
+            
         apf.uirecorder.setDelayedDetails(state.index, state.eventName, state.actionIdx);
         //this.current = current;
     },
@@ -1304,7 +1311,7 @@ apf.uirecorder = {
                                 apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_ID_REQUIRED, { 
                                     testId: testId, 
                                     action: eventName + " (" + actionIdx + ")"
-                                });
+                                }, true);
                             }
 
                             for (var name in apf.uirecorder.checkList[testId][actionIdx][prop][elName]) {
@@ -1372,6 +1379,7 @@ apf.uirecorder = {
 
                         break;
                     case "events":
+                        debugger
                         break;
                 }
             }
@@ -1743,7 +1751,8 @@ apf.uirecorder = {
      * set test error, warning or notice
      */
     setTestResult : function(type, msg, values, stopOnError) {//val, testId, action) {
-        if (!apf.uirecorder.testResults[type][values.testId]) apf.uirecorder.testResults[type][values.testId] = [];
+        if (values.testId)
+            if (!apf.uirecorder.testResults[type][values.testId]) apf.uirecorder.testResults[type][values.testId] = [];
 
         var found = false;
         var message = msg;
@@ -1761,14 +1770,16 @@ apf.uirecorder = {
             }
         }
         
-        for (var i = 0, l = apf.uirecorder.testResults[type][values.testId].length; i < l; i++) {
-            if (apf.uirecorder.testResults[type][values.testId][i].message == message) {
-                found = true;
-                break;
+        if (values.testId) {
+            for (var i = 0, l = apf.uirecorder.testResults[type][values.testId].length; i < l; i++) {
+                if (apf.uirecorder.testResults[type][values.testId][i].message == message) {
+                    found = true;
+                    break;
+                }
             }
         }
-
-        if (!found)
+        
+        if (!found) {
             apf.uirecorder.testResults[type][values.testId].push({
                 action      : values.action, 
                 testId      : values.testId, 
@@ -1777,16 +1788,45 @@ apf.uirecorder = {
                 name        : values.name, 
                 message     : message
             });
+        }
         
         if (type == "error" && stopOnError) {
             //apf.uirecorder.testResults["error"][testId].push({message: "Test failed"});
-            apf.uirecorder.actionList.push({
-                name: "Test failed: " + message
-            });
-            apf.uirecorder.testCheck(true);            
+            apf.console.info(values.actionIdx + ". test failed error: " + message);            
+
+            apf.uirecorder.pause();
+
+            apf.uirecorder.setPopupWindow("Error", message, 
+                // ignore error, continue testing
+                function() {
+                    uir_windowPopup.setProperty("visible", false);
+                    
+                    // set timeout to enable user to release the mouse before continuing test
+                    setTimeout(function() {
+                        apf.uirecorder.resume();
+                    }, 1000);
+                    
+                }, 
+                
+                // stop testing
+                function() {
+                    apf.uirecorder.actionList.push({
+                        name: "Test failed: " + message
+                    });
+                    uir_windowPopup.setProperty("visible", false);
+                    apf.uirecorder.testCheck(true);
+                }
+            )
         }
     },
     
+    setPopupWindow : function(title, msg, ignoreCallback, stopCallback) {
+        uir_windowPopup.setProperty("visible", true);
+        uir_windowPopup.setProperty("title", title);
+        uir_popup_msg.setProperty("value", msg);
+        uir_popup_btnIgnore.setProperty("onclick", ignoreCallback);
+        uir_popup_btnStop.setProperty("onclick", stopCallback);
+    },
     /**
      * check is successfull, remove check from checkList and remove error if set on first check
      */
@@ -1823,6 +1863,10 @@ apf.uirecorder = {
             case "tests":
                 o3.cwd.get("data/tests.xml").data = apf.uirecorder.testListXml.xml;
                 alert("file \"tests.xml\" saved to \"data\" folder");
+                break;
+            case "testResults":
+                o3.cwd.get("data/testresults.xml").data = apf.uirecorder.testResultsXml.xml;
+                alert("file \"testresults.xml\" saved to \"data\" folder");
                 break;
         }
     }
