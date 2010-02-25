@@ -148,7 +148,7 @@ apf.ContentEditable.plugin("fontstyle", function() {
 
     this.submit = function(e, sStyle) {
         if (!sStyle) {
-            el = e.target || e.srcElement;
+            var el = e.target || e.srcElement;
             while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
                 el = el.parentNode;
             sStyle = el.getAttribute("rel");
@@ -270,7 +270,7 @@ apf.ContentEditable.plugin("fontstyle", function() {
             ').submit(event);"><span>Normal</span></a>'];
         for (var i in oStyles) {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
-                i, '" href="javascript:;" onmouseup="apf.lookup(',
+                i, '" href="javascript:;" onmousedown="apf.lookup(',
                 this.$uniqueId, ').submit(event);"><span class="', i, '">',
                 oStyles[i].caption, "</span></a>")
         }
@@ -595,7 +595,7 @@ apf.ContentEditable.plugin("blockformat", function() {
             aFormats = getFormats(editor);
         for (var i = 0, j = aFormats.length; i < j; i++) {
             aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
-                aFormats[i], '" href="javascript:;" onmouseup="apf.lookup(',
+                aFormats[i], '" href="javascript:;" onmousedown="apf.lookup(',
                 this.$uniqueId, ').submit(event);"><', aFormats[i], ">",
                 blocksMap[aFormats[i]], "</", aFormats[i], "></a>");
         }
