@@ -74,8 +74,12 @@ apf.ContentEditable.plugin("link", function(){
         if (!this.oUrl.value.replace("http://", "")) return;
 
         this.editor.$execCommand("CreateLink", "javascript:apftmp(0);");
-        var oLink, aLinks = this.editor.$activeDocument.getElementsByTagName("a");
-        for (var i = 0; i < aLinks.length && !oLink; i++)
+        var oLink,
+            oEditor = this.editor,
+            aLinks  = oEditor.$activeDocument.getElementsByTagName("a"),
+            i       = 0,
+            l       = aLinks.length;
+        for (; i < l && !oLink; i++)
             if (aLinks[i].href == "javascript:apftmp(0);")
                 oLink = aLinks[i];
         if (oLink) {
@@ -84,13 +88,14 @@ apf.ContentEditable.plugin("link", function(){
             oLink.target = this.oTarget.value;
             oLink.title  = this.oTitle.value;
         }
-        this.editor.$selection.collapse(false);
+        oEditor.$selection.collapse(false);
+
+        oEditor.$restoreFocus();
         
         // propagate the change AFTER changing back the link to its proper format
-        this.editor.change(this.editor.getValue());
+        oEditor.change(oEditor.getValue());
 
-        if (e.stop)
-            e.stop();
+        apf.stopEvent(e);
         return false;
     };
 

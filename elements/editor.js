@@ -189,28 +189,6 @@ apf.editor = function(struct, tagName){
     });
 
     /**
-     * Paste (clipboard) data into the Editor
-     *
-     * @see element.editor.method.inserthtml
-     * @param {Event} e
-     * @type  {void}
-     * @private
-     */
-    function onPaste(e) {
-        var _self = this;
-        $setTimeout(function() {
-            var s = this.$activeDocument.body.innerHTML;
-            if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
-                var o = _self.$plugins["pasteword"];
-                if (o)
-                    _self.$propHandlers["value"].call(_self, o.parse(s));
-            }
-            if (_self.realtime)
-                _self.change(_self.getValue());
-        });
-    }
-
-    /**
      * Event handler; fired when the user clicked inside the editable area.
      *
      * @see object.abstractevent
@@ -361,7 +339,7 @@ apf.editor = function(struct, tagName){
         //#endif
         this.$activeDocument.host = this;
 
-        apf.addListener(this.$activeDocument.body, "paste", onPaste.bindWithEvent(this));
+        apf.addListener(this.$activeDocument.body, "paste", this.$paste.bindWithEvent(this));
     };
 
     //this.addEventListener("contextmenu", onContextmenu);

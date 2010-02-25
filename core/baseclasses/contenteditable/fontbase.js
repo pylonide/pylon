@@ -61,9 +61,8 @@ apf.ContentEditable.plugin("fonts", function() {
     };
 
     this.execute = function() {
-        if (!panelBody) {
+        if (!panelBody)
             apf.popup.setContent(this.$uniqueId, this.createPanelBody());
-        }
 
         this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
         

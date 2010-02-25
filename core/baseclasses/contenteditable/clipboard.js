@@ -52,7 +52,10 @@ apf.ContentEditable.pasteDialog = function(sName) {
             panelBody.style.visibility = "visible";
         var _self = this;
         $setTimeout(function() {
-            _self.oArea.focus();
+            try {
+                _self.oArea.focus();
+            }
+            catch (ex) {}
         }, 100); // 100ms, because of the $focusfix code...
         //return button id, icon and action:
         return {
@@ -88,10 +91,7 @@ apf.ContentEditable.pasteDialog = function(sName) {
         }
         this.editor.$insertHtml(sContent);
 
-        if (e.stop)
-            e.stop();
-        else
-            e.cancelBubble = true;
+        apf.stopEvent(e);
         return false;
     };
 

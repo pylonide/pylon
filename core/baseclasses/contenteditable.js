@@ -335,7 +335,7 @@ apf.ContentEditable = function() {
                 case 73:  // I
                 case 117: // u
                 case 85:  // U
-                //case 86:  // V |_ See onPaste()
+                //case 86:  // V |_ See this.$paste()
                 //case 118: // v |  event handler...
                     if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey
                       && !e.altKey && this.realtime)
@@ -387,7 +387,7 @@ apf.ContentEditable = function() {
                     case 86:  // V
                     case 118: // v
                         if (!apf.isGecko)
-                            onPaste.call(this);
+                            this.$paste();
                         //found = true;
                         break;
                     case 37: // left
@@ -996,7 +996,12 @@ apf.ContentEditable = function() {
             //_self.$notifyAllButtons(); // @todo This causes pain, find out why
             if (!bNoSel)
                _self.$selection.set();
-            _self.$visualFocus();
+            if (apf.isIE) {
+                _self.focus();
+                $setTimeout(function() {_self.$visualFocus();});
+            }
+            else
+                _self.$visualFocus();
         });
     };
 
@@ -1199,6 +1204,20 @@ apf.ContentEditable = function() {
         }
         else if (bNotify)
             this.$notifyAllButtons();
+    };
+
+    this.$restoreFocus = function(bWithSel) {
+        // for now, only IE needs this workaround to return the focus to the
+        // contentEditable area - whilst preserving the correct state.
+        if (apf.isIE) {
+            var _self = this;
+            $setTimeout(function() {
+                if (bWithSel)
+                    _self.$selection.set();
+                _self.focus();
+                $setTimeout(function() {_self.$visualFocus();});
+            });
+        }
     };
 
     /**
@@ -1574,13 +1593,30 @@ apf.ContentEditable = function() {
         this.setProperty("value", this.getValue())
         #endif*/
 
-        if (bNoFocus) return;
+        if (!bNoFocus)
+            this.$restoreFocus();
+    };
+
+    /**
+     * Paste (clipboard) data into the Editor
+     *
+     * @see element.editor.method.inserthtml
+     * @param {Event} e
+     * @type  {void}
+     */
+    this.$paste = function (e) {
         var _self = this;
         $setTimeout(function() {
-            _self.$selection.set();
-            _self.$visualFocus();
+            var s = _self.$activeDocument.body.innerHTML;
+            if (s.match(/mso[a-zA-Z]+/i)) { //check for Paste from Word
+                var o = _self.$plugins["pasteword"];
+                if (o)
+                    _self.$propHandlers["value"].call(_self, o.parse(s));
+            }
+            if (_self.realtime)
+                _self.change(_self.getValue());
         });
-    };
+    }
 
     /**
      * Corrects the default/ standard behavior of user agents that do not match

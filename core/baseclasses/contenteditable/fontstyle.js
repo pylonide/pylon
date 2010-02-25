@@ -234,7 +234,8 @@ apf.ContentEditable.plugin("fontstyle", function() {
                     sel.selectNode(htmlNode);
                 }
             }
-            
+
+            oEditor.$restoreFocus();
             // Notify the SmartBindings we've changed...
             // #ifdef __WITH_DATAACTION
             oEditor.change(oEditor.getValue());
@@ -576,7 +577,8 @@ apf.ContentEditable.plugin("blockformat", function() {
                 
                 this.blockPreview.innerHTML = blocksMap[sBlock];
             }
-            
+
+            oEditor.$restoreFocus();
             // Notify the SmartBindings we've changed...
             // #ifdef __WITH_DATAACTION
             oEditor.change(oEditor.getValue());

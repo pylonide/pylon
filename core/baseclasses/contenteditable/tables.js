@@ -76,8 +76,12 @@ apf.ContentEditable.plugin("table", function() {
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
 
-        var i, j, k, l, aOut = ['<table border="0" width="50%">'];
-        for (i = 0, j = oSize[0]; i < j; i++) {
+        var k, l,
+            i       = 0,
+            j       = oSize[0],
+            oEditor = this.editor,
+            aOut    = ['<table border="0" width="50%">'];
+        for (; i < j; i++) {
             aOut.push("<tr>");
             for (k = 0, l = oSize[1]; k < l; k++)
                 aOut.push("<td>", (apf.isIE ? "" : '&nbsp;<br _apf_placeholder="1" />'),"</td>");
@@ -85,12 +89,8 @@ apf.ContentEditable.plugin("table", function() {
         }
         aOut.push("</table>")
 
-        //this.restoreSelection();
-        //if (apf.isIE)
-        //this.editor.$selection.set();
-        this.editor.$insertHtml(aOut.join(""), true);
-        this.editor.$selection.collapse(false);
-        this.editor.$visualFocus();
+        oEditor.$insertHtml(aOut.join(""), true);
+        oEditor.$selection.collapse(false);
     };
 
     var bMorphing = false, oMorphCurrent, iMorphXCount, iMorphYCount;
@@ -395,7 +395,9 @@ apf.ContentEditable.plugin("tablewizard", function() {
             if (this.tablePlugin != _self)
                 return;
 
-            var oRow, i, j, idx = 0;
+            var oRow, i, j,
+                idx     = 0,
+                oEditor = _self.editor;
 
             if (_self.oCell) {
                 for (i = 0, j = _self.oRow.cells.length; i < j; i++)
@@ -403,7 +405,7 @@ apf.ContentEditable.plugin("tablewizard", function() {
                         idx = i;
             }
 
-            _self.editor.$selection.set();
+            oEditor.$selection.set();
 
             switch (e.value) {
                 case "rowbefore":
@@ -471,7 +473,7 @@ apf.ContentEditable.plugin("tablewizard", function() {
                     break;
                 case "mergecells":
                     var rows = [], cells = [],
-                        oSel = _self.editor.$selection.get(),
+                        oSel = oEditor.$selection.get(),
                         grid = getTableGrid(_self.oTable),
                         oCellPos, aRows, aRowCells, aBrs, oTd, k;
 
@@ -658,11 +660,13 @@ apf.ContentEditable.plugin("tablewizard", function() {
                     }
                     break;
            }
+
+           oEditor.$restoreFocus();
            // #ifdef __WITH_DATAACTION
-            _self.editor.change(_self.editor.getValue());
-            /* #else
-            _self.editor.setProperty("value", _self.editor.getValue())
-            #endif*/
+           oEditor.change(_self.editor.getValue());
+           /* #else
+           _self.editor.setProperty("value", _self.editor.getValue())
+           #endif*/
         });
     };
 });
