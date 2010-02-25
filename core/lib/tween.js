@@ -736,6 +736,7 @@ return {
     single: single,
     multi: multi,
     css: css,
+    cssRemove: cssRemove,
     clearQueue: clearQueue,
     addModule: function(name, func, force) {
         if (typeof name != "string" || typeof func != "function" || (modules[name] && !force))
