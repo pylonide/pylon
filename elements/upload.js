@@ -492,10 +492,11 @@ apf.upload = function(struct, tagName){
 
         var o   = this.rel.$ext,
             pos = apf.getAbsolutePosition(o);
-        this.$ext.style.top    = pos[1] + "px";
-        this.$ext.style.left   = pos[0] + "px";
-        this.$ext.style.width  = o.offsetWidth + "px";
-        this.$ext.style.height = o.offsetHeight + "px";
+        this.$ext.style.position = o.style.position || 'absolute';
+        this.$ext.style.top      = pos[1] + "px";
+        this.$ext.style.left     = pos[0] + "px";
+        this.$ext.style.width    = o.offsetWidth + "px";
+        this.$ext.style.height   = o.offsetHeight + "px";
     };
 
     var anchor;
