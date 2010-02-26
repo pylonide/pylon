@@ -809,6 +809,7 @@ debugger;
      * Stop recording and playing
      */
     stop : function() {
+        debugger;
         apf.uirecorder.inited = false;
         if (apf.uirecorder.isRecording) {
             apf.uirecorder.isRecording = false;
