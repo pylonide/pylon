@@ -803,9 +803,8 @@ apf.datagrid    = function(struct, tagName){
 
             if (h.type == "icon"){
                 var node = this.$getLayoutNode("cell", "caption", oRow.appendChild(cell));
-                if (apf.isIE) {
-                    apf.setNodeValue(node, "&nbsp;");
-                }
+                apf.setNodeValue(node, "&nbsp;");
+                
                 (node.nodeType == 1 && node || node.parentNode)
                     .setAttribute("style", "background-image:url(" 
                         + apf.getAbsolutePath(this.iconPath, 
