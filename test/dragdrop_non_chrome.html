@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" 
+    xmlns:a="http://ajax.org/2005/aml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Getting Started</title>
+        
+        <script src="js/trunk/apf.js"></script>
+    </head>
+    <body style="margin:30px;">
+        <a:skin src="skins/_index.xml" media-path="images/" icon-path="icons/" />
+        
+        <a:model id="mdlTree" src="treedata.xml" />
+        <a:tree id="trTest" width="200" top="10" left="10" height="300"
+          model="mdlTree" startcollapsed="false" canrename="false"> 
+            <a:each match="[item|folder|root]">
+                <a:caption match = "[@caption]" />
+                <a:caption                  value = "[text()]" />
+                <a:icon    match = "[item]" value = "note_b.png" />
+                <a:icon                     value = "Famfolder.gif" />
+        
+                <a:drag match="[folder|item]" /> 
+                <a:drop 
+                  match  = "[folder]" 
+                  target = "[root]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[folder]" 
+                  target = "[folder]" 
+                  action = "insert-before" />
+                <a:drop 
+                  match  = "[folder]" 
+                  target = "[item]" 
+                  action = "list-append" />
+                <a:drop 
+                  match  = "[item]" 
+                  target = "[folder|root]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[item]" 
+                  target = "[item]" 
+                  action = "list-append" />
+            </a:each>
+        </a:tree>
+
+        <a:model id="mdlList"> 
+            <items> 
+                <item image="images/slideshow_img/img1.jpg" caption="PCI"></item>
+                <item image="images/slideshow_img/img2.jpg" caption="AGP"></item>
+                <item image="images/slideshow_img/img3.jpg" caption="FDD"></item>
+            </items> 
+        </a:model>
+        <a:list 
+          id         = "listPics" 
+          skin       = "listicons" 
+          model      = "mdlList"
+          top="10" left="230" width="200" height="300"
+          thumbsize  = "90">
+            <a:each match="[item]">
+                <a:caption match="[@caption|text()]" />
+                <a:image 
+                  match="[@image]"></a:image>
+                <a:drag match="[item]" />
+                <a:drop 
+                  match="[item]" action="list-append" />
+            </a:each>
+        </a:list>
+
+    </body>
+</html>

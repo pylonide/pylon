@@ -1,0 +1,18 @@
+<data>
+    <root caption="My Products">
+        <item image="images/thinkgeek1.jpg">Microscope</item>
+        <item image="images/thinkgeek2.jpg">Watch</item>
+        <item image="images/thinkgeek3.jpg">Glowball</item>
+        <item image="images/thinkgeek4.jpg">GlowballEnergy Drink</item>
+        <item image="images/thinkgeek5.jpg">Soap</item>
+        <folder caption="Special Products">
+            <item image="images/thinkgeek6.jpg">USB Heater</item>
+            <item image="images/thinkgeek7.jpg">Deskfan</item>
+            <item image="images/thinkgeek8.jpg">RC Tanks</item>
+        </folder>
+        <folder caption="My Favourites">
+            <item image="images/thinkgeek14.jpg">Globe Toy</item>
+            <item image="images/thinkgeek16.jpg">Telescope</item>
+        </folder>
+    </root>
+</data>
