@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" 
+    xmlns:a="http://ajax.org/2005/aml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Getting Started</title>
+        
+        <script src="trunk/apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins/_index.xml" media-path="images/" icon-path="icons/" />
+        <a:datagrid 
+          width    = "500" 
+          id       = "dg1"
+          actiontracker = "dgAt1"
+          disabled = "{btn1.value}"
+          height   = "150"> 
+            <a:each match="[news]"> 
+                <a:column 
+                  type   = "icon" 
+                  width  = "16" 
+                  value  = "[@icon]" />
+                <a:column 
+                  caption = "Name" 
+                  value   = "[@name]"
+                  width   = "100%" /> 
+                <a:column 
+                  caption = "Article counter" 
+                  width   = "180" 
+                  value   = "[@count]" />
+            </a:each> 
+            <a:actions>
+                <a:remove /> 
+                <a:add />
+            </a:actions>
+
+            <a:model>
+                <data>
+                    <news name="Ajax" icon="note.png" count="54"></news>
+                    <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+                    </news>
+                    <news name="Android" icon="note.png" count="2"></news>
+                    <news name="Apple" icon="note.png" count="11"></news>
+                    <news name="Aptana" icon="note.png" count="30"></news>
+                    <news name="Canvas" icon="note.png" count="115"></news>
+                    <news name="Chrome" icon="note.png" count="9"></news>
+                    <news name="ColdFusion" icon="note.png" count="10"></news>
+                    <news name="CSS" icon="note.png" count="176"></news>
+                    <news name="Dojo" icon="note.png" count="224"></news>
+                    <news name="JavaScript" icon="note.png" count="1218"></news>
+                    <news name="JSON" icon="note.png" count="59"></news>
+                    <news name="Mac" icon="note.png" count="1"></news>
+                    <news name="Mozilla" icon="note.png" count="11"></news>
+                </data>
+            </a:model>
+        </a:datagrid>
+
+        <a:button onclick="dg1.getActionTracker().undo()">UNDO</a:button>
+         <a:button action="remove" target="dg1">Remove selected row</a:button>
+
+
+    </body>
+</html>
