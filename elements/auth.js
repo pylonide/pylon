@@ -60,12 +60,14 @@
  *         waiting-state = "stLoggingIn" />
  *   </a:appsettings>
  *   <a:teleport>
- *       <a:rpc id="comm" protocol="cgi">
- *           <a:method name="login" url="http://localhost/login.php">
+ *       <a:rpc 
+ *         id       = "comm" 
+ *         protocol = "cgi">
+ *           <a:method name="login" url="login.php">
  *               <a:param name="username" />
  *               <a:param name="password" />
  *           </a:method>
- *           <a:method name="logout" url="http://localhost/logout.php" />
+ *           <a:method name="logout" url="logout.php" />
  *       </a:rpc>
  *   </a:teleport>
  *  
@@ -73,11 +75,13 @@
  *     loginMsg.visible  = "false"
  *     winLogin.disabled = "false">
  *       <a:state id="stFail"
- *         loginMsg.value   = "Username or password incorrect"
- *         loginMsg.visible = "true" />
+ *         loginMsg.value    = "Username or password incorrect"
+ *         loginMsg.visible  = "true"
+ *         winLogin.disabled = "false" />
  *       <a:state id="stError"
- *         loginMsg.value   = "An error has occurred. Please check your network."
- *         loginMsg.visible = "true" />
+ *         loginMsg.value    = "An error has occurred. Please check your network."
+ *         loginMsg.visible  = "true"
+ *         winLogin.disabled = "false" />
  *       <a:state id="stLoggingIn"
  *         loginMsg.value    = "Please wait whilst logging in..."
  *         loginMsg.visible  = "true"
@@ -93,10 +97,10 @@
  * 
  *  <a:window id="winLogin" visible="true" width="400" height="400">
  *      <a:label>Username</a:label>
- *      <a:textbox type="username" value="Lukasz" />
+ *      <a:textbox type="username" value="TestUser" />
  *  
  *      <a:label>Password</a:label>
- *      <a:textbox type="password" value="ppp" />
+ *      <a:textbox type="password" value="open" />
  * 
  *      <a:label id="loginMsg" />
  *      <a:button action="login">Log in</a:button>

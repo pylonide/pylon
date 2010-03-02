@@ -344,7 +344,7 @@ apf.calendar = function(struct, tagName){
             w_dayInWeek    = w_firstYearDay.getDay(),
             w_days         = w_dayInWeek,
             c              = this.$calVars;
-apf.console.info(month+" "+year)
+        
         c.currentMonth = month;
         c.currentYear  = year;
         

@@ -68,13 +68,25 @@
  * Example:
  * This example shows how to do complex sorting using a javascript callback function.
  * <code>
- *  <a:each select="file|folder" sort="[@name]" sort-method="compare" />
- *  <a:script>
- *      function compare(value, args, xmlNode) {
- *          //Sort all folders together and all files and then sort on alphabet.
- *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
- *      }
- *  </a:script>
+ *  <a:model id="mdlList">
+ *      <data>
+ *          <item date="2009-11-12" deleted="0"></item>
+ *          <item date="2009-11-11" deleted="0"></item>
+ *          <item date="2009-11-10" deleted="1"></item>
+ *          <item date="2009-11-09" deleted="1"></item>
+ *          <item2 date="2009-11-08" deleted="1"></item2>
+ *      </data>
+ *  </a:model>
+ *  <a:list id="list" width="200" height="200" model="mdlList">
+ *      <a:script>
+ *          function sth_compare(value, args, xmlNode) {
+ *          
+ *          }
+ *      </a:script>
+ *      <a:each match="[item]" sort="[@date]" sort-method="sth_compare">
+ *          <a:caption match="[@date]" />
+ *      </a:each>
+ *  </a:list>
  * </code>
  * @attribute {String} select       an xpath statement which selects the nodes
  *                                  which will be rendered.
