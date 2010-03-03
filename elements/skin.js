@@ -187,7 +187,7 @@ apf.aml.setElement("skin", apf.skin);
 
             //if (!apf.supportNamespaces)
             xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
-                .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "")
+                .replace(/^[\r\n\s]*/, "") //.replace(/&nbsp;/g, " ")
                 .replace(/xmlns\=\"[^"]*\"/g, "");
             
             if (!xmlString) {

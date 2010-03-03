@@ -134,7 +134,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
                 //@todo apf3.0 please make one way of doing this
                 xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
-                    .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "");
+                    .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ")
                 if (!apf.supportNamespaces)
                     xmlString = xmlString.replace(/xmlns\=\"[^"]*\"/g, "");
                 

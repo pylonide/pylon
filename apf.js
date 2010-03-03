@@ -1786,7 +1786,7 @@ var apf = {
 
                     //@todo apf3.0 rewrite this flow
                     var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
-                      .replace(/&nbsp;/g, " ").replace(/^[\r\n\s]*/, "");
+                      .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ")
                     if (!apf.supportNamespaces)
                         str = str.replace(/xmlns\=\"[^"]*\"/g, "");
                     //var xmlNode = apf.getXmlDom(str);//apf.getAmlDocFromString(xmlString);
