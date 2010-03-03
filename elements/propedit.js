@@ -28,38 +28,30 @@
  * This example shows a datagrid width several columns mixing percentage and
  * fixed size columns.
  * <code>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:bindings>
+ *  <a:datagrid model="mdlNews" options="move|size" width="600">
+ *      <a:each match="[news]">
  *          <a:column type="icon" width="16" value="newspaper.png" />
- *          <a:column caption="Date" select="publication/@date" width="70" />
- *            <a:column caption="Title" width="180" select="title" />
- *          <a:column caption="Subtitle" select="subtitle" width="100%" />
- *          <a:each select="news" />
- *      </bindings>
- *      <a:actions />
- *  </datagrid>
- * </code>
- * Example:
- * This example shows a spreadsheet component. The spreadsheet component is an
- * alias for the datagrid. It has a different skin and different defaults.
- * <code>
- *  <a:spreadsheet>
- *      <a:bindings>
- *          <a:column caption="A" select="@field3" />
- *          <a:column caption="B" select="@field1" />
- *          <a:column caption="C" select="@field2" />
- *          <a:column caption="D" select="@field4" />
- *          <a:column caption="E" select="@field5" />
- *          <a:each select="record" />
- *      </bindings>
+ *          <a:column caption="Date" value="[publication/@date]" width="70" />
+ *          <a:column caption="Title" width="180" value="[title]" />
+ *          <a:column caption="Subtitle" value="[subtitle]" width="100%" />
+ *      </a:each>
  *      <a:model>
- *          <records>
- *              <record field1="b" field2="b" field3="c" field4="d" field5="e" />
- *              <record field1="g" field2="b" field3="c" field4="d" field5="e" />
- *          </records>
- *      </model>
- *  </spreadsheet>
+ *          <data>
+ *              <news>
+ *                  <title>title 1</title>
+ *                  <subtitle>subtitle 1</subtitle>
+ *                  <publication date="1999-09-09"></publication>
+ *              </news>
+ *              <news>
+ *                  <title>title 2</title>
+ *                  <subtitle>subtitle 2</subtitle>
+ *                  <publication date="1999-09-10"></publication>
+ *              </news>
+ *          </data>
+ *      </a:model>
+ *  </a:datagrid>
  * </code>
+ * 
  * Example:
  * This example shows a propedit (property editor) component. The propedit 
  * component is an alias for the datagrid. It has a different skin and different
@@ -69,7 +61,7 @@
  * </code>
  *
  * @constructor
- * @define datagrid, spreadsheet, propedit
+ * @define datagrid, propedit
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -97,47 +89,133 @@
  *   {XMLElement} dataNode  the {@link term.datanode data node}.
  *   Example:
  *   <code>
- *      <a:propedit 
- *        lookupaml      = "tmpLookup"
- *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
- *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
- *        onmultiedit    = "loadMultiEdit(event, this)">
- *          <a:bindings>
- *              <a:template select="self::product" value="mdlProps:product" />
- *          </bindings>
- *      </propedit>
- *
- *      <a:template id="tmpLookup" autoinit="true">
- *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
- *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
- *            autoselect="false">
- *              <a:bindings>
- *                  <a:caption select="self::picture"><![CDATA[
- *                      {name} | {description}
- *                  ]]></caption>
- *                  <!-- use @descfield -->
- *                  <a:caption><![CDATA[[
- *                      var field = n.parentNode.getAttribute("descfield");
- *                      %(value(field) || "[Geen Naam]");
- *                  ]]]></caption>
- *                  <a:icon select="self::product" value="package_green.png" />
- *                  <a:icon value="table.png" />
- *                  <a:each select="node()[local-name()]" />
- *              </bindings>
- *              <a:actions />
- *          </list>
- *          
- *          <a:toolbar>
- *              <a:bar>
- *                  <a:button id="btnLkpPrev" disabled="true" 
- *                      onclick="...">&lt; Previous</button>
- *                  <a:spinner id="spnLookup" width="40" 
- *                      min="1" max="1" onafterchange="..." />
- *                  <a:button id="btnLkpNext" disabled="true" 
- *                      onclick="...">Next &gt;</button>
- *              </bar>
- *          </toolbar>
- *      </template>
+ *    <a:model id="mdlProps">
+ *      <props>
+ *          <folder>
+ *              <group caption="General">
+ *                  <prop 
+ *                    caption    = "Title" 
+ *                    editor     = "textbox" 
+ *                    value      = "[@caption]" 
+ *                    required   = "true" />
+ *                  <prop 
+ *                    caption  = "Priority" 
+ *                    editor   = "dropdown" 
+ *                    value    = "[@priority]">
+ *                      <item value="1">1</item> 
+ *                      <item value="2">2</item> 
+ *                      <item value="3">3</item> 
+ *                      <item value="4">4</item> 
+ *                      <item value="5">5</item> 
+ *                  </prop>
+ *                  <prop 
+ *                    caption = "(Align)" 
+ *                    editor  = "textbox" 
+ *                    value   = "[@align]">
+ *                      <prop 
+ *                        caption = "Position" 
+ *                        editor  = "dropdown" 
+ *                        value   = "[@align-template]">
+ *                          <item value="left">left</item> 
+ *                          <item value="top">top</item> 
+ *                          <item value="right">right</item> 
+ *                          <item value="bottom">bottom</item> 
+ *                      </prop>
+ *                      <prop 
+ *                        caption  = "Splitter" 
+ *                        editor   = "checkbox" 
+ *                        values   = "True|False"
+ *                        value    = "[@splitter]" />
+ *                          <prop 
+ *                            caption  = "Edge" 
+ *                            editor   = "slider" 
+ *                            value    = "[@edge]" />
+ *                          <prop 
+ *                            caption  = "Some value" 
+ *                            editor   = "spinner" 
+ *                            value    = "[@some]" />
+ *                  </prop>
+ *                  <prop 
+ *                    caption  = "Date" 
+ *                    editor   = "caldropdown" 
+ *                    value    = "[@date]" />
+ *              </group>
+ *              <group caption="Advanced">
+ *                  <prop 
+ *                    caption  = "Title" 
+ *                    editor   = "textbox" 
+ *                    value    = "[@caption]" 
+ *                    required = "true" />
+ *                  <prop 
+ *                    caption = "Priority" 
+ *                    editor  = "dropdown" 
+ *                    value   = "[@priority]">
+ *                      <item value="1">1</item> 
+ *                      <item value="2">2</item> 
+ *                      <item value="3">3</item> 
+ *                      <item value="4">4</item> 
+ *                      <item value="5">5</item> 
+ *                  </prop>
+ *                  <prop 
+ *                    caption   = "(Align)" 
+ *                    editor    = "textbox" 
+ *                    value     = "[@align]">
+ *                      <prop 
+ *                        caption  = "Position" 
+ *                        editor   = "dropdown" 
+ *                        value    = "[@align-template]">
+ *                          <item value="left">left</item> 
+ *                          <item value="top">top</item> 
+ *                          <item value="right">right</item> 
+ *                          <item value="bottom">bottom</item> 
+ *                      </prop>
+ *                      <prop 
+ *                        caption  = "Splitter" 
+ *                        editor   = "checkbox" 
+ *                        values   = "True|False"
+ *                        value    = "[@splitter]" />
+ *                      <prop 
+ *                        caption  = "Edge" 
+ *                        editor   = "slider" 
+ *                        value    = "[@edge]" />
+ *                      <prop 
+ *                        caption  = "Some value" 
+ *                        editor   = "spinner" 
+ *                        value    = "[@some]" />
+ *                  </prop>
+ *                  <prop 
+ *                    caption  = "Date" 
+ *                    editor   = "caldropdown" 
+ *                    value    = "[@date]" />
+ *              </group>
+ *          </folder>
+ *          <file>
+ *              <prop 
+ *                caption    = "Title" 
+ *                type       = "textbox" 
+ *                select     = "@caption" 
+ *                required   = "true" />
+ *                  <prop 
+ *                    caption  = "Priority" 
+ *                    type     = "dropdown" 
+ *                    select   = "@priority"
+ *                    overview = "overview">
+ *                      <item value="1">1</item> 
+ *                      <item value="2">2</item> 
+ *                      <item value="3">3</item> 
+ *                      <item value="4">4</item> 
+ *                      <item value="5">5</item> 
+ *                  </prop>
+ *              </file>
+ *          </props>
+ *      </a:model>
+ *      
+ *       <a:model id="mdlData">
+ *           <folder caption="My Documents" priority="4" align="left-splitter-3" />
+ *       </a:model>
+ *       
+ *       <a:propedit id="pe" columns="35%,65%" model="mdlData" 
+            properties="[mdlProps::folder]" width="300" height="500" />
  *   </code>
  */
 apf.propedit    = function(struct, tagName){
@@ -197,53 +275,6 @@ apf.propedit    = function(struct, tagName){
      * consists of descriptions of columns (or rows for propedit) for which
      * several settings are determined such as validation rules, edit component 
      * and selection rules.
-     * Example:
-     * This example contains a template that describes the fields in a property
-     * editor for xml data representing a news article.
-     * <code>
-     *  <news>
-     *      <prop caption="Title *" type="text" select="title" required="true" 
-     *        minlength="4" invalidmsg="Incorrect title;The title is required."/>
-     *      <prop caption="Subtitle *" type="text" select="subtitle" 
-     *        required="true" minlength="4" 
-     *        invalidmsg="Incorrect subtitle;The subtitle is required."/>
-     *      <prop caption="Source" type="text" select="source" minlength="4" 
-     *        invalidmsg="Incorrect source;The source is required."/>
-     *      <prop select="editors_choice" caption="Show on homepage"
-     *        overview="overview" type="dropdown">
-     *          <item value="1">Yes</item> 
-     *          <item value="0">No</item> 
-     *      </prop>
-     *      <prop caption="Auteur*" select="author" descfield="name" 
-     *        overview="overview" maxlength="10" type="lookup" 
-     *        foreign_table="author" required="true" /> 
-     *      <prop select="categories/category" descfield="name" type="lookup" 
-     *        multiple="multiple" caption="Categorie" overview="overview" 
-     *        foreign_table="category" /> 
-     *      <prop caption="Image" type="custom" 
-     *        exec="showUploadWindow('news', 'setNewsImage', selected)" 
-     *        select="pictures/picture/file" />
-     *      <prop select="comments" descfield="title" caption="Comments" 
-     *        type="children" multiple="multiple">
-     *          <props table="news_comment" descfield="title">
-     *              <prop select="name" datatype="string" caption="Name*" 
-     *                required="1" maxlength="255" 
-     *                invalidmsg="Incorrect name;The name is required."/> 
-     *              <prop select="email" datatype="apf:email" caption="Email" 
-     *                maxlength="255" 
-     *                invalidmsg="Incorrect e-mail;Please retype."/> 
-     *              <prop select="date" datatype="xsd:date" caption="Date*" 
-     *                required="1" 
-     *                invalidmsg="Incorrect date;Format is dd-mm-yyyy."/> 
-     *              <prop select="title" datatype="string" caption="Title*" 
-     *                required="1" maxlength="255" 
-     *                invalidmsg="Incorrect title;Title is required."/> 
-     *              <prop select="body" caption="Message*" required="1" 
-     *                invalidmsg="Incorrect message;Message is required."/> 
-     *          </props>
-     *      </prop>
-     *  </news>
-     * </code>
      */
     this.$propHandlers["properties"] = function(value){
         var _self = this;

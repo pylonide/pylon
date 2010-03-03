@@ -40,16 +40,11 @@
  * Example:
  * Sets the flash source text based on data loaded into this component.
  * <code>
- *  <a:flashplayer>
- *      <a:bindings>
- *          <a:value select="@src" />
- *      </a:bindings>
+ *  <a:flashplayer value="[@src]">
+ *      <a:model>
+ *          <data src="flash.swf" />
+ *      </a:model>
  *  </a:flashplayer>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:flashplayer value="[@src]" />
  * </code>
  */
 apf.flashplayer = function(struct, tagName){

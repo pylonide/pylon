@@ -89,6 +89,12 @@ apf.item  = function(struct, tagName){
      *  <a:menu id="mmain">
      *      <a:item submenu="msub">Sub menu</a:item>
      *  </a:menu>
+     *  
+     *  <a:toolbar>
+     *      <a:menubar>
+     *          <a:button submenu="mmain">File</a:button>
+     *      </a:menubar>
+     *  </a:toolbar>
      * </code>
      */
     this.$propHandlers["submenu"] = function(value){
@@ -106,25 +112,43 @@ apf.item  = function(struct, tagName){
      * Example:
      * This example shows a list
      * <code>
-     *  <a:list>
-     *     [...]
-     *
-     *     <a:contextmenu menu="mnuXY" select="computer" />
-     *     <a:contextmenu menu="mnuTest" />
-     *  </a:list>
-     *
-     *  <a:menu id="mnuTest">
-     *     <a:item select="person">Send an E-mail</a:Item>
-     *     <a:item select="phone">Call Number</a:Item>
-     *     <a:divider />
-     *     <a:item select="phone">Remove</a:Item>
-     *     <a:divider />
-     *     <a:item select="person|phone">View Pictures</a:Item>
-     *  </a:menu>
-     *
-     *  <a:menu id="mnuXY">
-     *     <a:item>Reboot</a:Item>
-     *  </a:menu>
+     *   <a:menu id="mnuTest">
+     *       <a:item match="[person]" method="send">Send an E-mail</a:item>
+     *       <a:item match="[phone]" method="call">Call Number</a:item>
+     *       <a:divider />
+     *       <a:item match="[phone]" method="remove">Remove</a:item>
+     *       <a:divider />
+     *       <a:item match="[person|phone]" method="viewpictures">View Pictures</a:item>
+     *   </a:menu>
+     *   
+     *   <a:menu id="mnuXY">
+     *       <a:item method="reboot">Reboot</a:item>
+     *   </a:menu>
+     *   
+     *   <a:text contextmenu="mnuXY" width="200" height="200">
+     *       Please right-click on this plane
+     *   </a:text>
+     *   
+     *   <a:list id="lstTest" allow-deselect="true" width="200" height="200">
+     *       <a:each match="[person|phone|computer]">
+     *           <a:caption match="[@caption]" />
+     *           <a:icon match="[person]" value="user.png" />
+     *           <a:icon match="[phone]" value="phone.png" />
+     *           <a:icon match="[computer]" value="computer.png" />
+     *       </a:each>
+     *       <a:model>
+     *           <data>
+     *               <person caption="Ruben Daniels" />
+     *               <person caption="Rik Arends" />
+     *               <phone caption="+31 555 544486" />
+     *               <phone caption="+1 555 2392" />
+     *               <computer caption="Mail Server" />
+     *               <computer caption="File Server" />
+     *           </data>
+     *       </a:model>
+     *       <a:contextmenu menu="mnuXY" match="[computer]" />
+     *       <a:contextmenu menu="mnuTest" />
+     *   </a:list>
      * </code>
      */
     this.$propHandlers["select"] = function(value){

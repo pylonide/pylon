@@ -30,9 +30,9 @@
  * <code>
  *  <a:model id="mdlPictures"> 
  *      <pictures> 
- *          <picture title="Landscape" src="slideshow_img/landscape.jpg" />
- *          <picture title="Animal" src="http://example.com/animal.jpg" />
- *          <picture title="River" src="http://example.com/river.jpg" />
+ *          <picture title="Landscape" src="img1.jpg" />
+ *          <picture title="Animal" src="img2.jpg" />
+ *          <picture title="River" src="img3.jpg" />
  *      </pictures> 
  *  </a:model>
  *  <a:list 
@@ -43,12 +43,12 @@
  *    model  = "mdlPictures">
  *      <a:each match = "[picture]" >
  *          <a:name match="[@title]" />
- *          <a:image match="[@src]" />
+ *          <a:image match="[@src]">path/to/image/[@src]</a:image>
  *      </a:each>
  *  </a:list>
  *  <a:img 
  *    model  = "{lstPics.selected}" 
- *    value  = "[@src]" 
+ *    value  = "path/to/image/[@src]" 
  *    width  = "200" 
  *    height = "200" />
  * </code>
@@ -70,15 +70,6 @@
  * from the bound data.
  * Example:
  * Sets the image source based on data loaded into this component.
- * <code>
- *  <a:img>
- *      <a:bindings>
- *          <a:value match="[@src]" />
- *      </a:bindings>
- *  </a:img>
- * </code>
- * Example:
- * A shorter way to write this is:
  * <code>
  *  <a:model id="mdlPictures"> 
  *      <data src="path/to/image.jpg" /> 

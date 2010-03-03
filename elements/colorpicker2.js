@@ -44,17 +44,8 @@
  * Example:
  * Sets the color based on data loaded into this component.
  * <code>
- *  <a:colorpicker>
- *      <a:bindings>
- *          <a:value match="[@color]" />
- *      </a:bindings>
- *  </a:colorpicker>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
  *  <a:model id="mdlColor">
- *      <data color="#00099"></data>
+ *      <data color="#000099"></data>
  *  </a:model>
  *  <a:colorpicker 
  *    model = "mdlColor" 

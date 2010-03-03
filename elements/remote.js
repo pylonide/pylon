@@ -129,7 +129,7 @@
  *
  *  <a:remote transport="myXMPP" id="rmtPersons">
  *      <a:person unique="[@number]" />
- *      <a:unique match="[self::galaxy]" unique="[@name]" />
+ *      <a:unique match="[galaxy]" unique="[@name]" />
  *      <a:planet unique="[@id]" />
  *      <a:species unique="[text()]" />
  *  </a:remote>

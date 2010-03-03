@@ -31,12 +31,12 @@
  * <code>
  *  <a:portal columns="60%,40%">
  *      <a:bindings>
- *          <a:src select="@src" />
- *          <a:collapsed select="@collapsed" default="0" />
+ *          <a:src match="[@src]" />
+ *          <a:collapsed match="[@collapsed]" value="0" />
  *          <a:icon value="icoDocklet.png" />
- *          <a:column select="@column" />
- *          <a:caption select="@name" />
- *          <a:each select="docklet" />
+ *          <a:column match="[@column]" />
+ *          <a:caption match="[@name]" />
+ *          <a:each match="[docklet]" />
  *      </a:bindings>
  *      <a:model>
  *          <docklets>

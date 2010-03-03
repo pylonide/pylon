@@ -51,6 +51,7 @@
  *          mask       = "password"
  *          minlength  = "4"
  *          invalidmsg = "Please enter a password of at least four characters" />
+ *      <a:button onclick="vgForm.validate()">Validate</a:button>
  *  </a:bar>
  * </code>
  *

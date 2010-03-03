@@ -26,7 +26,7 @@
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
  * <code>
- *  <a:frame title="Options">
+ *  <a:frame caption="Options">
  *      <a:radiobutton>Option 1</a:radiobutton>
  *      <a:radiobutton>Option 2</a:radiobutton>
  *      <a:radiobutton>Option 3</a:radiobutton>

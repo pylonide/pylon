@@ -341,7 +341,7 @@ apf.model = function(struct, tagName){
         $attrBindings
         //split / join, pop, indexOf
         
-        <j:textbox value="{persons/person/@blah}" width="{persons/blah/@width}" height="[@height]" model="mdlBlah::bli"/>
+        <a:textbox value="[persons/person/@blah]" width="[persons/blah/@width]" height="[@height]" model="[mdlBlah::bli]"/>
     */
     this.$bindXmlProperty = function(amlNode, prop, xpath, optimize, listenRoot) {
         var q ,p, id = amlNode.$uniqueId;

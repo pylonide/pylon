@@ -53,7 +53,12 @@
  * component is an alias for the datagrid. It has a different skin and different
  * defaults. See {@link element.datagrid.attribute.template the template attribute}.
  * <code>
- *  <a:propedit template="mdlTemplate" />
+ *  <a:propedit 
+ *    columns    = "35%,65%" 
+ *    model      = "mdlData" 
+ *    properties = "[mdlProps::folder]" 
+ *    width      = "300" 
+ *    height     = "500" />
  * </code>
  *
  * @constructor
@@ -87,47 +92,138 @@
  *   {XMLElement} dataNode  the {@link term.datanode data node}.
  *   Example:
  *   <code>
+ *      <a:model id="mdlProps">
+ *          <props>
+ *              <folder>
+ *                   <group caption="General">
+ *                      <prop 
+ *                        caption    = "Title" 
+ *                        editor     = "textbox" 
+ *                        value      = "[@caption]" 
+ *                        required   = "true" />
+ *                      <prop 
+ *                        caption  = "Priority" 
+ *                        editor   = "dropdown" 
+ *                        value    = "[@priority]">
+ *                           <item value="1">1</item> 
+ *                           <item value="2">2</item> 
+ *                           <item value="3">3</item> 
+ *                           <item value="4">4</item> 
+ *                           <item value="5">5</item> 
+ *                      </prop>
+ *                      <prop 
+ *                        caption   = "(Align)" 
+ *                        editor    = "textbox" 
+ *                        value     = "[@align]">
+ *                           <prop 
+ *                             caption  = "Position" 
+ *                             editor   = "dropdown" 
+ *                             value    = "[@align-template]">
+ *                               <item value="left">left</item> 
+ *                               <item value="top">top</item> 
+ *                               <item value="right">right</item> 
+ *                               <item value="bottom">bottom</item> 
+ *                           </prop>
+ *                           <prop 
+ *                             caption  = "Splitter" 
+ *                             editor   = "checkbox" 
+ *                             values   = "True|False"
+ *                             value    = "[@splitter]" />
+ *                           <prop 
+ *                             caption  = "Edge" 
+ *                             editor   = "slider" 
+ *                             value    = "[@edge]" />
+ *                           <prop 
+ *                             caption  = "Some value" 
+ *                             editor   = "spinner" 
+ *                             value    = "[@some]" />
+ *                      </prop>
+ *                      <prop 
+ *                         caption  = "Date" 
+ *                         editor   = "caldropdown" 
+ *                         value    = "[@date]" />
+ *                   </group>
+ *                   <group caption="Advanced">
+ *                      <prop 
+ *                        caption    = "Title" 
+ *                        editor     = "textbox" 
+ *                        value      = "[@caption]" 
+ *                        required   = "true" />
+ *                      <prop 
+ *                        caption  = "Priority" 
+ *                        editor   = "dropdown" 
+ *                        value    = "[@priority]">
+ *                           <item value="1">1</item> 
+ *                           <item value="2">2</item> 
+ *                           <item value="3">3</item> 
+ *                           <item value="4">4</item> 
+ *                           <item value="5">5</item> 
+ *                      </prop>
+ *                      <prop 
+ *                        caption   = "(Align)" 
+ *                        editor    = "textbox" 
+ *                        value     = "[@align]">
+ *                           <prop 
+ *                             caption  = "Position" 
+ *                             editor   = "dropdown" 
+ *                             value    = "[@align-template]">
+ *                               <item value="left">left</item> 
+ *                               <item value="top">top</item> 
+ *                               <item value="right">right</item> 
+ *                               <item value="bottom">bottom</item> 
+ *                           </prop>
+ *                           <prop 
+ *                             caption  = "Splitter" 
+ *                             editor   = "checkbox" 
+ *                             values   = "True|False"
+ *                             value    = "[@splitter]" />
+ *                           <prop 
+ *                             caption  = "Edge" 
+ *                             editor   = "slider" 
+ *                             value    = "[@edge]" />
+ *                           <prop 
+ *                             caption  = "Some value" 
+ *                             editor   = "spinner" 
+ *                             value    = "[@some]" />
+ *                      </prop>
+ *                      <prop 
+ *                         caption  = "Date" 
+ *                         editor   = "caldropdown" 
+ *                         value    = "[@date]" />
+ *                   </group>
+ *              </folder>
+ *              <file>
+ *                  <prop 
+ *                    caption    = "Title" 
+ *                    type       = "textbox" 
+ *                    select     = "@caption" 
+ *                    required   = "true" />
+ *                  <prop 
+ *                    caption  = "Priority" 
+ *                    type     = "dropdown" 
+ *                    select   = "@priority"
+ *                    overview = "overview">
+ *                       <item value="1">1</item> 
+ *                       <item value="2">2</item> 
+ *                       <item value="3">3</item> 
+ *                       <item value="4">4</item> 
+ *                       <item value="5">5</item> 
+ *                  </prop>
+ *              </file>
+ *          </props>
+ *      </a:model>
+ *      
+ *      <a:model id="mdlData">
+ *          <folder caption="My Documents" priority="4" align="left-splitter-3" />
+ *      </a:model>
+ *       
  *      <a:propedit 
- *        lookupaml      = "tmpLookup"
- *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
- *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
- *        onmultiedit    = "loadMultiEdit(event, this)">
- *          <a:bindings>
- *              <a:template select="self::product" value="mdlProps:product" />
- *          </bindings>
- *      </propedit>
- *
- *      <a:template id="tmpLookup" autoinit="true">
- *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
- *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
- *            autoselect="false">
- *              <a:bindings>
- *                  <a:caption select="self::picture"><![CDATA[
- *                      {name} | {description}
- *                  ]]></caption>
- *                  <!-- use @descfield -->
- *                  <a:caption><![CDATA[[
- *                      var field = n.parentNode.getAttribute("descfield");
- *                      %(value(field) || "[Geen Naam]");
- *                  ]]]></caption>
- *                  <a:icon select="self::product" value="package_green.png" />
- *                  <a:icon value="table.png" />
- *                  <a:each select="node()[local-name()]" />
- *              </bindings>
- *              <a:actions />
- *          </list>
- *          
- *          <a:toolbar>
- *              <a:bar>
- *                  <a:button id="btnLkpPrev" disabled="true" 
- *                      onclick="...">&lt; Previous</button>
- *                  <a:spinner id="spnLookup" width="40" 
- *                      min="1" max="1" onafterchange="..." />
- *                  <a:button id="btnLkpNext" disabled="true" 
- *                      onclick="...">Next &gt;</button>
- *              </bar>
- *          </toolbar>
- *      </template>
+ *        id         = "pe" 
+ *        columns    = "35%,65%" 
+ *        model      = "mdlData" 
+ *        properties = "[mdlProps::folder]" 
+ *        width      = "300" 
+ *        height     = "500" />
  *   </code>
  * @binding caption   Determines the caption of a node.
  * @binding css       Determines a css class for a node.
