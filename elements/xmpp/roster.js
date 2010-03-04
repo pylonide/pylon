@@ -44,7 +44,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
     var aEntities = [],
         aRooms    = [],
         userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
-                     "fullJID": 1, "status": 1};
+                     "fullJID": 1, "status": 1, "affiliation": 1, "role": 1};
 
     this.registerAccount = function(username, domain, resource) {
         if (!resource)
@@ -149,8 +149,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 room        : (modelContent.muc && resource) ? bareJID : null,
                 roomJID     : null,
                 subscription: options.subscription || "",
-                affiliation : null,
-                role        : null,
+                affiliation : options.affiliation || null,
+                role        : options.role || null,
                 group       : options.group || "",
                 status      : (bIsRoom || (modelContent.muc && resource))
                     ? apf.xmpp.TYPE_AVAILABLE
@@ -240,7 +240,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @param {String} sMsg The actual message
      * @type  {void}
      */
-    this.updateMessageHistory = function(sJID, sMsg) {
+    this.updateMessageHistory = function(sJID, sMsg, sThread) {
+        // #ifdef __WITH_RSB
+        if (sThread == "rsb") return true;
+        // #endif
         if (!model || !(modelContent.chat || modelContent.muc)) return false;
 
         var oEnt, oRoom;
@@ -285,6 +288,18 @@ apf.xmpp_roster = function(model, modelContent, res) {
         return aRooms;
     };
 
+    this.getRoomParticipants = function(sRoom) {
+        var o,
+            res = [],
+            i   = 0,
+            l   = aEntities.length;
+        for (; i < l; i++) {
+            if ((o = aEntities[i]).room == sRoom)
+                res.push(o);
+        }
+        return res;
+    }
+
     /**
      * Get the full list (Array) of entities (users/ contacts).
      * 
@@ -328,7 +343,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {String}
      */
     this.sanitizeJID = function(sJID) {
-        return sJID.replace(/[\"\s\&\\\/\:<>]+/, "");
+        return sJID.replace(/[\"\s\&\\\/\:<>]+/, "").toLowerCase();
     };
 };
 

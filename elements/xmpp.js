@@ -266,6 +266,11 @@ apf.xmpp = function(struct, tagName){
             this.implement(apf.xmpp_muc);
         }
     };
+
+    this.$initMuc = function() {
+        if (this.$canMuc) return;
+        this.setProperty("muc-model", "rsb");
+    };
     // #endif
 
     /*
@@ -720,6 +725,10 @@ apf.xmpp = function(struct, tagName){
             if (callback)
                 callback(null, apf.SUCCESS);
         }
+    };
+
+    this.isConnected = function() {
+        return Boolean(this.$serverVars[CONN]);
     };
 
     /**
@@ -1434,6 +1443,12 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function parseData(oXml) {
+        //#ifdef __TP_XMPP_MUC
+        if (this.$serverVars["muc_callback"]) {
+            this.$serverVars["muc_callback"]();
+            delete this.$serverVars["muc_callback"];
+        }
+        //#endif
         if (oXml && oXml.nodeType) {
             this.$serverVars["previousMsg"] = [];
             // do other stuff... like processing the messages? :P
@@ -1486,52 +1501,56 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function parseMessagePackets(aMessages) {
-        var sMsg, sFrom, sJID, oBody, bRoom,
+        var oMsg, sJID, sType, oThread, sThread, sMsg, sFrom, oBody, bRoom,
             i = 0,
             l = aMessages.length;
 
         for (; i < l; i++) {
-            sJID  = aMessages[i].getAttribute("from");
-            bRoom = (aMessages[i].getAttribute("type") == "groupchat");
+            oMsg    = aMessages[i];
+            sJID    = oMsg.getAttribute("from");
+            sType   = oMsg.getAttribute("type");
+            bRoom   = (sType == "groupchat");
             // #ifdef __TP_XMPP_ROSTER
             if (sJID && !bRoom)
                 this.$serverVars[ROSTER].getEntityByJID(sJID); //unsed var...yet?
             // #endif
 
-            if (aMessages[i].getAttribute("type") == "chat" || bRoom) {
-                oBody = aMessages[i].getElementsByTagName("body")[0];
-                if (!(oBody && oBody.childNodes.length)) continue;
-                
-                sFrom = aMessages[i].getAttribute("from");
-                sMsg  = getMessage(oBody);
-                // #ifdef __TP_XMPP_ROSTER
-                // #ifdef __TP_XMPP_MUC
-                if (bRoom && sFrom == this.$mucRoster.fullJID)
-                    return;
-                // #endif
-                if ((bRoom ? this.$mucRoster : this.$serverVars[ROSTER])
-                  .updateMessageHistory(sFrom, sMsg)) {
-                // #endif
+            oBody = oMsg.getElementsByTagName("body")[0];
+            if (!(oBody && oBody.childNodes.length)) continue;
+
+            oThread = oMsg.getElementsByTagName("thread");
+            if (oThread.length)
+                sThread = oThread[0].firstChild.nodeValue.trim();
+            sFrom = oMsg.getAttribute("from");
+            sMsg  = getMessage(oBody);
+            // #ifdef __TP_XMPP_ROSTER
+            // #ifdef __TP_XMPP_MUC
+            if (bRoom && sFrom == this.$mucRoster.fullJID)
+                return;
+            // #endif
+
+            if ((bRoom ? this.$mucRoster : this.$serverVars[ROSTER])
+              .updateMessageHistory(sFrom, sMsg, sThread)) {
+            // #endif
+                if (sType == apf.xmpp.MSG_CHAT) {
                     this.dispatchEvent("receivechat", {
                         from   : sFrom,
                         message: sMsg
                     });
-                // #ifdef __TP_XMPP_ROSTER
+                }
+                // #ifdef __WITH_RSB
+                else if (sType == apf.xmpp.MSG_NORMAL
+                  || (sType == apf.xmpp.MSG_GROUPCHAT && sThread == "rsb")) {
+                    //#ifdef __DEBUG
+                    apf.console.info("received the following from the server: "
+                        + sMsg, "xmpp");
+                    //#endif
+                    this.$mucSignal(apf.xmpp.NS.datastatus, sFrom, sMsg);
                 }
                 // #endif
+            // #ifdef __TP_XMPP_ROSTER
             }
-            else if (aMessages[i].getAttribute("type") == "normal") { //normal = Remote SmartBindings
-                oBody = aMessages[i].getElementsByTagName("body")[0];
-                if (!(oBody && oBody.childNodes.length)) continue;
-
-                //Remote SmartBindings support
-                sMsg = getMessage(oBody);
-                //#ifdef __DEBUG
-                apf.console.info("received the following from the server: "
-                    + sMsg, "xmpp");
-                //#endif
-                this.dispatchEvent("datachange", { data: sMsg });
-            }
+            // #endif
         }
     }
 
@@ -1568,13 +1587,17 @@ apf.xmpp = function(struct, tagName){
                                 break;
                             o = aX[k].getElementsByTagName("item")[0];
                             if (!o) break;
-                            this.$mucRoster.getEntityByJID(sJID, {
+                            this.$mucRoster.getEntityByJID(sJID, o = {
                                 roomJID    : o.getAttribute("jid"),
                                 affiliation: o.getAttribute("affiliation"),
                                 role       : o.getAttribute("role"),
                                 status     : aPresence[i].getAttribute("type")
                                     || apf.xmpp.TYPE_AVAILABLE
                             });
+                            if (o.affiliation == "owner") {
+                                o.owner = sJID;
+                                this.dispatchEvent("receivedowner", o);
+                            }
                             break;
                     }
                 }
@@ -1584,7 +1607,7 @@ apf.xmpp = function(struct, tagName){
                 var oRoster = this.$serverVars[ROSTER],
                     oUser   = oRoster.getEntityByJID(sJID),
                     sType   = aPresence[i].getAttribute("type");
-                    
+
                 if (sType == apf.xmpp.TYPE_SUBSCRIBE) {
                     // incoming subscription request, deal with it!
                     incomingAdd.call(this, aPresence[i].getAttribute("from"));
@@ -1683,6 +1706,11 @@ apf.xmpp = function(struct, tagName){
                     case apf.xmpp.NS.muc_owner:
                         this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sFrom);
                         break;
+                    // #ifdef __WITH_RSB
+                    case apf.xmpp.NS.datastatus:
+                        this.$mucSignal(apf.xmpp.NS.datastatus, sFrom, aIQs[i]);
+                        break;
+                    // #endif
                     // #endif
                     default:
                         break;
@@ -2014,7 +2042,7 @@ apf.xmpp = function(struct, tagName){
 
         if (!this.$serverVars[CONN]) return false;
 
-        var bRoom = (this.$canMuc && type == "groupchat"),
+        var bRoom = (this.$canMuc && type == apf.xmpp.MSG_GROUPCHAT),
             aArgs = Array.prototype.slice.call(arguments),
             oUser;
         // #ifdef __TP_XMPP_ROSTER
@@ -2022,7 +2050,7 @@ apf.xmpp = function(struct, tagName){
             oUser = this.$serverVars[ROSTER].getEntityByJID(to);
         // #endif
 
-        if (!oUser){
+        if (!oUser && !bRoom){
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(0, this,
                         "XMPP sendMessage error: no valid 'to' address provided",
@@ -2055,17 +2083,37 @@ apf.xmpp = function(struct, tagName){
         );
     };
 
-    //#ifdef __WITH_RSB
-    this.sendRSB = function(message) {
-        var oRoster = this.$serverVars[ROSTER];
-        if (!oRoster) return;
-        var aUsers = oRoster.getAllEntities(apf.xmpp.TYPE_AVAILABLE),
-            i      = 0,
-            l      = aUsers.length;
-        for (; i < l; i++)
-            this.sendMessage(aUsers[i].bareJID, message, null, apf.xmpp.MSG_NORMAL);
+    this.getTime = function(sEntity, fCallback) {
+        var sIq = createIqBlock({
+                type  : "get",
+                id    : makeUnique("time"),
+                from  : this.$serverVars[ROSTER].fullJID,
+                to    : sEntity
+            },
+            "<time xmlns='" + apf.xmpp.NS.time + "'/>"
+        ),
+        _self = this;
+        this.$doXmlRequest(function(oXml) {
+                if (oXml && oXml.nodeType) {
+                    var iq = oXml.getElementsByTagName("iq")[0];
+                    if (iq && iq.getAttribute("type") == "result"
+                      && iq.getElementsByTagName("time").length) {
+                        return fCallback({
+                            tzo: iq.getElementsByTagName("tzo")[0].firstChild.nodeValue,
+                            utc: iq.getElementsByTagName("utc")[0].firstChild.nodeValue
+                        });
+                    }
+                }
+                fCallback(false);
+            }, _self.$isPoll
+            ? createStreamElement.call(this, null, null, sIq)
+            : createBodyElement({
+                rid   : this.$getRID(),
+                sid   : this.$serverVars[SID],
+                xmlns : apf.xmpp.NS.httpbind
+            }, sIq)
+        );
     };
-    // #endif
 
     /**
      * Makes sure that a few header are sent along with all the requests to the
@@ -2091,6 +2139,16 @@ apf.xmpp = function(struct, tagName){
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
         this.disconnect();
     });
+
+    // #ifdef __TP_XMPP_MUC && __WITH_RSB
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        var _self = this;
+        $setTimeout(function() {
+            if (!_self.$canMuc)
+                _self.$initMuc();
+        });
+    });
+    // #endif
     
     // #ifdef __WITH_DATA
     
@@ -2131,12 +2189,16 @@ apf.xmpp.NS   = {
     httpbind    : "http://jabber.org/protocol/httpbind",
     feature_reg : "http://jabber.org/features/iq-register",
     bosh        : "urn:xmpp:xbosh",
+    time        : "urn:xmpp:time",
     jabber      : "jabber:client",
     bind        : "urn:ietf:params:xml:ns:xmpp-bind",
     session     : "urn:ietf:params:xml:ns:xmpp-session",
     auth        : "jabber:iq:auth",
     roster      : "jabber:iq:roster",
     register    : "jabber:iq:register",
+    //#ifdef __WITH_RSB
+    datastatus  : "jabber:iq:rsbstatus",
+    //#endif
     data        : "jabber:x:data",
     stream      : "http://etherx.jabber.org/streams",
     disco_info  : "http://jabber.org/protocol/disco#info",

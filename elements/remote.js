@@ -103,11 +103,11 @@
  * @allowchild unique, {any}
  * @addnode elements
  *
- * @define unique Element defining what is unique about a set of data
- * elements. This enables remote smartbindings to point to xml data in 
- * the same way on all clients. This way changes that happen to these 
- * elements are described non-ambiguously. The tagName can be replaced
- * by the tagName of the {@link term.datanode data node} for which the uniqueness is specified.
+ * @define unique Element defining what is unique about a set of data elements.
+ * This enables remote smartbindings to point to xml data in  the same way on all
+ * clients. This way changes that happen to these elements are described
+ * non-ambiguously. The tagName can be replaced by the tagName of the
+ * {@link term.datanode data node} for which the uniqueness is specified.
  * Example:
  * This example shows a complex data set and a remote smartbinding that
  * specifies the uniqueness of all nodes concerned.
@@ -134,8 +134,10 @@
  *      <a:species unique="[text()]" />
  *  </a:remote>
  * </code>
- * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes} that share a similar uniqueness trait.
- * @attribute {String} unique   the xpath that retrieves the unique value for a specific {@link term.datanode data node}.
+ * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes}
+ *                              that share a similar uniqueness trait.
+ * @attribute {String} unique   the xpath that retrieves the unique value for a
+ *                              specific {@link term.datanode data node}.
  */
 /**
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -153,11 +155,13 @@ apf.remote = function(struct, tagName){
 };
 
 (function(){
-    this.lookup     = {};
-    this.select     = [];
-    this.models     = [];
-    this.rsbQueue   = {};
-    this.queueTimer = null;
+    this.lookup              = {};
+    this.select              = [];
+    this.models              = {};
+    this.rsbQueue            = {};
+    this.queueTimer          = null;
+    this.pendingSessions     = {};
+    this.pendingTerminations = {};
     
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;
@@ -167,6 +171,36 @@ apf.remote = function(struct, tagName){
     this.$attrExcludePropBind = apf.extend({
         match : 1
     }, this.$attrExcludePropBind);
+
+    this.startSession = function(model, xpath) {
+        console.log("starting session", model, xpath);
+        if (!model.id)
+            model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
+        xpath  = xpath || "//";
+        var id = model.id + ":" + xpath;
+        this.models[id] = model;
+        // @todo: impl. partial model sharing
+        if (this.transport && this.transport.isConnected())
+            this.transport.startRSB(model, this.sessionStarted);
+        else
+            this.pendingSessions[id] = model;
+    };
+
+    this.endSession = function(model, xpath) {
+        console.log("ending session", model, xpath);
+        xpath  = xpath || "//";
+        var id = model.id + ":" + xpath;
+        // @todo: impl. partial model sharing
+        if (this.transport && this.transport.isConnected())
+            this.transport.endRSB(model);
+        else
+            this.pendingSessions[id] = model;
+        delete this.models[id];
+    };
+
+    this.sessionStarted = function(sRoom, iTime) {
+        console.log("session started: ", sRoom, iTime);
+    };
     
     this.sendChange = function(args, model){
         if (apf.xmldb.disableRSB)
@@ -201,9 +235,6 @@ apf.remote = function(struct, tagName){
     };
     
     this.queueMessage = function(args, model, qHost){
-        if (!model.id)
-            model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
-
         if (!qHost.rsbQueue)
             qHost.rsbQueue = {};
         if (!qHost.rsbQueue[model.id]) {
@@ -224,7 +255,7 @@ apf.remote = function(struct, tagName){
             //#ifdef __DEBUG
             apf.console.info("Sending RSB message\n" + apf.serialize(qHost.rsbQueue[model]));
             //#endif
-            this.transport.sendRSB(apf.serialize(qHost.rsbQueue[model]));
+            this.transport.sendRSB(model, apf.serialize(qHost.rsbQueue[model]));
         }
         qHost.rsbQueue = {};
     };
@@ -341,12 +372,26 @@ apf.remote = function(struct, tagName){
         }
         //#endif
 
+        this.transport.addEventListener("connected", function() {
+            var s;
+            for (s in _self.pendingTerminations)
+                _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
+            console.dir(_self.pendingSessions);
+            for (s in _self.pendingSessions)
+                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
+        });
+
         this.transport.addEventListener("datachange", function(e){
-            var data = apf.unserialize(e.data),
+            var data = apf.unserialize(e.body),
                 i    = 0,
                 l    = data.length;//@todo error check here.. invalid message
             for (; i < l; i++)
                 _self.receiveChange(data[i]);
+        });
+
+        this.transport.addEventListener("datastatuschange", function(e) {
+            // todo
+            // e looks like { model: "mdlData", seq: 0, status: "ACK" }
         });
     });
 }).call(apf.remote.prototype = new apf.AmlElement());

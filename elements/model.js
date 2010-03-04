@@ -149,25 +149,31 @@ apf.model = function(struct, tagName){
     //#ifdef __WITH_RSB
     //Connect to a remote smartbinding
     this.$propHandlers["remote"] = function(value, prop){
-        if (this.rsb) {
-            this.rsb.models.remove(this);
-            this.rsb = null;
-        }
-        
-        if (value) {
-            this.rsb = apf.nameserver.get("remote", this.remote);
+        this.unshare();
 
-            //#ifdef __DEBUG
-            if (!this.rsb || !this.rsb.models) {
-                throw new Error(apf.formatErrorString(0, null,
-                    "Loading AML into model",
-                    "Could not find reference to remote smartbinding: '"
-                    + this.getAttribute("remote") + "'", this))
-            }
-            //#endif
+        if (value)
+            this.share();
+    };
 
-            this.rsb.models.push(this);
+    this.share = function(xpath) {
+        this.rsb = apf.nameserver.get("remote", this.remote);
+
+        //#ifdef __DEBUG
+        if (!this.rsb || !this.rsb.models) {
+            throw new Error(apf.formatErrorString(0, null,
+                "Loading AML into model",
+                "Could not find reference to remote smartbinding: '"
+                + this.getAttribute("remote") + "'", this))
         }
+        //#endif
+
+        this.rsb.startSession(this, xpath || "//");
+    };
+
+    this.unshare = function(xpath) {
+        if (!this.rsb) return;
+        this.rsb.endSession(this, xpath || "//");
+        this.rsb = null;
     };
     //#endif
 
