@@ -185,8 +185,9 @@ apf.soap = function(){
             this.nsName, ":", functionName, " xmlns:",
             this.nsName, "=\"", this.nsURL, "\">"]
 
-        for (var i = 0, l = args.length; i < l; i++)
-            message.push(this.doSerialize(args[i]));
+         for (var param in args) {
+             message.push(this.doSerialize(args[param], param));
+         }
 
         message.push("</", this.nsName, ":", functionName,
            "></SOAP-ENV:Body></SOAP-ENV:Envelope>");
