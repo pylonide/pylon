@@ -350,7 +350,7 @@ apf.slider = function(struct, tagName){
             min = parseInt(apf.getBox(
                 apf.getStyle(this.oContainer, "padding"))[3]);
 
-            offset = (((max - min) * multiplier) + min);
+            offset = Math.round(((max - min) * multiplier) + min);
 
             if (animate) {
                 apf.tween.single(this.oKnob, {
