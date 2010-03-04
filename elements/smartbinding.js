@@ -50,10 +50,14 @@
  * A smartbinding can be used by multiple elements referenced by id:
  * <code>
  *  <a:smartbinding id="sbExample">
- *      <a:model />
- *      ...
+ *      <a:model id="mdlList" src="http://localhost/get_person.php?id=10" />
+ *      <a:bindings>
+ *          <a:caption match="[@name]" />
+ *          <a:each match="[user]"/>
+ *      </a:bindings>
  *  </a:smartbinding>
- *  <a:tree smartbinding="sbExample" />
+ *
+ *  <a:list width="300" smartbinding="sbExample" />
  * </code>
  *
  * Bindings:
@@ -120,11 +124,11 @@
  * name as the name of the binding rule. In the next example, the visible
  * attribute of a textbox is based on the availability of a {@link term.datanode data node}:
  * <code>
- *  <a:textbox>
- *      <a:bindings>
- *          <a:visible match="[name]" value="true" />
- *      </a:bindings>
- *  </a:textbox>
+ *  <a:model>
+ *      <data name="false" />
+ *  </a:model>
+ *  
+ *  <a:textbox visible="[@name]" value="Text" />
  * </code>
  * Each element has a primary bind rule that can be accessed in a short format.
  * This is usually the value bind rule. The short format works as follows:
@@ -178,11 +182,24 @@
  * not specified, they each default to an icon representing their type. This would
  * be encoded like this:
  * <code>
- *  <a:bindings>
- *      <a:icon match="[@icon]" />
- *      <a:icon match="[folder]" value="folder.png" />
- *      <a:icon match="[file]" value="file.png" />
- *  </a:bindings>
+ *  <a:model id="mdlSmart1">
+ *      <data>
+ *          <folder caption="folder 1">
+ *              <file caption="file 1" />
+ *              <file caption="file 2" />
+ *              <file caption="unknown" icon="icoAnything.gif" />
+ *          </folder>
+ *      </data>
+ *  </a:model>
+ *  <a:tree model="mdlSmart1">
+ *      <a:bindings>
+ *          <a:caption value="[@caption]" />
+ *          <a:icon match="[@icon]" />
+ *          <a:icon match="[folder]" value="Famfolder.gif" />
+ *          <a:icon match="[file]" value="icoEmpty.png" />
+ *          <a:each match="[folder|file]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  *
  * Processors:
@@ -217,9 +234,24 @@
  * javascript to the result by calling a method. The following examples shows
  * a caption where a javascript method inserts smileys.
  * <code>
- *  <a:bindings>
- *      <a:caption match="[body]" method="insertSmileys" />
- *  </a:bindings>
+ *  <a:model id="mdlSmart1">
+ *      <data>
+ *          <file caption="file 1" />
+ *          <file caption="file 2" />
+ *      </data>
+ *  </a:model>
+ *  <a:tree model="mdlSmart1" height="100">
+ *      <a:script>
+ *          function insertSmileys(value) {
+ *              //do something with value
+ *              return value;
+ *          }
+ *      </a:script>
+ *      <a:bindings>
+ *          <a:caption value="{insertSmileys([@caption])}" />
+ *          <a:each match="[file]" />
+ *      </a:bindings>
+ *  </a:tree>
  * </code>
  *
  * Extending:
@@ -233,18 +265,24 @@
  * <code>
  *  <a:model id="mdlSmart2">
  *      <data>
- *          <item title="Title 1" id="1" leaf="long"></item>
- *          <item title="Title 2" id="2"></item>
+ *          <group name="Group 1">
+ *              <user name="User 1" id="1" leaf="long"></user>
+ *              <user name="User 2" id="2"></user>
+ *          </group>
+ *          <group name="Group 2">
+ *              <user name="User 3" id="3" leaf="long"></user>
+ *              <user name="User 4" id="4"></user>
+ *          </group>
  *      </data>
  *  </a:model>
  *  
  *  <a:tree model="mdlSmart2">
  *      <a:bindings>
- *          <a:caption match = "[@title]" />
+ *          <a:caption match="[@name]" />
  *          <a:insert  
- *            match = "[item[not(@leaf)]]" 
- *            get   = "http://servername.com/insert.php?keyword=[@id]" />
- *          <a:each match="[item]" />
+ *            match = "[user[not(@leaf)]]" 
+ *            get   = "http://localhost/get_person.php?id=[@id]" />
+ *          <a:each match="[user|group]" />
  *      </a:bindings>
  *  </a:tree>
  * </code>
@@ -267,8 +305,9 @@
  * <code>
  *  <a:datagrid>
  *      <a:actions>
- *          <a:remove select = "self::contact[not(@readonly)]"
- *                    set    = "remove_contact.jsp?id=[@dbid]" />
+ *          <a:remove 
+ *            match = "[contact[not(@readonly)]]" 
+ *            set   = "php/remove_contact.php?id=[@id]" />
  *      </a:actions>
  *  </a:datagrid>
  * </code>
@@ -749,7 +788,7 @@ apf.smartbinding = function(struct, tagName){
      * this smartbinding element
      * Example:
      * <code>
-     *  <a:smartbinding id="sbExample" bindings="actExample" />
+     *  <a:smartbinding id="sbExample" actions="actExample" />
      * </code>
      * @see element.actions
      * @see term.action
@@ -760,7 +799,7 @@ apf.smartbinding = function(struct, tagName){
      * element
      * Example:
      * <code>
-     *  <a:smartbinding id="sbExample" dragdrop="ddExample" />
+     *  <a:smartbinding id="sbExample" bindings="bndExample" />
      * </code>
      * @see element.dragdrop
      * @see term.smartbinding
@@ -779,9 +818,9 @@ apf.smartbinding = function(struct, tagName){
      * Example:
      * <code>
      *  <a:bindings id="bndFolders" >
-     *      <a:caption select="@name" />
-     *      <a:icon select="@icon" />
-     *      <a:each select="folder" sort="@name" />
+     *      <a:caption match="[@name]" />
+     *      <a:icon match="[@icon]" />
+     *      <a:each match="[folder]" sort="[@name]" />
      *  </a:bindings>
      *
      *  <a:tree bindings="bndFolders" />

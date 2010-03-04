@@ -193,12 +193,12 @@
  *              <prop 
  *                caption    = "Title" 
  *                type       = "textbox" 
- *                select     = "@caption" 
+ *                value      = "[@caption]" 
  *                required   = "true" />
  *                  <prop 
  *                    caption  = "Priority" 
  *                    type     = "dropdown" 
- *                    select   = "@priority"
+ *                    value    = "[@priority]"
  *                    overview = "overview">
  *                      <item value="1">1</item> 
  *                      <item value="2">2</item> 

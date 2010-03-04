@@ -37,7 +37,7 @@
  *  <a:button onclick="player1.play()">play</a:button>
  *  <a:button onclick="player1.pause()">pause</a:button>
  *
- *  <a:slider value="[player1.position]" />
+ *  <a:slider value="{player1.position}" />
  * </code>
  * Example:
  * This example shows two slider which lets the user indicate a value in a form.
@@ -161,6 +161,7 @@ apf.slider = function(struct, tagName){
      *    min   = "0"
      *    max   = "5000"
      *    step  = "1000"
+     *    mask  = "#"
      *    slide = "snap" />
      * </code>
      */

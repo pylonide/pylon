@@ -63,23 +63,30 @@
  * two methods which can be called. The return of the first method is handled
  * by a javascript function called processSearch.
  * <code>
- *  <a:rpc id="comm" protocol="xmlrpc">
- *      <a:method
- *        name    = "searchProduct"
- *        receive = "processSearch" />
- *      <a:method
- *        name = "loadProduct" />
+ *  <a:rpc 
+ *    id       = "flickr" 
+ *    protocol = "xmlrpc" 
+ *    url      = "http://www.flickr.com/services/xmlrpc/"> 
+ *      <a:method 
+ *        name        = "search" 
+ *        receive     = "flickrResult" 
+ *        method-name = "flickr.photos.search" />
  *  </a:rpc>
- *
- *  <a:script>
+ *  
+ *  <a:script>//<!-- 
  *      //This function is called when the search returns
- *      function processSearch(data, state, extra){
+ *      function flickrResult(data, state, extra) {
  *          alert(data)
- *      }
- *
- *      //Execute a search for the product car
- *      comm.searchProduct('car', 10);
- *  </a:script>
+ *      };
+ *      
+ *      //Execute a search for the flowers keyword
+ *      flickr.search({
+ *          api_key  : '5ab84bdb606e86015a15a45ffe8d022b',
+ *          text     : "flowers", 
+ *          per_page : 4, 
+ *          page     : 1
+ *      });
+ *  //--></a:script>
  * </code>
  *
  * Example:
@@ -88,26 +95,20 @@
  *  <a:rpc id="comm" protocol="cgi">
  *      <a:method
  *        name    = "searchProduct"
- *        url     = "http://example.com/search.php"
+ *        url     = "http://localhost/search.php"
  *        receive = "processSearch">
  *          <a:param name="search" />
  *          <a:param name="page" />
  *          <a:param name="textbanner" value="1" />
  *      </a:method>
- *      <a:method
- *        name = "loadProduct"
- *        url  = "http://example.com/show-product.php">
- *          <a:param name="id" />
- *          <a:param name="search_id" />
- *      </a:method>
  *  </a:rpc>
- *
+ *  
  *  <a:script>
  *      //This function is called when the search returns
  *      function processSearch(data, state, extra){
- *          alert(data)
+ *         alert(data)
  *      }
- *
+ *  
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </a:script>
