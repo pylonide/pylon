@@ -159,7 +159,7 @@ apf.model = function(struct, tagName){
         this.rsb = apf.nameserver.get("remote", this.remote);
 
         //#ifdef __DEBUG
-        if (!this.rsb || !this.rsb.models) {
+        if (!this.rsb || !this.rsb.sessions) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading AML into model",
                 "Could not find reference to remote smartbinding: '"

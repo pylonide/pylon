@@ -41,6 +41,8 @@ apf.xmpp_muc = function(){
         mucVars = {
             created: {} // list of room ID's that the user created him/herself
         },
+        // keep reference to access class constants in function scope chain
+        oXmpp   = apf.xmpp,
         // munge often-used strings
         SID     = "SID",
         JID     = "JID",
@@ -65,7 +67,7 @@ apf.xmpp_muc = function(){
             : _self.$createBodyElement({
                 rid   : _self.$getRID(),
                 sid   : _self.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : oXmpp.NS.httpbind
             }, sBody)
         );
     }
@@ -101,7 +103,7 @@ apf.xmpp_muc = function(){
                 to    : this.$mucDomain,
                 type  : "get",
                 id    : this.$makeUnique("disco")
-            }, "<query xmlns='" + apf.xmpp.NS.disco_items + "'/>")
+            }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
         );
     };
 
@@ -157,7 +159,7 @@ apf.xmpp_muc = function(){
                 to    : sRoom,
                 type  : "get",
                 id    : this.$makeUnique("disco")
-            }, "<query xmlns='" + apf.xmpp.NS.disco_items + "'/>")
+            }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
         );
     };
 
@@ -166,16 +168,17 @@ apf.xmpp_muc = function(){
         var f  = "room_cb_" + sRoom,
             cb = mucVars[f];
         delete mucVars[f];
-        //if (typeof cb != "function") return;
         switch (iType) {
             case apf.xmpp_muc.ROOM_CREATE:
             case apf.xmpp_muc.ROOM_EXISTS:
-                cb(true);
+                if (typeof cb == "function")
+                    cb(true);
                 break;
             case apf.xmpp_muc.ROOM_NOTFOUND:
-                cb(false);
+                if (typeof cb == "function")
+                    cb(false);
                 break;
-            case apf.xmpp.NS.datastatus:
+            case oXmpp.NS.datastatus:
                 // a datastatus message will typically look like this:
                 // <iq from="romeo@shakespeare.net/home" type="result" xmlns="jabber:iq:rsbstatus">
                 //     <item status="change" prevdelta="x" currdelta="y"><![CDATA[
@@ -204,7 +207,7 @@ apf.xmpp_muc = function(){
                 from  : this.$serverVars[JID],
                 to    : sRoom + "/" + sNick
             },
-            "<x xmlns='" + apf.xmpp.NS.muc + (sPassword
+            "<x xmlns='" + oXmpp.NS.muc + (sPassword
                 ? "'><password>" + sPassword + "</x>"
                 : "'/>")),
             fCallback
@@ -218,7 +221,7 @@ apf.xmpp_muc = function(){
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sRoom + "/" + sNick,
-                type  : apf.xmpp.TYPE_UNAVAILABLE
+                type  : oXmpp.TYPE_UNAVAILABLE
             }, sMsg ? "<status>" + sMsg + "</status>" : ""), fCallback
         );
     };
@@ -253,7 +256,7 @@ apf.xmpp_muc = function(){
                 from : _self.$serverVars[JID],
                 to   : sRoom
             },
-            "<x xmlns='" + apf.xmpp.NS.muc_user + "'><invite to='"
+            "<x xmlns='" + oXmpp.NS.muc_user + "'><invite to='"
             + oUser.bareJID + (sReason
                 ? "'><reason>" + sReason + "</reason></invite>"
                 : "'/>") + "</x>"),
@@ -269,7 +272,7 @@ apf.xmpp_muc = function(){
                 from : _self.$serverVars[JID],
                 to   : sRoom
             },
-            "<x xmlns='" + apf.xmpp.NS.muc_user + "'><decline to='"
+            "<x xmlns='" + oXmpp.NS.muc_user + "'><decline to='"
             + oUser.bareJID + (sReason
                 ? "'><reason>" + sReason + "</reason></invite>"
                 : "'/>") + "</x>"),
@@ -310,8 +313,8 @@ apf.xmpp_muc = function(){
                     type  : "set",
                     id    : _self.$makeUnique("create")
                 },
-                "<query xmlns='" + apf.xmpp.NS.muc_owner + "'><x xmlns='"
-                + apf.xmpp.NS.data + "' type='submit'/></query>")
+                "<query xmlns='" + oXmpp.NS.muc_owner + "'><x xmlns='"
+                + oXmpp.NS.data + "' type='submit'/></query>")
             );
         };
 
@@ -319,7 +322,7 @@ apf.xmpp_muc = function(){
                 from  : this.$serverVars[JID],
                 to    : sRoom + "/" + sNick
             },
-            "<x xmlns='" + apf.xmpp.NS.muc + "'/>")
+            "<x xmlns='" + oXmpp.NS.muc + "'/>")
         );
     };
 
@@ -354,7 +357,7 @@ apf.xmpp_muc = function(){
                 type  : "set",
                 id    : this.$makeUnique("create")
             },
-            "<query xmlns='" + apf.xmpp.NS.muc_owner + "'><destroy jid='"
+            "<query xmlns='" + oXmpp.NS.muc_owner + "'><destroy jid='"
             + sRoom + (sReason 
                 ? "'><reason>" + sReason + "</reason></destroy>"
                 : "'/>")
@@ -363,63 +366,101 @@ apf.xmpp_muc = function(){
     };
 
     //#ifdef __WITH_RSB
-    this.startRSB = function(oModel, fCallback) {
-        if (!oModel || !oModel.id)
+    this.startRSB = function(sSession, fCallback) {
+        if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RSB session", "Invalid model provided."));
-        var _self = this,
-            sRoom = this.$mucRoster.sanitizeJID(oModel.id + "@" + this.$mucDomain);
+        var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this.$mucDomain);
         mucVars[sRoom + "started"] = fCallback;
-        this.joinOrCreateRoom(sRoom, this.$mucRoster.fullJID, function() {
+        this.joinOrCreateRoom(sRoom, this.$serverVars["roster"].username, function() {
             if (mucVars.created[sRoom]) {
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
-                fCallback(oModel.id, (new Date()).valueOf());
+                fCallback(sRoom.substring(0, sRoom.indexOf("@")));
                 mucVars[sRoom + "started"] = null;
             }
             else {
                 // room created, now it's time to get the latest model version
                 // and metadata
-                console.log("room joined...");
+                mucVars[sRoom + "started"].joined = 0;
             }
         });
     };
 
-    this.endRSB = function(oModel) {
-        if (!oModel || !oModel.id)
+    this.endRSB = function(sSession) {
+        if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RSB session", "Invalid model provided."));
         // todo
     };
 
-    this.syncRSB = function(oModel) {
-        // todo
+    this.syncRSB = function(oData) {
+        // do not request data from rooms we created ourselves
+        if (mucVars.created[oData.room]) return;
+
+        var _self = this;
+        $setTimeout(function() {
+            _self.sendMessage({
+                to   : _self.$serverVars["roster"].getEntity(oData.owner).fullJID,
+                x    : "<field type='text-single' var='session'><value>"
+                     + oData.room.substring(0, oData.room.indexOf("@"))
+                     + "</value></field>"
+                     + "<field type='text-single' var='baseline'><value>get</value></field>"
+                     + "<field type='text-multi' var='modeldata'><value>" + oData.model + "</value></field>",
+                xtype: "submit",
+                type : oXmpp.MSG_NORMAL
+            });
+        });
+    };
+
+    this.sendSyncRSB = function(sTo, sSession, iBaseline, sData) {
+        var _self = this;
+        $setTimeout(function() {
+            _self.sendMessage({
+                to   : sTo,
+                x    : "<field type='text-single' var='session'><value>" + sSession + "</value></field>"
+                     + "<field type='text-single' var='baseline'><value>" + iBaseline + "</value></field>"
+                     + (sData
+                        ? "<field type='text-multi' var='modeldata'><value><![CDATA[" + sData + "]]></value></field>"
+                        : ""),
+                xtype: "result",
+                type : oXmpp.MSG_NORMAL
+            });
+        });
     };
 
     this.sendRSB = function(sModel, sMsg) {
         var oRoster = this.$serverVars["roster"];
         if (!oRoster) return;
         var sRoom = this.$mucRoster.sanitizeJID(sModel + "@" + this.$mucDomain);
-        this.sendMessage(sRoom, sMsg, "rsb", apf.xmpp.MSG_GROUPCHAT);
+        this.sendMessage({
+            to     : sRoom,
+            message: sMsg,
+            thread : "rsb",
+            type   : oXmpp.MSG_GROUPCHAT
+        });
     };
 
-    this.addEventListener("receivedowner", function(oData) {
-        var iResIdx   = oData.owner.indexOf("/"),
-            sRoom     = oData.owner.substring(0, iResIdx),
+    this.addEventListener("receivedparticipant", function(oData) {
+        var sPart     = oData.participant,
+            iResIdx   = sPart.indexOf("/"),
+            sRoom     = sPart.substring(0, iResIdx),
             sModel    = sRoom.substring(0, sRoom.indexOf("@")),
-            sJID      = oData.owner.substring(iResIdx + 1),
+            sNick     = sPart.substring(iResIdx + 1),
             fCallback = mucVars[sRoom + "started"];
-        mucVars[sRoom + "started"] = null;
         // do not request data from rooms we created ourselves
-        if (mucVars.created[sRoom]) return;
-        this.getTime(sJID, function(oData) {
-            var now = (new Date()).valueOf();
-            if (!oData) return fCallback(sModel, now);
-            fCallback(sModel, oData.utc.replace(/([\d]{4})-([\d]{2})-([\d]{2})T([\d]{2}):([\d]{2}):([\d]{2})Z/,
-              function(t, y, m, d, h, mm, s) {
-                  console.log("date parsed: " + y + "-" + m + "-" + d + "T" + h + ":" + mm + ":" + s + "Z", "same as " + oData.utc + "?");
-                  return new Date(parseInt(y), parseInt(m), parseInt(d), parseInt(h),
-                      parseInt(mm), parseInt(s)).valueOf();
-              }));
-        })
+        if (mucVars.created[sRoom] || (oData.affiliation != "owner"
+          && sNick != this.$serverVars["roster"].username))
+            return;
+
+        if (oData.affiliation == "owner")
+            fCallback.owner = sNick;
+        if (++fCallback.joined == 2) {
+            this.syncRSB({
+                room : sRoom,
+                model: sModel,
+                owner: fCallback.owner
+            });
+            delete mucVars[sRoom + "started"];
+        }
     });
     //#endif
 
@@ -433,6 +474,7 @@ apf.xmpp_muc.ROOM_EXISTS    = 2;
 apf.xmpp_muc.ROOM_NOTFOUND  = 3;
 apf.xmpp_muc.ROOM_JOINED    = 4;
 apf.xmpp_muc.ROOM_LEFT      = 5;
+apf.xmpp_muc.ROOM_RSB       = 5;
 
 apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
 apf.xmpp_muc.ACTION_KICK    = 0x0002;

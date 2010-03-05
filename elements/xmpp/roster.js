@@ -64,9 +64,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * It may return an collection of JID's when little info to search with is
      * provided.
      *
-     * @param {String} node
-     * @param {String} domain
-     * @param {String} resource
+     * @param {String}  node
+     * @param {String}  [domain]
+     * @param {String}  [resource]
+     * @param {Boolean} [bRoom]
      * @type  {mixed}
      */
     this.getEntity = function(node, domain, resource, bRoom) {
@@ -81,6 +82,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
             node      = aTemp[0];
             domain    = aTemp[1];
         }
+        domain = domain || this.domain;
 
         var n, i, l, oExact,
             bResource = (resource && !bRoom),

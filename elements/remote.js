@@ -157,7 +157,7 @@ apf.remote = function(struct, tagName){
 (function(){
     this.lookup              = {};
     this.select              = [];
-    this.models              = {};
+    this.sessions            = {};
     this.rsbQueue            = {};
     this.queueTimer          = null;
     this.pendingSessions     = {};
@@ -173,33 +173,54 @@ apf.remote = function(struct, tagName){
     }, this.$attrExcludePropBind);
 
     this.startSession = function(model, xpath) {
-        console.log("starting session", model, xpath);
         if (!model.id)
             model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
         xpath  = xpath || "//";
         var id = model.id + ":" + xpath;
-        this.models[id] = model;
+        this.sessions[id] = model;
         // @todo: impl. partial model sharing
-        if (this.transport && this.transport.isConnected())
-            this.transport.startRSB(model, this.sessionStarted);
-        else
+        if (this.transport && this.transport.isConnected()) {
+            delete this.sessions[id];
+            id = this.transport.normalizeEntity(id);
+            this.sessions[id] = {
+                model: model,
+                xpath: xpath
+            };
+            var _self = this;
+            this.transport.startRSB(id, function(sSession, iTime) {
+                _self.sessionStarted(sSession, iTime);
+            });
+        }
+        else {
             this.pendingSessions[id] = model;
+        }
     };
 
     this.endSession = function(model, xpath) {
-        console.log("ending session", model, xpath);
         xpath  = xpath || "//";
         var id = model.id + ":" + xpath;
         // @todo: impl. partial model sharing
         if (this.transport && this.transport.isConnected())
-            this.transport.endRSB(model);
+            this.transport.endRSB(this.transport.normalizeEntity(id));
         else
             this.pendingSessions[id] = model;
-        delete this.models[id];
+        delete this.sessions[id];
     };
 
-    this.sessionStarted = function(sRoom, iTime) {
-        console.log("session started: ", sRoom, iTime);
+    this.sessionStarted = function(sSession, iTime) {
+        var oSession;
+        if (!(oSession = this.sessions[sSession])) return;
+        // check if time is provided, otherwise user created the session
+        var now = (new Date()).valueOf();
+        oSession.baseline = iTime ? now - parseInt(iTime) : 0;
+        if (!iTime)
+            oSession.started = now;
+
+        apf.console.log("session started: " + sSession + ", " + oSession.baseline);
+    };
+
+    this.pauseSession = function() {
+        // @todo
     };
     
     this.sendChange = function(args, model){
@@ -220,17 +241,31 @@ apf.remote = function(struct, tagName){
             this.processQueue(this);
         }
     };
+
+    this.getSessionByModel = function(sModel) {
+        if (typeof sModel != "string")
+            sModel = sModel.id;
+        for (var i in this.sessions) {
+            if (this.sessions[i].model.id == sModel)
+                return this.sessions[i];
+        }
+        return null;
+    };
     
     this.buildMessage = function(args, model){
-        for (var i = 0, l = args.length; i < l; i++) {
+        var oSession = this.getSessionByModel(model.id),
+            i        = 0,
+            l        = args.length;
+
+        for (; i < l; ++i) {
             if (args[i] && args[i].nodeType)
                 args[i] = this.xmlToXpath(args[i], model.data);
         }
         
         return {
-            model     : model.name,
+            model     : model.id,
             args      : args,
-            timestamp : new Date().toGMTString()
+            currdelta : (new Date()).valueOf() - oSession.baseline
         };
     };
     
@@ -376,7 +411,6 @@ apf.remote = function(struct, tagName){
             var s;
             for (s in _self.pendingTerminations)
                 _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
-            console.dir(_self.pendingSessions);
             for (s in _self.pendingSessions)
                 _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
         });
@@ -390,8 +424,23 @@ apf.remote = function(struct, tagName){
         });
 
         this.transport.addEventListener("datastatuschange", function(e) {
-            // todo
-            // e looks like { model: "mdlData", seq: 0, status: "ACK" }
+            // e looks like { type: "submit", from: "benvolio@shakespeare.lit", fields: [] }
+            apf.console.log("datastatuschange msg: " + e);
+            if (!e.fields["session"]) return;
+            var sSession = e.fields["session"].value,
+                oSession = _self.sessions[sSession];
+            if (!oSession) return; // @todo : send failure message
+            if (e.type == "submit") {
+                var iBaseline = e.fields["baseline"]  ? oSession.started : 0,
+                    sModel    = e.fields["modeldata"] ? oSession.model.getXml().xml : "";
+
+                this.sendSyncRSB(e.from, sSession, iBaseline, sModel);
+            }
+            else if (e.type == "result") {
+                // @todo: replace the current XML with the document provided by the session owner
+                _self.sessions[sSession].model.load(e.fields["modeldata"].value);
+                _self.sessionStarted(sSession, e.fields["baseline"].value);
+            }
         });
     });
 }).call(apf.remote.prototype = new apf.AmlElement());

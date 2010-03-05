@@ -44,8 +44,7 @@
  *      }
  *
  *      // Send a message to John
- *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
- *          apf.xmpp.MSG_CHAT);
+ *      myXMPP.sendMessage({to: 'john@my-jabber-server.com', message: 'A test message'});
  *  </a:script>
  * </code>
  * Remarks:
@@ -116,6 +115,70 @@ apf.xmpp = function(struct, tagName){
 };
 
 (function() {
+    var constants = {
+        // Collection of shorthands for all namespaces known and used by this class
+        NS   : {
+            sasl        : "urn:ietf:params:xml:ns:xmpp-sasl",
+            httpbind    : "http://jabber.org/protocol/httpbind",
+            feature_reg : "http://jabber.org/features/iq-register",
+            bosh        : "urn:xmpp:xbosh",
+            time        : "urn:xmpp:time",
+            jabber      : "jabber:client",
+            bind        : "urn:ietf:params:xml:ns:xmpp-bind",
+            session     : "urn:ietf:params:xml:ns:xmpp-session",
+            auth        : "jabber:iq:auth",
+            roster      : "jabber:iq:roster",
+            register    : "jabber:iq:register",
+            //#ifdef __WITH_RSB
+            datastatus  : "jabber:iq:rsbstatus",
+            //#endif
+            data        : "jabber:x:data",
+            stream      : "http://etherx.jabber.org/streams",
+            disco_info  : "http://jabber.org/protocol/disco#info",
+            disco_items : "http://jabber.org/protocol/disco#items",
+            muc         : "http://jabber.org/protocol/muc",
+            muc_user    : "http://jabber.org/protocol/muc#user",
+            muc_owner   : "http://jabber.org/protocol/muc#owner",
+            commands    : "http://jabber.org/protocol/commands"
+        },
+        CONN_POLL : 0x0001,
+        CONN_BOSH : 0x0002,
+
+        ERROR_AUTH : 0x0004,
+        ERROR_CONN : 0x0008,
+        ERROR_MUC  : 0x0010,
+        ERROR_REG  : 0x0011,
+
+        SUBSCR_FROM : "from",
+        SUBSCR_TO   : "to",
+        SUBSCR_BOTH : "both",
+        SUBSCR_NONE : "none",
+
+        TYPE_AVAILABLE   : "", //no need to send 'available'
+        TYPE_UNAVAILABLE : "unavailable",
+        TYPE_PROBE       : "probe",
+        TYPE_SUBSCRIBED  : "subscribed",
+        TYPE_SUBSCRIBE   : "subscribe",
+        TYPE_UNSUBSCRIBE : "unsubscribe",
+        TYPE_UNSUBSCRIBED: "unsubscribed",
+
+        STATUS_ONLINE    : "online",
+        STATUS_OFFLINE   : "offline",
+        STATUS_SHOW      : "show",
+        STATUS_AWAY      : "away",
+        STATUS_XA        : "xa",
+        STATUS_DND       : "dnd",
+        STATUS_INVISIBLE : "invisible",
+        STATUS_FFC       : "chat",
+
+        MSG_CHAT      : "chat",
+        MSG_GROUPCHAT : "groupchat",
+        MSG_ERROR     : "error",
+        MSG_HEADLINE  : "headline",
+        MSG_NORMAL    : "normal"
+    };
+    apf.extend(apf.xmpp, constants)
+
     this.$server     = null;
     this.timeout     = 10000;
     this.maxrequests = 2;
@@ -124,7 +187,7 @@ apf.xmpp = function(struct, tagName){
 
     this.$model         = null;
     this.$modelContent  = null;
-    this.$xmppMethod    = apf.xmpp.CONN_BOSH;
+    this.$xmppMethod    = constants.CONN_BOSH;
     this.$isPoll        = false;
     this.$pollTimeout   = 2000;
     this.$autoRegister  = false;
@@ -193,10 +256,10 @@ apf.xmpp = function(struct, tagName){
 
     this.$propHandlers["type"] = function(value) {
         this.$xmppMethod = (value == "polling")
-            ? apf.xmpp.CONN_POLL
-            : apf.xmpp.CONN_BOSH;
+            ? constants.CONN_POLL
+            : constants.CONN_BOSH;
 
-        this.$isPoll = Boolean(this.$xmppMethod & apf.xmpp.CONN_POLL);
+        this.$isPoll = Boolean(this.$xmppMethod & constants.CONN_POLL);
     };
 
     this.$propHandlers["poll-timeout"] = function(value) {
@@ -378,7 +441,7 @@ apf.xmpp = function(struct, tagName){
         }
         var sOut = aOut.join("").replace(/,$/, "");
 
-        return "<response xmlns='" + apf.xmpp.NS.sasl + "'>"
+        return "<response xmlns='" + constants.NS.sasl + "'>"
             + apf.crypto.Base64.encode(sOut) + "</response>";
     }
 
@@ -415,7 +478,7 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function createPresenceBlock(options, content) {
-        var aOut = ["<presence xmlns='", apf.xmpp.NS.jabber, "'"];
+        var aOut = ["<presence xmlns='", constants.NS.jabber, "'"];
         if (options.type)
             aOut.push(" type='", options.type, "'");
         if (options.to)
@@ -450,8 +513,8 @@ apf.xmpp = function(struct, tagName){
      * @type  {String}
      * @private
      */
-    function createMessageBlock(options, body) {
-        var aOut = ["<message xmlns='", apf.xmpp.NS.jabber, "' from='", 
+    function createMessageBlock(options) {
+        var aOut = ["<message xmlns='", constants.NS.jabber, "' from='",
             this.$serverVars[JID], "' to='", options.to, "' id='message_",
             ++this.$serverVars["mess_count"], "' xml:lang='",
             options["xml:lang"], "'"];
@@ -468,7 +531,16 @@ apf.xmpp = function(struct, tagName){
         if (options.thread)
             aOut.push("<thread>", options.thread, "</thread>");
 
-        aOut.push("<body>", body, "</body></message>");
+        // support for xep-0004 in message stanza's
+        if (options.x) {
+            aOut.push("<x xmlns='", constants.NS.data, "' type='",
+                options.xtype || "submit", "'>", options.x, "</x>")
+        }
+
+        if (options.message)
+            aOut.push("<body><![CDATA[", options.message.trim(), "]]></body>");
+
+        aOut.push("</message>");
         return aOut.join("");
     }
 
@@ -557,7 +629,7 @@ apf.xmpp = function(struct, tagName){
                         return true;
                     
                     //@TBD:Mike please talk to me about how to integrate onError() properly
-                    onError.call(_self, apf.xmpp.ERROR_CONN, extra.message, state);
+                    onError.call(_self, constants.ERROR_CONN, extra.message, state);
                     throw oError;
                 }
 
@@ -586,7 +658,7 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function onError(nType, sMsg, nState) {
-        if (nType & apf.xmpp.ERROR_CONN) {
+        if (nType & constants.ERROR_CONN) {
             if (this.$retryCount == 3) {
                 this.$retryCount = 0;
                 clearTimeout(this.$listener);
@@ -601,8 +673,8 @@ apf.xmpp = function(struct, tagName){
             this.$retryCount = 0;
         }
 
-        var bIsAuth = nType & apf.xmpp.ERROR_AUTH,
-            bIsConn = nType & apf.xmpp.ERROR_CONN;
+        var bIsAuth = nType & constants.ERROR_AUTH,
+            bIsConn = nType & constants.ERROR_CONN;
 
         // #ifdef __DEBUG
         apf.console.log("[XMPP-" + (bIsAuth
@@ -670,8 +742,8 @@ apf.xmpp = function(struct, tagName){
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
                 to             : this.$domain,
-                xmlns          : apf.xmpp.NS.jabber,
-                "xmlns:stream" : apf.xmpp.NS.stream,
+                xmlns          : constants.NS.jabber,
+                "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
               })
             : createBodyElement({
@@ -685,8 +757,8 @@ apf.xmpp = function(struct, tagName){
                 ver            : "1.6",
                 "xml:lang"     : "en",
                 "xmpp:version" : "1.0",
-                xmlns          : apf.xmpp.NS.httpbind,
-                "xmlns:xmpp"   : apf.xmpp.NS.bosh
+                xmlns          : constants.NS.httpbind,
+                "xmlns:xmpp"   : constants.NS.bosh
               })
         );
     };
@@ -716,7 +788,7 @@ apf.xmpp = function(struct, tagName){
                       pause : 120,
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
-                      xmlns : apf.xmpp.NS.httpbind
+                      xmlns : constants.NS.httpbind
                   })
             );
         }
@@ -788,7 +860,7 @@ apf.xmpp = function(struct, tagName){
      */
     function processConnect(oXml, state, extra) {
         if (state != apf.SUCCESS)
-            return onError.call(this, apf.xmpp.ERROR_CONN, extra.message, state);
+            return onError.call(this, constants.ERROR_CONN, extra.message, state);
 
         // reset retry/ connection counter
         this.$retryCount = 0;
@@ -805,7 +877,7 @@ apf.xmpp = function(struct, tagName){
         var oMech  = oXml.getElementsByTagName("mechanisms")[0],
             sXmlns = oMech.getAttribute("xmlns");
         // @todo apf3.0 hack for o3, remove when o3 is fixed
-        this.$serverVars["AUTH_SASL"] = apf.isO3 || (sXmlns && sXmlns == apf.xmpp.NS.sasl);
+        this.$serverVars["AUTH_SASL"] = apf.isO3 || (sXmlns && sXmlns == constants.NS.sasl);
 
         var aNodes = oXml.getElementsByTagName("mechanism"),
             i      = 0,
@@ -824,11 +896,11 @@ apf.xmpp = function(struct, tagName){
         aNodes = oXml.getElementsByTagName("register");
         for (i = 0, l = aNodes.length; i < l; i++) {
             this.$serverVars["AUTH_REG"] =
-                (aNodes[i].getAttribute("xmlns") == apf.xmpp.NS.feature_reg);
+                (aNodes[i].getAttribute("xmlns") == constants.NS.feature_reg);
         }
 
         if (!found) {
-            return onError.call(this, apf.xmpp.ERROR_AUTH,
+            return onError.call(this, constants.ERROR_AUTH,
                 "No supported authentication protocol found. We cannot continue!");
         }
         return (this.$serverVars["AUTH_REG"] && this.$serverVars["register"])
@@ -849,7 +921,7 @@ apf.xmpp = function(struct, tagName){
                 type  : "set",
                 id    : makeUnique("reg")
             },
-            "<query xmlns='" + apf.xmpp.NS.register + "'><username>"
+            "<query xmlns='" + constants.NS.register + "'><username>"
                 + this.$serverVars["username"] + "</username><password>"
                 + this.$serverVars["password"] + "</password></query>"
         ),
@@ -859,7 +931,7 @@ apf.xmpp = function(struct, tagName){
                     var iq = oXml.getElementsByTagName("iq")[0];
                     if ((iq && iq.getAttribute("type") == "error")
                       || oXml.getElementsByTagName("error").length) {
-                        onError.call(_self, apf.xmpp.ERROR_REG,
+                        onError.call(_self, constants.ERROR_REG,
                             "New account registration for account '"
                             + this.$serverVars["username"] + " failed.");
                     }
@@ -868,14 +940,14 @@ apf.xmpp = function(struct, tagName){
                 }
                 //#ifdef __DEBUG
                 else if (!_self.$isPoll)
-                    onError.call(_self, apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+                    onError.call(_self, constants.ERROR_CONN, null, apf.OFFLINE);
                 //#endif
             }, _self.$isPoll
             ? createStreamElement.call(this, null, null, sIq)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sIq)
         );
     }
@@ -892,7 +964,7 @@ apf.xmpp = function(struct, tagName){
         if (this.$serverVars["AUTH_SASL"]) {
             // start the authentication process by sending a request
             var sType = this.$serverVars["AUTH_TYPE"],
-                sAuth = "<auth xmlns='" + apf.xmpp.NS.sasl + "' mechanism='"
+                sAuth = "<auth xmlns='" + constants.NS.sasl + "' mechanism='"
                     + sType + (sType == "PLAIN"
                         ? "'>" + this.$serverVars["username"] + "@" + this.$domain
                             + String.fromCharCode(0) + this.$serverVars["username"]
@@ -906,7 +978,7 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
-                      xmlns : apf.xmpp.NS.httpbind
+                      xmlns : constants.NS.httpbind
                   }, sAuth)
             );
         }
@@ -916,7 +988,7 @@ apf.xmpp = function(struct, tagName){
                     type  : "get",
                     id    : makeUnique("auth")
                 },
-                "<query xmlns='" + apf.xmpp.NS.auth + "'><username>"
+                "<query xmlns='" + constants.NS.auth + "'><username>"
                     + this.$serverVars["username"] + "</username></query>"
             );
             this.$doXmlRequest(processAuthRequest, this.$isPoll
@@ -924,7 +996,7 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
-                    xmlns : apf.xmpp.NS.httpbind
+                    xmlns : constants.NS.httpbind
                 }, sIq)
             );
         }
@@ -1004,7 +1076,7 @@ apf.xmpp = function(struct, tagName){
     function processAuthRequest(oXml) {
         if (this.$serverVars["AUTH_SASL"]) {
             if (!processChallenge.call(this, oXml))
-                return onError.call(this, apf.xmpp.ERROR_AUTH);
+                return onError.call(this, constants.ERROR_AUTH);
 
             var sRealm = this.$serverVars["realm"],
                 md5    = apf.crypto.MD5;
@@ -1051,7 +1123,7 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
-                      xmlns : apf.xmpp.NS.httpbind
+                      xmlns : constants.NS.httpbind
                   }, sAuth)
             );
         }
@@ -1060,7 +1132,7 @@ apf.xmpp = function(struct, tagName){
                 var iq = oXml.getElementsByTagName("iq")[0];
                 if ((iq && iq.getAttribute("type") == "error")
                   || oXml.getElementsByTagName("error").length) {
-                    return onError.call(this, apf.xmpp.ERROR_AUTH);
+                    return onError.call(this, constants.ERROR_AUTH);
                 }
                 var aDigest,
                     bDigest = (aDigest = oXml.getElementsByTagName("digest")
@@ -1069,13 +1141,13 @@ apf.xmpp = function(struct, tagName){
                         type  : "set",
                         id    : makeUnique("auth")
                     },
-                    "<query xmlns='" + apf.xmpp.NS.auth + "'><username>"
+                    "<query xmlns='" + constants.NS.auth + "'><username>"
                         + this.$serverVars["username"] + "</username><resource>"
                         + this.resource + "</resource>" + (bDigest
-                            ? "<digest xmlns='" + apf.xmpp.NS.auth + ">"
+                            ? "<digest xmlns='" + constants.NS.auth + ">"
                                 + apf.crypto.SHA1(this.$serverVars["AUTH_ID"]
                                 + this.$serverVars["password"]) + "</digest>"
-                            : "<password xmlns='" + apf.xmpp.NS.auth + "'>"
+                            : "<password xmlns='" + constants.NS.auth + "'>"
                                 + this.$serverVars["password"] + "</password>")
                         + "</query>"
                 );
@@ -1084,13 +1156,13 @@ apf.xmpp = function(struct, tagName){
                     : createBodyElement({
                         rid   : this.$getRID(),
                         sid   : this.$serverVars[SID],
-                        xmlns : apf.xmpp.NS.httpbind
+                        xmlns : constants.NS.httpbind
                     }, sIq)
                 );
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
             //#endif
         }
     }
@@ -1115,7 +1187,7 @@ apf.xmpp = function(struct, tagName){
         // register the variables that are inside the challenge body
         // (probably only 'rspauth')
         if (!processChallenge.call(this, oXml))
-            return onError.call(this, apf.xmpp.ERROR_AUTH);
+            return onError.call(this, constants.ERROR_AUTH);
 
         var sAuth = createAuthBlock({});
         this.$doXmlRequest(reOpenStream, this.$isPoll
@@ -1123,7 +1195,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                   rid   : this.$getRID(),
                   sid   : this.$serverVars[SID],
-                  xmlns : apf.xmpp.NS.httpbind
+                  xmlns : constants.NS.httpbind
               }, sAuth)
         );
     }
@@ -1144,20 +1216,20 @@ apf.xmpp = function(struct, tagName){
     function reOpenStream(oXml) {
         if (this.$serverVars["AUTH_SASL"]) {
             if (!processChallenge.call(this, oXml))
-                return onError.call(this, apf.xmpp.ERROR_AUTH);
+                return onError.call(this, constants.ERROR_AUTH);
         }
         else {
             if (oXml && oXml.nodeType) {
                 var iq = oXml.getElementsByTagName("iq")[0];
                 if ((iq && iq.getAttribute("type") == "error")
                   || oXml.getElementsByTagName("error").length) {
-                    return onError.call(this, apf.xmpp.ERROR_AUTH);
+                    return onError.call(this, constants.ERROR_AUTH);
                 }
                 delete this.$serverVars["password"];
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
             //#endif
         }
 
@@ -1173,8 +1245,8 @@ apf.xmpp = function(struct, tagName){
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
                 to             : this.$domain,
-                xmlns          : apf.xmpp.NS.jabber,
-                "xmlns:stream" : apf.xmpp.NS.stream,
+                xmlns          : constants.NS.jabber,
+                "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
               })
             : createBodyElement({
@@ -1183,8 +1255,8 @@ apf.xmpp = function(struct, tagName){
                   to             : this.$domain,
                   "xml:lang"     : "en",
                   "xmpp:restart" : "true",
-                  xmlns          : apf.xmpp.NS.httpbind,
-                  "xmlns:xmpp"   : apf.xmpp.NS.bosh
+                  xmlns          : constants.NS.httpbind,
+                  "xmlns:xmpp"   : constants.NS.bosh
               })
         );
     }
@@ -1199,9 +1271,9 @@ apf.xmpp = function(struct, tagName){
         var sIq = createIqBlock({
             id    : "bind_" + ++this.$serverVars["bind_count"],
             type  : "set",
-            xmlns : this.$isPoll ? null : apf.xmpp.NS.jabber
+            xmlns : this.$isPoll ? null : constants.NS.jabber
           },
-          "<bind xmlns='" + apf.xmpp.NS.bind + "'>" +
+          "<bind xmlns='" + constants.NS.bind + "'>" +
              "<resource>" + this.resource + "</resource>" +
           "</bind>"
         );
@@ -1210,7 +1282,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                   rid   : this.$getRID(),
                   sid   : this.$serverVars[SID],
-                  xmlns : apf.xmpp.NS.httpbind
+                  xmlns : constants.NS.httpbind
               }, sIq)
         );
     };
@@ -1244,9 +1316,9 @@ apf.xmpp = function(struct, tagName){
                     id    : this.$sAJAX_ID,
                     to    : this.$domain,
                     type  : "set",
-                    xmlns : apf.xmpp.NS.jabber
+                    xmlns : constants.NS.jabber
                 },
-                "<session xmlns='" + apf.xmpp.NS.session + "'/>"
+                "<session xmlns='" + constants.NS.session + "'/>"
             ),
             _self = this;
             this.$doXmlRequest(function(oXml) {
@@ -1257,13 +1329,13 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
-                    xmlns : apf.xmpp.NS.httpbind
+                    xmlns : constants.NS.httpbind
                 }, sIq)
             );
         }
         else {
             //@todo: check for binding failures!
-            onError.call(this, apf.xmpp.ERROR_AUTH);
+            onError.call(this, constants.ERROR_AUTH);
         }
     }
 
@@ -1279,7 +1351,7 @@ apf.xmpp = function(struct, tagName){
     function setInitialPresence() {
         // NOW only we set the actual presence tag!
         var sPresence = createPresenceBlock({
-            type: apf.xmpp.TYPE_AVAILABLE
+            type: constants.TYPE_AVAILABLE
         }),
         _self = this;
         this.$doXmlRequest(function(oXml) {
@@ -1292,7 +1364,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sPresence)
         );
     }
@@ -1314,7 +1386,7 @@ apf.xmpp = function(struct, tagName){
                 type  : "get",
                 id    : makeUnique("roster")
             },
-            "<query xmlns='" + apf.xmpp.NS.roster + "'/>"
+            "<query xmlns='" + constants.NS.roster + "'/>"
         ),
         _self = this,
         v     = this.$serverVars;
@@ -1345,7 +1417,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sIq)
         );
     }
@@ -1371,7 +1443,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                   rid   : this.$getRID(),
                   sid   : this.$serverVars[SID],
-                  xmlns : apf.xmpp.NS.httpbind
+                  xmlns : constants.NS.httpbind
               }, "")
         );
     };
@@ -1393,7 +1465,7 @@ apf.xmpp = function(struct, tagName){
         this.$listener = null;
         if (data || state) {
             if (state != apf.SUCCESS)
-                return onError.call(this, apf.xmpp.ERROR_CONN, extra.message, state);
+                return onError.call(this, constants.ERROR_CONN, extra.message, state);
             else
                 parseData.call(this, data);
         }
@@ -1467,7 +1539,7 @@ apf.xmpp = function(struct, tagName){
         }
         //#ifdef __DEBUG
         else if (!this.$isPoll)
-            onError.call(this, apf.xmpp.ERROR_CONN, null, apf.OFFLINE);
+            onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
         //#endif
     }
 
@@ -1480,6 +1552,7 @@ apf.xmpp = function(struct, tagName){
      * @type  {String}
      */
     function getMessage(oNode) {
+        if (!oNode) return null;
         var node,
             msg = [],
             i   = 0,
@@ -1489,6 +1562,29 @@ apf.xmpp = function(struct, tagName){
                 msg.push(node.nodeValue);
         }
         return msg.join("").replace(/\&quot;/g, '"');
+    }
+
+    function fieldsToObject(aFields) {
+        if (!aFields || !aFields.length)
+            return {};
+        /*<field type='text-single' var='baseline'><value>get</value></field>
+         *<field type='text-multi' var='modeldata'><value>mdlpersons</value></field>
+         */
+        var oField, oVal,
+            res = {},
+            i   = 0,
+            l   = aFields.length;
+        for (; i < l; ++i) {
+            oField = aFields[i],
+            oVal   = oField.getElementsByTagName("value")[0];
+            if (oVal.firstChild.nodeType == 4) // CDATA section
+                oVal = oVal.firstChild;
+            res[oField.getAttribute("var")] = {
+                type: oField.getAttribute("type"),
+                value: oVal.firstChild.nodeValue
+            };
+        }
+        return res;
     }
 
     /*
@@ -1504,6 +1600,9 @@ apf.xmpp = function(struct, tagName){
         var oMsg, sJID, sType, oThread, sThread, sMsg, sFrom, oBody, bRoom,
             i = 0,
             l = aMessages.length;
+        //#ifdef __DEBUG
+        apf.console.info("parseMessagePackets: " + l, "xmpp");
+        //#endif
 
         for (; i < l; i++) {
             oMsg    = aMessages[i];
@@ -1516,7 +1615,7 @@ apf.xmpp = function(struct, tagName){
             // #endif
 
             oBody = oMsg.getElementsByTagName("body")[0];
-            if (!(oBody && oBody.childNodes.length)) continue;
+            //if (!(oBody && oBody.childNodes.length)) continue;
 
             oThread = oMsg.getElementsByTagName("thread");
             if (oThread.length)
@@ -1532,20 +1631,29 @@ apf.xmpp = function(struct, tagName){
             if ((bRoom ? this.$mucRoster : this.$serverVars[ROSTER])
               .updateMessageHistory(sFrom, sMsg, sThread)) {
             // #endif
-                if (sType == apf.xmpp.MSG_CHAT) {
+                if (sMsg && sType == constants.MSG_CHAT) {
                     this.dispatchEvent("receivechat", {
                         from   : sFrom,
                         message: sMsg
                     });
                 }
                 // #ifdef __WITH_RSB
-                else if (sType == apf.xmpp.MSG_NORMAL
-                  || (sType == apf.xmpp.MSG_GROUPCHAT && sThread == "rsb")) {
+                else if (sType == constants.MSG_NORMAL) {
+                    var oX = oMsg.getElementsByTagName("x")[0];
+                    if (!oX) continue;
+                    sType = oX.getAttribute("type");
+                    this.dispatchEvent("datastatuschange", {
+                        type   : sType,
+                        from   : sFrom,
+                        fields : fieldsToObject(oX.getElementsByTagName("field"))
+                    });
+                }
+                else if (sMsg && sType == constants.MSG_GROUPCHAT && sThread == "rsb") {
                     //#ifdef __DEBUG
                     apf.console.info("received the following from the server: "
                         + sMsg, "xmpp");
                     //#endif
-                    this.$mucSignal(apf.xmpp.NS.datastatus, sFrom, sMsg);
+                    this.$mucSignal(constants.NS.datastatus, sFrom, sMsg);
                 }
                 // #endif
             // #ifdef __TP_XMPP_ROSTER
@@ -1577,7 +1685,7 @@ apf.xmpp = function(struct, tagName){
             if (aX.length) {
                 for (var o, k = 0, l2 = aX.length; k < l2; k++) {
                     switch (aX[k].getAttribute("xmlns")) {
-                        case apf.xmpp.NS.muc_user:
+                        case constants.NS.muc_user:
                             if (this.$getStatusCode(aX[k], 201)) {
                                 this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sJID);
                                 break;
@@ -1592,12 +1700,10 @@ apf.xmpp = function(struct, tagName){
                                 affiliation: o.getAttribute("affiliation"),
                                 role       : o.getAttribute("role"),
                                 status     : aPresence[i].getAttribute("type")
-                                    || apf.xmpp.TYPE_AVAILABLE
+                                    || constants.TYPE_AVAILABLE
                             });
-                            if (o.affiliation == "owner") {
-                                o.owner = sJID;
-                                this.dispatchEvent("receivedowner", o);
-                            }
+                            o.participant = sJID;
+                            this.dispatchEvent("receivedparticipant", o);
                             break;
                     }
                 }
@@ -1608,13 +1714,13 @@ apf.xmpp = function(struct, tagName){
                     oUser   = oRoster.getEntityByJID(sJID),
                     sType   = aPresence[i].getAttribute("type");
 
-                if (sType == apf.xmpp.TYPE_SUBSCRIBE) {
+                if (sType == constants.TYPE_SUBSCRIBE) {
                     // incoming subscription request, deal with it!
                     incomingAdd.call(this, aPresence[i].getAttribute("from"));
                 }
                 // record any status change...
                 if (oUser)
-                    oRoster.update(oUser, sType || apf.xmpp.TYPE_AVAILABLE);
+                    oRoster.update(oUser, sType || constants.TYPE_AVAILABLE);
             }
         }
         // #endif
@@ -1645,7 +1751,7 @@ apf.xmpp = function(struct, tagName){
                 var aItems, k, l3;
                 switch (aQueries[j].getAttribute("xmlns")) {
                     // #ifdef __TP_XMPP_ROSTER
-                    case apf.xmpp.NS.roster:
+                    case constants.NS.roster:
                         aItems  = aQueries[j].getElementsByTagName("item");
                         var oRoster = this.$serverVars[ROSTER],
                             pBlocks = [];
@@ -1662,10 +1768,10 @@ apf.xmpp = function(struct, tagName){
                             });
                             // now that we have a contact added to our roster,
                             // it's time to ask for presence
-                            if (sSubscr == apf.xmpp.SUBSCR_TO
-                              || sSubscr == apf.xmpp.SUBSCR_BOTH)
+                            if (sSubscr == constants.SUBSCR_TO
+                              || sSubscr == constants.SUBSCR_BOTH)
                                 pBlocks.push(oContact);
-                            else if (oContact.subscription == apf.xmpp.TYPE_SUBSCRIBED)
+                            else if (oContact.subscription == constants.TYPE_SUBSCRIBED)
                                 confirmAdd.call(this, oContact);
                         }
                         if (pBlocks.length)
@@ -1673,7 +1779,7 @@ apf.xmpp = function(struct, tagName){
                         break;
                     // #endif
                     // #ifdef __TP_XMPP_MUC
-                    case apf.xmpp.NS.disco_items:
+                    case constants.NS.disco_items:
                         if (!this.$canMuc) break;
 
                         var aErrors = aIQs[i].getElementsByTagName("error");
@@ -1700,15 +1806,15 @@ apf.xmpp = function(struct, tagName){
                                 oRoom.subscription = aItems[k].getAttribute("name");
                         }
                         break;
-                    case apf.xmpp.NS.muc_user:
+                    case constants.NS.muc_user:
                         // @todo implement;
                         break;
-                    case apf.xmpp.NS.muc_owner:
+                    case constants.NS.muc_owner:
                         this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sFrom);
                         break;
                     // #ifdef __WITH_RSB
-                    case apf.xmpp.NS.datastatus:
-                        this.$mucSignal(apf.xmpp.NS.datastatus, sFrom, aIQs[i]);
+                    case constants.NS.datastatus:
+                        this.$mucSignal(constants.NS.datastatus, sFrom, aIQs[i]);
                         break;
                     // #endif
                     // #endif
@@ -1735,10 +1841,10 @@ apf.xmpp = function(struct, tagName){
         this.$doXmlRequest(restartlistener, createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             },
             createPresenceBlock({
-                type  : type || apf.xmpp.TYPE_AVAILABLE,
+                type  : type || constants.TYPE_AVAILABLE,
                 status: status,
                 custom: custom
             }))
@@ -1764,7 +1870,7 @@ apf.xmpp = function(struct, tagName){
         if (apf.isArray(from)) {
             for (var i = 0, l = from.length; i < l; i++) {
                 aPresence.push(createPresenceBlock({
-                    type: apf.xmpp.TYPE_PROBE,
+                    type: constants.TYPE_PROBE,
                     to  : from[i].fullJID,
                     from: oRoster.fullJID
                 }));
@@ -1772,7 +1878,7 @@ apf.xmpp = function(struct, tagName){
         }
         else {
             aPresence.push(createPresenceBlock({
-                type  : apf.xmpp.TYPE_PROBE,
+                type  : constants.TYPE_PROBE,
                 to    : from.fullJID,
                 from  : oRoster.fullJID
             }));
@@ -1784,7 +1890,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sPresence)
         );
         // #endif
@@ -1806,8 +1912,8 @@ apf.xmpp = function(struct, tagName){
         if (typeof jid != "string") return false;
         var oRoster  = this.$serverVars[ROSTER],
             oContact = oRoster.getEntityByJID(jid);
-        if (oContact && (oContact.subscription == apf.xmpp.SUBSCR_TO
-          || oContact.subscription == apf.xmpp.SUBSCR_BOTH))
+        if (oContact && (oContact.subscription == constants.SUBSCR_TO
+          || oContact.subscription == constants.SUBSCR_BOTH))
             return this.requestPresence(oContact);
 
         // all clear, now we request a new roster item
@@ -1815,7 +1921,7 @@ apf.xmpp = function(struct, tagName){
                 type  : "set",
                 id    : makeUnique("set")
             },
-            "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + jid
+            "<query xmlns='" + constants.NS.roster + "'><item jid='" + jid
                 + "' /></query>"
         ),
         _self = this;
@@ -1825,13 +1931,13 @@ apf.xmpp = function(struct, tagName){
                 // if all is well, a contact is added to the roster.
                 // <presence to='contact@example.org' type='subscribe'/>
                 var sPresence = createPresenceBlock({
-                    type  : apf.xmpp.TYPE_SUBSCRIBE,
+                    type  : constants.TYPE_SUBSCRIBE,
                     to    : jid
                 });
                 _self.$doXmlRequest(function(oXml) {
                         if (!oXml || !oXml.nodeType) {
                             return !_self.$isPoll
-                                ? onError.call(_self, apf.xmpp.ERROR_CONN, null, apf.OFFLINE)
+                                ? onError.call(_self, constants.ERROR_CONN, null, apf.OFFLINE)
                                 : null;
                         }
                         _self.$listen();
@@ -1839,7 +1945,7 @@ apf.xmpp = function(struct, tagName){
                         var oPresence = oXml.getElementsByTagName("presence")[0];
                         if (oPresence.getAttribute("error")) {
                             sPresence = createPresenceBlock({
-                                type  : apf.xmpp.TYPE_UNSUBSCRIBE,
+                                type  : constants.TYPE_UNSUBSCRIBE,
                                 to    : jid
                             });
                             _self.$doXmlRequest(function(data, state, extra){
@@ -1852,7 +1958,7 @@ apf.xmpp = function(struct, tagName){
                                 : createBodyElement({
                                     rid   : this.$getRID(),
                                     sid   : this.$serverVars[SID],
-                                    xmlns : apf.xmpp.NS.httpbind
+                                    xmlns : constants.NS.httpbind
                                 }, sPresence)
                             );
                         }
@@ -1863,7 +1969,7 @@ apf.xmpp = function(struct, tagName){
                     : createBodyElement({
                         rid   : _self.$getRID(),
                         sid   : _self.$serverVars[SID],
-                        xmlns : apf.xmpp.NS.httpbind
+                        xmlns : constants.NS.httpbind
                     }, sPresence)
                 );
             }, this.$isPoll
@@ -1871,7 +1977,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sIq)
         );
         // #endif
@@ -1896,10 +2002,10 @@ apf.xmpp = function(struct, tagName){
                     type  : "get",
                     id    : makeUnique("roster")
                 },
-                "<query xmlns='" + apf.xmpp.NS.roster + "'><item jid='" + sJID
+                "<query xmlns='" + constants.NS.roster + "'><item jid='" + sJID
                     + "' /></query>"
             ) +  createPresenceBlock({
-                type  : apf.xmpp.TYPE_SUBSCRIBED,
+                type  : constants.TYPE_SUBSCRIBED,
                 to    : sJID
             });
             this.$doXmlRequest(restartListener, this.$isPoll
@@ -1907,14 +2013,14 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
-                    xmlns : apf.xmpp.NS.httpbind
+                    xmlns : constants.NS.httpbind
                 }, sMsg)
             );
         }
         if (this.$autoDeny) {
             // <presence to='user@example.com' type='unsubscribed'/>
             var sPresence = createPresenceBlock({
-                type  : apf.xmpp.TYPE_UNSUBSCRIBED,
+                type  : constants.TYPE_UNSUBSCRIBED,
                 to    : sJID
             });
             this.$doXmlRequest(restartListener, this.$isPoll
@@ -1922,7 +2028,7 @@ apf.xmpp = function(struct, tagName){
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
-                    xmlns : apf.xmpp.NS.httpbind
+                    xmlns : constants.NS.httpbind
                 }, sPresence)
             );
         }
@@ -1938,7 +2044,7 @@ apf.xmpp = function(struct, tagName){
      */
     function confirmAdd(oContact) {
         var sPresence = createPresenceBlock({
-            type  : apf.xmpp.TYPE_SUBSCRIBED,
+            type  : constants.TYPE_SUBSCRIBED,
             to    : oContact.jid
         });
         this.$doXmlRequest(restartListener, this.$isPoll
@@ -1946,24 +2052,24 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sPresence)
         );
     }
     // #endif
     var statusMap = {
-        "online"      : apf.xmpp.STATUS_ONLINE,
-        "offline"     : apf.xmpp.STATUS_OFFLINE,
-        "away"        : apf.xmpp.STATUS_AWAY,
-        "xa"          : apf.xmpp.STATUS_XA,
-        "extendedaway": apf.xmpp.STATUS_XA,
-        "onvacation"  : apf.xmpp.STATUS_XA,
-        "dnd"         : apf.xmpp.STATUS_DND,
-        "donotdisturb": apf.xmpp.STATUS_DND,
-        "invisible"   : apf.xmpp.STATUS_INVISIBLE,
-        "ffc"         : apf.xmpp.STATUS_FFC,
-        "chatty"      : apf.xmpp.STATUS_FFC,
-        "freeforchat" : apf.xmpp.STATUS_FFC
+        "online"      : constants.STATUS_ONLINE,
+        "offline"     : constants.STATUS_OFFLINE,
+        "away"        : constants.STATUS_AWAY,
+        "xa"          : constants.STATUS_XA,
+        "extendedaway": constants.STATUS_XA,
+        "onvacation"  : constants.STATUS_XA,
+        "dnd"         : constants.STATUS_DND,
+        "donotdisturb": constants.STATUS_DND,
+        "invisible"   : constants.STATUS_INVISIBLE,
+        "ffc"         : constants.STATUS_FFC,
+        "chatty"      : constants.STATUS_FFC,
+        "freeforchat" : constants.STATUS_FFC
     };
 
     /**
@@ -1976,7 +2082,7 @@ apf.xmpp = function(struct, tagName){
      * @type  {void}
      */
     this.setStatus = function(sStatus) {
-        sStatus = statusMap[sStatus] || apf.xmpp.STATUS_ONLINE;
+        sStatus = statusMap[sStatus] || constants.STATUS_ONLINE;
         
         return this.setPresence(sStatus, sStatus);
     };
@@ -1987,15 +2093,17 @@ apf.xmpp = function(struct, tagName){
      * the following format:
      * 'apf.xmpp.MSG_*'
      *
-     * @param {String}   to         Must be of the format 'node@domainname.ext'
-     * @param {String}   message
-     * @param {String}   [thread]   For threading messages, i.e. to log a conversation
-     * @param {String}   [type]     Message type, defaults to 'chat'
-     * @param {Function} [callback] Synchronisation callback for Datainstructions
+     * @param {Object}   options    An object containing all the details for the
+     *                              message to be sent:
+     *      {String}   to         Must be of the format 'node@domainname.ext'
+     *      {String}   message
+     *      {String}   [thread]   For threading messages, i.e. to log a conversation
+     *      {String}   [type]     Message type, defaults to 'chat'
+     *      {Function} [callback] Synchronisation callback for Datainstructions
      * @type  {void}
      */
-    this.sendMessage = function(to, message, thread, type, callback) {
-        if (!message) return false;
+    this.sendMessage = function(options) {
+        if (!options || !(options.message || options.x)) return false;
         var _self = this;
 
         //#ifdef __WITH_OFFLINE
@@ -2008,18 +2116,12 @@ apf.xmpp = function(struct, tagName){
             if (apf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = {
-                    to       : to,
-                    message  : message,
-                    thread   : thread,
-                    callback : callback,
-                    type     : type,
+                    options  : options,
                     retry    : function(){
-                        _self.sendMessage(this.to, this.message, 
-                            this.thread, this.type, this.callback);
+                        _self.sendMessage(this.options);
                     },
                     $object : [this.name, "new apf.xmpp()"],
-                    $retry  : "this.object.sendMessage(this.to, this.message, \
-                        this.thread, this.type, this.callback)"
+                    $retry  : "this.object.sendMessage(this.options)"
                 };
 
                 apf.offline.queue.add(info);
@@ -2042,34 +2144,31 @@ apf.xmpp = function(struct, tagName){
 
         if (!this.$serverVars[CONN]) return false;
 
-        var bRoom = (this.$canMuc && type == apf.xmpp.MSG_GROUPCHAT),
+        var bRoom = (this.$canMuc && options.type == constants.MSG_GROUPCHAT),
             aArgs = Array.prototype.slice.call(arguments),
             oUser;
         // #ifdef __TP_XMPP_ROSTER
         if (!bRoom)
-            oUser = this.$serverVars[ROSTER].getEntityByJID(to);
+            oUser = this.$serverVars[ROSTER].getEntityByJID(options.to);
         // #endif
 
         if (!oUser && !bRoom){
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(0, this,
                         "XMPP sendMessage error: no valid 'to' address provided",
-                        "To: " + to + "\nMessage: " + message));
+                        "To: " + options.to + "\nMessage: " + options.message));
             //#endif
             return false;
         }
 
-        var sMsg = createMessageBlock.call(this, {
-                type       : type || apf.xmpp.MSG_CHAT,
-                to         : to,
-                thread     : thread,
+        var sMsg = createMessageBlock.call(this, apf.extend({
+                type       : constants.MSG_CHAT,
                 "xml:lang" : "en"
-            },
-            "<![CDATA[" + message + "]]>");
+            }, options));
 
         this.$doXmlRequest(function(data, state, extra){
-                if (callback)
-                    callback.call(_self, data, state, extra);
+                if (options.callback)
+                    options.callback.call(_self, data, state, extra);
 
                 _self.$serverVars["previousMsg"] = aArgs;
                 restartListener.call(_self, data, state, extra);
@@ -2078,7 +2177,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sMsg)
         );
     };
@@ -2090,7 +2189,7 @@ apf.xmpp = function(struct, tagName){
                 from  : this.$serverVars[ROSTER].fullJID,
                 to    : sEntity
             },
-            "<time xmlns='" + apf.xmpp.NS.time + "'/>"
+            "<time xmlns='" + constants.NS.time + "'/>"
         ),
         _self = this;
         this.$doXmlRequest(function(oXml) {
@@ -2110,9 +2209,13 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
-                xmlns : apf.xmpp.NS.httpbind
+                xmlns : constants.NS.httpbind
             }, sIq)
         );
+    };
+
+    this.normalizeEntity = function(sEnt) {
+        return this.$serverVars[ROSTER].sanitizeJID(sEnt);
     };
 
     /**
@@ -2167,7 +2270,13 @@ apf.xmpp = function(struct, tagName){
                 //@todo
                 break;
             case "notify":
-                this.sendMessage(args[1], args[0], args[2], args[3], callback);
+                this.sendMessage({
+                    to      : args[1],
+                    message : args[0],
+                    thread  : args[2],
+                    type    : args[3],
+                    callback: callback
+                });
                 break;
             default:
                 //#ifdef __DEBUG
@@ -2182,66 +2291,5 @@ apf.xmpp = function(struct, tagName){
 }).call(apf.xmpp.prototype = new apf.Teleport());
 
 apf.aml.setElement("xmpp", apf.xmpp);
-
-// Collection of shorthands for all namespaces known and used by this class
-apf.xmpp.NS   = {
-    sasl        : "urn:ietf:params:xml:ns:xmpp-sasl",
-    httpbind    : "http://jabber.org/protocol/httpbind",
-    feature_reg : "http://jabber.org/features/iq-register",
-    bosh        : "urn:xmpp:xbosh",
-    time        : "urn:xmpp:time",
-    jabber      : "jabber:client",
-    bind        : "urn:ietf:params:xml:ns:xmpp-bind",
-    session     : "urn:ietf:params:xml:ns:xmpp-session",
-    auth        : "jabber:iq:auth",
-    roster      : "jabber:iq:roster",
-    register    : "jabber:iq:register",
-    //#ifdef __WITH_RSB
-    datastatus  : "jabber:iq:rsbstatus",
-    //#endif
-    data        : "jabber:x:data",
-    stream      : "http://etherx.jabber.org/streams",
-    disco_info  : "http://jabber.org/protocol/disco#info",
-    disco_items : "http://jabber.org/protocol/disco#items",
-    muc         : "http://jabber.org/protocol/muc",
-    muc_user    : "http://jabber.org/protocol/muc#user",
-    muc_owner   : "http://jabber.org/protocol/muc#owner"
-};
-
-apf.xmpp.CONN_POLL = 0x0001;
-apf.xmpp.CONN_BOSH = 0x0002;
-
-apf.xmpp.ERROR_AUTH = 0x0004;
-apf.xmpp.ERROR_CONN = 0x0008;
-apf.xmpp.ERROR_MUC  = 0x0010;
-apf.xmpp.ERROR_REG  = 0x0011;
-
-apf.xmpp.SUBSCR_FROM = "from";
-apf.xmpp.SUBSCR_TO   = "to";
-apf.xmpp.SUBSCR_BOTH = "both";
-apf.xmpp.SUBSCR_NONE = "none";
-
-apf.xmpp.TYPE_AVAILABLE   = ""; //no need to send 'available'
-apf.xmpp.TYPE_UNAVAILABLE = "unavailable";
-apf.xmpp.TYPE_PROBE       = "probe";
-apf.xmpp.TYPE_SUBSCRIBED  = "subscribed";
-apf.xmpp.TYPE_SUBSCRIBE   = "subscribe";
-apf.xmpp.TYPE_UNSUBSCRIBE = "unsubscribe";
-apf.xmpp.TYPE_UNSUBSCRIBED= "unsubscribed";
-
-apf.xmpp.STATUS_ONLINE    = "online";
-apf.xmpp.STATUS_OFFLINE   = "offline";
-apf.xmpp.STATUS_SHOW      = "show";
-apf.xmpp.STATUS_AWAY      = "away";
-apf.xmpp.STATUS_XA        = "xa";
-apf.xmpp.STATUS_DND       = "dnd";
-apf.xmpp.STATUS_INVISIBLE = "invisible";
-apf.xmpp.STATUS_FFC       = "chat";
-
-apf.xmpp.MSG_CHAT      = "chat";
-apf.xmpp.MSG_GROUPCHAT = "groupchat";
-apf.xmpp.MSG_ERROR     = "error";
-apf.xmpp.MSG_HEADLINE  = "headline";
-apf.xmpp.MSG_NORMAL    = "normal";
 
 // #endif
