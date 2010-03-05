@@ -516,6 +516,8 @@ apf.uirecorder.output = {
         MODEL_NOT_SET       : "Model data change \"_VAL_\" is not set correctly.",
         MODEL_WRONG_VALUE   : "Model data change \"_VAL_\" of element \"_VAL\" has wrong value.",
         MODEL_NO_ID         : "Model without id found. ID is required for a model.",
+        
+        SCRIPT_CRITICAL     : "A critical error has occurred: \"_VAL_\" in file: \"_VAL_\" on line: \"_VAL_\""
     },
     $saveTest : function(saveType) {
         var id;
