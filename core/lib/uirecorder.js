@@ -4,197 +4,62 @@
  * @experimental
  */
 apf.uirecorder = {
-    isPlaying   : false,
-    isRecording : false,
-    isTesting   : false,
     inited      : false,
+    isRecording : false,
+
+    setTimeout  : self.setTimeout,
     
-    current      : {},
-    setTimeout   : self.setTimeout,
+    actionList  : [],   // list of captured user actions
+    detailList  : {},   // list of captured events, property changes and model data changes 
+    testResults : {     // list of notices, warnings and errors found after testing
+        error      : {},
+        warning    : {},
+        notice     : {}
+    },
     
-    ERROR_NODE_NOT_VISIBLE      : "Element \"_VAL_\" is not visible.",
-    ERROR_NODE_NOT_EXIST        : "Element \"_VAL_\" does not exist (anymore). AML Node is removed from the document or the id is changed/removed.",
-    ERROR_NODE_NOT_INIT         : "Element \"_VAL_\" not initialized (yet).",            
-    ERROR_ACTION_WRONG_TARGET   : "Could not perform action \"_VAL_\" on element \"_VAL_\".",
-    ERROR_PROP_NOT_SET          : "Property \"_VAL_\" of element \"_VAL_\" is not set correctly.",
-    ERROR_PROP_VALUE_INCORRECT  : "Property \"_VAL_\" of element \"_VAL_\" has a incorrect value.",
-    ERROR_MODEL_NOT_SET         : "Model data change \"_VAL_\" of element \"_VAL_\" is not executed.",
-    ERROR_MODEL_VALUE_INCORRECT : "Model data change \"_VAL_\" of element \"_VAL_\" has a incorrect value.",
-    ERROR_MODEL_ID_REQUIRED     : "Model without id found. ID is required for a model.",
+    testListXml     : null,   // xml object with captured tests
+    resultListXml   : null    // xml object with results after testing
+} 
 
-    WARNING_NO_ID               : "No id specified for element with xpath: \"_VAL_\". Using xpath now to determine corresponding element. Could fail if elements are added/removed.",
-    
-    ERROR_SCRIPT_CRITICAL       : "A critical error has occurred: \"_VAL_\" in file: \"_VAL_\" on line \"_VAL_\"", 
-    
-    init : function() {
-        if (apf.uirecorder.inited)
-            return;
+apf.uirecorder.capture = {
+    /*
+     * capturing vars and methods 
+     */
+    $startTime   : 0,    // starttime of recording
+    $curTestFile : "",   // current file being recorded
 
-        apf.uirecorder.inited = true;
+    // init capturing of user interaction
+    $init : function() {
+        if (apf.uirecorder.$inited) return;
+        apf.uirecorder.$inited = true;
         
-        // Error handling
-        window.onerror = function(msg, url, line) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-debugger;
-            apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_SCRIPT_CRITICAL, {
-                val     : [msg, url, line] 
-            }, true);
-        }
-        
-        apf.onerror = function() {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            debugger;
-        }
-
-        /* Form events support */
-        document.documentElement.onselect = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-        
-        document.documentElement.onchange = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-        
-        document.documentElement.onsubmit = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-        
-        document.documentElement.onreset = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-       
-        /* User interface events support */
-        document.documentElement.onfocus = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-
-        document.documentElement.onblur = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-
-        /* Mouse events support */
-        document.documentElement.onclick = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-            //apf.uirecorder.captureAction("click", e);
-        }
-
+        // listeners for user mouse interaction
         document.documentElement.ondblclick = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-            apf.uirecorder.captureAction("dblClick", e);
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
+            apf.uirecorder.capture.$captureAction("dblClick", e || event);
         }
         
         document.documentElement.onmousedown = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-            apf.uirecorder.captureAction("mousedown", e);
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
+            apf.uirecorder.capture.$captureAction("mousedown", e || event);
         }
 
         document.documentElement.onmouseup = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-            apf.uirecorder.captureAction("mouseup", e);
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
+            apf.uirecorder.capture.$captureAction("mouseup", e || event);
         }
         
         document.documentElement.onmousemove = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
-            e = e || event;
-            apf.uirecorder.captureAction("mousemove", e);
+            apf.uirecorder.capture.$captureAction("mousemove", e || event);
         }
         
-        document.documentElement.onmouseover = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-        
-        document.documentElement.onmouseout = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-        }
-
-        /* Keyboard events support for all browsers */
-        document.documentElement.onkeyup = function(e) {
-            debugger;
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-
-            var keycode = (e.keyCode) ? e.keyCode : e.which;
-
-            //apf.uirecorder.captureAction("keyup", e, keycode);
-        }
-        
-        document.documentElement.onkeydown = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-
-            //var validKeys = [37, 38, 39, 40, 27]; // arrowkeys, esc
-
-            var keycode = (e.keyCode) ? e.keyCode : e.which;
-
-            //if (validKeys.indexOf(keycode) == -1) return;
-
-            //if (e.shiftKey) keycode = "[SHIFT]" + keycode;
-            //if (e.altKey)   keycode = "[ALT]" + keycode;
-            //if (e.ctrlKey)  keycode = "[CTRL]" + keycode;
-
-            //apf.uirecorder.captureAction("keydown", e, keycode);
-        }
-        
-        document.documentElement.onkeypress = function(e) {
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                return;
-            e = e || event;
-
-            var character = "";
-            if (e.keyCode) { // Internet Explorer
-                character = String.fromCharCode(e.keyCode);
-            } 
-            else if (e.which) { // W3C
-                character = String.fromCharCode(e.which);
-            }
-            else {
-                character = e.keyCode
-            }
-           
-
-            if (e.shiftKey) character = "[SHIFT]" + character;
-            if (e.altKey)   character = "[ALT]" + character;
-            if (e.ctrlKey)  character = "[CTRL]" + character;
-            //alert(character);
-            apf.uirecorder.captureAction("keypress", e, character);
-        }
-
-        /* Support for Mouse Scroll event */
+        // Support for Mouse Scroll event
         if(document.addEventListener) {
             /* FF */
             document.addEventListener("DOMMouseScroll", function(e) {
-                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                    return;
-    
+                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
                 e = e || event;
 
                 var delta = null;
@@ -206,15 +71,13 @@ debugger;
                 else if (e.detail)
                     delta = -e.detail / 3;
                 
-                apf.uirecorder.captureAction("mousescroll", e, delta);
+                apf.uirecorder.capture.$captureAction("mousescroll", e, delta);
             }, false);
         }
         else {
             /* IE */
             document.onmousewheel = function(e) {
-                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
-                    return;
-
+                if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
                 e = e || event;
 
                 var delta = null;
@@ -226,653 +89,20 @@ debugger;
                 else if (e.detail)
                     delta = -e.detail / 3;
                     
-                apf.uirecorder.captureAction("mousescroll", e, delta);
+                apf.uirecorder.capture.$captureAction("mousescroll", e, delta);
             };
         }
     },
-
-    /**
-     * Checks delta value and creates object to simulate mouse scroll
-     * 
-     * @param {Object} e   event object
-     */
-    createMouseWheelEvent : function(e) {
-        var delta = null;
-        if (e.wheelDelta) {
-            delta = e.wheelDelta / 120;
-            if (apf.isOpera)
-                delta *= -1;
-        }
-        else if (e.detail)
-            delta = -e.detail / 3;
-
-        return {
-            type : apf.isGecko ? "DOMMouseScroll" : (apf.isIE ? "mousewheel" : "DOMMouseScroll"),
-            delta : delta
-        }
-    },
-
-    /**
-     * Initiate user interface recorder and start recording
-     */
-    startTime : 0,
-    curTestFile : "",
-
-    record : function(file) {
-        apf.uirecorder.curTestFile = file;
-        apf.uirecorder.actionList = [];
-        apf.uirecorder.detailList = {};
-        apf.uirecorder.startTime = new Date().getTime();
-        apf.uirecorder.isRecording = true;
-
-        apf.uirecorder.init();
-    },
     
-    /**
-     * Pause test, call apf.uirecorder.resume() to resume test
+    /* 
+     * capture user actions
+     * htmlElement : original html element on which the event occurred
+     * htmlNode    : specific container that holds the htmlElement described above
      */
-    isPaused : false,
-    pause : function() {
-        if (apf.uirecorder.isPaused) return
-
-        apf.console.info("pause on actionIdx:" + apf.uirecorder.curActionIdx);
-        
-        apf.uirecorder.isPaused = true;
-        apf.uirecorder.beforeDelay = new Date().getTime();
-    },
-    /**
-     * Resume paused test
-     */
-    resume : function() {
-        apf.uirecorder.resumed = true;
-        apf.uirecorder.isPaused = false;
-        apf.uirecorder.testDelay += new Date().getTime() - apf.uirecorder.beforeDelay;
-        apf.console.info("resume on actionIdx:" + apf.uirecorder.curActionIdx + ", delay = " + apf.uirecorder.testDelay);
-        apf.uirecorder.playAction();
-    },
-    
-    /**
-     * Stop recording and start playing
-     */
-    curTestIdx : 0, 
-    curActionIdx : 1, // skip init action 
-    play : function(saveResults) {
-//        if (uir_mdlTests.data)
-//            apf.uirecorder.testListXml = apf.getXml(uir_mdlTests.data.xml); 
-//        if (!apf.uirecorder.testListXml) apf.uirecorder.testListXml = apf.getXml('<testList><test file="demo/google/translate/example.xml" name="test1" index="0" status="@todo status"><action name="init" x="630" y="222" time="16" delayTime=""><element name="apf"><activeElement></activeElement></element><element name="uir_bar"><events><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="0"/><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="0"/><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="0"/><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="0"/><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="0"/><event name="DOMNodeRemoved" caption="DOMNodeRemoved" time="16"/></events></element></action><action name="mousemove" x="628" y="226" time="172" delayTime="3469"><element name="apf"><activeElement>html[1]/body[1]/a:window[1]/a:bar[1]/a:dropdown[1]</activeElement></element><element name="winGoogle"><events><event name="show" caption="show" time="32"/></events></element></action><action name="mousemove" x="621" y="226" time="203" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="617" y="226" time="219" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="614" y="227" time="219" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="611" y="229" time="235" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="607" y="232" time="235" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="603" y="236" time="250" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="597" y="240" time="250" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="591" y="245" time="266" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="584" y="252" time="266" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="579" y="259" time="282" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="574" y="263" time="282" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="570" y="269" time="297" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="566" y="274" time="297" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="563" y="279" time="313" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="560" y="283" time="328" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="557" y="287" time="328" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="554" y="291" time="344" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="552" y="294" time="344" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="549" y="297" time="360" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="547" y="300" time="360" delayTime="" ignore="true"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="546" y="303" time="375" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="310" time="407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="311" time="453" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="313" time="469" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="314" time="485" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="316" time="516" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="544" y="316" time="735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="545" y="316" time="735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="546" y="316" time="750" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="548" y="316" time="750" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="549" y="316" time="782" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="551" y="316" time="813" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="552" y="316" time="860" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="550" y="316" time="1235" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="549" y="316" time="1516" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="547" y="316" time="1532" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="546" y="316" time="1547" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="545" y="316" time="1563" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="316" time="1563" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="542" y="316" time="1594" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="540" y="316" time="1610" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="541" y="316" time="1891" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="542" y="316" time="1907" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="544" y="316" time="2063" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="545" y="316" time="2250" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousedown" x="545" y="316" time="2469" delayTime="2500" amlNode="winGoogle" htmlNode="$minBtn" width="16" height="16" absX="541" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element><element name="to_translate"><events><event name="DOMFocusOut" caption="DOMFocusOut" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="focus" caption="focus" time="2469"/><event name="movefocus" caption="movefocus" time="2469"/><event name="xforms-focus" caption="xforms-focus" time="2469"/><event name="DOMFocusIn" caption="DOMFocusIn" time="2469"/></events></element><element name="winGoogle"><events><event name="mousedown" caption="mousedown" time="2469"/><event name="mousedown" caption="mousedown" time="2469"/></events></element></action><action name="mouseup" x="545" y="316" time="2594" delayTime="3594" amlNode="winGoogle" htmlNode="$minBtn" width="16" height="16" absX="541" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:window[1]/a:bar[1]/a:dropdown[1]</activeElement></element><element name="winGoogle"><events><event name="beforestatechange" caption="beforestatechange" time="2594"/><event name="afterstatechange" caption="afterstatechange" time="2594"/></events><properties><property name="state" time="2594">minimized</property></properties></element><element name="to_translate"><events><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/><event name="blur" caption="blur" time="2594"/></events></element><element name="trashbin"><events><event name="xforms-next" caption="xforms-next" time="2594"/></events></element></action><action name="mousemove" x="546" y="316" time="2813" delayTime="5860" amlNode="winGoogle"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element></action><action name="mousemove" x="548" y="316" time="2828" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="549" y="316" time="2828" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="551" y="316" time="2844" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="551" y="315" time="2844" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="552" y="315" time="2860" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="553" y="315" time="2860" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="555" y="315" time="2875" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="556" y="314" time="2875" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="559" y="314" time="2891" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="561" y="314" time="2891" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="562" y="314" time="2907" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="563" y="312" time="2922" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="562" y="312" time="3391" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="559" y="312" time="3407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="557" y="312" time="3422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="556" y="312" time="3422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="554" y="312" time="3438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="554" y="313" time="3438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="553" y="313" time="3500" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="552" y="313" time="3516" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="550" y="313" time="3735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="549" y="313" time="3735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="546" y="314" time="3750" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="545" y="314" time="3766" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="543" y="314" time="3782" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="542" y="316" time="3797" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="540" y="316" time="3813" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="541" y="316" time="4125" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="542" y="316" time="4157" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="544" y="316" time="4469" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="545" y="316" time="4500" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="546" y="316" time="4563" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousedown" x="546" y="316" time="4860" delayTime="4891" amlNode="winGoogle" htmlNode="$minBtn" width="16" height="16" absX="541" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element><element name="to_translate"><events><event name="DOMFocusOut" caption="DOMFocusOut" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="focus" caption="focus" time="4860"/><event name="movefocus" caption="movefocus" time="4860"/><event name="xforms-focus" caption="xforms-focus" time="4860"/><event name="DOMFocusIn" caption="DOMFocusIn" time="4860"/></events></element><element name="winGoogle"><events><event name="mousedown" caption="mousedown" time="4860"/><event name="mousedown" caption="mousedown" time="4860"/></events></element></action><action name="mouseup" x="546" y="316" time="4985" delayTime="5000" amlNode="winGoogle" htmlNode="$minBtn" width="16" height="16" absX="541" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element><element name="winGoogle"><events><event name="beforestatechange" caption="beforestatechange" time="4985"/><event name="afterstatechange" caption="afterstatechange" time="4985"/></events><properties><property name="state" time="4985">normal</property></properties></element><element name="to_translate"><events><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="focus" caption="focus" time="5000"/><event name="movefocus" caption="movefocus" time="5000"/><event name="xforms-focus" caption="xforms-focus" time="5000"/><event name="DOMFocusIn" caption="DOMFocusIn" time="5000"/></events></element></action><action name="mousemove" x="549" y="316" time="5328" delayTime="8532" amlNode="winGoogle"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element></action><action name="mousemove" x="551" y="316" time="5344" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="552" y="316" time="5344" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="553" y="316" time="5360" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="555" y="315" time="5375" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="556" y="315" time="5391" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="559" y="315" time="5391" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="561" y="315" time="5407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="562" y="315" time="5407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="563" y="315" time="5422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="565" y="315" time="5438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="566" y="315" time="5438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="568" y="315" time="5453" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="569" y="315" time="5485" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="570" y="315" time="5500" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="569" y="315" time="5797" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="567" y="315" time="5828" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="566" y="315" time="6328" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="564" y="315" time="6344" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="563" y="315" time="6360" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="562" y="315" time="6407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="560" y="315" time="6407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="559" y="315" time="6422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="559" y="314" time="7688" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="561" y="314" time="7860" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="562" y="314" time="8172" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="563" y="314" time="8219" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousedown" x="563" y="314" time="8516" delayTime="8547" amlNode="winGoogle" htmlNode="$maxBtn" width="16" height="16" absX="557" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element><element name="winGoogle"><events><event name="mousedown" caption="mousedown" time="8516"/><event name="mousedown" caption="mousedown" time="8516"/></events></element></action><action name="mouseup" x="563" y="314" time="8641" delayTime="8719" amlNode="winGoogle" htmlNode="$maxBtn" width="16" height="16" absX="557" absY="303"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]/a:textbox[1]</activeElement></element><element name="winGoogle"><events><event name="beforestatechange" caption="beforestatechange" time="8641"/><event name="afterstatechange" caption="afterstatechange" time="8719"/></events><properties><property name="state" time="8641">maximized</property></properties></element></action><action name="mousemove" x="565" y="314" time="8953" delayTime="" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element><element name="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><events><event name="mouseover" caption="mouseover" time="9532"/><event name="mouseout" caption="mouseout" time="9625"/><event name="mouseover" caption="mouseover" time="10344"/></events></element></action><action name="mousemove" x="566" y="314" time="8969" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="568" y="314" time="8985" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="569" y="316" time="9000" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="570" y="316" time="9000" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="572" y="317" time="9016" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="573" y="317" time="9016" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="576" y="318" time="9032" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="578" y="320" time="9032" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="580" y="321" time="9047" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="586" y="324" time="9047" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="590" y="325" time="9063" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="602" y="328" time="9063" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="620" y="337" time="9078" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="678" y="367" time="9094" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="714" y="385" time="9094" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="754" y="405" time="9110" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="793" y="425" time="9110" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="833" y="445" time="9125" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="872" y="465" time="9125" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="906" y="483" time="9141" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="969" y="524" time="9157" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="996" y="546" time="9172" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1022" y="565" time="9172" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1045" y="584" time="9188" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1065" y="602" time="9188" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1084" y="619" time="9203" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1100" y="636" time="9203" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1127" y="661" time="9219" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1140" y="675" time="9235" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1151" y="689" time="9235" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1163" y="706" time="9250" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1173" y="720" time="9250" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1184" y="736" time="9266" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1192" y="749" time="9266" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1202" y="760" time="9282" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1212" y="770" time="9282" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1222" y="780" time="9297" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1229" y="786" time="9297" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1238" y="793" time="9313" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1251" y="805" time="9328" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1258" y="813" time="9328" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1266" y="824" time="9344" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1286" y="848" time="9375" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1319" y="871" time="9375" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1327" y="872" time="9391" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1336" y="872" time="9391" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1342" y="872" time="9407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1347" y="872" time="9407" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1353" y="872" time="9422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1361" y="876" time="9422" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1373" y="881" time="9438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1387" y="888" time="9438" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1401" y="893" time="9453" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1417" y="899" time="9453" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1431" y="902" time="9469" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1448" y="905" time="9485" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1462" y="908" time="9485" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1475" y="910" time="9500" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1489" y="915" time="9500" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1503" y="919" time="9516" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1518" y="925" time="9516" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1530" y="932" time="9532" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1542" y="936" time="9532" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1552" y="939" time="9547" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1559" y="942" time="9547" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1564" y="943" time="9563" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1566" y="943" time="9563" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1566" y="938" time="9610" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1566" y="930" time="9625" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1560" y="913" time="9641" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1547" y="892" time="9641" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1530" y="869" time="9641" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1514" y="849" time="9657" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1500" y="835" time="9657" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1486" y="819" time="9672" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1475" y="802" time="9672" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1460" y="779" time="9688" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1443" y="750" time="9688" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1423" y="717" time="9703" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1401" y="679" time="9703" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1375" y="636" time="9719" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1342" y="589" time="9735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1306" y="539" time="9735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1266" y="491" time="9750" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1220" y="440" time="9750" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1178" y="388" time="9766" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1134" y="336" time="9766" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1093" y="291" time="9782" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1054" y="248" time="9782" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1019" y="213" time="9797" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="988" y="182" time="9797" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="958" y="155" time="9813" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="934" y="132" time="9813" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="911" y="111" time="9828" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="894" y="91" time="9828" delayTime="" ignore="true" amlNode="language"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="877" y="74" time="9844" delayTime="" ignore="true" amlNode="translated"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="863" y="61" time="9844" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="853" y="54" time="9860" delayTime="" ignore="true" amlNode="to_translate"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="848" y="52" time="9860" delayTime="" ignore="true" amlNode="to_translate"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="847" y="52" time="9875" delayTime="" ignore="true" amlNode="to_translate"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="847" y="57" time="9891" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="847" y="68" time="9891" delayTime="" ignore="true" amlNode="translated"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="853" y="83" time="9907" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:table[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="864" y="100" time="9907" delayTime="" ignore="true" amlNode="language"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="881" y="121" time="9922" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="904" y="147" time="9922" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="937" y="182" time="9938" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="977" y="219" time="9938" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1021" y="262" time="9953" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1070" y="308" time="9953" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1120" y="355" time="9969" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1173" y="406" time="9969" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1221" y="456" time="9985" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1269" y="507" time="9985" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1312" y="554" time="10000" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1351" y="601" time="10000" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1386" y="644" time="10016" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1411" y="683" time="10016" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1428" y="713" time="10032" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1438" y="737" time="10032" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1444" y="754" time="10047" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="767" time="10063" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="777" time="10063" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="784" time="10078" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="793" time="10078" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="801" time="10094" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="813" time="10094" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="824" time="10110" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1445" y="835" time="10110" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1447" y="847" time="10125" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1449" y="857" time="10125" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1452" y="861" time="10141" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1454" y="864" time="10141" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1454" y="865" time="10157" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1455" y="866" time="10157" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1455" y="871" time="10172" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1459" y="883" time="10188" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1461" y="891" time="10188" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1462" y="896" time="10203" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1462" y="902" time="10203" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1464" y="905" time="10219" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1464" y="906" time="10219" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1464" y="908" time="10250" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1465" y="910" time="10250" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1465" y="913" time="10266" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1466" y="916" time="10266" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1468" y="920" time="10282" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1468" y="923" time="10282" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1471" y="926" time="10297" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1472" y="928" time="10313" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1474" y="930" time="10313" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1475" y="930" time="10328" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1475" y="932" time="10328" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1476" y="935" time="10344" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1478" y="936" time="10344" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1479" y="939" time="10360" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1481" y="942" time="10360" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1483" y="945" time="10375" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1485" y="947" time="10375" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1486" y="949" time="10391" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1488" y="949" time="10391" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1489" y="949" time="10407" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1491" y="949" time="10422" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1492" y="949" time="10453" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1493" y="950" time="10453" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1495" y="950" time="10453" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1496" y="952" time="10469" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1498" y="952" time="10469" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1499" y="952" time="10500" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1502" y="952" time="10516" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1503" y="952" time="10516" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1505" y="952" time="10532" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1506" y="952" time="10547" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1508" y="952" time="10563" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1509" y="952" time="10594" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1509" y="951" time="10766" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1507" y="951" time="10797" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1507" y="950" time="10797" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1506" y="950" time="10813" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1504" y="950" time="10813" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1503" y="950" time="10828" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1502" y="950" time="10860" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1500" y="950" time="10860" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1499" y="948" time="10907" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1496" y="947" time="10953" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1493" y="946" time="10969" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1492" y="946" time="10985" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1490" y="946" time="10985" delayTime="" ignore="true" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousedown" x="1490" y="946" time="11313" delayTime="12313" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]" htmlNode="$ext" width="100" height="25" absX="1474" absY="933"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]</activeElement></element><element name="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><events><event name="mousedown" caption="mousedown" time="11313"/><event name="DOMFocusOut" caption="DOMFocusOut" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="focus" caption="focus" time="11313"/><event name="movefocus" caption="movefocus" time="11313"/><event name="xforms-focus" caption="xforms-focus" time="11313"/><event name="DOMFocusIn" caption="DOMFocusIn" time="11313"/><event name="mousedown" caption="mousedown" time="11313"/></events></element><element name="to_translate"><events><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/><event name="blur" caption="blur" time="11313"/></events></element></action><action name="mouseup" x="1490" y="946" time="11407" delayTime="11422" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]" htmlNode="$ext" width="100" height="25" absX="1474" absY="933"><element name="apf"><activeElement>html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]</activeElement></element><element name="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><events><event name="mouseup" caption="mouseup" time="11407"/><event name="click" caption="click" time="11407"/></events></element></action><action name="mousemove" x="1490" y="937" time="11657" delayTime="12438" amlNode="html[1]/body[1]/a:bar[1]/a:window[1]/a:button[1]"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1495" y="923" time="11657" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1501" y="907" time="11672" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1506" y="889" time="11672" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1512" y="867" time="11688" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1519" y="842" time="11688" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1526" y="812" time="11703" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1537" y="778" time="11703" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1550" y="731" time="11719" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1563" y="676" time="11719" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1574" y="622" time="11735" delayTime="" ignore="true" amlNode="winGoogle"><element name="apf"><activeElement></activeElement></element></action><action name="mousemove" x="1589" y="569" time="11735" delayTime="" ignore="true" amlNode="html[1]/undefined[1]"><element name="apf"><activeElement></activeElement></element></action></test></testList>');
-
-        apf.uirecorder.saveResults = saveResults;
-        var timer = 3;
-        uir_windowStartTest.setProperty("visible", true);
-        uir_windowStartTest.setProperty("title", "Starting test in..." + timer);
-        
-        var intval = window.setInterval(function() {
-            timer -= 1;
-            if (timer == 0) {
-                window.clearInterval(intval);
-                intval = "";
-                uir_windowStartTest.setProperty("visible", false);
-                if (apf.uirecorder.saveResults) {
-                    apf.uirecorder.resetResults();
-                }
-                
-                apf.uirecorder.curTestIdx = 0;
-                apf.uirecorder.curActionIdx = 1; // skip init action
-                apf.uirecorder.curCheckActionIdx = 0; // index needed for testing
-                //uir_btnPlay.setAttribute("disabled", true);
-                uir_windowChanges.setProperty("visible", false);
-                uir_windowTestResults.setProperty("visible", false);
-
-                apf.uirecorder.load(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"), function() {
-                    //var timeout = setTimeout(function() {
-                        apf.queue.empty();
-                        apf.uirecorder.playTest();
-                        //clearTimeout(timeout);
-                    //}, 2000);
-                });
-            }
-            else {
-                uir_windowStartTest.setProperty("title", "Starting test in..." + timer);
-            }
-        }, 1000);
-    },
-    playTest : function() {
-        if (apf.uirecorder.saveResults)
-            apf.uirecorder.test(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"));
-
-        apf.uirecorder.playAction();
-    },
-    testDelay : 0,
-    timeoutTimer : null,
-    playAction : function() {
-        if (apf.uirecorder.isPaused) return;
-        
-        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
-        var action = test.childNodes[apf.uirecorder.curActionIdx];
-        //var elapsedTime = 0;
-        
-        // realtime movement
-        if (uir_ddRealtime.value == "realtime") {
-            if (apf.uirecorder.timeoutTimer) {
-                clearTimeout(apf.uirecorder.timeoutTimer);
-            }
-            //if (apf.uirecorder.resumed) debugger;
-            //var time = new Date().getTime();
-            var timeout = parseInt(action.getAttribute("time")) + apf.uirecorder.testDelay - (new Date().getTime() - apf.uirecorder.startTime);
-            if (timeout > 0) {
-                apf.uirecorder.timeoutTimer = setTimeout(function() {
-                    apf.uirecorder.execAction();
-                }, timeout);
-            }
-            else {
-                apf.uirecorder.execAction();
-            }
-        }
-        // max movement
-        else if (uir_ddRealtime.value == "max") {
-            apf.uirecorder.execAction();
-        }
-    },
-    
-    // check if currect action has certain events during testing
-    checkEvents : {
-        "beforeload"        : "afterload",
-        "beforestatechange" : "afterstatechange"
-    },
-    beforeDelay : 0,
-    checkList : {},
-    curRealActionIdx : 0,
-    execAction : function() {
-        if (!apf.uirecorder.isTesting || apf.uirecorder.isPaused) return;
-        
-        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
-        var action = test.childNodes[apf.uirecorder.curActionIdx];
-/*
-        if (test.childNodes[apf.uirecorder.curActionIdx-1])
-            var prevAction = test.childNodes[apf.uirecorder.curActionIdx-1]
-        if (test.childNodes[apf.uirecorder.curActionIdx+1])
-            var nextAction = test.childNodes[apf.uirecorder.curActionIdx+1]
-*/        
-        var xPos, yPos;
-        if (action.getAttribute("name") != "mousemove") {
-            if (action.getAttribute("amlNode")) {
-                if (action.getAttribute("htmlNode")) {
-                    // @todo check if htmlNode is visible
-                    
-                    var htmlNode;
-                    var amlNode = (action.getAttribute("amlNode").indexOf("html[") == 0) 
-                        ? apf.document.selectSingleNode(action.getAttribute("amlNode").substr(8)) // search for amlNode based on xpath
-                        : window[action.getAttribute("amlNode")] // search for amlNode with id 
-                               || null; // no amlNode found
-                    
-                    if (!amlNode) {
-                        apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_NODE_NOT_EXIST, {
-                            val     : action.getAttribute("amlNode"), 
-                            testId  : test.getAttribute("name")
-                        }, true);
-                        return;
-                    }
-        
-                    // get htmlNode
-                    if (action.getAttribute("htmlNode") == "$ext")
-                        htmlNode = amlNode.$ext;
-                    else if (amlNode.$getActiveElements && amlNode.$getActiveElements()[action.getAttribute("htmlNode")])
-                        htmlNode = amlNode.$getActiveElements()[action.getAttribute("htmlNode")];
-                    
-                    // htmlNode not visible
-                    if (htmlNode) { 
-                        if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
-                            apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_NODE_NOT_VISIBLE, {
-                                val: (action.getAttribute("htmlNode") != "$ext" ? action.getAttribute("htmlNode") : action.getAttribute("amlNode")), 
-                                testId: test.getAttribute("name")
-                            }, true);
-                            /*
-                            if (!apf.uirecorder.testResults.error[test.getAttribute("name")]) apf.uirecorder.testResults.error[test.getAttribute("name")] = [];
-                            apf.uirecorder.testResults.error[test.getAttribute("name")].push({
-                                message: apf.uirecorder.ERROR_NODE_NOT_VISIBLE.replace("_ELEMENT_", (action.getAttribute("htmlNode") != "$ext" ? action.getAttribute("htmlNode") : action.getAttribute("amlNode")))
-                            })
-                            */
-                        }
-                        
-                        // position of htmlNode
-                        var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
-                        xPos = pos[0]-(parseInt(action.getAttribute("absX"))-parseInt(action.getAttribute("x"))) * ((htmlNode.offsetWidth/action.getAttribute("width")));
-                        yPos = pos[1]-(parseInt(action.getAttribute("absY"))-parseInt(action.getAttribute("y"))) * ((htmlNode.offsetHeight/action.getAttribute("height")));
-                    }
-                }
-                else {
-                    debugger;
-                } 
-            }
-        }
-        if (!xPos && !yPos) {
-            xPos = action.getAttribute("x");
-            yPos = action.getAttribute("y");
-        }
-//if (xPos != action.getAttribute("x") || yPos != action.getAttribute("y")) debugger;
-
-        o3.mouseTo(
-            parseInt(xPos) + hostWnd.clientX, 
-            parseInt(yPos) + hostWnd.clientY, 
-            hostWnd
-        );
-        
-        /*
-        if (action.getAttribute("name") === "click") {
-            if (uir_ddRealtime.value == "max") o3.wait(1);
-            o3.mouseLeftClick();
-        }
-        else 
-        */
-       if (action.getAttribute("name") === "keypress") {
-            o3.sendAsKeyEvents(action.getAttribute("value"));
-        }
-        else if (action.getAttribute("name") === "keydown") {
-            o3.sendKeyDown(action.getAttribute("value"));
-        }
-        else if (action.getAttribute("name") === "keyup") {
-            o3.sendKeyUp(action.getAttribute("value"));
-        }
-        else if (action.getAttribute("name") === "mousedown") {
-            if (uir_ddRealtime.value == "max") 
-                o3.wait(1);
-            o3.mouseLeftDown();
-        }
-        else if (action.getAttribute("name") === "mouseup") {
-            if (uir_ddRealtime.value == "max")
-                o3.wait(1);
-            o3.mouseLeftUp();
-        }
-        else if (action.getAttribute("name") === "dblClick") {
-            if (uir_ddRealtime.value == "max") 
-                o3.wait(1);
-            o3.mouseLeftDown();
-            o3.mouseLeftUp();
-            o3.mouseLeftDown();
-            o3.mouseLeftUp();
-        }
-        else if (action.getAttribute("name") === "mousescroll") {
-            o3.mouseWheel(action.getAttribute("value"));
-        }
-
-        // set target checks
-        var actionIdx = (apf.uirecorder.checkList[test.getAttribute("name")]) ? apf.uirecorder.checkList[test.getAttribute("name")].length : 0;
-        if (action.getAttribute("name") != "mousemove") {
-            // check htmlNode
-            if (action.getAttribute("htmlNode")) {
-                // multiselect element
-/*
-                if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
-                    var xpath = apf.xmlToXpath(amlNode.selected);
-                    var htmlNode = apf.xmldb.findHtmlNode(amlNode.selected, amlNode);
-                    var htmlNodeName = htmlNode.innerText;
-                    
-                    if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = {};
-                    if (!apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx] = {};
-                    apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx].htmlNode = 
-                        (action.getAttribute("htmlNode") == "$ext") ? action.getAttribute("amlNode") : htmlNodeName;
-                }
-                else {
-*/
-                    //if (action.getAttribute("htmlNode") == "popup") debugger;
-                    apf.console.info("action on htmlNode " + action.getAttribute("htmlNode") + " of " + action.getAttribute("amlNode"));
-                    if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = [];
-                    
-                    if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx] = {};
-                        
-                    //if (!apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][apf.uirecorder.curActionIdx] = {};
-                    apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].htmlNode = 
-                        (action.getAttribute("htmlNode") == "$ext") ? action.getAttribute("amlNode") : action.getAttribute("htmlNode");
-//                } 
-            }
-            
-            // set value checks
-            var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
-
-            for (var elName, nodes, ci = 0, cl = action.childNodes.length; ci < cl; ci++) {
-                elName = action.childNodes[ci].getAttribute("name");
-                for (var type in detailTypes) {
-                    if (!action.childNodes[ci].selectSingleNode(type)) continue;
-                    nodes = action.childNodes[ci].selectSingleNode(type).selectNodes(detailTypes[type]);
-
-                    for (var node, ni = 0, nl = nodes.length; ni < nl; ni++) {
-                        node = nodes[ni];
-
-                        if (type == "properties") {
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = [];
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx] = {};
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].properties) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].properties = {};
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].properties[elName]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].properties[elName] = {};
-                            apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].properties[elName][node.getAttribute("name")] = node.text;
-                        }
-                        else if (type == "events") {
-                            if (node.getAttribute("value")) {
-                                if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = [];
-                                if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx] = {};
-                                if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].events) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].events = {};
-                                if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].events[elName]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].events[elName] = {};
-                                apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].events[elName][node.getAttribute("name")] = node.value;
-                            }
-                        }
-                        else if (type == "data") {
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")]) apf.uirecorder.checkList[test.getAttribute("name")] = [];
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx] = {};
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].data) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].data = {};
-                            if (!apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].data[elName]) apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].data[elName] = {};
-                            apf.uirecorder.checkList[test.getAttribute("name")][actionIdx].data[elName][node.getAttribute("name")] = node.text;
-                        }
-                    }
-                }
-            }
-        }
-
-        // set event checks
-        var delayCheck = false;
-        if (apf.uirecorder.isTesting) {
-            for (var ce in apf.uirecorder.checkEvents) {
-                if (action.selectNodes("element[events[event[@name='" + ce + "']]]")) {
-                    var matches = action.selectNodes("element[events[event[@name='" + ce + "']]]");
-                    if (matches.length) {
-                        for (var targetName, mi = 0, ml = matches.length; mi < ml; mi++) {
-                            targetName = matches[mi].getAttribute("name");
-                            if (targetName.indexOf("html[1]") == 0) {
-                                delayCheck = true;
-                                apf.uirecorder.beforeDelay = new Date().getTime();
-
-                                
-                                var amlNode = apf.xmldb.getNodeById(targetName) || apf.document.selectSingleNode(targetName.substr(8));
-                                if (!amlNode) debugger;
-                                
-                                // event already triggered, continue test
-                                if (apf.uirecorder.testEventList[targetName] && apf.uirecorder.testEventList[targetName].indexOf(apf.uirecorder.checkEvents[ce]) > -1) {
-                                    apf.console.info("event " + apf.uirecorder.checkEvents[ce] + " already called on " + targetName);
-                                    apf.uirecorder.testEventList[targetName].splice(apf.uirecorder.testEventList[targetName].indexOf(apf.uirecorder.checkEvents[ce]), 1);
-                                    apf.uirecorder.testCheck();
-                                }
-                                // event not triggered yet, add listener
-                                else {
-                                    apf.console.info("addEventListener added to " + targetName + ": " + apf.uirecorder.checkEvents[ce]);
-                                    amlNode.addEventListener(apf.uirecorder.checkEvents[ce], apf.uirecorder.waitForEvent);
-                                }
-                            }
-                            else {
-                                //debugger;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-/*
-        for (var ce in apf.uirecorder.checkEvents) {
-            if (apf.uirecorder.testEventList[ce] && apf.uirecorder.testEventList[ce].length) {
-                for (var i = 0; i < apf.uirecorder.testEventList[ce].length; i++) {
-                    if (apf.uirecorder.testEventList[ce][i].indexOf("html[1]") == 0) {
-                        //debugger;
-                        if (apf.uirecorder.testEventList[apf.uirecorder.checkEvents[ce]].indexOf(apf.uirecorder.testEventList[ce][i]) > -1) {
-                            apf.uirecorder.testEventList[apf.uirecorder.checkEvents[ce]].splice(apf.uirecorder.testEventList[apf.uirecorder.checkEvents[ce]].indexOf(apf.uirecorder.testEventList[ce][i]), 1);
-                            //apf.uirecorder.testCheck();
-                        }
-                        else {
-                            delayCheck = true;
-                            apf.console.info("addEventListener added to " + apf.uirecorder.testEventList[ce][i] + ": " + apf.uirecorder.checkEvents[ce]);
-                            apf.document.selectSingleNode(apf.uirecorder.testEventList[ce][i].substr(8)).addEventListener(apf.uirecorder.checkEvents[ce], apf.uirecorder.waitForEvent);
-                        }
-                        apf.uirecorder.testEventList[ce].splice(i, 1);
-                    }
-                }
-            }
-        }
-*/
-        //apf.uirecorder.testEventList = {};
-        
-        if (!delayCheck) {
-            apf.uirecorder.testCheck();
-        } 
-    },
-    waitForEvent : function(e) {
-        //apf.console.info("waitForEvent: " + apf.uirecorder.curActionIdx);
-        e.currentTarget.removeEventListener(e.name, apf.uirecorder.waitForEvent);
-        
-        //(apf.xmlToXpath(this) || amlNode.id) 
-        apf.console.info("event fired in waitForEvent: " + e.name);
-//if (e.name == "afterstatechange") debugger;
-        //apf.console.info("testCheck (waitForEvent): " + apf.uirecorder.curActionIdx);
-        apf.uirecorder.testCheck();
-        apf.uirecorder.testDelay += new Date().getTime() - apf.uirecorder.beforeDelay;
-    },
-    testResultsXml : null,
-    testCheck : function(playNext) {
-        if (!apf.uirecorder.isTesting) return;
-        
-        var test = apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")];
-        var action = test.childNodes[apf.uirecorder.curActionIdx];
-
-        // play next action
-        if (test.childNodes.length > apf.uirecorder.curActionIdx+1 && !playNext) {
-            apf.uirecorder.curActionIdx++;
-            //apf.console.info("playAction (testCheck): test.childNodes.length = " + test.childNodes.length + " apf.uirecorder.curActionIdx+1 = " + apf.uirecorder.curActionIdx+1);
-            apf.uirecorder.playAction();
-        }
-        else {
-            apf.uirecorder.stop();
-                
-            // save test results
-            if (apf.uirecorder.saveResults) {
-                apf.uirecorder.saveTest("results", test.getAttribute("name"));
-            }
-
-            // play next test
-            if (uir_listTests.selection.length > apf.uirecorder.curTestIdx+1) {
-                apf.uirecorder.curTestIdx++;
-                apf.uirecorder.load(apf.uirecorder.testListXml.childNodes[uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("index")].getAttribute("file"), function() {
-                    
-                    // short delay to prevent capturing the loading of the elements in markup.xml
-                    //var timeout = setTimeout(function() {
-                        apf.uirecorder.curActionIdx = 1; // skip init action
-                        apf.uirecorder.playTest();
-                        //clearTimeout(timeout);
-                    //}, 2000);
-                });
-            }
-            // all tests done
-            else {
-                apf.uirecorder.curTestIdx = null;
-                apf.uirecorder.curActionIdx = null;
-                if (apf.uirecorder.saveResults && uir_cbShowChanges.checked) {
-                    uir_mdlTests.load(apf.uirecorder.testListXml.xml);
-                    uir_mdlChanges2.load(apf.uirecorder.resultListXml.xml);
-                    uir_windowChanges.setProperty("visible", true);
-                    uir_windowTestResults.setProperty("visible", true);
-                }
-                
-// generate testResults xml
-                var xml = apf.getXml("<testResults />");
-                var types = ["error", "warning", "notice"];
-                var resultNode;
-                for (var type, ti = 0, tl = types.length; ti < tl; ti++) {
-                    type = types[ti];
-                    for (var testId in apf.uirecorder.testResults[type]) {
-                        if (apf.uirecorder.testResults[type][testId].length) {
-                            for (var i = 0, l = apf.uirecorder.testResults[type][testId].length; i < l; i++) {
-                                resultNode = xml.ownerDocument.createElement(type);
-                                //resultNode.setAttribute("type", type);
-                                resultNode.setAttribute("testId", testId);
-                                if (apf.uirecorder.testResults[type][testId][i].action)
-                                    resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action);
-                                resultNode.appendChild(xml.ownerDocument.createTextNode(apf.uirecorder.testResults[type][testId][i].message));
-                                xml.appendChild(resultNode);
-                            }
-                        }
-                    }
-                }
-                
-                var numErrors   = xml.selectNodes("error").length;
-                var numWarnings = xml.selectNodes("warning").length;
-                var numNotices  = xml.selectNodes("notice").length;
-
-                // temp solution for "datagrid using same model" bug
-                if (numErrors == 0) {
-                    resultNode = xml.ownerDocument.createElement("error");
-                    resultNode.setAttribute("testId", testId);
-                    resultNode.appendChild(xml.ownerDocument.createTextNode("No errors found"));
-                    xml.appendChild(resultNode);
-                    numErrors = 1;
-                }
-                if (numWarnings == 0) {
-                    resultNode = xml.ownerDocument.createElement("warning");
-                    resultNode.setAttribute("testId", testId);
-                    resultNode.appendChild(xml.ownerDocument.createTextNode("No warnings found"));
-                    xml.appendChild(resultNode);
-                    numWarnings = 1;
-                }
-                if (numNotices == 0) {
-                    resultNode = xml.ownerDocument.createElement("notice");
-                    resultNode.setAttribute("testId", testId);
-                    resultNode.appendChild(xml.ownerDocument.createTextNode("No notices found"));
-                    xml.appendChild(resultNode);
-                    numNotices = 1;
-                }
-
-                apf.uirecorder.testResultsXml = xml;
-
-                // save results in file "testlog.xml"
-                apf.uirecorder.saveFile("testResults");
-                
-
-                // set testResults model
-                uir_mdlTestResults.load(apf.uirecorder.testResultsXml.xml);
-                
-                // set number of errors, warning and notices to tab caption
-                uir_pageTestResultsErrors.setProperty("caption", "Errors (" + numErrors + ")");
-                uir_pageTestResultsWarnings.setProperty("caption", "Warnings (" + numWarnings + ")");
-                uir_pageTestResultsNotices.setProperty("caption", "Notices (" + numNotices + ")");
-
-                // change tab
-                if (numErrors || numWarnings || numNotices)
-                    uir_windowTestResults.setProperty("visible", true);
-
-                if (numNotices > 0) {
-                    uir_pageTestResultsNotices.setProperty("visible", true);
-                    uir_tabTestResults.setAttribute('activepage', 'uir_pageTestResultsNotices');
-                }
-                else {
-                    uir_pageTestResultsNotices.setProperty("visible", false);
-                }
-                
-                if (numWarnings > 0) {
-                    uir_pageTestResultsWarnings.setProperty("visible", true);
-                    uir_tabTestResults.setAttribute('activepage', 'uir_pageTestResultsWarnings');
-                }
-                else {
-                    uir_pageTestResultsWarnings.setProperty("visible", false);
-                }
-
-                if (numErrors > 0) {
-                    uir_pageTestResultsErrors.setProperty("visible", true);
-                    uir_tabTestResults.setAttribute('activepage', 'uir_pageTestResultsErrors');
-                }
-                else {
-                    uir_pageTestResultsErrors.setProperty("visible", false);
-                }
-            // @todo write testResults to log file
-                
-                // reset testResults
-                apf.uirecorder.testResults = {
-                    error       : {},
-                    warning     : {},
-                    notice      : {}
-                }
-                apf.console.info("all tests done");
-            }
-        }
-    },
-    
-    /**
-     * Start testing
-     */
-    test : function(file) {
-        apf.uirecorder.curTestFile = file;
-        //apf.uirecorder.resultListXml = null;
-        apf.uirecorder.actionList = [];
-        apf.uirecorder.detailList = {};
-        apf.uirecorder.startTime = new Date().getTime();
-        apf.uirecorder.isTesting = true;
-        apf.uirecorder.testEventList = [];
-        apf.uirecorder.testDelay = 0;
-        apf.uirecorder.curActionIdx = 1; // skip init action
-        apf.uirecorder.init();
-    },
-    
-    /**
-     * Stop recording and playing
-     */
-    stop : function() {
-        debugger;
-        apf.uirecorder.inited = false;
-        if (apf.uirecorder.isRecording) {
-            apf.uirecorder.isRecording = false;
-            apf.uirecorder.saveTest("test");
-        }
-        apf.uirecorder.isTesting   = false;
-        apf.uirecorder.isPlaying   = false;
-        apf.uirecorder.isPaused   = false;
-        
-        apf.uirecorder.detailList = {};
-    },
-    
-    /**
-     * Stop recording and playing, clear list of recorded actions
-     */
-    resetTests : function() {
-        apf.uirecorder.isRecording = false;
-        apf.uirecorder.isPlaying   = false;
-        apf.uirecorder.isTesting   = false;
-        apf.uirecorder.testListXml   = apf.getXml("<testList />");
-    },
-
-    /**
-     * Stop recording and playing, clear list of recorded actions
-     */
-    resetResults : function() {
-        apf.uirecorder.isRecording = false;
-        apf.uirecorder.isPlaying   = false;
-        apf.uirecorder.isTesting   = false;
-        apf.uirecorder.resultListXml   = apf.getXml("<resultList />");
-    },
-
-    /**
-     * 
-     */
-    markupLoaded : false,
-    load : function(file, callback) {
-        uir_bar.replaceMarkup(file, {
-            callback : callback
-        });
-    },
-    
-    /**
-     * Record user action like mouse clicks, movement of keypress 
-     */
-    actionList      : [],
-    actionObjects : [],
-    firstMousemoveObj : null,
-    testResults : {
-        error      : {},
-        warning    : {},
-        notice     : {}
-    },
-    curCheckActionIdx : 0,
-    captureAction : function(eventName, e, value) {
+    $captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
 
-        // ignore interaction with uirecorder controls
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") {
-            return;
-        }
-        
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
@@ -883,8 +113,6 @@ debugger;
                 if (activeElements) {
                     for (var name in activeElements) {
                         if (apf.isChildOf(activeElements[name], htmlElement, true)) {
-                            //amlNode[name] = activeElements[name];
-                            //alert("activeElement found: " + i);
                             htmlNode = activeElements[name];
                             htmlNodeName = name;
                             break;
@@ -919,163 +147,99 @@ debugger;
                     htmlNodeName = "$ext";
                 }
             }
-        }            
+        }
         
-        //if (htmlNode)
-            //debugger;
-        // time in ms when action is executed
-        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
+        // elapsed time since start of recording/playback
+        var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
+
+        // set action object
         var actionObj = {
             time        : time,
             name        : eventName,
             detailList  : {}
         }
+        if (htmlElement)    actionObj.htmlElement   = htmlElement;
+        if (amlNode)        actionObj.amlNode       = amlNode;
+        if (e && e.clientX) actionObj.x             = parseInt(e.clientX);
+        if (e && e.clientY) actionObj.y             = parseInt(e.clientY);
+        if (value)          actionObj.value         = value;
         
+        // set properties of htmlNode
         if (htmlNode) {
             var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode);
             actionObj.htmlNode = {
                 name        : htmlNodeName,
                 width       : htmlNode.offsetWidth,
                 height      : htmlNode.offsetHeight,
-                x           : pos[0],
-                y           : pos[1],
+                x           : parseInt(pos[0]),
+                y           : parseInt(pos[1]),
                 scrollTop   : htmlNode.scrollTop,
                 scrollLeft  : htmlNode.scrollLeft
             }
             if (!htmlNode.scrollTop && htmlNode.scrollTop != 0) debugger;
         }
-
-        if (htmlElement)    actionObj.htmlElement   = htmlElement;
-        if (amlNode)        actionObj.amlNode       = amlNode;
-        if (e && e.clientX) actionObj.x             = e.clientX;
-        if (e && e.clientY) actionObj.y             = e.clientY;
-        if (value)          actionObj.value         = value;
-
-        // collect events before first ui action
+        
+        // process detailList
+        // set init action, overwriting first (mousemove) action
         if (apf.uirecorder.actionList.length == 0) {
-            // reset all before init
-            //apf.uirecorder.detailList = {};
-            
             actionObj.name = "init";
             actionObj.detailList = apf.uirecorder.detailList;
             apf.uirecorder.detailList = {};
             apf.uirecorder.actionList.push(actionObj);
             return;
         }
-            
-                
-        // detect first mousemove action in serie
-        if (apf.uirecorder.actionList.length > 1 || apf.uirecorder.actionList.length == 1) {
-            if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove")
-                apf.uirecorder.firstMousemoveObj = actionObj;
-        }
-        
-        // combine mousedown / mouseup to click
-        /*
-        if (apf.uirecorder.actionList.length > 1 && eventName == "mouseup" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousedown") {
-            actionObj.name = "click";
-            
-            // merge detailList of mousedown with current actionObj
-            for (var elementName in apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList) {
-                //actionObj.delayTime = actionObj.time;
-                actionObj.time = apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].time;
 
-                
-                if (!actionObj.detailList) actionObj.detailList = {};
-                if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
-                    amlNode     : (apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName] && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode) ? apf.uirecorder.actionList[apf.uirecorder.actionList.length-1][elementName].amlNode : null,
-                    events      : [],
-                    properties  : [],
-                    data        : []
-                };
-    
-                actionObj.detailList[elementName].events = actionObj.detailList[elementName].events.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].events);
-                actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].properties);
-                actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].detailList[elementName].data);
-            }
-            // replace mousedown obj with new click obj
-            apf.uirecorder.actionList[apf.uirecorder.actionList.length-1] = actionObj;
+        // save reference to first mousemove object
+        var index, delayObj;
+        if (apf.uirecorder.actionList.length == 1 || (apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove")) {
+            actionObj.index = apf.uirecorder.capture.actionList.length;
+            apf.uirecorder.capture.firstMousemoveObj = actionObj;
         }
         
-        else 
-        */
-        var index, delayObj;
+        // combine mousemove actions
         if (apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
             for (var elementName in apf.uirecorder.detailList) {
-                if (!apf.uirecorder.firstMousemoveObj.detailList) apf.uirecorder.firstMousemoveObj.detailList = {};
-                if (!apf.uirecorder.firstMousemoveObj.detailList[elementName]) apf.uirecorder.firstMousemoveObj.detailList[elementName] = {
+                if (!apf.uirecorder.capture.firstMousemoveObj.detailList) apf.uirecorder.capture.firstMousemoveObj.detailList = {};
+                if (!apf.uirecorder.capture.firstMousemoveObj.detailList[elementName]) apf.uirecorder.capture.firstMousemoveObj.detailList[elementName] = {
                     amlNode     : apf.uirecorder.detailList[elementName].amlNode,
                     events      : [],
                     properties  : [],
                     data        : []
                 };
     
-                apf.uirecorder.firstMousemoveObj.detailList[elementName].events = apf.uirecorder.firstMousemoveObj.detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
-                apf.uirecorder.firstMousemoveObj.detailList[elementName].properties = apf.uirecorder.firstMousemoveObj.detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
-                apf.uirecorder.firstMousemoveObj.detailList[elementName].data = apf.uirecorder.firstMousemoveObj.detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
+                apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].events     = apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
+                apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].properties = apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
+                apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].data       = apf.uirecorder.capture.firstMousemoveObj.detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
             }
-            apf.uirecorder.detailList = {};
-            actionObj.ignore = "true";
+            apf.uirecorder.detailList   = {};
+            actionObj.ignore            = "true";
             apf.uirecorder.actionList.push(actionObj);
 
-            delayObj = apf.uirecorder.firstMousemoveObj;
-            index = apf.uirecorder.firstMousemoveObj.index;
-        }
-        
-        // doubleClick = mousedown, mouseup, mouseup
-        else if ( apf.uirecorder.actionList.length > 3 
-               && eventName == "dblClick" 
-               && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mouseup"
-               && apf.uirecorder.actionList[apf.uirecorder.actionList.length-2].name == "mouseup"
-               && apf.uirecorder.actionList[apf.uirecorder.actionList.length-3].name == "mousedown") {
-
-            actionObj.detailList = apf.uirecorder.detailList;
-            apf.uirecorder.detailList = {};
-
-            // merge details from previous 3 actions with current one
-            for (var i = apf.uirecorder.actionList.length-1, l = apf.uirecorder.actionList.length-4; i > l ; i--) {
-                for (var elementName in apf.uirecorder.actionList[i].detailList) {
-                    if (!actionObj.detailList[elementName]) actionObj.detailList[elementName] = {
-                        amlNode     : (apf.uirecorder.actionList[i].detailList[elementName] && apf.uirecorder.actionList[i].detailList[elementName].amlNode) ? apf.uirecorder.actionList[i].detailList[elementName].amlNode : null,
-                        events      : [],
-                        properties  : [],
-                        data        : []
-                    };
-        
-                    actionObj.detailList[elementName].events = actionObj.detailList[elementName].events.concat(apf.uirecorder.actionList[i].detailList[elementName].events);
-                    actionObj.detailList[elementName].properties = actionObj.detailList[elementName].properties.concat(apf.uirecorder.actionList[i].detailList[elementName].properties);
-                    actionObj.detailList[elementName].data = actionObj.detailList[elementName].data.concat(apf.uirecorder.actionList[i].detailList[elementName].data);
-                }
-            }
-
-            // delete last 3 actions from actionList and actionObjects list
-            apf.uirecorder.actionList.splice(apf.uirecorder.actionList.length-3, 3);
-
-            apf.uirecorder.actionList.push(actionObj);
-
-            delayObj = actionObj;
-            index = actionObj.index = apf.uirecorder.actionObjects.length;
+            delayObj    = apf.uirecorder.capture.firstMousemoveObj;
+            index       = apf.uirecorder.capture.firstMousemoveObj.index;
         }
         else {
             actionObj.detailList = apf.uirecorder.detailList;
             apf.uirecorder.detailList = {};
-            apf.uirecorder.actionList.push(actionObj);
-
+            
             delayObj = actionObj;
-            index = actionObj.index = apf.uirecorder.actionObjects.length;
+            index = actionObj.index = apf.uirecorder.capture.actionList.length;
         }
-        //actionObj.activeElement = apf.xmlToXpath(apf.activeElement);
-
-        apf.uirecorder.actionObjects.push(actionObj);
+        
+        // save action object
+        apf.uirecorder.actionList.push(actionObj);
+        
         
         //For new timeouts associated with the next action.
-        var currentState = apf.uirecorder.current = {};
+        var currentState = apf.uirecorder.capture.current = {};
 
         //For all the running timeouts
-        apf.uirecorder.current.actionObj = delayObj;
-        apf.uirecorder.current.index     = index;
-        apf.uirecorder.current.eventName = eventName;
-        apf.uirecorder.current.actionIdx = apf.uirecorder.curCheckActionIdx;
+        apf.uirecorder.capture.current.actionObj = delayObj;
+        apf.uirecorder.capture.current.index     = index;
+        apf.uirecorder.capture.current.eventName = eventName;
+        
+        if (apf.uirecorder.isTesting)
+            apf.uirecorder.capture.current.actionIdx = apf.uirecorder.capture.curCheckActionIdx;
 
         // delayed capturing of events
         var recursion = false;
@@ -1088,359 +252,97 @@ debugger;
             return apf.uirecorder.setTimeout(function(){
                 //apf.console.info("setTimeout");
                 recursion = true;
-                apf.uirecorder.runInContext(currentState, f);
+                apf.uirecorder.capture.runInContext(currentState, f);
                 recursion = false;
             }, ms);
         }
-
+/*
         //first check, 2nd check in setDelayedDetails()
         if (apf.uirecorder.isTesting && eventName != "mousemove") {
             apf.uirecorder.checkResults(actionObj, eventName, apf.uirecorder.curCheckActionIdx);
             apf.uirecorder.curCheckActionIdx++;
         }
+*/
     },
+
     runInContext : function(state, f){
         //Put everything until now on the current action
-        //var current = this.current;
-        apf.uirecorder.setDelayedDetails(this.current.index, this.current.eventName, this.current.actionIdx);
+        apf.uirecorder.capture.setDelayedDetails(this.current.index, this.current.eventName, this.current.actionIdx);
        
         //Set the new stuff on the past action
-        //this.current = state;
         if (typeof f == "string")
             apf.exec(f)
         else
             f();
             
-        apf.uirecorder.setDelayedDetails(state.index, state.eventName, state.actionIdx);
-        //this.current = current;
+        apf.uirecorder.capture.setDelayedDetails(state.index, state.eventName, state.actionIdx);
     },
     
+    // capture detailed event calls, property/model data changes
     setDelayedDetails : function(index, eventName, actionIdx) {
-        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
+        var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         
         // if object is mousemove delayTime is possibly set multiple times, take time with highest number
-        if (!apf.uirecorder.actionObjects[index].delayTime || time > apf.uirecorder.actionObjects[index].delayTime)
-            apf.uirecorder.actionObjects[index].delayTime = time;
+        if (!apf.uirecorder.actionList[index].delayTime || time > apf.uirecorder.actionList[index].delayTime)
+            apf.uirecorder.actionList[index].delayTime = time;
         for (var elementName in apf.uirecorder.detailList) {
-            if (!apf.uirecorder.actionObjects[index].detailList) apf.uirecorder.actionObjects[index].detailList = {};
-            if (!apf.uirecorder.actionObjects[index].detailList[elementName]) apf.uirecorder.actionObjects[index].detailList[elementName] = {
+            if (!apf.uirecorder.actionList[index].detailList) apf.uirecorder.actionList[index].detailList = {};
+            if (!apf.uirecorder.actionList[index].detailList[elementName]) apf.uirecorder.actionList[index].detailList[elementName] = {
                 amlNode     : (apf.uirecorder.detailList[elementName] && apf.uirecorder.detailList[elementName].amlNode) ? apf.uirecorder.detailList[elementName].amlNode : null,
                 events      : [],
                 properties  : [],
                 data        : []
             };
 
-            apf.uirecorder.actionObjects[index].detailList[elementName].events = apf.uirecorder.actionObjects[index].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
-            apf.uirecorder.actionObjects[index].detailList[elementName].properties = apf.uirecorder.actionObjects[index].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
-            apf.uirecorder.actionObjects[index].detailList[elementName].data = apf.uirecorder.actionObjects[index].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
+            apf.uirecorder.actionList[index].detailList[elementName].events     = apf.uirecorder.actionList[index].detailList[elementName].events.concat(apf.uirecorder.detailList[elementName].events);
+            apf.uirecorder.actionList[index].detailList[elementName].properties = apf.uirecorder.actionList[index].detailList[elementName].properties.concat(apf.uirecorder.detailList[elementName].properties);
+            apf.uirecorder.actionList[index].detailList[elementName].data       = apf.uirecorder.actionList[index].detailList[elementName].data.concat(apf.uirecorder.detailList[elementName].data);
         }
         
         apf.uirecorder.detailList = {};
 
         if (apf.activeElement && apf.activeElement.parentNode)
-            apf.uirecorder.actionObjects[index].activeElement = apf.activeElement.id || apf.xmlToXpath(apf.activeElement);
-        //else
-            //debugger;
-            
-        
-        // check, for delayed details
+            apf.uirecorder.actionList[index].activeElement = apf.activeElement.id || apf.xmlToXpath(apf.activeElement);
+
+/*            
+        // 2nd check
         if (apf.uirecorder.isTesting && eventName != "mousemove")
-            apf.uirecorder.checkResults(apf.uirecorder.actionObjects[index], eventName, actionIdx); // true
+            apf.uirecorder.checkResults(apf.uirecorder.actionList[index], eventName, actionIdx); // true
+*/
     },
     
     /*
-     * check results during testing fase
+     * capture apf events
      */
-    checkResults : function(actionObj, eventName, actionIdx, stopOnError) {
-        apf.console.info("checkResults");
-        var testId = uir_listTests.selection[apf.uirecorder.curTestIdx].getAttribute("name");
-        //var actionIdx = apf.uirecorder.curCheckActionIdx;
-
-        if (apf.uirecorder.checkList[testId]
-         && apf.uirecorder.checkList[testId][actionIdx]
-        ) {
-            var error = "";
-            for (var prop in apf.uirecorder.checkList[testId][actionIdx]) {
-                switch (prop) {
-                    case "htmlNode":
-                        // match amlNode id
-                        if (actionObj.amlNode && actionObj.amlNode.id && apf.uirecorder.checkList[testId][actionIdx][prop] == actionObj.amlNode.id) {
-                            //debugger;
-                            delete apf.uirecorder.checkList[testId][actionIdx][prop];
-                        }
-                        // match apf.popup content
-                        /*
-                        else if (htmlNodeName == "popup" && apf.popup.isShowing(apf.popup.last) && apf.isChildOf(apf.popup.cache[apf.popup.last].content, htmlElement, true)) {
-                            debugger;
-                            // no error
-                        }
-                        */
-                        else if (!actionObj.amlNode 
-                          || actionObj.amlNode.$getActiveElements && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.checkList[testId][actionIdx][prop]] 
-                          || apf.uirecorder.checkList[testId][actionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
-                        ) {
-                            
-                            //debugger;
-                            apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_ACTION_WRONG_TARGET, {
-                                val: [eventName, apf.uirecorder.checkList[testId][actionIdx][prop]], 
-                                testId      : testId, 
-                                action: eventName + " (" + actionIdx + ")"
-                            }, true);
-//                                apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_NODE_NOT_INIT, apf.uirecorder.checkList[testId][actionIdx][prop], testId, eventName);
-                        }
-                        else if (actionObj.htmlNode 
-                             && ( (actionObj.htmlNode.name != "$ext" && actionObj.htmlNode.name != apf.uirecorder.checkList[testId][actionIdx][prop]) 
-                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.checkList[testId][actionIdx][prop] != (actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)))) 
-                                ) {
-                            //debugger;
-                            apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_ACTION_WRONG_TARGET, {
-                                val: [eventName, apf.uirecorder.checkList[testId][actionIdx][prop]], 
-                                testId: testId, 
-                                action: eventName + " (" + actionIdx + ")"
-                            }, true);
-                        }
-                        
-                        // check succesfull, no errors found
-                        else {
-                            //apf.uirecorder.removeCheck();
-                            delete apf.uirecorder.checkList[testId][actionIdx][prop];
-                        }
-                        break;
-                    case "properties":
-                        for (var elName in apf.uirecorder.checkList[testId][actionIdx][prop]) {
-                            for (var name in apf.uirecorder.checkList[testId][actionIdx][prop][elName]) {
-                                if (actionObj.detailList && actionObj.detailList[elName] && actionObj.detailList[elName].properties && actionObj.detailList[elName].properties.length) {
-                                    for (var found = false, valueMatch = false, pi = 0, pl = actionObj.detailList[elName].properties.length; pi < pl; pi++) {
-                                        if (actionObj.detailList[elName].properties[pi].name == name) {
-                                            found = true;
-                                            // string
-                                            if (typeof actionObj.detailList[elName].properties[pi].value == "string" && actionObj.detailList[elName].properties[pi].value == apf.uirecorder.checkList[testId][actionIdx][prop][elName][name]) {
-                                                match = true;
-                                            }
-                                            // object, amlNode
-                                            else if (apf.serialize(actionObj.detailList[elName].properties[pi].value).split("<").join("&lt;").split(">").join("&gt;") == apf.uirecorder.checkList[testId][actionIdx][prop][elName][name]) {
-                                                match = true;
-                                            }
-                                            break;
-                                        }
-                                    }
-
-                                    if (!found) {
-                                        //debugger;
-                                        apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_PROP_NOT_SET, {
-                                            val         : [name, elName], 
-                                            testId      : testId, 
-                                            actionIdx   : actionIdx, 
-                                            elName      : elName, 
-                                            name        : name,
-                                            action      : eventName + " (" + actionIdx + ")"
-                                        }, stopOnError);
-                                    }
-                                    else if (!match) {
-                                        //debugger;
-                                        apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_PROP_VALUE_INCORRECT, {
-                                            val         : [name, elName], 
-                                            testId      : testId, 
-                                            actionIdx   : actionIdx, 
-                                            elName      : elName, 
-                                            name        : name,
-                                            action: eventName + " (" + actionIdx + ")"
-                                        }, stopOnError);
-                                    }
-                                    
-                                    // check succesfull, no errors found
-                                    else if (match) {
-                                        apf.console.info("checkSuccess for: " + actionIdx + " : " + elName + ": " + name);
-                                        apf.uirecorder.checkSuccess({
-                                            testId      : testId,
-                                            actionIdx   : actionIdx,
-                                            prop        : prop,
-                                            elName      : elName,
-                                            name        : name
-                                        });
-                                    }
-                                }
-                                else {
-                                    apf.console.info("error prop not set (2): " + eventName + " (" + actionIdx + ")" + " : " + elName + ": " + name);
-                                    apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_PROP_NOT_SET, { 
-                                        val         : [name, elName], 
-                                        testId      : testId, 
-                                        actionIdx   : actionIdx, 
-                                        elName      : elName, 
-                                        name        : name,
-                                        action      : eventName + " (" + actionIdx + ")"
-                                    }, stopOnError);
-                                }
-                            }
-                        }
-                        break;
-                    // for models, loop through all models and check for value
-                    case "data":
-/*
-                        if (actionObj.detailList) {
-                            var models = [];
-                            for (var elName in actionObj.detailList) {
-                                // add elements with name starting with "model"
-                                if (elName.indexOf("model") != 0) continue;
-                                models.push(actionObj.detailList[elName]);
-                            }
-                        }
-                        
-                        var match;
-                        for (var elName in apf.uirecorder.checkList[testId][actionIdx][prop]) {
-                            match = false;
-                            for (var name in apf.uirecorder.checkList[testId][actionIdx][prop][elName]) {
-                                for (var model, mi = 0, ml = models.length; mi < ml; mi++) {
-                                    model = models[mi];
-                                    
-                                    for (var di = 0, dl = model.data.length; di < dl; di++) {
-                                        if (model.data[di].name == name && apf.serialize(model.data[di].value).split("<").join("&lt;").split(">").join("&gt;") == apf.uirecorder.checkList[testId][actionIdx][prop][elName][name]) {
-                                            match = true;
-                                        }    
-                                    }
-                                }
-                            }
-                            
-                            if (!match)
-                                apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_NOT_FOUND, [name, elName], testId, eventName + " (" + actionIdx + ")");
-                        }
-*/
-//                            debugger;
-                        for (var elName in apf.uirecorder.checkList[testId][actionIdx][prop]) {
-                            // id for model is required, otherwise apf generate id and it's difficult to get original model
-                            if (elName.indexOf("model") == 0) {
-                                apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_ID_REQUIRED, { 
-                                    testId: testId, 
-                                    action: eventName + " (" + actionIdx + ")"
-                                }, true);
-                            }
-
-                            for (var name in apf.uirecorder.checkList[testId][actionIdx][prop][elName]) {
-                                if (actionObj.detailList && actionObj.detailList[elName] && actionObj.detailList[elName].data && actionObj.detailList[elName].data.length) {
-                                    for (var found = false, valueMatch = false, pi = 0, pl = actionObj.detailList[elName].data.length; pi < pl; pi++) {
-                                        if (actionObj.detailList[elName].data[pi].name == name) {
-                                            found = true;
-                                            // string, boolean, number
-                                            if (typeof actionObj.detailList[elName].data[pi].value != "object" && actionObj.detailList[elName].data[pi].value == apf.uirecorder.checkList[testId][actionIdx][prop][elName][name]) {
-                                                match = true;
-                                            }
-                                            // object, amlNode
-                                            else if (apf.serialize(actionObj.detailList[elName].data[pi].value).split("<").join("&lt;").split(">").join("&gt;") == apf.uirecorder.checkList[testId][actionIdx][prop][elName][name]) {
-                                                match = true;
-                                            }
-                                            break;
-                                        }
-                                    }
-
-                                    if (!found) {
-                                        //debugger;
-                                        apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_NOT_SET, {
-                                            val         : [name, elName], 
-                                            testId      : testId, 
-                                            actionIdx   : actionIdx, 
-                                            elName      : elName, 
-                                            name        : name,
-                                            action      : eventName + " (" + actionIdx + ")"
-                                        }, stopOnError);
-                                    }
-                                    else if (!match) {
-                                        //debugger;
-                                        apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_VALUE_INCORRECT, {
-                                            val         : [name, elName], 
-                                            testId      : testId, 
-                                            actionIdx   : actionIdx, 
-                                            elName      : elName, 
-                                            name        : name,
-                                            action      : eventName + " (" + actionIdx + ")"
-                                        }, stopOnError);
-                                    }
-                                    else if (match) {
-                                        apf.uirecorder.checkSuccess({
-                                            testId      : testId,
-                                            actionIdx   : actionIdx,
-                                            prop        : prop,
-                                            elName      : elName,
-                                            name        : name
-                                        });
-                                    }
-                                }
-                                else {
-                                    //debugger;
-                                    apf.uirecorder.setTestResult("error", apf.uirecorder.ERROR_MODEL_NOT_SET, {
-                                        val         : [name, elName], 
-                                        testId      : testId, 
-                                        actionIdx   : actionIdx, 
-                                        elName      : elName, 
-                                        name        : name,
-                                        action      : eventName + " (" + actionIdx + ")"
-                                    }, stopOnError);
-                                }
-                            }
-                        }
-
-                        break;
-                    case "events":
-                        debugger
-                        break;
-                }
-            }
-        }
-        // nothing to check for currect action
-        else {
-            //debugger;
-        }
-    },
-    detailList : {},
-    
-    capturedEvents : {
-        "mouseover" : {}
-    },
-    mouseoverEvents : ["dragover", "dragout"],
-    lastEventObj    : {},
-    testEventList   : [],
     captureEvent : function(eventName, e) {
-        if (!e || e.noCapture) return; 
+        if (!e) debugger;
         
         var amlNode = e.amlNode || e.currentTarget;
         if (eventName == "movefocus")
             amlNode = e.toElement;
         else if (eventName == "DOMNodeRemoved")
             amlNode = e.relatedNode;
-        
-        // ignore uir_bar and debugwin
-        if ((amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0 && amlNode.id != "uir_bar") || (amlNode && amlNode.localName && amlNode.localName == "debugwin")) return;
-                    
+            
+        // get name of target
         var targetName;
+
         // aml element
-        if (amlNode && (amlNode.parentNode) && amlNode != "uir_bar") {
+        if (amlNode && amlNode.parentNode) {
             targetName = amlNode.id || apf.xmlToXpath(amlNode);
         }
         // html element
-        else if (amlNode && amlNode.id == "uir_bar" && e.htmlEvent) {
+        else if (amlNode && e.htmlEvent) {
             var htmlElement = e.htmlEvent.srcElement;
             targetName = ("&lt;" + htmlElement.tagName + "&gt; " + htmlElement.id) || "&lt;" + htmlElement.tagName + "&gt;";
         }
         // apf
-        else if (amlNode && amlNode.console && amlNode.extend && amlNode.all) { 
+        else if (amlNode && amlNode.console && amlNode.extend && amlNode.all) {
             targetName = "apf";
         }
-        
-        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
-        var eventObj = {
-            time        : time,
-            name        : eventName,
-            //amlNode     : amlNode,
-            //xmlNode     : xmlNode,
-            event       : e
-        }
 
-        if (e.action) {
-            if (!eventObj.value) eventObj.value = {};
-            eventObj.value.action = e.action;
-        }
-
-        var value = null;
+        // specific cases for target name
         if (["beforeselect", "afterselect"].indexOf(eventName) > -1) {
+            if (!e.selected) debugger;
             targetName = e.selected.id || apf.xmlToXpath(e.selected);
         }
         else if (["dragstart", "dragdrop", "dragover", "dragout"].indexOf(eventName) > -1) {
@@ -1449,139 +351,104 @@ debugger;
                 targetName = e.data[0].id || apf.xmlToXpath(e.data[0]);
             }
         }
-        else if (eventName == "xmlupdate") {
-            if (!eventObj.value) eventObj.value = {};
-            if (eventObj.value.xml)
-                eventObj.value.xml = e.xmlNode.xml.split("<").join("&lt;").split(">").join("&gt;");
-            if (eventObj.value.action)
-                eventObj.value.action = eventObj.value.action;
-                
-        }
-        else if (eventName == "keydown") {
-            
-        }
 
-        if (amlNode) {
-            //value = apf.serialize(amlNode);
-        }
-
-        //if (eventName == "focus" || eventName == "blur") debugger;
-        //if (value) 
-            //eventObj.value = value;
-
+        // no target name found
         if (!targetName) {
             if (amlNode && amlNode.localName)
                 targetName = amlNode.id || amlNode.localName
             else
                 targetName = "trashbin";
         }
-        
-        //apf.console.info("event " + eventName + " dispatched on " + targetName);
 
-        if (targetName) {
-            if (apf.uirecorder.mouseoverEvents.indexOf(eventName) > -1) {
-                if (!apf.uirecorder.capturedEvents.mouseover[targetName]) apf.uirecorder.capturedEvents.mouseover[targetName] = {
-                    amlNode     : amlNode,
-                    events      : [],
-                    properties  : [],
-                    data        : []
-                };
-                // repeating event
-                if (!(targetName == apf.uirecorder.lastEventObj.target && eventName == apf.uirecorder.lastEventObj.name) || !apf.uirecorder.capturedEvents.mouseover[targetName].events.length) {
-                    apf.uirecorder.capturedEvents.mouseover[targetName].events.push(eventObj);
-                }
-                else {
-                    if (!apf.uirecorder.capturedEvents.mouseover[targetName].events[apf.uirecorder.capturedEvents.mouseover[targetName].events.length-1].calls) 
-                        apf.uirecorder.capturedEvents.mouseover[targetName].events[apf.uirecorder.capturedEvents.mouseover[targetName].events.length-1].calls = 1;
-                    apf.uirecorder.capturedEvents.mouseover[targetName].events[apf.uirecorder.capturedEvents.mouseover[targetName].events.length-1].calls++;
-                }
-            }
-            else {
-                if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
-                    amlNode     : amlNode,
-                    events      : [],
-                    properties  : [],
-                    data        : []
-                };
-                
-                // repeating event
-                if (!(targetName == apf.uirecorder.lastEventObj.target && eventName == apf.uirecorder.lastEventObj.name) || !apf.uirecorder.detailList[targetName].events.length) {
-                    apf.uirecorder.detailList[targetName].events.push(eventObj);
-                }
-                else {
-                    if (!apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls) 
-                        apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls = 1;
-                    apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls++;
-                }
-            }
-            apf.uirecorder.lastEventObj = {
-                targetName  : targetName,
-                amlNode     : amlNode,
-                name        : eventName,
-                event       : e
-            };
-            
-            // create event list during playback or testing
-            if (apf.uirecorder.isPlaying || apf.uirecorder.isTesting) {
-                if (!apf.uirecorder.testEventList[eventName]) apf.uirecorder.testEventList[eventName] = [];
-                apf.uirecorder.testEventList[eventName].push(targetName);
-                
-                /*
-                if (!apf.uirecorder.testEventList[targetName]) apf.uirecorder.testEventList[targetName] = [];
-                if (apf.uirecorder.testEventList[targetName].indexOf(eventName) == -1)
-                    apf.uirecorder.testEventList[targetName].push(eventName);
-                */
-            }
+
+
+        // elapsed time since start of recording/playback
+        var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
+        var eventObj = {
+            time        : time,
+            name        : eventName,
+            event       : e
+        }
+        
+        // optional properties
+        if (e.action) {
+            if (!eventObj.value) eventObj.value = {};
+            eventObj.value.action = e.action;
+        }
+
+        // save events to detailList
+        if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+            amlNode     : amlNode,
+            events      : [],
+            properties  : [],
+            data        : []
+        };
+        
+        // repeating event
+        if (!apf.uirecorder.capture.$lastEventObj || (!(targetName == apf.uirecorder.capture.$lastEventObj.targetName && eventName == apf.uirecorder.capture.$lastEventObj.name) || !apf.uirecorder.detailList[targetName].events.length)) {
+            apf.uirecorder.detailList[targetName].events.push(eventObj);
         }
         else {
-            //debugger;
+            if (!apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls) 
+                apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls = 1;
+            apf.uirecorder.detailList[targetName].events[apf.uirecorder.detailList[targetName].events.length-1].calls++;
+        }
+        
+        // save last event object to check repeating event calls
+        apf.uirecorder.capture.$lastEventObj = {
+            targetName  : targetName,
+            name        : eventName
+        };
+        
+        // create event list during testing, used to check if certain events are already called for an element
+        if (apf.uirecorder.isTesting) {
+            if (!apf.uirecorder.testEventList[eventName]) apf.uirecorder.testEventList[eventName] = [];
+            apf.uirecorder.testEventList[eventName].push(targetName);
         }
     },
+    
     capturePropertyChange : function(amlNode, prop, value) {
-        if (amlNode && amlNode.id && amlNode.id.indexOf("uir") == 0) return;
         if (amlNode) {
-            if (!amlNode.parentNode) debugger;
             targetName = amlNode.id || apf.xmlToXpath(amlNode);
         } 
-        else 
+        else {
             debugger;
+        }
 
-        if (typeof value == "object" && value.length == 1) 
+        if (apf.isArray(value) && value.length == 1) 
             value = value[0];
-        
-        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
+            
+        // elapsed time since start of recording/playback
+        var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         var propObj = {
             time        : time,
             name        : prop,
-            //amlNode     : amlNode,
-            //xmlNode     : xmlNode,
             value       : value
         }
             
-        if (targetName) {
-            if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
-                amlNode     : amlNode,
-                events      : [],
-                properties  : [],
-                data        : []
-            };
-            
-            apf.uirecorder.detailList[targetName].properties.push(propObj);
-        }
+        if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+            amlNode     : amlNode,
+            events      : [],
+            properties  : [],
+            data        : []
+        };
+        
+        apf.uirecorder.detailList[targetName].properties.push(propObj);
     },
+    
     captureModelChange : function(params) {
-        if (params.amlNode && params.amlNode.id && params.amlNode.id.indexOf("uir") == 0) return;
         if (params.amlNode) {
-            if (!params.amlNode.parentNode) debugger;
             targetName = params.amlNode.id || apf.xmlToXpath(params.amlNode);
         }
+        else {
+            debugger;
+        }
 
-        var time        = parseInt(new Date().getTime() - apf.uirecorder.startTime);
+        // elapsed time since start of recording/playback
+        var time        = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         var dataObj = {
             time        : time,
             name        : params.action
-            //amlNode     : amlNode,
-            //xmlNode     : xmlNode,
         }
         if (params.amlNode) {
             if (!dataObj.value) dataObj.value = {};
@@ -1592,24 +459,65 @@ debugger;
                 dataObj.value.xmlNode = apf.serialize(params.xmlNode).split("<").join("&lt;").split(">").join("&gt;");
         }
         
-        if (targetName) {
-            if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
-                amlNode     : params.amlNode,
-                events      : [],
-                properties  : [],
-                data        : []
-            };
-            
-            apf.uirecorder.detailList[targetName].data.push(dataObj);
-        }
+        if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+            amlNode     : params.amlNode,
+            events      : [],
+            properties  : [],
+            data        : []
+        };
+        
+        apf.uirecorder.detailList[targetName].data.push(dataObj);
+    },
+    
+    // Reset capturing
+    reset : function() {
+        apf.uirecorder.inited               = false;
+        apf.uirecorder.isRecording          = false;
+        apf.uirecorder.capture.actionList   = [];
+        apf.uirecorder.capture.detailList   = {};
     },
 
-    /**
-     * Save test recording / test results
-     */
-    testListXml : null,
-    resultListXml : null,
-    saveTest : function(saveType, testName) {
+    // Initiate user interface recorder and start recording
+    record : function(file) {
+        apf.uirecorder.capture.reset();
+
+        apf.uirecorder.capture.$curTestFile  = file;
+        apf.uirecorder.capture.$startTime    = new Date().getTime();
+        apf.uirecorder.isRecording  = true;
+
+        apf.uirecorder.capture.$init();
+    },
+    
+    // Stop capturing and save test
+    stop : function() {
+        if (apf.uirecorder.isRecording)
+            apf.uirecorder.output.$saveTest("test");
+
+        apf.uirecorder.capture.reset();
+    }
+}
+
+apf.uirecorder.output = {
+    notices : {
+        
+    },
+    warnings : {
+        NO_ID               : "No id specified for element \"_VAL_\". Using xpath to determine element now. Could lead to failed test if elements are added/removed."
+    },
+    errors : {
+        NODE_NOT_VISIBLE    : "Element \"_VAL_\" exists but is not visible.",
+        NODE_NOT_EXIST      : "Element \"_VAL_\" does not exists.",
+
+        ACTION_WRONG_TARGET : "Could not perform action \"_VAL_\" on element \"_VAL_\".",
+
+        PROP_NOT_SET        : "Property \"_VAL_\" is not set.",
+        PROP_WRONG_VALUE    : "Could not perform action \"_VAL_\" on element \"_VAL_\".",
+
+        MODEL_NOT_SET       : "Model data change \"_VAL_\" is not set correctly.",
+        MODEL_WRONG_VALUE   : "Model data change \"_VAL_\" of element \"_VAL\" has wrong value.",
+        MODEL_NO_ID         : "Model without id found. ID is required for a model.",
+    },
+    $saveTest : function(saveType) {
         var id;
         if (saveType == "test") {
             if (!apf.uirecorder.testListXml)
@@ -1623,44 +531,24 @@ debugger;
         }
         
         var testXml = apf.getXml("<test />");
-        testXml.setAttribute("file", apf.uirecorder.curTestFile);
-        testXml.setAttribute("name", testName || "test" + id);
+        testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
+        testXml.setAttribute("name", "test" + id);
         testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
-        testXml.setAttribute("status", "@todo status");        
-
-        // reset detailList and activeElement for last mousemove action
-        for (var action, i = apf.uirecorder.actionList.length-1; i > 0; i--) {
-            action = apf.uirecorder.actionList[i];
-            if (action.ignore) {
-                continue;
-            }
-            else if (action.name == "mousemove") {
-                delete apf.uirecorder.actionList[i].activeElement;
-                apf.uirecorder.actionList[i].detailList = {};
-                break;
-            }
-            else if (action.name != "mousemove") {
-                break;
-            }
-        }
 
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
             aNode = testXml.ownerDocument.createElement("action");
-            aNode.setAttribute("name", action.name);
-            aNode.setAttribute("x", action.x);
-            aNode.setAttribute("y", action.y);
-            aNode.setAttribute("time", action.time);
-            aNode.setAttribute("delayTime", action.delayTime);
+            aNode.setAttribute("name"       , action.name);
+            aNode.setAttribute("x"          , action.x);
+            aNode.setAttribute("y"          , action.y);
+            aNode.setAttribute("time"       , action.time);
+            if (action.delayTime) aNode.setAttribute("delayTime"  , action.delayTime);
 
             if (action.ignore) { 
                 aNode.setAttribute("ignore", action.ignore);
-                //prevNode.setAttribute("delayTime", action.delayTime);
             }
-            else {
-                prevNode = aNode;
-            }
+
             if (action.amlNode && action.amlNode.localName != "debugwin") {
                 if (action.amlNode.parentNode)
                     aNode.setAttribute("amlNode", action.amlNode.id || apf.xmlToXpath(action.amlNode));
@@ -1674,17 +562,23 @@ debugger;
                 aNode.setAttribute("scrollTop", action.htmlNode.scrollTop);
                 aNode.setAttribute("scrollLeft", action.htmlNode.scrollLeft);
             }
+            
+            // set value
             if (action.value || typeof action.value == "boolean") aNode.setAttribute("value", action.value);
 
-            var eNode, iNode;
-            eNode = testXml.ownerDocument.createElement("element");
-            eNode.setAttribute("name", "apf");
-            iNode = testXml.ownerDocument.createElement("activeElement");
-            iNode.appendChild(testXml.ownerDocument.createTextNode(action.activeElement));
-            eNode.appendChild(iNode);
+            // set apf.activeElement
+            if (action.activeElement) {
+                var eNode, iNode;
+                eNode = testXml.ownerDocument.createElement("element");
+                eNode.setAttribute("name", "apf");
+                iNode = testXml.ownerDocument.createElement("activeElement");
+                iNode.appendChild(testXml.ownerDocument.createTextNode(action.activeElement));
+                eNode.appendChild(iNode);
+                
+                aNode.appendChild(eNode);
+            }
             
-            aNode.appendChild(eNode);
-            
+            // loop through detailList
             if (action.detailList) {
                 for (var elementName in action.detailList) {
                     eNode = testXml.ownerDocument.createElement("element");
@@ -1693,7 +587,7 @@ debugger;
                     // warning for AML nodes with no id defined
                     //apf.document.selectSingleNode(targetName.substr(8))
                     if (elementName.indexOf("html[") == 0) {
-                       apf.uirecorder.setTestResult("warning", apf.uirecorder.WARNING_NO_ID, { 
+                       apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.NO_ID, { 
                             val: elementName, 
                             testId: testXml.getAttribute("name")
                         });
@@ -1735,42 +629,34 @@ debugger;
             testXml.appendChild(aNode);
         }
 
-        // reset actionList
-        apf.uirecorder.actionList = [];
-
-        if (saveType === "test") {
+        if (saveType === "test")
             apf.uirecorder.testListXml.appendChild(testXml);
-            //apf.uirecorder.createChangesXml(apf.uirecorder.testListXml);
-        }
-        else if (saveType === "results") {
+        else if (saveType === "results")
             apf.uirecorder.resultListXml.appendChild(testXml);
-            //apf.uirecorder.createChangesXml(apf.uirecorder.resultListXml);
-        }
+        
+        debugger;
     },
     
-    /**
-     * set test error, warning or notice
-     */
-    setTestResult : function(type, msg, values, stopOnError) {//val, testId, action) {
+    // set warning/error/notice
+    setTestResult : function(type, msg, values, stopOnError) {
         if (values.testId)
             if (!apf.uirecorder.testResults[type][values.testId]) apf.uirecorder.testResults[type][values.testId] = [];
-
-        var found = false;
-        var message = msg;
         
+        var message = msg;
+
+        // create message, replace _VAL_ in string with specified values
         if (values.val) {
-            if (typeof values.val == "string") {
+            if (typeof values.val == "string")
                 message = message.replace("_VAL_", values.val);
-            }
             
             // multiple values in message
-            else {
-                for (var vi = 0, vl = values.val.length; vi < vl; vi++) {
+            else 
+                for (var vi = 0, vl = values.val.length; vi < vl; vi++) 
                     message = message.replace("_VAL_", values.val[vi]);
-                }
-            }
         }
-        
+
+        // search for duplicates
+        var found = false;        
         if (values.testId) {
             for (var i = 0, l = apf.uirecorder.testResults[type][values.testId].length; i < l; i++) {
                 if (apf.uirecorder.testResults[type][values.testId][i].message == message) {
@@ -1780,6 +666,7 @@ debugger;
             }
         }
         
+        // set message
         if (!found) {
             apf.uirecorder.testResults[type][values.testId].push({
                 action      : values.action, 
@@ -1790,7 +677,9 @@ debugger;
                 message     : message
             });
         }
-        
+
+        // handle errors
+/*
         if (type == "error" && stopOnError) {
             //apf.uirecorder.testResults["error"][testId].push({message: "Test failed"});
             apf.console.info(values.actionIdx + ". test failed error: " + message);            
@@ -1819,58 +708,22 @@ debugger;
                 }
             )
         }
+*/
     },
     
-    setPopupWindow : function(title, msg, ignoreCallback, stopCallback) {
-        uir_windowPopup.setProperty("visible", true);
-        uir_windowPopup.setProperty("title", title);
-        uir_popup_msg.setProperty("value", msg);
-        uir_popup_btnIgnore.setProperty("onclick", ignoreCallback);
-        uir_popup_btnStop.setProperty("onclick", stopCallback);
-    },
-    /**
-     * check is successfull, remove check from checkList and remove error if set on first check
-     */
-    checkSuccess : function(values) {
-        if (!values.testId) return;
-        
-        // check if error has been registered before
-        // could happen if check is succesfull during capture of delayed calls/changes
-        for (var type in apf.uirecorder.testResults) {
-            if (!apf.uirecorder.testResults[type][values.testId]) continue;
-            if (apf.uirecorder.testResults[type][values.testId].length) {
-                for (var resultObj, i = 0, l = apf.uirecorder.testResults[type][values.testId].length; i < l; i++) {
-                    resultObj = apf.uirecorder.testResults[type][values.testId][i];
-//debugger;
-                    if (resultObj.actionIdx == values.actionIdx && resultObj.elName == values.elName && resultObj.name == values.name) {
-//debugger;
-                        apf.console.info("error removed: " + values.actionIdx + ". " + values.elName + ": " + values.name);
-                        apf.uirecorder.testResults[type][values.testId].splice(i, 1);
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // remove check
-        delete apf.uirecorder.checkList[values.testId][values.actionIdx][values.prop][values.elName][values.name];
-    },
-    
-    /*
-     * save file to filesystem
-     */
-    saveFile : function(type) {
+    saveFile : function(o3, type) {
         switch (type) {
             case "tests":
                 o3.cwd.get("data/tests.xml").data = apf.uirecorder.testListXml.xml;
-                alert("file \"tests.xml\" saved to \"data\" folder");
+                //alert("file \"tests.xml\" saved to \"data\" folder");
                 break;
             case "testResults":
                 o3.cwd.get("data/testresults.xml").data = apf.uirecorder.testResultsXml.xml;
-                alert("file \"testresults.xml\" saved to \"data\" folder");
+                //alert("file \"testresults.xml\" saved to \"data\" folder");
                 break;
         }
     }
-};
+    
+    
+}
 //#endif
-

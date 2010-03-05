@@ -648,7 +648,7 @@ apf.Class.prototype = new (function(){
             if (apf.uirecorder) {
                 if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                     if (this.ownerDocument && this.$aml)
-                        apf.uirecorder.capturePropertyChange(this, prop, value); 
+                        apf.uirecorder.capture.capturePropertyChange(this, prop, value); 
                 }
             }
             //#endif
@@ -862,7 +862,7 @@ apf.Class.prototype = new (function(){
             if (["debug"].indexOf(eventName) == -1) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
                 if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
                     if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
-                        apf.uirecorder.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
+                        apf.uirecorder.capture.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
                     } 
                 }
                 // when eventName == "load" all elements are loaded and drawn
