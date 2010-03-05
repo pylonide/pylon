@@ -44,10 +44,10 @@
  *
  * @binding caption  Determines the caption of a node.
  * @binding icon     Determines the icon of a node. This binding rule is used
- * to determine the icon displayed when using a list skin. The {baseclass.baselist.binding.image image binding}
+ * to determine the icon displayed when using a list skin. The {@link baseclass.baselist.binding.image image binding}
  * is used to determine the image in the thumbnail skin.
  * @binding image    Determines the image of a node. This binding rule is used
- * to determine the image displayed when using a thumbnail skin. The {baseclass.baselist.binding.icon icon binding}
+ * to determine the image displayed when using a thumbnail skin. The {@link baseclass.baselist.binding.icon icon binding}
  * is used to determine the icon in the list skin.
  * Example:
  * In this example the image url is read from the thumbnail attribute of the data node.
