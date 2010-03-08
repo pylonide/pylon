@@ -332,14 +332,16 @@ apf.DataBinding = function(){
      *          <a:each match="[image]" />
      *      </a:bindings>
      *  </a:list>
-     * 
-     *  <a:script>
+     *  
+     *  <a:script><!--
+     *      apf.onload = function() {
      *      lstExample.load('<images>\
      *          <image icon="icoTest.gif">image 1</image>\
      *          <image icon="icoTest.gif">image 2</image>\
      *          <image icon="icoTest.gif">image 3</image>\
      *          </images>');
-     *  </a:script>
+     *      }
+     *  --></a:script>
      * </code>
      *
      * @param {mixed}  [xmlNode]
