@@ -18,7 +18,9 @@ apf.uirecorder = {
     },
     
     testListXml     : null,   // xml object with captured tests
-    resultListXml   : null    // xml object with results after testing
+    resultListXml   : null,   // xml object with results after testing
+    
+    outputXml       : null  // output xml for recorded test or test results
 } 
 
 apf.uirecorder.capture = {
@@ -92,8 +94,41 @@ apf.uirecorder.capture = {
                 apf.uirecorder.capture.$captureAction("mousescroll", e, delta);
             };
         }
+        
+        // listeners for keyboard interaction
+        // @todo fix problem with onkeyup in apf
+    },
+
+    // Reset capturing
+    reset : function() {
+        apf.uirecorder.inited               = false;
+        apf.uirecorder.isRecording          = false;
+        apf.uirecorder.actionList   = [];
+        apf.uirecorder.detailList   = {};
+    },
+
+    // Initiate user interface recorder and start recording
+    record : function(file, testId) {
+        apf.uirecorder.capture.reset();
+
+        apf.uirecorder.capture.$curTestFile = file;
+        apf.uirecorder.capture.$curTestId   = testId;
+        apf.uirecorder.capture.$startTime   = new Date().getTime();
+        apf.uirecorder.isRecording          = true;
+
+        apf.uirecorder.capture.$init();
     },
     
+    // Stop capturing and save test
+    stop : function() {
+        if (apf.uirecorder.isRecording)
+            apf.uirecorder.output.$saveTest("test");
+        if (apf.uirecorder.isTesting)
+            apf.uirecorder.output.$saveTest("results");
+
+        //apf.uirecorder.capture.reset();
+    },
+
     /* 
      * capture user actions
      * htmlElement : original html element on which the event occurred
@@ -192,7 +227,7 @@ apf.uirecorder.capture = {
         // save reference to first mousemove object
         var index, delayObj;
         if (apf.uirecorder.actionList.length == 1 || (apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove")) {
-            actionObj.index = apf.uirecorder.capture.actionList.length;
+            actionObj.index = apf.uirecorder.actionList.length;
             apf.uirecorder.capture.firstMousemoveObj = actionObj;
         }
         
@@ -223,7 +258,7 @@ apf.uirecorder.capture = {
             apf.uirecorder.detailList = {};
             
             delayObj = actionObj;
-            index = actionObj.index = apf.uirecorder.capture.actionList.length;
+            index = actionObj.index = apf.uirecorder.actionList.length;
         }
         
         // save action object
@@ -252,12 +287,12 @@ apf.uirecorder.capture = {
             return apf.uirecorder.setTimeout(function(){
                 //apf.console.info("setTimeout");
                 recursion = true;
-                apf.uirecorder.capture.runInContext(currentState, f);
+                apf.uirecorder.capture.$runInContext(currentState, f);
                 recursion = false;
             }, ms);
         }
 /*
-        //first check, 2nd check in setDelayedDetails()
+        //first check, 2nd check in $setDelayedDetails()
         if (apf.uirecorder.isTesting && eventName != "mousemove") {
             apf.uirecorder.checkResults(actionObj, eventName, apf.uirecorder.curCheckActionIdx);
             apf.uirecorder.curCheckActionIdx++;
@@ -265,9 +300,9 @@ apf.uirecorder.capture = {
 */
     },
 
-    runInContext : function(state, f){
+    $runInContext : function(state, f){
         //Put everything until now on the current action
-        apf.uirecorder.capture.setDelayedDetails(this.current.index, this.current.eventName, this.current.actionIdx);
+        apf.uirecorder.capture.$setDelayedDetails(this.current.index, this.current.eventName, this.current.actionIdx);
        
         //Set the new stuff on the past action
         if (typeof f == "string")
@@ -275,11 +310,11 @@ apf.uirecorder.capture = {
         else
             f();
             
-        apf.uirecorder.capture.setDelayedDetails(state.index, state.eventName, state.actionIdx);
+        apf.uirecorder.capture.$setDelayedDetails(state.index, state.eventName, state.actionIdx);
     },
     
     // capture detailed event calls, property/model data changes
-    setDelayedDetails : function(index, eventName, actionIdx) {
+    $setDelayedDetails : function(index, eventName, actionIdx) {
         var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         
         // if object is mousemove delayTime is possibly set multiple times, take time with highest number
@@ -402,8 +437,8 @@ apf.uirecorder.capture = {
         
         // create event list during testing, used to check if certain events are already called for an element
         if (apf.uirecorder.isTesting) {
-            if (!apf.uirecorder.testEventList[eventName]) apf.uirecorder.testEventList[eventName] = [];
-            apf.uirecorder.testEventList[eventName].push(targetName);
+            //if (!apf.uirecorder.testEventList[eventName]) apf.uirecorder.testEventList[eventName] = [];
+            //apf.uirecorder.testEventList[eventName].push(targetName);
         }
     },
     
@@ -467,33 +502,151 @@ apf.uirecorder.capture = {
         };
         
         apf.uirecorder.detailList[targetName].data.push(dataObj);
+    }
+}
+
+apf.uirecorder.playback = {
+    $curTestXml     : null,
+    $curActionIdx   : 0,
+    $curAction      : null,
+    $playSpeed      : "realtime",
+    $timeoutTimer   : null,
+    $testDelay      : 0,
+    $startTime      : 0,
+    $windowOffset   : {
+        top     : 0,
+        left    : 0
     },
     
-    // Reset capturing
+    // reset playback
     reset : function() {
-        apf.uirecorder.inited               = false;
-        apf.uirecorder.isRecording          = false;
-        apf.uirecorder.capture.actionList   = [];
-        apf.uirecorder.capture.detailList   = {};
-    },
-
-    // Initiate user interface recorder and start recording
-    record : function(file) {
-        apf.uirecorder.capture.reset();
-
-        apf.uirecorder.capture.$curTestFile  = file;
-        apf.uirecorder.capture.$startTime    = new Date().getTime();
-        apf.uirecorder.isRecording  = true;
-
-        apf.uirecorder.capture.$init();
+        apf.uirecorder.isPlaying = false;
+        apf.uirecorder.isTesting = false;
     },
     
-    // Stop capturing and save test
-    stop : function() {
-        if (apf.uirecorder.isRecording)
-            apf.uirecorder.output.$saveTest("test");
+    // playback current test and save test results
+    test : function(testXml, playSpeed, o3, offset) {
+        apf.uirecorder.isTesting = true;
+        
+        this.play(testXml, playSpeed, o3, offset);
+    },
+    
+    // playback current test without saving test results
+    //  testXml     : xml object of single test with all actions
+    //  playSpeed   : realtime / max
+    //  o3          : reference to o3
+    //  offset      : object with top/left offset of browser element in relation to client window 
+    play : function(testXml, playSpeed, o3, offset) {
+        this.$o3            = o3;
+        this.$playSpeed     = playSpeed;
+        this.$curTestXml    = testXml;
+        this.$curActionIdx  = 0;
+        this.$windowOffset  = offset;
+        
+        if (!apf.uirecorder.isTesting)
+            apf.uirecorder.isPlaying = true;
+        apf.uirecorder.capture.$init();
+        
+        this.$startTime = new Date().getTime();
+        this.$playAction();
+    },
+    
+    // play current action of test
+    $playAction : function() {
+        this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
+        
+        if (this.$playSpeed == "realtime") {
+            if (this.$timeoutTimer) {
+                clearTimeout(this.$timeoutTimer);
+            }
 
-        apf.uirecorder.capture.reset();
+            var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - this.$startTime);
+            if (timeout > 0) {
+                apf.uirecorder.timeoutTimer = setTimeout(function() {
+                    apf.uirecorder.playback.$execAction();
+                }, timeout);
+            }
+            
+            // timeout smaller or equal to 0, execute immediatly
+            else {
+                this.$execAction();
+            }
+        } 
+        else if (this.$playSpeed == "max") {
+            this.$execAction();
+        }
+    },
+    
+    // execute user interaction for current action
+    $execAction : function() {
+        var xPos, yPos;
+        if (!xPos && !yPos) {
+            xPos = this.$curAction.getAttribute("x");
+            yPos = this.$curAction.getAttribute("y");
+        }
+
+        // move mouse cursor to correct position
+        this.$o3.mouseTo(
+            parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
+            parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
+            this.$o3.window
+        );
+
+        // execute mouse action
+        if (this.$curAction.getAttribute("name") === "keypress") {
+            this.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
+        }
+        else if (this.$curAction.getAttribute("name") === "keydown") {
+            this.$o3.sendKeyDown(this.$curAction.getAttribute("value"));
+        }
+        else if (this.$curAction.getAttribute("name") === "keyup") {
+            this.$o3.sendKeyUp(this.$curAction.getAttribute("value"));
+        }
+        else if (this.$curAction.getAttribute("name") === "mousedown") {
+            if (this.$playSpeed == "max") 
+                this.$o3.wait(1);
+            this.$o3.mouseLeftDown();
+        }
+        else if (this.$curAction.getAttribute("name") === "mouseup") {
+            if (this.$playSpeed == "max")
+                this.$o3.wait(1);
+            this.$o3.mouseLeftUp();
+        }
+        else if (this.$curAction.getAttribute("name") === "dblClick") {
+            if (this.$playSpeed == "max") 
+                this.$o3.wait(1);
+            this.$o3.mouseLeftDown();
+            this.$o3.mouseLeftUp();
+            this.$o3.mouseLeftDown();
+            this.$o3.mouseLeftUp();
+        }
+        else if (this.$curAction.getAttribute("name") === "mousescroll") {
+            this.$o3.mouseWheel(this.$curAction.getAttribute("value"));
+        }
+        
+        this.$testCheck();
+    },
+    
+    // check if more actions are available for playback, if not end current test 
+    $testCheck : function() {
+        // more actions to be executed
+        if (this.$curTestXml.childNodes.length > this.$curActionIdx+1) {
+            this.$curActionIdx++;
+            this.$playAction();
+        }
+        
+        // test complete, process results
+        else {
+            if (apf.uirecorder.isTesting) {
+                apf.dispatchEvent("apftest_testcomplete");
+            }
+            else if (apf.uirecorder.isPlaying){
+                apf.dispatchEvent("apftest_testcomplete");
+            }
+
+            apf.uirecorder.capture.stop();
+            apf.uirecorder.playback.reset();
+        }
     }
 }
 
@@ -520,6 +673,7 @@ apf.uirecorder.output = {
         SCRIPT_CRITICAL     : "A critical error has occurred: \"_VAL_\" in file: \"_VAL_\" on line: \"_VAL_\""
     },
     $saveTest : function(saveType) {
+        /*
         var id;
         if (saveType == "test") {
             if (!apf.uirecorder.testListXml)
@@ -531,12 +685,19 @@ apf.uirecorder.output = {
                 apf.uirecorder.resultListXml = apf.getXml("<resultList />");
             id = parseInt(apf.uirecorder.resultListXml.childNodes.length) + 1;
         }
-        
+        */
         var testXml = apf.getXml("<test />");
-        testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
-        testXml.setAttribute("name", "test" + id);
-        testXml.setAttribute("index", apf.uirecorder.testListXml.childNodes.length);
-
+        
+        
+        if (apf.uirecorder.isTesting) {
+            testXml.setAttribute("name", apf.uirecorder.playback.$curTestXml.getAttribute("name"));
+            testXml.setAttribute("file", apf.uirecorder.playback.$curTestXml.getAttribute("name"));
+        }
+        else {
+            testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
+            testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
+        }
+        
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
@@ -631,11 +792,14 @@ apf.uirecorder.output = {
             testXml.appendChild(aNode);
         }
 
+        /*
         if (saveType === "test")
             apf.uirecorder.testListXml.appendChild(testXml);
         else if (saveType === "results")
             apf.uirecorder.resultListXml.appendChild(testXml);
-        
+        */
+       
+        apf.uirecorder.outputXml = testXml;
         debugger;
     },
     
@@ -711,21 +875,6 @@ apf.uirecorder.output = {
             )
         }
 */
-    },
-    
-    saveFile : function(o3, type) {
-        switch (type) {
-            case "tests":
-                o3.cwd.get("data/tests.xml").data = apf.uirecorder.testListXml.xml;
-                //alert("file \"tests.xml\" saved to \"data\" folder");
-                break;
-            case "testResults":
-                o3.cwd.get("data/testresults.xml").data = apf.uirecorder.testResultsXml.xml;
-                //alert("file \"testresults.xml\" saved to \"data\" folder");
-                break;
-        }
     }
-    
-    
 }
 //#endif

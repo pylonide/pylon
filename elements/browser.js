@@ -32,6 +32,9 @@
  * @inherits apf.XForms
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
+ * 
+ * @event load
+ * @event error
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
@@ -175,6 +178,15 @@ apf.browser = function(struct, tagName){
             this.$int              = this.$ext;
             //this.$ext.style.border = "2px inset white";
         }
+        
+        var _self = this;
+        apf.addListener(this.$int, "load", function(){
+            _self.dispatchEvent("load");
+        });
+
+        apf.addListener(this.$int, "error", function(){
+            _self.dispatchEvent("error");
+        });
 
         //this.$int = this.$ext.contentWindow.document.body;
         this.$ext.host = this;
