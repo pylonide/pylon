@@ -240,8 +240,8 @@ apf.htmlCleaner = (function() {
                     if (inline) {
                         if (apf.isIE) {
                             inline = inline.replace(exportRE[5],
-                                function(m, str, m, v){
-                                    return str || m + "=\"" + v + "\"";
+                                function(m1, str, m2, v){
+                                    return str || m2 + "=\"" + v + "\"";
                                 });//'$2="$3"') //quote un-quoted attributes
                         }
 
@@ -301,8 +301,8 @@ apf.htmlCleaner = (function() {
                         else {
                             if (apf.isIE) {
                                 block = block.replace(exportRE[5],
-                                    function(m, str, m, v){
-                                        return str || m + "=\"" + v + "\"";
+                                    function(m1, str, m2, v){
+                                        return str || m2 + "=\"" + v + "\"";
                                     });//'$2="$3"') //quote un-quoted attributes
                             }
 
