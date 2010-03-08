@@ -237,7 +237,7 @@ apf.BaseButton = function(){
     };
 
     this.$doBgSwitch = function(nr){
-        if (this.bgswitch && (this.$background[2] >= nr || nr == 4)) {
+        if (this.background && (this.$background[2] >= nr || nr == 4)) {
             if (nr == 4)
                 nr = this.$background[2] + 1;
 

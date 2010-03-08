@@ -116,17 +116,17 @@ apf.BaseTab = function(){
      * @attribute {String} activepage the name of the active page.
      * Example:
      * <code>
-     *  <a:tab activepage="general">
-     *      <a:page id="home">
+     *  <a:tab activepage="general" width="250" height="100">
+     *      <a:page id="home" caption="Home">
+     *      ...
+     *      </a:page>
+     *      <a:page id="advanced" caption="Advanced">
      *          ...
      *      </a:page>
-     *      <a:page id="advanced">
+     *      <a:page id="general" caption="General">
      *          ...
      *      </a:page>
-     *      <a:page id="general">
-     *          ...
-     *      </a:page>
-     *  </a:tab>
+     *   </a:tab>
      * </code>
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){

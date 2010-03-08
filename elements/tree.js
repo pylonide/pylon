@@ -84,9 +84,9 @@
  * <code>
  *  <a:tree model="filesystem.xml">
  *      <a:bindings>
- *          <a:caption match="[@caption]" />
+ *          <a:caption match="[@caption|@filename]" />
  *          <a:insert match="[folder]" get="{myWebdav.readdir([@id])}" />
- *          <a:each match="[folder]" />
+ *          <a:each match="[drive|file|folder]" />
  *      </a:bindings>
  *  </a:tree>
  * </code>
@@ -113,13 +113,13 @@
  * This example shows a gouped contact list, that displays a message under 
  * empty groups.
  * <code>
- *  <a:tree>
+ *  <a:tree model="xml/contacts.xml">
  *      <a:bindings>
- *          <a:caption select="@caption" />
- *          <a:icon select="self::contact" value="icoContact.png" />
- *          <a:icon select="self::group" value="icoFolder.png" />
- *          <a:empty select="self::group" value="Drag a contact to this group." />
- *          <a:each select="group|contact" />
+ *          <a:caption match="[@caption]" />
+ *          <a:icon match="[contact]" value="icoContact.png" />
+ *          <a:icon match="[group]" value="icoFolder.gif" />
+ *          <a:empty match="[group]" value="Drag a contact to this group." />
+ *          <a:each match="[group|contact]" />
  *      </a:bindings>
  *  </a:tree>
  * </code>

@@ -32,8 +32,7 @@
  * Example:
  * Writing to a file with a WebDAV connector
  * <code>
- *  <a:webdav id="myWebDAV"
- *    url   = "http://my-webdav-server.com/dav_files/" />
+ *  <a:webdav id="myWebDAV" url="http://my-webdav-server.com/dav_files/" />
  *     
  *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'

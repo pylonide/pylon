@@ -71,15 +71,6 @@
  * Example:
  * Sets the value based on data loaded into this component.
  * <code>
- *  <a:upload>
- *      <a:bindings>
- *          <a:value match="[@filename]" />
- *      </a:bindings>
- *  </a:upload>
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
  *  <a:upload value="[@filename]" />
  * </code>
  *

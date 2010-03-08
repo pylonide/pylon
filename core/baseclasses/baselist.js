@@ -55,14 +55,15 @@
  *  <a:thumbnail>
  *      <a:model>
  *          <data>
- *              <image caption="Thumb 1" thumbnail="thumb1.jpg" />
- *              <image caption="Thumb 2" thumbnail="thumb2.jpg" />
+ *              <image caption="Thumb 1" thumbnail="img1" />
+ *              <image caption="Thumb 2" thumbnail="img2" />
  *              <image caption="Thumb 3" />
  *          </data>
  *      </a:model>
  *      <a:bindings>
  *          <a:caption match="[@caption]" />
- *          <a:image match="[@thumbnail]" default="default_thumbnail.jpg" />
+ *          <a:image match="[@thumbnail]" value="images/slideshow_img/[@thumbnail]_small.jpg" />
+ *          <a:image value="images/slideshow_img/img29_small.jpg" />
  *          <a:each match="[image]" />
  *      </a:bindings>
  *  </a:thumbnail>
@@ -71,14 +72,19 @@
  * Example:
  * In this example a node is bold when the folder contains unread messages:
  * <code>
- *  <a:list>
+ *  <a:tree>
  *      <a:model>
  *          <data>
  *              <folder caption="Folder 1">
- *                  <message unread="true" />
+ *                  <message unread="true" caption="message 1" />
  *              </folder>
- *              <folder caption="Folder 2" icon="email.png"></folder>
- *              <folder caption="Folder 3"></folder>
+ *              <folder caption="Folder 2" icon="email.png">
+ *                  <message caption="message 2" />
+ *              </folder>
+ *              <folder caption="Folder 3">
+ *                  <message caption="message 3" />
+ *                  <message caption="message 4" />
+ *              </folder>
  *          </data>
  *      </a:model>
  *      <a:bindings>
@@ -86,9 +92,9 @@
  *          <a:css match="[message[@unread]]" value="highlighUnread" />
  *          <a:icon match="[@icon]" />
  *          <a:icon match="[folder]" value="Famfolder.gif" />
- *          <a:each match="[folder]" />
+ *          <a:each match="[folder|message]" />
  *      </a:bindings>
- *  </a:list>
+ *  </a:tree>
  * </code>
  * @binding tooltip  Determines the tooltip of a node.
  * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.

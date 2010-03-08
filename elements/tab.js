@@ -30,7 +30,7 @@
  * startup of the application or when the page is activated.
  * Example:
  * <code>
- *  <a:tab id="tab">
+ *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
  *          <a:button>Example</a:button>
