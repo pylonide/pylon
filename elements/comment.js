@@ -33,5 +33,6 @@ apf.comment = function(){
 };
 
 apf.comment.prototype = new apf.AmlComment();
+apf.aml.setElement("comment", apf.comment);
 
 // #endif

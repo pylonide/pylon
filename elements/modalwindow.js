@@ -30,6 +30,8 @@ apf.WinServer = {
     wins  : [],
 
     setTop : function(win, norecur){
+        if (win.zindex) return;
+        
         if (win.$opened) {
             if (win.$opened.visible)
                 return;

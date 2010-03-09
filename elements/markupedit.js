@@ -72,23 +72,36 @@ apf.markupedit = function(struct, tagName){
     );
 
     this.$isTreeArch  = true; // Tree Architecture for loading Data
-    this.$focussable = true; // This object can get the focus
+    this.$focussable  = true; // This object can get the focus
     
-    this.clearMessage  = "There are no items";
-    this.startClosed   = true;
-    this.animType      = 0;
-    this.animSteps     = 3;
-    this.animSpeed     = 20;
+    this.startcollapsed = true;
+    this.$animType      = 0;
+    this.$animSteps     = 3;
+    this.$animSpeed     = 20;
+    this.reselectable   = true; //@todo hack!
+    
+    this.prerender     = false;
+    this.each          = "node()[local-name(.) and not(@nomk = 'true')]";
     
     // #ifdef __WITH_CSS_BINDS
-    this.dynCssClasses = [];
+    this.$dynCssClasses = [];
     // #endif
-    
-    var _self = this;
     
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
+    
+    this.expandAndSelect = function(xmlNode) {
+        var _self = this;
+        (function _recur(loopNode){
+            var pNode = _self.getTraverseParent(loopNode);
+            if (pNode != _self.xmlRoot)
+                _recur(pNode);
+            _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
+        })(xmlNode);
+        
+        this.select(xmlNode);
+    }
     
     /**
      * Sets an attribute to an xml node
@@ -103,6 +116,21 @@ apf.markupedit = function(struct, tagName){
         
         this.$executeAction("setAttribute", [xmlNode, name, value],
             "setAttributeValue", xmlNode);
+    };
+    
+    /**
+     * Remove an attribute
+     *
+     */
+    this.removeAttribute = function(xmlNode, name, value){
+        if (!xmlNode)
+            xmlNode = this.caret || this.selected;
+
+        if (!xmlNode || xmlNode.getAttribute(name) == value) 
+            return;
+        
+        this.$executeAction("removeAttribute", [xmlNode, name],
+            "removeAttribute", xmlNode);
     };
     
     /**
@@ -140,8 +168,8 @@ apf.markupedit = function(struct, tagName){
     /**
      * @private
      */
-    this.slideToggle = function(htmlNode, force){
-        if(this.noCollapse) 
+    this.slideToggle = function(htmlNode, force, immediate){
+        if (this.nocollapse) 
             return;
         
         if (!htmlNode)
@@ -157,15 +185,22 @@ apf.markupedit = function(struct, tagName){
             if (force == 1) return;
             elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/min/, "plus");
-            this.slideClose(container, apf.xmldb.getNode(htmlNode));
+            htmlNode.className = htmlNode.className.replace(/min/, "plus");
+            this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate);
         }
         else {
             if (force == 2) return;
             elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/plus/, "min");
-            this.slideOpen(container, apf.xmldb.getNode(htmlNode));
+            htmlNode.className = htmlNode.className.replace(/plus/, "min");
+            this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate);
         }
     };
+    
+    this.isCollapsed = function(xmlNode){
+        return (apf.getStyle(this.$getLayoutNode("item", "container",
+            apf.xmldb.getHtmlNode(xmlNode, this)), "display") == "none");
+    }
     
     var lastOpened = {};
     /**
@@ -178,30 +213,39 @@ apf.markupedit = function(struct, tagName){
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
+        
+        //We don't slide open elements without children.
+        if (!container.innerHTML && !this.getTraverseNodes(xmlNode).length)
+            return; 
 
         if (this.singleopen) {
-            var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
+            var pNode = this.getTraverseParent(xmlNode),
+                p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
-              && this.getTraverseParent(lastOpened[p][1]) == pNode) 
+              && this.getTraverseParent(lastOpened[p][1]) == pNode)
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
             lastOpened[p] = [htmlNode, xmlNode];
         }
         
         container.style.display = "block";
+        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential")) {
+            this.$extend(xmlNode, container, immediate);
+            return;
+        }
         
         if (immediate) {
             container.style.height = "auto";
             return;
         }
 
+        var _self = this;
         apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : 0, 
             to      : container.scrollHeight, 
-            anim    : this.animType, 
-            steps   : this.animOpenStep,
-            interval: this.animSpeed,
+            anim    : this.$animType, 
+            steps   : this.$animOpenStep,
+            interval: this.$animSpeed,
             onfinish: function(container){
                 if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                     $setTimeout(function(){
@@ -221,7 +265,7 @@ apf.markupedit = function(struct, tagName){
      * @private
      */
     this.slideClose = function(container, xmlNode){
-        if (this.noCollapse) 
+        if (this.nocollapse) 
             return;
         
         if (!xmlNode)
@@ -240,9 +284,9 @@ apf.markupedit = function(struct, tagName){
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
             to      : 0, 
-            anim    : this.animType, 
-            steps   : this.animCloseStep,
-            interval: this.animSpeed,
+            anim    : this.$animType, 
+            steps   : this.$animCloseStep,
+            interval: this.$animSpeed,
             onfinish: function(container, data){
                container.style.display = "none";
             }
@@ -336,7 +380,7 @@ apf.markupedit = function(struct, tagName){
             this.$setStyleClass(this.$getLayoutNode("item", "openclose", 
                 htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
-            this.$setStyleClass(this.$getLayoutNode("item", "container", 
+            this.$setStyleClass(this.$getLayoutNode("item", null, 
                 htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
             
@@ -357,56 +401,72 @@ apf.markupedit = function(struct, tagName){
         }
     };
     
-    this.startRenameThis = function(oHtml, Lid, isName){
+    this.startRenameThis = function(oHtml, Lid, isName, id){
+        if (this.renaming) {
+            this.stopRename(null, true);
+            var _self = this;
+            return setTimeout(function(){
+                _self.startRenameThis(oHtml, Lid, isName);
+            });
+        }
+        
         this.$getCaptionElement = function(){
             return oHtml;
         }
         
         var attrName = oHtml.getAttribute("aname");
         
-        var xmlNode = apf.xmldb.getNodeById(Lid);
+        var xmlNode = id ? knownElements[id] : apf.xmldb.getNodeById(Lid);
+        if (!xmlNode) throw new Error();
+
+        this.$multiLineRename = id && xmlNode.nodeType != 3 ? true : false;
+
+        /*if (!this.isSelected(xmlNode)) {
+            this.select(xmlNode);
+            return;
+        }*/
+        
         this.$getCaptionXml = function(){ //@todo
-            return attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild;
+            return xmlNode.nodeType != 1 ? xmlNode 
+                : (attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild);
         }
         
         this.getSelectFromRule = function(setname, cnode){
-            return [null, attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild];
+            return [null, xmlNode.nodeType != 1 ? xmlNode 
+                : (attrName ? xmlNode.getAttributeNode(attrName) : xmlNode.firstChild)];
         };
         
-        if (isName) {
-            var renCallback = function(e){
-                this.removeEventListener("beforerename", renCallback, true);
-                this.removeEventListener("stoprename", renRemove, true);
-
-                if (e.args[2] == attrName)
-                    return false;
-                    
-                var changes = [];
-                changes.push({
-                    func : "removeAttribute",
-                    args : [xmlNode, attrName]
-                });
-                
-                changes.push({
-                    func : "setAttribute",
-                    args : [xmlNode, e.args[2], xmlNode.getAttribute(attrName) || ""]
-                });
-                
-                e.action = "multicall";
-                e.args   = changes;
-            };
-            var renRemove = function(){
-                this.removeEventListener("beforerename", renCallback, true);
-                this.removeEventListener("stoprename", renRemove, true);
-            };
-            this.addEventListener("beforerename", renCallback, true);
-            this.addEventListener("stoprename", renRemove, true);
+        this.$validateRename = function(value){
+            return !isName || !value || value.match(/^[a-z]/i);
         }
+        
+        this.rename = function(x, value){
+            this.$noanim = true;
+            if (attrName) {
+                if (isName) { 
+                    if (value == "")
+                        this.removeAttribute(xmlNode, attrName);
+                    else
+                        this.renameAttribute(xmlNode, attrName, value);
+                }
+                else
+                    this.setAttributeValue(xmlNode, attrName, value);
+            }
+            else
+                this.setTextNode(xmlNode, value);
+            this.$noanim = false;
+        };
         
         this.startRename();
         
-        if (isName)
-            this.oTxt[apf.hasContentEditable ? "innerHTML" : "value"] = attrName;
+        if (isName) {
+            this.$txt[apf.hasContentEditable ? "innerHTML" : "value"] = attrName;
+            this.$txt.className = "";
+        }
+        else
+            this.$txt.className = "attrvalue";
+        
+        apf.selectTextHtml(this.$txt);
     }
     
     /**
@@ -414,16 +474,16 @@ apf.markupedit = function(struct, tagName){
      * @todo  Use escape(27) key to cancel change (see rename)
      */
     function addAttribute(pNode, name, value, htmlNode, Lid){
-        _self.$getNewContext("attribute");
-        var elName = _self.$getLayoutNode("attribute", "name");
-        var elValue = _self.$getLayoutNode("attribute", "value");
+        this.$getNewContext("attribute");
+        var elName = this.$getLayoutNode("attribute", "name");
+        var elValue = this.$getLayoutNode("attribute", "value");
         apf.setNodeValue(elName, name);
         apf.setNodeValue(elValue, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elValue.setAttribute("title", value);
-        
+
         elName.setAttribute("aname", name);
-        elName.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
+        elName.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
         elName.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
@@ -439,7 +499,7 @@ apf.markupedit = function(struct, tagName){
         elValue.setAttribute("aname", name);
         elValue.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
-        elValue.setAttribute("onmouseup", "apf.selectTextHtml(this);\
+        elValue.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");
         elValue.setAttribute("onkeydown", "if (event.keyCode==13) {\
@@ -452,27 +512,29 @@ apf.markupedit = function(struct, tagName){
         
         if (pNode.style) {
             htmlNode = apf.insertHtmlNode(
-                _self.$getLayoutNode("attribute"), 
+                this.$getLayoutNode("attribute"), 
                 pNode, 
-                _self.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
+                this.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
             
-            animHighlight(htmlNode);
-            animHighlight(_self.$getLayoutNode("attribute", "name", htmlNode));
-            animHighlight(_self.$getLayoutNode("attribute", "value", htmlNode));
+            if (!this.$noanim) {
+                animHighlight(htmlNode);
+                animHighlight(this.$getLayoutNode("attribute", "name", htmlNode));
+                animHighlight(this.$getLayoutNode("attribute", "value", htmlNode));
+            }
         }
         else
-            pNode.appendChild(_self.$getLayoutNode("attribute"));
+            pNode.appendChild(this.$getLayoutNode("attribute"));
     }
     
     function addTextnode(pNode, value, Lid){
-        _self.$getNewContext("textnode");
-        var elTextNode = _self.$getLayoutNode("textnode", "text");
-        var elTag = _self.$getLayoutNode("textnode", "tag");
+        this.$getNewContext("textnode");
+        var elTextNode = this.$getLayoutNode("textnode", "text");
+        var elTag = this.$getLayoutNode("textnode", "tag");
         apf.setNodeValue(elTextNode, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
         
-        elTextNode.setAttribute("onmousedown", "apf.lookup(" + _self.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
+        elTextNode.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
         elTextNode.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");
@@ -488,15 +550,17 @@ apf.markupedit = function(struct, tagName){
         
         if (pNode.style) {
             var htmlNode = apf.insertHtmlNode(
-                _self.$getLayoutNode("textnode"), pNode, pNode.lastChild);
-            animHighlight(_self.$getLayoutNode("textnode", "text", htmlNode));
+                this.$getLayoutNode("textnode"), pNode, pNode.lastChild);
+            
+            if (!this.$noanim)
+                animHighlight(this.$getLayoutNode("textnode", "text", htmlNode));
         }
         else
-            pNode.appendChild(_self.$getLayoutNode("textnode"));
+            pNode.appendChild(this.$getLayoutNode("textnode"));
     }
 
     //This can be optimized by NOT using getLayoutNode all the time
-    this.initNode = function(xmlNode, state, Lid){
+    this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
         
@@ -505,29 +569,18 @@ apf.markupedit = function(struct, tagName){
         
         //should be restructured and combined events set per element 
         var elItem = this.$getLayoutNode("item");
-        elItem.setAttribute("onmouseover", 'var o = apf.lookup(' + this.$uniqueId + ');\
-            if (o.onmouseover) \
-                o.onmouseover(event, this);');
-        elItem.setAttribute("onmouseout", 'var o = apf.lookup(' + this.$uniqueId + ');\
-            if(o.onmouseout) \
-                o.onmouseout(event, this)');
-        elItem.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
-            if (o.onmousedown) \
-                o.onmousedown(event, this);');
         elItem.setAttribute(apf.xmldb.htmlIdTag, Lid);
         
         //Set open/close skin class & interaction
         this.$setStyleClass(this.$getLayoutNode("item", "openclose"), 
             treeState[state]);
-        this.$setStyleClass(this.$getLayoutNode("item", "container"), 
+        this.$setStyleClass(this.$getLayoutNode("item"), 
             treeState[state])
         var elOpenClose = this.$getLayoutNode("item", "openclose");
         if (hasChildren)
             elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
                 "var o = apf.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this);\
-                if (o.onmousedown) \
-                    o.onmousedown(event, this);\
                 apf.cancelBubble(event,o);");
         
         //Select interaction
@@ -542,9 +595,7 @@ apf.markupedit = function(struct, tagName){
         elSelect.setAttribute("onmousedown", "var o = apf.lookup(" + this.$uniqueId + ");\
             apf.cancelBubble(event, o);\
             if (o.hasFocus()) \
-                o.select(this);\
-            if (o.onmousedown) \
-                o.onmousedown(event, this);" 
+                o.select(this);" 
             + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
         //if(!elSelect.getAttribute("ondblclick")) elSelect.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose();');
 
@@ -563,17 +614,18 @@ apf.markupedit = function(struct, tagName){
             if (attr.nodeName.match(/a_id|a_listen|a_doc|a_loaded/))
                 continue;
             
-            addAttribute(elAttributes, attr.nodeName, 
+            addAttribute.call(this, elAttributes, attr.nodeName, 
                 attr.nodeValue, null, Lid);
         }
         
         var elBeginTail = this.$getLayoutNode("item", "begintail");
         var elEnd = this.$getLayoutNode("item", "endtag");
+        //@todo totally wrong, because text nodes besides element nodes are ignored.
         if (!(state&HAS_CHILD)) {
             elEnd.setAttribute("style", "display:none");
 
-            if (xmlNode.childNodes.length) {
-                addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue, Lid);
+            if (xmlNode.childNodes.length > 1 || xmlNode.childNodes.length == 1 && xmlNode.firstChild.nodeValue.trim()) {
+                addTextnode.call(this, elAttributes, xmlNode.childNodes[0].nodeValue, Lid);
                 apf.setNodeValue(elBeginTail, "&lt;/" + xmlNode.tagName + "&gt;");
             }
             else
@@ -593,7 +645,7 @@ apf.markupedit = function(struct, tagName){
             this.$setStyleClass(this.$getLayoutNode("item", null, 
                 this.$getLayoutNode("item")), cssClass);
             if (cssClass)
-                this.dynCssClasses.push(cssClass);
+                this.$dynCssClasses.push(cssClass);
         }
         //#endif
 
@@ -630,14 +682,15 @@ apf.markupedit = function(struct, tagName){
     
     function animHighlight(oHtml){
         if (!oHtml.offsetHeight) return;
-        
+
         apf.setStyleClass(oHtml, "highlight");
         $setTimeout(function(){
-            apf.tween.css(oHtml, "highlight", {
+            /*apf.tween.css(oHtml, "highlight", {
                 anim    : 0, 
                 steps   : 20, 
-                interval: 30}, true);
-        }, 400);
+                interval: 30}, true);*/
+            apf.setStyleClass(oHtml, "", ["highlight"]);
+        }, 1000);
     }
     
     this.$updateNode = function(xmlNode, htmlNode){
@@ -657,6 +710,7 @@ apf.markupedit = function(struct, tagName){
         }
 
         var doneFirstChild     = false;
+        var deleteQueue        = [];
         var nodes = [], cnodes = elAttributes.childNodes;
         for (i = 0; i < cnodes.length; i++)
             nodes.push(cnodes[i]);
@@ -692,7 +746,7 @@ apf.markupedit = function(struct, tagName){
             //Remove attribute if it no longer exists
             var name = elName.innerHTML;
             if (!aLookup[name])
-                nodes[i].parentNode.removeChild(nodes[i]);//apf.removeChild here??
+                deleteQueue.push(nodes[i]);
             //Change it
             else if(aLookup[name] != elValue.innerHTML) {
                 elValue.innerHTML = aLookup[name];
@@ -707,25 +761,44 @@ apf.markupedit = function(struct, tagName){
             elName.setAttribute("aname", name);
             elValue.setAttribute("aname", name);
         }
-        
+
         //Add the remaining attributes
         for (var attr in aLookup) {
-            addAttribute(elAttributes, attr, aLookup[attr], htmlNode, xmlNode.getAttribute(apf.xmldb.xmlIdTag));
+            if (deleteQueue.length) {
+                var html = deleteQueue.pop();
+                var elName  = this.$getLayoutNode("attribute", "name", html);
+                var elValue = this.$getLayoutNode("attribute", "value", html);
+                elName.setAttribute("aname", attr);
+                elValue.setAttribute("aname", attr);
+                elName.innerHTML  = attr;
+                elValue.innerHTML = aLookup[attr];
+                
+                animHighlight(elName);
+            }
+            else {
+                addAttribute.call(this, elAttributes, attr, aLookup[attr], htmlNode, 
+                  xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+            }
+        }
+        
+        //Remove remaining queue
+        for (var i = 0; i < deleteQueue.length; i++) {
+            deleteQueue[i].parentNode.removeChild(deleteQueue[i]);//apf.removeChild here??
         }
         
         //Add textnode if its not there yet
         if (!doneFirstChild && xmlNode.childNodes.length == 1 
           && xmlNode.childNodes[0].nodeType == 3) {
-            addTextnode(elAttributes, xmlNode.childNodes[0].nodeValue);
+            addTextnode.call(this, elAttributes, xmlNode.childNodes[0].nodeValue);
             apf.setNodeValue(elBeginTail, "</" + xmlNode.tagName + ">");
         }
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.$applyBindRule("css", xmlNode);
-        if (cssClass || this.dynCssClasses.length) {
-            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if (cssClass && !this.dynCssClasses.contains(cssClass))
-                this.dynCssClasses.push(cssClass);
+        if (cssClass || this.$dynCssClasses.length) {
+            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses);
+            if (cssClass && !this.$dynCssClasses.contains(cssClass))
+                this.$dynCssClasses.push(cssClass);
         }
         // #endif
     };
@@ -740,7 +813,7 @@ apf.markupedit = function(struct, tagName){
         this.$getLayoutNode("empty", "caption").nodeValue = this.emptyMessage;
         apf.insertHtmlNode(oItem, container);
         
-        if (!this.startClosed) {
+        if (!this.startcollapsed) {
             if (container.style) {
                 //container.style.display = "block";
                 //container.style.height = "auto";
@@ -750,7 +823,7 @@ apf.markupedit = function(struct, tagName){
     };
     
     this.$setLoading = function(xmlNode, container){
-        this.$getNewContext("Loading");
+        this.$getNewContext("loading");
         this.$setLoadStatus(xmlNode, "potential");
         apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
     };
@@ -758,6 +831,51 @@ apf.markupedit = function(struct, tagName){
     this.$removeLoading = function(htmlNode){
         if (!htmlNode) return;
         this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    };
+    
+    //check databinding for how this is normally implemented
+    this.$extend = function(xmlNode, container, immediate){
+        var rule       = this.$getBindRule("insert", xmlNode),
+            xmlContext = rule && rule.match
+                ? (rule.cmatch || rule.compile("match"))(xmlNode)
+                : xmlNode;
+
+        if (rule && xmlContext) {
+            this.$setLoadStatus(xmlNode, "loading");
+            
+            if (rule.get) {
+                // #ifdef __WITH_OFFLINE_TRANSACTIONS
+                if (!apf.offline.onLine) {
+                    apf.offline.transactions.actionNotAllowed();
+                    this.slideClose(container, xmlNode);
+                    return;
+                }
+                //#endif
+                
+                this.getModel().$insertFrom(rule.getAttribute("get"), {
+                    xmlNode     : xmlContext,
+                    insertPoint : xmlContext, 
+                    amlNode     : this
+                });
+            }
+            else {
+                if (this.$applyBindRule("insert", xmlNode))
+                    this.insert(data, {insertPoint: xmlContext});
+            }
+        }
+        else if (!this.prerender) {
+            this.$setLoadStatus(xmlNode, "loading");
+            this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
+            
+            this.$noanim = true;
+            xmlUpdateHandler.call(this, {
+                action  : "insert", 
+                xmlNode : xmlNode, 
+                result  : this.$addNodes(xmlNode, container, true), //checkChildren ???
+                anim    : !immediate
+            });
+            delete this.$noanim;
+        }
     };
     
     function xmlUpdateHandler(e){
@@ -788,6 +906,11 @@ apf.markupedit = function(struct, tagName){
     }
     
     this.addEventListener("xmlupdate", xmlUpdateHandler);
+    this.addEventListener("beforeload", function(e){
+        this.each = e.xmlNode.$regbase
+            ? "node()[not(@nomk = 'true')]"
+            : "node()[local-name(.) and not(@nomk = 'true')]";
+    });
     
     /* ***********************
         Keyboard Support
@@ -960,18 +1083,23 @@ apf.markupedit = function(struct, tagName){
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         //Why is this function called 3 times when adding one node? (hack/should)
-        var loadChildren = this.$getBindRule("insert", xmlNode) ? true : false;
-        var hasChildren  = (loadChildren 
-            || xmlNode.selectSingleNode(this.each)) ? true : false;
-        
-        var startClosed  = this.startClosed;// || this.$applyBindRule("collapse", xmlNode, ".") !== false;
-        var state        = (hasChildren ? HAS_CHILD : 0) 
-            | (startClosed && hasChildren  || loadChildren ? IS_CLOSED : 0) 
-            | (isLast ? IS_LAST : 0);
+        var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
+            traverseNodes    = this.getTraverseNodes(xmlNode),
+            hasTraverseNodes = traverseNodes.length ? true : false,
+            hasChildren      = loadChildren || hasTraverseNodes,
+            startcollapsed   = this.$hasBindRule("collapsed")
+                ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
+                : (this.$hasBindRule("expanded") 
+                    ? (this.$getDataNode("expanded", xmlNode) ? false : true)
+                    : this.startcollapsed),
+            state            = (hasChildren ? HAS_CHILD : 0) 
+                | (startcollapsed && hasChildren  || loadChildren ? IS_CLOSED : 0) 
+                | (isLast ? IS_LAST : 0),
+            htmlNode         = this.$initNode(xmlNode, state, Lid),
+            container        = this.$getLayoutNode("item", "container"),
+            eachLength;
 
-        var htmlNode     = this.initNode(xmlNode, state, Lid);
-        var container    = this.$getLayoutNode("item", "container");
-        if (!startClosed && !this.noCollapse)
+        if (!startcollapsed && !this.nocollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
         //TEMP on for dynamic subloading
@@ -979,11 +1107,20 @@ apf.markupedit = function(struct, tagName){
             container.setAttribute("style", "display:none;");
         
         //Dynamic SubLoading (Insertion) of SubTree
-        if (loadChildren && !this.$hasLoadStatus(xmlNode))
+        if (!this.prerender)
+            eachLength = traverseNodes.length;
+
+        //Dynamic SubLoading (Insertion) of SubTree
+        //@todo weird bug with eachLenght > 2
+        if (hasChildren && !this.prerender && eachLength > 0 && startcollapsed
+          || loadChildren && (!this.$hasLoadStatus(xmlNode) 
+          || this.$hasLoadStatus(xmlNode, "potential"))) {
             this.$setLoading(xmlNode, container);
-        else if(!this.getTraverseNodes(xmlNode).length 
-          && this.$applyBindRule("empty", xmlNode))
+        }
+        else if (!hasTraverseNodes && (msg = this.$applyBindRule("empty", xmlNode))) {
+            //this.$setEmptyMessage(container, msg);
             this.setEmpty(container);
+        }
 
         if (!htmlParentNode && (xmlParentNode == this.xmlRoot 
           || xmlNode == this.xmlRoot)) {
@@ -1026,7 +1163,8 @@ apf.markupedit = function(struct, tagName){
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 var q = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
-                animHighlight(this.$getLayoutNode("item", "select", q));
+                if (!this.$noanim)
+                    animHighlight(this.$getLayoutNode("item", "select", q));
                 
                 if (!apf.isChildOf(htmlNode, container, true)) 
                     var container = apf.insertHtmlNode(container, htmlParentNode, beforeNode);
@@ -1039,7 +1177,7 @@ apf.markupedit = function(struct, tagName){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if(!startClosed && this.openOnAdd 
+                if(!startcollapsed && this.openOnAdd 
                   && htmlParentNode != this.$int 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode);
@@ -1053,10 +1191,12 @@ apf.markupedit = function(struct, tagName){
             }
         }
         
-        if (this.prerender) 
-            this.$addNodes(xmlNode, container, true); //checkChildren (optimization) ???
-        else
+        if (this.prerender || eachLength < 1 || !startcollapsed) {
+            this.$addNodes(xmlNode, container, false); //checkChildren ???
+        }
+        /*else {
             this.$setLoadStatus(xmlNode, "potential");
+        }*/
 
         return container;
     };
@@ -1083,6 +1223,101 @@ apf.markupedit = function(struct, tagName){
         apf.insertHtmlNodes(nodes, container || this.$int);
         nodes.length = 0;
     };
+    
+    var typeName = {};
+    typeName[3] = "textnode";
+    typeName[4] = "cdata";
+    typeName[7] = "procinstr";
+    typeName[8] = "comment";
+    
+    var knownElements = [null];
+    this.$addNonElement = function(xmlNode, pNode, checkChildren, insertBefore, depth){
+        if (!xmlNode.$regbase) //Won't support non AML nodes for now
+            return;
+        
+        //Check if xmlNode isnt rendered already
+        if (checkChildren)
+            htmlNode = false;
+        
+        if (htmlNode)
+            return;
+        
+        if (xmlNode.nodeType == 3) {
+            this.$getNewContext("textnode");
+            var node = this.$getLayoutNode("textnode");
+            var txtNode = this.$getLayoutNode("textnode", "text");
+        }
+        else {
+            //Retrieve DataBind ID
+            //var Lid = apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
+            
+            this.$getNewContext("anynode");
+            var node     = this.$getLayoutNode("anynode");
+            var tagstart = this.$getLayoutNode("anynode", "tagstart");
+            var tagend   = this.$getLayoutNode("anynode", "tagend");
+            
+            switch(xmlNode.nodeType){
+                case 4: //CDATA
+                    apf.setNodeValue(tagstart, "&lt;![CDATA[");
+                    apf.setNodeValue(tagend, "]]&gt;");
+                break;
+                case 7: //Processing Instruction
+                    apf.setNodeValue(tagstart, "&lt;?" + xmlNode.target);
+                    apf.setNodeValue(tagend, "?&gt;");
+                break;
+                case 8: //Comment
+                    apf.setNodeValue(tagstart, "&lt;!--");
+                    apf.setNodeValue(tagend, "--&gt;");
+                break;
+                default:
+                return;
+            }
+            
+            this.$getLayoutNode("anynode", "openclose").setAttribute("onmousedown", 
+                "var o = this.parentNode;\
+                 apf.setStyleClass(o, o.className.indexOf('open') > -1 ? '' : 'open', ['open']);")
+            
+            var txtNode = this.$getLayoutNode("anynode", "text");
+        }
+
+        var value = xmlNode.nodeValue;
+        if (value.trim().indexOf("\n") > -1) {
+            //@todo Changing the nodeValue is technically wrong, but we do it to get rename to play nice.. there are better solution.
+            value = (xmlNode.nodeValue = apf.removeStartWhitespaces(value
+              .replace(/^ *\n/, "")
+              .replace(/\n *$/, "")))
+                .replace(/</g, "&lt;")
+                .replace(/\n/g, "<br />");
+        }
+        else
+            value = value.trim().replace(/</g, "&lt;");
+
+        apf.setNodeValue(txtNode, value);
+        this.$setStyleClass(node, typeName[xmlNode.nodeType], "");
+        
+        var Lid = xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId;
+        txtNode.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId 
+            + ").startRenameThis(this, '" + Lid + "', false, " 
+            + (knownElements.push(xmlNode) - 1) + ");");
+        txtNode.setAttribute("onmouseup", "\
+            event.cancelBubble=true;\
+            return false;");
+        txtNode.setAttribute("onkeydown", "if (event.keyCode==13) {\
+              this.blur();\
+              return false;\
+            };\
+            event.cancelBubble=true;");
+        txtNode.setAttribute("onselectstart", "event.cancelBubble = true;");
+        txtNode.setAttribute("ondblclick", "event.cancelBubble = true;");
+
+        if (pNode.style) {
+            var htmlNode = apf.insertHtmlNode(node, pNode);
+            //if (!this.$noanim)
+                //animHighlight(this.$getLayoutNode("anynode", "text", htmlNode));
+        }
+        else
+            pNode.appendChild(node);
+    }
     
     this.$getParentNode = function(htmlNode){
         return htmlNode 
@@ -1156,20 +1391,35 @@ apf.markupedit = function(struct, tagName){
         this.$ext.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent : e || event});
         }
+        
+        var _self = this;
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent: e || event});
+        }
+        this.$ext.onmouseout = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent: e || event});
+        }
     };
     
     this.$loadAml = function(x){
         this.openOnAdd   = !apf.isFalse(x.getAttribute("openonadd"));
-        this.startClosed = !apf.isFalse(this.getAttribute("startclosed") 
-            || this.$getOption("Main", "startclosed"));
-        this.noCollapse  = apf.isTrue(this.getAttribute("nocollapse"));
-        if (this.noCollapse)
-            this.startClosed = false;
+        this.startcollapsed = !apf.isFalse(this.getAttribute("startcollapsed") 
+            || this.$getOption("Main", "startcollapsed"));
+        this.nocollapse  = apf.isTrue(this.getAttribute("nocollapse"));
+        if (this.nocollapse)
+            this.startcollapsed = false;
         this.singleopen  = apf.isTrue(this.getAttribute("singleopen"));
-        this.prerender   = !apf.isFalse(this.getAttribute("prerender"));
+        //this.prerender   = !apf.isFalse(this.getAttribute("prerender"));
     };
     
     this.$destroy = function(){
+        //#ifdef __DEBUG
+        if (!this.$ext) {
+            apf.console.error("destroy is called more than once for markupedit");
+            return;
+        }
+        //#endif
+        
         this.$ext.onclick = null;
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;

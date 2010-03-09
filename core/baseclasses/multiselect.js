@@ -699,8 +699,12 @@ apf.MultiSelect = function(){
 
             xmlNode = apf.xmldb.getNodeById(id);//, this.xmlRoot);
         }
+        
+        if (!shiftKey && !ctrlKey && !force && !this.reselectable 
+          && this.$valueList.length <= 1 && this.$valueList.indexOf(xmlNode) > -1)
+            return;
 
-        if(this.dispatchEvent('beforeselect', {
+        if (this.dispatchEvent('beforeselect', {
             selected    : xmlNode,
             htmlNode    : htmlNode,
             ctrlKey     : ctrlKey,
@@ -776,10 +780,6 @@ apf.MultiSelect = function(){
         }
         else { //Normal Selection
             //htmlNode && this.$selected == htmlNode && this.$valueList.length <= 1 && this.$selectedList.contains(htmlNode)
-            if (!force && !this.reselectable && this.$valueList.length <= 1 
-              && this.$valueList.indexOf(xmlNode) > -1)
-                return;
-
             if (this.$selected)
                 this.$deselect(this.$selected);
             if (this.$caret)
@@ -1406,7 +1406,7 @@ apf.MultiSelect = function(){
                                 xpathmode: 5
                             })))(this.xmlRoot);
                             
-                            model = m.model && m.model.nodeFunc && m.model;
+                            model = m.model && m.model.$isModel && m.model;
                             if (model)
                                 path = m.xpath;
                             else if (m.model) {

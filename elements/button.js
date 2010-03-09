@@ -160,7 +160,6 @@ apf.button  = function(struct, tagName){
      * @attribute {String}  icon     the url from which the icon image is loaded.
      * @attribute {Boolean} state    whether this boolean is a multi state button.
      * @attribute {String}  value    the initial value of a state button.
-     * @attribute {String}  tooltip  the text displayed when a user hovers with the mouse over the element.
      * @attribute {String}  color    the text color of the caption of this element.
      * @attribute {String}  caption  the text displayed on this element indicating the action when the button is pressed.
      * @attribute {String}  action   one of the default actions this button can perform when pressed.
@@ -210,10 +209,6 @@ apf.button  = function(struct, tagName){
             this.$setState("Down", {});
         else
             this.$setState("Out", {});
-    };
-
-    this.$propHandlers["tooltip"] = function(value){
-        this.$ext.setAttribute("title", value);
     };
 
     this.$propHandlers["state"] = function(value){
@@ -748,7 +743,7 @@ apf.button.actions  = {
             ? self[this.target]
             : this.parentNode;
 
-        if (parent.localName == "model")
+        if (parent.$isModel)
             model = parent;
         else {
             if (!parent.$validgroup) {

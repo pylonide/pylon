@@ -39,6 +39,9 @@ apf.page = function(struct, tagName){
 
 (function(){
     this.canHaveChildren = true;
+    //#ifdef __WITH_CONTENTEDITABLE
+    this.$canEdit        = false;
+    //#endif
     this.$focussable     = false;
     this.buttons         = false;
     this.closebtn        = false;

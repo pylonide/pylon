@@ -327,7 +327,12 @@ apf.MultiselectBinding = function(){
      * @see  baseclass.multiselectbinding.binding.each
      */
     this.getTraverseParent = function(xmlNode){
-        if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
+        if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+            return false;
+
+        //@todo this can be removed when we have a new xpath implementation
+        if (xmlNode.$regbase)
+            return xmlNode.parentNode;
 
         var x, id = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
         if (!id) {
@@ -576,7 +581,7 @@ apf.MultiselectBinding = function(){
                   && actionFeature[action] & 1)
                     action = "update";
 
-                if (xmlNode == listenNode) {
+                if (xmlNode == listenNode && !this.renderRoot) {
                     if (xmlNode == this.xmlRoot && action != "insert") {
                         //@todo apf3.0 - fix this for binding on properties
                         this.dispatchEvent("xmlupdate", {
@@ -864,7 +869,7 @@ apf.MultiselectBinding = function(){
      * and check if it has representation. If it doesn't
      * representation is created via $add().
      */
-    this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
+    this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth){
         // #ifdef __DEBUG
         if (!this.each) {
             throw new Error(apf.formatErrorString(1060, this,
@@ -883,7 +888,13 @@ apf.MultiselectBinding = function(){
             : false; << UNUSED */
 
         for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
+            if (nodes[i].nodeType != 1) {
+                //#ifdef __WITH_MARKUPEDIT
+                if (this.$addNonElement)
+                    this.$addNonElement(nodes[i], parent || this.$int, checkChildren, insertBefore, depth);
+                //#endif
+                continue;
+            }
 
             if (checkChildren)
                 htmlNode = this.$findHtmlNode(nodes[i].getAttribute(apf.xmldb.xmlIdTag)
@@ -899,7 +910,7 @@ apf.MultiselectBinding = function(){
                         : (lastNode ? lastNode.nextSibling : null),//(parent || this.$int).firstChild);
                     parentNode = this.$add(nodes[i], Lid, isChild ? xmlNode.parentNode : xmlNode,
                         beforeNode ? parent || this.$int : parent, beforeNode,
-                        (!beforeNode && i == nodes.length - 1));//Should use getTraverParent
+                        (!beforeNode && i == nodes.length - 1), depth);//Should use getTraverParent
 
                 //Exit if component tells us its done with rendering
                 if (parentNode === false) {
@@ -1091,7 +1102,7 @@ apf.MultiselectBinding = function(){
      * this node is selectable.
      * Example:
      * <code>
-     *  <a:list select="{[@disabled] != 1}" each="[item]" />
+     *  <a:list match="{[@disabled] != 1}" each="[item]" />
      * </code>
      * @see  baseclass.multiselect.binding.select
      */

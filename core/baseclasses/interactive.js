@@ -89,10 +89,13 @@ apf.Interactive = function(){
             return;
 
         var mdown = o.onmousedown;
-        o.onmousedown = function(){
+        o.onmousedown = function(e){
             if (mdown && mdown.apply(this, arguments) === false)
                 return;
-
+            
+            if ((e || event).button == 2)
+                return;
+            
             dragStart.apply(this, arguments);
         }
         o.interactive = (o.interactive||0)+1;
@@ -152,7 +155,7 @@ apf.Interactive = function(){
     function dragStart(e){
         if (!e) e = event;
 
-        if (!_self.draggable || apf.dragMode)
+        if (!_self.draggable || _self.editable || apf.dragMode)
             return;
         
         //#ifdef __WITH_OUTLINE
@@ -184,10 +187,10 @@ apf.Interactive = function(){
         //#endif
 
         var pos = posAbs 
-            ? apf.getAbsolutePosition(_self.$ext, _self.$ext.offsetParent) 
+            ? apf.getAbsolutePosition(_self.$ext, _self.$ext.offsetParent, true) 
             : [parseInt(apf.getStyle(_self.$ext, "left")) || 0, 
                parseInt(apf.getStyle(_self.$ext, "top")) || 0];
-            
+
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
         
@@ -199,7 +202,7 @@ apf.Interactive = function(){
             oOutline.className     = "drag";
             
             var diffOutline = apf.getDiff(oOutline);
-            _self.$ext.parentNode.appendChild(oOutline);
+            _self.$ext.offsetParent.appendChild(oOutline);
             oOutline.style.left    = pos[0] + "px";
             oOutline.style.top     = pos[1] + "px";
             oOutline.style.width   = (_self.$ext.offsetWidth - diffOutline[0]) + "px";
@@ -312,7 +315,7 @@ apf.Interactive = function(){
     function resizeStart(e, options){
         if (!e) e = event;
 
-        if (!_self.resizable)
+        if (!_self.resizable || _self.editable)
             return;
 
         //#ifdef __WITH_OUTLINE
@@ -439,7 +442,7 @@ apf.Interactive = function(){
             }
 
             doResize(e || event, true);
-            
+
             if (_self.setProperty)
                 updateProperties();
             
@@ -463,7 +466,12 @@ apf.Interactive = function(){
         return false;
     }
     
-    function updateProperties(){
+    function updateProperties(left, top, width, height, hdiff, vdiff){
+        if (typeof left == "undefined") {
+            left = l, top = t, width = w, height = h, 
+                vdiff = verdiff, hdiff  = hordiff;
+        }
+
         if (posAbs) {
             var htmlNode = _self.$ext;
             if (_self.right || _self.bottom) {
@@ -473,28 +481,41 @@ apf.Interactive = function(){
             }
 
             if (_self.right && _self.right != _self.setProperty("right", 
-                  pHtmlNode.offsetWidth - htmlNode.offsetLeft 
-                  - htmlNode.offsetWidth)) {
-                htmlNode.style.left = "";
+                  (htmlNode.offsetParent.tagName == "BODY" 
+                  ? apf.getWindowHeight() 
+                  : htmlNode.offsetParent.offsetWidth) 
+                    + (parseInt(apf.getStyle(htmlNode.offsetParent, apf.descPropJs 
+                        ? "borderLeftWidth" : "border-left-width")) || 0)
+                    - (left === null ? htmlNode.offsetLeft : left)
+                    - htmlNode.offsetWidth)) {
+                if (!_self.left)
+                    htmlNode.style.left = "";
             }
             
             if (_self.bottom && _self.bottom != _self.setProperty("bottom", 
-                  pHtmlNode.offsetHeight - htmlNode.offsetTop 
-                  - htmlNode.offsetHeight)) {
-                htmlNode.style.top = "";
+                (htmlNode.offsetParent.tagName == "BODY" 
+                  ? apf.getWindowHeight() 
+                  : htmlNode.offsetParent.offsetHeight) 
+                    + (parseInt(apf.getStyle(htmlNode.offsetParent, apf.descPropJs 
+                        ? "borderTopWidth" : "border-top-width")) || 0)
+                    - (top === null ? htmlNode.offsetTop : top)
+                    - htmlNode.offsetHeight)) {
+                if (!_self.top)
+                    htmlNode.style.top = "";
             }
         
-            if (l && (!_self.right || _self.left)) 
-                _self.setProperty("left", l);
-            if (t && (!_self.bottom || _self.top)) 
-                _self.setProperty("top", t);
+            if (left && (!_self.right || _self.left)) 
+                _self.setProperty("left", left);
+            if (top && (!_self.bottom || _self.top)) 
+                _self.setProperty("top", top);
         }
-        
-        if (w && (!_self.left || !_self.right)) 
-            _self.setProperty("width", w + hordiff) 
-        if (h && (!_self.top || !_self.bottom)) 
-            _self.setProperty("height", h + verdiff); 
+
+        if (width && (!_self.left || !_self.right)) 
+            _self.setProperty("width", width + hdiff) 
+        if (height && (!_self.top || !_self.bottom)) 
+            _self.setProperty("height", height + vdiff); 
     }
+    this.$updateProperties = updateProperties;
     
     var min = Math.min, max = Math.max, lastTime;
     function resizeMove(e){
@@ -559,7 +580,7 @@ apf.Interactive = function(){
                     - verdiff)) + "px";
         
         //@todo apf3.0 this is execution wise inefficient
-        if (_self.parentNode.localName == "table") {
+        if (_self.parentNode && _self.parentNode.localName == "table") {
             updateProperties();
             apf.layout.processQueue();
         }
@@ -598,7 +619,7 @@ apf.Interactive = function(){
     function resizeIndicate(e){
         if(!e) e = event;
         
-        if (!_self.resizable || document.onmousemove)
+        if (!_self.resizable || _self.editable || document.onmousemove)
             return;
 
         //@todo This is probably not gen purpose

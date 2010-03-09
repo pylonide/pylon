@@ -134,7 +134,7 @@ apf.errorbox = function(struct, tagName){
     this.setMessage = function(value){
         if (value && value.indexOf(";") > -1) {
             value = value.split(";");
-            value = "<strong>" + value[0] + "</strong>" + value[1];
+            value = "<strong>" + value.shift() + "</strong>" + value.join(";");
         }
         this.$int.innerHTML = value || "";
     };
@@ -164,12 +164,12 @@ apf.errorbox = function(struct, tagName){
             //#endif
         }
 
-        this.hide();
-        
         apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
     };
     
     this.$loadAml = function(x){
+        if (!apf.isTrue(this.getAttribute("visible")))
+            this.hide();
     };
     
     this.$destroy = function(){

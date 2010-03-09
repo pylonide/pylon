@@ -143,10 +143,72 @@
  *  </a:script>
  * </code>
  *
+ * Example:
+ * Ajax.org Markup Language
+ * <code>
+ *  <a:rpc id="comm" protocol="cgi">
+ *      <a:method
+ *        name    = "searchProduct"
+ *        url     = "http://example.com/search.php"
+ *        receive = "processSearch">
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method
+ *        name = "loadProduct"
+ *        url  = "http://example.com/show-product.php">
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ *
+ * Example:
+ * Ajax.org Markup Language
+ * <code>
+ *  <a:rpc id="comm" protocol="jsonrpc">
+ *      <a:method 
+ *        name    = "searchProduct" 
+ *        receive = "processSearch">
+ *          <a:param name="search" />
+ *          <a:param name="page" />
+ *          <a:param name="textbanner" value="1" />
+ *      </a:method>
+ *      <a:method 
+ *        name = "loadProduct">
+ *          <a:param name="id" />
+ *          <a:param name="search_id" />
+ *      </a:method>
+ *  </a:rpc>
+ *
+ *  <a:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </a:script>
+ * </code>
+ *
  * @attribute {String}  protocol         the name of the plugin that is used
  *                                       to provide the messages.
  * @attribute {Boolean} [multicall]      whether the call is stacked until
  *                                       purge() is called.
+ * @attribute {String}  [route-server]   the location of the proxy script that 
+ *                                       allows for cross domain communication.
  * @attribute {String}  [http-method]    the http method used to send the data.
  *                                       This attribute is only used by the cgi protocol.
  *   Possible values:
@@ -199,6 +261,10 @@ apf.rpc = function(struct, tagName){
     this.$booleanProperties["multicall"] = true;
 
     this.$supportedProperties.push("protocol", "type", "multicall", "http-method");
+
+    this.$propHandlers["route-server"] = function(value){
+        this.autoroute = value ? true : false;
+    }
 
     //@todo change this to use prototype
     this.$propHandlers["protocol"] = function(value){

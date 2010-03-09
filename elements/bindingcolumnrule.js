@@ -22,14 +22,15 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * @attribute {String} icon
- * @attribute {String} caption
- * @attribute {String} width
- * @attribute {String} options
- * @attribute {String} editor
- * @attribute {String} colspan
- * @attribute {String} align
- * @attribute {String} css
+ * @attribute {String}  icon
+ * @attribute {String}  caption
+ * @attribute {String}  width
+ * @attribute {String}  options
+ * @attribute {String}  editor
+ * @attribute {String}  colspan
+ * @attribute {String}  align
+ * @attribute {String}  css
+ * @attribute {Boolean} tree
  */
 apf.BindingColumnRule = function(struct, tagName){
     this.$init(tagName, apf.NODE_HIDDEN, struct);
@@ -45,6 +46,18 @@ apf.BindingColumnRule = function(struct, tagName){
     this.$resizable = true;
     this.$movable   = true;
     this.$cssInit   = false;
+    
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        css     : 1,
+        icon    : 1,
+        caption : 1
+    }, this.$attrExcludePropBind);
+    
+    this.$supportedProperties.push("tree", "icon", "caption", "width", "options", 
+        "editor", "colspan", "align", "css");
+    
+    this.$booleanProperties["tree"] = true;
     
     this.$propHandlers["icon"]  = function(value, prop){
         
@@ -87,8 +100,10 @@ apf.BindingColumnRule = function(struct, tagName){
     this.resize = function(newsize, pNode){
         var hN;
         if (this.$isPercentage) {
-            var ratio = newsize / (this.$ext.offsetWidth - (pNode.$widthdiff - 3)), //div 0 ??
+            var oldsize = (this.$ext.offsetWidth - (pNode.$widthdiff - 3)),
+                ratio = newsize / oldsize, //div 0 ??
                 next  = [],
+                fixed = [],
                 total = 0,
                 node  = this.$ext.nextSibling;
             
@@ -98,8 +113,12 @@ apf.BindingColumnRule = function(struct, tagName){
                     next.push(hN);
                     total += hN.$width;
                 }
+                else fixed.push(hN);
                 node = node.nextSibling;
             }
+            
+            if (fixed.length && !next.length)
+                return fixed[0].resize(fixed[0].$width + (oldsize - newsize), pNode);
             
             var newPerc  = ratio * this.$width,
                 diffPerc = newPerc - this.$width,
@@ -132,9 +151,9 @@ apf.BindingColumnRule = function(struct, tagName){
                 //apf.setStyleRule("." + this.$className, "width", newsize + "px"); //Set
             }
             apf.setStyleRule("." + this.$className, "width", newsize + "px", null, pNode.oWin); //Set
-            
+
             pNode.$fixed += diff;
-            var vLeft = (pNode.$fixed + 5) + "px";
+            var vLeft = (pNode.$fixed) + "px";
 
             if (!this.$isFixedGrid) {
                 //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
@@ -217,15 +236,21 @@ apf.BindingColumnRule = function(struct, tagName){
         if (!pNode.length)
             return;
 
-        var node, nodes = pNode.$int.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (pNode.$withContainer && ((i+1) % 2) == 0)
-                continue;
-
-            node = nodes[i];
-            node.insertBefore(node.childNodes[childNrFrom], 
-                typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
-        }
+        (function _recur(nodes){
+            for (var node, i = 0; i < nodes.length; i++) {
+                //if (pNode.$withContainer && ((i+1) % 2) == 0)
+                    //continue;
+    
+                node = nodes[i];
+                if (pNode.$isTreeArch && node.tagName == "BLOCKQUOTE") { //@todo small hack
+                    _recur(node.childNodes);
+                }
+                else {
+                    node.insertBefore(node.childNodes[childNrFrom], 
+                    typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
+                }
+            }
+        })(pNode.$int.childNodes);
         
         /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
@@ -274,14 +299,14 @@ apf.BindingColumnRule = function(struct, tagName){
         $head.setAttribute("hid", this.$uniqueId);
         
         var hCaption = pNode.$getLayoutNode("headitem", "caption");
-        if (this.icon) {
+        /*if (this.icon) {
             this.$sortable = false;
             $head.setAttribute("style", "background-image:url("
                 + apf.getAbsolutePath(pNode.iconPath, this.icon) 
                 + ")");
             hCaption.nodeValue = "&nbsp;";
         }
-        else
+        else*/
             hCaption.nodeValue = this.caption || caption || "";
         
         this.$ext = this.$int = apf.insertHtmlNode($head, pNode.$head || pNode.$int);

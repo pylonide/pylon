@@ -67,7 +67,7 @@ apf.Rename = function(){
     this.$regbase      = this.$regbase|apf.__RENAME__;
 
     this.canrename     = true;
-    this.renameSubject =
+    this.$renameSubject =
     this.renameTimer   =
     this.lastCursor    = null;
     
@@ -169,39 +169,52 @@ apf.Rename = function(){
             return this.stopRename();
         
         this.renaming      = true;
-        this.renameSubject = this.caret || this.selected;
+        this.$renameSubject = this.caret || this.selected;
 
         var wdt = elCaption.offsetWidth;
         this.lastCursor = elCaption.style.cursor;
         elCaption.style.cursor = "text";
-        elCaption.parentNode.replaceChild(this.oTxt, elCaption);
+        elCaption.parentNode.replaceChild(this.$txt, elCaption);
         elCaption.host = this;
 
         if (apf.isTrue(this.$getOption("main", "scalerename"))) {
-            var diff = apf.getWidthDiff(this.oTxt);
-            this.oTxt.style.width = (wdt - diff - 3) + "px";
+            var diff = apf.getWidthDiff(this.$txt);
+            this.$txt.style.width = (wdt - diff - 3) + "px";
         }
 
-        this.replacedNode = elCaption;
+        this.$replacedNode = elCaption;
         var xmlNode       = this.$getCaptionXml
-            ? this.$getCaptionXml(this.renameSubject)
-            : this.$getDataNode("caption", this.renameSubject);
+            ? this.$getCaptionXml(this.$renameSubject)
+            : this.$getDataNode("caption", this.$renameSubject);
 
-        this.oTxt[apf.hasContentEditable ? "innerHTML" : "value"] = startEmpty || !xmlNode
+        //xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
+        value =  startEmpty || !xmlNode
             ? ""
-            : (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
+            : (xmlNode.nodeType != 1
                 ? unescape(decodeURI(xmlNode.nodeValue))
                 : (apf.isOnlyChild(xmlNode.firstChild, [3,4])
                     ? apf.queryValue(xmlNode)
-                    : this.$applyBindRule("caption", this.renameSubject))) || "";
+                    : this.$applyBindRule("caption", this.$renameSubject))) || "";
 
-        this.oTxt.unselectable = "Off";
-        this.oTxt.host         = this;
+        if (apf.hasContentEditable) {
+            if (this.$multiLineRename)
+                this.$txt.innerHTML = apf.htmlCleaner.prepare(value.trim()
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\n/g, "<br />"));
+            else
+                this.$txt.innerHTML = value.replace(/</g, "&lt;");
+        }
+        else 
+            this.$txt.value = value;
 
-        //this.oTxt.focus();
+        this.$txt.unselectable = "Off";
+        this.$txt.host         = this;
+
+        //this.$txt.focus();
         try {
-            this.oTxt.focus();
-            this.oTxt.select();
+            this.$txt.focus();
+            this.$txt.select();
         }
         catch(e) {}
     };
@@ -214,44 +227,52 @@ apf.Rename = function(){
     this.stopRename = function(contextXml, success){
         clearTimeout(this.renameTimer);
 
-        if (!this.renaming || contextXml && contextXml != this.renameSubject
-          || !this.replacedNode)
+        if (!this.renaming || contextXml && contextXml != this.$renameSubject
+          || !this.$replacedNode)
             return false;
 
-        if (this.oTxt.parentNode && this.oTxt.parentNode.nodeType == 1) {
+        if (this.$txt.parentNode && this.$txt.parentNode.nodeType == 1) {
             if (apf.isIE8 || apf.isIE7Emulate)
-                this.oTxt.blur();
+                this.$txt.blur();
             
-            this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
+            this.$txt.parentNode.replaceChild(this.$replacedNode, this.$txt);
         }
 
         this.renaming = false;
 
-        if (this.replacedNode) {
-            this.replacedNode.style.cursor = this.lastCursor || "";
-            this.replacedNode.host = null;
+        if (this.$replacedNode) {
+            this.$replacedNode.style.cursor = this.lastCursor || "";
+            this.$replacedNode.host = null;
+        }
+        
+        //apf.hasContentEditable ??
+        if (this.$multiLineRename) {
+            var value = apf.html_entity_decode(
+                apf.htmlCleaner.parse(this.$txt.innerHTML, true)
+                            .replace(/<br \/>/g, "")
+                            .replace(/<\/?p>/g, ""));
+        }
+        else {
+            var value = this.$txt[apf.hasContentEditable ? "innerText" : "value"]
+                            .replace(/<.*?nobr>/gi, "");
         }
 
-        if (!success) {
+        if (!success || (this.$validateRename && !this.$validateRename(value))) {
             this.dispatchEvent("stoprename");
             this.$stopAction("rename");
         }
         else {
-            if (this.replacedNode) {
-                this.replacedNode.innerHTML = this.oTxt[apf.hasContentEditable
-                    ? "innerText"
-                    : "value"];
+            if (this.$replacedNode) {
+                this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
             }
-             //this.$selected.innerHTML = this.oTxt.innerHTML;
-            this.rename(this.renameSubject,
-                this.oTxt[apf.hasContentEditable ? "innerText" : "value"]
-                .replace(/<.*?nobr>/gi, ""));
+             //this.$selected.innerHTML = this.$txt.innerHTML;
+            this.rename(this.$renameSubject, value);
         }
 
         if (!this.renaming) {
-            this.renameSubject    = null;
-            this.replacedNode     = null;
-            this.oTxt.style.width = "";
+            this.$renameSubject    = null;
+            this.$replacedNode     = null;
+            this.$txt.style.width = "";
         }
         
         return true;
@@ -262,7 +283,8 @@ apf.Rename = function(){
         var key = e.keyCode;
 
         if (this.renaming) {
-            if (key == 27 || key == 13) {
+            if (key == 27 || this.$multiLineRename && e.ctrlKey && key == 13 
+              || !this.$multiLineRename && key == 13) {
                 this.stopRename(null, key == 13 && !this.$autocomplete);
                 e.cancelBubble = true;
                 return false;
@@ -293,60 +315,61 @@ apf.Rename = function(){
     //#endif
 
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        this.oTxt.refCount--;
+        this.$txt.refCount--;
 
-        if (!this.oTxt.refCount) {
-            this.oTxt.host        =
-            this.oTxt.onmouseover =
-            this.oTxt.onmousedown =
-            this.oTxt.select      =
-            this.oTxt.onfocus     =
-            this.oTxt.onblur      = null;
+        if (!this.$txt.refCount) {
+            this.$txt.host        =
+            this.$txt.onmouseover =
+            this.$txt.onmousedown =
+            this.$txt.select      =
+            this.$txt.onfocus     =
+            this.$txt.onblur      = null;
         }
     });
     
     this.$init(function(){
-        if (!(this.oTxt = document.getElementById("txt_rename"))) {
+        if (!(this.$txt = document.getElementById("txt_rename"))) {
             if (apf.hasContentEditable) {
-                this.oTxt = document.createElement("DIV");
-                this.oTxt.contentEditable = true;
+                this.$txt = document.createElement("DIV");
+                this.$txt.contentEditable = true;
                 if (apf.isIE6)
-                    this.oTxt.style.width = "1px";
-                //this.oTxt.canHaveHTML = false;
+                    this.$txt.style.width = "1px";
+                //this.$txt.canHaveHTML = false;
             }
             else {
-                this.oTxt              = document.createElement("input");
-                this.oTxt.id           = "txt_rename";
-                this.oTxt.autocomplete = false;
+                this.$txt              = document.createElement("input");
+                this.$txt.id           = "txt_rename";
+                this.$txt.autocomplete = false;
             }
         
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)
-                apf.sanitizeTextbox(this.oTxt);
+                apf.sanitizeTextbox(this.$txt);
             //#endif
         
-            this.oTxt.refCount         = 0;
-            this.oTxt.id               = "txt_rename";
-            this.oTxt.style.whiteSpace = "nowrap";
-            this.oTxt.onselectstart    = function(e){
+            this.$txt.refCount         = 0;
+            this.$txt.id               = "txt_rename";
+            //this.$txt.style.whiteSpace = "nowrap";
+            apf.importCssString("#txt_rename{white-space:nowrap}");
+            this.$txt.onselectstart    = function(e){
                 (e || event).cancelBubble = true;
             };
             // #ifdef __WITH_WINDOW_FOCUS
-            //this.oTxt.host = this;
-            apf.sanitizeTextbox(this.oTxt);
+            //this.$txt.host = this;
+            apf.sanitizeTextbox(this.$txt);
             // #endif
         
-            this.oTxt.onmouseover = this.oTxt.onmouseout = this.oTxt.oncontextmenu =
-            this.oTxt.onmousedown = function(e){ (e || event).cancelBubble = true; };
+            this.$txt.onmouseover = this.$txt.onmouseout = this.$txt.oncontextmenu =
+            this.$txt.onmousedown = function(e){ (e || event).cancelBubble = true; };
         
-            this.oTxt.onkeyup = function(){
+            this.$txt.onkeyup = function(){
                 if (!this.host.$autocomplete)
                     return;
         
                 this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
             }
         
-            this.oTxt.select = function(){
+            this.$txt.select = function(){
                 if (!apf.hasMsRangeObject)
                     return this.focus();
         
@@ -365,14 +388,14 @@ apf.Rename = function(){
         
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug) {
-                this.oTxt.onfocus = function(){
+                this.$txt.onfocus = function(){
                     if (apf.window)
                         apf.window.$focusfix2();
                 };
             }
             //#endif
         
-            this.oTxt.onblur = function(){
+            this.$txt.onblur = function(){
                 if (apf.isGecko)
                     return; //bug in firefox calling onblur too much
         
@@ -388,7 +411,7 @@ apf.Rename = function(){
             };
         }
         
-        this.oTxt.refCount++;
+        this.$txt.refCount++;
     });
 }
 

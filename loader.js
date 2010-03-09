@@ -171,7 +171,8 @@ apf.$x = apf.$loader
         "core/markup/aml/processinginstruction.js",
         
         "core/markup/xhtml/element.js",
-        "core/markup/xsd/element.js"
+        "core/markup/xsd/element.js",
+        "core/baseclasses/contenteditable2.js"
     )
     .wait()
     .script(
@@ -235,10 +236,10 @@ apf.$x = apf.$loader
         "core/baseclasses/virtualviewport.js",
         //"baseclasses/xforms.js",
         "core/baseclasses/contenteditable.js",
-        "core/baseclasses/contenteditable2.js",
         
         "core/baseclasses/basebutton.js",
         "core/baseclasses/baselist.js",
+        "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
         "core/baseclasses/basestatebuttons.js",
@@ -290,6 +291,7 @@ apf.$x = apf.$loader
         "elements/checkbox.js",
         "elements/codeeditor.js", 
         "elements/collection.js",
+        "elements/comment.js",
         //"colorpicker.js",
         "elements/colorpicker2.js",
         "elements/contextmenu.js",
@@ -412,8 +414,8 @@ apf.$x = apf.$loader
 
         //Conditional compilation workaround... (can this be improved??)
         if (document.all) {
-            var oldWinError = window.onerror;
-            window.onerror = function(m){
+            var oldWinError = window.onerror, z;
+            window.onerror = z = function(m){
                 apf.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
 
                 if (!arguments.caller)
@@ -421,7 +423,7 @@ apf.$x = apf.$loader
             }
         }
         apf.Init.addConditional(function(){
-            if (document.all) //Conditional compilation workaround... (can this be improved??)
+            if (document.all && window.onerror == z) //Conditional compilation workaround... (can this be improved??)
                 window.onerror = oldWinError;
 
             apf.dispatchEvent("domready");

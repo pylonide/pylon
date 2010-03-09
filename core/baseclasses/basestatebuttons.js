@@ -542,7 +542,7 @@ apf.BaseStateButtons = function(){
         }
         
         var diff = apf.getDiff(this.$ext);
-        hordiff  = diff[0];
+        hordiff  = diff[0]; 
         verdiff  = diff[1];
         marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
     };

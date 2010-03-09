@@ -239,6 +239,7 @@ apf.aml.setElement("selectable", apf.BindingRule);
 apf.aml.setElement("value",      apf.BindingRule);
 apf.aml.setElement("src",        apf.BindingRule);
 apf.aml.setElement("collapsed",  apf.BindingRule);
+apf.aml.setElement("expanded",  apf.BindingRule);
 apf.aml.setElement("empty",      apf.BindingRule);
 // #endif
 

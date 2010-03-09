@@ -435,6 +435,7 @@ var apf = {
         this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
+        this.supportCSSAnim            = apf.isWebkit && (apf.webkitRev > 525);//apf.isIphone;
         this.w3cRange                  = Boolean(window["getSelection"]);
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
@@ -467,7 +468,7 @@ var apf = {
         this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !!document.createElement("canvas").getContext;
         this.supportCanvasText         = !!(this.supportCanvas
-            && typeof document.createElement("canvas").getContext("2d").fillText == "function");
+            && typeof document.createElement("canvas").getContext("2d").fillText == "function")
 
         this.hasVideo                  = !!document.createElement("video")["canPlayType"];
         this.hasAudio                  = !!document.createElement("audio")["canPlayType"];
@@ -1161,8 +1162,8 @@ var apf = {
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = ["---- APF Error ----"];
-        if (amlContext) {
+        var str = [];
+        if (amlContext && amlContext.ownerDocument) {
             if (amlContext.nodeType == 9)
                 amlContext = amlContext.documentElement;
 
@@ -1215,7 +1216,7 @@ var apf = {
             str.push(outputname + ": " + output);
         if (amlContext)
             str.push("\n===\n" + amlStr);
-        
+
         return (apf.lastErrorMessage = str.join("\n"));
         /*#else
         apf.lastErrorMessage = message;
@@ -1767,6 +1768,9 @@ var apf = {
             return apf.oHttp.get((apf.alternativeAml 
               || document.body && document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0], {
+                //#ifdef __DEBUG
+                type : "markup",
+                //#endif
                 callback: function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
                         var oError = new Error(apf.formatErrorString(0, null,
@@ -1786,7 +1790,7 @@ var apf = {
 
                     //@todo apf3.0 rewrite this flow
                     var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
-                      .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ")
+                      .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ") //should be html2xmlentity conversion
                     if (!apf.supportNamespaces)
                         str = str.replace(/xmlns\=\"[^"]*\"/g, "");
                     //var xmlNode = apf.getXmlDom(str);//apf.getAmlDocFromString(xmlString);

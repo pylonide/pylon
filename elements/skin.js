@@ -33,6 +33,7 @@
  * @attribute {String} src        the location of the skin definition.
  * @attribute {String} media-path the basepath for the images of the skin.
  * @attribute {String} icon-path  the basepath for the icons used in the elements using this skinset.
+ * @allowchild  style, presentation
  * @addnode global, anyaml
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -165,6 +166,9 @@ apf.aml.setElement("skin", apf.skin);
         apf.oHttp.get(
         #endif */
           path, {
+          //#ifdef __DEBUG
+          type : "skin",
+          //#endif
           callback: function(xmlString, state, extra){
              if (state != apf.SUCCESS) {
                 var oError = new Error(apf.formatErrorString(1007,

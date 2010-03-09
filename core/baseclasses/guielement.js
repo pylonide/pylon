@@ -115,7 +115,7 @@ apf.GuiElement = function(){
         "focussable", "zindex", "disabled", "tabindex",
         "disable-keyboard", "contextmenu", "visible", "autosize", 
         "loadaml", "actiontracker", "alias",
-        "width", "left", "top", "height"
+        "width", "left", "top", "height", "tooltip"
     );
 
     this.$setLayout = function(type){
@@ -166,6 +166,9 @@ apf.GuiElement = function(){
         //#endif
         //#ifdef __WITH_ALIGNMENT
         ,apf.Alignment
+        //#endif
+        //#ifdef __WITH_CONTENTEDITABLE
+        ,apf.ContentEditable2
         //#endif
     );
     
@@ -394,6 +397,16 @@ apf.GuiElement = function(){
 
     //#ifdef __AMLCONTEXTMENU
     this.addEventListener("contextmenu", function(e){
+        // #ifdef __WITH_CONTENTEDITABLE2
+        if (this.editable) {
+            apf.ContentEditable2.showContextMenu(this, e);
+            
+            e.returnValue  = false;
+            e.cancelBubble = true;
+            return;
+        }
+        // #endif
+        
         if (!this.contextmenus) return;
         
         if (this.hasFeature(apf.__DATABINDING__)) {
@@ -647,6 +660,14 @@ apf.GuiElement.propHandlers = {
     "disable-keyboard": function(value){
         this.disableKeyboard = apf.isTrue(value);
     },
+    
+    /**
+     * @attribute {String}  tooltip  the text displayed when a user hovers with 
+     * the mouse over the element.
+     */
+    "tooltip" : function(value){
+        this.$ext.setAttribute("title", value);
+    },
 
     //#ifdef __AMLCONTEXTMENU
     /**
@@ -719,10 +740,10 @@ apf.GuiElement.propHandlers = {
      * that loads new aml as children of this element.
      */
     //#ifdef __WITH_CONTENTEDITABLE
-    "editable": function(value){
+    /*"editable": function(value){
         this.implement(apf.ContentEditable2);
         this.$propHandlers["editable"].apply(this, arguments);
-    },
+    },*/
     
     /**
      * @attribute {String} sets this aml element to be contenteditable
@@ -735,6 +756,7 @@ apf.GuiElement.propHandlers = {
         this.$propHandlers["contenteditable"].apply(this, arguments);
     }
     //#endif
+    
    
     //#ifdef __WITH_ALIAS
     /**

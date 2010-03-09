@@ -25,19 +25,47 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 apf.ContentEditable2 = function() {
     this.$regbase = this.$regbase | apf.__CONTENTEDITABLE__;
 
-    var _self = this;
+    this.editable = false;
+    this.$canEdit = true;
+    this.$init(function(tagName, nodeFunc, struct){
+         this.$inheritProperties["editable"] = 2;
+    });
     
-    if (!apf.ContentEditable2.resize)
-        apf.ContentEditable2.resize = new apf.Resize();
-    
+    this.$booleanProperties["editable"] = true;
     this.$propHandlers["editable"] = function(value, prop){
-        apf.ContentEditable2.resize.initElement(this);
-        this.isEditable = true;
+        if (!apf.ContentEditable2.resize)
+            apf.ContentEditable2.resize = new apf.Resize();
+        
+        if (value) {
+            if (this.$canEdit)
+                apf.ContentEditable2.resize.initElement(this);
+            this.isEditable = true;
+            
+            var _self = this;
+            if (!this.parentNode.isEditable) {
+                //@todo Use new property events in apf3.0
+                $setTimeout(function(){
+                    apf.ContentEditable2.resize.grab(_self);
+                });
+            }
+        }
+        else {
+            if (this.$canEdit)
+                apf.ContentEditable2.resize.deInitElement(this);
+            this.isEditable = false;
+            
+            //@todo hack!
+            apf.ContentEditable2.resize.hide();
+        }
     }
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        var x = this.$aml;
+        /*if (!this.editable)
+            return;
+        
+        var x     = this.$aml;
         var nodes = this.childNodes;
+        
         for (var i = 0, l = nodes.length; i < l; i++) {
             if (typeof nodes[i].editable == "undefined") { //@todo inheritance?
                 if (nodes[i].nodeFunc == apf.NODE_VISIBLE && nodes[i].localName != "page") {
@@ -48,13 +76,11 @@ apf.ContentEditable2 = function() {
                     arguments.callee.apply(nodes[i], arguments);
                 }
             }
-        }
-        
-        if (!this.parentNode.isEditable) {
-            //@todo Use new property events in apf3.0
-            $setTimeout(function(){
-                apf.ContentEditable2.resize.grab(_self);
-            });
+        }*/
+        if (!this.editable) {
+            this.editable = apf.getInheritedAttribute(this, "editable");
+            if (this.editable)
+                this.$propHandlers["editable"].call(this, true);
         }
     });
     
@@ -70,10 +96,16 @@ apf.ContentEditable2.setMode = function(mode, type){
 	if (!this.pointer)
 	    this.pointer = new apf.ElementDrawer();
 	
-	if (mode == "add") this.pointer.activate();
-	else this.pointer.deactivate();
+	if (mode == "add" || mode == "select") 
+	    this.pointer.activate();
+	else 
+	    this.pointer.deactivate();
 	
-	this.addType = type;
+    this.addType = type;
+}
+
+apf.ContentEditable2.showContextMenu = function(amlNode, e){
+    mnuContentEditable.display(e.x, e.y, null, amlNode);
 }
 
 apf.ContentEditable2.actions = {
@@ -84,7 +116,7 @@ apf.ContentEditable2.actions = {
 
 apf.ContentEditable2.execCommand = function(type, options, undo){
     if (!options) options = {};
-    var sel = options.sel || this.resize.getSelected();//@todo should become a real selection object (see html5 spec)
+    var sel = options.sel || this.resize.getSelected()[0];//@todo should become a real selection object (see html5 spec)
     
     if (this.started && type != "commit" && type != "rollback" && !undo) {
         apf.ContentEditable2.actions.transaction.push([type, options]);
@@ -103,22 +135,30 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
                     htmlNode   = options.htmlNode,
                     parentNode = options.parentNode;
                 if (!parentNode) {
-                    parentNode = (this.resize.getSelected() || apf.document.documentElement);
+                    parentNode = (this.resize.getSelected(0) || apf.document.documentElement);
                     if (parentNode.getPage) {
                         parentNode = parentNode.getPage();
                     }
                     else {
-                        while (!parentNode.canHaveChildren)
+                        while (parentNode && !parentNode.canHaveChildren)
                             parentNode = parentNode.parentNode;
                     }
                     options.parentNode = parentNode;
                 }
                 
+                if (!parentNode) debugger;
+                
                 var pos = apf.getAbsolutePosition(parentNode.$int);
                 jmlNode.setAttribute("left", htmlNode.offsetLeft - pos[0]);
                 jmlNode.setAttribute("top", htmlNode.offsetTop - pos[1]);
                 
-                parentNode.appendChild(jmlNode);
+                if (self.apfView) {
+                    apfView.$int.contentWindow.apf.$debugwin.showAmlNode(parentNode);
+                    apfView.$int.contentWindow.apf.xmldb.appendChild(parentNode, jmlNode);//applyChanges("add", jmlNode);
+                }
+                else {
+                    parentNode.appendChild(jmlNode);
+                }
                 
                 var minwidth  = jmlNode.minwidth
                         || parseInt(jmlNode.$getOption("main", "minwidth")) || 0,
@@ -140,8 +180,52 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
                 //#endif
                 this.resize.grab(jmlNode);
                 options.addedNode = jmlNode;
+                
+                //@todo hacks!
+                if (self.apfView) {
+                    apfView.$int.contentWindow.apf.$debugwin.showAmlNode(jmlNode);
+                    setTimeout(function(){
+                        apfView.$int.contentWindow.apf.$debugwin.showAmlNode(jmlNode);
+                    }, 100);
+                    //apfView.$int.contentWindow.apf.xmldb.applyChanges("add", jmlNode);
+                }
+                
+                trTools.select(trTools.queryNode("//node()[@name='Arrow']"));
             }
             break;
+        case "select":
+            var htmlNode   = options.htmlNode,
+                parentNode = options.parentNode;
+            if (!parentNode) {
+                parentNode = (this.resize.getSelected(0) || apf.document.documentElement);
+                if (parentNode.getPage) {
+                    parentNode = parentNode.getPage();
+                }
+                else {
+                    while (parentNode && !parentNode.canHaveChildren)
+                        parentNode = parentNode.parentNode;
+                }
+                options.parentNode = parentNode;
+            }
+            
+            var nodes = parentNode.getElementsByTagName("*");
+            var htmlParent = htmlNode.parentNode;
+            var left = htmlNode.offsetLeft;
+            var top  = htmlNode.offsetTop;
+            var right = left + htmlNode.offsetWidth;
+            var bottom = top + htmlNode.offsetHeight;
+            var first = true;
+            for (var i = 0; i < nodes.length; i++) {
+                var pos = apf.getAbsolutePosition(nodes[i].$ext, htmlParent);
+                if (pos[0] > left && pos[0] + nodes[i].$ext.offsetWidth < right
+                  && pos[1] > top && pos[1] + nodes[i].$ext.offsetHeight < bottom) {
+                    this.resize.grab(nodes[i], !first);
+                    first = false;
+                }
+            }
+            
+            trTools.select(trTools.queryNode("//node()[@name='Arrow']"));
+            return;
         case "remove":
             if (undo) {
                 options.removedNode[1].insertBefore(options.removedNode[0],
@@ -216,17 +300,96 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
             //#ifdef __WITH_LAYOUT
             apf.layout.processQueue();
             //#endif
+
             this.resize.regrab();
             return;
         case "rollback":
             this.started = false;
             apf.ContentEditable2.actions.transaction = [];
             return;
+        case "cut":
+            var options = {};
+            this.execCommand("remove", options);
+            apf.ContentEditable2.clipBoard.put(sel);
+            return;
+        case "copy":
+            apf.ContentEditable2.clipBoard.put(sel);
+            return;
+        case "paste":
+            var content = apf.ContentEditable2.clipBoard.get();
+            if (!content) return;
+
+            if (typeof content == "string") {
+                sel.insertMarkup(content);
+            }
+            else if (content.$regbase) {
+                sel.appendChild(content.cloneNode(true))
+            }
+            else {
+                alert("Could not paste content");
+            }
+            return;
+        case "defposition":
+            this.execCommand("begin");
+            ["align", "left", "top", "right", 
+             "bottom", "width", "height", "anchors"].each(function(item){
+                if (sel[item])
+                    apf.ContentEditable2.execCommand("property", {
+                        name : item,
+                        value : ""
+                    });
+            });
+            sel.$ext.style.position = ""; //@todo this should be done by align/anchoring
+            this.execCommand("commit");
+            apf.ContentEditable2.resize.grab(sel, -1);
+            return;
+        case "back":
+            if (sel.zindex != 0)
+                this.execCommand("property", {
+                    name  : "zindex",
+                    value : 0
+                });
+            return;
+        case "backward":
+            if (sel.zindex != 0)
+                this.execCommand("property", {
+                    name  : "zindex",
+                    value : (sel.zindex || 1) - 1
+                });
+            return;
+        case "front":
+            if (sel.zindex != 100000)
+                this.execCommand("property", {
+                    name  : "zindex",
+                    value : 100000
+                });
+            return;
+        case "forward":
+            if (sel.zindex != 100000)
+                this.execCommand("property", {
+                    name  : "zindex",
+                    value : (sel.zindex || 0) + 1
+                });
+            return;
+        case "lock":
+            return;
+        case "unlock":
+            return;
     }
     
     if (!options || !options.maintenance)
         apf.ContentEditable2.actions.undostack.push([type, options]);
 }
+
+apf.ContentEditable2.clipBoard = {
+    store : null,
+    put : function(item){
+        this.store = item;
+    },
+    get : function(){
+        return this.store;
+    }
+};
 
 apf.Resize = function(){
     this.$init();
@@ -236,7 +399,7 @@ apf.Resize = function(){
     
     this.draggable     = true;
     this.resizable     = true;
-    this.dragOutline   = true;
+    this.dragOutline   = false;
     this.dragSelection = true;
     
     var _self = this,
@@ -253,44 +416,73 @@ apf.Resize = function(){
         nodes[(div.type = pos.pop())] = div;
     }
     
-    this.getSelected = function(){
-        return selected;
+    var oOutline = document.body.appendChild(document.createElement("div"));
+    oOutline.style.position = "absolute";
+    oOutline.style.display  = "none";
+    oOutline.style.border   = "2px solid gray";
+    oOutline.style.zIndex   = 2000000;
+    
+    this.getSelected = function(nr){
+        return typeof nr != "undefined" ? selected[nr] : selected;
     };
     
+    this.deInitElement = function(el) {
+        el.$ext.onmousedown = el.$prevmd || null;
+    }
+    
     this.initElement = function(el){
+        el.$prevmd = el.$ext.onmousedown;
         el.$ext.onmousedown = function(e){
-            _self.grab(el);
+            if (!e) e = event;
+            
+            _self.grab(el, e.ctrlKey);
             _self.left = el.left;
             _self.top = el.top;
             _self.right = el.right;
             _self.bottom = el.bottom;
-            (e || event).cancelBubble = true;
+            e.cancelBubble = true;
+            
+            if (e.button != 2)
+                oOutline.style.display = "block";
+            
+            if (self.apfView)
+                apfView.$int.contentWindow.apf.$debugwin.showAmlNode(el);
         }
         this.$propHandlers["draggable"].call({$ext: el.$ext}, true);
     };
     
-    var selected, anchors,
+    var selected = [], anchors,
         size   = 8,
         margin = 1;
-    this.grab = function(oEl, options) {
+    this.grab = function(oEl, multiple) {
         //#ifdef __WITH_LAYOUT
         if (this.$ext) {
             apf.layout.removeRule(this.$ext, "contenteditable");
             apf.layout.activateRules(oEl);
         }
         //#endif
+
+        if (multiple === true && selected.length && oEl.parentNode != selected[0].parentNode)
+            return;
+
+        if (selected.length > 1 && selected.contains(oEl))
+            multiple = -1;
+        
         if (!oEl) {
+            selected = [];
             this.hide();
             return;
         }
-        
-        if (oEl.nodeFunc) {
-            selected = oEl;
-            anchors = oEl.$anchors && oEl.$anchors.length 
-                ? oEl.$anchors
-                : [oEl.top, oEl.right, oEl.bottom, oEl.left];
+
+        if (oEl.nodeFunc && (multiple != -1 || selected.length == 1)) {
+            if (multiple != -1) {
+                if (!multiple)
+                    selected = [];
+                selected.push(oEl);
+            }
             oEl = oEl.$ext;
-            this.$ext = oEl;
+            
+            this.$ext = oOutline;//oEl;
         }
         
         this.regrab();
@@ -300,36 +492,105 @@ apf.Resize = function(){
             nodes[i].style.display = "block";
         }
 
-        if (anchors) {
-            apf.setStyleClass(nodes.n, anchors[0] ? "idegrabber_selected" : "",
-                ["idegrabber_selected"]);
-            apf.setStyleClass(nodes.e, anchors[1] ? "idegrabber_selected" : "",
-                ["idegrabber_selected"]);
-            apf.setStyleClass(nodes.s, anchors[2] ? "idegrabber_selected" : "",
-                ["idegrabber_selected"]);
-            apf.setStyleClass(nodes.w, anchors[3] ? "idegrabber_selected" : "",
-                ["idegrabber_selected"]);
-        }
-
         //This should all be removed on ungrab
         //#ifdef __WITH_LAYOUT
         apf.layout.setRules(oEl, "contenteditable", "apf.all[" + this.$uniqueId + "].regrab()", true);
         apf.layout.queue(oEl);
         //#endif
+
         _self.onresize = function(){
+            this.$ext = oOutline;
             apf.ContentEditable2.execCommand("commit");
         };
 
         _self.ondrag = function(e){
+            var el = oEl.host || oEl;
+            
+            if (selected.length > 1) {
+                apf.ContentEditable2.execCommand("rollback");
+                apf.ContentEditable2.execCommand("begin");
+                
+                var deltaX = oOutline.offsetLeft - lastPos[0];
+                var deltaY = oOutline.offsetTop - lastPos[1];
+                for (var n, i = 0; i < selected.length; i++) {
+                    n = selected[i];
+                    var diff = apf.getDiff(this.$ext = n.$ext);
+                    this.left = n.left;
+                    this.top = n.top;
+                    this.right = n.right;
+                    this.bottom = n.bottom;
+                    this.$amlNode = n;
+                    this.$updateProperties(
+                        n.$ext.offsetLeft + deltaX, 
+                        n.$ext.offsetTop + deltaY, 
+                        n.$ext.offsetWidth - diff[0], 
+                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
+                }
+                
+                delete this.$amlNode;
+                this.$ext = oOutline;
+            }
+            
             apf.ContentEditable2.execCommand("commit");
+            apf.ContentEditable2.resize.grab(el, -1);
+            
+            oOutline.style.display = "none";
         };
     };
     
+    var lastPos;
     this.regrab = function(){
         //Position
-        var oEl = this.$ext;
-        var pos = apf.getAbsolutePosition(oEl);
-        pos.push(oEl.offsetWidth, oEl.offsetHeight);
+        if (selected.length == 1) {
+            var oEl = selected[0];
+            
+            var anchors = selected.length == 1
+              ? (oEl.$anchors && oEl.$anchors.length 
+                ? oEl.$anchors
+                : [oEl.top, oEl.right, oEl.bottom, oEl.left])
+              : [];
+    
+            if (anchors) {
+                apf.setStyleClass(nodes.n, anchors[0] ? "idegrabber_selected" : "",
+                    ["idegrabber_selected"]);
+                apf.setStyleClass(nodes.e, anchors[1] ? "idegrabber_selected" : "",
+                    ["idegrabber_selected"]);
+                apf.setStyleClass(nodes.s, anchors[2] ? "idegrabber_selected" : "",
+                    ["idegrabber_selected"]);
+                apf.setStyleClass(nodes.w, anchors[3] ? "idegrabber_selected" : "",
+                    ["idegrabber_selected"]);
+            }
+            
+            oEl = oEl.$ext;//this.$ext;
+            var pos = apf.getAbsolutePosition(oEl);
+            pos.push(oEl.offsetWidth, oEl.offsetHeight);
+        }
+        else {
+            var pos = [100000,100000,0,0];
+            for (var i = 0; i < selected.length; i++) {
+                var oEl  = selected[i].$ext;
+                var opos = apf.getAbsolutePosition(oEl);
+                if (opos[0] < pos[0]) pos[0] = opos[0];
+                if (opos[1] < pos[1]) pos[1] = opos[1];
+                if (opos[0] + oEl.offsetWidth > pos[2]) pos[2] = opos[0] + oEl.offsetWidth;
+                if (opos[1] + oEl.offsetHeight > pos[3]) pos[3] = opos[1] + oEl.offsetHeight;
+            }
+            pos[2] -= pos[0];
+            pos[3] -= pos[1];
+        }
+
+        oEl.offsetParent.appendChild(oOutline);
+        var ppos = apf.getAbsolutePosition(oOutline.parentNode, null, true);
+        
+        lastPos = pos.slice();
+        lastPos[0] -= ppos[0];
+        lastPos[1] -= ppos[1];
+        
+        var diff = apf.getDiff(oOutline);
+        oOutline.style.left  = (lastPos[0]) + "px";
+        oOutline.style.top   = (lastPos[1]) + "px";
+        oOutline.style.width = Math.max(0, pos[2] - diff[0]) + "px";
+        oOutline.style.height = Math.max(0, pos[3] - diff[1]) + "px";
 
         //Middle ones (hor)
         nodes.s.style.left = 
@@ -375,7 +636,7 @@ apf.Resize = function(){
         if (!apf.ContentEditable2.started)
             apf.ContentEditable2.execCommand("begin");
 
-        apf.ContentEditable2.execCommand("property", {name:name, value:value});
+        apf.ContentEditable2.execCommand("property", {sel: this.$amlNode, name:name, value:value});
         
         return value;
     };
@@ -383,11 +644,16 @@ apf.Resize = function(){
     var map = {"e":"right", "w":"left", "n":"top", "s":"bottom"};
     function mousedown(e){
         if (!e) e = event;
+        if (e.button == 2 || selected.length > 1)
+            return;
+        
+        var sel = selected[0];
+        
         if (e.ctrlKey && this.type.length == 1) {
             apf.ContentEditable2.execCommand("begin");
-            
-            if (selected.$anchors && selected.$anchors.length) {
-                var anchors = selected.$anchors;
+
+            if (sel.$anchors && sel.$anchors.length) {
+                var anchors = sel.$anchors;
                 _self.setProperty("anchors", null);
                 _self.setProperty("top", anchors[0]);
                 _self.setProperty("right", anchors[1]);
@@ -395,63 +661,73 @@ apf.Resize = function(){
                 _self.setProperty("left", anchors[3]);
             }
             
-            apf.setStyleClass(this, !selected[map[this.type]] 
-                ? "idegrabber_selected" : "", ["idegrabber_selected"]);
+            apf.setStyleClass(this, !sel[map[this.type]] 
+                ? "idegrabber_sel" : "", ["idegrabber_sel"]);
+
+            var pHtmlNode = sel.$ext.offsetParent;
+            if (pHtmlNode.tagName == "BODY")
+                pHtmlNode = document.documentElement;
 
             var prop = map[this.type];
-            if (selected[prop]) {
+            if (sel[prop]) {
                 if (prop == "right" && !this.left)
-                    _self.setProperty("left", selected.$ext.offsetLeft);
+                    _self.setProperty("left", sel.$ext.offsetLeft
+                        - (parseInt(apf.getStyle(pHtmlNode, apf.descPropJs 
+                                ? "borderLeftWidth" : "border-left-width")) || 0));
                 else if (prop == "bottom" && !this.top)
-                    _self.setProperty("top", selected.$ext.offsetTop);
+                    _self.setProperty("top", sel.$ext.offsetTop
+                        - (parseInt(apf.getStyle(pHtmlNode, apf.descPropJs 
+                                ? "borderTopWidth" : "border-top-width")) || 0));
 
-                _self.setProperty(prop, null);
+                _self.setProperty(prop, "");
             }
             else {
-                var pHtmlNode = selected.$ext.offsetParent;
-                if (pHtmlNode.tagName == "BODY")
-                    pHtmlNode = document.documentElement;
-                    
                 switch(this.type) {
                     case "e":
                         _self.setProperty("right", pHtmlNode.offsetWidth
-                            - selected.$ext.offsetLeft - selected.$ext.offsetWidth);
+                            + (parseInt(apf.getStyle(pHtmlNode, apf.descPropJs 
+                                ? "borderLeftWidth" : "border-left-width")) || 0)
+                            - sel.$ext.offsetLeft - sel.$ext.offsetWidth);
                         break;
                     case "w":
-                        _self.setProperty("left", selected.$ext.offsetLeft);
+                        _self.setProperty("left", sel.$ext.offsetLeft);
                         break;
                     case "n":
-                        _self.setProperty("top", selected.$ext.offsetTop);
+                        _self.setProperty("top", sel.$ext.offsetTop);
                         break;
                     case "s":
                         _self.setProperty("bottom", pHtmlNode.offsetHeight
-                            - selected.$ext.offsetTop - selected.$ext.offsetHeight);
+                            + (parseInt(apf.getStyle(pHtmlNode, apf.descPropJs 
+                                ? "borderTopWidth" : "border-top-width")) || 0)
+                            - sel.$ext.offsetTop - sel.$ext.offsetHeight);
                         break;
                 }
             }
 
             _self.setProperty("width", !this.left || !this.right
-                ? selected.$ext.offsetWidth
+                ? sel.$ext.offsetWidth
                 : null);
             _self.setProperty("height", !this.top || !this.bottom
-                ? selected.$ext.offsetHeight
+                ? sel.$ext.offsetHeight
                 : null);
             
             apf.ContentEditable2.execCommand("commit");
         }
         else {
-            _self.left      = selected.left;
-            _self.top       = selected.top;
-            _self.right     = selected.right;
-            _self.bottom    = selected.bottom;
-            _self.minwidth  = selected.minwidth
-                || parseInt(selected.$getOption("main", "minwidth")) || 0;
-            _self.minheight = selected.minheight
-                || parseInt(selected.$getOption("main", "minheight")) || 0;
-            _self.maxwidth  = selected.maxwidth
-                || parseInt(selected.$getOption("main", "maxwidth")) || 10000;
-            _self.maxheight = selected.maxheight
-                || parseInt(selected.$getOption("main", "maxheight")) || 10000;
+            _self.left      = sel.left;
+            _self.top       = sel.top;
+            _self.right     = sel.right;
+            _self.bottom    = sel.bottom;
+            _self.minwidth  = sel.minwidth
+                || parseInt(sel.$getOption("main", "minwidth")) || 0;
+            _self.minheight = sel.minheight
+                || parseInt(sel.$getOption("main", "minheight")) || 0;
+            _self.maxwidth  = sel.maxwidth
+                || parseInt(sel.$getOption("main", "maxwidth")) || 10000;
+            _self.maxheight = sel.maxheight
+                || parseInt(sel.$getOption("main", "maxheight")) || 10000;
+            
+            _self.$ext = sel.$ext;
             
             _self.$resizeStart(e || event, {
                 resizeType : this.type,
@@ -514,6 +790,22 @@ apf.ElementDrawer = function (){
             //if ((e.srcElement || e.target) == document.body)
                 //return false;
 
+            p1.style.top = "-2000px";
+            p2.style.top = "-2000px";
+            var el = document.elementFromPoint(e.clientX, e.clientY);
+            var amlNode = apf.findHost(el);
+            
+            p1.style.top = "";
+            p2.style.top = "";
+            
+            if (amlNode) {
+                while (amlNode && !amlNode.$int)
+                    amlNode = amlNode.parentNode;
+            }
+            if (!amlNode)
+                amlNode = apf.document.documentElement;
+            apf.ContentEditable2.resize.grab(amlNode);
+
             q.style.display = "block";
             q.style.left    = (startX = event.clientX) + "px";
             q.style.top     = (startY = event.clientY) + "px";
@@ -522,10 +814,15 @@ apf.ElementDrawer = function (){
 
         document.onmouseup = function(){
             if (q.offsetWidth > 10 && q.offsetHeight > 10) {
-                apf.ContentEditable2.execCommand("add", {htmlNode: q});
+                if (apf.ContentEditable2.mode == "select") {
+                    apf.ContentEditable2.execCommand("select", {htmlNode: q});
+                }
+                else {
+                    apf.ContentEditable2.execCommand("add", {htmlNode: q});
+                }
                 _self.deactivate();
             }
-
+            
             q.style.display = "none";
             startX = false;
             startY = false;
@@ -553,5 +850,7 @@ apf.ElementDrawer = function (){
  * @private
  */
 apf.Selection = function(){};
+
+apf.config.$inheritProperties["editable"] = 1;
 
 // #endif

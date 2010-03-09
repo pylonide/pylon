@@ -352,7 +352,7 @@ apf.slider = function(struct, tagName){
                 apf.getStyle(this.oContainer, "padding"))[3]);
 
             offset = Math.round(((max - min) * multiplier) + min);
-
+            
             if (animate) {
                 apf.tween.single(this.oKnob, {
                     type    : 'left',
@@ -584,9 +584,10 @@ apf.slider = function(struct, tagName){
                     //_self.value = -1; //reset value //@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
                     if (_self.slideDiscreet) {
                         this.$onlySetXml = true;//blrgh..
-                        var rValue = _self.change(Math.round(knobValue / _self.step)
-                            * _self.step);
+                        var rValue = _self.change(Math.round((knobValue / _self.step)
+                            * _self.step));
                         this.$onlySetXml = false;
+                        
                         if (rValue !== false) {
                             _self.$propHandlers["value"].call(_self, knobValue, 
                                 "value", true);

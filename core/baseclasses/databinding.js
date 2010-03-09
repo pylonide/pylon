@@ -98,8 +98,8 @@ apf.DataBinding = function(){
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         model     : 1,
-        taverse   : 1,
-        valuerule : 1
+        each      : 1,
+        eachvalue : 1
     }, this.$attrExcludePropBind);
 
     /**** Public Methods ****/
@@ -1079,7 +1079,7 @@ apf.DataBinding = function(){
                 
                 //@todo apf3 this needs to be fixed in live markup
                 if (typeof m != "string") {
-                    model = m.model && m.model.nodeFunc && m.model;
+                    model = m.model && m.model.$isModel && m.model;
                     if (model)
                         xpath = m.xpath;
                     else if (m.model) {
@@ -1354,7 +1354,7 @@ apf.DataBinding = function(){
                 model.register(this, value[1]);
                 return;
             }
-            else if (value.nodeFunc) { // A model node is passed
+            else if (value.$isModel) { // A model node is passed
                 //Convert model object to value;
                 model = value;
                 value = this.model = model.name;

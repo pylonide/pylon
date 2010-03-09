@@ -356,7 +356,7 @@ apf.caldropdown = function(struct, tagName){
      */
     this.slideToggle = function(e, userAction) {
         if (!e) e = event;
-        if (userAction && this.disabled)
+        if (userAction && !this.disabled)
             return;
 
         if (this.isOpen)

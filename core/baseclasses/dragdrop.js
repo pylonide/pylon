@@ -49,8 +49,8 @@ apf.__DRAGDROP__ = 1 << 5;
  * <code>
  *  <a:smartbinding>
  *      <a:bindings>
- *          <a:caption select="@filename" />
- *          <a:each select="file|folder" />
+ *          <a:caption match="[@filename]" />
+ *          <a:each match="[file|folder]" />
  *
  *          <a:drag select = "person" copy="event.ctrlKey" />
  *          <a:drop

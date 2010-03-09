@@ -105,7 +105,7 @@ apf.BaseList = function(){
     this.$init(true);
     
     // #ifdef __WITH_CSS_BINDS
-    this.dynCssClasses = [];
+    this.$dynCssClasses = [];
     // #endif
     
     this.listNodes   = [];
@@ -565,10 +565,10 @@ apf.BaseList = function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.$applyBindRule("css", xmlNode);
 
-        if (cssClass || this.dynCssClasses.length) {
-            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if (cssClass && !this.dynCssClasses.contains(cssClass)) {
-                this.dynCssClasses.push(cssClass);
+        if (cssClass || this.$dynCssClasses.length) {
+            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses);
+            if (cssClass && !this.$dynCssClasses.contains(cssClass)) {
+                this.$dynCssClasses.push(cssClass);
             }
         }
         // #endif
@@ -689,7 +689,7 @@ apf.BaseList = function(){
         if (cssClass) {
             this.$setStyleClass(oItem, cssClass);
             if (cssClass)
-                this.dynCssClasses.push(cssClass);
+                this.$dynCssClasses.push(cssClass);
         }
         // #endif
 

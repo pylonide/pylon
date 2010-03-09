@@ -218,12 +218,46 @@
  *      </a:model>
  *       
  *      <a:propedit 
- *        id         = "pe" 
- *        columns    = "35%,65%" 
- *        model      = "mdlData" 
- *        properties = "[mdlProps::folder]" 
- *        width      = "300" 
- *        height     = "500" />
+ *        lookupaml      = "tmpLookup"
+ *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
+ *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
+ *        onmultiedit    = "loadMultiEdit(event, this)">
+ *          <a:bindings>
+ *              <a:template match="[self::product]" value="mdlProps:product" />
+ *          </bindings>
+ *      </propedit>
+ *
+ *      <a:template id="tmpLookup" autoinit="true">
+ *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
+ *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
+ *            automatch="[false]">
+ *              <a:bindings>
+ *                  <a:caption match="[self::picture]"><![CDATA[
+ *                      {name} | {description}
+ *                  ]]></caption>
+ *                  <!-- use @descfield -->
+ *                  <a:caption><![CDATA[[
+ *                      var field = n.parentNode.getAttribute("descfield");
+ *                      %(value(field) || "[Geen Naam]");
+ *                  ]]]></caption>
+ *                  <a:icon match="[self::product]" value="package_green.png" />
+ *                  <a:icon value="table.png" />
+ *                  <a:each match="[node()[local-name()]]" />
+ *              </bindings>
+ *              <a:actions />
+ *          </list>
+ *          
+ *          <a:toolbar>
+ *              <a:bar>
+ *                  <a:button id="btnLkpPrev" disabled="true" 
+ *                      onclick="...">&lt; Previous</button>
+ *                  <a:spinner id="spnLookup" width="40" 
+ *                      min="1" max="1" onafterchange="..." />
+ *                  <a:button id="btnLkpNext" disabled="true" 
+ *                      onclick="...">Next &gt;</button>
+ *              </bar>
+ *          </toolbar>
+ *      </template>
  *   </code>
  * @binding caption   Determines the caption of a node.
  * @binding css       Determines a css class for a node.
@@ -245,71 +279,44 @@
  * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
 
  */
-apf.spreadsheet = function(struct, tagName){
-    this.$init(tagName || "spreadsheet", apf.NODE_VISIBLE, struct);
-};
-
-apf.datagrid    = function(struct, tagName){
+apf.datagrid = function(struct, tagName){
     this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
+    
+    this.$headings       = [],
+    this.$cssRules       = []; //@todo Needs to be reset;
+    this.$lastOpened     = {};
+    
+    this.$editors        = {};
+    
+    // #ifdef __WITH_CSS_BINDS
+    this.$dynCssClasses = [];
+    // #endif
 };
 
 (function(){
-    this.$init(function(){
-        this.$headings       = [],
-        this.$cssRules       = []; //@todo Needs to be reset;
-        this.$nodes          = [];
-        this.$lastOpened     = {};
-        
-        this.$editors        = {};
-        
-        // #ifdef __WITH_CSS_BINDS
-        this.dynCssClasses = [];
-        // #endif
-    });
+    var HAS_CHILD = 1 << 1,
+        IS_CLOSED = 1 << 2,
+        IS_LAST   = 1 << 3,
+        IS_ROOT   = 1 << 4,
+        treeState = this.$treeState;
     
-    this.implement(
-        //#ifdef __WITH_RENAME
-        //apf.Rename
-        //#endif
-        //#ifdef __WITH_DRAGDROP
-        //apf.DragDrop,
-        //#endif
-        //#ifdef __WITH_CACHE
-        apf.Cache,  
-        //#endif
-        //#ifdef __WITH_DATAACTION
-        apf.DataAction
-        //#endif
-    );
+    /*this.$init(function() {
+        this.addEventListener("keydown", keyHandler, true);
+    });*/
     
-    this.$focussable     = true; // This object can get the focus
-    this.multiselect     = true; // Enable MultiSelect
-    this.bufferselect    = false;
-    
-    this.startClosed     = true;
-    this.$animType       = apf.tween.NORMAL;
-    this.$animSteps      = 3;
-    this.$animSpeed      = 20;
-
-    this.$curBtn         = null;
-    this.$useTable       = false;
-    //this.$lastcell       = null;
-    //this.$lastcol        = 0;
-    //this.$lastrow        = null;
-    //this.$lastSorted     = null;
-    //this.$lastCaptionCol = null;
+    this.bufferselect       = false;
+    this.$useTable          = false;
+    this.$focussable        = true;
+    this.$isWindowContainer = -1;
     
     this.$widthdiff      = 0;
     this.$defaultwidth   = 0;
     this.$useiframe      = 0;
+    this.$needsDepth     = true;
     
     //#ifdef __WITH_RENAME
     this.$renameStartCollapse = false;
     //#endif
-    
-    this.$init(function() {
-        this.addEventListener("keydown", keyHandler, true);
-    });
 
     /**
      * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
@@ -345,7 +352,7 @@ apf.datagrid    = function(struct, tagName){
     /**** Keyboard Support ****/
     
     // #ifdef __WITH_KEYBOARD
-    function keyHandler(e){
+    /*function keyHandler(e){
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
@@ -622,7 +629,7 @@ apf.datagrid    = function(struct, tagName){
         
         this.lookup = null;
         //return false;
-    }
+    }*/
     
     // #endif
     
@@ -633,7 +640,7 @@ apf.datagrid    = function(struct, tagName){
         if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
-        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
         
         if (this.oDoc)
             this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
@@ -649,144 +656,12 @@ apf.datagrid    = function(struct, tagName){
         if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
             return;
 
-        this.$setStyleClass(this.oFocus || this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         
         if (this.oDoc)
             this.$setStyleClass(this.oDoc.documentElement, "", [this.$baseCSSname + "Focus"]);
-    };
-    
-    /**** Private methods ****/
-    
-    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
-        var r     = [],
-            nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
-                ? this.xmlRoot.selectNodes(this.each)
-                : this.getTraverseNodes(),
-            f, i;
-        for(f = false, i = 0; i < nodes.length; i++) {
-            if (nodes[i] == xmlStartNode)
-                f = true;
-            if (f)
-                r.push(nodes[i]);
-            if (nodes[i] == xmlEndNode)
-                f = false;
-        }
         
-        if (!r.length || f) {
-            r = [];
-            for (f = false, i = nodes.length - 1; i >= 0; i--) {
-                if (nodes[i] == xmlStartNode)
-                    f = true;
-                if (f)
-                    r.push(nodes[i]);
-                if (nodes[i] == xmlEndNode)
-                    f = false;
-            }
-        }
-        
-        return r;
-    };
-    
-    /**** Sliding functions ****/
-    
-    /**
-     * @private
-     */
-    this.slideToggle = function(htmlNode, force, userAction){
-        if (this.noCollapse || userAction && this.disabled) 
-            return;
-        
-        //var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag); // unused?
-        var container = htmlNode.nextSibling;
-
-        if (apf.getStyle(container, "display") == "block") {
-            if (force == 1) return;
-            htmlNode.className = htmlNode.className.replace(/min/, "plus");
-            this.slideClose(container, apf.xmldb.getNode(htmlNode));
-        }
-        else {
-            if (force == 2) return;
-            htmlNode.className = htmlNode.className.replace(/plus/, "min");
-            this.slideOpen(container, apf.xmldb.getNode(htmlNode));
-        }
-    };
-    
-    /**
-     * @private
-     */
-    this.slideOpen = function(container, xmlNode){
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
-        if (!container)
-            container = htmlNode.nextSibling;
-
-        if (this.singleopen) {
-            var pNode = this.getTraverseParent(xmlNode),
-                p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
-            if (this.$lastOpened[p] && this.$lastOpened[p][1] != xmlNode
-              && this.getTraverseParent(this.$lastOpened[p][1]) == pNode)
-                this.slideToggle(this.$lastOpened[p][0], 2);//lastOpened[p][1]);
-            this.$lastOpened[p] = [htmlNode, xmlNode];
-        }
-        
-        container.style.display = "block";
-
-        var _self = this;
-
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : 0, 
-            to      : container.scrollHeight, 
-            anim    : this.$animType,
-            steps   : this.$animSteps,
-            interval: this.$animSpeed,
-            onfinish: function(container){
-                if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
-                    $setTimeout(function(){
-                        _self.$extend(xmlNode, container);
-                    });
-                    container.style.height = "auto";
-                }
-                else {
-                    //container.style.overflow = "visible";
-                    container.style.height = "auto";
-                }
-            }
-        });
-    };
-
-    /**
-     * @private
-     */
-    this.slideClose = function(container, xmlNode){
-        if (this.noCollapse) return;
-        
-        if (this.singleopen) {
-            var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
-                .getAttribute(apf.xmldb.xmlIdTag);
-            this.$lastOpened[p] = null;
-        }
-        
-        container.style.height   = container.offsetHeight;
-        container.style.overflow = "hidden";
-
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.scrollHeight, 
-            to      : 0, 
-            anim    : this.$animType,
-            steps   : this.$animSteps,
-            interval: this.$animSpeed,
-            onfinish: function(container, data){
-               container.style.display = "none";
-            }
-        });
-    };
-    
-    this.$findContainer = function(htmlNode) {
-        var node = htmlNode.nextSibling;
-        if (!node)
-            return htmlNode;
-        return node.nodeType == 1 ? node : node.nextSibling;
+        hideEditor.call(this);
     };
     
     /**** Databinding ****/
@@ -825,7 +700,7 @@ apf.datagrid    = function(struct, tagName){
         }
 
         if (fixed > 0 && !this.$isFixedGrid) {
-            var vLeft = fixed + 5;
+            var vLeft = fixed;
             
             //first column has total -1 * fixed margin-left. - 5
             //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
@@ -850,12 +725,16 @@ apf.datagrid    = function(struct, tagName){
             importStylesheet(this.$cssRules, this.oWin);
     });
     
-    this.$add = function(xmlNode, sLid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$initNode = function(xmlNode, state, Lid, depth){
         //Build Row
-        this.$getNewContext("row");
-        var oRow = this.$getLayoutNode("row");
-        oRow.setAttribute("id", sLid);
-        oRow.setAttribute("class", "row" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
+        this.$getNewContext("item");
+        var oRow = this.$getLayoutNode("item");
+        oRow.setAttribute("id", Lid);
+        
+        //@todo if treearch
+        oRow.setAttribute("class", oRow.getAttribute("class") + " "  
+            + treeState[state] + " item" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
+        this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         
         oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose(null, true);'
             + (this.$withContainer ? 'o.slideToggle(this, null, true);' : '')
@@ -889,28 +768,43 @@ apf.datagrid    = function(struct, tagName){
         for (var cell, h, i = 0; i < this.$headings.length; i++) {
             h = this.$headings[i];
             
-            this.$getNewContext("cell");
-            cell = this.$getLayoutNode("cell");
+            if (h.tree) {
+                this.$getNewContext("treecell");
+                cell = this.$getLayoutNode("treecell");
+                var oc = this.$getLayoutNode("treecell", "openclose");
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);\
+                    apf.cancelBubble(event, o);");
+            
+                oc.setAttribute("ondblclick", "event.cancelBubble = true");
+                
+                /*cell.setAttribute("style", "background-position: " 
+                    + ((((depth||0)+1) * 15) - 10) + "px 50%");*/
+            }
+            else {
+                this.$getNewContext("cell");
+                cell = this.$getLayoutNode("cell");
+            }
             
             apf.setStyleClass(cell, h.$className);
             
             if (h.css)
-                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode));
-
-            if (h.type == "icon"){
-                var node = this.$getLayoutNode("cell", "caption", oRow.appendChild(cell));
-                apf.setNodeValue(node, "&nbsp;");
-                
+                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
+            
+            if (h.icon) {
+                var node = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", oRow.appendChild(cell));
                 (node.nodeType == 1 && node || node.parentNode)
-                    .setAttribute("style", "background-image:url(" 
+                    .setAttribute("style", "padding-left:19px;background:url(" 
                         + apf.getAbsolutePath(this.iconPath, 
-                            ((h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || ""))
-                        + ")");
+                            ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
+                        + ") no-repeat 0 0;");
             }
-            else {
-                apf.setNodeValue(this.$getLayoutNode("cell", "caption", oRow.appendChild(cell)),
+            
+            if (h.value) {
+                apf.setNodeValue(this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", oRow.appendChild(cell)),
                     (h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || "");
-                    //(this.$applyBindRule([h.xml], xmlNode) || "").trim() || ""); //@todo for IE but seems not a good idea
             }
         }
         
@@ -924,17 +818,11 @@ apf.datagrid    = function(struct, tagName){
         if (cssClass) {
             this.$setStyleClass(oRow, cssClass);
             if (cssClass)
-                this.dynCssClasses.push(cssClass);
+                this.$dynCssClasses.push(cssClass);
         }
         // #endif
 
-        //return apf.insertHtmlNode(oRow, htmlParentNode || this.$int, beforeNode);
-        if (htmlParentNode)
-            apf.insertHtmlNode(oRow, htmlParentNode, beforeNode);
-        else
-            this.$nodes.push(oRow);
-        
-        if (this.$withContainer) {
+        /*if (this.$withContainer) {
             var desc = this.$applyBindRule("description", xmlNode);
             this.$getNewContext("container");
             var oDesc = this.$getLayoutNode("container");
@@ -947,30 +835,9 @@ apf.datagrid    = function(struct, tagName){
                 apf.insertHtmlNode(oDesc, htmlParentNode, beforeNode);
             else 
                 this.$nodes.push(oDesc);
-        }
-    };
-    
-    this.$fill = function(nodes){
-        if (this.$useiframe)
-            this.$pHtmlDoc = this.oDoc;
-
-        if (this.$useTable) {
-            apf.insertHtmlNodes(this.$nodes, this.$int, null,
-                 "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
-                 "</tbody></table>");
-        }
-        else
-            apf.insertHtmlNodes(this.$nodes, this.$int);
-
-        this.$nodes.length = 0;
-    };
-
-    this.$deInitNode = function(xmlNode, htmlNode){
-        if (this.$withContainer)
-            htmlNode.parentNode.removeChild(htmlNode.nextSibling);
+        }*/
         
-        //Remove htmlNodes from tree
-        htmlNode.parentNode.removeChild(htmlNode);
+        return oRow;
     };
     
     this.$updateNode = function(xmlNode, htmlNode){
@@ -978,35 +845,48 @@ apf.datagrid    = function(struct, tagName){
         
         var nodes     = this.$head.childNodes,
             htmlNodes = htmlNode.childNodes,
-            node, p;
+            cell, p;
         
         if (!this.namevalue && this.$curBtn)
             p = this.$curBtn.parentNode;
 
-        for (var nodeIter, h, i = this.namevalue ? 1 : 0, l = nodes.length; i < l; i++) {
+        var nodeIter, h, i = 0;
+        nodeIter = htmlNodes[0];
+        while (nodeIter) {
+            if (nodeIter.nodeType != 1) {
+                nodeIter = nodeIter.nextSibling;
+                continue;
+            }
+            
             h = apf.all[nodes[i].getAttribute("hid")];
             
-            nodeIter = htmlNodes[i];
-            while (nodeIter && nodeIter.nodeType != 1)
-                nodeIter = nodeIter.nextSibling;
-            
             //@todo fake optimization
-            node = this.$getLayoutNode("cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
+            cell = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
+
+            if (h.css)
+                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
+
+            if (h.tree) {
+                /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);");*/
+            }
             
-            if (h.type == "icon") {
-                (node.nodeType == 1 && node || node.parentNode)
-                    .style.backgroundImage = "url(" 
-                        + apf.getAbsolutePath(this.iconPath, 
-                            ((h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || ""))
-                        + ")";
+            if (h.value)
+                cell.innerHTML = (h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || "";
+            
+            if (h.icon) {
+                (cell.nodeType == 1 && cell || cell.parentNode).style.backgroundImage = 
+                    "url(" + apf.getAbsolutePath(this.iconPath, 
+                        ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
+                    + ")";
             }
-            else {
-                node.innerHTML = (h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || ""
-            }
+            
+            i++;
+            nodeIter = nodeIter.nextSibling;
         }
-        
-        if (!this.namevalue && p)
-            p.appendChild(this.$curBtn);
         
         //return; //@todo fake optimization
         
@@ -1018,34 +898,197 @@ apf.datagrid    = function(struct, tagName){
         
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.$applyBindRule("css", xmlNode);
-        if (cssClass || this.dynCssClasses.length) {
-            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if (cssClass && !this.dynCssClasses.contains(cssClass))
-                this.dynCssClasses.push(cssClass);
+        if (cssClass || this.$dynCssClasses.length) {
+            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses);
+            if (cssClass && !this.$dynCssClasses.contains(cssClass))
+                this.$dynCssClasses.push(cssClass);
         }
         // #endif
         
-        if (this.$withContainer) {
+        /*if (this.$withContainer) {
             htmlNode.nextSibling.innerHTML 
                 = this.$applyBindRule("description", xmlNode) || "";
+        }*/
+    };
+    
+    this.$dblclick = function(htmlNode){
+        var _self = this, id, cell;
+        while (!(id = htmlNode.getAttribute(apf.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
+            htmlNode = (cell = htmlNode).parentNode;
         }
-    };
-    
-    this.$moveNode = function(xmlNode, htmlNode){
-        if (!htmlNode) return;
-        var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling 
-            ? apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this)
-            : null;
-
-        oPHtmlNode.insertBefore(htmlNode, beforeNode);
         
-        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
-    };
+        var h, colId = cell.className.match(/(col\d+)/)[1];
+        for (var i = 0; i < this.$headings.length; i++) {
+            if (this.$headings[i].$className == colId) {
+                h = this.$headings[i];
+                break;
+            }
+        }
+        
+        if (!h) debugger;
+
+        if (!h.editor) //No editor specified
+            return;
+
+        /*if (this.$lastEditor) {
+            //this.$lastEditor[0].$blur();
+            this.$lastEditor[0].setProperty("visible", false);
+            
+            var nodes = this.$lastEditor[1].childNodes;
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!nodes[i].host)
+                    nodes[i].style.display = "";
+            }
+        }*/
+        
+        var xmlNode = apf.xmldb.getNode(htmlNode);
+        /*
+            - editor (name of widget, lm function returning amlNode or lm template ref)
+            - children being aml nodes
+        */
+        var editParent = cell;//this.$getLayoutNode("cell", "caption", cell);
+        var oEditor, editor = h.editor; 
+        var ceditor = apf.lm.compile(editor, {xpathmode: 2}); //@todo can this be more efficient?
     
-    this.$selectDefault = function(XMLRoot){
-        this.select(XMLRoot.selectSingleNode(this.each), null, null, null, true);
-    };
+        var nodes = editParent.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (!nodes[i].host)
+                nodes[i].style.display = "none";
+        }
+
+        if (ceditor.type == 2) {
+            if (!this.$editors[editor]) {
+                var constr = apf.namespaces[apf.ns.aml].elements[editor];
+                var info   = {
+                    htmlNode : editParent,
+                    width    : "100%-3",
+                    style    : "position:relative;z-index:10000",
+                    value    : "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2)  //only xpath value's supported for now
+                        + "]",
+                    focussable : false
+                };
+                
+                //@todo copy all non-known properties of the prop element
+
+                /*if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                    info.caption   = "[text()]";
+                    info.eachvalue = "[@value]";
+                    info.each      = "item";
+                    info.model     = "{apf.xmldb.getElementById('" 
+                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
+                }*/
+
+                oEditor = this.$editors[editor] = new constr(info);
+                
+                var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
+                if (box[1] || box[3]) {
+                    oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
+                }
+                //else if (!box[3])
+                    //oEditor.$ext.style.marginLeft = "-1px";
+                
+                //oEditor.$focussable = false;
+                oEditor.addEventListener("blur", function(){
+                    hideEditor.call(_self);
+                });
+                oEditor.parentNode   = this;
+                oEditor.realtime     = false;
+                oEditor.$focusParent = this;
+                oEditor.setAttribute("focussable", "true");
+                //delete oEditor.parentNode;
+                
+                oEditor.addEventListener("beforechange", function(e){
+                    return _self.dispatchEvent("beforechange", e);
+                });
+                
+                oEditor.addEventListener("afterchange", function(e){
+                    return _self.dispatchEvent("afterchange", e);
+                });
+                
+                oEditor.addEventListener("keydown", function(e){
+                    if (e.keyCode == 13) {
+                        hideEditor.call(_self);
+                        _self.$focus();
+                    }
+                    else if (e.keyCode == 27) {
+                        oEditor.removeAttribute("value"); //@todo this bugs in slider
+                        hideEditor.call(_self);
+                        //_self.getActionTracker().undo();
+                    }
+                });
+                
+                //@todo set actiontracker
+            }
+            else {
+                oEditor = this.$editors[editor];
+                
+                /*if (oEditor.hasFeature(apf.__MULTISELECT__))
+                    oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
+                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");*/
+
+                oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                    + (v = h.value).substr(1, v.length - 2) 
+                    + "]");
+
+                oEditor.setProperty("visible", true);
+                editParent.appendChild(oEditor.$ext);
+            }
+            
+            /*setTimeout(function(){
+                oEditor.focus();
+            });*/
+        }
+        else {
+            //Create dropdown 
+            
+            var obj = ceditor.call(this, this.xmlRoot);
+            if (obj.localName == "template") {
+                //add template contents to dropped area
+            }
+            else {
+                //add xml into dropped area
+            }
+        }
+        
+        if (oEditor.localName == "textbox")
+            oEditor.select();
+        
+        oEditor.focus();
+        oEditor.$focus();
+        
+        this.$setStyleClass(htmlNode, "editing");
+        
+        this.$lastEditor = [oEditor, editParent, xmlNode, htmlNode, this.getActionTracker().undolength];
+    }
+    
+    this.addEventListener("mousedown", function(e){
+        if (this.$lastEditor 
+          && !apf.isChildOf(this.$lastEditor[1], 
+            e.htmlEvent.srcElement || e.htmlEvent.target, true))
+                hideEditor.call(this);
+    });
+    
+    this.addEventListener("beforeselect", function hideEditor(e){
+        if (this.$lastEditor) {
+            //this.$lastEditor[0].$blur();
+            this.$lastEditor[0].setProperty("visible", false);
+            if (!this.$lastEditor)
+                return;
+            
+            var nodes = this.$lastEditor[1].childNodes;
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!nodes[i].host)
+                    nodes[i].style.display = "";
+            }
+            
+            this.$setStyleClass(this.$lastEditor[3], "", ["editing"]);
+            
+            this.$lastEditor = null;
+            
+            this.$focus();
+        }
+    });
     
     /**** Column management ****/
 
@@ -1108,9 +1151,16 @@ apf.datagrid    = function(struct, tagName){
     /**** Init ****/
 
     this.$draw = function(){
+        this.$drawBase();
+        
+        var _self = this;
+        this.$ext.onmousedown = function(e){
+            _self.dispatchEvent("mousedown", {htmlEvent: e || event}); 
+        }
+        
+        //@todo rename 'body' to 'container'
+        
         //Build Main Skin
-        this.$ext     = this.$getExternal();
-        this.$int     = this.$getLayoutNode("main", "body", this.$ext);
         this.$head    = this.$getLayoutNode("main", "head", this.$ext);
         this.$pointer = this.$getLayoutNode("main", "pointer", this.$ext);
 
@@ -1123,8 +1173,6 @@ apf.datagrid    = function(struct, tagName){
         this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
         this.$useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
-        var _self = this;
-        
         //Initialize Iframe 
         if (this.$useiframe && !this.oIframe) {
             //this.$int.style.overflow = "hidden";
@@ -1164,27 +1212,27 @@ apf.datagrid    = function(struct, tagName){
             apf.convertIframe(this.oIframe, true);
 
             // #ifdef __WITH_RENAME
-            this.oDoc.body.insertAdjacentHTML("beforeend", this.oTxt.outerHTML);
+            this.oDoc.body.insertAdjacentHTML("beforeend", this.$txt.outerHTML);
 
-            var t     = this.oTxt;
+            var t     = this.$txt;
             t.refCount--;
-            this.oTxt = this.oDoc.body.lastChild;
-            this.oTxt.parentNode.removeChild(this.oTxt);
-            this.oTxt.select = t.select;
+            this.$txt = this.oDoc.body.lastChild;
+            this.$txt.parentNode.removeChild(this.$txt);
+            this.$txt.select = t.select;
 
-            this.oTxt.ondblclick    = 
-            this.oTxt.onselectstart = 
-            this.oTxt.onmouseover   = 
-            this.oTxt.onmouseout    = 
-            this.oTxt.oncontextmenu = 
-            this.oTxt.onmousedown   = function(e){ 
+            this.$txt.ondblclick    = 
+            this.$txt.onselectstart = 
+            this.$txt.onmouseover   = 
+            this.$txt.onmouseout    = 
+            this.$txt.oncontextmenu = 
+            this.$txt.onmousedown   = function(e){ 
                 (e || (_self.oWin || window).event).cancelBubble = true; 
             };
 
-            this.oTxt.onfocus   = t.onfocus;
-            this.oTxt.onblur    = t.onblur;
-            this.oTxt.onkeyup   = t.onkeyup;
-            this.oTxt.refCount  = 1;
+            this.$txt.onfocus   = t.onfocus;
+            this.$txt.onblur    = t.onblur;
+            this.$txt.onkeyup   = t.onkeyup;
+            this.$txt.refCount  = 1;
             // #endif
             
             if (apf.getStyle(this.oDoc.documentElement, apf.isIE 
@@ -1200,12 +1248,6 @@ apf.datagrid    = function(struct, tagName){
                 this.addEventListener("xmlupdate", this.oIframe.onresize);
             }
             
-            this.oDoc.documentElement.onmousedown = function(e){
-                if (!e) e = _self.oWin.event;
-                if ((e.srcElement || e.target).tagName == "HTML")
-                    apf.popup.forceHide();
-            }
-                        
             this.oDoc.documentElement.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
@@ -1232,24 +1274,21 @@ apf.datagrid    = function(struct, tagName){
                 this.addEventListener("xmlupdate", this.$resize);
             }
             
-            this.$int.onmousedown = function(e){
-                if (!e) e = event;
-                if ((e.srcElement || e.target) == this)
-                    apf.popup.forceHide();
-            }
-            
             this.$int.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
                         _self.$head.scrollLeft = _self.$int.scrollLeft;
                 };
         }
+        
+        this.$int.ondblclick = function(e){
+            if (!e) e = event;
+            _self.$dblclick(e.srcElement || e.target);
+        }
     };
     
     this.$destroy = function(){
-        apf.popup.removeContent(this.$uniqueId);
-        
-        //@todo destroy this.oTxt here
+        //@todo destroy this.$txt here
 
         this.$ext.onclick = this.$int.onresize = null;
         
@@ -1258,17 +1297,8 @@ apf.datagrid    = function(struct, tagName){
         apf.layout.activateRules(this.$int);
         //#endif
     };
-// #ifdef __WITH_MULTISELECT
-}).call(apf.datagrid.prototype = new apf.MultiSelect());
-/* #elseif __WITH_DATABINDING
-}).call(apf.datagrid.prototype = new apf.MultiselectBinding());
-   #else
-}).call(apf.datagrid.prototype = new apf.Presentation());
-#endif*/
+}).call(apf.datagrid.prototype = new apf.BaseTree());
 
-apf.spreadsheet.prototype = apf.datagrid.prototype;
-
-apf.aml.setElement("spreadsheet", apf.spreadsheet);
 apf.aml.setElement("datagrid",    apf.datagrid);
 //apf.aml.setElement("column",      apf.BindingRule);
 apf.aml.setElement("description", apf.BindingRule);

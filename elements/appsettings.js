@@ -28,7 +28,6 @@
  * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
  * @see core.apf.object.debugwin
  * @see core.apf.object.console
- * @attribute {Boolean} debug-teleport          whether teleport messages are displayed in the log.
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
  * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
  * @see element.contextmenu

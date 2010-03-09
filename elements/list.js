@@ -32,7 +32,7 @@
  * Example:
  * A simple list with inline items.
  * <code>
- *  <a:list multiselect="false">
+ *  <a:list multimatch="[false]">
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
  *      <a:item>United Kingdom</a:item>

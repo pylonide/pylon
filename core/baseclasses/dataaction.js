@@ -447,7 +447,7 @@ apf.DataAction = function(){
                 xpathmode: 5
             })))(xmlNode);
             
-            var model = m.model && m.model.nodeFunc && m.model;
+            var model = m.model && m.model.$isModel && m.model;
             if (model) {
                 var node  = model.queryNode(m.xpath);
                 xmlNode = model.data;

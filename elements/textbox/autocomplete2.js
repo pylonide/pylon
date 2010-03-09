@@ -237,7 +237,7 @@ this.addEventListener("popuphide", function(){
     /**** Lookup ****/
 
     /*
-        <prop select="author" descfield="name" datatype="lookupkey" 
+        <prop match="[author]" descfield="name" datatype="lookupkey" 
           caption="Author" description="Author id" overview="overview" 
           maxlength="10" type="lookup" foreign_table="author" />
     */

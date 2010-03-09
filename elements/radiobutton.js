@@ -96,12 +96,13 @@ apf.radiobutton = function(struct, tagName){
     this.$focussable = true; // This object can get the focus
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    /*this.$attrExcludePropBind = apf.extend({
         checked: 1
-    }, this.$attrExcludePropBind);
+    }, this.$attrExcludePropBind);*/
 
     /**** Properties and Attributes ****/
 
+    this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "background", "group",
         "label", "checked", "tooltip", "icon");
 
@@ -182,17 +183,10 @@ apf.radiobutton = function(struct, tagName){
         if (!this.$group)
             return;
 
-        if (apf.isTrue(value)) {
-            this.checked = true;
+        if (value)
             this.$group.setProperty("value", this.value);
-        }
-        else if (apf.isFalse(value)) {
-            this.checked = false;
-            this.$group.setProperty("value", "");
-        }
-        else {
-            this.$group.$setDynamicProperty("value", value);
-        }
+        //else if (this.$group.value == this.value)
+            //this.$group.setProperty("value", "");
     };
     
     this.addEventListener("prop.model", function(e){
@@ -418,6 +412,9 @@ apf.radiobutton = function(struct, tagName){
         this.oLabel = this.$getLayoutNode("main", "label", this.$ext);
         this.oIcon  = this.$getLayoutNode("main", "icon", this.$ext);
 
+        if (this.oLabel && this.oLabel.nodeType != 1)
+            this.oLabel = this.oLabel.parentNode;
+
         this.enable();
     };
 
@@ -513,5 +510,7 @@ apf.$group = function(struct, tagName){
     };
 };
 apf.$group.prototype = new apf.StandardBinding();
+
+apf.aml.setElement("group", apf.$group);
 
 // #endif

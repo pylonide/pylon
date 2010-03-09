@@ -132,7 +132,8 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["autoinit"] = true;
+    this.$booleanProperties["autoinit"]      = true;
+    this.$booleanProperties["save-original"] = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
         "save-original", "remote"];
     
@@ -587,7 +588,6 @@ apf.model = function(struct, tagName){
     //@todo move this to propHandlers
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var x = this.$aml;
-        
         if (this.parentNode.hasFeature(apf.__DATABINDING__)) {
             if (!this.name)
                 this.setProperty("id", "model" + this.parentNode.$uniqueId);
@@ -782,6 +782,8 @@ apf.model = function(struct, tagName){
             if (xmlNode.charAt(0) == "<") {
                 if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
+                if (!apf.supportNamespaces)
+                    xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
                 xmlNode = apf.getXmlDom(xmlNode, null, true).documentElement; //@todo apf3.0 whitespace issue
             }
             else
@@ -790,6 +792,7 @@ apf.model = function(struct, tagName){
 
         if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
             var _self = this;
+            this.data = xmlNode; //@todo expirement
             apf.queue.add("modelload" + this.$uniqueId, function(){
                 _self.load(xmlNode, options);
             });
@@ -807,10 +810,20 @@ apf.model = function(struct, tagName){
             //doc.setProperty("SelectionNamespaces", this.getAttribute("ns"));
         
         if (xmlNode) {
-            if (!apf.supportNamespaces && (xmlNode.prefix || xmlNode.scopeName))
+            if (!apf.supportNamespaces) {
+                /* && (xmlNode.prefix || xmlNode.scopeName)) {
                 doc.setProperty("SelectionNamespaces", "xmlns:"
                      + (xmlNode.prefix || xmlNode.scopeName) + "='"
-                     + xmlNode.namespaceURI + "'");
+                     + xmlNode.namespaceURI + "'");*/
+                var xmlns = [], attr = xmlNode.attributes;
+                for (var i = 0, l = attr.length; i < l; i++) {
+                    if (attr[i].nodeName.substr(0, 5) == "xmlns") {
+                        xmlns.push(attr[i].xml);
+                    }
+                }
+                if (xmlns.length)
+                    doc.setProperty("SelectionNamespaces", xmlns.join(" "));
+            }
             
             apf.xmldb.addNodeListener(xmlNode, this); //@todo this one can be added for this.$listeners and when there are none removed
             apf.xmldb.nodeConnect(
@@ -898,12 +911,13 @@ apf.model = function(struct, tagName){
     /**
      * Inserts data into the data of this model using a data instruction.
      * @param {String}     instruction  the data instrution how to retrieve the data.
-     * @param {XMLElement} xmlContext   the {@link term.datanode data node} that provides context to the data instruction.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} insertPoint  the parent element for the inserted data.
+     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
+     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
+     *   {Function}   callback     the code executed when the data request returns.
      *   {mixed}      <>           Custom properties available in the data instruction.
-     * @param {Function} callback       the code executed when the data request returns.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -936,16 +950,12 @@ apf.model = function(struct, tagName){
                   options.amlNode || _self, oError) === true)
                     return true;
 
+                if (callback 
+                  && callback.call(this, extra.data, state, extra) === false)
+                    return;
+
                 throw oError;
             }
-
-            //#ifdef __DEBUG
-            if (!options.insertPoint) {
-                throw new Error(apf.formatErrorString(0, amlNode || _self,
-                    "Inserting data", "Could not determine insertion point for "
-                  + "instruction: " + instruction));
-            }
-            //#endif
 
             //Checking for xpath
             if (typeof options.insertPoint == "string")
@@ -958,7 +968,7 @@ apf.model = function(struct, tagName){
             (options.amlNode || _self).insert(data, options);
 
             if (callback)
-                callback.call(this, extra.data);
+                callback.call(this, extra.data, state, extra);
         };
 
         apf.getData(instruction, options);
@@ -971,7 +981,9 @@ apf.model = function(struct, tagName){
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} insertPoint  the parent element for the inserted data.
-     *   {Boolean}    copyAttribute  wether the attributes of the merged element are copied.
+     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
+     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
+     *   {Function}   callback     the code executed when the data request returns.
      *   {mixed}      <>           Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
@@ -981,9 +993,17 @@ apf.model = function(struct, tagName){
             else
                 return this.$insertFrom(xmlNode, options);
         }
-        
+
         if (!options.insertPoint)
             options.insertPoint = this.data;
+
+        //#ifdef __DEBUG
+        if (!options.insertPoint) {
+            throw new Error(apf.formatErrorString(0, amlNode || _self,
+                "Inserting data", "Could not determine insertion point for "
+              + "instruction: " + instruction));
+        }
+        //#endif
 
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 

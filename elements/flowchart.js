@@ -1070,7 +1070,7 @@ apf.flowchart = function(struct, tagName){
         if (cssClass) {
             this.$setStyleClass(block, cssClass);
             if (cssClass)
-                this.dynCssClasses.push(cssClass);
+                this.$dynCssClasses.push(cssClass);
         }
         // #endif
         

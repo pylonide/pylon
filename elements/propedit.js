@@ -21,6 +21,8 @@
 
 // #ifdef  __AMLPROPEDIT || __INC_ALL
 
+//@todo There is a lot of dead code in here (also in the skin) remove it
+
 /**
  * Element providing a sortable, selectable grid containing scrollable 
  * information. Grid columns can be reordered and resized.
@@ -28,30 +30,21 @@
  * This example shows a datagrid width several columns mixing percentage and
  * fixed size columns.
  * <code>
- *  <a:datagrid model="mdlNews" options="move|size" width="600">
- *      <a:each match="[news]">
+ *  <a:datagrid model="mdlNews" options="move|size">
+ *      <a:bindings>
  *          <a:column type="icon" width="16" value="newspaper.png" />
  *          <a:column caption="Date" value="[publication/@date]" width="70" />
  *          <a:column caption="Title" width="180" value="[title]" />
  *          <a:column caption="Subtitle" value="[subtitle]" width="100%" />
  *      </a:each>
  *      <a:model>
- *          <data>
- *              <news>
- *                  <title>title 1</title>
- *                  <subtitle>subtitle 1</subtitle>
- *                  <publication date="1999-09-09"></publication>
- *              </news>
- *              <news>
- *                  <title>title 2</title>
- *                  <subtitle>subtitle 2</subtitle>
- *                  <publication date="1999-09-10"></publication>
- *              </news>
- *          </data>
- *      </a:model>
- *  </a:datagrid>
+ *          <records>
+ *              <record field1="b" field2="b" field3="c" field4="d" field5="e" />
+ *              <record field1="g" field2="b" field3="c" field4="d" field5="e" />
+ *          </records>
+ *      </model>
+ *  </spreadsheet>
  * </code>
- * 
  * Example:
  * This example shows a propedit (property editor) component. The propedit 
  * component is an alias for the datagrid. It has a different skin and different
@@ -61,7 +54,7 @@
  * </code>
  *
  * @constructor
- * @define datagrid, propedit
+ * @define datagrid, spreadsheet, propedit
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -89,152 +82,66 @@
  *   {XMLElement} dataNode  the {@link term.datanode data node}.
  *   Example:
  *   <code>
- *    <a:model id="mdlProps">
- *      <props>
- *          <folder>
- *              <group caption="General">
- *                  <prop 
- *                    caption    = "Title" 
- *                    editor     = "textbox" 
- *                    value      = "[@caption]" 
- *                    required   = "true" />
- *                  <prop 
- *                    caption  = "Priority" 
- *                    editor   = "dropdown" 
- *                    value    = "[@priority]">
- *                      <item value="1">1</item> 
- *                      <item value="2">2</item> 
- *                      <item value="3">3</item> 
- *                      <item value="4">4</item> 
- *                      <item value="5">5</item> 
- *                  </prop>
- *                  <prop 
- *                    caption = "(Align)" 
- *                    editor  = "textbox" 
- *                    value   = "[@align]">
- *                      <prop 
- *                        caption = "Position" 
- *                        editor  = "dropdown" 
- *                        value   = "[@align-template]">
- *                          <item value="left">left</item> 
- *                          <item value="top">top</item> 
- *                          <item value="right">right</item> 
- *                          <item value="bottom">bottom</item> 
- *                      </prop>
- *                      <prop 
- *                        caption  = "Splitter" 
- *                        editor   = "checkbox" 
- *                        values   = "True|False"
- *                        value    = "[@splitter]" />
- *                          <prop 
- *                            caption  = "Edge" 
- *                            editor   = "slider" 
- *                            value    = "[@edge]" />
- *                          <prop 
- *                            caption  = "Some value" 
- *                            editor   = "spinner" 
- *                            value    = "[@some]" />
- *                  </prop>
- *                  <prop 
- *                    caption  = "Date" 
- *                    editor   = "caldropdown" 
- *                    value    = "[@date]" />
- *              </group>
- *              <group caption="Advanced">
- *                  <prop 
- *                    caption  = "Title" 
- *                    editor   = "textbox" 
- *                    value    = "[@caption]" 
- *                    required = "true" />
- *                  <prop 
- *                    caption = "Priority" 
- *                    editor  = "dropdown" 
- *                    value   = "[@priority]">
- *                      <item value="1">1</item> 
- *                      <item value="2">2</item> 
- *                      <item value="3">3</item> 
- *                      <item value="4">4</item> 
- *                      <item value="5">5</item> 
- *                  </prop>
- *                  <prop 
- *                    caption   = "(Align)" 
- *                    editor    = "textbox" 
- *                    value     = "[@align]">
- *                      <prop 
- *                        caption  = "Position" 
- *                        editor   = "dropdown" 
- *                        value    = "[@align-template]">
- *                          <item value="left">left</item> 
- *                          <item value="top">top</item> 
- *                          <item value="right">right</item> 
- *                          <item value="bottom">bottom</item> 
- *                      </prop>
- *                      <prop 
- *                        caption  = "Splitter" 
- *                        editor   = "checkbox" 
- *                        values   = "True|False"
- *                        value    = "[@splitter]" />
- *                      <prop 
- *                        caption  = "Edge" 
- *                        editor   = "slider" 
- *                        value    = "[@edge]" />
- *                      <prop 
- *                        caption  = "Some value" 
- *                        editor   = "spinner" 
- *                        value    = "[@some]" />
- *                  </prop>
- *                  <prop 
- *                    caption  = "Date" 
- *                    editor   = "caldropdown" 
- *                    value    = "[@date]" />
- *              </group>
- *          </folder>
- *          <file>
- *              <prop 
- *                caption    = "Title" 
- *                type       = "textbox" 
- *                value      = "[@caption]" 
- *                required   = "true" />
- *                  <prop 
- *                    caption  = "Priority" 
- *                    type     = "dropdown" 
- *                    value    = "[@priority]"
- *                    overview = "overview">
- *                      <item value="1">1</item> 
- *                      <item value="2">2</item> 
- *                      <item value="3">3</item> 
- *                      <item value="4">4</item> 
- *                      <item value="5">5</item> 
- *                  </prop>
- *              </file>
- *          </props>
- *      </a:model>
- *      
- *       <a:model id="mdlData">
- *           <folder caption="My Documents" priority="4" align="left-splitter-3" />
- *       </a:model>
- *       
- *       <a:propedit id="pe" columns="35%,65%" model="mdlData" 
-            properties="[mdlProps::folder]" width="300" height="500" />
+ *      <a:propedit 
+ *        lookupaml      = "tmpLookup"
+ *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
+ *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
+ *        onmultiedit    = "loadMultiEdit(event, this)">
+ *          <a:bindings>
+ *              <a:template match="[self::product]" value="mdlProps:product" />
+ *          </bindings>
+ *      </propedit>
+ *
+ *      <a:template id="tmpLookup" autoinit="true">
+ *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
+ *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
+ *            automatch="[false]">
+ *              <a:bindings>
+ *                  <a:caption match="[self::picture]"><![CDATA[
+ *                      {name} | {description}
+ *                  ]]></caption>
+ *                  <!-- use @descfield -->
+ *                  <a:caption><![CDATA[[
+ *                      var field = n.parentNode.getAttribute("descfield");
+ *                      %(value(field) || "[Geen Naam]");
+ *                  ]]]></caption>
+ *                  <a:icon match="[self::product]" value="package_green.png" />
+ *                  <a:icon value="table.png" />
+ *                  <a:each match="[node()[local-name()]]" />
+ *              </bindings>
+ *              <a:actions />
+ *          </list>
+ *          
+ *          <a:toolbar>
+ *              <a:bar>
+ *                  <a:button id="btnLkpPrev" disabled="true" 
+ *                      onclick="...">&lt; Previous</button>
+ *                  <a:spinner id="spnLookup" width="40" 
+ *                      min="1" max="1" onafterchange="..." />
+ *                  <a:button id="btnLkpNext" disabled="true" 
+ *                      onclick="...">Next &gt;</button>
+ *              </bar>
+ *          </toolbar>
+ *      </template>
  *   </code>
  */
 apf.propedit    = function(struct, tagName){
     this.$init(tagName || "propedit", apf.NODE_VISIBLE, struct);
+    
+    //this.$headings       = [],
+    //this.$cssRules       = []; //@todo Needs to be reset;
+    this.$nodes          = [];
+    //this.$lastOpened     = {};
+    
+    this.$editors        = {};
+    
+    // #ifdef __WITH_CSS_BINDS
+    this.$dynCssClasses = [];
+    // #endif
 };
 
 (function(){
     this.$init(function(){
-        //this.$headings       = [],
-        //this.$cssRules       = []; //@todo Needs to be reset;
-        this.$nodes          = [];
-        //this.$lastOpened     = {};
-        
-        this.$editors        = {};
-        
-        // #ifdef __WITH_CSS_BINDS
-        this.dynCssClasses = [];
-        // #endif
-        
         this.addEventListener("keydown", keyHandler, true);
     });
     
@@ -275,22 +182,95 @@ apf.propedit    = function(struct, tagName){
      * consists of descriptions of columns (or rows for propedit) for which
      * several settings are determined such as validation rules, edit component 
      * and selection rules.
+     * Example:
+     * This example contains a template that describes the fields in a property
+     * editor for xml data representing a news article.
+     * <code>
+     *  <news>
+     *      <prop caption="Title *" type="text" match="[title]" required="true" 
+     *        minlength="4" invalidmsg="Incorrect title;The title is required."/>
+     *      <prop caption="Subtitle *" type="text" match="[subtitle]" 
+     *        required="true" minlength="4" 
+     *        invalidmsg="Incorrect subtitle;The subtitle is required."/>
+     *      <prop caption="Source" type="text" match="[source]" minlength="4" 
+     *        invalidmsg="Incorrect source;The source is required."/>
+     *      <prop match="[editors_choice]" caption="Show on homepage"
+     *        overview="overview" type="dropdown">
+     *          <item value="1">Yes</item> 
+     *          <item value="0">No</item> 
+     *      </prop>
+     *      <prop caption="Auteur*" match="[author]" descfield="name" 
+     *        overview="overview" maxlength="10" type="lookup" 
+     *        foreign_table="author" required="true" /> 
+     *      <prop match="[categories/category]" descfield="name" type="lookup" 
+     *        multiple="multiple" caption="Categorie" overview="overview" 
+     *        foreign_table="category" /> 
+     *      <prop caption="Image" type="custom" 
+     *        exec="showUploadWindow('news', 'setNewsImage', selected)" 
+     *        match="[pictures/picture/file]" />
+     *      <prop match="[comments]" descfield="title" caption="Comments" 
+     *        type="children" multiple="multiple">
+     *          <props table="news_comment" descfield="title">
+     *              <prop match="[name]" datatype="string" caption="Name*" 
+     *                required="1" maxlength="255" 
+     *                invalidmsg="Incorrect name;The name is required."/> 
+     *              <prop match="[email]" datatype="apf:email" caption="Email" 
+     *                maxlength="255" 
+     *                invalidmsg="Incorrect e-mail;Please retype."/> 
+     *              <prop match="[date]" datatype="xsd:date" caption="Date*" 
+     *                required="1" 
+     *                invalidmsg="Incorrect date;Format is dd-mm-yyyy."/> 
+     *              <prop match="[title]" datatype="string" caption="Title*" 
+     *                required="1" maxlength="255" 
+     *                invalidmsg="Incorrect title;Title is required."/> 
+     *              <prop match="[body]" caption="Message*" required="1" 
+     *                invalidmsg="Incorrect message;Message is required."/> 
+     *          </props>
+     *      </prop>
+     *  </news>
+     * </code>
      */
     this.$propHandlers["properties"] = function(value){
         var _self = this;
+        var propLoadObj = { //Should probably exist only once if expanded with xmlUpdate
+            load : function(data){
+                if (typeof data == "string")
+                    data = apf.getXml(data);
 
-        apf.setModel(value, {load: function(data){
-            if (typeof data == "string")
-                data = apf.getXml(data);
-            
-            _self.$properties = data;
-            if (_self.xmlRoot)
-                _self.$load(data);
-        }});
+                _self.$properties = data;
+                if (_self.xmlRoot)
+                    _self.load(_self.xmlRoot);
+            }
+        };
+
+        if (!value)
+            debugger;
+
+        var xml;
+        if (typeof value == "string") {
+            if (value.substr(0, 1) == "<") 
+                propLoadObj.load(value);
+            else
+                apf.setModel(value, propLoadObj);
+        }
+        else if (value.$isModel){
+            //Value is model aml element
+            value.register(propLoadObj);
+        }
+        else {
+            //Assuming value is xml node
+            //#ifdef __DEBUG
+            setTimeout(function(){
+                propLoadObj.load(value);
+            });
+            /* #else
+            propLoadObj.load(value);
+            #endif */
+        }
     };
     
     this.$canLoadData = function(){
-        return true;
+        return this.$headings ? true : false;
     }
     
     this.$columns = ["50%", "50%"];
@@ -704,14 +684,18 @@ apf.propedit    = function(struct, tagName){
         apf.insertHtmlNodes(output, this.$int);
         
         this.setProperty("root", this.xmlRoot); //or xmlNode ??
-        
+
         //@todo select the first one
-        this.select(this.$findHtmlNode(
-            p.selectSingleNode(".//prop").getAttribute(apf.xmldb.xmlIdTag) 
-            + "|" + this.$uniqueId));
+        var prop = p.selectSingleNode(".//prop");
+        if (prop) {
+            this.select(this.$findHtmlNode(
+              prop.getAttribute(apf.xmldb.xmlIdTag) 
+              + "|" + this.$uniqueId));
+        }
     }
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+        return;
         if (this.$lastEditor[0] == UndoObj.amlNode) {
             this.$lastEditor[1].firstChild.innerHTML = 
                 ((apf.lm.compile(this.$lastEditor[2].getAttribute("value"), {
@@ -774,6 +758,12 @@ apf.propedit    = function(struct, tagName){
         var oEditor, editor = prop.getAttribute("editor");
         var ceditor = apf.lm.compile(editor, {xpathmode: 2});
         if (ceditor.type == 2) {
+            //#ifdef __DEBUG
+            if (!editor) {
+                throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
+            }
+            //#endif
+            
             if (!this.$editors[editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
                 var info   = {
