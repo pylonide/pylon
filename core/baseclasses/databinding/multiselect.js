@@ -1049,7 +1049,7 @@ apf.MultiselectBinding = function(){
      * which xml node the value is retrieved.
      * Example:
      * <code>
-     *  <a:list valuerule="@value" each="[item]" />
+     *  <a:list value="[@value]" each="[item]" />
      * </code>
      * @see  baseclass.multiselect.binding.value
      */
