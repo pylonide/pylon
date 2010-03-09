@@ -637,14 +637,15 @@ apf.uirecorder.playback = {
         
         // test complete, process results
         else {
+            apf.uirecorder.capture.stop();
+
             if (apf.uirecorder.isTesting) {
-                apf.dispatchEvent("apftest_testcomplete");
+                apf.dispatchEvent("apftest_testcomplete", {saveResults: true});
             }
             else if (apf.uirecorder.isPlaying){
                 apf.dispatchEvent("apftest_testcomplete");
             }
 
-            apf.uirecorder.capture.stop();
             apf.uirecorder.playback.reset();
         }
     }
@@ -800,7 +801,6 @@ apf.uirecorder.output = {
         */
        
         apf.uirecorder.outputXml = testXml;
-        debugger;
     },
     
     // set warning/error/notice
