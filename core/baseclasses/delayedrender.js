@@ -35,12 +35,12 @@ apf.__DELAYEDRENDER__ = 1 << 11
  * Example:
  * In this example the button isn't rendered until the advanced tab becomes active.
  * <code>
- *  <a:tab>
+ *  <a:tab width="200" height="150">
  *      <a:page caption="General">
- *          ...
+ *      ...
  *      </a:page>
  *      <a:page caption="Advanced" render="runtime">
- *          <a:button>OK</a:button>
+ *         <a:button>OK</a:button>
  *      </a:page>
  *  </a:tab>
  * </code>

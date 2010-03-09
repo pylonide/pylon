@@ -37,9 +37,9 @@ apf.__DRAGDROP__ = 1 << 5;
  * This is a simple example, enabling drag&drop for a list.
  * <code>
  *  <a:list
- *      drag     = "true"
- *      drop     = "true"
- *      dragcopy = "true" />
+ *    drag     = "true"
+ *    drop     = "true"
+ *    dragcopy = "true" />
  * </code>
  *
  * Example:
@@ -52,25 +52,27 @@ apf.__DRAGDROP__ = 1 << 5;
  *          <a:caption match="[@filename]" />
  *          <a:each match="[file|folder]" />
  *
- *          <a:drag select = "person" copy="event.ctrlKey" />
+ *          <a:drag 
+ *            match = "[person]" 
+ *            copy  = "event.ctrlKey" />
  *          <a:drop
- *              select         = "file"
- *              target         = "folder"
- *              action         = "tree-append"
- *              copy = "event.ctrlKey" />
+ *            match  = "[file]"
+ *            target = "[folder]"
+ *            action = "tree-append"
+ *            copy   = "event.ctrlKey" />
  *          <a:drop
- *              select         = "folder"
- *              target         = "folder"
- *              action         = "insert-before"
- *              copy = "event.ctrlKey" />
+ *            match  = "[folder]"
+ *            target = "[folder]"
+ *            action = "insert-before"
+ *            copy   = "event.ctrlKey" />
  *      </a:bindings>
  *      <a:actions>
  *          <a:move
- *              select = "self::folder"
- *              set    = "{myWebdav.move([@path], [../@path])}" />
+ *              match = "[folder]"
+ *              set   = "{myWebdav.move([@path], [../@path])}" />
  *          <a:copy
- *              select = "self::file"
- *              set    = "{myWebdav.copy([@path], [../@path])}" />
+ *              match = "[file]"
+ *              set   = "{myWebdav.copy([@path], [../@path])}" />
  *      </a:actions>
  *  </a:smartbinding>
  * </code>

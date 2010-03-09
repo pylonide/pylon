@@ -82,9 +82,9 @@ apf.__MULTISELECT__ = 1 << 8;
  * In this example the tree contains nodes that have a disabled flag set. 
  * These nodes cannot be selected
  * <code>
- *  <a:tree width="200">
+ *  <a:list width="200">
  *      <a:bindings>
- *          <a:select match="[self::node()[not(@disabled) or @disabled != 'true']]" />
+ *          <a:selectable match="[self::node()[not(@disabled) or @disabled != 'true']]" />
  *          <a:each match="[person]"></a:each>
  *          <a:caption match="[@name]"></a:caption>
  *      </a:bindings>
@@ -97,7 +97,7 @@ apf.__MULTISELECT__ = 1 << 8;
  *              <person disabled="true" name="test 1"/>
  *          </data>
  *      </a:model>
- *  </a:tree>
+ *  </a:list>
  * </code>
  * @binding value  Determines the way the value for the element is retrieved
  * from the selected node. The value property contains this value.
@@ -169,7 +169,7 @@ apf.MultiSelect = function(){
      *      </a:bindings>
      *      <a:model>
      *          <products>
-     *              <product name="Soundblaster" type="audio"    id="product10" />
+     *              <product name="Soundblaster" type="audio"    id="product10" length="12" />
      *              <product name="Teapot"       type="3d"       id="product13" />
      *              <product name="Coprocessor"  type="chips"    id="product15" />
      *              <product name="Keyboard"     type="input"    id="product17" />
@@ -182,10 +182,12 @@ apf.MultiSelect = function(){
      * This example selects a product by it's value and then removes the
      * selection.
      * <code>
-     *  <a:script>
-     *      myList.setValue("product20");
-     *      myList.remove();
-     *  </a:script>
+     *  <a:script><!--
+     *      apf.onload = function() {
+     *          myList.setValue("product20");
+     *          myList.remove();
+     *      }
+     *  --></a:script>
      * </code>
      * Example:
      * This example gets a product by it's value and then removes it.
@@ -326,11 +328,15 @@ apf.MultiSelect = function(){
      * adds it. After selecting the new node the user is offered a rename input
      * box.
      * <code>
-     *  var xmlNode = apf.xmldb.copy(myList.selected);
-     *  xmlNode.setAttribute("name", "New product");
-     *  myList.add(xmlNode);
-     *  myList.select(xmlNode);
-     *  myList.startRename();
+     *  <a:script><![CDATA[
+     *      apf.onload = function() {
+     *          var xmlNode = apf.xmldb.copy(myList.selected);
+     *          xmlNode.setAttribute("name", "New product");
+     *          myList.add(xmlNode);
+     *          myList.select(xmlNode);
+     *          myList.startRename();
+     *      }
+     *  ]]></a:script>
      * </code>
      * Remarks:
      * Another way to trigger this method is by using the action attribute on a
@@ -339,26 +345,30 @@ apf.MultiSelect = function(){
      *  <a:list>
      *      <a:bindings />
      *      <a:model />
-     *      <a:add>
-     *          <product name="New item" />
-     *      </a:add>
+     *      <a:actions>
+     *          <a:add>
+     *              <product name="New item" />
+     *          </a:add>
+     *      </a:actions>
      *  </a:list>
      *  <a:button action="add" target="myList">Add new product</a:button>
      * </code>
      * Using the action methodology you can let the original data source
      * (usually the server) know that the user added an item.
      * <code>
-     *  <a:add set="{comm.addProduct([.])}" />
+     *  <a:add get="{comm.addProduct()}" />
      * </code>
      * For undo this action should be extended as follows.
      * <code>
      *  <a:list id="myList" actiontracker="atList">
      *      <a:bindings />
      *      <a:model />
-     *      <a:add set  = "add_product.php?xml=%[.]"
-     *             undo = "remove_product.php?id=[@id]">
-     *          <product name="New product" id="productId" />
-     *      </a:add>
+     *      <a:actions>
+     *          <a:add set  = "add_product.php?xml=%[.]"
+     *              undo = "remove_product.php?id=[@id]">
+     *              <product name="New product" id="productId" />
+     *          </a:add>
+     *      </a:actions>
      *  </a:list>
      *  <a:button 
      *    action = "add" 

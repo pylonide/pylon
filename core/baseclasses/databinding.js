@@ -830,10 +830,10 @@ apf.DataBinding = function(){
      * changes, the list loads new data by extending the model. During the load
      * of this new data the loading message is displayed.
      * <code>
-     *  <a:list model="#trFolders">
+     *  <a:list model="[trFolders::element]">
      *      <a:bindings>
      *          ...
-     *          <a:load load="{comm.getFiles([@path])}" />
+     *          <a:load get="{comm.getFiles([@path])}" />
      *      </bindings>
      *  </a:list>
      * </code>
@@ -872,33 +872,33 @@ apf.DataBinding = function(){
      * are used. This example shows a tree with files and folders.
      * <code>
      *  <a:tree smartbinding="sbExample" />
-     *
+     * 
      *  <a:smartbinding id="sbExample">
      *      <a:bindings>
-     *          <a:caption  select = "@name"/>
-     *          <a:icon     select = "self::file"
+     *          <a:caption  match  = "[@caption|@filename]"/>
+     *          <a:icon     match  = "[file]"
      *                      value  = "icoFile.gif" />
      *          <a:icon     value  = "icoFolder.gif" />
-     *          <a:each select = "file|folder|root" />
-     *          <a:drag select = "folder|file" />
-     *          <a:drop select = "folder" 
-     *                  target = "root"
-     *                  operation = "tree-append" />
-     *          <a:drop select = "folder" 
-     *                  target = "folder"
-     *                  operation = "insert-before" />
-     *          <a:drop select = "file"   
-     *                  target = "folder|root" 
-     *                  soperation = "tree-append" />
-     *          <a:drop select = "file"   
-     *                  target = "file"        
-     *                  operation = "insert-before" />
-     *      </bindings>
+     *          <a:each     match  = "[file|folder|drive]" />
+     *          <a:drag     match  = "[folder|file]" />
+     *          <a:drop     match  = "[folder]" 
+     *                      target = "[root]"
+     *                      action = "tree-append" />
+     *          <a:drop     match  = "[folder]" 
+     *                      target = "[folder]"
+     *                      action = "insert-before" />
+     *          <a:drop     match  = "[file]"   
+     *                      target = "[folder|root]" 
+     *                      action = "tree-append" />
+     *          <a:drop     match  = "[file]"   
+     *                      target = "[file]"
+     *                      action = "insert-before" />
+     *      </a:bindings>
      *      <a:actions>
      *          <a:remove set = "remove.php?path=[@path]" />
-     *          <a:rename set = "move.php?from=oldValue&to=[@path]" />
-     *      </actions>
-     *      <a:model load="get_listing.php" />
+     *          <a:rename set = "move.php?from=oldValue&amp;to=[@path]" />
+     *      </a:actions>
+     *      <a:model src="xml/filesystem.xml" />
      *  </a:smartbinding>
      * </code>
      * Remarks:
@@ -932,33 +932,33 @@ apf.DataBinding = function(){
      * Example:
      * <code>
      *  <a:tree 
-     *     id             = "tree" 
-     *     height         = "200" 
-     *     width          = "250" 
-     *     actions        = "actExample"
-     *     model          = "filesystem.xml"
-     *     actiontracker  = "atExample"
-     *     startcollapsed = "false" 
-     *     onerror        = "alert('Sorry this action is not permitted');return false">
-     *       <a:each match="[folder|drive]">
-     *           <a:caption match="[@caption]" />
-     *           <a:icon value="Famfolder.gif" />
-     *       </a:each>
-     *   </a:tree>
-     *   
-     *   <a:actions id="actExample">
-     *       <a:rename match = "[file]"   
-     *                set    = "rename_folder.php?id=[@fid]" />
-     *       <a:rename match = "[folder]" 
-     *                set    = "rename_file.php?id=[@fid]" />
-     *   </a:actions>
-     *   
-     *   <a:button 
-     *     caption = "Rename"
-     *     right   = "10" 
-     *     top     = "10"
-     *     onclick = "tree.startRename()" />
-     *   <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
+     *    id             = "tree" 
+     *    height         = "200" 
+     *    width          = "250" 
+     *    actions       = "actExample"
+     *    model          = "xml/filesystem.xml"
+     *    actiontracker  = "atExample"
+     *    startcollapsed = "false" 
+     *    onerror        = "alert('Sorry this action is not permitted');return false">
+     *      <a:each match="[folder|drive]">
+     *          <a:caption match="[@caption|@filename]" />
+     *          <a:icon value="Famfolder.gif" />
+     *      </a:each>
+     *  </a:tree>
+     *  
+     *  <a:actions id="actExample">
+     *      <a:rename match = "[file]"   
+     *               set    = "rename_folder.php?id=[@fid]" />
+     *      <a:rename match = "[folder]" 
+     *               set    = "rename_file.php?id=[@fid]" />
+     *  </a:actions>
+     *  
+     *  <a:button 
+     *    caption = "Rename"
+     *    right   = "10" 
+     *    top     = "10"
+     *    onclick = "tree.startRename()" />
+     *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
      * </code>
      */
     this.$propHandlers["actions"] = 

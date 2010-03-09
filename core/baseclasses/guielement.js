@@ -676,10 +676,19 @@ apf.GuiElement.propHandlers = {
      * shortcut.
      * Example:
      * <code>
-     *  <a:menu id="mnuExample" />
-     *
-     *  <a:list contextmenu="mnuExample" />
-     *  <a:bar contextmenu="mnuExample" />
+     *  <a:menu id="mnuExample">
+     *      <a:item>test</a:item>
+     *      <a:item>test2</a:item>
+     *  </a:menu>
+     *   
+     *  <a:list 
+     *    contextmenu = "mnuExample" 
+     *    width       = "200" 
+     *    height      = "150" />
+     *  <a:bar 
+     *    contextmenu = "mnuExample" 
+     *    width       = "200" 
+     *    height      = "150" />
      * </code>
      */
     "contextmenu": function(value){

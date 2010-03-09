@@ -36,7 +36,12 @@ apf.__INTERACTIVE__ = 1 << 21;
  * element.
  * Example:
  * <code>
- *  <a:bar draggable="true" />
+ *  <a:bar 
+ *    draggable = "true" 
+ *    width     = "200" 
+ *    height    = "200" 
+ *    left      = "10" 
+ *    top       = "10" />
  * </code>
  * @attribute {Boolean} resizable whether an element is resizable. The user will able
  * to resize the element by grabbing one of the four edges of the element and 
@@ -46,7 +51,11 @@ apf.__INTERACTIVE__ = 1 << 21;
  * area can be configured in the skin of the element.
  * Example:
  * <code>
- *  <a:window resizable="true" />
+ *  <a:window 
+ *    resizable = "true"
+ *    visible   = "true" 
+ *    width     = "400" 
+ *    height    = "200" />
  * </code>
  * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
  * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
