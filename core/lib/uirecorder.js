@@ -16,11 +16,10 @@ apf.uirecorder = {
         warning    : {},
         notice     : {}
     },
-    
-    testListXml     : null,   // xml object with captured tests
-    resultListXml   : null,   // xml object with results after testing
-    
-    outputXml       : null  // output xml for recorded test or test results
+    testResultsXml  : null,
+    testListXml     : null,     // xml object with captured tests
+    resultListXml   : null,     // xml object with results after testing
+    outputXml       : null     // output xml for recorded test or test results
 } 
 
 apf.uirecorder.capture = {
@@ -125,7 +124,6 @@ apf.uirecorder.capture = {
             apf.uirecorder.output.$saveTest("test");
         if (apf.uirecorder.isTesting)
             apf.uirecorder.output.$saveTest("results");
-
         //apf.uirecorder.capture.reset();
     },
 
@@ -274,7 +272,7 @@ apf.uirecorder.capture = {
         apf.uirecorder.capture.current.eventName = eventName;
         
         if (apf.uirecorder.isTesting)
-            apf.uirecorder.capture.current.actionIdx = apf.uirecorder.capture.curCheckActionIdx;
+            apf.uirecorder.capture.current.actionIdx = apf.uirecorder.capture.$curCheckActionIdx;
 
         // delayed capturing of events
         var recursion = false;
@@ -291,13 +289,12 @@ apf.uirecorder.capture = {
                 recursion = false;
             }, ms);
         }
-/*
+
         //first check, 2nd check in $setDelayedDetails()
         if (apf.uirecorder.isTesting && eventName != "mousemove") {
-            apf.uirecorder.checkResults(actionObj, eventName, apf.uirecorder.curCheckActionIdx);
-            apf.uirecorder.curCheckActionIdx++;
+            apf.uirecorder.testing.checkResults(actionObj, eventName, apf.uirecorder.testing.$curCheckActionIdx);
+            apf.uirecorder.testing.$curCheckActionIdx++;
         }
-*/
     },
 
     $runInContext : function(state, f){
@@ -512,12 +509,11 @@ apf.uirecorder.playback = {
     $playSpeed      : "realtime",
     $timeoutTimer   : null,
     $testDelay      : 0,
-    $startTime      : 0,
-    $windowOffset   : {
+     $windowOffset   : {
         top     : 0,
         left    : 0
     },
-    
+
     // reset playback
     reset : function() {
         apf.uirecorder.isPlaying = false;
@@ -531,6 +527,10 @@ apf.uirecorder.playback = {
         this.play(testXml, playSpeed, o3, offset);
     },
     
+    stop : function() {
+        apf.uirecorder.playback.reset();
+    },
+
     // playback current test without saving test results
     //  testXml     : xml object of single test with all actions
     //  playSpeed   : realtime / max
@@ -547,12 +547,13 @@ apf.uirecorder.playback = {
             apf.uirecorder.isPlaying = true;
         apf.uirecorder.capture.$init();
         
-        this.$startTime = new Date().getTime();
+        apf.uirecorder.capture.$startTime = new Date().getTime();
         this.$playAction();
     },
     
     // play current action of test
     $playAction : function() {
+        if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying)) return;
         this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
         
         if (this.$playSpeed == "realtime") {
@@ -560,7 +561,7 @@ apf.uirecorder.playback = {
                 clearTimeout(this.$timeoutTimer);
             }
 
-            var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - this.$startTime);
+            var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - apf.uirecorder.capture.$startTime);
             if (timeout > 0) {
                 apf.uirecorder.timeoutTimer = setTimeout(function() {
                     apf.uirecorder.playback.$execAction();
@@ -578,20 +579,71 @@ apf.uirecorder.playback = {
     },
     
     // execute user interaction for current action
+    $mouseTargetActions : ["mousedown", "mouseup", "mousescroll", "dblClick"],
+    $mouseMoveActions : ["mousemove", "mousedown", "mouseup", "mousescroll", "dblClick"],
     $execAction : function() {
-        var xPos, yPos;
-        if (!xPos && !yPos) {
-            xPos = this.$curAction.getAttribute("x");
-            yPos = this.$curAction.getAttribute("y");
+        // locate html element and calculate position of mouse action
+        if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
+            var xPos, yPos;
+
+            if (this.$curAction.getAttribute("amlNode")) {
+                if (this.$curAction.getAttribute("htmlNode")) {
+                    var htmlNode;
+                    var amlNode = (this.$curAction.getAttribute("amlNode").indexOf("html[") == 0) 
+                        ? apf.document.selectSingleNode(this.$curAction.getAttribute("amlNode").substr(8)) // search for amlNode based on xpath
+                        : window[this.$curAction.getAttribute("amlNode")] // search for amlNode with id 
+                               || null; // no amlNode found
+                    
+                    if (!amlNode) {
+                        apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
+                            val     : this.$curAction.getAttribute("amlNode"), 
+                            testId  : this.$curTestXml.getAttribute("name")
+                        }, true);
+                        return;
+                    }
+        
+                    // get htmlNode
+                    if (this.$curAction.getAttribute("htmlNode") == "$ext")
+                        htmlNode = amlNode.$ext;
+                    else if (amlNode.$getActiveElements && amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")])
+                        htmlNode = amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")];
+                    
+                    // htmlNode not visible
+                    if (htmlNode) { 
+                        if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
+                            apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_VISIBLE, {
+                                val: (this.$curAction.getAttribute("htmlNode") != "$ext" ? this.$curAction.getAttribute("htmlNode") : this.$curAction.getAttribute("amlNode")), 
+                                testId: this.$curTestXml.getAttribute("name")
+                            }, true);
+                        }
+                        
+                        // position of htmlNode
+                        var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
+                        xPos = pos[0]-(parseInt(this.$curAction.getAttribute("absX"))-parseInt(this.$curAction.getAttribute("x"))) * ((htmlNode.offsetWidth/this.$curAction.getAttribute("width")));
+                        yPos = pos[1]-(parseInt(this.$curAction.getAttribute("absY"))-parseInt(this.$curAction.getAttribute("y"))) * ((htmlNode.offsetHeight/this.$curAction.getAttribute("height")));
+                    }
+                }
+                else {
+                    debugger;
+                } 
+            }
         }
-
+        
         // move mouse cursor to correct position
-        this.$o3.mouseTo(
-            parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
-            parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
-            this.$o3.window
-        );
-
+        if (apf.uirecorder.playback.$mouseMoveActions.indexOf(this.$curAction.getAttribute("name") > -1)) {
+            if (!xPos && !yPos) {
+                xPos = this.$curAction.getAttribute("x");
+                yPos = this.$curAction.getAttribute("y");
+            }
+    
+            // move mouse cursor to correct position
+            this.$o3.mouseTo(
+                parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
+                parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
+                this.$o3.window
+            );
+        }
+        
         // execute mouse action
         if (this.$curAction.getAttribute("name") === "keypress") {
             this.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
@@ -624,6 +676,18 @@ apf.uirecorder.playback = {
             this.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
         
+        // set checks
+        var actionIdx = apf.uirecorder.testing.$checkList.length;
+        if (this.$curAction.getAttribute("name") != "mousemove") {
+            // checks if action is performed on correct htmlNode
+            if (this.$curAction.getAttribute("htmlNode")) {
+                // @todo multiselect items
+                // @todo popup elements
+                if (!apf.uirecorder.testing.$checkList[actionIdx]) apf.uirecorder.testing.$checkList[actionIdx] = {};
+                apf.uirecorder.testing.$checkList[actionIdx].htmlNode = (this.$curAction.getAttribute("htmlNode") == "$ext") ? this.$curAction.getAttribute("amlNode") : this.$curAction.getAttribute("htmlNode");
+            }
+        }
+
         this.$testCheck();
     },
     
@@ -637,16 +701,71 @@ apf.uirecorder.playback = {
         
         // test complete, process results
         else {
+            apf.console.info("test complete");
             apf.uirecorder.capture.stop();
 
             if (apf.uirecorder.isTesting) {
-                apf.dispatchEvent("apftest_testcomplete", {saveResults: true});
+                apf.uirecorder.output.createTestResultsXml();
+                apf.dispatchEvent("apftest_testcomplete", {isTesting: true});
             }
             else if (apf.uirecorder.isPlaying){
                 apf.dispatchEvent("apftest_testcomplete");
             }
 
             apf.uirecorder.playback.reset();
+        }
+    }
+}
+
+apf.uirecorder.testing = {
+    $curCheckActionIdx   : 0,
+    $checkList           : [],        // list with checks that need to be performed during testing
+    
+    checkResults : function(actionObj, eventName, actionIdx) {
+        if (this.$checkList[actionIdx]) {
+            for (var prop in this.$checkList) {
+                switch (prop) {
+                    case "htmlNode":
+                        // match if amlNode id corresponds
+                        if (actionObj.amlNode && actionObj.amlNode.id && this.$checkList[actionIdx][prop] == actionObj.amlNode.id) {
+                            delete this.$checkList[actionIdx][prop];
+                        }
+                        
+                        // @todo check popup
+                        
+                        // error if no amlNode is targeted
+                        // or htmlNode is not part of the targeted amlNode, either activeElements or $ext
+                        else if (!actionObj.amlNode 
+                            || actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.checkList[actionIdx][prop]]
+                            || this.$checkList[actionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
+                        ) {
+                            apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
+                                val: [eventName, this.$checkList[actionIdx][prop]], 
+                                testId  : apf.uirecorder.capture.$curTestXml.getAttribute("name"), 
+                                action  : eventName + " (" + actionIdx + ")"
+                            });
+                        }
+                        
+                        // error if targeted htmlNode has different name than recorded htmlNode name
+                        // or htmlNode is $ext, but not of targeted amlNode
+                        else if (actionObj.htmlNode 
+                             && ( (actionObj.htmlNode.name != "$ext" && actionObj.htmlNode.name != apf.uirecorder.checkList[actionIdx][prop]) 
+                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.checkList[actionIdx][prop] != (actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)))) 
+                                ) {
+                            apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
+                                val: [eventName, apf.uirecorder.checkList[actionIdx][prop]], 
+                                testId  : apf.uirecorder.capture.$curTestXml.getAttribute("name"),
+                                action  : eventName + " (" + actionIdx + ")"
+                            });
+                        }
+                        
+                        // no erros found, check successfull
+                        else {
+                            delete this.$checkList[actionIdx][prop];
+                        }
+                        break;
+                }
+            }
         }
     }
 }
@@ -804,7 +923,7 @@ apf.uirecorder.output = {
     },
     
     // set warning/error/notice
-    setTestResult : function(type, msg, values, stopOnError) {
+    setTestResult : function(type, msg, values) {
         if (values.testId)
             if (!apf.uirecorder.testResults[type][values.testId]) apf.uirecorder.testResults[type][values.testId] = [];
         
@@ -845,8 +964,8 @@ apf.uirecorder.output = {
         }
 
         // handle errors
-/*
-        if (type == "error" && stopOnError) {
+        if (type == "error") {
+            debugger;
             //apf.uirecorder.testResults["error"][testId].push({message: "Test failed"});
             apf.console.info(values.actionIdx + ". test failed error: " + message);            
 
@@ -874,7 +993,56 @@ apf.uirecorder.output = {
                 }
             )
         }
-*/
+    },
+    
+    createTestResultsXml : function() {
+        var xml = apf.getXml("<testResults />");
+        var types = ["error", "warning", "notice"];
+        var resultNode;
+        for (var type, ti = 0, tl = types.length; ti < tl; ti++) {
+            type = types[ti];
+            for (var testId in apf.uirecorder.testResults[type]) {
+                if (apf.uirecorder.testResults[type][testId].length) {
+                    for (var i = 0, l = apf.uirecorder.testResults[type][testId].length; i < l; i++) {
+                        resultNode = xml.ownerDocument.createElement(type);
+                        //resultNode.setAttribute("type", type);
+                        resultNode.setAttribute("testId", testId);
+                        if (apf.uirecorder.testResults[type][testId][i].action)
+                            resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action);
+                        resultNode.appendChild(xml.ownerDocument.createTextNode(apf.uirecorder.testResults[type][testId][i].message));
+                        xml.appendChild(resultNode);
+                    }
+                }
+            }
+        }
+
+        // temp solution for "datagrid using same model" bug
+        var numErrors   = xml.selectNodes("error").length;
+        var numWarnings = xml.selectNodes("warning").length;
+        var numNotices  = xml.selectNodes("notice").length;
+
+        if (numErrors == 0) {
+            resultNode = xml.ownerDocument.createElement("error");
+            resultNode.setAttribute("testId", testId);
+            resultNode.appendChild(xml.ownerDocument.createTextNode("No errors found"));
+            xml.appendChild(resultNode);
+            numErrors = 1;
+        }
+        if (numWarnings == 0) {
+            resultNode = xml.ownerDocument.createElement("warning");
+            resultNode.setAttribute("testId", testId);
+            resultNode.appendChild(xml.ownerDocument.createTextNode("No warnings found"));
+            xml.appendChild(resultNode);
+            numWarnings = 1;
+        }
+        if (numNotices == 0) {
+            resultNode = xml.ownerDocument.createElement("notice");
+            resultNode.setAttribute("testId", testId);
+            resultNode.appendChild(xml.ownerDocument.createTextNode("No notices found"));
+            xml.appendChild(resultNode);
+            numNotices = 1;
+        }
+        apf.uirecorder.testResultsXml = xml;
     }
 }
 //#endif
