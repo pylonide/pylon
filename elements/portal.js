@@ -459,7 +459,7 @@ apf.portal = function(struct, tagName){
             pHtmlNode = this.$columns[this.$applyBindRule("column", dataNode) || 0];
         }
         
-        if (docklet = dockwin_cache.pop()) {
+        if (docklet = dockwin_cache.pop() && (typeof dockwin_cache.pop() == 'function' && dockwin_cache.pop().dataNode == dataNode)) {
             docklet.parentNode = this;
             pHtmlNode.appendChild(docklet.$ext);
             docklet.$pHtmlNode = pHtmlNode;
