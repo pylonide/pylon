@@ -42,14 +42,14 @@ apf.xmldb = new (function(){
     this.htmlIdTag    = "id";
     this.disableRSB   = false;
 
-    var xmlDocLut     = [];
+    this.$xmlDocLut   = [];
 
     /**
      * @private
      */
     this.getElementById = function(id, doc){
         if (!doc)
-            doc = xmlDocLut[id.split("\|")[0]];
+            doc = this.$xmlDocLut[id.split("\|")[0]];
         if (!doc)
             return false;
 
@@ -81,14 +81,14 @@ apf.xmldb = new (function(){
      * @private
      */
     this.getDocumentById = function(id){
-        return xmlDocLut[id];
+        return this.$xmlDocLut[id];
     };
 
     /**
      * @private
      */
     this.getDocument = function(node){
-        return xmlDocLut[node.getAttribute(this.xmlIdTag).split("\|")[0]];
+        return this.$xmlDocLut[node.getAttribute(this.xmlIdTag).split("\|")[0]];
     };
 
     /**
@@ -236,7 +236,8 @@ apf.xmldb = new (function(){
     /**
      * @private
      */
-    this.addNodeListener = function(xmlNode, o, id){
+    this.$listeners = [];
+    this.addNodeListener = function(xmlNode, o, uId){
         // #ifdef __DEBUG
         if (!o.$xmlUpdate && !o.setProperty)
             throw new Error(apf.formatErrorString(1040, null, 
@@ -244,8 +245,35 @@ apf.xmldb = new (function(){
                 "Interface not supported."));
         // #endif
 
-        var listen = xmlNode.getAttribute(this.xmlListenTag);
-        id || (id = String(o.$uniqueId));
+        var id, listen = String(xmlNode.getAttribute(this.xmlListenTag) || "");
+        //id || (id = String(o.$uniqueId));
+        
+        if (!uId) uId = String(o.$uniqueId);
+        if (uId.charAt(0) == "p") {
+            uId = uId.split("|");
+            id = this.$listeners.push(function(){
+                //@todo apf3.0 should this be exactly like in class.js?
+                //@todo optimize this to check the async flag: parsed[3] & 4
+                
+                var amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
+                if (amlNode) {
+                    var model = apf.all[uId[3]];
+                    var xpath = model.$propBinds[uId[1]][uId[2]].root;
+                    
+                    amlNode.$execProperty(uId[2], xpath
+                        ? model.data.selectSingleNode(xpath)
+                        : model.data);
+                }
+            }) - 1;
+        }
+        else {
+            id = this.$listeners.push(function(args){
+                var amlNode = apf.all[uId];
+                if (amlNode)
+                    amlNode.$xmlUpdate.apply(amlNode, args);
+            }) - 1;
+        }
+
         if (!listen || listen.indexOf(id) == -1)
             xmlNode.setAttribute(this.xmlListenTag, listen ? listen + ";" + id : id);
 
@@ -292,7 +320,9 @@ apf.xmldb = new (function(){
                 return;
             pNode = tNode.nodeType == 1 ? tNode : null;
         }
-        if (pNode || !tNode) {
+        if (pNode.nodeType != 1)
+            tNode = pNode;
+        else if (pNode || !tNode) {
             tNode = pNode.selectSingleNode("text()");
 
             if (!tNode)
@@ -305,6 +335,9 @@ apf.xmldb = new (function(){
 
         //Apply Changes
         tNode.nodeValue = value;
+        
+        if (tNode.$regbase)
+            tNode.$setValue(value);
 
         this.applyChanges("text", tNode.parentNode, undoObj);
 
@@ -589,7 +622,7 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Looks for listeners and executes their $xmlUpdate methods.
+     * Looks for this.$listeners and executes their $xmlUpdate methods.
      * @private
      */
     var notifyQueue = {}, notifyTimer;
@@ -617,7 +650,7 @@ apf.xmldb = new (function(){
 
         var listen, uId, uIds, i, j, hash, info, amlNode, runTimer, found;
         while (loopNode && loopNode.nodeType != 9) {
-            //Get List of Node listeners ID's
+            //Get List of Node this.$listeners ID's
             listen = loopNode.getAttribute(this.xmlListenTag);
 
             if (listen) {
@@ -627,7 +660,7 @@ apf.xmldb = new (function(){
                     uId = uIds[i];
                     
                     //Property support
-                    if (uId.charAt(0) == "p") {
+                    /*if (uId.charAt(0) == "p") {
                         uId = uId.split("|");
                         
                         //@todo apf3.0 should this be exactly like in class.js?
@@ -643,7 +676,7 @@ apf.xmldb = new (function(){
                                 : model.data);
                         }
                         continue;
-                    }
+                    }*/
                     
                     hash = notifyQueue[uId];
                     if (!hash)
@@ -668,11 +701,16 @@ apf.xmldb = new (function(){
                         continue;
                     }
 
-                    if (!this.delayUpdate && "|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
-                        amlNode = apf.all[uId];
+                    //!this.delayUpdate && <- that doesnt work because of information that is destroyed
+                    if ("|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
+                        if (this.$listeners[uId]) {
+                            this.$listeners[uId]([action, xmlNode,
+                                loopNode, undoObj, oParent]);
+                        }
+                        /*amlNode = apf.all[uId];
                         if (amlNode)
                             amlNode.$xmlUpdate(action, xmlNode,
-                                loopNode, undoObj, oParent);
+                                loopNode, undoObj, oParent);*/
                     }
                     else {
                         hash.push([action, xmlNode, loopNode, undoObj, oParent]);
@@ -694,17 +732,17 @@ apf.xmldb = new (function(){
         else if (runTimer) {
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
-            //notifyTimer = $setTimeout(function(){
+            notifyTimer = $setTimeout(function(){
                 //this.$hasQueue = true;
                 apf.xmldb.notifyQueued();
-            //});
+            });
         }
     };
 
     /**
      *  @todo in actiontracker - add stack auto purging
      *        - when undo item is purged which was a removed, remove cache item
-     *  @todo shouldn't the removeNode method remove all listeners?
+     *  @todo shouldn't the removeNode method remove all this.$listeners?
      *  @todo rename to processQueue
      *  @private
      */
@@ -714,8 +752,9 @@ apf.xmldb = new (function(){
         clearTimeout(notifyTimer);
         for (var uId in notifyQueue) {
             var q       = notifyQueue[uId];
-            var amlNode = apf.all[uId];
-            if (!amlNode || !q)
+            var func    = this.$listeners[uId];
+            //!amlNode || 
+            if (!q)
                 continue;
 
             //Run queue items
@@ -724,7 +763,8 @@ apf.xmldb = new (function(){
                     continue;
 
                 //Update xml data
-                amlNode.$xmlUpdate.apply(amlNode, q[i]);
+                //amlNode.$xmlUpdate.apply(amlNode, q[i]);
+                func(q[i]);
             }
         }
 
@@ -748,7 +788,7 @@ apf.xmldb = new (function(){
 
     // #ifdef __WITH_RSB
     /**
-     * Sends Message through transport to tell remote databound listeners
+     * Sends Message through transport to tell remote databound this.$listeners
      * that data has been changed
      * @private
      */
@@ -762,7 +802,7 @@ apf.xmldb = new (function(){
         if (!model && apf.isO3)
             model = self[mdlId];
         if (!model) {
-            if (!apf.nameserver.getAll("remove").length)
+            if (!apf.nameserver.getAll("remote").length)
                 return;
 
             //#ifdef __DEBUG
@@ -850,12 +890,12 @@ apf.xmldb = new (function(){
                 lookup[frm.apf.all[i].unloadBindings()] = true;
 
         //Remove Listen Nodes
-        for (var k = 0; k < xmlDocLut.length; k++) {
+        for (var k = 0; k < this.$xmlDocLut.length; k++) {
             //#ifdef __SUPPORT_WEBKIT
-            if (!xmlDocLut[k]) continue;
+            if (!this.$xmlDocLut[k]) continue;
             //#endif
 
-            var Nodes = xmlDocLut[k].selectNodes("//self::node()[@"
+            var Nodes = this.$xmlDocLut[k].selectNodes("//self::node()[@"
                 + this.xmlListenTag + "]");
 
             //Loop through Nodes and rebuild listen array
@@ -882,19 +922,18 @@ apf.xmldb = new (function(){
             docEl = xmlNode;
 
         var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag)
-            || xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
+            || this.$xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
 
-        if (docId && docId > -1)
-            return docId;
-
-        docId = xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
-        if (docEl)
-            docEl.setAttribute(this.xmlDocTag, docId);
+        if (!docId || docId == -1) {
+            docId = this.$xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
+            if (docEl)
+                docEl.setAttribute(this.xmlDocTag, docId);
+        }
 
         if (model)
             apf.nameserver.register("model", docId, model);
 
-        return xmlDocLut.length - 1;
+        return docId;
     };
 });
 

@@ -178,6 +178,35 @@ apf.xmpp_muc = function(){
                 if (typeof cb == "function")
                     cb(false);
                 break;
+            case apf.xmpp_muc.ROOM_JOINED:
+            case apf.xmpp_muc.ROOM_LEFT:
+                var oEnt = this.$mucRoster.getEntityByJID(oData.fullJID, {
+                    room       : sRoom,
+                    roomJID    : oData.roomJID,
+                    affiliation: oData.affiliation,
+                    role       : oData.role,
+                    status     : oData.status
+                });
+                var oOwner    = this.$mucRoster.getRoomOwner(sRoom),
+                    oRoster   = this.$serverVars["roster"];
+                // #ifdef __WITH_RSB
+                // if the user created this room, the initial data needs to be sent to
+                // any participant other than itself
+                if (!oOwner || oEnt.nick == oRoster.username          // meself
+                  || oOwner.nick != oRoster.username || !oEnt.roomJID // we're not the owner
+                  || oEnt.role == "none")                             // user just left the room
+                    return;
+
+                this.dispatchEvent("datastatuschange", {
+                    from     : oEnt.roomJID,
+                    session  : sRoom.substring(0, sRoom.indexOf("@")),
+                    type     : "submit",
+                    baseline : 1,
+                    modeldata: 1,
+                    fields   : {}
+                });
+                // #endif
+                break;
             case oXmpp.NS.datastatus:
                 // a datastatus message will typically look like this:
                 // <iq from="romeo@shakespeare.net/home" type="result" xmlns="jabber:iq:rsbstatus">
@@ -188,8 +217,8 @@ apf.xmpp_muc = function(){
                 
                 // 'old' style data message passing
                 this.dispatchEvent("datachange", {
-                    model           : sRoom.split("@")[0],
-                    body            : oData
+                    session : sRoom.split("@")[0],
+                    body    : oData
                 });
                 break;
         }
@@ -349,13 +378,32 @@ apf.xmpp_muc = function(){
         });
     };
 
+    this.setPrivileges = function(sRoom, sTo, sAffiliation, fCallback) {
+        var oOwner    = this.$mucRoster.getRoomOwner(sRoom),
+            oRoster   = this.$serverVars["roster"],
+            sType     = oOwner.nick == oRoster.username ? "owner" : "admin",
+            sNS       = oOwner.nick == oRoster.username
+                ? oXmpp.NS.muc_owner
+                : oXmpp.NS.muc_admin;
+        doRequest(_self.$createIqBlock({
+                from  : _self.$serverVars[JID],
+                to    : sRoom,
+                type  : "set",
+                id    : _self.$makeUnique(sType)
+            },
+            "<query xmlns='" + sNS + "'><item affiliation='" + sAffiliation
+                + "' jid='" + sTo + "'/></query>"),
+            fCallback
+        );
+    };
+
     this.destroyRoom = function(sRoom, sReason) {
         if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
                 to    : sRoom,
                 type  : "set",
-                id    : this.$makeUnique("create")
+                id    : this.$makeUnique("destroy")
             },
             "<query xmlns='" + oXmpp.NS.muc_owner + "'><destroy jid='"
             + sRoom + (sReason 
@@ -370,36 +418,36 @@ apf.xmpp_muc = function(){
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RSB session", "Invalid model provided."));
         var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this.$mucDomain);
-        mucVars[sRoom + "started"] = fCallback;
         this.joinOrCreateRoom(sRoom, this.$serverVars["roster"].username, function() {
             if (mucVars.created[sRoom]) {
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
                 fCallback(sRoom.substring(0, sRoom.indexOf("@")));
-                mucVars[sRoom + "started"] = null;
             }
-            else {
-                // room created, now it's time to get the latest model version
-                // and metadata
-                mucVars[sRoom + "started"].joined = 0;
-            }
+            // room joined, now wait till we get the latest model version
+            // and metadata from the owner of the room
         });
     };
 
     this.endRSB = function(sSession) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RSB session", "Invalid model provided."));
-        // todo
+        var oOwner = this.$mucRoster.getRoomOwner(sRoom);
+        if (!oOwner || oOwner.nick != this.$serverVars["roster"].username)
+            return; //only destroy rooms we created ourselves...
+        this.destroyRoom(sSession);
     };
 
     this.syncRSB = function(oData) {
-        // do not request data from rooms we created ourselves
-        if (mucVars.created[oData.room]) return;
-
-        var _self = this;
+        var _self   = this,
+            oRoster = this.$serverVars["roster"],
+            oOwner  = this.$mucRoster.getRoomOwner(oData.room);
+        // do not request data from rooms of which the user is an owner
+        if (!oOwner || oOwner.nick == oRoster.username)
+            return;
         $setTimeout(function() {
             _self.sendMessage({
-                to   : _self.$serverVars["roster"].getEntity(oData.owner).fullJID,
+                to   : oRoster.getEntity(oData.owner).fullJID,
                 x    : "<field type='text-single' var='session'><value>"
                      + oData.room.substring(0, oData.room.indexOf("@"))
                      + "</value></field>"
@@ -428,8 +476,6 @@ apf.xmpp_muc = function(){
     };
 
     this.sendRSB = function(sModel, sMsg) {
-        var oRoster = this.$serverVars["roster"];
-        if (!oRoster) return;
         var sRoom = this.$mucRoster.sanitizeJID(sModel + "@" + this.$mucDomain);
         this.sendMessage({
             to     : sRoom,
@@ -438,35 +484,7 @@ apf.xmpp_muc = function(){
             type   : oXmpp.MSG_GROUPCHAT
         });
     };
-
-    this.addEventListener("receivedparticipant", function(oData) {
-        var sPart     = oData.participant,
-            iResIdx   = sPart.indexOf("/"),
-            sRoom     = sPart.substring(0, iResIdx),
-            sModel    = sRoom.substring(0, sRoom.indexOf("@")),
-            sNick     = sPart.substring(iResIdx + 1),
-            fCallback = mucVars[sRoom + "started"];
-        // do not request data from rooms we created ourselves
-        if (mucVars.created[sRoom] || (oData.affiliation != "owner"
-          && sNick != this.$serverVars["roster"].username))
-            return;
-
-        if (oData.affiliation == "owner")
-            fCallback.owner = sNick;
-        if (++fCallback.joined == 2) {
-            this.syncRSB({
-                room : sRoom,
-                model: sModel,
-                owner: fCallback.owner
-            });
-            delete mucVars[sRoom + "started"];
-        }
-    });
     //#endif
-
-    // @todo: implement room registration as per JEP-77
-    // @todo: implement all moderator features
-    // @todo: implement all admin & owner features
 };
 
 apf.xmpp_muc.ROOM_CREATE    = 1;
@@ -474,7 +492,7 @@ apf.xmpp_muc.ROOM_EXISTS    = 2;
 apf.xmpp_muc.ROOM_NOTFOUND  = 3;
 apf.xmpp_muc.ROOM_JOINED    = 4;
 apf.xmpp_muc.ROOM_LEFT      = 5;
-apf.xmpp_muc.ROOM_RSB       = 5;
+apf.xmpp_muc.ROOM_RSB       = 6;
 
 apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
 apf.xmpp_muc.ACTION_KICK    = 0x0002;

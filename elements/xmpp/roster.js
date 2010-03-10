@@ -44,7 +44,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
     var aEntities = [],
         aRooms    = [],
         userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
-                     "fullJID": 1, "status": 1, "affiliation": 1, "role": 1};
+                     "fullJID": 1, "status": 1, "affiliation": 1, "role": 1,
+                     "nick": 1};
 
     this.registerAccount = function(username, domain, resource) {
         if (!resource)
@@ -91,7 +92,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
         for (i = 0, l = aEntities.length; i < l; i++) {
             n = aEntities[i]
             if (n && n.node == node && n.domain == domain
-              && (!bResource || n.resources.contains(resource))
+              && (!bResource || n.resource == resource)
               && (!bRoom || n.isRoom)) {
                 aResult.push(n);
                 if (n.fullJID == fullJID)
@@ -133,9 +134,27 @@ apf.xmpp_roster = function(model, modelContent, res) {
         }
 
         var domain  = jid,
-            oEnt    = this.getEntity(node, domain,
-                        modelContent.muc ? resource : null),
+            oEnt    = this.getEntity(node, domain, resource),
             bareJID = node + "@" + domain;
+        if (!resource) {
+            apf.console.warn("No resource provided for Jabber entity '" + bareJID
+                + "'. Roster may get corrupted this way!", "xmpp");
+        }
+        else if (oEnt) {
+            //adding of an additional 'resource'...except for chat rooms
+            if (!apf.isArray(oEnt))
+                oEnt = [oEnt];
+            for (var i = 0, l = oEnt.length; i < l; ++i) {
+                if (!oEnt[i] || oEnt[i].resource) continue;
+                oEnt = oEnt[i];
+                oEnt.resource = resource;
+                oEnt.fullJID  = bareJID + "/" + resource;
+                break;
+            }
+        }
+
+        if (apf.isArray(oEnt))
+            oEnt = oEnt[0];
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
@@ -144,12 +163,13 @@ apf.xmpp_roster = function(model, modelContent, res) {
             oEnt = this.update({
                 node        : node,
                 domain      : domain,
-                resources   : resource ? [resource] : [],
+                resource    : resource || null,
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
                 isRoom      : bIsRoom,
                 room        : (modelContent.muc && resource) ? bareJID : null,
-                roomJID     : null,
+                nick        : (modelContent.muc && resource) ? resource : null,
+                roomJID     : options.roomJID,
                 subscription: options.subscription || "",
                 affiliation : options.affiliation || null,
                 role        : options.role || null,
@@ -161,12 +181,6 @@ apf.xmpp_roster = function(model, modelContent, res) {
         }
         else {
             this.update(apf.extend(oEnt, options));
-        }
-
-        //adding of an additional 'resource'...except for chat rooms
-        if (resource && oEnt && !oEnt.isRoom && !oEnt.resources.contains(resource)) {
-            oEnt.resources.push(resource);
-            oEnt.fullJID = bareJID + "/" + resource;
         }
 
         return oEnt;
@@ -183,10 +197,19 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {Object}
      */
     this.update = function(oEnt, status) {
+        if (modelContent.muc && oEnt.room && oEnt.role == "none") {
+            // a contact is leaving the chatroom
+            if (oEnt.xml) {
+                apf.xmldb.removeNode(oEnt.xml);
+                aEntities.remove(oEnt);
+            }
+            return oEnt;
+        }
+
         if (!oEnt.xml) {
             var bIsAccount = (oEnt.node == this.username
                               && oEnt.domain == this.domain
-                              && (!modelContent.muc || oEnt.resources.contains(this.resource)));
+                              && (!modelContent.muc || oEnt.resource == this.resource));
             aEntities.push(oEnt);
             if (oEnt.isRoom)
                 aRooms.push(oEnt);
@@ -218,15 +241,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.updateEntityXml = function(oEnt) {
         if (!oEnt || !oEnt.xml) return null;
         for (var i in userProps) {
-            if (typeof oEnt[i] != "undefined")
+            if (typeof oEnt[i] != "undefined" && oEnt[i] !== null)
                 oEnt.xml.setAttribute(i, oEnt[i]);
-        }
-        if (modelContent.muc) {
-            oEnt.xml.setAttribute("name", oEnt.isRoom 
-                ? oEnt.subscription
-                : oEnt.resources[oEnt.resources.length - 1]);
-            if (!oEnt.isRoom && oEnt.room)
-                oEnt.xml.setAttribute("room", oEnt.room);
         }
 
         apf.xmldb.applyChanges("synchronize", oEnt.xml);
@@ -300,7 +316,18 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 res.push(o);
         }
         return res;
-    }
+    };
+
+    this.getRoomOwner = function(sRoom) {
+        var o,
+            i = 0,
+            l = aEntities.length;
+        for (; i < l; i++) {
+            if ((o = aEntities[i]).room == sRoom && o.affiliation == "owner")
+                return o;
+        }
+        return null;
+    };
 
     /**
      * Get the full list (Array) of entities (users/ contacts).

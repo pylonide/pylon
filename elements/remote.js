@@ -211,10 +211,8 @@ apf.remote = function(struct, tagName){
         var oSession;
         if (!(oSession = this.sessions[sSession])) return;
         // check if time is provided, otherwise user created the session
-        var now = (new Date()).valueOf();
-        oSession.baseline = iTime ? now - parseInt(iTime) : 0;
-        if (!iTime)
-            oSession.started = now;
+        var now = (new Date()).getTime();
+        oSession.baseline = iTime ? parseInt(iTime) : now;
 
         apf.console.log("session started: " + sSession + ", " + oSession.baseline);
     };
@@ -265,13 +263,14 @@ apf.remote = function(struct, tagName){
         return {
             model     : model.id,
             args      : args,
-            currdelta : (new Date()).valueOf() - oSession.baseline
+            currdelta : (new Date()).getTime() - oSession.baseline
         };
     };
     
     this.queueMessage = function(args, model, qHost){
         if (!qHost.rsbQueue)
             qHost.rsbQueue = {};
+
         if (!qHost.rsbQueue[model.id]) {
             qHost.rsbQueue[model.id] = [];
             qHost.rsbModel           = model;
@@ -295,80 +294,103 @@ apf.remote = function(struct, tagName){
         qHost.rsbQueue = {};
     };
     
-    this.receiveChange = function(message){
+    this.receiveChange = function(oMessage, oSession){
         if (apf.xmldb.disableRSB)
             return;
 
         //#ifdef __WITH_OFFLINE
         // @todo apf3.0 implement proper offline support in RSB
         if (apf.offline && apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
-            queue.push(message);
+            queue.push(oMessage);
             return;
         }
         //#endif
         
         //this.lastTime = new Date().getTime();
-        if (message.timestamp < this.discardBefore)
+        if (oMessage.timestamp < this.discardBefore)
             return;
         
-        var model = apf.nameserver.get("model", message.model),
-            q     = message.args;
+        var model = oSession ? oSession.model : apf.nameserver.get("model", oMessage.model),
+            q     = oMessage.args;
         
         //#ifdef __DEBUG
         if (!model) {
             //Maybe make this a warning?
             throw new Error(apf.formatErrorString(0, this, 
                 "Remote Smartbinding Received", "Could not find model when "
-              + "receiving data for it with name '" + message.model + "'"));
+              + "receiving data for it with name '" + oMessage.model + "'"));
         }
         //#endif
         
-        //Maybe make this an error?
-        var xmlNode = this.xpathToXml(q[1], model.data);
-        //#ifdef __DEBUG
-        if (!xmlNode) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Remote Smartbinding Received", "Could get XML node from model "
-              + "with Xpath '" + q[1] + "'"));
-        }
-        /*#else
-        if (!xmlNode) return;
-        #endif*/
-        
-        var disableRSB       = apf.xmldb.disableRSB,
-            beforeNode;
+        var oError, beforeNode, xmlNode,
+            disableRSB       = apf.xmldb.disableRSB;
         apf.xmldb.disableRSB = 2; //Feedback prevention
 
-        switch (q[0]) {
-            case "setTextNode":
-                apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
-                break;
-            case "setAttribute":
-                apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
-                break;
-            case "addChildNode":
-                apf.xmldb.addChildNode(xmlNode, q[2], q[3],
-                    this.xpathToXml(q[4], model.data), q[5]);
-                break;
-            case "appendChild":
-                beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                if (typeof q[2] == "string")
-                    q[2] = apf.getXml(q[2]);
-                apf.xmldb.appendChild(xmlNode, //@todo check why there's cleanNode here
-                    apf.xmldb.cleanNode(q[2]), beforeNode, q[4], q[5]);
-                break;
-            case "moveNode":
-                beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                var sNode = this.xpathToXml(q[2], model.data);
-                apf.xmldb.appendChild(xmlNode, sNode, beforeNode,
-                    q[4], q[5]);
-                break;
-            case "removeNode":
-                apf.xmldb.removeNode(xmlNode, q[2]);
-                break;
+        // correct timestamp with the session baseline
+        oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
+
+        if (oSession && model.$at) {
+            apf.console.log("timestamp comparison: " + (new Date().toGMTString())
+                + ", " + (new Date(oMessage.currdelta).toGMTString()));
+            var aUndos = model.$at.getDone(oMessage.currdelta),
+                i      = 0,
+                l      = aUndos.length;
+            apf.console.dir(aUndos);
+            if (l) {
+                for (; i < l; ++i)
+                    aUndos[i].$dontapply = true;
+                model.$at.undo(l);
+            }
+        }
+
+        xmlNode = this.xpathToXml(q[1], model.data);
+        if (!xmlNode) {
+            //#ifdef __DEBUG
+            oError = new Error(apf.formatErrorString(0, this,
+                "Remote Smartbinding Received", "Could not get XML node from \
+                 model with Xpath '" + q[1] + "'"));
+            //#endif
+        }
+        else {
+            switch (q[0]) {
+                case "setTextNode":
+                    apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
+                    break;
+                case "setAttribute":
+                    apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
+                    break;
+                case "addChildNode":
+                    apf.xmldb.addChildNode(xmlNode, q[2], q[3],
+                        this.xpathToXml(q[4], model.data), q[5]);
+                    break;
+                case "appendChild":
+                    beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
+                    if (typeof q[2] == "string")
+                        q[2] = apf.getXml(q[2]);
+                    apf.xmldb.appendChild(xmlNode, //@todo check why there's cleanNode here
+                        apf.xmldb.cleanNode(q[2]), beforeNode, q[4], q[5]);
+                    break;
+                case "moveNode":
+                    beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
+                    var sNode = this.xpathToXml(q[2], model.data);
+                    apf.xmldb.appendChild(xmlNode, sNode, beforeNode, q[4], q[5]);
+                    break;
+                case "removeNode":
+                    apf.xmldb.removeNode(xmlNode, q[2]);
+                    break;
+            }
+        }
+
+        if (oSession && model.$at && l) {
+            model.$at.redo(l);
+            for (i = 0; i < l; ++i)
+                aUndos[i].$dontapply = false;
         }
 
         apf.xmldb.disableRSB = disableRSB;
+
+        if (oError)
+            throw oError;
     };
     
     this.xmlToXpath = apf.xmlToXpath;
@@ -416,23 +438,24 @@ apf.remote = function(struct, tagName){
         });
 
         this.transport.addEventListener("datachange", function(e){
-            var data = apf.unserialize(e.body),
-                i    = 0,
-                l    = data.length;//@todo error check here.. invalid message
+            var oData    = apf.unserialize(e.body),
+                oSession = _self.sessions[e.session],
+                i        = 0,
+                l        = oData.length;//@todo error check here.. invalid message
             for (; i < l; i++)
-                _self.receiveChange(data[i]);
+                _self.receiveChange(oData[i], oSession);
         });
 
         this.transport.addEventListener("datastatuschange", function(e) {
             // e looks like { type: "submit", from: "benvolio@shakespeare.lit", fields: [] }
             apf.console.log("datastatuschange msg: " + e);
-            if (!e.fields["session"]) return;
-            var sSession = e.fields["session"].value,
+            if (!e.session && !e.fields["session"]) return;
+            var sSession = e.session || e.fields["session"].value,
                 oSession = _self.sessions[sSession];
             if (!oSession) return; // @todo : send failure message
             if (e.type == "submit") {
-                var iBaseline = e.fields["baseline"]  ? oSession.started : 0,
-                    sModel    = e.fields["modeldata"] ? oSession.model.getXml().xml : "";
+                var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
+                    sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
 
                 this.sendSyncRSB(e.from, sSession, iBaseline, sModel);
             }

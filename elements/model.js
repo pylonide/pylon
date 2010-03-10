@@ -866,6 +866,11 @@ apf.model = function(struct, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //@todo optimize by only doing this for add, sync etc actions
         
+        //#ifdef __WITH_RSB
+        if (this.rsb && !this.$at && UndoObj)
+            this.$at = UndoObj.at;
+        //#endif
+
         //#ifdef __WITH_UIRECORDER
             if (apf.uirecorder) {
                 if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording

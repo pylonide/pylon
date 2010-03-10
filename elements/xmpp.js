@@ -139,6 +139,7 @@ apf.xmpp = function(struct, tagName){
             muc         : "http://jabber.org/protocol/muc",
             muc_user    : "http://jabber.org/protocol/muc#user",
             muc_owner   : "http://jabber.org/protocol/muc#owner",
+            muc_admin   : "http://jabber.org/protocol/muc#admin",
             commands    : "http://jabber.org/protocol/commands"
         },
         CONN_POLL : 0x0001,
@@ -1695,15 +1696,15 @@ apf.xmpp = function(struct, tagName){
                                 break;
                             o = aX[k].getElementsByTagName("item")[0];
                             if (!o) break;
-                            this.$mucRoster.getEntityByJID(sJID, o = {
-                                roomJID    : o.getAttribute("jid"),
+                            var sRoom = sJID.substring(0, sJID.indexOf("/"));
+                            this.$mucSignal(apf.xmpp_muc.ROOM_JOINED, sRoom, {
+                                fullJID    : sJID,
+                                roomJID    : o.getAttribute("jid") || null,
                                 affiliation: o.getAttribute("affiliation"),
                                 role       : o.getAttribute("role"),
                                 status     : aPresence[i].getAttribute("type")
                                     || constants.TYPE_AVAILABLE
                             });
-                            o.participant = sJID;
-                            this.dispatchEvent("receivedparticipant", o);
                             break;
                     }
                 }
