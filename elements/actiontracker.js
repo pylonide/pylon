@@ -51,21 +51,25 @@
  *   object:
  *   {String}  action           the action to be executed
  *   {Array}   args             the arguments for the action
- *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
+ *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server
+ *                              for both execution and undo. (See action rules)
  *   {AmlNode} [amlNode]        the GUI element that triggered the action
- *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
+ *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to
+ *                              which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
  * @event actionfail Fires when an action fails to be sent to the server.
  *   bubbles: true
  *   object:
- *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
+ *     {Error}          error     the error object that is thrown when the event
+ *                                callback doesn't return false.
  *     {Number}         state     the state of the call
  *       Possible values:
  *       apf.SUCCESS  the request was successfull
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *     {mixed}          userdata  data that the caller wanted to be available in
+ *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
  *     {Http}           tpModule  the teleport module that is making the request.
@@ -81,7 +85,8 @@
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *     {mixed}          userdata  data that the caller wanted to be available in
+ *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
  *     {Http}           tpModule  the teleport module that is making the request.
@@ -155,9 +160,29 @@ apf.actiontracker = function(struct, tagName){
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
             ? this.parentNode.getActionTracker(true)
-            : (apf.window.$at != this
-                ? apf.window.$at
-                : null);
+            : (apf.window.$at != this ? apf.window.$at : null);
+    };
+
+    this.getDone = function(time) {
+        if (typeof time != "number")
+            return [];
+        for (var o, l, i = l = this.$stackDone.length; i >= 0; --i) {
+            if (!(o = this.$stackDone[i]) || !o.timestamp) continue;
+            if (o.timestamp >= time)
+                return this.$stackDone.slice(i);
+        }
+        return [];
+    };
+
+    this.getUndone = function(time) {
+        if (typeof time != "number")
+            return [];
+        for (var o, i = 0, l = this.$stackDone.length; i < l; ++i) {
+            if (!(o = this.$stackUndone[i]) || !o.timestamp) continue;
+            if (o.timestamp <= time)
+                return this.$stackUndone.slice(0, i + 1);
+        }
+        return [];
     };
 
     /**
@@ -167,9 +192,11 @@ apf.actiontracker = function(struct, tagName){
      *   Properties:
      *   {String}  action           the action to be executed
      *   {Array}   args             the arguments for the action
-     *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
+     *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the
+     *                              server for both execution and undo. (See action rules)
      *   {AmlNode} [amlNode]        the GUI element that triggered the action
-     *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to which the action node works on
+     *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
+     *                              to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
      */
     this.execute = function(options){
@@ -382,13 +409,13 @@ apf.actiontracker = function(struct, tagName){
         if (state != apf.SUCCESS) {
             //Tell anyone that wants to hear about our failure :(
             if (this.dispatchEvent("actionfail", apf.extend(extra, {
-                state   : state,
-                message : "Could not sent Action RPC request for control "
-                            + this.name
-                            + "[" + this.localName + "] \n\n"
-                            + extra.message,
-                bubbles : true
-            })) === false) {
+                  state   : state,
+                  message : "Could not sent Action RPC request for control "
+                          + this.name
+                          + "[" + this.localName + "] \n\n"
+                          + extra.message,
+                  bubbles : true
+              })) === false) {
 
                 //#ifdef __DEBUG
                 apf.console.warn("You have cancelled the automatic undo \
@@ -473,7 +500,8 @@ apf.actiontracker = function(struct, tagName){
             this.$execStack.length--;
 
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
-            if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+            //We want to maintain the stack for sync
+            if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
                 apf.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
@@ -484,9 +512,10 @@ apf.actiontracker = function(struct, tagName){
             return;
         }
 
+        var undoObj, qItem;
         // Add the item to the queue
         if (isGroup) { //@todo currently no offline support for grouped actions
-            var undoObj, qItem = this.$execStack.shift();
+            qItem = this.$execStack.shift();
             for (var i = 0; i < UndoObj.length; i++) {
                 undoObj = UndoObj[i];
                 this.$execStack.unshift({
@@ -502,8 +531,8 @@ apf.actiontracker = function(struct, tagName){
             return;
         }
 
-        var qItem = {
-            undoObj : UndoObj.preparse(undo, this),
+        qItem = {
+            undoObj: UndoObj.preparse(undo, this),
             undo   : undo
 
         };
@@ -614,10 +643,11 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
  * @default_private
  */
 apf.UndoData = function(settings, at){
-    this.localName = "UndoData";
-    this.extra     = {};
+    this.localName  = "UndoData";
+    this.extra      = {};
     //#ifdef __WITH_RSB
-    this.rsbQueue  = {};
+    this.rsbQueue   = {};
+    this.$dontapply = false;
     //#endif
     apf.extend(this, settings);
 
@@ -666,9 +696,7 @@ apf.UndoData = function(settings, at){
 
         //#ifdef __WITH_RSB
         //this can be optimized
-        var rsb = this.rsbModel
-            ? this.rsbModel.rsb
-            : apf.remote;
+        var rsb = this.rsbModel ? this.rsbModel.rsb : apf.remote;
         //#endif
 
         //Record arguments
@@ -774,9 +802,7 @@ apf.UndoData = function(settings, at){
 
             var args = this.args,
                 //#ifdef __WITH_RSB
-                rsb  = this.rsbModel
-                    ? this.rsbModel.rsb
-                    : apf.remote,
+                rsb  = this.rsbModel ? this.rsbModel.rsb : apf.remote,
                 //#endif
                 xmlNode, i, l, item, name;
 
@@ -873,7 +899,8 @@ apf.UndoData = function(settings, at){
 
         //#ifdef __DEBUG
         if (!options || options._pc === true) {
-            throw new Error("Error in data instruction:" + dataInstruction); //@todo apf3.0 turn this into a proper apf error
+            //@todo apf3.0 turn this into a proper apf error
+            throw new Error("Error in data instruction:" + dataInstruction);
         }
         //#endif
         
@@ -1169,14 +1196,14 @@ apf.actiontracker.actions = {
 
     //@todo please change .func to .action for constency reasons
     "multicall" : function(UndoObj, undo, at){
-        var q = UndoObj.args;
-
-        var dUpdate = apf.xmldb.delayUpdate;
+        var i, l,
+            q       = UndoObj.args,
+            dUpdate = apf.xmldb.delayUpdate;
         apf.xmldb.delayUpdate = true;
 
         // Set Calls
         if (!undo) {
-            for(var i = 0; i < q.length; i++) {
+            for (i = 0, l = q.length; i < l; i++) {
                 if (!q[i].extra)
                     q[i].extra = {};
                 //#ifdef __WITH_RSB
@@ -1194,7 +1221,7 @@ apf.actiontracker.actions = {
         }
         // Undo Calls
         else {
-            for (var i = q.length - 1; i >= 0; i--)
+            for (i = q.length - 1; i >= 0; i--)
                 apf.actiontracker.actions[q[i].func](q[i], true, at);
         }
 
@@ -1208,28 +1235,28 @@ apf.actiontracker.actions = {
      * @deprecated Use "multicall" from now on
      */
     "addRemoveNodes" : function(UndoObj, undo){
-        var q = UndoObj.args;
+        var i, l, q = UndoObj.args;
 
         // Set Text Node
         if (!undo) {
             // Add
-            for (var i = 0; i < q[1].length; i++){
+            for (i = 0, l = q[1].length; i < l; i++){
                 apf.xmldb.appendChild(q[0], q[1][i],
                     null, null, null, UndoObj);
             }
 
             // Remove
-            for (var i = 0; i < q[2].length; i++)
+            for (i = 0, l = q[2].length; i < l; i++)
                 apf.xmldb.removeNode(q[2][i], null, UndoObj);
         }
         // Undo Text Node Setting
         else {
             // Add
-            for (var i = 0; i < q[2].length; i++)
+            for (i = 0, l = q[2].length; i < l; i++)
                 apf.xmldb.appendChild(q[0], q[2][i]);
 
             // Remove
-            for (var i = 0; i < q[1].length; i++)
+            for (i = 0, l = q[1].length; i < l; i++)
                 apf.xmldb.removeNode(q[1][i]);
         }
     }
