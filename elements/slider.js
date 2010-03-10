@@ -138,6 +138,8 @@ apf.slider = function(struct, tagName){
     this.mask        = "%";
     this.min         = 0;
     this.max         = 1000001;
+    this.isOpened    = false;
+    this.hasTSlider  = false; 
 
     this.$supportedProperties.push("step", "mask", "min", "max", "slide",
         "value", "markers");
@@ -200,9 +202,9 @@ apf.slider = function(struct, tagName){
                 count = (max - this.min) / this.step,
                 prop  = this.$dir == "horizontal" ? "left" : "top",
                 size  = this.$dir == "horizontal"
-                    ? this.$ext.offsetWidth - this.oKnob.offsetWidth 
-                      - apf.getWidthDiff(this.oContainer)
-                    : this.$ext.offsetHeight - this.oKnob.offsetHeight;
+                    ? this.oSlider.offsetWidth - this.oKnob.offsetWidth 
+                      - apf.getWidthDiff(this.oSlider)
+                    : this.oSlider.offsetHeight - this.oKnob.offsetHeight;
 
             for (i = 0; i < count + 1; i++) {
                 this.$getNewContext("marker");
@@ -224,9 +226,9 @@ apf.slider = function(struct, tagName){
         var pos, i,
             prop = this.$dir == "horizontal" ? "left" : "top",
             size = this.$dir == "horizontal"
-                ? this.$ext.offsetWidth - this.oKnob.offsetWidth 
-                  - apf.getWidthDiff(this.oContainer)
-                : this.$ext.offsetHeight - this.oKnob.offsetHeight,
+                ? this.oSlider.offsetWidth - this.oKnob.offsetWidth 
+                  - apf.getWidthDiff(this.oSlider)
+                : this.oSlider.offsetHeight - this.oKnob.offsetHeight,
             nodes = this.oMarkers.getElementsByTagName("U");//small hack
         for (i = nodes.length - 1; i >= 0; i--) {
             pos = Math.max(0, i * (1 / count));
@@ -345,11 +347,11 @@ apf.slider = function(struct, tagName){
                 : (this.value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
-            max = (this.oContainer.offsetWidth
-                - apf.getWidthDiff(this.oContainer))
+            max = (this.oSlider.offsetWidth
+                - apf.getWidthDiff(this.oSlider))
                 - this.oKnob.offsetWidth;
             min = parseInt(apf.getBox(
-                apf.getStyle(this.oContainer, "padding"))[3]);
+                apf.getStyle(this.oSlider, "padding"))[3]);
 
             offset = Math.round(((max - min) * multiplier) + min);
             
@@ -374,11 +376,11 @@ apf.slider = function(struct, tagName){
             }
         }
         else {
-            max = (this.oContainer.offsetHeight
-                - apf.getHeightDiff(this.oContainer))
+            max = (this.oSlider.offsetHeight
+                - apf.getHeightDiff(this.oSlider))
                 - this.oKnob.offsetHeight;
             min = parseInt(apf.getBox(
-                apf.getStyle(this.oContainer, "padding"))[0]);
+                apf.getStyle(this.oSlider, "padding"))[0]);
 
             offset = (((max - min) * (1 - multiplier)) + min);
 
@@ -404,6 +406,27 @@ apf.slider = function(struct, tagName){
         }
 
         if (this.oLabel) {
+            if (this.oLabel.nodeValue !== null) {
+                this.oLabel.nodeValue = 
+                    this.mask == "%"
+                        ? Math.round(multiplier * 100) + "%" 
+                        : (this.mask == "#" 
+                            ? (this.step
+                                ? (Math.round(this.value / this.step) * this.step)
+                                : this.value)
+                            : this.mask[Math.round(this.value - this.min) / (this.step || 1)]);
+            }
+            else {
+                this.oLabel.value = 
+                    this.mask == "%"
+                        ? Math.round(multiplier * 100) + "%" 
+                        : (this.mask == "#" 
+                            ? (this.step
+                                ? (Math.round(this.value / this.step) * this.step)
+                                : this.value)
+                            : this.mask[Math.round(this.value - this.min) / (this.step || 1)]);
+            }
+            /*
             //Percentage
             if (this.mask == "%") {
                 this.oLabel.nodeValue = Math.round(multiplier * 100) + "%";
@@ -419,7 +442,7 @@ apf.slider = function(struct, tagName){
             else {
                 this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min)
                     / (this.step || 1)]; //optional floor ??
-            }
+            }*/
         }
     };
 
@@ -434,6 +457,10 @@ apf.slider = function(struct, tagName){
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
+    };
+    
+    this.setLabelValue = function(value) {
+        this.$propHandlers["value"].call(this, ((parseInt(value)*(this.max - this.min)/100)));
     };
 
     /**
@@ -480,6 +507,11 @@ apf.slider = function(struct, tagName){
                     return;
                 this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
+            case 13:
+                //ENTER
+                if (this.hasTSlider)
+                    this.setLabelValue(this.oLabel.value);
+                break;
             default:
                 return;
         }
@@ -487,24 +519,147 @@ apf.slider = function(struct, tagName){
         return false;
     }, true);
     // #endif
+    
+    this.slideToggle = function(e, userAction) {
+        if (!e) e = event;
+        if (userAction && this.disabled)
+            return;
+
+        if (this.isOpened)
+            this.slideUp();
+        else
+            this.slideDown(e);
+    };
+    
+    this.slideDown = function(e) {
+        if (this.dispatchEvent("slidedown") === false)
+            return false;
+
+        this.isOpened = true;
+
+        this.oSliderContainer.style.display = "block";
+        this.oSliderContainer.style[apf.supportOverflowComponent
+            ? "overflowY"
+            : "overflow"] = "hidden";
+        
+        this.oSliderContainer.style.display = "block";
+        var sWidth = this.oSliderContainer.offsetWidth;
+        var sHeight = this.oSliderContainer.offsetHeight;
+        var diff = apf.getDiff(this.oSliderContainer);
+        var right = sWidth - this.$ext.offsetWidth;
+        this.oSliderContainer.style.display = "none";
+
+        this.oSliderContainer.style.display = "";
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
+
+        var _self = this;
+        apf.popup.show(this.$uniqueId, {
+            x       : -1 * right,
+            y       : this.$ext.offsetHeight,
+            animate : true,
+            ref     : this.$ext,
+            width   : sWidth + 1,
+            height  : sHeight - diff[1],
+            callback: function(container) {
+                container.style[apf.supportOverflowComponent
+                    ? "overflowY"
+                    : "overflow"] = "hidden";
+                _self.setLabelValue(_self.oLabel.value);
+            }
+        });
+    };
+    
+    this.slideUp = function() {
+        if (!this.isOpened) return false;
+        if (this.dispatchEvent("slideup") === false) return false;
+
+        this.isOpened = false;
+        if (this.selected) {
+            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
+            if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
+        }
+
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Down"]);
+        apf.popup.hide();
+        return false;
+    };
+    
+    this.addEventListener("afterselect", function(e) {
+        if (!e) e = event;
+
+        this.slideUp();
+        if (!this.isOpened)
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
+    });
+    
+    this.$blur = function() {
+        apf.popup.forceHide();
+
+        if (!this.isOpened)
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
+
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        
+        if (this.hasTSlider)
+            this.setLabelValue(this.oLabel.value);
+    };
+    
+    this.$focus = function(){
+        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
+    }
+    
+    this.addEventListener("popuphide", this.slideUp);
 
     /**** Init ****/
 
     this.$draw = function(){
+        this.$getNewContext("main");
+        
         //Build Main Skin
-        this.$ext     = this.$getExternal();
+        this.$ext = this.$getExternal(null, null, function(oExt) {
+            var oButton = this.$getLayoutNode("main", "button", oExt);
+            if (oButton) {
+                oButton.setAttribute("onmousedown",
+                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
+            }
+        });
+        
+        this.hasTSlider = this.$hasLayoutNode("container");
+        if (this.hasTSlider) {
+            this.$getNewContext("container");
+            
+            this.oSliderContainer = this.$getExternal("container", null, function(oExt1) {
+            });
+        }
+
         this.oLabel   = this.$getLayoutNode("main", "status", this.$ext);
-        this.oMarkers = this.$getLayoutNode("main", "markers", this.$ext);
-        this.oKnob    = this.$getLayoutNode("main", "slider", this.$ext);
         this.oFill    = this.$getLayoutNode("main", "fill", this.$ext);
         this.oBalloon = this.$getLayoutNode("main", "balloon", this.$ext);
-        this.$int     = this.oContainer = this.$getLayoutNode("main",
-            "container", this.$ext);
+        
+        
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
+        
+        this.$int     = this.oContainer = this.$getLayoutNode("main", "container", this.$ext);
 
-        this.$dir     = this.$getOption("main", "direction") || "horizontal";
+        if (this.hasTSlider) {
+            this.oMarkers = this.$getLayoutNode("container", "markers", this.oSliderContainer);
+            this.oKnob    = this.$getLayoutNode("container", "grabber", this.oSliderContainer);
+            this.oSlider  = this.$getLayoutNode("container", "slider", this.oSliderContainer);
+            
+            //Set up the popup
+            this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSliderContainer, apf.skins.getCssString(this.skinName));
+            document.body.appendChild(this.oSliderContainer);
+        }
+        else {
+            this.oMarkers = this.$getLayoutNode("main", "markers", this.$ext);
+            this.oKnob    = this.$getLayoutNode("main", "slider", this.$ext);
+            this.oSlider  = this.$ext;
+        }
+
+        this.$dir = this.$getOption("main", "direction") || "horizontal";
 
         this.oKnob.style.left = (parseInt(apf.getBox(
-            apf.getStyle(this.$ext, "padding"))[3])) + "px";
+            apf.getStyle(this.oSlider, "padding"))[3])) + "px";
 
         var _self = this;
         function prepareKnob(e) {
@@ -517,16 +672,16 @@ apf.slider = function(struct, tagName){
             this.startValue = _self.value;
 
             if (_self.$dir == "horizontal") {
-                this.max = parseInt(apf.getStyle(_self.oContainer, "width"))
+                this.max = parseInt(apf.getStyle(_self.oSlider, "width"))
                     - this.offsetWidth;
                 this.min = parseInt(apf.getBox(
-                    apf.getStyle(_self.oContainer, "padding"))[3]);
+                    apf.getStyle(_self.oSlider, "padding"))[3]);
             }
             else {
-                this.max = parseInt(apf.getStyle(_self.oContainer, "height"))
+                this.max = parseInt(apf.getStyle(_self.oSlider, "height"))
                     - this.offsetHeight;
                 this.min = parseInt(apf.getBox(
-                    apf.getStyle(_self.oContainer, "padding"))[0]);
+                    apf.getStyle(_self.oSlider, "padding"))[0]);
             }
         }
 
@@ -680,7 +835,7 @@ apf.slider = function(struct, tagName){
                 _self.$setStyleClass(this, "", ["btndown", "btnover"]);
         };
 
-        this.$ext.onmousedown = function(e) {
+        this.oSlider.onmousedown = function(e) {
             if (_self.disabled) return false;
             e = e || window.event;
 
@@ -711,7 +866,7 @@ apf.slider = function(struct, tagName){
         //@todo this goes wrong with skin switching. smartbindings is called again.
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$ext, "knob",
+        apf.layout.setRules(this.oSlider, "knob",
             "apf.all[" + this.$uniqueId + "].$resize()", true);
         apf.layout.queue(this.$ext);
         //#endif
