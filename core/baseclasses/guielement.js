@@ -167,7 +167,7 @@ apf.GuiElement = function(){
         //#ifdef __WITH_ALIGNMENT
         ,apf.Alignment
         //#endif
-        //#ifdef __WITH_CONTENTEDITABLE
+        //#ifdef __WITH_CONTENTEDITABLE2
         ,apf.ContentEditable2
         //#endif
     );
