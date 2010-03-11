@@ -684,7 +684,6 @@ apf.submitform = function(struct, tagName){
 
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //this.setConnections(this.xmlRoot, "select");
-        //if(confirm("debug? " + this.toString())) debugger;
         this.dispatchEvent("xmlupdate");
     };
 

@@ -466,7 +466,6 @@ apf.portal = function(struct, tagName){
             //docklet.setProperty("skin", this.$applyBindRule("skin", dataNode) || "docklet"); //@todo (apf3.0) or something like that
             
             var skin = this.$applyBindRule("dockskin", dataNode) || "docklet";
-            //if(skin == "dockblank") debugger;
             if (docklet.skin != skin)
                 docklet.$forceSkinChange(docklet.skin = skin);
             docklet.show();

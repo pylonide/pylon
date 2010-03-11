@@ -39,9 +39,7 @@
  *        connection    = "bosh" 
  *  </a:teleport>
  *  
- *  <a:remote transport="myXMPP" id="rmtPersons">
- *      <a:person unique="[@id]" />
- *  </a:remote>
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
  *  
  *  <a:model id="mdlPersons" remote="rmtPersons">
  *      <persons>
@@ -127,17 +125,11 @@
  *      </universe>
  *  </a:model>
  *
- *  <a:remote transport="myXMPP" id="rmtPersons">
- *      <a:person unique="[@number]" />
- *      <a:unique match="[galaxy]" unique="[@name]" />
- *      <a:planet unique="[@id]" />
- *      <a:species unique="[text()]" />
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
  *  </a:remote>
  * </code>
  * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes}
  *                              that share a similar uniqueness trait.
- * @attribute {String} unique   the xpath that retrieves the unique value for a
- *                              specific {@link term.datanode data node}.
  */
 /**
  * @author      Ruben Daniels (ruben AT javeline DOT com)
@@ -178,9 +170,9 @@ apf.remote = function(struct, tagName){
         xpath  = xpath || "//";
         var id = model.id + ":" + xpath;
         this.sessions[id] = model;
-        // @todo: impl. partial model sharing
         if (this.transport && this.transport.isConnected()) {
             delete this.sessions[id];
+            delete this.pendingSessions[id];
             id = this.transport.normalizeEntity(id);
             this.sessions[id] = {
                 model: model,
@@ -199,11 +191,13 @@ apf.remote = function(struct, tagName){
     this.endSession = function(model, xpath) {
         xpath  = xpath || "//";
         var id = model.id + ":" + xpath;
-        // @todo: impl. partial model sharing
-        if (this.transport && this.transport.isConnected())
+        if (this.transport && this.transport.isConnected()) {
+            delete this.pendingTerminations[id];
             this.transport.endRSB(this.transport.normalizeEntity(id));
-        else
-            this.pendingSessions[id] = model;
+        }
+        else {
+            this.pendingTerminations[id] = model;
+        }
         delete this.sessions[id];
     };
 
@@ -211,7 +205,7 @@ apf.remote = function(struct, tagName){
         var oSession;
         if (!(oSession = this.sessions[sSession])) return;
         // check if time is provided, otherwise user created the session
-        var now = (new Date()).getTime();
+        var now = new Date().getTime();
         oSession.baseline = iTime ? parseInt(iTime) : now;
 
         apf.console.log("session started: " + sSession + ", " + oSession.baseline);
@@ -263,7 +257,7 @@ apf.remote = function(struct, tagName){
         return {
             model     : model.id,
             args      : args,
-            currdelta : (new Date()).getTime() - oSession.baseline
+            currdelta : new Date().getTime() - oSession.baseline
         };
     };
     
@@ -330,12 +324,13 @@ apf.remote = function(struct, tagName){
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
 
         if (oSession && model.$at) {
+            // #ifdef __DEBUG
             apf.console.log("timestamp comparison: " + (new Date().toGMTString())
                 + ", " + (new Date(oMessage.currdelta).toGMTString()));
+            // #endif
             var aUndos = model.$at.getDone(oMessage.currdelta),
                 i      = 0,
                 l      = aUndos.length;
-            apf.console.dir(aUndos);
             if (l) {
                 for (; i < l; ++i)
                     aUndos[i].$dontapply = true;
@@ -344,14 +339,7 @@ apf.remote = function(struct, tagName){
         }
 
         xmlNode = this.xpathToXml(q[1], model.data);
-        if (!xmlNode) {
-            //#ifdef __DEBUG
-            oError = new Error(apf.formatErrorString(0, this,
-                "Remote Smartbinding Received", "Could not get XML node from \
-                 model with Xpath '" + q[1] + "'"));
-            //#endif
-        }
-        else {
+        if (xmlNode) {
             switch (q[0]) {
                 case "setTextNode":
                     apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
@@ -379,7 +367,15 @@ apf.remote = function(struct, tagName){
                     apf.xmldb.removeNode(xmlNode, q[2]);
                     break;
             }
+            
         }
+        //#ifdef __DEBUG
+        else {
+            oError = new Error(apf.formatErrorString(0, this,
+                "Remote Smartbinding Received", "Could not get XML node from \
+                 model with Xpath '" + q[1] + "'"));
+        }
+        //#endif
 
         if (oSession && model.$at && l) {
             model.$at.redo(l);
@@ -465,6 +461,11 @@ apf.remote = function(struct, tagName){
                 _self.sessionStarted(sSession, e.fields["baseline"].value);
             }
         });
+    });
+
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        for (var i = 0, l = this.sessions.length; i < l; ++i)
+            this.endSession(this.sessions[i].model, this.sessions[i].xpath);
     });
 }).call(apf.remote.prototype = new apf.AmlElement());
 

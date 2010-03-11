@@ -115,7 +115,6 @@ apf.htmlCleaner = (function() {
                         else {
                             if ((bdepth.length || lastBlockClosed)
                               && br.indexOf("_apf_marker") > -1) {
-                                //debugger;
                                 //donothing
                             }
                             else

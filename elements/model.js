@@ -883,7 +883,6 @@ apf.model = function(struct, tagName){
                             UndoObj     : UndoObj
                         }); 
                     }
-                    //debugger;
                 }
             }
         //#endif

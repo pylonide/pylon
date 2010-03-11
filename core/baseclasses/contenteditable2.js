@@ -146,8 +146,6 @@ apf.ContentEditable2.execCommand = function(type, options, undo){
                     options.parentNode = parentNode;
                 }
                 
-                if (!parentNode) debugger;
-                
                 var pos = apf.getAbsolutePosition(parentNode.$int);
                 jmlNode.setAttribute("left", htmlNode.offsetLeft - pos[0]);
                 jmlNode.setAttribute("top", htmlNode.offsetTop - pos[1]);

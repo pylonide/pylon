@@ -314,7 +314,6 @@ apf.select1   = function(struct, tagName){
           && e.xmlNode.getAttribute('custom') == '1') {
             this.setCaret(e.xmlNode);
             this.selected = e.xmlNode;
-            debugger;
             $setTimeout(function(){
                 _self.startRename()
             });

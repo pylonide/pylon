@@ -243,9 +243,6 @@ apf.propedit    = function(struct, tagName){
             }
         };
 
-        if (!value)
-            debugger;
-
         var xml;
         if (typeof value == "string") {
             if (value.substr(0, 1) == "<") 

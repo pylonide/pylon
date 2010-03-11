@@ -1652,10 +1652,8 @@ apf.ContentEditable = function() {
             var s, aLinks = oParent.getElementsByTagName("a");
             for (var i = 0, j = aLinks.length; i < j; i++) {
                 s = aLinks[i].getAttribute("_apf_href");
-                if (s) { //prefix 'http://' if it's not there yet...
-                    aLinks[i].href = (s.indexOf("http://") == -1
-                        ? "http://" : "") + s;
-                }
+                if (s) //prefix 'http://' if it's not there yet...
+                    aLinks[i].href = (!s.match(/^[a-zA-Z]+\:/) ? "http://" : "") + s;
             }
         }
     };
