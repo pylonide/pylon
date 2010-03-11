@@ -748,7 +748,7 @@ apf.GuiElement.propHandlers = {
      * @attribute {String} sets this aml element to be editable
      * that loads new aml as children of this element.
      */
-    //#ifdef __WITH_CONTENTEDITABLE
+    //#ifdef __WITH_CONTENTEDITABLE2
     /*"editable": function(value){
         this.implement(apf.ContentEditable2);
         this.$propHandlers["editable"].apply(this, arguments);
