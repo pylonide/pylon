@@ -512,7 +512,7 @@ apf.actiontracker = function(struct, tagName){
             return;
         }
 
-        var undoObj, qItem;
+        var idx, undoObj, qItem;
         // Add the item to the queue
         if (isGroup) { //@todo currently no offline support for grouped actions
             qItem = this.$execStack.shift();
@@ -536,7 +536,7 @@ apf.actiontracker = function(struct, tagName){
             undo   : undo
 
         };
-        this.$execStack.push(qItem) - 1;
+        idx = this.$execStack.push(qItem) - 1;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync

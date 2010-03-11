@@ -628,6 +628,7 @@ apf.xmldb = new (function(){
     var notifyQueue = {}, notifyTimer;
     this.$hasQueue = false;
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
+        if (undoObj.$dontapply) return;
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && apf.offline.models.enabled
           && apf.offline.models.realtime) {
@@ -640,8 +641,8 @@ apf.xmldb = new (function(){
             undoObj.xmlNode = xmlNode;
 
         //Set Variables
-        var oParent  = nextloop;
-        var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
+        var oParent  = nextloop,
+            loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
 
         //var xmlId = xmlNode.getAttribute(this.xmlIdTag);
 
@@ -683,8 +684,7 @@ apf.xmldb = new (function(){
                         notifyQueue[uId] = hash = [];
 
                     // Filtering
-                    if ("|update|attribute|text|".indexOf("|"
-                      + action + "|") > -1) {
+                    if ("|update|attribute|text|".indexOf("|" + action + "|") > -1) {
                         found = false;
                         for (j = 0; j < hash.length; j++) {
                             if (hash[j] && xmlNode == hash[j][1]
