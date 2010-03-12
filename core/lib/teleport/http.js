@@ -43,10 +43,10 @@
  *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
- *          if (state != apf.SUCCESS)
- *              return alert('an error has occurred');
+ *         if (state != apf.SUCCESS)
+ *             return alert('an error has occurred');
  *
- *          alert(data);
+ *         alert(data);
  *      }
  *  });
  * </code>
