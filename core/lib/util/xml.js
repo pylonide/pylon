@@ -33,7 +33,7 @@ apf.isChildOf = function(pNode, childnode, orItself){
         return false;
     
     if (childnode.nodeType == 2)
-        childnode = childnode.selectSingleNode("..");
+        childnode = childnode.ownerElement || childnode.selectSingleNode("..");
     
     if (orItself && pNode == childnode)
         return true;
@@ -80,7 +80,7 @@ apf.isOnlyChild = function(node, nodeType){
 apf.getChildNumber = function(node, sameTagname){
     var p = node.parentNode, j = 0;
     if (!p) return 0;
-    for (var i = 0; i < p.childNodes.length; i++) {
+    for (var i = 0, l = p.childNodes.length; i < l; i++) {
         if (p.childNodes[i] == node)
             return j;
         if (!sameTagname || node.nodeType == 1 && node.tagName == p.childNodes[i].tagName)
@@ -111,7 +111,8 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
 
     if (options && options.clearContents) {
         //Signal listening elements
-        var node, j, i, nodes = parentNode.selectNodes("descendant::node()[@" + apf.xmldb.xmlListenTag + "]");
+        var node, j, i,
+            nodes = parentNode.selectNodes("descendant::node()[@" + apf.xmldb.xmlListenTag + "]");
         for (i = nodes.length - 1; i >= 0; i--) {
             var s = nodes[i].getAttribute(apf.xmldb.xmlListenTag).split(";");
             for (j = s.length - 1; j >= 0; j--) {
@@ -124,8 +125,8 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         }
         
         //clean parent
-        var nodes = parentNode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--)
+        nodes = parentNode.childNodes;
+        for (i = nodes.length - 1; i >= 0; i--)
             parentNode.removeChild(nodes[i]);
     }
 
@@ -149,7 +150,8 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         else if (options.start + options.length == marker.getAttribute("end")) {
             marker.setAttribute("end", options.start + options.length);
             beforeNode = marker.nextSibling;
-            reserved = parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end")) - options.length;
+            reserved = parseInt(marker.getAttribute("reserved"))
+                + parseInt(marker.getAttribute("end")) - options.length;
         }
         //Middle of marker
         else {
@@ -206,7 +208,8 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
 /**
  * Sets the nodeValue of a dom node.
  *
- * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue. When an element node is passed the first text node is set.
+ * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue.
+ *                                   When an element node is passed the first text node is set.
  * @param {String}     nodeValue     the value to set.
  * @param {Boolean}    applyChanges  whether the changes are propagated to the databound elements.
  * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
@@ -249,6 +252,10 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
                 || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                 undoObj);
     }
+    // #ifdef __WITH_RSB
+    if (applyChanges)
+        apf.xmldb.applyRSB(["setNodeValue", xmlNode, nodeValue], undoObj);
+    // #endif
 };
 
 /**
@@ -517,21 +524,25 @@ apf.convertMethods = {
         if (!basename) 
             basename = "";
         
-        var str = [], value, nodes = xml.childNodes, done = {};
-        for (var i = 0; i < nodes.length; i++) {
+        var value, name, sameNodes, j, l2,
+            str   = [],
+            nodes = xml.childNodes,
+            done  = {},
+            i     = 0,
+            l     = nodes.length;
+        for (; i < l; ++i) {
             if (nodes[i].nodeType != 1)
                 continue;
-            var name = nodes[i].tagName;
+            name = nodes[i].tagName;
             if (done[name])
                 continue;
 
             //array
-            var sameNodes = xml.selectNodes(name);
+            sameNodes = xml.selectNodes(name);
             if (sameNodes.length > 1) {
                 done[name] = true;
-                for (var j = 0; j < sameNodes.length; j++) {
-                    value = this.cgivars(sameNodes[j],
-                        basename + name + "[" + j + "]");
+                for (j = 0, l2 = sameNodes.length; j < l2; j++) {
+                    value = this.cgivars(sameNodes[j], basename + name + "[" + j + "]");
                     if (value)
                         str.push(value);
                 }
@@ -544,14 +555,13 @@ apf.convertMethods = {
         }
 
         var attr = xml.attributes;
-        for (i = 0; i < attr.length; i++) {
+        for (i = 0, l = attr.length; i < l; i++) {
             if (attr[i].nodeValue) {
                 if (basename) 
                     str.push(basename + "[" + attr[i].nodeName + "]="
                         + escape(attr[i].nodeValue));
                 else
-                    str.push(attr[i].nodeName + "="
-                        + escape(attr[i].nodeValue));
+                    str.push(attr[i].nodeName + "=" + escape(attr[i].nodeValue));
             }
         }
 
@@ -561,33 +571,39 @@ apf.convertMethods = {
         value = apf.queryValue(xml, "text()");
         if (basename && value)
             return basename + "=" + escape(value);
+
+        return "";
     },
 
     "cgiobjects": function(xml, basename, isSub){
         if (!basename)
             basename = "";
         
-        var str = [], value, nodes = xml.childNodes, done = {};
-        for (var i = 0; i < nodes.length; i++) {
-            var node = nodes[i];
+        var value, node, name, isOnlyChild, lnodes, nm, j, l2, k, l3, a, attr,
+            str   = [],
+            nodes = xml.childNodes,
+            i     = 0,
+            l     = nodes.length;
+        for (; i < l; ++i) {
+            node = nodes[i];
             if (node.nodeType != 1)
                 continue;
 
-            var name = node.tagName; //@hack
+            name = node.tagName; //@hack
             if (name == "revision")
                 continue;
 
-            var isOnlyChild = apf.isOnlyChild(node.firstChild, [3,4]);
-            var count       = 0;
+            isOnlyChild = apf.isOnlyChild(node.firstChild, [3,4]);
 
             //array
             if (!node.attributes.length && !isOnlyChild) {
-                var lnodes = node.childNodes;
-                for (var nm, j = 0, l = lnodes.length; j < l; j++) {
+                lnodes = node.childNodes;
+                for (j = 0, l2 = lnodes.length; j < l2; ++j) {
                     if (lnodes[j].nodeType != 1)
                         continue;
                     
-                    nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "[" + i + "]";
+                    nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "")
+                       + "[" + i + "]";
                     value = this.cgiobjects(lnodes[j], nm, true);
                     if (value)
                         str.push(value);
@@ -596,29 +612,26 @@ apf.convertMethods = {
                         str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
                             + escape(lnodes[j].firstChild.nodeValue));
                     
-                    var k, a, attr = lnodes[j].attributes;
-                    for (k = 0; k < attr.length; k++) {
-                        if (!(a = attr[k]).nodeValue)
-                            continue;
-                        
-                        str.push(nm + "[" + a.nodeName + "]=" 
-                            + escape(a.nodeValue));
+                    attr = lnodes[j].attributes;
+                    for (k = 0, l3 = attr.length; k < l3; ++k) {
+                        if (!(a = attr[k]).nodeValue) continue;
+                        str.push(nm + "[" + a.nodeName + "]="  + escape(a.nodeValue));
                     }
                 }
             }
             //single value
             else {
                 if (isOnlyChild)
-                    str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") + "=" 
-                        + escape(node.firstChild.nodeValue));
+                    str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") 
+                        + "="  + escape(node.firstChild.nodeValue));
                 
-                var a, attr = node.attributes;
-                for (j = 0; j < attr.length; j++) {
+                attr = node.attributes;
+                for (j = 0, l2 = attr.length; j < l; ++j) {
                     if (!(a = attr[j]).nodeValue)
                         continue;
                     
-                    str.push(basename + (isSub ? "[" : "") + name + "_" + a.nodeName + (isSub ? "]" : "") + "=" 
-                        + escape(a.nodeValue));
+                    str.push(basename + (isSub ? "[" : "") + name + "_" 
+                        + a.nodeName + (isSub ? "]" : "") + "="  + escape(a.nodeValue));
                 }
             }
         }
@@ -628,6 +641,8 @@ apf.convertMethods = {
 
         if (str.length)
             return str.join("&");
+
+        return "";
     }
 };
 
@@ -653,7 +668,7 @@ apf.convertXml = function(xml, to){
  * @return {XMLNode} the found xml node, or null.
  */
 apf.getTextNode = function(x){
-    for (var i = 0; i < x.childNodes.length; i++) {
+    for (var i = 0, l = x.childNodes.length; i < l; ++i) {
         if (x.childNodes[i].nodeType == 3 || x.childNodes[i].nodeType == 4)
             return x.childNodes[i];
     }
@@ -676,14 +691,18 @@ apf.getBoundValue = function(amlNode, xmlRoot, applyChanges){
  * @private
  */
 apf.getArrayFromNodelist = function(nodelist){
-    for (var nodes = [], j = 0; j < nodelist.length; j++)
+    for (var nodes = [], j = 0, l = nodelist.length; j < l; ++j)
         nodes.push(nodelist[j]);
     return nodes;
 };
 
 apf.serializeChildren = function(xmlNode){
-    var s = [], nodes = xmlNode.childNodes;
-    for (var node, i = 0, l = nodes.length; i < l; i++) {
+    var node,
+        s     = [],
+        nodes = xmlNode.childNodes,
+        i     = 0,
+        l     = nodes.length;
+    for (; i < l; ++i) {
         s[i] = (node = nodes[i]).nodeType == 1 
             ? node.xml || node.serialize()
             : (node.nodeType == 8 ? "" : node.nodeValue);
@@ -706,8 +725,10 @@ apf.getXmlString = function(xmlNode){
  * Creates xml nodes from an xml string recursively.
  *
  * @param {String}  strXml     the xml definition.
- * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
- * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
+ * @param {Boolean} [noError]  whether an exception should be thrown by the parser
+ *                             when the xml is not valid.
+ * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between
+ *                                        XML elements should be preserved
  * @return {XMLNode} the created xml node.
  */
 apf.getXml = function(strXml, noError, preserveWhiteSpace){
@@ -722,19 +743,23 @@ apf.getXml = function(strXml, noError, preserveWhiteSpace){
 apf.formatXml = function(strXml){
     strXml = strXml.trim();
 
-    var lines = strXml.split("\n");
-    for (var i = 0; i < lines.length; i++)
+    var lines = strXml.split("\n"),
+        depth = 0,
+        i     = 0,
+        l     = lines.length;
+    for (; i < l; ++i)
         lines[i] = lines[i].trim();
     lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
         .replace(/\n\</g, "<").replace(/\</g, "\n<").split("\n");
     lines.removeIndex(0);//test if this is actually always fine
     lines.removeIndex(lines.length);
 
-    for (var depth = 0, i = 0; i < lines.length; i++)
+    for (i = 0, l = lines.length; i < l; i++)
         lines[i] = "    ".repeat((lines[i].match(/^\s*\<\//)
             ? (depth==0)?0:--depth
             : (lines[i].match(/^\s*\<[^\?][^>]+[^\/]\>/) ? depth++ : depth))) + lines[i];
-    if (!strXml) return "";
+    if (!strXml)
+        return "";
 
     return lines.join("\n");
 };
@@ -751,16 +776,16 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
     }
 
     if (apf != this && this.lookup && this.select) {
-        var def = this.lookup[xmlNode.tagName];
+        var unique, def = this.lookup[xmlNode.tagName];
         if (def) {
             //unique should not have ' in it... -- can be fixed...
-            var unique = xmlNode.selectSingleNode(def).nodeValue;
+            unique = xmlNode.selectSingleNode(def).nodeValue;
             return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
         }
         
-        for (var i = 0; i < this.select.length; i++) {
+        for (var i = 0, l = this.select.length; i < l; i++) {
             if (xmlNode.selectSingleNode(this.select[i][0])) {
-                var unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
+                unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
                 return "//" + this.select[i][0] + "[" + this.select[i][1]
                     + "='" + unique + "']";
             }
@@ -770,7 +795,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (xmlNode == xmlContext)
         return ".";
 
-    if (!xmlNode.parentNode) {
+    if (!xmlNode.parentNode && !xmlNode.ownerElement) {
         //#ifdef __DEBUG
         throw new Error(apf.formatErrorString(0, null, 
             "Converting XML to Xpath", 

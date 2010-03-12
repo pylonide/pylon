@@ -366,6 +366,9 @@ apf.remote = function(struct, tagName){
                 case "removeNode":
                     apf.xmldb.removeNode(xmlNode, q[2]);
                     break;
+                case "setNodeValue":
+                    apf.setNodeValue(xmlNode, q[2], true);
+                    break;
             }
             
         }

@@ -44,14 +44,14 @@
  *      }
  *
  *      // Send a message to John
- *      myXMPP.sendMessage({to: 'john@my-jabber-server.com', message: 'A test message'});
+ *      myXMPP.sendMessage({to: 'john@my-jabber-server.com/resource', message: 'A test message'});
  *  </a:script>
  * </code>
  * Remarks:
  * Calls can be made to a server using a special {@link term.datainstruction data instruction}
  * format.
  * <code>
- *  submission="{myXmpp.notify([@bar], 'john@my-jabber-server.com')}"
+ *  submission="{myXmpp.notify([@bar], 'john@my-jabber-server.com/resource')}"
  *  submission="{myXmpp.login([@foo], [@bar])}"
  *  submission="{myXmpp.logout()}"
  * </code>
