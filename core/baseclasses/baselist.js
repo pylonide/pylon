@@ -646,6 +646,13 @@ apf.BaseList = function(){
                 || "onmousedown", 'var o = apf.lookup(' + this.$uniqueId
                 + '); o.select(this, event.ctrlKey, event.shiftKey, -1)');
         }
+        
+        this.$listGrid = this.$getOption("main", "list-mode") == "grid"; 
+        
+        if (this.$listGrid) {
+            oItem.setAttribute("onmouseover", 
+                oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event, \'over\');');
+        }
 
         //Setup Nodes Identity (Look)
         if (elIcon) {
