@@ -630,7 +630,9 @@ apf.xmpp = function(struct, tagName){
                         return true;
                     
                     //@TBD:Mike please talk to me about how to integrate onError() properly
-                    onError.call(_self, constants.ERROR_CONN, extra.message, state);
+                    onError.call(_self, !this.$serverVars[CONN]
+                        ? constants.ERROR_AUTH
+                        : constants.ERROR_CONN, extra.message, state);
                     throw oError;
                 }
 
@@ -659,23 +661,23 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function onError(nType, sMsg, nState) {
-        if (nType & constants.ERROR_CONN) {
+        var bIsAuth = nType & constants.ERROR_AUTH,
+            bIsConn = nType & constants.ERROR_CONN;
+        if (bIsConn) {
             if (this.$retryCount == 3) {
                 this.$retryCount = 0;
                 clearTimeout(this.$listener);
                 this.$listener = null;
                 return this.connect(this.$serverVars["username"], this.$serverVars["password"],
                     this.$serverVars["login_callback"],
-                    this.$serverVars["register"] || this.$autoRegister)
+                    this.$serverVars["register"] || this.$autoRegister);
             }
             this.$retryCount++;
+            this.$listen();
         }
         else {
             this.$retryCount = 0;
         }
-
-        var bIsAuth = nType & constants.ERROR_AUTH,
-            bIsConn = nType & constants.ERROR_CONN;
 
         // #ifdef __DEBUG
         apf.console.log("[XMPP-" + (bIsAuth
@@ -861,7 +863,7 @@ apf.xmpp = function(struct, tagName){
      */
     function processConnect(oXml, state, extra) {
         if (state != apf.SUCCESS)
-            return onError.call(this, constants.ERROR_CONN, extra.message, state);
+            return onError.call(this, constants.ERROR_AUTH, extra.message, state);
 
         // reset retry/ connection counter
         this.$retryCount = 0;
@@ -941,7 +943,7 @@ apf.xmpp = function(struct, tagName){
                 }
                 //#ifdef __DEBUG
                 else if (!_self.$isPoll)
-                    onError.call(_self, constants.ERROR_CONN, null, apf.OFFLINE);
+                    onError.call(_self, constants.ERROR_REG, null, apf.OFFLINE);
                 //#endif
             }, _self.$isPoll
             ? createStreamElement.call(this, null, null, sIq)
@@ -1163,7 +1165,7 @@ apf.xmpp = function(struct, tagName){
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_AUTH, null, apf.OFFLINE);
             //#endif
         }
     }
@@ -1230,7 +1232,7 @@ apf.xmpp = function(struct, tagName){
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_AUTH, null, apf.OFFLINE);
             //#endif
         }
 
@@ -1431,7 +1433,7 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.$listen = function() {
-        if (this.$listening === true) return;
+        if (this.$listening === true || !this.$serverVars[CONN]) return;
 
         this.$listening = true;
 
@@ -1471,12 +1473,10 @@ apf.xmpp = function(struct, tagName){
                 parseData.call(this, data);
         }
 
-        if (this.$serverVars[CONN] && !this.$listening) {
-            var _self = this;
-            this.$listener = $setTimeout(function() {
-                _self.$listen();
-            }, this.$pollTimeout || 0);
-        }
+        var _self = this;
+        this.$listener = $setTimeout(function() {
+            _self.$listen();
+        }, this.$pollTimeout || 0);
     }
 
     this.$restartListener = restartListener;

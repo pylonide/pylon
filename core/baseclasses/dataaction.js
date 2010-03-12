@@ -68,7 +68,7 @@ apf.DataAction = function(){
      * multi-user environment. Locks are one way of enforcing concurrency 
      * control policies. Ajax.org Platform (apf) has support for locking in 
      * combination with {@link term.action action rules}. There are two 
-     * types of locks; pessimistic and optimistic locks. Descriptions below is
+     * types of locks; pessimistic and optimistic locks. Descriptions below are
      * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
      *
      * Optimistic:
@@ -89,7 +89,7 @@ apf.DataAction = function(){
      * concurrent users - it can be frustrating for users.
      *
      * For optimistic locking apf can run as if there would be no locking. 
-     * Changed data is send to the server and is either successfully saved or
+     * Changed data is sent to the server and is either successfully saved or
      * not. When the action isn't changed and the server returns an error code
      * the {@link element.actiontracker actiontracker} <strong>automatically 
      * reverts the change</strong>. 
@@ -122,7 +122,7 @@ apf.DataAction = function(){
      * should reload the part of the content for which the lock failed. See
      * {@link baseclass.databinding.event.lockfailed}.
      *
-     * Note: JFF understands the status codes specified in RFC4918 for the locking implementation
+     * Note: APF understands the status codes specified in RFC4918 for the locking implementation
      *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
      
