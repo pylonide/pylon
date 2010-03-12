@@ -383,7 +383,7 @@ apf.select1   = function(struct, tagName){
         this.thumbclass = this.$getOption("main", "thumbclass");
     };
     
-    this.$selectSeries = function(e, type) {
+    this.$selectSeries = function(e) {
         e = e || event;
         e.cancelBubble = true;
         var target = e.target || e.srcElement;

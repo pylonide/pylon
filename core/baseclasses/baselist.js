@@ -651,7 +651,7 @@ apf.BaseList = function(){
         
         if (this.$listGrid) {
             oItem.setAttribute("onmouseover", 
-                oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event, \'over\');');
+                oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
         }
 
         //Setup Nodes Identity (Look)
