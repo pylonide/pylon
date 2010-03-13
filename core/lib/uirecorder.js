@@ -561,7 +561,8 @@ apf.uirecorder.playback = {
         top     : 0,
         left    : 0
     },
-
+	$pauseAfterAction	: null,
+	
     // reset playback
     reset : function() {
         apf.uirecorder.isPlaying = false;
@@ -823,7 +824,7 @@ apf.uirecorder.playback = {
                                 if (!apf.uirecorder.testing.$checkList[actionIdx].details) apf.uirecorder.testing.$checkList[actionIdx].details = [];
                                 if (!apf.uirecorder.testing.$checkList[actionIdx].details[dIdx]) apf.uirecorder.testing.$checkList[actionIdx].details[dIdx] = {};
                                 if (!apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data) apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data = {};
-                                if (!apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data[elName]) apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data[elName] = {};
+                                 if (!apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data[elName]) apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data[elName] = {};
                                 apf.uirecorder.testing.$checkList[actionIdx].details[dIdx].data[elName][node.getAttribute("name")] = node.text;
                             }
                         }
@@ -872,6 +873,14 @@ apf.uirecorder.playback = {
     // check if more actions are available for playback, if not end current test 
     $testCheck : function() {
         // more actions to be executed
+		if (apf.uirecorder.playback.$pauseAfterAction && this.curAction.name == apf.uirecorder.playback.$pauseAfterAction.action) {
+			apf.console.info('testCheck: delayed pause after mousedoen/mouseup combo');
+			apf.uirecorder.playback.pause();
+			this.$waitEventsInterval = setInterval(function(){
+				apf.uirecorder.testing.$waitForEvents(apf.uirecorder.playback.$pauseAfterAction.params.actionObj, apf.uirecorder.playback.$pauseAfterAction.eventName, apf.uirecorder.playback.$pauseAfterAction.checkActionIdx, apf.uirecorder.playback.$pauseAfterAction.checkIdx);
+			}, 10);
+		}
+
         if (this.$curTestXml.childNodes.length > this.$curActionIdx+1) {
             this.$curActionIdx++;
             this.$playAction();
@@ -894,7 +903,7 @@ apf.uirecorder.playback = {
             else if (apf.uirecorder.isPlaying){
                 apf.dispatchEvent("apftest_testcomplete");
             }
-debugger;
+
             apf.uirecorder.playback.reset();
         }
     },
@@ -922,7 +931,7 @@ apf.uirecorder.testing = {
     $checkList          : [],       // list with checks that need to be performed during testing
     ignoreWarnings      : false,    // ignore coming warnings during testing
     
-    $waitEventsInterval : "",
+	$waitEventsInterval : "",
     $waitEventChecks    : [],
     $waitForEvents : function(actionObj, eventName, actionIdx, checkActionIdx, checkIdx) {
         //apf.console.info("waitForEvents: " + checkActionIdx); // causes problems with setInterval
@@ -954,7 +963,10 @@ apf.uirecorder.testing = {
             this.$waitEventsInterval = "";
             //apf.console.info("waitForEvent checks succesful for checkActionIdx: " + checkActionIdx);
             
-            if (!apf.uirecorder.output.$popup) {
+			if (apf.uirecorder.playback.$pauseAfterAction) {
+				apf.uirecorder.playback.$pauseAfterAction = null;
+			}
+			else if (!apf.uirecorder.output.$popup) {
                 //delete this.$checkList[checkActionIdx].waitEvents;
                 this.$checkResults(actionObj, eventName, actionIdx, checkActionIdx, checkIdx);
                 apf.uirecorder.playback.resume();
@@ -971,7 +983,7 @@ apf.uirecorder.testing = {
          
 
         // check waitEvent checks
-        if (this.$checkList[checkActionIdx].waitEvents && this.$checkList[checkActionIdx].waitEvents[checkIdx]) {
+        if (this.$checkList[checkActionIdx] && this.$checkList[checkActionIdx].waitEvents && this.$checkList[checkActionIdx].waitEvents[checkIdx]) {
             //debugger;
             // loop thought elements in checkList
             for (var elName in this.$checkList[checkActionIdx].waitEvents[checkIdx]) {
@@ -992,8 +1004,13 @@ apf.uirecorder.testing = {
             
             if (this.$waitEventsInterval == "") {
                 if (eventName == "mousedown" && apf.uirecorder.actionList[actionIdx+1].name == "mouseup") {
-                    // @todo set flag for next playAction (where actionName is "mouseup") to pause and check for waitEvent 
-                    debugger;
+					
+                    // @todo set flag for next playAction (where actionName is "mouseup") to pause and check for waitEvent
+					// pause after mouseup?
+					apf.uirecorder.playback.$pauseAfterAction = {
+						action: "mouseup",
+						params: [actionObj, eventName, checkActionIdx, checkIdx]
+					}
                 }
                 else {
                     apf.console.info(checkIdx + ": start setInterval for " + elName);
@@ -1313,7 +1330,7 @@ apf.uirecorder.output = {
         if (!found) {
             // prevent popup disturbing a mousedown/mouseup combo
             if (!apf.uirecorder.testing.ignoreWarnings && values.action == "mousedown" && apf.uirecorder.playback.$curTestXml.childNodes[values.actionIdx].getAttribute("name") == "mouseup") {
-                debugger;
+                //debugger;
                 // @todo set flag for next playAction (where actionName is "mouseup") to pause and check for waitEvent 
                 // @todo remove return call;    
                 apf.console.info("avoided mousedown/mouseup combo disturbed by popup");
