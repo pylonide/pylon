@@ -138,7 +138,8 @@ apf.uirecorder.capture = {
     $captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
-
+if (eventName != "mousemove")
+    apf.console.info("captured action: " + eventName);
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
@@ -274,8 +275,9 @@ apf.uirecorder.capture = {
         apf.uirecorder.capture.current.index     = index;
         apf.uirecorder.capture.current.eventName = eventName;
         
+        apf.uirecorder.capture.current.actionIdx = apf.uirecorder.testing.$curActionIdx;
         if (apf.uirecorder.isTesting)
-            apf.uirecorder.capture.current.actionIdx = apf.uirecorder.testing.$curCheckActionIdx;
+            apf.uirecorder.capture.current.checkActionIdx = apf.uirecorder.testing.$curCheckActionIdx;
 
         // delayed capturing of events
         var recursion = false;
@@ -301,10 +303,10 @@ apf.uirecorder.capture = {
                     if (actionObj.detailList[0][elName].events.length) {
                         // loop through detailList events
                         for (var i = 0, l = actionObj.detailList[0][elName].events.length; i < l; i++) {
-                            if (!this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx]) this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx] = [];
-                            if (!this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx][0]) this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx][0] = {};
-                            if (!this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx][0][elName]) this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx][0][elName] = [];
-                            this.$capturedEventList[apf.uirecorder.testing.$curCheckActionIdx][0][elName].push(actionObj.detailList[0][elName].events[i].name);
+                            if (!this.$capturedEventList[apf.uirecorder.playback.$curActionIdx]) this.$capturedEventList[apf.uirecorder.playback.$curActionIdx] = [];
+                            if (!this.$capturedEventList[apf.uirecorder.playback.$curActionIdx][0]) this.$capturedEventList[apf.uirecorder.playback.$curActionIdx][0] = {};
+                            if (!this.$capturedEventList[apf.uirecorder.playback.$curActionIdx][0][elName]) this.$capturedEventList[apf.uirecorder.playback.$curActionIdx][0][elName] = [];
+                            this.$capturedEventList[apf.uirecorder.playback.$curActionIdx][0][elName].push(actionObj.detailList[0][elName].events[i].name);
                         }
                     }
                 }
@@ -327,7 +329,7 @@ apf.uirecorder.capture = {
                 }
             }
 
-            apf.uirecorder.testing.$checkResults(actionObj, eventName, apf.uirecorder.testing.$curCheckActionIdx, 0);
+            apf.uirecorder.testing.$checkResults(actionObj, eventName, apf.uirecorder.playback.$curActionIdx, apf.uirecorder.testing.$curCheckActionIdx, 0);
             apf.uirecorder.testing.$curCheckActionIdx++;
         }
     },
@@ -569,6 +571,16 @@ apf.uirecorder.playback = {
     reset : function() {
         apf.uirecorder.isPlaying = false;
         apf.uirecorder.isTesting = false;
+        
+        if (this.$timeoutTimer) {
+            clearTimeout(this.$timeoutTimer);
+            this.$timeoutTimer = "";
+        }
+        if (this.$waitElementsInterval) {
+            clearInterval(this.$waitElementsInterval);
+            this.$waitElementsInterval = "";
+        }
+
     },
     
     // playback current test and save test results
@@ -585,8 +597,8 @@ apf.uirecorder.playback = {
 
     // pause current playback
     pause : function() {
-		apf.console.info("pause called");
-        if (apf.uirecorder.isPaused) return
+		if (apf.uirecorder.isPaused) return
+        apf.console.info("paused on " + this.$curActionIdx);
         apf.uirecorder.isPaused = true;
         this.$startTestDelay = new Date().getTime();
     },
@@ -594,6 +606,7 @@ apf.uirecorder.playback = {
     // resume paused playback
     resume : function() {
         if (!apf.uirecorder.isPaused) return;
+        apf.console.info("resumed");
         apf.uirecorder.isPaused = false;
         this.$testDelay += new Date().getTime() - this.$startTestDelay;
         this.$playAction();
@@ -605,16 +618,16 @@ apf.uirecorder.playback = {
     //  o3          : reference to o3
     //  offset      : object with top/left offset of browser element in relation to client window 
     play : function(testXml, playSpeed, o3, offset) {
+apf.console.info("start playback");
         this.$o3            = o3;
         this.$playSpeed     = playSpeed;
         this.$curTestXml    = testXml;
         this.$curActionIdx  = 0;
         this.$windowOffset  = offset;
-        apf.console.info("before creating checkList");
-        this.$createCheckList();
-        apf.console.info("checkList created");        
+
         if (!apf.uirecorder.isTesting)
             apf.uirecorder.isPlaying = true;
+        this.$createCheckList();
         apf.uirecorder.capture.$init();
 
         apf.uirecorder.capture.$startTime = new Date().getTime();
@@ -625,21 +638,24 @@ apf.uirecorder.playback = {
         // check all actions except mousemove's
         var checkActions = apf.uirecorder.playback.$curTestXml.childNodes; //selectNodes("action[not(@name='mousemove')]");
 		
-        for (var action, i = 0, l = checkActions.length; i < l; i++) {
+        for (var htmlNode ,action, i = 0, l = checkActions.length; i < l; i++) {
             if (checkActions[i].getAttribute("name") == "mousemove") continue;
             // set checks for available amlNodes, check in playAction
             // seperate in details1, details2??
             if (checkActions[i].getAttribute("amlNode")) {
                 if (!this.$checkList[i]) this.$checkList[i] = {}
                 if (!this.$checkList[i].elementAvailable) this.$checkList[i].elementAvailable = [];
-                this.$checkList[i].elementAvailable.push(checkActions[i].getAttribute("amlNode"));
+                if (this.$checkList[i].elementAvailable.indexOf(checkActions[i].getAttribute("amlNode")) == -1)
+                    this.$checkList[i].elementAvailable.push(checkActions[i].getAttribute("amlNode"));
             }
             
             // set htmlNode checks, check in checkResults()
             if (checkActions[i].getAttribute("htmlNode")) {
                 if (!this.$checkList[i]) this.$checkList[i] = {}
                 if (!this.$checkList[i].htmlNode) this.$checkList[i].htmlNode = [];
-                this.$checkList[i].elementAvailable.push((checkActions[i].getAttribute("htmlNode") == "$ext") ? checkActions[i].getAttribute("amlNode") : checkActions[i].getAttribute("htmlNode"));
+                htmlNode = (checkActions[i].getAttribute("htmlNode") == "$ext") ? checkActions[i].getAttribute("amlNode") : checkActions[i].getAttribute("htmlNode");
+                if (this.$checkList[i].htmlNode.indexOf(checkActions[i].getAttribute("htmlNode")) == -1)
+                    this.$checkList[i].htmlNode.push(htmlNode);
             }
             
             // set checks to compare value of properties, events and data, check in checkResults()
@@ -690,48 +706,85 @@ apf.uirecorder.playback = {
         }
     },
     
-    // check to see if all elements are
-    $waitElementsCheck : function() {
-        // check elements
-		apf.console.info("$waitElementsCheck: " + this.$checkList[this.$curActionIdx].elementAvailable.length);
-        for (var i = 0, l = this.$checkList[this.$curActionIdx].elementAvailable.length; i < l; i++) {
-            if (!((this.$checkList[this.$curActionIdx].elementAvailable[i].indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
-                ? apf.document.selectSingleNode(this.$checkList[this.$curActionIdx].elementAvailable[i].substr(8)) // search for amlNode based on xpath
-                : window[this.$checkList[this.$curActionIdx].elementAvailable[i]] // search for amlNode on screen 
-                       || null)) {
-				apf.console.info("element not found: " + this.$checkList[this.$curActionIdx].elementAvailable[i]);
-                return;
+    // check to see if element is on stage
+    $elementsAvailable : function(actionIdx) {
+        // if there are elements to check
+        if (this.$checkList[actionIdx] && this.$checkList[actionIdx].elementAvailable) {
+            for (var amlNode, i = 0, l = this.$checkList[actionIdx].elementAvailable.length; i < l; i++) {
+                //if one element is not available return false
+                amlNode = (this.$checkList[actionIdx].elementAvailable[i].indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
+                    ? apf.document.selectSingleNode(this.$checkList[actionIdx].elementAvailable[i].substr(8)) // search for amlNode based on xpath
+                    : window[this.$checkList[actionIdx].elementAvailable[i]] // search for amlNode on screen 
+                           || null
+
+                if (!amlNode || (amlNode && !(amlNode.$ext.clientTop >= 0 && amlNode.$ext.clientLeft >= 0 && amlNode.$ext.clientWidth >= 0 && amlNode.$ext.clientHeight >= 0))) {
+                    
+//                    apf.console.info("element not found: " + this.$checkList[actionIdx].elementAvailable[i]);
+                    return false;
+                }
             }
         }
-        
-        apf.console.info("$waitElementsCheck continue: " + this.$curActionIdx);
+        else {
+            debugger;
+        }
+                
+        return true;
+    },
+    
+    // check to see if all elements are
+    $waitElementsCheck : function(actionIdx) {
+        // check elements
+		apf.console.info("$waitElementsCheck: " + actionIdx);
+        if (!this.$elementsAvailable(actionIdx)) {
+            return;
+        }
+
+        apf.console.info("$waitElementsCheck continue: " + actionIdx);
         // all elements available, continue playback
         clearInterval(this.$waitElementsInterval);
         this.$waitElementsInterval = "";
-        delete this.$checkList[this.$curActionIdx].elementAvailable;
+        //delete this.$checkList[actionIdx].elementAvailable;
         this.resume();
     },
     
     // play current action of test
     $playAction : function() {
-		apf.console.info("$playAction: " + this.$curActionIdx);
-        // pause playback if all elements required for this action are available
-        if (this.$checkList[this.$curActionIdx] && this.$checkList[this.$curActionIdx].elementAvailable && this.$checkList[this.$curActionIdx].elementAvailable.length) {
-            apf.console.info("$playAction: " + this.$checkList[this.$curActionIdx].elementAvailable.length);
-            this.pause();
-            this.$waitElementsInterval = setInterval(function() {
-                apf.uirecorder.playback.$waitElementsCheck();
-            }, 10);
-            return;
-        }
-        
         //apf.console.info("playAction on: " + this.$curActionIdx);
-        //if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying) || apf.uirecorder.isPaused) return;
+        if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying) || apf.uirecorder.isPaused) return;
+        
         this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
+        if (this.$curAction.getAttribute("name") != "mousemove") {
+            apf.console.info("$playAction: " + this.$curActionIdx);
+        }
+
+        // if popups in queue and no popup visible show them after mouseup action
+        if (apf.uirecorder.output.$popupQueue.length && !apf.uirecorder.output.$popup) {
+            // if needed wait for mouseup (after mousedown) to prevent mousedown/mouseup combo being disturbed
+            if (apf.uirecorder.output.$popupOnMouseup && this.$curTestXml.childNodes[this.$curActionIdx-1] && this.$curTestXml.childNodes[this.$curActionIdx-1].getAttribute("name") == "mouseup") {
+                apf.console.info("$playAction: open popup");
+                apf.uirecorder.output.$showPopup();
+                return;
+            }
+        }
+
+        // pause playback if all elements required for this action are not available yet, not in middle of mousedown/mouseup combo
+        if (this.$curAction.getAttribute("name") != "mousemove" && this.$checkList[this.$curActionIdx] && this.$checkList[this.$curActionIdx].elementAvailable && !this.$elementsAvailable(this.$curActionIdx)) {
+            if (!(this.$curAction.getAttribute("name") == "mouseup" && apf.uirecorder.actionList[this.$curActionIdx-1] == "mousedown")) {
+                //apf.console.info("$playAction: elements for actionIdx " + this.$curActionIdx + " not all available yet");
+                if (this.$checkList[this.$curActionIdx] && this.$checkList[this.$curActionIdx].elementAvailable && this.$checkList[this.$curActionIdx].elementAvailable.length) {
+                    this.pause();
+                    this.$waitElementsInterval = setInterval(function() {
+                        apf.uirecorder.playback.$waitElementsCheck(apf.uirecorder.playback.$curActionIdx);
+                    }, 10);
+                    return;
+                }
+            }
+        }                
         
         if (this.$playSpeed == "realtime") {
             if (this.$timeoutTimer) {
                 clearTimeout(this.$timeoutTimer);
+                this.$timeoutTimer = "";
             }
             var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - apf.uirecorder.capture.$startTime);
             if (timeout > 0) {
@@ -758,20 +811,6 @@ apf.uirecorder.playback = {
         "beforeload"        : "afterload",
         "beforestatechange" : "afterstatechange"
     },
-    $checkAmlNodeInterval   : "",
-    $checkAmlNodeExist  : function(name) {
-        var amlNode = (name.indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
-            ? apf.document.selectSingleNode(name.substr(8)) // search for amlNode based on xpath
-            : window[name] // search for amlNode on screen 
-                   || null; // no amlNode found
-        
-        // amlNode found, continue with test
-        if (amlNode) {
-            clearInterval(this.$checkAmlNodeInterval);
-            this.$checkAmlNodeInterval = "";
-            this.$execAction();
-        }
-    },
     
     $execAction : function() {
         if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying) || apf.uirecorder.isPaused) {
@@ -780,7 +819,14 @@ apf.uirecorder.playback = {
             }
             return;
         }
-        apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
+        
+        if (apf.uirecorder.playback.$playSpeed == "max" && this.$curAction.getAttribute("name") == "mousemove") { 
+            this.$testCheck();
+            return;
+        }
+        
+        if (this.$curAction.getAttribute("name") != "mousemove")
+            apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
         
         // locate html element and calculate position of mouse action
         if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
@@ -799,10 +845,10 @@ apf.uirecorder.playback = {
                         apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
                             val     : this.$curAction.getAttribute("amlNode"), 
                             testId  : this.$curTestXml.getAttribute("name")
-                        }, true);
+                        });
                         return;
                     }
-        
+
                     // get htmlNode
                     if (this.$curAction.getAttribute("htmlNode") == "$ext")
                         htmlNode = amlNode.$ext;
@@ -932,7 +978,9 @@ apf.uirecorder.playback = {
 
         if (this.$curTestXml.childNodes.length > this.$curActionIdx+1) {
             this.$curActionIdx++;
-            this.$playAction();
+            
+            if (!apf.uirecorder.isPaused)
+                this.$playAction();
         }
         
         // test complete, process results
@@ -1017,7 +1065,7 @@ apf.uirecorder.testing = {
                 apf.uirecorder.playback.$pauseAfterAction = null;
             }
             else if (!apf.uirecorder.output.$popup) {
-                //delete this.$checkList[checkActionIdx].waitEvents;
+                //delete this.$checkList[actionIdx].waitEvents;
                 this.$checkResults(actionObj, eventName, actionIdx, checkActionIdx, checkIdx);
                 apf.uirecorder.playback.resume();
             }
@@ -1026,30 +1074,30 @@ apf.uirecorder.testing = {
     
     // run through checkList and see if recording matches test 
     $checkResults : function(actionObj, eventName, actionIdx, checkActionIdx, checkIdx) {
-        apf.console.info("checkResults - actionObj: " + actionObj.name + ", eventName: " + eventName + ", checkActionIdx: " + checkActionIdx + ", checkIdx: " + checkIdx);
+        //apf.console.info("checkResults - actionObj: " + actionObj.name + ", eventName: " + eventName + ", checkActionIdx: " + checkActionIdx + ", checkIdx: " + checkIdx);
         // check waitEvents first
             // wait until these events are triggered before continuing
             // possibly need to wait before certain element is available
          
-
         // check waitEvent checks
-        if (apf.uirecorder.playback.$checkList[checkActionIdx] && apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents && apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents[checkIdx]) {
+        if (apf.uirecorder.playback.$checkList[actionIdx] && apf.uirecorder.playback.$checkList[actionIdx].waitEvents && apf.uirecorder.playback.$checkList[actionIdx].waitEvents[checkIdx]) {
+apf.console.info("$checkResults: waitEvents found");
             //debugger;
             // loop thought elements in checkList
-            for (var elName in apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents[checkIdx]) {
+            for (var elName in apf.uirecorder.playback.$checkList[actionIdx].waitEvents[checkIdx]) {
                 // add check for startEvent
                 this.$waitEventChecks.push({
                     elName  : elName,
-                    evtName : apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents[checkIdx][elName][0]
+                    evtName : apf.uirecorder.playback.$checkList[actionIdx].waitEvents[checkIdx][elName][0]
                 });
                 
                 // add check for endEvent
                 this.$waitEventChecks.push({
                     elName  : elName,
-                    evtName : apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents[checkIdx][elName][1]
+                    evtName : apf.uirecorder.playback.$checkList[actionIdx].waitEvents[checkIdx][elName][1]
                 });
                 
-                delete apf.uirecorder.playback.$checkList[checkActionIdx].waitEvents[checkIdx][elName];
+                delete apf.uirecorder.playback.$checkList[actionIdx].waitEvents[checkIdx][elName];
             }
             
             if (this.$waitEventsInterval == "") {
@@ -1074,16 +1122,18 @@ apf.uirecorder.testing = {
         }
         
         // check other checks
-        if (apf.uirecorder.playback.$checkList[checkActionIdx]) {
+        if (apf.uirecorder.playback.$checkList[actionIdx]) {
+apf.console.info("$checkResults: other checks found");
+
             var deleteCheckList = [];
-            for (var prop in apf.uirecorder.playback.$checkList[checkActionIdx]) {
+            for (var prop in apf.uirecorder.playback.$checkList[actionIdx]) {
                 // already checked waitEvents above
                 if (prop == "waitEvents") continue;
                 switch (prop) {
                     case "htmlNode":
                         // match if amlNode id corresponds
-                        if (actionObj.amlNode && actionObj.amlNode.id && apf.uirecorder.playback.$checkList[checkActionIdx][prop] == actionObj.amlNode.id) {
-                            delete apf.uirecorder.playback.$checkList[checkActionIdx][prop];
+                        if (actionObj.amlNode && actionObj.amlNode.id && apf.uirecorder.playback.$checkList[actionIdx][prop] == actionObj.amlNode.id) {
+                            delete apf.uirecorder.playback.$checkList[actionIdx][prop];
                         }
                         
                         // @todo check popup
@@ -1091,11 +1141,11 @@ apf.uirecorder.testing = {
                         // error if no amlNode is targeted
                         // or htmlNode is not part of the targeted amlNode, either activeElements or $ext
                         else if (!actionObj.amlNode 
-                            || actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[checkActionIdx][prop]]
-                            || apf.uirecorder.playback.$checkList[checkActionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
+                            || actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[actionIdx][prop]]
+                            || apf.uirecorder.playback.$checkList[actionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
                         ) {
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
-                                val: [eventName, apf.uirecorder.playback.$checkList[checkActionIdx][prop]], 
+                                val: [eventName, apf.uirecorder.playback.$checkList[actionIdx][prop]], 
                                 testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"), 
                                 action  : eventName + " (" + checkActionIdx + ")"
                             });
@@ -1104,11 +1154,11 @@ apf.uirecorder.testing = {
                         // error if targeted htmlNode has different name than recorded htmlNode name
                         // or htmlNode is $ext, but not of targeted amlNode
                         else if (actionObj.htmlNode 
-                             && ( (actionObj.htmlNode.name != "$ext" && actionObj.htmlNode.name != apf.uirecorder.playback.$checkList[checkActionIdx][prop]) 
-                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.playback.$checkList[checkActionIdx][prop] != (actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)))) 
+                             && ( (actionObj.htmlNode.name != "$ext" && actionObj.htmlNode.name != apf.uirecorder.playback.$checkList[actionIdx][prop]) 
+                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.playback.$checkList[actionIdx][prop].indexOf(actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)) == -1)) 
                                 ) {
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
-                                val: [eventName, apf.uirecorder.playback.$checkList[checkActionIdx][prop]], 
+                                val: [eventName, apf.uirecorder.playback.$checkList[actionIdx][prop]], 
                                 testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                 action  : eventName + " (" + checkActionIdx + ")"
                             });
@@ -1116,16 +1166,16 @@ apf.uirecorder.testing = {
                         
                         // no erros found, check successfull
                         else {
-                            delete apf.uirecorder.playback.$checkList[checkActionIdx][prop];
+                            delete apf.uirecorder.playback.$checkList[actionIdx][prop];
                         }
                         break;
                     case "details":
 //                    case "properties":
 //                    case "events":
 //                    case "data":
-                        if (!apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx]) continue;
-                        for (var dType in apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx]) {
-                            for (var elName in apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx][dType]) {
+                        if (!apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx]) continue;
+                        for (var dType in apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx]) {
+                            for (var elName in apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx][dType]) {
 
                                 // check if amlNode with elName exist in document
                                 var amlNode = (elName.indexOf("html[") == 0) 
@@ -1145,8 +1195,7 @@ apf.uirecorder.testing = {
                                     */
                                 }
     
-                                
-                                for (var name in apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx][dType][elName]) {
+                                for (var name in apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx][dType][elName]) {
                                     var valSet = false;
                                     if (actionObj.detailList[checkIdx] && actionObj.detailList[checkIdx][elName] && actionObj.detailList[checkIdx][elName][dType] && actionObj.detailList[checkIdx][elName][dType].length) {
                                         for (var valMatch = false, i = 0, l = actionObj.detailList[checkIdx][elName][dType].length; i < l; i++) {
@@ -1155,8 +1204,8 @@ apf.uirecorder.testing = {
                                                 
                                                 // check string
                                                 // check object, amlNode
-                                                if ((typeof actionObj.detailList[checkIdx][elName][dType][i].value == "string" && actionObj.detailList[checkIdx][elName][dType][i].value == apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx][dType][elName][name])
-                                                   || (apf.serialize(actionObj.detailList[checkIdx][elName][dType][i].value).split("<").join("&lt;").split(">").join("&gt;") == apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx][dType][elName][name])
+                                                if ((typeof actionObj.detailList[checkIdx][elName][dType][i].value == "string" && actionObj.detailList[checkIdx][elName][dType][i].value == apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx][dType][elName][name])
+                                                   || (apf.serialize(actionObj.detailList[checkIdx][elName][dType][i].value).split("<").join("&lt;").split(">").join("&gt;") == apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx][dType][elName][name])
                                                 ) {
                                                     valMatch = true;
                                                 }
@@ -1165,27 +1214,25 @@ apf.uirecorder.testing = {
                                         }
                                     }
     
-                                    //if (isSecondCheck) {
-                                        if (!valSet) {
-                                           apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_NOT_SET, { 
-                                                val         : [prop, name, elName], 
-                                                testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
-                                                action      : eventName + " (" + checkActionIdx + ")"
-                                            });
-                                        }
-                                        else if (!valMatch) {
-                                           apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_INCORRECT, { 
-                                                val         : [prop, name, elName], 
-                                                testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
-                                                action      : eventName + " (" + checkActionIdx + ")"
-                                            });
-                                        }
-                                        else {
-                                            // @todo delete from checkList
-                                            apf.console.info("succesfull check: " + prop + ": " + elName + " - " + name);
-                                            //deleteCheckList.push(apf.uirecorder.playback.$checkList[checkActionIdx][prop][checkIdx][dType][elName][name]);
-                                        }
-                                    //}
+                                    if (!valSet) {
+                                       apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_NOT_SET, { 
+                                            val         : [prop, name, elName], 
+                                            testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
+                                            action      : eventName
+                                        });
+                                    }
+                                    else if (!valMatch) {
+                                       apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_INCORRECT, { 
+                                            val         : [prop, name, elName], 
+                                            testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
+                                            action      : eventName
+                                        });
+                                    }
+                                    else {
+                                        // @todo delete from checkList
+                                        apf.console.info("succesfull check: " + prop + ": " + elName + " - " + name);
+                                        //deleteCheckList.push(apf.uirecorder.playback.$checkList[actionIdx][prop][checkIdx][dType][elName][name]);
+                                    }
                                 }
                             }                            
                         }
@@ -1204,7 +1251,9 @@ apf.uirecorder.testing = {
 }
 
 apf.uirecorder.output = {
-    $popup : false,
+    $popup          : false,
+    $popupQueue     : [],
+    $popupOnMouseup  : false,
     
     // messages output for test results
     notices : {
@@ -1378,33 +1427,32 @@ apf.uirecorder.output = {
         
         // set message
         if (!found) {
-            // prevent popup disturbing a mousedown/mouseup combo
-            if (!apf.uirecorder.testing.ignoreWarnings && values.action == "mousedown" && apf.uirecorder.playback.$curTestXml.childNodes[values.actionIdx].getAttribute("name") == "mouseup") {
-                //debugger;
-                // @todo set flag for next playAction (where actionName is "mouseup") to pause and check for waitEvent 
-                // @todo remove return call;    
-                apf.console.info("avoided mousedown/mouseup combo disturbed by popup");
-                
-                return;
-            }
             // handle warning
             if (apf.uirecorder.isTesting && type == "warning" && !apf.uirecorder.testing.ignoreWarnings) {
-                apf.uirecorder.playback.pause();
+                this.$popupQueue.push({
+                    type    : type,
+                    action  : values.action,
+                    message : message
+                });
                 
-                setTimeout(function() {
-                    apf.console.info("warning popup");
-                    apf.uirecorder.output.$popup = true;
-                    apf.dispatchEvent("apftest_" + type, {message: message})
-                }, 500);
+                if (values.action == "mousedown") {
+                    this.$popupOnMouseup = true;
+                }
                 
-                apf.addEventListener("apftest_testcontinue", this.$continueTest);
+                // no popup visible yet
+                if (!apf.uirecorder.output.$popup) {
+                    // if needed wait for mouseup (after mousedown) to prevent mousedown/mouseup combo being disturbed
+                    if (!this.$popupOnMouseup) {
+                        this.$showPopup();
+                    }
+                }
             }
             
             // handle error
             if (type == "error") {
                 var isTesting = apf.uirecorder.isTesting;
                 apf.uirecorder.playback.$testFailed();
-                apf.console.info("error popup");
+                //apf.console.info("error popup");
                 apf.dispatchEvent("apftest_" + type, {message: message, isTesting: isTesting})
             }
 
@@ -1421,14 +1469,40 @@ apf.uirecorder.output = {
         }
     },
     
+    // show popup
+    $showPopup : function() {
+        // short delay to let script finish previous action        
+        setTimeout(function() {
+            apf.uirecorder.output.$popup = true;
+            this.$popupOnMouseup = false;
+            apf.uirecorder.playback.pause();
+            apf.dispatchEvent("apftest_" + apf.uirecorder.output.$popupQueue[0].type, {message: apf.uirecorder.output.$popupQueue[0].message})
+        }, 500);
+        apf.addEventListener("apftest_testcontinue", apf.uirecorder.output.$continueTest);
+    },
+    
     // continue with current test after popup
     $continueTest : function(e) {
+        apf.uirecorder.output.$popupQueue.shift();
         apf.uirecorder.testing.ignoreWarnings = e.ignoreWarnings;
-        apf.removeEventListener("apftest_testcontinue", this.$continueTest);
-        setTimeout(function() {
-            apf.uirecorder.output.$popup = false;
-            apf.uirecorder.playback.resume();
-        }, 500);
+        
+        // no popups in queue
+        if (!apf.uirecorder.output.$popupQueue.length || apf.uirecorder.testing.ignoreWarnings) {
+            // reset popupQueue
+            apf.uirecorder.output.$popupQueue = [];
+            apf.removeEventListener("apftest_testcontinue", apf.uirecorder.output.$continueTest);
+  
+            // small delay to enable user to release mouse
+            setTimeout(function() {
+                apf.uirecorder.output.$popup = false;
+                apf.uirecorder.playback.resume();
+            }, 500);
+        }
+        
+        // show next popup in queue
+        else {
+            apf.dispatchEvent("apftest_" + apf.uirecorder.output.$popupQueue[0].type, {message: apf.uirecorder.output.$popupQueue[0].message})
+        }
     },
     
     // convert testResults object to Xml format
@@ -1445,7 +1519,7 @@ apf.uirecorder.output = {
                         //resultNode.setAttribute("type", type);
                         resultNode.setAttribute("testId", testId);
                         if (apf.uirecorder.testResults[type][testId][i].action)
-                            resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action);
+                            resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action + " (" + apf.uirecorder.testResults[type][testId][i].actionIdx + ")");
                         resultNode.appendChild(xml.ownerDocument.createTextNode(apf.uirecorder.testResults[type][testId][i].message));
                         xml.appendChild(resultNode);
                     }
