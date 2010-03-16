@@ -77,8 +77,8 @@
  * latency is no more than 100 to 300ms which is near impossible for such action
  * to be performed. Therefor this is deemed acceptable.
  * 
- * Working in a multi user environment could imply that data has a high 
- * probability of changing. This might be a problem when syncing offline 
+ * Working in a multi user environment usually implies that data has a high
+ * probability of changing. This might become a problem when syncing offline
  * changes after several hours. This should be a consideration for the 
  * application architect.
  *
@@ -89,7 +89,7 @@
  * serious scaling problem and is not preferred. apf.offline has built in support
  * for this type of timeout. By setting the rsb-timeout attribute it is aware
  * of when the server has timed out. When this timeout is reached the application 
- * will reload all it's data from the server and discard all offline rsb 
+ * will reload all its data from the server and discard all offline rsb 
  * messages before reconnecting to the server.
  *
  * @attribute {String} transport the name of the teleport element that provides a
