@@ -606,7 +606,7 @@ apf.slider = function(struct, tagName){
     });
     
     this.$blur = function() {
-        apf.popup.forceHide();
+        this.slideUp();
 
         if (!this.isOpened)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
@@ -620,8 +620,6 @@ apf.slider = function(struct, tagName){
     this.$focus = function(){
         this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }
-    
-    this.addEventListener("popuphide", this.slideUp);
 
     /**** Init ****/
 
