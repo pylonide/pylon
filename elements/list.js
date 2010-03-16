@@ -385,7 +385,7 @@ apf.select1   = function(struct, tagName){
     
     this.$selectSeries = function(e) {
         e = e || event;
-        e.cancelBubble = true;
+        //e.cancelBubble = true;
         var target = e.target || e.srcElement;
 
         if (e.type == "mouseover") {

@@ -543,11 +543,18 @@ apf.slider = function(struct, tagName){
             : "overflow"] = "hidden";
         
         this.oSliderContainer.style.display = "block";
-        var sWidth = this.oSliderContainer.offsetWidth;
-        var sHeight = this.oSliderContainer.offsetHeight;
+        var scWidth = this.oSliderContainer.offsetWidth;
+        var scHeight = this.oSliderContainer.offsetHeight;
+        var kWidth = this.oKnob.offsetWidth;
         var diff = apf.getDiff(this.oSliderContainer);
-        var right = sWidth - this.$ext.offsetWidth;
+        var right = scWidth - this.$ext.offsetWidth;
+        this.setLabelValue(this.oLabel.value);
         this.oSliderContainer.style.display = "none";
+        
+        //Place grabber in the same position as button
+        if(this.hasTSlider) {
+            right -= scWidth - parseInt(this.oKnob.style.left) - kWidth;
+        } 
 
         this.oSliderContainer.style.display = "";
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
@@ -558,13 +565,12 @@ apf.slider = function(struct, tagName){
             y       : this.$ext.offsetHeight,
             animate : true,
             ref     : this.$ext,
-            width   : sWidth + 1,
-            height  : sHeight - diff[1],
+            width   : scWidth + 1,
+            height  : scHeight - diff[1],
             callback: function(container) {
                 container.style[apf.supportOverflowComponent
                     ? "overflowY"
                     : "overflow"] = "hidden";
-                _self.setLabelValue(_self.oLabel.value);
             }
         });
     };
@@ -598,7 +604,7 @@ apf.slider = function(struct, tagName){
         if (!this.isOpened)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"])
 
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", this.$baseCSSname + "Down"]);
         
         if (this.hasTSlider)
             this.setLabelValue(this.oLabel.value);
