@@ -84,7 +84,7 @@ apf.ContentEditable.plugin("link", function(){
                 oLink = aLinks[i];
         if (oLink) {
             var val = this.oUrl.value;
-            oLink.href   = (val.indexOf("http://") == -1 ? "http://" : "") + val;
+            oLink.href   = (!val.match(/^[a-zA-Z]+\:/) ? "http://" : "") + val;
             oLink.target = this.oTarget.value;
             oLink.title  = this.oTitle.value;
         }
