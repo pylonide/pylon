@@ -460,7 +460,14 @@ apf.slider = function(struct, tagName){
     };
     
     this.setLabelValue = function(value) {
-        this.$propHandlers["value"].call(this, ((parseInt(value)*(this.max - this.min)/100)));
+        if (this.mask == "#") {
+             this.$propHandlers["value"].call(this, value);
+        }
+        else {
+            //for mask = "%"
+            this.$propHandlers["value"].call(this, (parseInt(value)*(this.max - this.min)/100));
+        }
+        
     };
 
     /**
