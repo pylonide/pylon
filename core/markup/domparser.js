@@ -95,7 +95,7 @@ apf.DOMParser.prototype = new (function(){
     
     //@todo prevent leakage by not recording .$aml
     this.parseFromXml = function(xmlNode, options){
-        var doc, docFrag;
+        var doc, docFrag, amlNode;
         if (!options) 
             options = {};
         
@@ -120,14 +120,14 @@ apf.DOMParser.prototype = new (function(){
             // #endif
             
             //Let's start building our tree
-            var amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
+            amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
             (docFrag || doc).appendChild(amlNode);
             if (options.htmlNode)
                 amlNode.$int = options.htmlNode;
         }
         else {
-            var amlNode = options.amlNode;
-            var doc     = options.doc;
+            amlNode = options.amlNode;
+            doc     = options.doc;
         }
 
         //Set parse context

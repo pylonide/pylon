@@ -181,6 +181,7 @@ apf.$x = apf.$loader
         "core/markup/xhtml/body.js",
         "core/markup/xhtml/html.js",
         "core/markup/xhtml/skipchildren.js",
+        "core/markup/xhtml/input.js",
         
         "core/markup/xinclude.js",
         "core/markup/xinclude/include.js",

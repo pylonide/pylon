@@ -354,8 +354,13 @@ apf.debugwin = {
             //document.body.style.position = "static";
         }
         
-        if (!apf.debugwin.win)
-            this.createWindow();
+        if (!apf.debugwin.win) {
+            if (!this.createWindow()) {
+                return $setTimeout(function() {
+                    apf.debugwin.show(e, filename, linenr);
+                }, 200);
+            }
+        }
 
         if (e) {
             var parsed = this.formatError(e);
@@ -861,6 +866,8 @@ apf.debugwin = {
             document.write("<div id='apf_debugwin'></div>");
             elError = document.getElementById("apf_debugwin");
         }
+        if (!elError)
+            return false;
 
         elError.style.position = apf.supportFixedPosition ? "fixed" : "absolute";
 
@@ -1626,6 +1633,8 @@ apf.debugwin = {
         apf.getWindowHeight = function(){
             return document.body.offsetHeight;
         }
+
+        return true;
     },
 
     run : function(action){

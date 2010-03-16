@@ -78,22 +78,27 @@ apf.aml.setElement("include", apf.XiInclude);
         
         //@todo apf3.x the insertBefore seems like unnecessary overhead
         if (xmlNode) {
-            var _self = this;
-            var nodes = domParser.parseFromXml(xmlNode, {
-                doc      : this.ownerDocument
-            }).firstChild.childNodes;
-            
-            var pNode = this.parentNode, node, i, l;   
-            for (node, i = 0, l = nodes.length; i < l; i++) {
+            var node,
+                _self = this,
+                nodes = domParser.parseFromXml(xmlNode, {
+                    doc : this.ownerDocument
+                  }).firstChild.childNodes,
+                pNode = this.parentNode,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i) {
                 (node = nodes[i]).parentNode = null; //@todo a little hackery
                 pNode.insertBefore(node, this);
             }
             
             if (!this.defer) {
-                (this.$parseContext[1] || (this.$parseContext[1] = {})).callback = function(){
+                var o  = (this.$parseContext[1] || (this.$parseContext[1] = {})),
+                    cb = o.callback;
+                o.callback = function(){
                     done.call(_self, xmlNode);
+                    if (cb)
+                        cb.call(_self.ownerDocument);
                 };
-                 
                 domParser.$continueParsing.apply(domParser, this.$parseContext);
             }
             else

@@ -60,9 +60,12 @@ apf.XhtmlElement = function(struct, tagName){
         
         if (handler)
             handler.call(this, value, null, name);
-        else if (this.$int)
+        else if (this.$int) {
+            try{
             this.$int.setAttribute(apf.isIE && name == "class" 
                 ? "className" : name, value);
+            }catch(ex){debugger;}
+        }
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
