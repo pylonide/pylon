@@ -182,7 +182,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     else
     // #endif
     {
-        beforeNode = options.beforeNode || apf.getNode(parentNode, [0]);
+        beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
 
         if (parentNode.ownerDocument.importNode) {

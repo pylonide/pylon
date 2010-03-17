@@ -1050,7 +1050,7 @@ apf.model = function(struct, tagName){
      * @param {XMLElement} xmlNode  the data node to send to the server.
      */
      //@todo rewrite this for apf3.0
-    this.submit = function(instruction, type, xmlNode, type, useComponents, xSelectSubTree){
+    this.submit = function(instruction, type, xmlNode, useComponents, xSelectSubTree){
         if (!instruction)
             instruction = this.submission;
         

@@ -342,6 +342,21 @@ apf.rpc = function(struct, tagName){
         return result;
     };
 
+    function getCallback(node) {
+        var p, f;
+        if (typeof node.callback == "string") {
+            // support objects and namespaced functions
+            p = node.callback.split("."),
+            f = self[p.shift()];
+            while (f && p.length)
+                f = f[p.shift()];
+        }
+        else {
+            f = node.callback;
+        }
+        return f || apf.K;
+    }
+
     this.call = function(name, args, options){
         var callback,
             node = this.$methods[name];
@@ -351,9 +366,7 @@ apf.rpc = function(struct, tagName){
             callback = args.pop();
         }
         else {
-            callback = (typeof node.callback == "string"
-                ? self[node.callback]
-                : node.callback) || function(){};
+            callback = getCallback(node);
         }
 
         args = this.$convertArgs(name, args);
