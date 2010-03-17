@@ -647,13 +647,8 @@ apf.slider = function(struct, tagName){
         this.oFill    = this.$getLayoutNode("main", "fill", this.$ext);
         this.oBalloon = this.$getLayoutNode("main", "balloon", this.$ext);
         
-        
-        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
-        
-        this.$int     = this.oContainer = this.$getLayoutNode("main", "container", this.$ext);
-        
         //Allows to select text in IE
-        this.$int.onselectstart = function(e){
+        this.$ext.onselectstart = function(e){
             if (!e) e = event;
             e.cancelBubble = true;
         }
