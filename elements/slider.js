@@ -254,8 +254,9 @@ apf.slider = function(struct, tagName){
         if (!value)
             this.mask = "%";
 
-        if (!this.mask.match(/^(%|#)$/))
+        if (!this.mask.match(/^(%|#.?#*)$/)) {
             this.mask = value.split(/\||;/);
+        }
     };
 
     /**
@@ -406,25 +407,29 @@ apf.slider = function(struct, tagName){
         }
 
         if (this.oLabel) {
+            var mask = this.mask.split(".");
+            
+            switch(mask[0]) {
+                case "%":
+                    var inputValue = Math.round(multiplier * 100) + "%";
+                    break;
+                case "#":
+                    var tempValue = (this.step
+                        ? (Math.round(this.value / this.step) * this.step)
+                        : this.value);
+                    var inputValue = new Number(tempValue).toFixed(mask[1] ? mask[1].length : 0);
+                    break;
+                default:
+                    var inputValue = this.mask[Math.round(this.value - this.min) / (this.step || 1)];
+                    break;
+                   
+            }
+
             if (this.oLabel.nodeValue !== null) {
-                this.oLabel.nodeValue = 
-                    this.mask == "%"
-                        ? Math.round(multiplier * 100) + "%" 
-                        : (this.mask == "#" 
-                            ? (this.step
-                                ? (Math.round(this.value / this.step) * this.step)
-                                : this.value)
-                            : this.mask[Math.round(this.value - this.min) / (this.step || 1)]);
+                this.oLabel.nodeValue = inputValue;
             }
             else {
-                this.oLabel.value = 
-                    this.mask == "%"
-                        ? Math.round(multiplier * 100) + "%" 
-                        : (this.mask == "#" 
-                            ? (this.step
-                                ? (Math.round(this.value / this.step) * this.step)
-                                : this.value)
-                            : this.mask[Math.round(this.value - this.min) / (this.step || 1)]);
+                this.oLabel.value = inputValue;
             }
             /*
             //Percentage
@@ -460,14 +465,18 @@ apf.slider = function(struct, tagName){
     };
     
     this.setLabelValue = function(value) {
-        if (this.mask == "#") {
-             this.$propHandlers["value"].call(this, value);
-        }
-        else {
-            //for mask = "%"
-            this.$propHandlers["value"].call(this, (parseInt(value)*(this.max - this.min)/100));
+        var mask = this.mask.split(".");
+        
+        switch(mask[0]) {
+            case "%":
+                value = parseInt(value) * (this.max - this.min) / 100;
+                break;
+            case "#":
+                value = new Number(value).toFixed(mask[1] ? mask[1].length : 0);
+                break;
         }
         
+        this.$propHandlers["value"].call(this, value);
     };
 
     /**
