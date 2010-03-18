@@ -339,7 +339,7 @@ apf.BaseTree = function(){
                 || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0),
 
             htmlNode         = this.$initNode(xmlNode, state, Lid, depth),
-            container        = this.$getLayoutNode("item", "container"),
+            container        = this.$getLayoutNode("item", "container", htmlNode),
             eachLength;
 
         if (!startcollapsed && !this.nocollapse)
@@ -397,14 +397,17 @@ apf.BaseTree = function(){
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
-                apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
-                if (!apf.isChildOf(htmlNode, container, true) && removeContainer) 
+                var isChildOfHtmlNode = !apf.isChildOf(htmlNode, container, true)
+                htmlNode = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
+                if (isChildOfHtmlNode && removeContainer)
                     var container = apf.insertHtmlNode(container, 
                         htmlParentNode, beforeNode);
+                else
+                	var container = this.$getLayoutNode("item", "container", htmlNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!apf.isChildOf(htmlParentNode, container, true) && removeContainer) 
+                if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 
