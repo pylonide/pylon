@@ -550,7 +550,7 @@ apf.DragDrop = function(){
             var fEl,
                 srcEl       = e.originalTarget || e.srcElement || e.target,
                 multiselect = _self.hasFeature(apf.__MULTISELECT__);
-            if (multiselect && srcEl == _self.$int)
+            if (multiselect && srcEl == _self.$container)
                 return;
             _self.dragging = 0;
 
@@ -1353,7 +1353,7 @@ apf.MultiselectDragDrop = function() {
             
             this.lastel = htmlNode
                 ? this.$getLayoutNode("item", "container", htmlNode)
-                : this.$int;
+                : this.$container;
             
             this.$setStyleClass(this.lastel, "dragInsert");
         }

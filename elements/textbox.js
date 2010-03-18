@@ -135,18 +135,18 @@ apf.textbox  = function(struct, tagName){
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value, prop, initial){
-        if (!this.$int || !initial && this.getValue() == value)
+        if (!this.$input || !initial && this.getValue() == value)
             return;
 
         // Set Value
         if (!initial && !value) //@todo apf3.x research the use of clear
             this.clear();
         else if (this.isHTMLBox) {
-            if (this.$int.innerHTML != value)
-                this.$int.innerHTML = value;
+            if (this.$input.innerHTML != value)
+                this.$input.innerHTML = value;
         }
-        else if (this.$int.value != value)
-            this.$int.value = value;
+        else if (this.$input.value != value)
+            this.$input.value = value;
         
         if (this.$button)
             this.$button.style.display = value && !initial ? "block" : "none";
@@ -157,8 +157,8 @@ apf.textbox  = function(struct, tagName){
     this.addEventListener("prop.maxlength", function(e){
 
         //Special validation support using nativate max-length browser support
-        if (this.$int.tagName.toLowerCase().match(/input|textarea/))
-            this.$int.maxLength = parseInt(e.value) || null;
+        if (this.$input.tagName.toLowerCase().match(/input|textarea/))
+            this.$input.maxLength = parseInt(e.value) || null;
     });
 
     /**
@@ -233,7 +233,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     //this.$propHandlers["ref"] = function(value) {
-    //    this.$int.setAttribute("name",  value.split("/").pop().split("::").pop()
+    //    this.$input.setAttribute("name",  value.split("/").pop().split("::").pop()
     //        .replace(/[\@\.\(\)]*/g, ""));
     //};
 
@@ -246,7 +246,7 @@ apf.textbox  = function(struct, tagName){
         if (value) {
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)
-                this.$int.onblur();
+                this.$input.onblur();
             //#endif
             
             //this.$propHandlers["value"].call(this, value, null, true);
@@ -262,12 +262,12 @@ apf.textbox  = function(struct, tagName){
      */
     this.$propHandlers["focusselect"] = function(value){
         var _self = this;
-        this.$int.onmousedown = function(){
+        this.$input.onmousedown = function(){
             _self.focusselect = false;
         };
 
-        this.$int.onmouseup  =
-        this.$int.onmouseout = function(){
+        this.$input.onmouseup  =
+        this.$input.onmouseout = function(){
             _self.focusselect = value;
         };
     };
@@ -318,7 +318,7 @@ apf.textbox  = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.$int.innerHTML : this.$int.value;
+        var v = this.isHTMLBox ? this.$input.innerHTML : this.$input.value;
         return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
     };
     
@@ -329,7 +329,7 @@ apf.textbox  = function(struct, tagName){
      */
     this.select   = function(){ 
         try {
-            this.$int.select(); 
+            this.$input.select(); 
         }
         catch(e){}
     };
@@ -337,12 +337,12 @@ apf.textbox  = function(struct, tagName){
     /**
      * Deselects the text in this element.
      */
-    this.deselect = function(){ this.$int.deselect(); };
+    this.deselect = function(){ this.$input.deselect(); };
 
     /**** Private Methods *****/
 
-    this.$enable  = function(){ this.$int.disabled = false; };
-    this.$disable = function(){ this.$int.disabled = true; };
+    this.$enable  = function(){ this.$input.disabled = false; };
+    this.$disable = function(){ this.$input.disabled = true; };
 
     this.$insertData = function(str){
         return this.setValue(str);
@@ -354,7 +354,7 @@ apf.textbox  = function(struct, tagName){
     this.insert = function(text){
         if (apf.hasMsRangeObject) {
             try {
-                this.$int.focus();
+                this.$input.focus();
             }
             catch(e) {}
             var range = document.selection.createRange();
@@ -365,7 +365,7 @@ apf.textbox  = function(struct, tagName){
             range.select();
         }
         else {
-            this.$int.value += text;
+            this.$input.value += text;
         }
     };
 
@@ -380,7 +380,7 @@ apf.textbox  = function(struct, tagName){
             this.$propHandlers["value"].call(this, "");
         }
         
-        if (!this.$int.tagName.toLowerCase().match(/input|textarea/i)) {
+        if (!this.$input.tagName.toLowerCase().match(/input|textarea/i)) {
             if (apf.hasMsRangeObject) {
                 try {
                     var range = document.selection.createRange();
@@ -418,7 +418,7 @@ apf.textbox  = function(struct, tagName){
             if (!text)
                 text = window.clipboardData.getData("Text");
 
-            this.$int.focus();
+            this.$input.focus();
             var range = document.selection.createRange();
             range.text = "";
             range.collapse();
@@ -435,7 +435,7 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        if (this["initial-message"] && this.$int.value == this["initial-message"]) {
+        if (this["initial-message"] && this.$input.value == this["initial-message"]) {
             this.$propHandlers["value"].call(this, "", null, true);
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
@@ -443,8 +443,8 @@ apf.textbox  = function(struct, tagName){
         var _self = this;
         function delay(){
             try {
-                if (!fTimer || document.activeElement != _self.$int) {
-                    _self.$int.focus();
+                if (!fTimer || document.activeElement != _self.$input) {
+                    _self.$input.focus();
                 }
                 else {
                     clearInterval(fTimer);
@@ -477,20 +477,20 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
-        if (this["initial-message"] && this.$int.value == "") {
+        if (this["initial-message"] && this.$input.value == "") {
             this.$propHandlers["value"].call(this, this["initial-message"], null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
 
         /*if (apf.hasMsRangeObject) {
-            var r = this.$int.createTextRange();
+            var r = this.$input.createTextRange();
             r.collapse();
             r.select();
         }*/
 
         try {
             if (apf.isIE || !e || e.srcElement != apf.window)
-                this.$int.blur();
+                this.$input.blur();
         }
         catch(e) {}
 
@@ -536,19 +536,19 @@ apf.textbox  = function(struct, tagName){
             oExt.setAttribute("onclick",     "if (!this.host.disabled) \
                 this.host.dispatchEvent('click', {htmlEvent : event});");
         });
-        this.$int    = this.$getLayoutNode("main", "input", this.$ext);
+        this.$input    = this.$getLayoutNode("main", "input", this.$ext);
         this.$button = this.$getLayoutNode("main", "button", this.$ext);
         
         if (this.type == "password")
             this.$propHandlers["type"].call(this, "password");
 
-        if (!apf.hasContentEditable && "input|textarea".indexOf(this.$int.tagName.toLowerCase()) == -1) {
-            var node  = this.$int;
-            this.$int = node.parentNode.insertBefore(document.createElement("textarea"), node);
+        if (!apf.hasContentEditable && "input|textarea".indexOf(this.$input.tagName.toLowerCase()) == -1) {
+            var node  = this.$input;
+            this.$input = node.parentNode.insertBefore(document.createElement("textarea"), node);
             node.parentNode.removeChild(node);
-            this.$int.className = node.className;
+            this.$input.className = node.className;
             if (this.$ext == node)
-                this.$ext = this.$int;
+                this.$ext = this.$input;
         }
         
         if (this.$button) {
@@ -559,20 +559,20 @@ apf.textbox  = function(struct, tagName){
         }
 
         //@todo for skin switching this should be removed
-        if (this.$int.tagName.toLowerCase() == "textarea") {
+        if (this.$input.tagName.toLowerCase() == "textarea") {
             this.addEventListener("focus", function(e){
                 //if (this.multiline != "optional")
                     //e.returnValue = false
             });
         }
 
-        this.$int.onselectstart = function(e){
+        this.$input.onselectstart = function(e){
             if (!e) e = event;
             e.cancelBubble = true;
         }
-        this.$int.host = this;
+        this.$input.host = this;
 
-        this.$int.onkeydown = function(e){
+        this.$input.onkeydown = function(e){
             e = e || window.event;
             
             if (this.host.disabled) {
@@ -613,7 +613,7 @@ apf.textbox  = function(struct, tagName){
             }
         };
 
-        this.$int.onkeyup = function(e){
+        this.$input.onkeyup = function(e){
             if (!e)
                 e = event;
                 
@@ -645,27 +645,27 @@ apf.textbox  = function(struct, tagName){
 
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.$int);
+            apf.sanitizeTextbox(this.$input);
         //#endif
 
         if (apf.hasAutocompleteXulBug)
-            this.$int.setAttribute("autocomplete", "off");
+            this.$input.setAttribute("autocomplete", "off");
 
-        if (!this.$int.tagName.toLowerCase().match(/input|textarea/)) {
+        if (!this.$input.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;
 
-            this.$int.unselectable    = "Off";
-            this.$int.contentEditable = true;
-            this.$int.style.width     = "1px";
+            this.$input.unselectable    = "Off";
+            this.$input.contentEditable = true;
+            this.$input.style.width     = "1px";
 
-            this.$int.select = function(){
+            this.$input.select = function(){
                 var r = document.selection.createRange();
                 r.moveToElementText(this);
                 r.select();
             }
         };
 
-        this.$int.deselect = function(){
+        this.$input.deselect = function(){
             if (!document.selection) return;
 
             var r = document.selection.createRange();
@@ -686,14 +686,14 @@ apf.textbox  = function(struct, tagName){
         if (this.$button)
             this.$button.onmousedown = null;
         
-        if (this.$int) {
-            this.$int.onkeypress     =
-            this.$int.onmouseup      =
-            this.$int.onmouseout     =
-            this.$int.onmousedown    =
-            this.$int.onkeydown      =
-            this.$int.onkeyup        =
-            this.$int.onselectstart  = null;
+        if (this.$input) {
+            this.$input.onkeypress     =
+            this.$input.onmouseup      =
+            this.$input.onmouseout     =
+            this.$input.onmousedown    =
+            this.$input.onkeydown      =
+            this.$input.onkeyup        =
+            this.$input.onselectstart  = null;
         }
     });
 // #ifdef __WITH_DATABINDING

@@ -83,8 +83,7 @@ apf.flashplayer = function(struct, tagName){
     
     this.$draw = function(){
         //Build Main Skin
-        this.$ext = 
-        this.$int = this.$pHtmlNode.appendChild(document.createElement("div"));
+        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
         this.$ext.onclick = function(){this.host.dispatchEvent("click");}
         
         var src = this.getAttribute("src") || "";

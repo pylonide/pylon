@@ -110,7 +110,7 @@ apf.label = function(struct, tagName){
     this.$supportedProperties.push("caption", "value", "for");
     this.$propHandlers["caption"] = 
     this.$propHandlers["value"]   = function(value){
-        this.$int.innerHTML = value;
+        this.$caption.innerHTML = value;
     };
     this.$propHandlers["for"] = function(value){
         forElement = typeof value == "string" ? self[value] : value;
@@ -119,9 +119,9 @@ apf.label = function(struct, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal();
-        this.$int = this.$getLayoutNode("main", "caption", this.$ext);
-        if (this.$int.nodeType != 1) 
-            this.$int = this.$int.parentNode;
+        this.$caption = this.$getLayoutNode("main", "caption", this.$ext);
+        if (this.$caption.nodeType != 1) 
+            this.$caption = this.$caption.parentNode;
         
         this.$ext.onmousedown = function(){
             if (forElement && forElement.$focussable && forElement.focussable)

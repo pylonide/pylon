@@ -109,8 +109,8 @@ apf.Cache = function(){
                     this.subTreeCacheContext.oHtml, this.subTreeCacheContext.beforeNode);
             }
             else {
-                while (this.$int.childNodes.length)
-                    this.subTreeCacheContext.oHtml.appendChild(this.$int.childNodes[0]);
+                while (this.$container.childNodes.length)
+                    this.subTreeCacheContext.oHtml.appendChild(this.$container.childNodes[0]);
             }
 
             this.documentId = this.xmlRoot = this.cacheId = this.subTreeCacheContext = null;
@@ -162,7 +162,7 @@ apf.Cache = function(){
                 htmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId,
                 node   = this.$pHtmlDoc.getElementById(htmlId);
             if (node) 
-                cacheItem = getId ? false : this.$int; //@todo apf3.0 what's this GLOBAL var doing here?
+                cacheItem = getId ? false : this.$container; //@todo apf3.0 what's this GLOBAL var doing here?
             else {
                 for (var prop in this.cache) {
                     if (this.cache[prop] && this.cache[prop].nodeType) {
@@ -200,10 +200,10 @@ apf.Cache = function(){
 
                 //Load html
                 if (this.renderRoot)
-                    this.$int.appendChild(oHtml);
+                    this.$container.appendChild(oHtml);
                 else {
                     while (oHtml.childNodes.length)
-                        this.$int.appendChild(oHtml.childNodes[0]);
+                        this.$container.appendChild(oHtml.childNodes[0]);
                 }
 
                 return true;
@@ -317,17 +317,17 @@ apf.Cache = function(){
     
     if (!this.$getCurrentFragment) {
         this.$getCurrentFragment = function(){
-            var fragment = this.$int.ownerDocument.createDocumentFragment();
+            var fragment = this.$container.ownerDocument.createDocumentFragment();
     
-            while (this.$int.childNodes.length) {
-                fragment.appendChild(this.$int.childNodes[0]);
+            while (this.$container.childNodes.length) {
+                fragment.appendChild(this.$container.childNodes[0]);
             }
     
             return fragment;
         };
     
         this.$setCurrentFragment = function(fragment){
-            this.$int.appendChild(fragment);
+            this.$container.appendChild(fragment);
     
             if (!apf.window.hasFocus(this))
                 this.blur();

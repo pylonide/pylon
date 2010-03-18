@@ -132,13 +132,13 @@ apf.pager = function(struct, tagName){
     
     this.$setClearMessage = function(msg, type){
         if (!this.$empty) {
-            this.$empty = this.$int.ownerDocument.createElement("span");
+            this.$empty = this.$container.ownerDocument.createElement("span");
             this.$setStyleClass(this.$empty, "loader");
         }
         
         if (type == "loading") {
             this.$setStyleClass(this.$ext, this.$baseCSSname + "Loading");
-            this.$int.appendChild(this.$empty);
+            this.$container.appendChild(this.$empty);
         }
     }
     
@@ -151,7 +151,7 @@ apf.pager = function(struct, tagName){
     
     this.$draw  = function() {
         this.$ext = this.$getExternal("main");
-        this.$int = this.$getLayoutNode("main", "container",  this.$ext);
+        this.$container = this.$getLayoutNode("main", "container",  this.$ext);
     };
     
     this.$load = function(xmlRoot) {
@@ -163,7 +163,7 @@ apf.pager = function(struct, tagName){
             nodes      = [],
             btn;
         
-        this.$int.innerHTML = "";
+        this.$container.innerHTML = "";
         
         if (!totalpages)
             return;
@@ -228,10 +228,10 @@ apf.pager = function(struct, tagName){
             nodes.push(btn);
         }
         
-        apf.insertHtmlNodes(nodes, this.$int);
+        apf.insertHtmlNodes(nodes, this.$container);
         
         if (this.$empty)
-            this.$int.appendChild(this.$empty);
+            this.$container.appendChild(this.$empty);
     }
     
 // #ifdef __WITH_DATABINDING

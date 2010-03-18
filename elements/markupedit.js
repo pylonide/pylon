@@ -1138,10 +1138,10 @@ apf.markupedit = function(struct, tagName){
                 htmlParentNode = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
-                    : this.$int;
+                    : this.$container;
             }
             
-            if (htmlParentNode == this.$int) {
+            if (htmlParentNode == this.$container) {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
                 
@@ -1178,7 +1178,7 @@ apf.markupedit = function(struct, tagName){
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
                 if(!startcollapsed && this.openOnAdd 
-                  && htmlParentNode != this.$int 
+                  && htmlParentNode != this.$container 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode);
                 
@@ -1207,7 +1207,7 @@ apf.markupedit = function(struct, tagName){
         //Please please consider moving this to apf.databinding and make it generic.. this is a mess
         /*if(this.renderRoot){
             var htmlNode = apf.xmldb.findHtmlNode(this.xmlRoot, this);
-            if(!htmlNode || htmlNode.parentNode != this.$int){
+            if(!htmlNode || htmlNode.parentNode != this.$container){
                 var nodes = nodes;
                 nodes = [];
                 
@@ -1220,7 +1220,7 @@ apf.markupedit = function(struct, tagName){
             }
         }*/
 
-        apf.insertHtmlNodes(nodes, container || this.$int);
+        apf.insertHtmlNodes(nodes, container || this.$container);
         nodes.length = 0;
     };
     
@@ -1322,7 +1322,7 @@ apf.markupedit = function(struct, tagName){
     this.$getParentNode = function(htmlNode){
         return htmlNode 
             ? this.$getLayoutNode("item", "container", htmlNode) 
-            : this.$int;
+            : this.$container;
     };
     
     /* ***********************
@@ -1382,7 +1382,7 @@ apf.markupedit = function(struct, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal(); 
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
         this.opencloseaction = this.$getOption("Main", "openclose");
         
         //Need fix...

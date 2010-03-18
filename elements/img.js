@@ -162,7 +162,7 @@ apf.preview = function(struct, tagName){
     
     this.$draw = function(){
         //Build Main Skin
-        this.$int = this.$ext = this.$getExternal();
+        this.$ext = this.$getExternal();
         this.$ext.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
@@ -170,9 +170,9 @@ apf.preview = function(struct, tagName){
         this.oImg   = this.$int.getElementsByTagName("img")[0];
         if (this.localName == "preview") {
             var _self = this;
-            this.$int.onclick = function() {
+            this.$ext.onclick = function() {
                 if (!_self.sPreview) return;
-                _self.$int.innerHTML = _self.sPreview;
+                _self.$ext.innerHTML = _self.sPreview;
                 this.onclick = null;
             };
         }

@@ -129,7 +129,7 @@ apf.aml.setElement("chart", apf.Chart);
 	this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal();
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
+        this.$getLayoutNode("main", "container", this.$ext);
         
         var ox, oy, lx, ly, bt, stack = [], interact = false;
         var iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];

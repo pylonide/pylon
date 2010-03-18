@@ -90,10 +90,10 @@ apf.browser = function(struct, tagName){
     this.$propHandlers["src"]   =
     this.$propHandlers["value"] = function(value, force){
         try {
-            this.$int.src = value || "about:blank";
+            this.$browser.src = value || "about:blank";
         }
         catch(e) {
-            this.$int.src = "about:blank";
+            this.$browser.src = "about:blank";
         }
     };
 
@@ -105,35 +105,35 @@ apf.browser = function(struct, tagName){
      * Retrieves the current url that is displayed.
      */
     this.getURL = function(){
-        return this.$int.src;
+        return this.$browser.src;
     };
 
     /**
      * Browses to the previous page
      */
     this.back = function(){
-        this.$int.contentWindow.history.back();
+        this.$browser.contentWindow.history.back();
     };
 
     /**
      * Browses to the next page
      */
     this.forward = function(){
-        this.$int.contentWindow.history.forward();
+        this.$browser.contentWindow.history.forward();
     };
 
     /**
      * Reload the current page
      */
     this.reload = function(){
-        this.$int.src = this.$int.src;
+        this.$browser.src = this.$browser.src;
     };
 
     /**
      * Print the currently displayed page
      */
     this.print = function(){
-        this.$int.contentWindow.print();
+        this.$browser.contentWindow.print();
     };
 
     /**
@@ -146,11 +146,11 @@ apf.browser = function(struct, tagName){
     this.runCode = function(str, noError){
         if (noError) {
             try {
-                this.$int.contentWindow.eval(str);
+                this.$browser.contentWindow.eval(str);
             } catch(e) {}
         }
         else {
-            this.$int.contentWindow.eval(str);
+            this.$browser.contentWindow.eval(str);
         }
     };
 
@@ -165,32 +165,32 @@ apf.browser = function(struct, tagName){
                 .appendChild(document.createElement("<iframe frameborder='0'></iframe>")).parentNode;
             this.$ext.style.width  = "100px";
             this.$ext.style.height = "100px";
-            this.$int = this.$ext.firstChild;
-            //this.$int = this.$ext;
-            this.$int.style.width  = "100%";
-            this.$int.style.height = "100%";
-            this.$int.frameBorder = 0;
+            this.$browser = this.$ext.firstChild;
+            //this.$browser = this.$ext;
+            this.$browser.style.width  = "100%";
+            this.$browser.style.height = "100%";
+            this.$browser.frameBorder = 0;
         }
         else {
             this.$ext = parentNode.appendChild(document.createElement("iframe"));
             this.$ext.style.width  = "100px";
             this.$ext.style.height = "100px";
-            this.$int              = this.$ext;
+            this.$browser              = this.$ext;
             //this.$ext.style.border = "2px inset white";
         }
         
         var _self = this;
-        apf.addListener(this.$int, "load", function(){
+        apf.addListener(this.$browser, "load", function(){
             _self.dispatchEvent("load");
         });
 
-        apf.addListener(this.$int, "error", function(){
+        apf.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
         });
 
-        //this.$int = this.$ext.contentWindow.document.body;
+        //this.$browser = this.$ext.contentWindow.document.body;
         this.$ext.host = this;
-        //this.$int.host = this;
+        //this.$browser.host = this;
         
         //@todo remove this
         this.$ext.style.borderTop = "1px solid #c3c3c3";

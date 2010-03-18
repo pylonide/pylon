@@ -1605,7 +1605,7 @@ apf.MultiSelect = function(){
     this.$propHandlers["allowdeselect"] = function(value){
         if (value) {
             var _self = this;
-            this.$int.onmousedown = function(e){
+            this.$container.onmousedown = function(e){
                 if (!e)
                     e = event;
                 if (e.ctrlKey || e.shiftKey)
@@ -1618,7 +1618,7 @@ apf.MultiSelect = function(){
             }
         }
         else {
-            this.$int.onmousedown = null;
+            this.$container.onmousedown = null;
         }
     };
 

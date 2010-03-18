@@ -486,7 +486,7 @@ apf.editor = function(struct, tagName){
      * @type  {void}
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
 
         if (apf.isOnlyChild(this.firstChild, [3,4]))
             this.$handlePropSet("value", this.firstChild.nodeValue.trim());

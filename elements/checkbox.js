@@ -184,12 +184,12 @@ apf.checkbox = function(struct, tagName){
     });
 
     this.$enable = function(){
-        if (this.$int) this.$int.disabled = false;
+        if (this.$input) this.$input.disabled = false;
         this.$doBgSwitch(1);
     };
 
     this.$disable = function(){
-        if (this.$int) this.$int.disabled = true;
+        if (this.$input) this.$input.disabled = true;
         this.$doBgSwitch(4);
     };
 
@@ -226,7 +226,7 @@ apf.checkbox = function(struct, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal();
-        this.$int = this.$getLayoutNode("main", "input", this.$ext);
+        this.$input = this.$getLayoutNode("main", "input", this.$ext);
 
         this.$setupEvents();
     };

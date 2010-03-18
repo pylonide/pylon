@@ -136,7 +136,7 @@ apf.VirtualViewport = function(){
                 return;
             
             var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$int.childNodes;
+                hNodes = _self.$container.childNodes;
             for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
                 if (hNodes[i].nodeType != 1) continue;
                 
@@ -156,17 +156,17 @@ apf.VirtualViewport = function(){
             var i;
             //Viewport shrinks
             if (limit < this.limit) {
-                var nodes = _self.$int.childNodes;
+                var nodes = _self.$container.childNodes;
                 for (i = nodes.length - 1; i >= 0; i--) {
                     if (nodes[i].nodeType != 1) continue;
-                    _self.$int.removeChild(nodes[i]);
+                    _self.$container.removeChild(nodes[i]);
                     if (--this.limit == limit) break;
                 }
             }
             //Viewport grows
             else if (limit > this.limit) {
                 for (i = this.limit; i < limit; i++) {
-                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$int);
+                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$container);
                 }
             }
             else
@@ -175,11 +175,11 @@ apf.VirtualViewport = function(){
             this.limit = limit;
             
             if (updateScrollbar)
-                this.sb.update(this.$int);
+                this.sb.update(this.$container);
         },
         
         findNewLimit : function(scrollTop){
-            var oHtml = _self.$int;
+            var oHtml = _self.$container;
             
             if (!scrollTop)
                 scrollTop = oHtml.scrollTop;
@@ -212,7 +212,7 @@ apf.VirtualViewport = function(){
             else if (oHtml.lastChild && oHtml.lastChild.offsetTop > oHtml.offsetHeight + scrollTop) {
                 var lastChild;
                 while (this.limit > 2 && (lastChild = oHtml.lastChild).offsetTop > oHtml.offsetHeight + scrollTop) {
-                    _self.$int.removeChild(lastChild);
+                    _self.$container.removeChild(lastChild);
                     this.limit--;
                 }
             }
@@ -249,7 +249,7 @@ apf.VirtualViewport = function(){
             this.offset = offsetN;
             
             if (diff > 0) { //get last node before resize
-                var lastNode = _self.$int.lastChild;
+                var lastNode = _self.$container.lastChild;
                 if (lastNode.nodeType != 1)
                     lastNode = lastNode.previousSibling;
             }
@@ -265,7 +265,7 @@ apf.VirtualViewport = function(){
             //this.viewport.prepare();
 
             //Traverse through XMLTree
-            //var nodes = this.$addNodes(this.xmlRoot, this.$int, null, this.renderRoot);
+            //var nodes = this.$addNodes(this.xmlRoot, this.$container, null, this.renderRoot);
             var nodes = _self.getTraverseNodes();
             if (!nodes)
                 return;
@@ -278,7 +278,7 @@ apf.VirtualViewport = function(){
             }
 
             var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$int.childNodes,
+                hNodes = _self.$container.childNodes,
                 xmlNode, htmlNode, xmlPos, sel, len, j, i;
 
             //remove nodes from the beginning
@@ -287,7 +287,7 @@ apf.VirtualViewport = function(){
                 len    = hNodes.length,
                 sel    = _self.$getSelection();
                 for (j = 0, i = 0; j < diff && i < len; i++) {
-                    htmlNode = _self.$int.firstChild;
+                    htmlNode = _self.$container.firstChild;
                     if (htmlNode.nodeType == 1) {
                         j++;
                         xmlNode = nodes[xmlPos++];
@@ -305,7 +305,7 @@ apf.VirtualViewport = function(){
                         }
                     }
                     
-                    _self.$int.appendChild(htmlNode);
+                    _self.$container.appendChild(htmlNode);
                 }
                 
                 //var lastNode = nodes[oldLimit - diff - 1]
@@ -316,7 +316,7 @@ apf.VirtualViewport = function(){
                 xmlPos = 0; //should be adjusted for changing limit
                 sel    = _self.$getSelection();
                 for (j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
-                    htmlNode = _self.$int.lastChild;
+                    htmlNode = _self.$container.lastChild;
                     if (htmlNode.nodeType == 1) {
                         j++;
                         xmlNode = nodes[xmlPos++];
@@ -329,7 +329,7 @@ apf.VirtualViewport = function(){
                         htmlNode.style.display = "block";
                     }
                     
-                    _self.$int.insertBefore(htmlNode, _self.$int.firstChild);
+                    _self.$container.insertBefore(htmlNode, _self.$container.firstChild);
                 }
             }
             //Recalc all nodes
@@ -353,12 +353,12 @@ apf.VirtualViewport = function(){
             if (!noScroll) {
                 if (offset >= this.length - this.initialLimit) {
                     diff = offset - (this.length - this.initialLimit) + 2;
-                    _self.$int.scrollTop = (_self.$int.scrollHeight - _self.$int.offsetHeight) * (diff / 2);
+                    _self.$container.scrollTop = (_self.$container.scrollHeight - _self.$container.offsetHeight) * (diff / 2);
                 }
                 else {
-                    var scrollTop = (offset % 1) * _self.$int.firstChild.offsetHeight;//(diff/limit) * _self.$int.offsetHeight;
+                    var scrollTop = (offset % 1) * _self.$container.firstChild.offsetHeight;//(diff/limit) * _self.$container.offsetHeight;
                     this.findNewLimit(scrollTop);
-                    _self.$int.scrollTop = scrollTop;
+                    _self.$container.scrollTop = scrollTop;
                 }
                 
                 if (updateScrollbar)
@@ -381,19 +381,19 @@ apf.VirtualViewport = function(){
     };
     
     this.viewport.sb.parentNode = new apf.Class().$init();
-    this.viewport.sb.parentNode.$int = this.$pHtmlNode;
+    this.viewport.sb.parentNode.$container = this.$pHtmlNode;
     this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
     
-    //this.$int.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
+    //this.$container.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
     
     //this.viewport.sb.realtime = false;//!apf.isIE;
-    this.viewport.sb.attach(this.$int, this.viewport, function(timed, pos){
+    this.viewport.sb.attach(this.$container, this.viewport, function(timed, pos){
         var vp = _self.viewport;
         
         if (vp.sb.realtime || !timed) {
             var l = vp.length - vp.initialLimit;
             if (l == 0)
-                _self.$int.scrollTop = pos * (_self.$int.scrollHeight - _self.$int.offsetHeight);
+                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - _self.$container.offsetHeight);
             else 
                 vp.change(l * pos, vp.limit, false);
         }
@@ -417,11 +417,11 @@ apf.VirtualViewport = function(){
      * - Optimize grow function to use fill
      */
     //#ifdef __WITH_LAYOUT
-    apf.layout.setRules(this.$int, "scrollbar", "\
+    apf.layout.setRules(this.$container, "scrollbar", "\
         var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
         s.update();\
     ", true);
-    apf.layout.queue(this.$int);
+    apf.layout.queue(this.$container);
     //#endif
     this.$isInViewport = function(xmlNode, struct){
         /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
@@ -496,7 +496,7 @@ apf.VirtualViewport = function(){
     this.$xmlUpdate = function(){
         this.viewport.cache  = null;
         this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
-        this.viewport.sb.update(this.$int);
+        this.viewport.sb.update(this.$container);
         this._xmlUpdate.apply(this, arguments);
     };
     
@@ -522,7 +522,7 @@ apf.VirtualViewport = function(){
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
         
-        this.viewport.sb.update(this.$int);
+        this.viewport.sb.update(this.$container);
 
         //Build HTML
         //this.$fill(nodes);

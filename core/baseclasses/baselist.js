@@ -190,7 +190,7 @@ apf.BaseList = function(){
             /*this.$getNewContext("item");
             var item = this.$getLayoutNode("item");
             item.setAttribute("id", Lid);
-            var htmlNode = apf.insertHtmlNode(item, htmlParentNode || this.$int, beforeNode);*/
+            var htmlNode = apf.insertHtmlNode(item, htmlParentNode || this.$container, beforeNode);*/
             var htmlNode = document.createElement("div");
             htmlNode.setAttribute("id", Lid);
             docFrag.appendChild(htmlNode);
@@ -205,7 +205,7 @@ apf.BaseList = function(){
             //apf.AmlParser.parseLastPass();
             //apf.isParsing = false;
             
-            this.$int.appendChild(docFrag);
+            this.$container.appendChild(docFrag);
             
             apf.queue.empty();
         };
@@ -264,7 +264,7 @@ apf.BaseList = function(){
                     this.viewport.change(0, null, true, true);
                     
                 this.select(this.getFirstTraverseNode(), false, shiftKey);
-                this.$int.scrollTop = 0;
+                this.$container.scrollTop = 0;
                 break;
             case 35:
                 //END
@@ -272,7 +272,7 @@ apf.BaseList = function(){
                     this.viewport.change(this.viewport.length, null, true, true);
                 
                 this.select(this.getLastTraverseNode(), false, shiftKey);
-                this.$int.scrollTop = this.$int.scrollHeight;
+                this.$container.scrollTop = this.$container.scrollHeight;
                 break;
             case 107:
                 //+
@@ -493,8 +493,8 @@ apf.BaseList = function(){
                             }
 
                             if (selHtml) {
-                                this.$int.scrollTop = selHtml.offsetTop
-                                    - (this.$int.offsetHeight
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
                                     - selHtml.offsetHeight) / 2;
                             }
                             return;
@@ -730,11 +730,11 @@ apf.BaseList = function(){
             this.listNodes.push(Item);
         }
 
-        apf.insertHtmlNodes(this.listNodes, this.$int);
+        apf.insertHtmlNodes(this.listNodes, this.$container);
         this.listNodes.length = 0;
 
         if (this.more && !this.moreItem)
-            this.moreItem = this.$int.lastChild;
+            this.moreItem = this.$container.lastChild;
     };
 
     /**
@@ -769,7 +769,7 @@ apf.BaseList = function(){
 
         this.add(xmlNode, null, null, function(addedNode){
             this.select(addedNode, null, null, null, null, true);
-            this.$int.appendChild(this.moreItem);
+            this.$container.appendChild(this.moreItem);
     
             var undoLastAction = function(){
                 this.getActionTracker().undo(this.autoselect ? 2 : 1);

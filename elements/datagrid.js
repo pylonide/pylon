@@ -345,7 +345,7 @@ apf.datagrid = function(struct, tagName){
     
     function scrollIntoView(){
         var Q = (this.current || this.$selected),
-            o = this.$int;
+            o = this.$container;
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
@@ -362,7 +362,7 @@ apf.datagrid = function(struct, tagName){
             return;
 
         var selXml = this.caret || this.selected,
-            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$int,
+            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$container,
             margin, node, hasScroll, hasScrollX, hasScrollY, items, lines;
 
         switch (key) {
@@ -395,12 +395,12 @@ apf.datagrid = function(struct, tagName){
             case 36:
                 //HOME
                 this.$setTempSelected (this.getFirstTraverseNode(), false, shiftKey);
-                this.$int.scrollTop = 0;
+                this.$container.scrollTop = 0;
                 return false;
             case 35:
                 //END
                 this.$setTempSelected (this.getLastTraverseNode(), false, shiftKey);
-                this.$int.scrollTop = this.$int.scrollHeight;
+                this.$container.scrollTop = this.$container.scrollHeight;
                 return false;
             case 107:
                 //+
@@ -616,8 +616,8 @@ apf.datagrid = function(struct, tagName){
                             }
                             
                             if (selHtml)
-                                this.$int.scrollTop = selHtml.offsetTop
-                                    - (this.$int.offsetHeight
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
                                     - selHtml.offsetHeight) / 2;
                             return;
                         }
@@ -709,7 +709,7 @@ apf.datagrid = function(struct, tagName){
                 "padding-right:" + vLeft + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-right
-            this.$int.style.paddingRight  =
+            this.$container.style.paddingRight  =
             this.$head.style.paddingRight = vLeft + "px";
         }
         
@@ -1164,8 +1164,8 @@ apf.datagrid = function(struct, tagName){
 
         if (this.$head.firstChild)
             this.$head.removeChild(this.$head.firstChild);
-        if (this.$int.firstChild)
-            this.$int.removeChild(this.$int.firstChild);
+        if (this.$container.firstChild)
+            this.$container.removeChild(this.$container.firstChild);
 
         var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
         this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
@@ -1173,11 +1173,11 @@ apf.datagrid = function(struct, tagName){
 
         //Initialize Iframe 
         if (this.$useiframe && !this.oIframe) {
-            //this.$int.style.overflow = "hidden";
-            //var sInt = this.$int.outerHTML 
-            var sClass   = this.$int.className;
-            //this.$int.parentNode.removeChild(this.$int);
-            this.oIframe = this.$int.appendChild(document.createElement(apf.isIE 
+            //this.$container.style.overflow = "hidden";
+            //var sInt = this.$container.outerHTML 
+            var sClass   = this.$container.className;
+            //this.$container.parentNode.removeChild(this.$container);
+            this.oIframe = this.$container.appendChild(document.createElement(apf.isIE 
                 ? "<iframe frameborder='0'></iframe>"
                 : "iframe"));
             this.oIframe.frameBorder = 0;
@@ -1197,8 +1197,8 @@ apf.datagrid = function(struct, tagName){
                 </html>');
             //Import CSS
             //this.oDoc.body.innerHTML = sInt;
-            this.$int = this.oDoc.body;//.firstChild;
-            this.$int.className = sClass;//this.oIframe.parentNode.className;
+            this.$container = this.oDoc.body;//.firstChild;
+            this.$container.className = sClass;//this.oIframe.parentNode.className;
             this.oDoc.documentElement.className = this.$ext.className;
             //this.oDoc.body.className = this.$ext.className;
 
@@ -1253,11 +1253,11 @@ apf.datagrid = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$int, apf.isIE 
+            if (apf.getStyle(this.$container, apf.isIE 
               ? "overflowY" : "overflow-y") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
-                      _self.$int.scrollHeight > _self.$int.offsetHeight 
+                      _self.$container.scrollHeight > _self.$container.offsetHeight 
                         ? "16px" : "0";
                 }
                 
@@ -1272,14 +1272,14 @@ apf.datagrid = function(struct, tagName){
                 this.addEventListener("xmlupdate", this.$resize);
             }
             
-            this.$int.onscroll = 
+            this.$container.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
-                        _self.$head.scrollLeft = _self.$int.scrollLeft;
+                        _self.$head.scrollLeft = _self.$container.scrollLeft;
                 };
         }
         
-        this.$int.ondblclick = function(e){
+        this.$container.ondblclick = function(e){
             if (!e) e = event;
             _self.$dblclick(e.srcElement || e.target);
         }
@@ -1288,11 +1288,11 @@ apf.datagrid = function(struct, tagName){
     this.$destroy = function(){
         //@todo destroy this.$txt here
 
-        this.$ext.onclick = this.$int.onresize = null;
+        this.$ext.onclick = this.$container.onresize = null;
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$int, "dg" + this.$uniqueId);
-        apf.layout.activateRules(this.$int);
+        apf.layout.removeRule(this.$container, "dg" + this.$uniqueId);
+        apf.layout.activateRules(this.$container);
         //#endif
     };
 }).call(apf.datagrid.prototype = new apf.BaseTree());

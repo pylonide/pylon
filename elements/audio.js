@@ -344,7 +344,7 @@ apf.audio = function(struct, tagName){
     this.$draw = function(){
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
         this.$ext.className = "apf_audio " + (this.getAttributeNode("class") || "");
-        this.$int = this.$ext;
+        this.$ext;
     };
 
     /**

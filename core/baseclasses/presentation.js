@@ -137,6 +137,7 @@ apf.Presentation = function(){
         changeSkin.call(this, skin, skinset);
     }
 
+    //@todo objects don't always have an $int anymore.. test this
     function changeSkin(skin, skinset){
         clearTimeout(this.$skinTimer);
 

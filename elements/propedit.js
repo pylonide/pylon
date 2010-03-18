@@ -282,7 +282,7 @@ apf.propedit    = function(struct, tagName){
     
     function scrollIntoView(){
         var Q = (this.current || this.$selected),
-            o = this.$int;
+            o = this.$body;
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
@@ -299,7 +299,7 @@ apf.propedit    = function(struct, tagName){
             shiftKey = e.shiftKey;
         
         var selXml = this.$lastEditor && this.$lastEditor[2],
-            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$int,
+            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$body,
             margin, node, hasScroll, hasScrollX, hasScrollY, items, lines;
 
         switch (key) {
@@ -354,7 +354,7 @@ apf.propedit    = function(struct, tagName){
                 while (!selHtml.offsetWidth)
                     selHtml = apf.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
                 
-                var top = apf.getAbsolutePosition(selHtml, this.$int)[1]
+                var top = apf.getAbsolutePosition(selHtml, this.$body)[1]
                      - (selHtml.offsetHeight/2);
                 if (top <= this.$ext.scrollTop)
                     this.$ext.scrollTop = top;
@@ -390,7 +390,7 @@ apf.propedit    = function(struct, tagName){
                     var selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 }
                 
-                var top = apf.getAbsolutePosition(selHtml, this.$int)[1] 
+                var top = apf.getAbsolutePosition(selHtml, this.$body)[1] 
                     + (selHtml.offsetHeight/2);
                 if (top > this.$ext.scrollTop + this.$ext.offsetHeight)
                     this.$ext.scrollTop = top - this.$ext.offsetHeight;
@@ -678,7 +678,7 @@ apf.propedit    = function(struct, tagName){
             }
         })(p.selectNodes("group|prop"), null, 0);
         
-        apf.insertHtmlNodes(output, this.$int);
+        apf.insertHtmlNodes(output, this.$body);
         
         this.setProperty("root", this.xmlRoot); //or xmlNode ??
 
@@ -859,14 +859,14 @@ apf.propedit    = function(struct, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.$ext     = this.$getExternal();
-        this.$int     = this.$getLayoutNode("main", "body", this.$ext);
+        this.$body     = this.$getLayoutNode("main", "body", this.$ext);
         this.$head    = this.$getLayoutNode("main", "head", this.$ext);
         this.$pointer = this.$getLayoutNode("main", "pointer", this.$ext);
 
         if (this.$head.firstChild)
             this.$head.removeChild(this.$head.firstChild);
-        if (this.$int.firstChild)
-            this.$int.removeChild(this.$int.firstChild);
+        if (this.$body.firstChild)
+            this.$body.removeChild(this.$body.firstChild);
 
         var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
         this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
@@ -876,11 +876,11 @@ apf.propedit    = function(struct, tagName){
         
         //Initialize Iframe 
         if (this.$useiframe && !this.oIframe) {
-            //this.$int.style.overflow = "hidden";
-            //var sInt = this.$int.outerHTML 
-            var sClass   = this.$int.className;
-            //this.$int.parentNode.removeChild(this.$int);
-            this.oIframe = this.$int.appendChild(document.createElement(apf.isIE 
+            //this.$body.style.overflow = "hidden";
+            //var sInt = this.$body.outerHTML 
+            var sClass   = this.$body.className;
+            //this.$body.parentNode.removeChild(this.$body);
+            this.oIframe = this.$body.appendChild(document.createElement(apf.isIE 
                 ? "<iframe frameborder='0'></iframe>"
                 : "iframe"));
             this.oIframe.frameBorder = 0;
@@ -900,8 +900,8 @@ apf.propedit    = function(struct, tagName){
                 </html>');
             //Import CSS
             //this.oDoc.body.innerHTML = sInt;
-            this.$int = this.oDoc.body;//.firstChild;
-            this.$int.className = sClass;//this.oIframe.parentNode.className;
+            this.$body = this.oDoc.body;//.firstChild;
+            this.$body.className = sClass;//this.oIframe.parentNode.className;
             this.oDoc.documentElement.className = this.$ext.className;
             //this.oDoc.body.className = this.$ext.className;
 
@@ -938,11 +938,11 @@ apf.propedit    = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$int, apf.isIE 
+            if (apf.getStyle(this.$body, apf.isIE 
               ? "overflowY" : "overflow-y") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
-                      _self.$int.scrollHeight > _self.$int.offsetHeight 
+                      _self.$body.scrollHeight > _self.$body.offsetHeight 
                         ? "16px" : "0";
                 }
                 
@@ -957,21 +957,21 @@ apf.propedit    = function(struct, tagName){
                 this.addEventListener("xmlupdate", this.$resize);
             }
             
-            this.$int.onmousedown = function(e){
+            this.$body.onmousedown = function(e){
                 if (!e) e = event;
                 if ((e.srcElement || e.target) == this)
                     apf.popup.forceHide();
             }
             
-            this.$int.onscroll = 
+            this.$body.onscroll = 
                 function(){
                     if (_self.$isFixedGrid)
-                        _self.$head.scrollLeft = _self.$int.scrollLeft;
+                        _self.$head.scrollLeft = _self.$body.scrollLeft;
                 };
         }
         
         var _self = this;
-        this.$int.onmousedown = function(e){
+        this.$body.onmousedown = function(e){
             if (!e) e = event;
             var target = e.srcElement || e.target;
             
@@ -1002,11 +1002,11 @@ apf.propedit    = function(struct, tagName){
     this.$destroy = function(){
         apf.popup.removeContent(this.$uniqueId);
         
-        this.$ext.onclick = this.$int.onresize = null;
+        this.$ext.onclick = this.$body.onresize = null;
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$int, "dg" + this.$uniqueId);
-        apf.layout.activateRules(this.$int);
+        apf.layout.removeRule(this.$body, "dg" + this.$uniqueId);
+        apf.layout.activateRules(this.$body);
         //#endif
     };
 // #ifdef __WITH_DATABINDING

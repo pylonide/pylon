@@ -363,7 +363,7 @@ apf.BaseTree = function(){
             this.$setEmptyMessage(container, msg);
         }
 
-        if ((!htmlParentNode || htmlParentNode == this.$int) 
+        if ((!htmlParentNode || htmlParentNode == this.$container) 
           && xmlParentNode == this.xmlRoot && !beforeNode) {
             this.$nodes.push(htmlNode);
             if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
@@ -377,10 +377,10 @@ apf.BaseTree = function(){
                 htmlParentNode = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
-                    : this.$int;
+                    : this.$container;
             }
             
-            if (htmlParentNode == this.$int) {
+            if (htmlParentNode == this.$container) {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
             }
@@ -410,7 +410,7 @@ apf.BaseTree = function(){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if (!startcollapsed && this.openadd && htmlParentNode != this.$int 
+                if (!startcollapsed && this.openadd && htmlParentNode != this.$container 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
@@ -439,12 +439,12 @@ apf.BaseTree = function(){
             this.$pHtmlDoc = this.oDoc;
 
         if (this.$useTable) {
-            apf.insertHtmlNodes(this.$nodes, this.$int, null,
+            apf.insertHtmlNodes(this.$nodes, this.$container, null,
                  "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
                  "</tbody></table>");
         }
         else
-            apf.insertHtmlNodes(this.$nodes, this.$int);
+            apf.insertHtmlNodes(this.$nodes, this.$container);
 
         this.$nodes.length = 0;
     };
@@ -452,7 +452,7 @@ apf.BaseTree = function(){
     this.$getParentNode = function(htmlNode){
         return htmlNode 
             ? this.$getLayoutNode("item", "container", htmlNode) 
-            : this.$int;
+            : this.$container;
     };
 
     this.$fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
@@ -556,7 +556,7 @@ apf.BaseTree = function(){
                 : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
-                : this.$int;
+                : this.$container;
         container  = this.$getLayoutNode("item", "container", htmlNode);
 
         if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
@@ -575,7 +575,7 @@ apf.BaseTree = function(){
         if (!oPHtmlNode.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
             this.$setEmptyMessage(oPHtmlNode, msg);
         
-        if (this.openadd && pHtmlNode != this.$int && pContainer.style.display != "block") 
+        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
             this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
@@ -822,7 +822,7 @@ apf.BaseTree = function(){
                     return false;
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight/2);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
@@ -863,7 +863,7 @@ apf.BaseTree = function(){
                     return false;
                     
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight/2);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = top - oExt.offsetHeight;
@@ -871,40 +871,40 @@ apf.BaseTree = function(){
                 return false;
             case 33: //@todo
                 //PGUP
-                pos   = apf.getAbsolutePosition(this.$int);
-                el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
                       - 2, pos[1] + 2);
                 sNode = apf.xmldb.findXmlNode(el);
                 if (sNode == this.selected) {
                     oExt.scrollTop -= oExt.offsetHeight - apf.getHeightDiff(oExt);
-                    el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
                           - 2, pos[1] + 2);
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight / 2);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 break;
             case 34: //@todo
                 //PGDN
-                pos   = apf.getAbsolutePosition(this.$int);
-                el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
+                pos   = apf.getAbsolutePosition(this.$container);
+                el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
                       - 2, pos[1] + this.$ext.offsetHeight - 4);
                 sNode = apf.xmldb.findXmlNode(el);
                 if (sNode == this.selected) {
                     oExt.scrollTop += oExt.offsetHeight - apf.getHeightDiff(oExt);
-                    el    = document.elementFromPoint(pos[0] + this.$int.offsetWidth
+                    el    = document.elementFromPoint(pos[0] + this.$container.offsetWidth
                           - 2, pos[1] + this.$ext.offsetHeight - 4);
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                top     = apf.getAbsolutePosition(selHtml, this.$int)[1]
+                top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight/2);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = top - oExt.offsetHeight;
@@ -947,8 +947,8 @@ apf.BaseTree = function(){
                             }
                             
                             if (selHtml)
-                                this.$int.scrollTop = selHtml.offsetTop
-                                    - (this.$int.offsetHeight
+                                this.$container.scrollTop = selHtml.offsetTop
+                                    - (this.$container.offsetHeight
                                     - selHtml.offsetHeight) / 2;
                             return;
                         }
@@ -1076,7 +1076,7 @@ apf.BaseTree = function(){
         
         //Build Main Skin
         this.$ext = this.$getExternal(); 
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
         this.opencloseaction = this.$getOption("main", "openclose");
         
         //Need fix...

@@ -145,7 +145,7 @@ apf.MultiselectBinding = function(){
                 else
                     htmlParent.appendChild(apf.xmldb.findHtmlNode(sNodes[i], _self));
             }
-        })(this.xmlRoot, this.$int);
+        })(this.xmlRoot, this.$container);
 
         return options;
     };
@@ -384,10 +384,10 @@ apf.MultiselectBinding = function(){
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
 
-            this.$empty = apf.insertHtmlNode(xmlEmpty, this.$int);
+            this.$empty = apf.insertHtmlNode(xmlEmpty, this.$container);
         }
         else {
-            this.$int.appendChild(this.$empty);
+            this.$container.appendChild(this.$empty);
         }
 
         var empty = this.$getLayoutNode("empty", "caption", this.$empty);
@@ -407,7 +407,7 @@ apf.MultiselectBinding = function(){
     };
 
     this.$updateClearMessage = function(msg, className) {
-        if (!this.$empty || this.$empty.parentNode != this.$int
+        if (!this.$empty || this.$empty.parentNode != this.$container
           || this.$empty.className.indexOf(className) == -1)
             return;
 
@@ -683,9 +683,9 @@ apf.MultiselectBinding = function(){
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
 
-            if (this.$int.firstChild && !apf.xmldb.getNode(this.$int.firstChild)) {
+            if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
-                this.$int.innerHTML = "";
+                this.$container.innerHTML = "";
 
                 if (!this.renderRoot) {
                     length = this.getTraverseNodes().length;
@@ -715,7 +715,7 @@ apf.MultiselectBinding = function(){
             pNode = this.getTraverseParent(xmlNode);
             
             if (pNode == this.xmlRoot)
-                parentHTMLNode = this.$int;
+                parentHTMLNode = this.$container;
             
             if (!parentHTMLNode && this.$isTreeArch) {
                 parentHTMLNode = this.$findHtmlNode(
@@ -736,7 +736,7 @@ apf.MultiselectBinding = function(){
               && apf.isChildOf(this.xmlRoot, xmlNode)) {
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
-                    : parentHTMLNode) || this.$int; //@todo I think this is wrong for non rendered sub tree nodes that get changed
+                    : parentHTMLNode) || this.$container; //@todo I think this is wrong for non rendered sub tree nodes that get changed
 
                 result = this.$addNodes(xmlNode, parentHTMLNode, true, true,
                     apf.xmldb.getHtmlNode(this.getNextTraverse(xmlNode), this));
@@ -891,7 +891,7 @@ apf.MultiselectBinding = function(){
             if (nodes[i].nodeType != 1) {
                 //#ifdef __WITH_MARKUPEDIT
                 if (this.$addNonElement)
-                    this.$addNonElement(nodes[i], parent || this.$int, checkChildren, insertBefore, depth);
+                    this.$addNonElement(nodes[i], parent || this.$container, checkChildren, insertBefore, depth);
                 //#endif
                 continue;
             }
@@ -907,9 +907,9 @@ apf.MultiselectBinding = function(){
                 //Add Children
                 var beforeNode = isChild
                         ? insertBefore
-                        : (lastNode ? lastNode.nextSibling : null),//(parent || this.$int).firstChild);
+                        : (lastNode ? lastNode.nextSibling : null),//(parent || this.$container).firstChild);
                     parentNode = this.$add(nodes[i], Lid, isChild ? xmlNode.parentNode : xmlNode,
-                        beforeNode ? parent || this.$int : parent, beforeNode,
+                        beforeNode ? parent || this.$container : parent, beforeNode,
                         (!beforeNode && i == nodes.length - 1), depth);//Should use getTraverParent
 
                 //Exit if component tells us its done with rendering

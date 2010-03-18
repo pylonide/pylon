@@ -616,16 +616,16 @@ apf.DataBinding = function(){
     //@todo this function is call way too much for a single load of a tree
     //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
-        if (!this.$int)
+        if (!this.$container)
             return;//@todo apf3.0
 
         if (this.clearSelection)
             this.clearSelection(!doEvent);
 
-        var lastHeight = this.$int.offsetHeight;
+        var lastHeight = this.$container.offsetHeight;
 
         if (this.dispatchEvent("$clear") !== false)
-            this.$int.innerHTML = ""; //@todo apf3.0
+            this.$container.innerHTML = ""; //@todo apf3.0
 
         if (typeof nomsg == "string") {
             var msgType = nomsg;

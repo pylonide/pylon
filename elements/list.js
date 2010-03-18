@@ -275,7 +275,7 @@ apf.select1   = function(struct, tagName){
             this.$setClearMessage    = function(msg){
                 if (!this.moreItem)
                     this.$fill();
-                this.$int.appendChild(this.moreItem);
+                this.$container.appendChild(this.moreItem);
             };
             this.$updateClearMessage = function(){}
             this.$removeClearMessage = function(){};
@@ -290,7 +290,7 @@ apf.select1   = function(struct, tagName){
     
     function $xmlUpdate(e){
         if ((!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1) && this.moreItem)
-            this.$int.appendChild(this.moreItem);
+            this.$container.appendChild(this.moreItem);
     }
     
     /*function $afterRenameMore(){
@@ -358,7 +358,7 @@ apf.select1   = function(struct, tagName){
         
         //Build Main Skin
         this.$ext = this.$getExternal();
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
+        this.$container = this.$getLayoutNode("main", "container", this.$ext);
         
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
