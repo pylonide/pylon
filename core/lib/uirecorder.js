@@ -19,10 +19,18 @@ apf.uirecorder = {
         warning    : {},
         notice     : {}
     },
-    testResultsXml  : null,
-    testListXml     : null,     // xml object with captured tests
-    resultListXml   : null,     // xml object with results after testing
-    outputXml       : null     // output xml for recorded test or test results
+    settings    : {
+        testing     : {
+            ignoreWarnings  : false,
+            ignoreErrors    : false
+        }
+    },
+    $settingsChanged    : false,
+    testResultsXml      : null,
+    testListXml         : null,     // xml object with captured tests
+    resultListXml       : null,     // xml object with results after testing
+    outputXml           : null,     // output xml for recorded test or test results
+    settingsXml         : null      // output xml for test settings
 } 
 
 apf.uirecorder.capture = {
@@ -44,7 +52,7 @@ apf.uirecorder.capture = {
     $init : function() {
         if (apf.uirecorder.$inited) return;
         apf.uirecorder.$inited = true;
-        
+
         // listeners for user mouse interaction
         document.documentElement.ondblclick = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
@@ -105,6 +113,7 @@ apf.uirecorder.capture = {
         }
         
         // listeners for keyboard interaction
+        // onkeyup does get called in SSB for some reason but does in the browser plugin
         document.documentElement.onkeyup = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
@@ -174,8 +183,9 @@ apf.uirecorder.capture = {
     
     // Stop capturing and save test
     stop : function() {
-        if (apf.uirecorder.isRecording)
+        if (apf.uirecorder.isRecording) {
             apf.uirecorder.output.$saveTest("test");
+        }
         if (apf.uirecorder.isTesting)
             apf.uirecorder.output.$saveTest("results");
         //apf.uirecorder.capture.reset();
@@ -221,13 +231,27 @@ apf.uirecorder.capture = {
             }
             */
           
+            // multiselect item
+/*
+            if (!amlNode && htmlElement) {
+                debugger;
+                amlNode = apf.xmldb.getNode(htmlElement).parentNode;
+                if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
+                    debugger;
+                }
+                else {
+                    debugger;
+                }
+            }
+*/
             // is multiselect widget
             // @todo generate name for multiselect htmlNode item
-/*            
-            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
-                var xpath = apf.xmlToXpath(amlNode.selected);
-                htmlNode = apf.xmldb.findHtmlNode(amlNode.selected, amlNode);
-                htmlNodeName = htmlNode.innerText;
+/*
+            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__)) {// && amlNode.selected) {
+                //debugger;
+                //var xpath = apf.xmlToXpath(amlNode.selected);
+                //htmlNode = apf.xmldb.findHtmlNode(amlNode.selected, amlNode);
+                //htmlNodeName = htmlNode.innerText;
             }
 */
             if (!htmlNode) {
@@ -751,6 +775,20 @@ apf.console.info("start playback");
         if (!apf.uirecorder.isTesting)
             apf.uirecorder.isPlaying = true;
 
+        // set settings
+        var testSettings = this.$curTestXml.selectSingleNode("settings");
+        for (var type, prop, val, ti = 0, tl = testSettings.childNodes.length; ti < tl; ti++) {
+            // apf.uirecorder.testing
+            if (apf.uirecorder[testSettings.childNodes[ti].nodeName] == undefined) continue;
+            
+            for (var pi = 0, pl = testSettings.childNodes[ti].childNodes.length; pi < pl; pi++) {
+                //apf.uirecorder.testing.ignoreWarnings
+                if (apf.uirecorder[testSettings.childNodes[ti].nodeName][testSettings.childNodes[ti].childNodes[pi].nodeName] ==  undefined) continue;
+                
+                apf.uirecorder[testSettings.childNodes[ti].nodeName][testSettings.childNodes[ti].childNodes[pi].nodeName] = testSettings.childNodes[ti].childNodes[pi].getAttribute("value"); 
+            }
+        }
+        
         this.$createCheckList();
         apf.uirecorder.capture.$init();
 
@@ -933,7 +971,7 @@ apf.console.info("start playback");
         }
 
         // if popups in queue and no popup visible show them after mouseup action
-        if (apf.uirecorder.output.$popupQueue.length && !apf.uirecorder.output.$popup && !apf.uirecorder.testing.ignoreWarnings) {
+        if (apf.uirecorder.output.$popupQueue.length && !apf.uirecorder.output.$popup && !apf.uirecorder.settings.testing.ignoreWarnings) {
             apf.console.info("playAction: popup found");
             // if needed wait for mouseup (after mousedown) to prevent mousedown/mouseup combo being disturbed
             if (apf.uirecorder.output.$popupOnMouseup && this.$curTestXml.childNodes[this.$curActionIdx-1] && this.$curTestXml.childNodes[this.$curActionIdx-1].getAttribute("name") == "mouseup") {
@@ -1024,7 +1062,7 @@ apf.console.info("start playback");
 */
 
         //if (this.$curAction.getAttribute("name") != "mousemove")
-            apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
+            //apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
         
         // locate html element and calculate position of mouse action
         if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
@@ -1564,7 +1602,6 @@ apf.uirecorder.output = {
         */
         var testXml = apf.getXml("<test />");
         
-        
         if (apf.uirecorder.isTesting) {
             testXml.setAttribute("name", apf.uirecorder.playback.$curTestXml.getAttribute("name"));
             testXml.setAttribute("file", apf.uirecorder.playback.$curTestXml.getAttribute("name"));
@@ -1573,7 +1610,17 @@ apf.uirecorder.output = {
             testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
             testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
         }
-        
+
+        // add settings to xml after recording of after testing with changes in settings
+        if (saveType == "test") {
+            testXml.appendChild(this.$getSettingsXml());
+        }
+        else if (apf.uirecorder.$settingsChanged) {
+            // replace current settings of curTestXml with new settings
+            var newXml = this.$getSettingsXml();
+            apf.xmldb.replaceNode(newXml, apf.uirecorder.playback.$curTestXml.selectSingleNode("settings"));
+        }
+
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
@@ -1669,6 +1716,23 @@ apf.uirecorder.output = {
         apf.uirecorder.outputXml = testXml;
     },
     
+    $getSettingsXml : function() {
+        var xml = apf.getXml("<settings/>");
+        
+        var typeNode, propNode, valNode;
+        for (var type in apf.uirecorder.settings) {
+            typeNode = xml.ownerDocument.createElement(type);
+            for (var prop in apf.uirecorder.settings[type]) {
+                propNode = xml.ownerDocument.createElement(prop);
+                propNode.setAttribute("value", apf.uirecorder.settings[type][prop].toString())
+                typeNode.appendChild(propNode);
+            }
+            xml.appendChild(typeNode);
+        }
+
+        return xml;
+    },
+    
     // set warning/error/notice
     setTestResult : function(type, msg, values) {
         if (values.testId)
@@ -1715,7 +1779,7 @@ apf.uirecorder.output = {
                 }
                 
                 // show popup if not popup is shown already and ignoreWarnings is false
-                if (!apf.uirecorder.output.$popup && !apf.uirecorder.testing.ignoreWarnings) {
+                if (!apf.uirecorder.output.$popup && !apf.uirecorder.settings.testing.ignoreWarnings) {
                     // if needed wait for mouseup (after mousedown) to prevent mousedown/mouseup combo being disturbed
                     if (!this.$popupOnMouseup) {
                         this.$showPopup();
@@ -1765,10 +1829,14 @@ apf.uirecorder.output = {
     // continue with current test after popup
     $continueTest : function(e) {
         apf.uirecorder.output.$popupQueue.shift();
-        apf.uirecorder.testing.ignoreWarnings = e.ignoreWarnings;
+        if (apf.uirecorder.settings.testing.ignoreWarnings != e.ignoreWarnings) {
+            apf.uirecorder.$settingsChanged = true;
+            apf.uirecorder.settings.testing.ignoreWarnings = e.ignoreWarnings;
+        }
+        
         
         // no popups in queue
-        if (!apf.uirecorder.output.$popupQueue.length || apf.uirecorder.testing.ignoreWarnings) {
+        if (!apf.uirecorder.output.$popupQueue.length || apf.uirecorder.settings.testing.ignoreWarnings) {
             // reset popupQueue
             apf.uirecorder.output.$popupQueue = [];
             apf.removeEventListener("apftest_testcontinue", apf.uirecorder.output.$continueTest);
