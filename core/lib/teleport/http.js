@@ -880,6 +880,7 @@ apf.http = function(){
         // #endif
 
         qItem.retries++;
+        qItem.options.id = id;
         this.get(qItem.url, qItem.options);
 
         return true;
