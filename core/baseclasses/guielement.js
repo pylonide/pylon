@@ -130,9 +130,11 @@ apf.GuiElement = function(){
                 return type == "table";
             }
             // #endif
-            
+           // #ifdef (__AMLVBOX || __AMLHBOX) && __AMLTABLE
+           else
+           // #endif  
             // #ifdef __AMLVBOX || __AMLHBOX
-            else if (this.aData || this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            if (this.aData || this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
                 if (!this.$alignmentEnabled) {
                     if (this.$disableCurrentLayout)
                         this.$disableCurrentLayout();
