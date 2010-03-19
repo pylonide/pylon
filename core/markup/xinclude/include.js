@@ -51,7 +51,7 @@ apf.aml.setElement("include", apf.XiInclude);
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
             domParser.$shouldWait++;
-            this.$parseContext = domParser.$callCount < 2 
+            this.$parseContext = domParser.$callCount > 0 //@todo this solution seems weird... the parse context thing should be rethought - optimization
                 && domParser.$parseContext || [this.parentNode];
         }
         
@@ -151,10 +151,10 @@ apf.aml.setElement("include", apf.XiInclude);
             
                 if (!xmlNode) {
                     throw new Error(apf.formatErrorString(0, null,
-                        "Loading skin",
+                        "Loading include",
                         "Could not parse include file. Maybe the file does not exist?", xmlNode));
                 }
-            
+                if (extra.url.indexOf("nieuws") > -1 ) debugger;
                 xmlNode.setAttribute("filename", extra.url);
 
                 // #ifdef __DEBUG

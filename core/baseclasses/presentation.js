@@ -460,6 +460,9 @@ apf.Presentation = function(){
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
         }
+        if (!this.$pNodes) {
+            throw new Error("Skin not loaded for :" + this.serialize(true));
+        }
         //#endif
 
         var node = this.$pNodes[type] || this.$originalNodes[type];
