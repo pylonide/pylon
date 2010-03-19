@@ -404,6 +404,7 @@ apf.dropdown = function(struct, tagName){
         this.oSlider = apf.insertHtmlNode(this.$getLayoutNode("container"),
             document.body);
         this.$container = this.$getLayoutNode("container", "contents", this.oSlider);
+        this.$container.host = this;
         
         //Set up the popup
         this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSlider,
