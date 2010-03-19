@@ -19,12 +19,7 @@ apf.uirecorder = {
         warning    : {},
         notice     : {}
     },
-    settings    : {
-        testing     : {
-            ignoreWarnings  : false,
-            ignoreErrors    : false
-        }
-    },
+    settings    : {},
     $settingsChanged    : false,
     testResultsXml      : null,
     testListXml         : null,     // xml object with captured tests
@@ -60,6 +55,7 @@ apf.uirecorder.capture = {
         }
         
         document.documentElement.onmousedown = function(e) {
+apf.console.info("mousedown");
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         }
@@ -163,7 +159,7 @@ apf.uirecorder.capture = {
 
     // Reset capturing
     reset : function() {
-        apf.uirecorder.inited               = false;
+        apf.uirecorder.$inited              = false;
         apf.uirecorder.isRecording          = false;
         apf.uirecorder.actionList   = [];
         apf.uirecorder.detailList   = {};
@@ -183,6 +179,7 @@ apf.uirecorder.capture = {
     
     // Stop capturing and save test
     stop : function() {
+        apf.uirecorder.$inited              = false;
         if (apf.uirecorder.isRecording) {
             apf.uirecorder.output.$saveTest("test");
         }
@@ -232,18 +229,12 @@ apf.uirecorder.capture = {
             */
           
             // multiselect item
-/*
-            if (!amlNode && htmlElement) {
-                debugger;
-                amlNode = apf.xmldb.getNode(htmlElement).parentNode;
-                if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
-                    debugger;
-                }
-                else {
-                    debugger;
-                }
+            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
+                var multiselectValue = amlNode.value;
+                htmlNodeName = "multiselect";
+                htmlNode = htmlElement;
             }
-*/
+
             // is multiselect widget
             // @todo generate name for multiselect htmlNode item
 /*
@@ -301,6 +292,10 @@ apf.uirecorder.capture = {
                 scrollLeft  : htmlNode.scrollLeft
             }
             if (!htmlNode.scrollTop && htmlNode.scrollTop != 0) debugger;
+        }
+        
+        if (multiselectValue != undefined) {
+            actionObj.multiselectValue = multiselectValue;
         }
         
         // process detailList
@@ -369,7 +364,7 @@ apf.uirecorder.capture = {
         // delayed capturing of events
         var recursion = false;
         $setTimeout = function(f, ms){
-            if (recursion)
+            if (recursion || !apf.uirecorder.inited)
                 return;
             
             //Record current mouseEvent
@@ -775,21 +770,17 @@ apf.console.info("start playback");
         if (!apf.uirecorder.isTesting)
             apf.uirecorder.isPlaying = true;
 
-        // set settings
-        var testSettings = this.$curTestXml.selectSingleNode("settings");
-        for (var type, prop, val, ti = 0, tl = testSettings.childNodes.length; ti < tl; ti++) {
-            // apf.uirecorder.testing
-            if (apf.uirecorder[testSettings.childNodes[ti].nodeName] == undefined) continue;
-            
-            for (var pi = 0, pl = testSettings.childNodes[ti].childNodes.length; pi < pl; pi++) {
-                //apf.uirecorder.testing.ignoreWarnings
-                if (apf.uirecorder[testSettings.childNodes[ti].nodeName][testSettings.childNodes[ti].childNodes[pi].nodeName] ==  undefined) continue;
-                
-                apf.uirecorder[testSettings.childNodes[ti].nodeName][testSettings.childNodes[ti].childNodes[pi].nodeName] = testSettings.childNodes[ti].childNodes[pi].getAttribute("value"); 
-            }
-        }
-        
         this.$createCheckList();
+
+        // hide debugwin
+        /*
+        if (apf.config.debug) {
+            apf.config.debug = false;
+            if (apf.debugwin.$ext && apf.debugwin.$ext.style)
+                apf.debugwin.hide();
+        }
+        */
+        
         apf.uirecorder.capture.$init();
 
         apf.uirecorder.capture.$startTime = new Date().getTime();
@@ -1611,16 +1602,6 @@ apf.uirecorder.output = {
             testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
         }
 
-        // add settings to xml after recording of after testing with changes in settings
-        if (saveType == "test") {
-            testXml.appendChild(this.$getSettingsXml());
-        }
-        else if (apf.uirecorder.$settingsChanged) {
-            // replace current settings of curTestXml with new settings
-            var newXml = this.$getSettingsXml();
-            apf.xmldb.replaceNode(newXml, apf.uirecorder.playback.$curTestXml.selectSingleNode("settings"));
-        }
-
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
@@ -1714,23 +1695,6 @@ apf.uirecorder.output = {
         }
 
         apf.uirecorder.outputXml = testXml;
-    },
-    
-    $getSettingsXml : function() {
-        var xml = apf.getXml("<settings/>");
-        
-        var typeNode, propNode, valNode;
-        for (var type in apf.uirecorder.settings) {
-            typeNode = xml.ownerDocument.createElement(type);
-            for (var prop in apf.uirecorder.settings[type]) {
-                propNode = xml.ownerDocument.createElement(prop);
-                propNode.setAttribute("value", apf.uirecorder.settings[type][prop].toString())
-                typeNode.appendChild(propNode);
-            }
-            xml.appendChild(typeNode);
-        }
-
-        return xml;
     },
     
     // set warning/error/notice
