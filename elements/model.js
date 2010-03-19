@@ -556,7 +556,7 @@ apf.model = function(struct, tagName){
      *
      */
     this.reset = function(){
-        this.load(this.copy);
+        this.load(this.$copy);
     };
 
     /**
@@ -564,7 +564,7 @@ apf.model = function(struct, tagName){
      * model. The reset() method returns the model to this point.
      */
     this.savePoint = function(){
-        this.copy = apf.xmldb.getCleanCopy(this.data);
+        this.$copy = apf.xmldb.getCleanCopy(this.data);
     };
 
     /**
@@ -792,12 +792,16 @@ apf.model = function(struct, tagName){
 
         if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
             var _self = this;
-            this.data = xmlNode; //@todo expirement
+            this.data = this.$copy = xmlNode; //@todo expirement
+            this.$queueLoading = true;
             apf.queue.add("modelload" + this.$uniqueId, function(){
                 _self.load(xmlNode, options);
+                _self.$queueLoading = false;
             });
             return;
         }
+        else if (this.$queueLoading)
+            apf.queue.remove("modelload" + this.$uniqueId);
         
         this.$state = 0;
 
@@ -830,7 +834,7 @@ apf.model = function(struct, tagName){
                 apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
             if ((!options || !options.nocopy) && this["save-original"])
-                this.copy = apf.xmldb.getCleanCopy(xmlNode);
+                this.$copy = apf.xmldb.getCleanCopy(xmlNode);
         }
 
         this.data = xmlNode;

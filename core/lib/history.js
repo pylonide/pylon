@@ -198,8 +198,8 @@ apf.history = {
         
         if (!apf.isIE && !apf.isIphone)
             apf.history.lastUrl = location.href.toString();
-        else if (apf.isIE8)
-            this.page = name;
+        //else if (apf.isIE8)
+            //this.page = name;
     },
 
     timer : null,

@@ -35,6 +35,10 @@ apf.queue = {
             this.timer = $setTimeout("apf.queue.empty()");
     },
     
+    remove : function(id){
+        delete this.q[id];
+    },
+    
     empty : function(prop){
         clearTimeout(this.timer);
         this.timer = null;
