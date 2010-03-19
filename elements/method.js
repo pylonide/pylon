@@ -51,6 +51,10 @@
  *                                       for later execution when offline.
  * @attribute {Boolean} [method-name]    the name sent to the server.
  *
+ * @attribute {String}  [type]           the type of the returned data
+ * Possible values:
+ * xml  returns the response as an xml document
+ *
  * @allowchild variable
  */
 apf.method = function(struct, tagName){
@@ -69,7 +73,7 @@ apf.method = function(struct, tagName){
     this.$booleanProperties["ignore-offline"] = true;
 
     this.$supportedProperties.push("name", "receive", "async", "caching",
-        "ignore-offline", "method-name");
+        "ignore-offline", "method-name", "type");
 
     this.$propHandlers["ignore-offline"] = function(value){
         this.ignoreOffline = value;

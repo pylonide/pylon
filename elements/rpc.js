@@ -406,11 +406,13 @@ apf.rpc = function(struct, tagName){
                 userdata      : node.userdata,
                 nocache       : (this.nocache === false) ? false : true,
                 data          : data,
-                useXML        : this.$useXml,
+                useXML        : this.$useXml || node.type == "xml",
                 caching       : node.caching,
                 ignoreOffline : node["ignore-offline"]
             }, options);
 
+        //#ifdef __WITH_AUTH
+        //@todo this shouldn't be in here
         if (node.auth && this.$auth) {
             if (auth = this.$auth.$credentials) {
                 o.username = auth.username;
@@ -425,6 +427,7 @@ apf.rpc = function(struct, tagName){
                 });
             }
         }
+        //#endif
 
         return this.$get(url, o);
     };
