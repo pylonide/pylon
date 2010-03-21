@@ -196,7 +196,7 @@ apf.console.info("mousedown");
     $captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
-
+debugger;
         //apf.console.info("captured action: " + eventName);
         
         // search for related htmlNode
@@ -1081,7 +1081,16 @@ apf.console.info("start playback");
                         htmlNode = amlNode.$ext;
                     else if (amlNode.$getActiveElements && amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")])
                         htmlNode = amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")];
-                    
+                    else if (this.$curAction.getAttribute("htmlNode") == "multiselect") {
+						debugger;
+						//htmlNode = amlNode.
+						//apf.xmldb.findXmlNodeByValue
+						// @todo if (this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect") {
+						  //amlNode.focus()
+						  //amlNode.setValue()
+						//}
+					}
+					
                     // htmlNode not visible
                     if (htmlNode) { 
                         if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
