@@ -151,7 +151,7 @@ apf.gallery = function(struct, tagName){
         if (apf.isChildOf(htmlElement, target, false)) {
             if ((htmlElement.className || "").indexOf("selected") > -1)
                 return;
-            
+
             apf.tween.single(htmlElement, {
                 steps : 10, 
                 type  : "fade",

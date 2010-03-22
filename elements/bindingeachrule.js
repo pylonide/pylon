@@ -88,7 +88,7 @@
  *      </a:each>
  *  </a:list>
  * </code>
- * @attribute {String} select       an xpath statement which selects the nodes
+ * @attribute {String} match        an xpath statement which selects the nodes
  *                                  which will be rendered.
  * @attribute {String} sort         an xpath statement which selects the value
  *                                  which is subject to the sorting algorithm.

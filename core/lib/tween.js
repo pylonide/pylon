@@ -102,9 +102,8 @@ var modules = {
         oHtml.style.marginLeft = (-1 * value) + PX;
     },
     fade: function(oHtml, value){
-        if (apf.hasStyleFilters)
+        if (!apf.supportOpacity && apf.hasStyleFilters)
             oHtml.style.filter  = "alpha(opacity=" + parseInt(value * 100) + ")";
-        //else if(false && apf.isGecko) oHtml.style.MozOpacity = value-0.000001;
         else
             oHtml.style.opacity = value;
     },
