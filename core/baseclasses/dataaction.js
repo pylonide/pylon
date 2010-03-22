@@ -407,7 +407,7 @@ apf.DataAction = function(){
         ev.undoObj = UndoObj;
 
         //Call After Event
-        if (!noevent) {
+        if (!noevent) { //@todo noevent is not implemented for before.. ???
             ev.name         = "after" + action.toLowerCase();
             ev.cancelBubble = false;
             delete ev.returnValue;
