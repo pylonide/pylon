@@ -454,7 +454,7 @@ apf.item  = function(struct, tagName){
 
         //@todo apf3.0 rename doesnt work yet.
         //@todo apf3.0 implement DOM Mutation events for multiselect widgets
-        //@todo apf3.0 implement attribute change triggers for icon, image, value, caption to updateNode this.$int
+        //@todo apf3.0 implement attribute change triggers for icon, image, value, caption to updateNode this.$container
         //@todo apf3.x this should be rearchitected
         //@todo apf3.x the functions dont need to be overloaded if selectNodes would work properly
         if (p.hasFeature(apf.__MULTISELECT__)) {
@@ -471,14 +471,14 @@ apf.item  = function(struct, tagName){
                     if (_self.$ext.parentNode)
                         this.$deInitNode(_self, _self.$ext);
     
-                    var oInt = p == _self.parentNode ? p.$int : _self.parentNode.$int;
+                    var oInt = p == _self.parentNode ? p.$container : _self.parentNode.$container;
                     var node = oInt.lastChild;//@todo this should be more generic
                     p.$add(_self, _self.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId, 
-                        _self.parentNode, oInt != p.$int && oInt, null);
+                        _self.parentNode, oInt != p.$container && oInt, null);
                     p.$fill();
                     
                     if (p.$isTreeArch) {
-                        _self.$int = p.$getLayoutNode("item", "container", 
+                        _self.$container = p.$getLayoutNode("item", "container",
                            _self.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
                     }
                     else _self.$ext = node && node.nextSibling || oInt.firstChild;
@@ -531,16 +531,16 @@ apf.item  = function(struct, tagName){
                 if (!this.getAttribute("caption"))
                     this.setAttribute("caption", this.caption);
                 
-                var oInt = p == this.parentNode ? p.$int : this.parentNode.$int;
+                var oInt = p == this.parentNode ? p.$container : this.parentNode.$container;
                 var node = oInt.lastChild;//@todo this should be more generic
                 if (!p.documentId)
                     p.documentId = apf.xmldb.getXmlDocId(this);
                 p.$add(this, apf.xmldb.nodeConnect(p.documentId, this, null, p), 
-                    this.parentNode, oInt != p.$int && oInt, null);
+                    this.parentNode, oInt != p.$container && oInt, null);
                 p.$fill();
     
                 if (p.$isTreeArch) {
-                    this.$int = p.$getLayoutNode("item", "container", 
+                    this.$container = p.$getLayoutNode("item", "container",
                        this.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
                 }
                 else this.$ext = node && node.nextSibling || oInt.firstChild;
@@ -576,7 +576,7 @@ apf.item  = function(struct, tagName){
 
         apf.setStyleClass(this.$ext, this.localName);
 
-        //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$int);
+        //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$container);
         this.$caption = this.$getLayoutNode("item", "caption", this.$ext)
         this.$icon    = this.$getLayoutNode("item", "icon", this.$ext);
         this.$hotkey  = this.$getLayoutNode("item", "hotkey", this.$ext);
