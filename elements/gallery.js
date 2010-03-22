@@ -63,6 +63,11 @@ apf.gallery = function(struct, tagName){
     
     this.tmrRefresh    = null;
     this.tmrSlide      = null;
+    
+    this.stepShow      = apf.isIE ? 15 : 20;
+    this.stepSlide     = apf.isIE ? 25 : 30;
+    this.stepHide      = 10
+    this.intSSlide     = apf.isIE ? 2 : 10;
 };
 
 (function(){
@@ -147,11 +152,11 @@ apf.gallery = function(struct, tagName){
         var target = e.target || e.srcElement;
         var from   = e.type == "mouseover" ? 0.7 : 1;
         var to     = e.type == "mouseover" ? 1   : 0.7;
-        
+
         if (apf.isChildOf(htmlElement, target, false)) {
             if ((htmlElement.className || "").indexOf("selected") > -1)
                 return;
-
+            //htmlElement.style.backgroundColor = e.type == "mouseover" ? "red" : "blue";
             apf.tween.single(htmlElement, {
                 steps : 10, 
                 type  : "fade",
@@ -161,6 +166,7 @@ apf.gallery = function(struct, tagName){
         }
     };
     
+    this.loading = false;
     this.$show = function() {
         var _self = this;
         this.$oImage.src = "about:blank";
@@ -171,8 +177,8 @@ apf.gallery = function(struct, tagName){
         if (this.thumbnailMode == "bar")
             this.calcThumbBarSize();
         
-        
         this.$oImage.onload = function() {
+            _self.loading = false;
             _self.$hideLoader();
             _self.$oImageBase.src = _self.$oImage.src;
             _self.last = _self.current;
@@ -207,11 +213,9 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
             _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
             _self.$oImage.style.display    = "block";
-            
-            _self.setDescription();
-            
+
             apf.tween.single(_self.$oImage, {
-                steps : 20,
+                steps : _self.stepShow,
                 type  : "fade",
                 anim  : apf.tween.NORMAL,
                 from  : 0,
@@ -231,17 +235,22 @@ apf.gallery = function(struct, tagName){
         _self.tmrRefresh = setInterval(function() {
             clearInterval(_self.tmrRefresh);
             
-            apf.tween.single(_self.$oImage, {
-                steps : 10,
-                type  : "fade",
-                anim  : apf.tween.NORMAL,
-                from  : 1,
-                to    : 0,
-                onfinish: function(){
-                    _self.setImagePath(_self.current);
-                }
-            });
-        }, 300);
+            if (!_self.loading) {
+                apf.tween.single(_self.$oImage, {
+                    steps : _self.stepHide,
+                    type  : "fade",
+                    anim  : apf.tween.NORMAL,
+                    from  : 1,
+                    to    : 0,
+                    onfinish: function(){
+                        _self.setImagePath(_self.current);
+                    }
+                });
+            }
+            else {
+                _self.setImagePath(_self.current);
+            }
+        }, apf.isIE ? 80 : 100);
     };
     
     this.setDescription = function(xmlNode) {
@@ -277,6 +286,7 @@ apf.gallery = function(struct, tagName){
     };
     
     this.setImagePath = function(xmlNode) {
+        this.loading = true;
         this.$oImage.src = this.$applyBindRule("src", xmlNode) 
             || this.defaultimage 
             || this.defaultthumb;
@@ -299,6 +309,7 @@ apf.gallery = function(struct, tagName){
         if (this.thumbnailMode == "bar")
             this.centerThumbnail(this.current);
         
+        this.setDescription();
         this.$refresh();
     });
     
@@ -315,7 +326,7 @@ apf.gallery = function(struct, tagName){
         var ocLeft = this.$container.offsetLeft;
         
         var tCenteredPos  = -1 * oLeft - parseInt((oWidth + apf.getMargin(htmlNode)[0]) / 2);
-        var vpCenteredPos = parseInt((this.$container.parentNode.offsetWidth - this.$oArrowPrev.offsetWidth - this.$oArrowNext.offsetWidth) / 2)
+        var vpCenteredPos = parseInt(this.$container.parentNode.offsetWidth / 2)
         
         var newLeft = tCenteredPos + this.maxLeft + vpCenteredPos;
         
@@ -337,7 +348,14 @@ apf.gallery = function(struct, tagName){
         });
     };
     
+    this.isLoaderActive = false;
+    
     this.$showLoader = function() {
+        if (this.isLoaderActive)
+            return;
+        
+        this.isLoaderActive = true;
+        
         this.$oLoader.style.display = "block";
         apf.tween.single(this.$oLoader, {
             steps    : 6, 
@@ -349,6 +367,7 @@ apf.gallery = function(struct, tagName){
     
     this.$hideLoader = function() {
         this.$oLoader.style.display = "none";
+        this.isLoaderActive = false;
     };
     
     this.$removeFilters = function() {
@@ -359,7 +378,7 @@ apf.gallery = function(struct, tagName){
     
     this.$resize = function() {
         this.maxLeft = this.$container.offsetLeft;
-        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth + this.$oArrowNext.offsetWidth);
+        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth);
     };
 
     this.$draw = function(){
@@ -407,7 +426,7 @@ apf.gallery = function(struct, tagName){
         };
         
         this.maxLeft = this.$container.offsetLeft;
-        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth + this.$oArrowNext.offsetWidth);
+        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth);
         this.slideFinish = true;
         
         this.$oArrowPrev.onmouseover = function() {
@@ -419,7 +438,7 @@ apf.gallery = function(struct, tagName){
                 if (oLeft + 1 > _self.minLeft && oLeft < _self.maxLeft) {
                     _self.$container.style.left = (oLeft + 1) + "px";
                 }
-            }, apf.isIE ? 2 : 10);
+            }, _self.intSSlide);
         };
         
         this.$oArrowPrev.onmouseout = function() {
@@ -435,7 +454,7 @@ apf.gallery = function(struct, tagName){
                 if (oLeft > _self.minLeft && oLeft - 1 < _self.maxLeft) { 
                     _self.$container.style.left = (oLeft - 1) + "px";
                 }
-            }, apf.isIE ? 2 : 10);
+            }, _self.intSSlide);
         };
         
         this.$oArrowNext.onmouseout = function() {
@@ -454,7 +473,7 @@ apf.gallery = function(struct, tagName){
                 : oLeft + 200;
             
             apf.tween.single(_self.$container, {
-                steps   : 15, 
+                steps   : _self.stepSlide, 
                 type    : "left", 
                 anim    : apf.tween.EASEOUT,
                 from    : oLeft, 
@@ -477,7 +496,7 @@ apf.gallery = function(struct, tagName){
                 : oLeft - 200;
             
             apf.tween.single(_self.$container, {
-                steps   : 15, 
+                steps   : _self.stepSlide, 
                 type    : "left", 
                 anim    : apf.tween.EASEOUT,
                 from    : oLeft, 
