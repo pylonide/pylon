@@ -4,7 +4,7 @@
  * @experimental
  */
 apf.uirecorder = {
-    inited      : false,
+    $inited     : false,
     isRecording : false,
     isPlaying   : false,
     isTesting   : false,
@@ -25,7 +25,11 @@ apf.uirecorder = {
     testListXml         : null,     // xml object with captured tests
     resultListXml       : null,     // xml object with results after testing
     outputXml           : null,     // output xml for recorded test or test results
-    settingsXml         : null      // output xml for test settings
+    settingsXml         : null,     // output xml for test settings
+    
+    debug : function() {
+        debugger;
+    }
 } 
 
 apf.uirecorder.capture = {
@@ -55,7 +59,6 @@ apf.uirecorder.capture = {
         }
         
         document.documentElement.onmousedown = function(e) {
-apf.console.info("mousedown");
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         }
@@ -185,6 +188,7 @@ apf.console.info("mousedown");
         }
         if (apf.uirecorder.isTesting)
             apf.uirecorder.output.$saveTest("results");
+        
         //apf.uirecorder.capture.reset();
     },
 
@@ -196,9 +200,8 @@ apf.console.info("mousedown");
     $captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
-debugger;
         //apf.console.info("captured action: " + eventName);
-        
+//if (eventName == "mousedown") debugger;
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
@@ -229,8 +232,9 @@ debugger;
             */
           
             // multiselect item
-            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
+            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected && eventName != "mousemove") {
                 var multiselectValue = amlNode.value;
+                apf.console.info("multiselect found");
                 htmlNodeName = "multiselect";
                 htmlNode = htmlElement;
             }
@@ -251,6 +255,9 @@ debugger;
                     htmlNodeName = "$ext";
                 }
             }
+            else if (htmlElement) {
+                htmlNode = htmlElement;
+            }
         }
         
         // elapsed time since start of recording/playback
@@ -262,19 +269,20 @@ debugger;
             name        : eventName,
             detailList  : []
         }
-        if (htmlElement)    actionObj.htmlElement   = htmlElement;
+        //if (htmlElement)    actionObj.htmlElement   = htmlElement;
         if (amlNode)        actionObj.amlNode       = amlNode;
         if (e && e.clientX) actionObj.x             = parseInt(e.clientX);
         if (e && e.clientY) actionObj.y             = parseInt(e.clientY);
         if (value)          actionObj.value         = value;
-        
+        /*
         if (eventName == "mousedown") {
             this.$setAsKeyAction = true;
         }
         else if (eventName == "mouseup") {
             this.$setAsKeyAction = false;
         }
-        if (this.$keyActionList.indexOf(eventName) > -1 || this.$setAsKeyAction) {  
+        */
+        if (this.$keyActionList.indexOf(eventName) > -1) { // || this.$setAsKeyAction  
             actionObj.keyActionIdx = this.$keyActionIdx;
             this.$keyActionIdx++;
         }
@@ -364,7 +372,7 @@ debugger;
         // delayed capturing of events
         var recursion = false;
         $setTimeout = function(f, ms){
-            if (recursion || !apf.uirecorder.inited)
+            if (recursion || !apf.uirecorder.$inited)
                 return;
             
             //Record current mouseEvent
@@ -568,7 +576,10 @@ debugger;
             else
                 targetName = "trashbin";
         }
-
+        // skip event calls on html[1]
+        else if (targetName == "html[1]"){
+            return;
+        }
         // elapsed time since start of recording/playback
         var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         var eventObj = {
@@ -678,7 +689,7 @@ apf.uirecorder.playback = {
     
     $keyActions             : [],
     $curKeyActionIdx        : 0,
-    
+    $skipNextAction         : false,
     $playSpeed              : "realtime",
     $maxSpeedDelay          : 40,   // delay in centiseconds (1/100)
     $timeoutTimer           : null,
@@ -773,13 +784,11 @@ apf.console.info("start playback");
         this.$createCheckList();
 
         // hide debugwin
-        /*
         if (apf.config.debug) {
             apf.config.debug = false;
-            if (apf.debugwin.$ext && apf.debugwin.$ext.style)
-                apf.debugwin.hide();
+            //if (apf.debugwin.$ext && apf.debugwin.$ext.style)
+                //apf.debugwin.hide();
         }
-        */
         
         apf.uirecorder.capture.$init();
 
@@ -796,6 +805,7 @@ apf.console.info("start playback");
     },
     
     $getKeyActionIdx : function(actionName) {
+        //return apf.uirecorder.playback.$curKeyActionIdx;
         for (var i = apf.uirecorder.playback.$curKeyActionIdx; i >= 0; i--) {
             if (apf.uirecorder.playback.$keyActions[i].getAttribute("name") == actionName)
                 return i;
@@ -807,12 +817,12 @@ apf.console.info("start playback");
     // collect checks that has to be checked during playback 
     $createCheckList : function() {
         // check all actions that are flagged as keyAction
-        this.$keyActions = apf.uirecorder.playback.$curTestXml.selectNodes("action[@keyActionIdx]");
+        this.$keyActions = apf.uirecorder.playback.$curTestXml.selectNodes("action[@keyActionIdx and not(@name='mousemove')]");
 		
         for (var htmlNode ,action, i = 0, l = this.$keyActions.length; i < l; i++) {
             // set checks for available amlNodes, check in playAction
             // seperate in details1, details2??
-            if (this.$keyActions[i].getAttribute("amlNode")) {
+            if (this.$keyActions[i].getAttribute("amlNode") != undefined) {
                 if (!this.$checkList[i]) this.$checkList[i] = {}
                 if (!this.$checkList[i].elementAvailable) this.$checkList[i].elementAvailable = [];
                 if (this.$checkList[i].elementAvailable.indexOf(this.$keyActions[i].getAttribute("amlNode")) == -1)
@@ -820,12 +830,25 @@ apf.console.info("start playback");
             }
             
             // set htmlNode checks, check in checkResults()
-            if (this.$keyActions[i].getAttribute("htmlNode")) {
-                if (!this.$checkList[i]) this.$checkList[i] = {}
-                if (!this.$checkList[i].htmlNode) this.$checkList[i].htmlNode = [];
-                htmlNode = (this.$keyActions[i].getAttribute("htmlNode") == "$ext") ? this.$keyActions[i].getAttribute("amlNode") : this.$keyActions[i].getAttribute("htmlNode");
-                if (this.$checkList[i].htmlNode.indexOf(this.$keyActions[i].getAttribute("htmlNode")) == -1)
-                    this.$checkList[i].htmlNode.push(htmlNode);
+            if (this.$keyActions[i].getAttribute("htmlNode") != undefined) {
+                // check htmlNode
+                // multiselect check already covered by properties/selection
+                //if (this.$keyActions[i].getAttribute("htmlNode") != "multiselect") {
+                    if (!this.$checkList[i]) this.$checkList[i] = {}
+                    if (!this.$checkList[i].htmlNode) this.$checkList[i].htmlNode = [];
+                    htmlNode = (this.$keyActions[i].getAttribute("htmlNode") == "$ext") ? this.$keyActions[i].getAttribute("amlNode") : this.$keyActions[i].getAttribute("htmlNode");
+                    if (this.$checkList[i].htmlNode.indexOf(this.$keyActions[i].getAttribute("htmlNode")) == -1)
+                        this.$checkList[i].htmlNode.push(htmlNode);
+                /*
+                }
+                // check multiselect value
+                else {
+                    if (!this.$checkList[i]) this.$checkList[i] = {}
+                    if (!this.$checkList[i].multiselect) this.$checkList[i].multiselect = {};
+                    if (!this.$checkList[i].multiselect[this.$keyActions[i].getAttribute("amlNode")])
+                        this.$checkList[i].multiselect[this.$keyActions[i].getAttribute("amlNode")] = this.$keyActions[i].getAttribute("multiselectValue");
+                }
+                */
             }
             
             // set checks to compare value of properties, events and data, check in checkResults()
@@ -853,7 +876,7 @@ apf.console.info("start playback");
                                 
                                 else if (type == "events") {
                                     // add events with a value
-                                    if (node.getAttribute("value")) {
+                                    if (node.getAttribute("value") != undefined) {
                                         if (!this.$checkList[i]) this.$checkList[i] = {};
                                         if (!this.$checkList[i].details) this.$checkList[i].details = [];
                                         if (!this.$checkList[i].details[dIdx]) this.$checkList[i].details[dIdx] = {};
@@ -895,6 +918,7 @@ apf.console.info("start playback");
         if (this.$checkList[keyActionIdx] && this.$checkList[keyActionIdx].elementAvailable) {
             for (var amlNode, i = 0, l = this.$checkList[keyActionIdx].elementAvailable.length; i < l; i++) {
                 //if one element is not available return false
+                if (this.$checkList[keyActionIdx].elementAvailable[i].indexOf("html[") == 0) continue;
                 amlNode = (this.$checkList[keyActionIdx].elementAvailable[i].indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
                     ? apf.document.selectSingleNode(this.$checkList[keyActionIdx].elementAvailable[i].substr(8)) // search for amlNode based on xpath
                     : window[this.$checkList[keyActionIdx].elementAvailable[i]] // search for amlNode on screen 
@@ -922,8 +946,8 @@ apf.console.info("start playback");
             var curTime = new Date().getTime();
             if (curTime <= this.$waitElementStartTime + this.$testDelay + this.$elementWaitTimeout) {
                 // @todo create new error for wait elements
-    
-               apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ELEMENT_TIMEOUT, { 
+                debugger;
+                apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ELEMENT_TIMEOUT, { 
                     val         : [this.$checkList[keyActionIdx].elementAvailable.join(", ")], 
                     testId      : this.$curTestXml.getAttribute("name"),
                     action      : this.$keyActions[keyActionIdx].getAttribute("name"),
@@ -958,7 +982,7 @@ apf.console.info("start playback");
         
         this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
         if (this.$curAction.getAttribute("name") != "mousemove") {
-            apf.console.info("$playAction: " + this.$curAction.getAttribute("keyActionIdx"));
+            apf.console.info("$playAction: keyAction (" + this.$curAction.getAttribute("keyActionIdx") + ")");
         }
 
         // if popups in queue and no popup visible show them after mouseup action
@@ -974,7 +998,7 @@ apf.console.info("start playback");
 
         // check for availability of needed elements
         if (this.$curAction.getAttribute("keyActionIdx") != undefined) {
-            this.$curKeyActionIdx = this.$curAction.getAttribute("keyActionIdx");
+            this.$curKeyActionIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
 //if (this.$curAction.getAttribute("name") == "mouseup") debugger;
             // pause playback until all elements required for this action are available, but not in middle of mousedown/mouseup combo
             if (this.$checkList[this.$curKeyActionIdx] && this.$checkList[this.$curKeyActionIdx].elementAvailable && !this.$elementsAvailable(this.$curKeyActionIdx)) {
@@ -1015,11 +1039,36 @@ apf.console.info("start playback");
         } 
         else if (this.$playSpeed == "max") {
             // skip non-keyActions
+            // execute actions between mousedown/mouseup
             if (this.$curAction.getAttribute("keyActionIdx") == undefined) { 
                 this.$testCheck();
                 return;
             }
+            
+            // skip mousedown when multiselect selection is made, selection occurs using setValue();
+            if (["mousedown"].indexOf(this.$curAction.getAttribute("name")) > -1 && this.$curAction.getAttribute("amlNode") != undefined && this.$curAction.getAttribute("htmlNode") != "multiselect") {
+                var keyIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
+                if (this.$keyActions[keyIdx+2] && this.$keyActions[keyIdx+2].getAttribute("amlNode") != undefined && this.$keyActions[keyIdx+2].getAttribute("htmlNode") == "multiselect") {
+                    // remove checks from checklist
+                    //debugger;
+                    if (this.$checkList[keyIdx])
+                        delete this.$checkList[keyIdx];
+                    if (this.$checkList[keyIdx])
+                        delete this.$checkList[keyIdx+1];
+                        
+                    this.$skipNextAction = true;
+                    this.$testCheck();
+                    return;
+                }
+            }            
 
+            // also skip mouseup when mousedown is skipped, 
+            if (this.$skipNextAction) {
+                this.$skipNextAction = false;
+                this.$testCheck();
+                return;
+            }
+            
             this.$execAction();
         }
     },
@@ -1052,7 +1101,7 @@ apf.console.info("start playback");
         }
 */
 
-        //if (this.$curAction.getAttribute("name") != "mousemove")
+//        if (this.$curAction.getAttribute("name") != "mousemove")
             //apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
         
         // locate html element and calculate position of mouse action
@@ -1082,7 +1131,7 @@ apf.console.info("start playback");
                     else if (amlNode.$getActiveElements && amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")])
                         htmlNode = amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")];
                     else if (this.$curAction.getAttribute("htmlNode") == "multiselect") {
-						debugger;
+						//debugger;
 						//htmlNode = amlNode.
 						//apf.xmldb.findXmlNodeByValue
 						// @todo if (this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect") {
@@ -1112,47 +1161,87 @@ apf.console.info("start playback");
             }
         }
         
-        // move mouse cursor to correct position
-        if (apf.uirecorder.playback.$mouseMoveActions.indexOf(this.$curAction.getAttribute("name") > -1)) {
-            if (!xPos && !yPos) {
-                xPos = this.$curAction.getAttribute("x");
-                yPos = this.$curAction.getAttribute("y");
+        // don't perform mousemovement, actions but set value of multiselect item
+        // notice: runInContext, setDelayedDetails and checkResults are not run cause mouseaction is not executed
+        if (this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect") {
+            if (this.$curAction.getAttribute("name") == "mousedown") {
+                apf.console.info("multiselect setvalue");
+                //amlNode.focus();
+                debugger;
+                // @todo check if value exist, if not raise warning
+                // if (valueExist) {
+                amlNode.setValue(this.$curAction.getAttribute("multiselectValue"));
+                // selected value not available in multiselect
+                //}
+                //else {
+                if (amlNode.value != this.$curAction.getAttribute("multiselectValue")) {
+                    apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
+                        val         : ["multiselect", "item", this.$curAction.getAttribute("amlNode")], 
+                        testId      : this.$curTestXml.getAttribute("name"),
+                        action      : this.$curAction.getAttribute("name"),
+                        keyActionIdx: this.$curAction.getAttribute("keyActionIdx")
+                    });
+                }
+                //}
+                    
             }
-    
-            // move mouse cursor to correct position
-            // ssb
-            if (this.$o3.window) {
-                this.$o3.mouseTo(
-                    parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
-                    parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
-                    this.$o3.window
-                );
-            }
-            // o3 browser plugin
-            else {
-                this.$o3.mouseTo(parseInt(xPos), parseInt(yPos));
-            }
+            this.$testCheck();
+            return;
         }
+        // move mouse cursor to correct position
+//        else if (apf.uirecorder.playback.$mouseMoveActions.indexOf(this.$curAction.getAttribute("name") > -1)) {
+        if (!xPos && !yPos) {
+            xPos = this.$curAction.getAttribute("x");
+            yPos = this.$curAction.getAttribute("y");
+        }
+
+        // move mouse cursor to correct position
+        // ssb
+        if (this.$o3.window) {
+            apf.console.info(this.$curAction.getAttribute("name") + " moved");
+            this.$o3.mouseTo(
+                parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
+                parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
+                this.$o3.window
+            );
+        }
+        // o3 browser plugin
+        else {
+            this.$o3.mouseTo(parseInt(xPos), parseInt(yPos));
+        }
+//        }
         
         // execute mouse action
         if (this.$curAction.getAttribute("name") === "keypress") {
+            if (this.$playSpeed == "max") 
+                this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
         }
         else if (this.$curAction.getAttribute("name") === "keydown") {
+            if (this.$playSpeed == "max") 
+                this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.sendKeyDown(this.$curAction.getAttribute("value"));
         }
         else if (this.$curAction.getAttribute("name") === "keyup") {
+            if (this.$playSpeed == "max") 
+                this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.sendKeyUp(this.$curAction.getAttribute("value"));
         }
         else if (this.$curAction.getAttribute("name") === "mousedown") {
             if (this.$playSpeed == "max") 
                 this.$o3.wait(this.$maxSpeedDelay);
-            this.$o3.mouseLeftDown();
+            if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
+                apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mousedown");
+                this.$o3.mouseLeftDown();
+            }
         }
         else if (this.$curAction.getAttribute("name") === "mouseup") {
             if (this.$playSpeed == "max")
                 this.$o3.wait(this.$maxSpeedDelay);
-            this.$o3.mouseLeftUp();
+            if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
+                apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mouseup");
+                this.$o3.mouseLeftUp();
+            }
         }
         else if (this.$curAction.getAttribute("name") === "dblClick") {
             if (this.$playSpeed == "max") 
@@ -1165,7 +1254,7 @@ apf.console.info("start playback");
         else if (this.$curAction.getAttribute("name") === "mousescroll") {
             this.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
-        
+        apf.console.info(this.$curAction.getAttribute("name") + " executed");
         this.$testCheck();
     },
 
@@ -1211,9 +1300,10 @@ apf.console.info("start playback");
                     else if (apf.uirecorder.isPlaying){
                         apf.dispatchEvent("apftest_testcomplete");
                     }
-        
+
+                    debugger;
                     apf.uirecorder.playback.reset();
-                }, 1)
+                }, 1000)
             }
             else {
                 apf.uirecorder.capture.stop();
@@ -1419,6 +1509,7 @@ apf.uirecorder.testing = {
                             || actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[keyActionIdx][prop]]
                             || apf.uirecorder.playback.$checkList[keyActionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
                         ) {
+                            debugger;
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
                                 val: [eventName, apf.uirecorder.playback.$checkList[keyActionIdx][prop]], 
                                 testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"), 
@@ -1429,9 +1520,10 @@ apf.uirecorder.testing = {
                         // error if targeted htmlNode has different name than recorded htmlNode name
                         // or htmlNode is $ext, but not of targeted amlNode
                         else if (actionObj.htmlNode 
-                             && ( (actionObj.htmlNode.name != "$ext" && actionObj.htmlNode.name != apf.uirecorder.playback.$checkList[keyActionIdx][prop]) 
+                             && ( (actionObj.htmlNode.name != "$ext" && apf.uirecorder.playback.$checkList[keyActionIdx][prop].indexOf(actionObj.htmlNode.name) == -1) 
                               || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.playback.$checkList[keyActionIdx][prop].indexOf(actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)) == -1)) 
                                 ) {
+                            debugger;
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
                                 val: [eventName, apf.uirecorder.playback.$checkList[keyActionIdx][prop]], 
                                 testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
@@ -1444,10 +1536,31 @@ apf.uirecorder.testing = {
                             delete apf.uirecorder.playback.$checkList[keyActionIdx][prop];
                         }
                         break;
+                    // multiselect check already covered by properties/selection
+                    /*
+                    case "multiselect":
+                        for (var elName in apf.uirecorder.playback.$checkList[keyActionIdx][prop]) {
+                            // amlNode is no multiselect
+                            if (!(actionObj.detailList[0][elName] && actionObj.detailList[0][elName].amlNode && actionObj.detailList[0][elName].amlNode.hasFeature(apf.__MULTISELECT__) && actionObj.detailList[0][elName].amlNode.selected)) {
+                                debugger;
+                            }
+                            // multiselect value is different
+                            else if (actionObj.detailList[0][elName].amlNode.value != apf.uirecorder.playback.$checkList[keyActionIdx][prop][elName]) {
+                                apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
+                                    val         : ["multiselect", "item", elName], 
+                                    testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
+                                    action      : eventName,
+                                    keyActionIdx: apf.uirecorder.playback.$getKeyActionIdx(eventName)
+                                });
+                            }
+                        }
+                        break;
+                    */
                     case "details":
 //                    case "properties":
 //                    case "events":
 //                    case "data":
+
                         if (!apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx]) continue;
                         for (var dType in apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx]) {
                             for (var elName in apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx][dType]) {
@@ -1462,9 +1575,10 @@ apf.uirecorder.testing = {
                                 if (!amlNode) {
                                     debugger;
                                     apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
-                                        val     : elName, 
-                                        testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
-                                        action      : eventName + " (" + checkActionIdx + ")"
+                                        val         : elName, 
+                                        testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
+                                        action      : eventName,
+                                        keyActionIdx: keyActionIdx
                                     });
                                     return;
                                 }
@@ -1641,8 +1755,9 @@ apf.uirecorder.output = {
             }
             
             // set value
-            if (action.value || typeof action.value == "boolean") aNode.setAttribute("value", action.value);
-
+            if (action.value != undefined) aNode.setAttribute("value", action.value);
+            if (action.multiselectValue != undefined) aNode.setAttribute("multiselectValue", action.multiselectValue);
+            
             // set apf.activeElement
             if (action.activeElement) {
                 var eNode, iNode;
