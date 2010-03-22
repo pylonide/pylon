@@ -154,7 +154,6 @@ apf.aml.setElement("include", apf.XiInclude);
                         "Loading include",
                         "Could not parse include file. Maybe the file does not exist?", xmlNode));
                 }
-                if (extra.url.indexOf("nieuws") > -1 ) debugger;
                 xmlNode.setAttribute("filename", extra.url);
 
                 // #ifdef __DEBUG
