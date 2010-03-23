@@ -95,7 +95,7 @@ apf.AmlText = function(isPrototype){
             this.implement(apf.StandardBinding);
             //#endif
             
-            pHtmlNode.appendChild(this.$ext = this.$int = document.createElement("span"));
+            pHtmlNode.appendChild(this.$ext = document.createElement("span"));
             this.$setDynamicProperty("calcdata", this.nodeValue);
             
             return;

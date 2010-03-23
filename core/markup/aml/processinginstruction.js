@@ -75,7 +75,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
         if (this.parentNode.$bindingRule || !(pHtmlNode = this.parentNode.$int)) 
             return;
 
-        pHtmlNode.appendChild(this.$ext = this.$int = document.createElement("span"));
+        pHtmlNode.appendChild(this.$ext = document.createElement("span"));
         this.$ext.host = this;
 
         this.$setDynamicProperty("calcdata", this.data);

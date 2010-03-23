@@ -55,7 +55,7 @@ apf.codeeditor = function(struct, tagName){
     //this.realtime          = false;
     this.value             = "";
     this.isContentEditable = true;
-    this.multiline         = false;
+    this.multiline         = true;
 
     /**
      * @attribute {Boolean} realtime whether the value of the bound data is
@@ -70,14 +70,14 @@ apf.codeeditor = function(struct, tagName){
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value, prop, initial){
-        if (!this.$int || !initial && this.getValue() == value)
+        if (!this.$input || !initial && this.getValue() == value)
             return;
 
         // Set Value
         /*if (!initial && !value) //@todo apf3.x research the use of clear
             this.clear();
         else {*/
-            this.$int.innerHTML = value
+            this.$input.innerHTML = value
                 .replace(/ /g, "&nbsp;")
                 .replace(/</g, "&lt;")
                 .replace(/\n/g, "<br />")
@@ -93,7 +93,7 @@ apf.codeeditor = function(struct, tagName){
         if (value) {
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)
-                this.$int.onblur();
+                this.$input.onblur();
             //#endif
             
             //this.$propHandlers["value"].call(this, value, null, true);
@@ -134,7 +134,7 @@ apf.codeeditor = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.$int.innerHTML : this.$int.value;
+        var v = this.isHTMLBox ? this.$input.innerHTML : this.$input.value;
         return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
     };
     
@@ -145,7 +145,7 @@ apf.codeeditor = function(struct, tagName){
      */
     this.select   = function(){ 
         try {
-            this.$int.select(); 
+            this.$input.select(); 
         }
         catch(e){}
     };
@@ -153,7 +153,7 @@ apf.codeeditor = function(struct, tagName){
     /**
      * Deselects the text in this element.
      */
-    this.deselect = function(){ this.$int.deselect(); };
+    this.deselect = function(){ this.$input.deselect(); };
 
     /**** Private Methods *****/
 
@@ -168,7 +168,7 @@ apf.codeeditor = function(struct, tagName){
             this.$propHandlers["value"].call(this, "");
         }
         
-        if (!this.$int.tagName.toLowerCase().match(/input|textarea/i)) {
+        if (!this.$input.tagName.toLowerCase().match(/input|textarea/i)) {
             if (apf.hasMsRangeObject) {
                 try {
                     var range = document.selection.createRange();
@@ -206,7 +206,7 @@ apf.codeeditor = function(struct, tagName){
             if (!text)
                 text = window.clipboardData.getData("Text");
 
-            this.$int.focus();
+            this.$input.focus();
             var range = document.selection.createRange();
             range.text = "";
             range.collapse();
@@ -223,7 +223,7 @@ apf.codeeditor = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        if (this["initial-message"] && this.$int.value == this["initial-message"]) {
+        if (this["initial-message"] && this.$input.value == this["initial-message"]) {
             this.$propHandlers["value"].call(this, "", null, true);
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
@@ -239,7 +239,7 @@ apf.codeeditor = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
-        if (this["initial-message"] && this.$int.value == "") {
+        if (this["initial-message"] && this.$input.value == "") {
             this.$propHandlers["value"].call(this, this["initial-message"], null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
@@ -291,7 +291,7 @@ apf.codeeditor = function(struct, tagName){
             var limit = this.limit; this.limit = 0;
             
             var _self = this.host, vp = this;
-            this.sb.attach(this.host.$int, this, function(timed, pos){
+            this.sb.attach(this.host.$input, this, function(timed, pos){
                 if (vp.sb.realtime || !timed) {
                     vp.change(l * pos, vp.limit, false);
                 }
@@ -338,7 +338,7 @@ apf.codeeditor = function(struct, tagName){
             this.offset = offsetN;
             
             if (diff > 0) { //get last node before resize
-                var lastNode = this.host.$int.lastChild;
+                var lastNode = this.host.$input.lastChild;
                 if (lastNode.nodeType != 1)
                     lastNode = lastNode.previousSibling;
             }
@@ -358,7 +358,7 @@ apf.codeeditor = function(struct, tagName){
     };
     
     //this.viewport.sb.parentNode = new apf.Class().$init();
-    //this.viewport.sb.parentNode.$int = this.$pHtmlNode;
+    //this.viewport.sb.parentNode.$input = this.$pHtmlNode;
     //this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
     
     this.$isInViewport = function(xmlNode, struct){
@@ -379,26 +379,26 @@ apf.codeeditor = function(struct, tagName){
             oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
             oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
         });
-        this.$int    = this.$getLayoutNode("main", "content", this.$ext);
+        this.$input    = this.$getLayoutNode("main", "content", this.$ext);
         
         this.viewport.host = this;
         this.viewport.draw();
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$int, "scrollbar", "\
+        apf.layout.setRules(this.$input, "scrollbar", "\
             var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
             s.update();\
         ", true);
-        apf.layout.queue(this.$int);
+        apf.layout.queue(this.$input);
         //#endif
         
-        this.$int.onselectstart = function(e){
+        this.$input.onselectstart = function(e){
             if (!e) e = event;
             e.cancelBubble = true;
         }
-        this.$int.host = this;
+        this.$input.host = this;
 
-        this.$int.onkeydown = function(e){
+        this.$input.onkeydown = function(e){
             e = e || window.event;
             
             return false;
@@ -424,7 +424,7 @@ apf.codeeditor = function(struct, tagName){
                 e.shiftKey, e.altKey, e);
         };
 
-        this.$int.onkeyup = function(e){
+        this.$input.onkeyup = function(e){
             if (!e)
                 e = event;
 
@@ -446,21 +446,21 @@ apf.codeeditor = function(struct, tagName){
             }
         };
 
-        if (!this.$int.tagName.toLowerCase().match(/input|textarea/)) {
+        if (!this.$input.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;
 
-            this.$int.unselectable    = "Off";
-            this.$int.contentEditable = true;
-            this.$int.style.width     = "1px";
+            this.$input.unselectable    = "Off";
+            this.$input.contentEditable = true;
+            this.$input.style.width     = "1px";
 
-            this.$int.select = function(){
+            this.$input.select = function(){
                 var r = document.selection.createRange();
                 r.moveToElementText(this);
                 r.select();
             }
         };
 
-        this.$int.deselect = function(){
+        this.$input.deselect = function(){
             if (!document.selection) return;
 
             var r = document.selection.createRange();
@@ -481,14 +481,14 @@ apf.codeeditor = function(struct, tagName){
         if (this.$button)
             this.$button.onmousedown = null;
         
-        if (this.$int) {
-            this.$int.onkeypress     =
-            this.$int.onmouseup      =
-            this.$int.onmouseout     =
-            this.$int.onmousedown    =
-            this.$int.onkeydown      =
-            this.$int.onkeyup        =
-            this.$int.onselectstart  = null;
+        if (this.$input) {
+            this.$input.onkeypress     =
+            this.$input.onmouseup      =
+            this.$input.onmouseout     =
+            this.$input.onmousedown    =
+            this.$input.onkeydown      =
+            this.$input.onkeyup        =
+            this.$input.onselectstart  = null;
         }
     });
 // #ifdef __WITH_DATABINDING

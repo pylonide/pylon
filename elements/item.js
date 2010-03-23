@@ -478,7 +478,7 @@ apf.item  = function(struct, tagName){
                     p.$fill();
                     
                     if (p.$isTreeArch) {
-                        _self.$container = p.$getLayoutNode("item", "container",
+                        _self.$container = p.$getLayoutNode("item", "container", 
                            _self.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
                     }
                     else _self.$ext = node && node.nextSibling || oInt.firstChild;
@@ -540,7 +540,7 @@ apf.item  = function(struct, tagName){
                 p.$fill();
     
                 if (p.$isTreeArch) {
-                    this.$container = p.$getLayoutNode("item", "container",
+                    this.$container = p.$getLayoutNode("item", "container", 
                        this.$ext = node && node.nextSibling || oInt.firstChild);//@todo this should be more generic
                 }
                 else this.$ext = node && node.nextSibling || oInt.firstChild;

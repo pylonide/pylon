@@ -343,8 +343,13 @@ apf.GuiElement = function(){
         // will $pHtmlNode be deprecated soon?
         // check used to be:
         //if (!this.$pHtmlNode && this.parentNode)
-        if (this.parentNode && this.parentNode.$int != this.$pHtmlNode)
-            this.$pHtmlNode = this.parentNode.$int; //@todo apf3.0 change this in the mutation events
+        if (this.parentNode) {
+            if (this.localName == "item" 
+              && this.parentNode.hasFeature(apf.__MULTISELECT__)) //special case for item nodes, using multiselect rendering
+                this.$pHtmlNode = this.parentNode.$container;
+            else
+                this.$pHtmlNode = this.parentNode.$int; //@todo apf3.0 change this in the mutation events
+        }
 
         if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMNodeInserted
             return;
