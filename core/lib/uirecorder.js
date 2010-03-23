@@ -43,7 +43,7 @@ apf.uirecorder.capture = {
     $capturedModelChangeList    : {},   // list of all model changes captured for current action
     
     $keyActionIdx       : 0,
-    $keyActionList      : ["mousedown", "mouseup", "dblClick", "keydown", "keyup"], // all actions that are always set as keyAction
+    $keyActionList      : ["mousedown", "mouseup", "dblClick", "keydown", "keyup", "keypress"], // all actions that are always set as keyAction
     $setAsKeyAction     : false,        // flag to set all actions as keyactions, like all mousemovements between mousedown and mouseup
 
     $validKeys          : [37, 38, 39, 40, 27, 16, 17, 18], //arrowkeys, Esc, shift, ctrl, alt
@@ -200,8 +200,8 @@ apf.uirecorder.capture = {
     $captureAction : function(eventName, e, value) {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
+        
         //apf.console.info("captured action: " + eventName);
-//if (eventName == "mousedown") debugger;
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
@@ -250,9 +250,13 @@ apf.uirecorder.capture = {
             }
 */
             if (!htmlNode) {
-                if (amlNode) {
+                if (amlNode && amlNode.nodeName != "lm") {
                     htmlNode = amlNode.$ext;
                     htmlNodeName = "$ext";
+                    //if (eventName == "mousedown") debugger;
+                }
+                else {
+                    amlNode = null;
                 }
             }
             else if (htmlElement) {
@@ -545,6 +549,9 @@ apf.uirecorder.capture = {
         // aml element
         if (amlNode && amlNode.parentNode) {
             targetName = amlNode.id || apf.xmlToXpath(amlNode);
+            if (targetName.indexOf("/text()") > -1) {
+                targetName = targetName.substr(0, targetName.length - "/text()[x]".length);    
+            }
         }
         // html element
         else if (amlNode && e.htmlEvent) {
@@ -622,6 +629,9 @@ apf.uirecorder.capture = {
     capturePropertyChange : function(amlNode, prop, value) {
         if (amlNode) {
             targetName = amlNode.id || apf.xmlToXpath(amlNode);
+            if (targetName.indexOf("/text()") > -1) {
+                targetName = targetName.substr(0, targetName.length - "/text()[x]".length);    
+            }
         } 
         else {
             debugger;
@@ -651,6 +661,9 @@ apf.uirecorder.capture = {
     captureModelChange : function(params) {
         if (params.amlNode) {
             targetName = params.amlNode.id || apf.xmlToXpath(params.amlNode);
+            if (targetName.indexOf("/text()") > -1) {
+                targetName = targetName.substr(0, targetName.length - "/text()[x]".length);    
+            }
         }
         else {
             debugger;
@@ -705,7 +718,8 @@ apf.uirecorder.playback = {
     $checkList              : [],       // list with checks that need to be performed during testing
     $checkEvents            : { // list of events where playback should wait before continuing playing 
         "beforeload"        : "afterload",
-        "beforestatechange" : "afterstatechange"
+        "beforestatechange" : "afterstatechange",
+        "beforeswitch"      : "afterswitch"
     },
 
     // reset playback
@@ -857,6 +871,8 @@ apf.console.info("start playback");
                     dIdx = this.$keyActions[i].childNodes[di].getAttribute("index");
                     for (var elName, nodes, ci = 0, cl = this.$keyActions[i].childNodes[di].childNodes.length; ci < cl; ci++) {
                         elName = this.$keyActions[i].childNodes[di].childNodes[ci].getAttribute("name");
+                        if (!elName) continue;
+if (elName && elName.indexOf("text()") > -1) debugger;
                         for (var type in this.$detailTypes) {
                             if (!this.$keyActions[i].childNodes[di].childNodes[ci].selectSingleNode(type)) continue;
                             nodes = this.$keyActions[i].childNodes[di].childNodes[ci].selectSingleNode(type).selectNodes(this.$detailTypes[type]);
@@ -1101,9 +1117,9 @@ apf.console.info("start playback");
         }
 */
 
-//        if (this.$curAction.getAttribute("name") != "mousemove")
-            //apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
-        
+        if (this.$curAction.getAttribute("name") != "mousemove")
+            apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
+//if (this.$curActionIdx == "181") debugger;     
         // locate html element and calculate position of mouse action
         if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
             var xPos, yPos;
@@ -1118,6 +1134,7 @@ apf.console.info("start playback");
                     
                     // check if amlNode already exist on stage, if not: wait till it does before continuing playback
                     if (!amlNode) {
+                        debugger;
                         apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
                             val     : this.$curAction.getAttribute("amlNode"), 
                             testId  : this.$curTestXml.getAttribute("name")
@@ -1151,8 +1168,14 @@ apf.console.info("start playback");
                         
                         // position of htmlNode
                         var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
-                        xPos = pos[0]-(parseInt(this.$curAction.getAttribute("absX"))-parseInt(this.$curAction.getAttribute("x"))) * ((htmlNode.offsetWidth/this.$curAction.getAttribute("width")));
-                        yPos = pos[1]-(parseInt(this.$curAction.getAttribute("absY"))-parseInt(this.$curAction.getAttribute("y"))) * ((htmlNode.offsetHeight/this.$curAction.getAttribute("height")));
+                        if (this.$curAction.getAttribute("width") != "0")
+                            xPos = pos[0]-(parseInt(this.$curAction.getAttribute("absX"))-parseInt(this.$curAction.getAttribute("x"))) * ((htmlNode.offsetWidth/parseInt(this.$curAction.getAttribute("width"))));
+                        else
+                            xPos = parseInt(this.$curAction.getAttribute("x"));
+                        if (this.$curAction.getAttribute("height") != "0")
+                            yPos = pos[1]-(parseInt(this.$curAction.getAttribute("absY"))-parseInt(this.$curAction.getAttribute("y"))) * ((htmlNode.offsetHeight/parseInt(this.$curAction.getAttribute("height"))));
+                        else
+                            yPos = parseInt(this.$curAction.getAttribute("y"));
                     }
                 }
                 else {
@@ -1198,7 +1221,7 @@ apf.console.info("start playback");
         // move mouse cursor to correct position
         // ssb
         if (this.$o3.window) {
-            apf.console.info(this.$curAction.getAttribute("name") + " moved");
+            //apf.console.info(this.$curAction.getAttribute("name") + " moved");
             this.$o3.mouseTo(
                 parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
                 parseInt(yPos) + this.$o3.window.clientY + this.$windowOffset.top, 
@@ -1231,7 +1254,7 @@ apf.console.info("start playback");
             if (this.$playSpeed == "max") 
                 this.$o3.wait(this.$maxSpeedDelay);
             if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
-                apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mousedown");
+                //apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mousedown");
                 this.$o3.mouseLeftDown();
             }
         }
@@ -1239,7 +1262,7 @@ apf.console.info("start playback");
             if (this.$playSpeed == "max")
                 this.$o3.wait(this.$maxSpeedDelay);
             if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
-                apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mouseup");
+                //apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mouseup");
                 this.$o3.mouseLeftUp();
             }
         }
@@ -1254,7 +1277,7 @@ apf.console.info("start playback");
         else if (this.$curAction.getAttribute("name") === "mousescroll") {
             this.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
-        apf.console.info(this.$curAction.getAttribute("name") + " executed");
+        //apf.console.info(this.$curAction.getAttribute("name") + " executed");
         this.$testCheck();
     },
 
@@ -1652,8 +1675,8 @@ apf.uirecorder.testing = {
                                     }
                                     else {
                                         // @todo delete from checkList
-                                        apf.console.info("succesfull check: " + prop + ": " + elName + " - " + name);
-                                        //deleteCheckList.push(apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx][dType][elName][name]);
+                                        //apf.console.info("succesfull check: " + prop + ": " + elName + " - " + name);
+                                        delete apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx][dType][elName][name];
                                     }
                                 }
                             }                            
@@ -1724,9 +1747,9 @@ apf.uirecorder.output = {
             testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
             testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
         }
-
+        
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
-        for (var prevNode, action, aNode, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
+        for (var prevNode, action, aNode, amlNodeName, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
             aNode = testXml.ownerDocument.createElement("action");
             aNode.setAttribute("name"       , action.name);
@@ -1741,8 +1764,13 @@ apf.uirecorder.output = {
             }
 
             if (action.amlNode && action.amlNode.localName != "debugwin") {
-                if (action.amlNode.parentNode)
-                    aNode.setAttribute("amlNode", action.amlNode.id || apf.xmlToXpath(action.amlNode));
+                if (action.amlNode.parentNode) {
+                    var amlNodeName = action.amlNode.id || apf.xmlToXpath(action.amlNode);
+                    if (amlNodeName.indexOf("/text()[") > -1)
+                        amlNodeName = amlNodeName.substr(0, amlNodeName.length - "/text()[x]".length)
+                    
+                    aNode.setAttribute("amlNode", amlNodeName);
+                }
             }
             if (action.htmlNode && action.htmlNode.name) {
                 aNode.setAttribute("htmlNode", action.htmlNode.name);
@@ -1778,8 +1806,13 @@ apf.uirecorder.output = {
                 
                 for (var elementName in action.detailList[dli]) {
                     eNode = testXml.ownerDocument.createElement("element");
-                    eNode.setAttribute("name", elementName);
+                    if (elementName.indexOf("/text()") == -1)
+                        eNode.setAttribute("name", elementName);
+                    // strip element name from /text()[x]
+                    else
+                        eNode.setAttribute("name", elementName.substr(0, elementName.length - "/text()[x]".length));
                     
+
                     for (var type in detailTypes) {
                         if (action.detailList[dli][elementName][type].length) {
                             dNode = testXml.ownerDocument.createElement(type)
