@@ -6,7 +6,7 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="0" />
+        <a:appsettings debug="1" />
         
         <a:dropdown>
             <a:bindings> 
@@ -23,5 +23,24 @@
                 </data> 
             </a:model> 
         </a:dropdown>
+
+        <a:dropdown id="ddSearch"
+            model="mdlSearchCats"
+            each="[category]"
+            caption="[text()]"
+            value="[category[@default='true']]"
+            eachvalue="[@name]" />
+        
+        <a:model id="mdlSearchCats">
+            <categories>
+                <category name="products" default="true">Producten</category>
+                <category name="suppliers">Leveranciers</category>
+                <category name="news">Productnieuws</category>
+                <category name="bestekcad">Bestekken &amp; CAD</category>
+                <!--category name="whitepapers">Whitepapers</category>
+                <category name="themes">Thema's</category>
+                <category name="wholesite">Hele Website</category-->
+            </categories>
+        </a:model>
     </body>
 </html>
