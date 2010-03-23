@@ -46,7 +46,7 @@ apf.uirecorder.capture = {
     $keyActionList      : ["mousedown", "mouseup", "dblClick", "keydown", "keyup", "keypress"], // all actions that are always set as keyAction
     $setAsKeyAction     : false,        // flag to set all actions as keyactions, like all mousemovements between mousedown and mouseup
 
-    $validKeys          : [37, 38, 39, 40, 27, 16, 17, 18], //arrowkeys, Esc, shift, ctrl, alt
+    $validKeys          : [37, 38, 39, 40, 27, 16, 17, 18, 13], //arrowkeys, Esc, shift, ctrl, alt, Enter
     // init capturing of user interaction
     $init : function() {
         if (apf.uirecorder.$inited) return;
@@ -120,16 +120,17 @@ apf.uirecorder.capture = {
             var keycode = (e.keyCode) ? e.keyCode : e.which;
             if (apf.uirecorder.capture.$validKeys.indexOf(keycode) == -1) return;
 
+apf.console.info("captured action: " + "keyup");
             apf.uirecorder.capture.$captureAction("keyup", e, keycode);
         }
         
         document.documentElement.onkeydown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
-
             var keycode = (e.keyCode) ? e.keyCode : e.which;
             if (apf.uirecorder.capture.$validKeys.indexOf(keycode) == -1) return;
             
+apf.console.info("captured action: " + "keydown");
             apf.uirecorder.capture.$captureAction("keydown", e, keycode);
         }
         
@@ -138,6 +139,7 @@ apf.uirecorder.capture = {
                 return;
             e = e || event;
 
+            if (apf.uirecorder.capture.$validKeys.indexOf(e.keyCode) > -1) return;
             var character = "";
             if (e.keyCode) { // Internet Explorer
                 character = String.fromCharCode(e.keyCode);
@@ -153,7 +155,7 @@ apf.uirecorder.capture = {
 //            if (e.shiftKey) character = "[SHIFT]" + character;
 //            if (e.altKey)   character = "[ALT]" + character;
 //            if (e.ctrlKey)  character = "[CTRL]" + character;
-
+apf.console.info("captured action: " + "keypress");
             apf.uirecorder.capture.$captureAction("keypress", e, character);
         }
         
@@ -189,6 +191,7 @@ apf.uirecorder.capture = {
         if (apf.uirecorder.isTesting)
             apf.uirecorder.output.$saveTest("results");
         
+        debugger;
         //apf.uirecorder.capture.reset();
     },
 
@@ -198,10 +201,11 @@ apf.uirecorder.capture = {
      * htmlNode    : specific container that holds the htmlElement described above
      */
     $captureAction : function(eventName, e, value) {
+        if (!apf.uirecorder.$inited) return;
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement)) ? apf.findHost(htmlElement) : null;
         
-        //apf.console.info("captured action: " + eventName);
+        apf.console.info("captured action: " + eventName);
         // search for related htmlNode
         if (eventName != "mousemove") {
             var htmlNode, htmlNodeName;
@@ -428,7 +432,6 @@ apf.uirecorder.capture = {
             }
             
         }
-
         //first check, 2nd check in $setDelayedDetails()
         if (apf.uirecorder.isTesting && eventName != "mousemove") {
             // warning for AML nodes with no id defined
@@ -654,7 +657,7 @@ apf.uirecorder.capture = {
             properties  : [],
             data        : []
         };
-        
+
         apf.uirecorder.detailList[targetName].properties.push(propObj);
     },
     
@@ -819,9 +822,10 @@ apf.console.info("start playback");
     },
     
     $getKeyActionIdx : function(actionName) {
-        //return apf.uirecorder.playback.$curKeyActionIdx;
+        if (apf.uirecorder.playback.$keyActions[apf.uirecorder.playback.$curKeyActionIdx] && apf.uirecorder.playback.$keyActions[apf.uirecorder.playback.$curKeyActionIdx].getAttribute("name") == actionName)
+            return apf.uirecorder.playback.$curKeyActionIdx;
         for (var i = apf.uirecorder.playback.$curKeyActionIdx; i >= 0; i--) {
-            if (apf.uirecorder.playback.$keyActions[i].getAttribute("name") == actionName)
+            if (apf.uirecorder.playback.$keyActions[i] && apf.uirecorder.playback.$keyActions[i].getAttribute("name") == actionName)
                 return i;
         }
 
@@ -950,6 +954,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             //debugger;
         }
                 
+        delete this.$checkList[keyActionIdx].elementAvailable;
         return true;
     },
     
@@ -962,7 +967,6 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             var curTime = new Date().getTime();
             if (curTime <= this.$waitElementStartTime + this.$testDelay + this.$elementWaitTimeout) {
                 // @todo create new error for wait elements
-                debugger;
                 apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ELEMENT_TIMEOUT, { 
                     val         : [this.$checkList[keyActionIdx].elementAvailable.join(", ")], 
                     testId      : this.$curTestXml.getAttribute("name"),
@@ -994,12 +998,18 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         // check if all actions are executed, if so end test
         if (this.$curTestXml.childNodes.length <= this.$curActionIdx) {
             this.$testCheck();
+            return;
         }
         
         this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
-        if (this.$curAction.getAttribute("name") != "mousemove") {
-            apf.console.info("$playAction: keyAction (" + this.$curAction.getAttribute("keyActionIdx") + ")");
+        if (this.$playSpeed == "max" && this.$curAction.getAttribute("keyActionIdx") == undefined) {
+            this.$testCheck();
+            return;
         }
+        
+        //if (this.$curAction.getAttribute("name") != "mousemove")
+            //apf.console.info("$playAction: keyAction (" + this.$curAction.getAttribute("keyActionIdx") + ")");
+        
 
         // if popups in queue and no popup visible show them after mouseup action
         if (apf.uirecorder.output.$popupQueue.length && !apf.uirecorder.output.$popup && !apf.uirecorder.settings.testing.ignoreWarnings) {
@@ -1017,21 +1027,26 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             this.$curKeyActionIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
 //if (this.$curAction.getAttribute("name") == "mouseup") debugger;
             // pause playback until all elements required for this action are available, but not in middle of mousedown/mouseup combo
-            if (this.$checkList[this.$curKeyActionIdx] && this.$checkList[this.$curKeyActionIdx].elementAvailable && !this.$elementsAvailable(this.$curKeyActionIdx)) {
-                //if (!(this.$curAction.getAttribute("name") == "mouseup" && this.$keyActions[this.$curKeyActionIdx-1].getAttribute("name") == "mousedown")) {
-                if (!(this.$keyActions[this.$curKeyActionIdx].getAttribute("name") == "mouseup")) {
-                    apf.console.info("$playAction: elements for keyActionIdx " + this.$curKeyActionIdx + " not all available yet");
-                    if (this.$checkList[this.$curKeyActionIdx] && this.$checkList[this.$curKeyActionIdx].elementAvailable && this.$checkList[this.$curKeyActionIdx].elementAvailable.length) {
-                        apf.console.info("paused by elementAvailable: waitElements (" + this.$curAction.getAttribute("name") + "/" + this.$keyActions[this.$curKeyActionIdx-1].getAttribute("name") + ")");
-                        if (this.$waitElementsInterval == "") {
-                            this.pause();
-                            this.$waitElementStartTime = new Date().getTime();
-                            this.$waitElementsInterval = setInterval(function() {
-                                apf.uirecorder.playback.$waitElementsCheck(apf.uirecorder.playback.$curKeyActionIdx);
-                            }, 10);
-                            return;
+            if (this.$checkList[this.$curKeyActionIdx] && this.$checkList[this.$curKeyActionIdx].elementAvailable) {
+                if (!this.$elementsAvailable(this.$curKeyActionIdx)) {
+                    //if (!(this.$curAction.getAttribute("name") == "mouseup" && this.$keyActions[this.$curKeyActionIdx-1].getAttribute("name") == "mousedown")) {
+                    if (!(this.$keyActions[this.$curKeyActionIdx].getAttribute("name") == "mouseup")) {
+                        apf.console.info("$playAction: elements for keyActionIdx " + this.$curKeyActionIdx + " not all available yet");
+                        if (this.$checkList[this.$curKeyActionIdx] && this.$checkList[this.$curKeyActionIdx].elementAvailable && this.$checkList[this.$curKeyActionIdx].elementAvailable.length) {
+                            apf.console.info("paused by elementAvailable: waitElements (" + this.$curAction.getAttribute("name") + "/" + this.$keyActions[this.$curKeyActionIdx-1].getAttribute("name") + ")");
+                            if (this.$waitElementsInterval == "") {
+                                this.pause();
+                                this.$waitElementStartTime = new Date().getTime();
+                                this.$waitElementsInterval = setInterval(function() {
+                                    apf.uirecorder.playback.$waitElementsCheck(apf.uirecorder.playback.$curKeyActionIdx);
+                                }, 10);
+                                return;
+                            }
                         }
                     }
+                }
+                else {
+                    delete this.$checkList[this.$curKeyActionIdx].elementAvailable;
                 }
             } 
         }
@@ -1117,8 +1132,8 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         }
 */
 
-        if (this.$curAction.getAttribute("name") != "mousemove")
-            apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
+        //if (this.$curAction.getAttribute("name") != "mousemove")
+            //apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
 //if (this.$curActionIdx == "181") debugger;     
         // locate html element and calculate position of mouse action
         if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
@@ -1242,13 +1257,13 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         }
         else if (this.$curAction.getAttribute("name") === "keydown") {
             if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay);
-            this.$o3.sendKeyDown(this.$curAction.getAttribute("value"));
+                this.$o3.wait(this.$maxSpeedDelay); 
+            this.$o3.sendKeyDown(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (this.$curAction.getAttribute("name") === "keyup") {
             if (this.$playSpeed == "max") 
                 this.$o3.wait(this.$maxSpeedDelay);
-            this.$o3.sendKeyUp(this.$curAction.getAttribute("value"));
+            this.$o3.sendKeyUp(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (this.$curAction.getAttribute("name") === "mousedown") {
             if (this.$playSpeed == "max") 
@@ -1463,7 +1478,7 @@ apf.uirecorder.testing = {
 
     // run through checkList and see if recording matches test 
     $checkResults : function(actionObj, eventName, actionIdx, keyActionIdx, checkIdx) {
-        //apf.console.info("checkResults - actionObj: " + actionObj.name + ", eventName: " + eventName + ", checkActionIdx: " + checkActionIdx + ", checkIdx: " + checkIdx);
+        apf.console.info("checkResults: eventName: " + eventName + ", keyActionIdx: " + keyActionIdx + ", checkIdx: " + checkIdx);
         // check waitEvent checks
         if (apf.uirecorder.playback.$checkList[keyActionIdx] && apf.uirecorder.playback.$checkList[keyActionIdx].waitEvents && apf.uirecorder.playback.$checkList[keyActionIdx].waitEvents[checkIdx]) {
             // loop thought elements in checkList
@@ -1719,7 +1734,7 @@ apf.uirecorder.output = {
         
         SCRIPT_CRITICAL     : "A critical error has occurred: \"_VAL_\" in file: \"_VAL_\" on line: \"_VAL_\"",
         CHECK_TIMEOUT       : "It takes too long to set _VAL_ \"_VAL_\" on element \"_VAL_\". Test stopped.",
-        ELEMENT_TIMEOUT     : "It takes too long to find element \"_VAL_\". Test stopped."
+        ELEMENT_TIMEOUT     : "Waiting for element \"_VAL_\" takes too long. Test stopped."
     },
     
     // save test after recording/playback
@@ -1815,6 +1830,7 @@ apf.uirecorder.output = {
 
                     for (var type in detailTypes) {
                         if (action.detailList[dli][elementName][type].length) {
+                        if (type == "properties" && action.name != "mousemove") debugger;
                             dNode = testXml.ownerDocument.createElement(type)
                             for (var item, vNode, di = 0, dl = action.detailList[dli][elementName][type].length; di < dl; di++) {
                                 item = action.detailList[dli][elementName][type][di];

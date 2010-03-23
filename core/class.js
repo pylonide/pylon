@@ -866,7 +866,7 @@ apf.Class.prototype = new (function(){
                     } 
                 }
                 // when eventName == "load" all elements are loaded and drawn
-                if (eventName == "load")
+                if (eventName == "load" && this.isIE != undefined)
                     apf.uirecorder.isLoaded = true;
             }
         }
