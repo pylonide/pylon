@@ -1323,11 +1323,45 @@ apf.MultiSelect = function(){
             delete this.$lastValue;
             return;
         }
+        
+        if (!this.$attrBindings["eachvalue"] && !this.$amlLoaded
+          && this.getAttribute("eachvalue")) {
+            var _self = this;
+            return apf.queue.add("value" + this.$uniqueId, function(){
+                _self.$propHandlers["value"].call(_self, value);
+            });
+        }
+        
+        //#ifdef __DEBUG
+        var rule = this.$getBindRule("value", this.xmlRoot);
+        if (rule) {
+            /*var compiled = rule.cvalue || rule.cmatch;
+            if (compiled.type != 3) {
+                throw new Error(apf.formatErrorString(0,
+                    "Setting value attribute",
+                    "Value attribute does not have legal value."));
+            }*/
+            if (rule.models[0] == this.$model)
+                throw new Error(apf.formatErrorString(0,
+                    "Setting value attribute",
+                    "Value should not point to the same model where the items\
+                     are loaded from. Please use value=\"[mdlName::xpath]\" to\
+                     specify the value. Use selected=\"[xpath]\" to just select\
+                     a node without making a databinding to it."));
+        }
+        //#endif
 
         if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
         else
             this.clearSelection();
+    }
+    
+    this.$propHandlers["default"] = function(value, prop){
+        if (!this.value || !this.$amlLoaded && !(this.getAttribute("value") 
+          || this.getAttribute("selected") || this.getAttribute("selection"))) {
+            this.$propHandlers["value"].call(this, "");
+        }
     }
     
     /**

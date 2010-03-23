@@ -24,18 +24,59 @@
             </a:model> 
         </a:dropdown>
 
+        <br />
+
+        <a:textbox id="txtTest" value="suppliers"/><br />
+        <a:textbox value="{txtTest.value}"/>
+
         <a:dropdown id="ddSearch"
-            model="mdlSearchCats"
-            each="[category]"
-            caption="[text()]"
-            value="[category[@default='true']]"
-            eachvalue="[@name]" />
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[mdlCat::category]"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown id="ddSearch"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          default   = "suppliers"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown id="ddSearch"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "{txtTest.value}"
+          eachvalue = "[@name]" />
+        
+        <!-- This will give a nice error
+        <a:dropdown id="ddSearch"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[category[@default='true']]"
+          eachvalue = "[@name]" />
+        -->
+        
+        <a:dropdown id="ddSearch"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          selected  = "[category[@default='true']]"
+          eachvalue = "[@name]" />
+        
+        <a:model id="mdlCat">
+            <data>
+                <category default="true">bestekcad</category>
+            </data>
+        </a:model>
         
         <a:model id="mdlSearchCats">
             <categories>
-                <category name="products" default="true">Producten</category>
+                <category name="products">Producten</category>
                 <category name="suppliers">Leveranciers</category>
-                <category name="news">Productnieuws</category>
+                <category name="news" default="true">Productnieuws</category>
                 <category name="bestekcad">Bestekken &amp; CAD</category>
                 <!--category name="whitepapers">Whitepapers</category>
                 <category name="themes">Thema's</category>

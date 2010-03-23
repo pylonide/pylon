@@ -98,8 +98,8 @@ apf.DataBinding = function(){
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         model     : 1,
-        each      : 1,
-        eachvalue : 1
+        each      : 1
+        //eachvalue : 1 //disabled because of line 1743 valueRule = in multiselect.js
     }, this.$attrExcludePropBind);
 
     /**** Public Methods ****/
