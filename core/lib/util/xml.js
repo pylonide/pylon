@@ -626,7 +626,7 @@ apf.convertMethods = {
                         + "="  + escape(node.firstChild.nodeValue));
                 
                 attr = node.attributes;
-                for (j = 0, l2 = attr.length; j < l; ++j) {
+                for (j = 0, l2 = attr.length; j2 < l; ++j) {
                     if (!(a = attr[j]).nodeValue)
                         continue;
                     
