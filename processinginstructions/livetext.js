@@ -39,7 +39,7 @@ apf.LiveTextPi = function(){
     this.implement(apf.StandardBinding);
 
     this.$propHandlers["calcdata"] = function(data){
-        this.$int.innerHTML = data && apf.htmlentities(data) || "";
+        this.$ext.innerHTML = data && apf.htmlentities(data) || "";
     };
 }).call(apf.LiveTextPi.prototype = new apf.AmlProcessingInstruction(true));
 

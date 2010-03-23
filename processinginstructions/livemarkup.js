@@ -68,14 +68,14 @@ apf.LiveMarkupPi = function(){
         }
 
         //if (!this.xmlRoot)
-            //return this.$int.innerHTML = "loading...";
+            //return this.$ext.innerHTML = "loading...";
 
         if (data && data.indexOf("<a:") > -1) {
-            this.$int.innerHTML = "";//data;
+            this.$ext.innerHTML = "";//data;
 
             this.$data = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
               + apf.ns.apf + "'>" + data + "</a:application>", "text/xml", {
-                htmlNode : this.$int
+                htmlNode : this.$ext
                 //nodelay  : true
             }).documentElement;
             
@@ -90,7 +90,7 @@ apf.LiveMarkupPi = function(){
                     nodes[i].destroy(true);
             }
             
-            this.$int.innerHTML = data || "";
+            this.$ext.innerHTML = data || "";
         }
     };
 }).call(apf.LiveMarkupPi.prototype = new apf.AmlProcessingInstruction(true));
