@@ -1341,13 +1341,14 @@ apf.MultiSelect = function(){
                     "Setting value attribute",
                     "Value attribute does not have legal value."));
             }*/
-            if (rule.models[0] == this.$model)
-                throw new Error(apf.formatErrorString(0,
+            if (rule.models[0] == this.$model) {
+                throw new Error(apf.formatErrorString(0, this,
                     "Setting value attribute",
                     "Value should not point to the same model where the items\
                      are loaded from. Please use value=\"[mdlName::xpath]\" to\
                      specify the value. Use selected=\"[xpath]\" to just select\
                      a node without making a databinding to it."));
+            }
         }
         //#endif
 
