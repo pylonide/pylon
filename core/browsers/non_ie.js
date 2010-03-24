@@ -614,5 +614,9 @@ apf.runNonIe = function (){
             Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-top")) || 0)
             + (parseInt(apf.getStyle(oHtml, "margin-bottom")) || 0))]
     };
+    
+    apf.getOpacity = function(oHtml) {
+        return apf.getStyle(oHtml, "opacity");
+    };
 }
 //#endif

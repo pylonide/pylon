@@ -270,6 +270,10 @@ apf.runIE = function(){
             Math.max(0, (parseInt(oHtml.currentStyle["marginTop"]) || 0)
             + (parseInt(oHtml.currentStyle["marginBottom"]) || 0))]
     };
+    
+    apf.getOpacity = function(oHtml) {
+        return parseInt(((oHtml.currentStyle["filter"] || "").match(/alpha\(opacity=(\d*)\)/) || [0,0])[1]) / 100;
+    };
 
     // #ifdef __WITH_POPUP_IE
     /**

@@ -68,6 +68,8 @@ apf.gallery = function(struct, tagName){
     this.stepSlide     = apf.isIE ? 25 : 30;
     this.stepHide      = 10
     this.intSSlide     = apf.isIE ? 2 : 10;
+    
+    this.imageStack = {};
 };
 
 (function(){
@@ -156,7 +158,7 @@ apf.gallery = function(struct, tagName){
         if (apf.isChildOf(htmlElement, target, false)) {
             if ((htmlElement.className || "").indexOf("selected") > -1)
                 return;
-            //htmlElement.style.backgroundColor = e.type == "mouseover" ? "red" : "blue";
+            
             apf.tween.single(htmlElement, {
                 steps : 10, 
                 type  : "fade",
@@ -213,7 +215,7 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
             _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
             _self.$oImage.style.display    = "block";
-
+                
             apf.tween.single(_self.$oImage, {
                 steps : _self.stepShow,
                 type  : "fade",
@@ -309,6 +311,8 @@ apf.gallery = function(struct, tagName){
         if (this.thumbnailMode == "bar")
             this.centerThumbnail(this.current);
         
+        //this.imageStack[this.current.getAttribute("name")] = this.current;
+            
         this.setDescription();
         this.$refresh();
     });
@@ -503,6 +507,91 @@ apf.gallery = function(struct, tagName){
                 to      : newLeft,
                 onfinish : function() {
                     _self.slideFinish = true;
+                }
+            });
+        };
+        
+        this.arrowsAreVisible = false;
+        this.arrowsVisible;
+        this.arrowsInvisible;
+        this.$oImage.onmouseover = function(e) {
+            e = e || event;
+            
+            if (_self.arrowsAreVisible)
+                return;
+            
+            _self.arrowsVisible = {
+                stop : false
+            };
+            
+            if (_self.arrowsInvisible)
+                _self.arrowsInvisible.stop = true;
+            
+            
+            
+            
+            _self.arrowsAreVisible = true;
+            _self.$oNext.style.display = "block";
+            _self.$oPrevious.style.display = "block";
+            apf.console.info("over")
+            apf.tween.multi(_self.$oNext, {
+                steps   : 15,
+                control : _self.arrowsVisible,
+                anim     : apf.tween.EASEOUT,
+                tweens   : [
+                    {type: "fade", from: apf.getOpacity(_self.$oNext), to: 1},
+                    {type: "fade", from: apf.getOpacity(_self.$oPrevious), to: 1, oHtml : _self.$oPrevious}
+                ],
+                onfinish : function() {
+                    _self.$oNext.style.display = "block";
+                    _self.$oPrevious.style.display = "block";
+                    apf.console.info("over complete")
+                    //alert(apf.getStyle(_self.$oNext, "opacity"))
+                }
+                
+            });
+        };
+        
+        this.$oImageContainer.onmouseout = function(e) {
+            e = e || event;
+            var target = e.target || e.srcElement;
+            
+            if (!_self.arrowsAreVisible)
+                return;
+
+            target = e.toElement 
+                ? e.toElement 
+                : (e.relatedTarget 
+                    ? e.relatedTarget 
+                    : null);
+                    
+            if (target)
+                apf.console.info(target.className)
+                
+            if (apf.isChildOf(_self.$oImageContainer, target, true))
+                return;
+                
+            _self.arrowsInvisible = {
+                stop : false
+            };
+            
+            if (_self.arrowsVisible)
+                _self.arrowsVisible.stop = true;
+
+            _self.arrowsAreVisible = false;
+//alert(_self.getOpacity(_self.$oNext))
+            apf.tween.multi(_self.$oNext, {
+                steps   : 15,
+                control : _self.arrowsInvisible,
+                anim     : apf.tween.EASEOUT,
+                tweens   : [
+                    {type: "fade", from: apf.getOpacity(_self.$oNext), to: 0},
+                    {type: "fade", from: apf.getOpacity(_self.$oPrevious), to: 0, oHtml : _self.$oPrevious}
+                ],
+                onfinish : function() {
+                    _self.$oNext.style.display = "none";
+                    _self.$oPrevious.style.display = "none";
+                    apf.console.info("out complete")
                 }
             });
         };
