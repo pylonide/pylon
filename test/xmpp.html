@@ -2,17 +2,6 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <script src="../apf.js"></script>
-        <script type="text/javascript">
-            function doLogin() {
-                myXMPP.connect(username.getValue(), password.getValue());
-            }
-
-            function sendMessage(oText) {
-                var oMsg = document.getElementById('messagebox');
-                myXMPP.sendMessage(null, oMsg.value);
-                oMsg.value = "";
-            }
-        </script>
         <style type="text/css">
             #message_log {
                 border: 1px solid silver;
