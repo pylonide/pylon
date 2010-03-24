@@ -1530,13 +1530,15 @@ apf.xmpp = function(struct, tagName){
                 parseMessagePackets.call(this, aMessages);
 
             var aPresence = oXml.getElementsByTagName("presence");
-            
             if (aPresence.length)
                 parsePresencePackets.call(this, aPresence);
 
             var aIQs = oXml.getElementsByTagName("iq");
             if (aIQs.length)
                 parseIqPackets.call(this, aIQs);
+
+            if (!aMessages.length && !aPresence.length && !aIQs.length)
+                this.dispatchEvent("unknownstanza", {data: oXml});
         }
         //#ifdef __DEBUG
         else if (!this.$isPoll)
@@ -2183,6 +2185,50 @@ apf.xmpp = function(struct, tagName){
         );
     };
 
+    this.sendXml = function(options) {
+        if (!options || !(options.message || options.x)) return false;
+        var _self = this;
+
+        //#ifdef __WITH_OFFLINE
+        if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
+            if (apf.offline.queue.enabled) {
+                var info = {
+                    options  : options,
+                    retry    : function(){
+                        _self.sendMessage(this.options);
+                    },
+                    $object : [this.name, "new apf.xmpp()"],
+                    $retry  : "this.object.sendMessage(this.options)"
+                };
+
+                apf.offline.queue.add(info);
+
+                return true;
+            }
+            //#ifdef __DEBUG
+            apf.console.warn("Trying to sent XMPP message even though \
+                              application is offline.", "xmpp");
+            //#endif
+        }
+        //#endif
+
+        if (!this.$serverVars[CONN]) return false;
+
+        this.$doXmlRequest(function(data, state, extra){
+                if (options.callback)
+                    options.callback.call(_self, data, state, extra);
+
+                restartListener.call(_self, data, state, extra);
+            }, this.$isPoll
+            ? createStreamElement.call(this, null, null, options.message)
+            : createBodyElement({
+                rid   : this.$getRID(),
+                sid   : this.$serverVars[SID],
+                xmlns : constants.NS.httpbind
+            }, options.message)
+        );
+    };
+
     this.getTime = function(sEntity, fCallback) {
         var sIq = createIqBlock({
                 type  : "get",
@@ -2278,6 +2324,9 @@ apf.xmpp = function(struct, tagName){
                     type    : args[3],
                     callback: callback
                 });
+                break;
+            case "sendXml":
+                this.sendXml(args[0]);
                 break;
             default:
                 //#ifdef __DEBUG
