@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __AMLFRAME || __INC_ALL
+// #ifdef __AMLGALLERY || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
@@ -599,3 +599,4 @@ apf.gallery = function(struct, tagName){
 }).call(apf.gallery.prototype = new apf.BaseList());
 
 apf.aml.setElement("gallery", apf.gallery);
+//#endif
