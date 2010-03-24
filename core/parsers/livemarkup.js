@@ -1102,7 +1102,7 @@ apf.lm = new (function(){
                         }
                         break;
                     case 10: // -------- ] --------
-                        sl--, parse_mode = (u = s[--sl]) >> 28, u = u & 0x0fffffff;
+                        sl--, parse_mode = (w = s[--sl]) >> 28, w = w & 0x0fffffff;
 
                         if (parse_mode == 6){ // was part of [] internally to xpath, see above
                             if (s[sl + 1] != "[")
@@ -1163,7 +1163,7 @@ apf.lm = new (function(){
                             if (!nesting)
                                 o_segs++, o_xpaths++;
                         }
-                        scope = u;
+                        scope = w;
                         break;
                     case 11: // -------- ( --------
                         if (ol == segment)
