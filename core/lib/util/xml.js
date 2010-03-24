@@ -579,70 +579,70 @@ apf.convertMethods = {
         if (!basename)
             basename = "";
         
-        var value, node, name, isOnlyChild, lnodes, nm, j, l2, k, l3, a, attr,
-            str   = [],
-            nodes = xml.childNodes,
-            i     = 0,
-            l     = nodes.length;
-        for (; i < l; ++i) {
+        var nodes = xml.childNodes, node;
+        var output = [], tagNames = {};
+        var nm = "", name, value;
+        var a, i, j;
+        var attr, attr_len;
+        var isOnly;
+        
+        for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            if (node.nodeType != 1)
-                continue;
+            
+            if (node.nodeType == 1) {
+                name = node.tagName;
+                isOnly = node.parentNode.selectNodes(name).length == 1 
+                    ? true 
+                    : false;
+                
+                if (typeof tagNames[name] == "undefined") {
+                    tagNames[name] = 0;
+                }
 
-            name = node.tagName; //@hack
-            if (name == "revision")
-                continue;
-
-            isOnlyChild = apf.isOnlyChild(node.firstChild, [3,4]);
-
-            //array
-            if (!node.attributes.length && !isOnlyChild) {
-                lnodes = node.childNodes;
-                for (j = 0, l2 = lnodes.length; j < l2; ++j) {
-                    if (lnodes[j].nodeType != 1)
-                        continue;
-                    
-                    nm = basename + (isSub ? "[" : "") + name + (isSub ? "]" : "")
-                       + "[" + i + "]";
-                    value = this.cgiobjects(lnodes[j], nm, true);
-                    if (value)
-                        str.push(value);
+                nm = basename 
+                   + (isSub ? "[" : "") + name + (isSub ? "]" : "") 
+                   + (isOnly ? "" : "[" + tagNames[name] + "]");
+                
+                attr     = node.attributes;
+                attr_len = node.attributes.length;
+                
+                if (attr_len > 0) {
+                    for (j = 0; j < attr_len; j++) {
+                        if (!(a = attr[j]).nodeValue) 
+                            continue;
                         
-                    if (apf.isOnlyChild(lnodes[j].firstChild, [3,4]))
-                        str.push(nm + "[" + lnodes[j].tagName + "]" + "=" 
-                            + escape(lnodes[j].firstChild.nodeValue));
-                    
-                    attr = lnodes[j].attributes;
-                    for (k = 0, l3 = attr.length; k < l3; ++k) {
-                        if (!(a = attr[k]).nodeValue) continue;
-                        str.push(nm + "[" + a.nodeName + "]="  + escape(a.nodeValue));
+                        output.push(nm + "[_" + a.nodeName + "]=" 
+                            + escape(a.nodeValue.trim()));
                     }
                 }
-            }
-            //single value
-            else {
-                if (isOnlyChild)
-                    str.push(basename + (isSub ? "[" : "") + name + (isSub ? "]" : "") 
-                        + "="  + escape(node.firstChild.nodeValue));
                 
-                attr = node.attributes;
-                for (j = 0, l2 = attr.length; j < l2; ++j) {
-                    if (!(a = attr[j]).nodeValue)
-                        continue;
-                    
-                    str.push(basename + (isSub ? "[" : "") + name + "_" 
-                        + a.nodeName + (isSub ? "]" : "") + "="  + escape(a.nodeValue));
+                value = this.cgiobjects(node, nm, true);
+                
+                if (value.dataType !== 1) {
+                    output.push(value);
                 }
+                else {
+                    if (node.firstChild && node.firstChild.nodeValue.trim()) {
+                        output.push(nm + (attr_len > 0 ? "[_]=" : "=") 
+                            + escape(node.firstChild.nodeValue.trim()));
+                    }
+                    else {
+                        if (attr_len == 0)
+                            output.push(nm);
+                    }
+                }
+                
+                tagNames[name]++;
             }
         }
-        
+
         if (!isSub && xml.getAttribute("id"))
-            str.push("id=" + escape(xml.getAttribute("id")));
+            output.push("id=" + escape(xml.getAttribute("id")));
 
-        if (str.length)
-            return str.join("&");
+        if (output.length)
+            return output.join("&");
 
-        return "";
+        return output;
     }
 };
 
