@@ -575,7 +575,7 @@ apf.convertMethods = {
         return "";
     },
 
-    "cgiobjects": function(xml, basename, isSub){
+    "cgiobjects": function(xml, basename, isSub, includeEmpty){
         if (!basename)
             basename = "";
         
@@ -627,8 +627,11 @@ apf.convertMethods = {
                             + escape(node.firstChild.nodeValue.trim()));
                     }
                     else {
-                        if (attr_len == 0)
-                            output.push(nm);
+                        if (attr_len == 0) {
+                            if (includeEmpty) {
+                                output.push(nm);
+                            }
+                        }
                     }
                 }
                 
