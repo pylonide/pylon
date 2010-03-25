@@ -1391,7 +1391,8 @@ apf.DataBinding = function(){
         if (!this.$amlLoaded) {
             var _self = this;
             this.$dbTimer = $setTimeout(function(){
-                apf.setModel(value, _self);
+                if (!_self.$amlDestroyed)
+                    apf.setModel(value, _self);
             });
         }
         else

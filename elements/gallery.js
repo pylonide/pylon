@@ -237,6 +237,9 @@ apf.gallery = function(struct, tagName){
         _self.tmrRefresh = setInterval(function() {
             clearInterval(_self.tmrRefresh);
             
+            if (_self.$amlDestroyed)
+                return;
+            
             if (!_self.loading) {
                 apf.tween.single(_self.$oImage, {
                     steps : _self.stepHide,
