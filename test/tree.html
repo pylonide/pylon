@@ -17,5 +17,41 @@
                 <a:each match="[drive|folder|file]" /> 
             </a:bindings> 
         </a:tree>
+
+        <a:tree
+          each          = "[category]"
+          caption       = "[@name]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false">
+        </a:tree>
+
+        <a:tree
+          each          = "[category]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false">
+            <a:caption><?lm [@name] ?></a:caption>
+        </a:tree>
+
+        <a:model id="mdlCategories">
+            <categories>
+                <category id="556" name="Constructies en materiaal" />
+                <category id="833" name="Gevels" />
+                <category id="382" name="Binnenwanden/plafonds" />
+                <category id="2090" name="Vloeren en trappen" />
+                <category id="580" name="Daken" />
+                <category id="1547" name="Ramen en deuren" />
+                <category id="1181" name="Transport" />
+                <category id="971" name="Inrichting" />
+                <category id="123120" name="W-installaties" />
+                <category id="982" name="E-installaties" />
+                <category id="485" name="Buitenruimte" />
+            </categories>
+        </a:model>
     </body>
 </html>
