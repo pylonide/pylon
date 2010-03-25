@@ -78,7 +78,7 @@ apf.__DATABINDING__ = 1 << 1;
  * @constructor
  * @inherits apf.Presentation
  * @baseclass
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  * @default_private
@@ -1388,7 +1388,7 @@ apf.DataBinding = function(){
         //Optimize xmlroot position and set model async (unset the old one)
         //@todo apf3.0 this could be optimized by using apf.queue and only when not all info is there...
         clearTimeout(this.$dbTimer);
-        if (!this.$amlLoaded) {
+        if (!this.$amlLoaded && this.nodeType == 1) {
             var _self = this;
             this.$dbTimer = $setTimeout(function(){
                 if (!_self.$amlDestroyed)

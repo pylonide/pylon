@@ -71,7 +71,7 @@ apf.__MULTISELECT__ = 1 << 8;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  *

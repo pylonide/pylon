@@ -25,7 +25,7 @@
  * @attribute  {String}  src          the url to retrieve the data from.
  * @see element.model
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */

@@ -139,7 +139,7 @@ apf.validator.validityState = function(){
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  */
@@ -554,7 +554,7 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  * @constructor
  * @default_private
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
  */

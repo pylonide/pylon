@@ -39,7 +39,7 @@
  * @attribute {String} src the location of the script file.
  * @addnode global, anyaml
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */

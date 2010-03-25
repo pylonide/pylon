@@ -27,7 +27,7 @@
  * @constructor
  * @todo use a struct instead of lots of local variables, and stop using eval
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  *

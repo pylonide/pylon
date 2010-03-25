@@ -34,7 +34,7 @@
  * @inherits apf.Class
  * @default_private
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */

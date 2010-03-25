@@ -71,7 +71,7 @@ apf.__INTERACTIVE__ = 1 << 21;
  *
  * @constructor
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       1.0
  *

@@ -37,7 +37,7 @@
  * @attribute {String} menu   the id of the menu element.
  * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */

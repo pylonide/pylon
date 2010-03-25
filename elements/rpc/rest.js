@@ -67,7 +67,7 @@
  * @inherits apf.http
  * @inherits apf.rpc
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.4

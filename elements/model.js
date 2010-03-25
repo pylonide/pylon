@@ -97,7 +97,7 @@
  * @attribute  {Boolean} save-original whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */

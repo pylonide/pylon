@@ -35,7 +35,7 @@ apf.__XFORMS__ = 1 << 17;
  *  IE: http://msdn.microsoft.com/msdnmag/issues/02/03/xml/
  *
  * @experimental
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9.8
  */

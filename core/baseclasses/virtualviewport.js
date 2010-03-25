@@ -32,7 +32,7 @@ apf.__VIRTUALVIEWPORT__ = 1 << 19;
  * @baseclass
  * @private
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com) & Mike de Boer
+ * @author      Ruben Daniels (ruben AT ajax DOT org) & Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
  */

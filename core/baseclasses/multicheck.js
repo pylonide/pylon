@@ -28,7 +28,7 @@ apf.__MULTICHECK__ = 1 << 22;
  *
  * @constructor
  * @baseclass
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0
  *

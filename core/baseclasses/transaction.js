@@ -102,7 +102,7 @@ apf.__TRANSACTION__ = 1 << 3;
  *
  * @event transactionconflict Fires when data in a transaction is being updated by an external process.
  *
- * @author      Ruben Daniels (ruben AT javeline DOT com)
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8.9
  */

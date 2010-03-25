@@ -24,7 +24,7 @@
 /**
  * Ajax.org Platform
  *
- * @author    Ruben Daniels (ruben AT javeline DOT com)
+ * @author    Ruben Daniels (ruben AT ajax DOT org)
  * @version   3.0
  * @url       http://www.ajax.org
  *
