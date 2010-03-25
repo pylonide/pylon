@@ -260,7 +260,7 @@ apf.gallery = function(struct, tagName){
         
         switch(this.title) {
             case "text":
-                var descr = title;
+                var descr = title || "No description";
                 break;
             case "number+text":
             case "text+number":
