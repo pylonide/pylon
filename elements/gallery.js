@@ -259,7 +259,7 @@ apf.gallery = function(struct, tagName){
     };
     
     this.setDescription = function(xmlNode) {
-        var title = this.current.getAttribute("title")
+        var title = this.$applyBindRule("caption", xmlNode || this.current);
         
         switch(this.title) {
             case "text":
