@@ -129,8 +129,9 @@ apf.BaseTree = function(){
         (function(node){
             var nodes = node.selectNodes(xpath);
             //for (var i = nodes.length - 1; i >= 0; i--) {
-            for (var i = 0; i < nodes.length; i++) {
-                _self.slideToggle(apf.xmldb.getHtmlNode(nodes[i], _self), 1, true);
+            for (var o, i = 0; i < nodes.length; i++) {
+                if (o = apf.xmldb.getHtmlNode(nodes[i], _self))
+                    _self.slideToggle(o, 1, true);
                 arguments.callee(nodes[i]);
             }
         })(this.xmlRoot);
@@ -143,8 +144,10 @@ apf.BaseTree = function(){
         var pNodes = this.xmlRoot.selectNodes(".//" + this.each
           .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
         
-        for (var i = pNodes.length - 1; i >=0; i--)
-            this.slideToggle(apf.xmldb.getHtmlNode(pNodes[i], this), 2, true);
+        for (var o, i = pNodes.length - 1; i >=0; i--) {
+            if (o = apf.xmldb.getHtmlNode(pNodes[i], this))
+                this.slideToggle(o, 2, true);
+        }
     };
     
     /**
@@ -208,6 +211,8 @@ apf.BaseTree = function(){
     
     var lastOpened = {};
     /**
+     * @event expand Fires when a tree leaf is expanded from collapsed view to
+     *               reveal its children leaves.
      * @private
      */
     this.slideOpen = function(container, xmlNode, immediate){
@@ -242,6 +247,7 @@ apf.BaseTree = function(){
         if (immediate || container.scrollHeight > 1000) {
             container.style.height = "auto";
             container.style.overflow = "visible";
+            this.dispatchEvent("expand", {xmlNode: xmlNode});
             return;
         }
 
@@ -267,11 +273,14 @@ apf.BaseTree = function(){
                     container.style.overflow = "visible";
                     container.style.height = "auto";
                 }
+                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
         });
     };
 
     /**
+     * @event collapse Fires when a tree leaf is collapsed from expanded view to
+     *                 conceal its children leaves.
      * @private
      */
     this.slideClose = function(container, xmlNode, immediate){
@@ -298,9 +307,11 @@ apf.BaseTree = function(){
         if (immediate) {
             container.style.height = 0;
             container.style.display = "none";
+            this.dispatchEvent("collapse", {xmlNode: xmlNode});
             return;
         }
 
+        var _self = this;
         apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
@@ -310,6 +321,7 @@ apf.BaseTree = function(){
             interval: this.$animSpeed,
             onfinish: function(container, data){
                container.style.display = "none";
+               _self.dispatchEvent("collapse", {xmlNode: xmlNode});
             }
         });
     };
