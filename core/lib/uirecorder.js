@@ -232,14 +232,38 @@ apf.uirecorder.capture = {
                 }
             }
             */
+            
+            // get htmlNode
+            //apf.queryNodes(htmlNode.substr(8), apf.document)
           
             // multiselect item
-            if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected && eventName != "mousemove") {
-                var multiselectValue = amlNode.value;
-                //debugger;
-                apf.console.info("multiselect found");
-                htmlNodeName = "multiselect";
-                htmlNode = htmlElement;
+            var multiselectValue;
+            if (eventName != "mousemove") {
+                if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
+                    var multiselect = true;
+                    var multiselectItem = apf.xmlToXpath(amlNode.selected);
+                    htmlNode = htmlElement;
+                    htmlNodeName = apf.xmlToXpath(htmlElement, amlNode.$selected).toLowerCase();
+//debugger;
+/*
+                    //if (amlNode.getValue() == undefined) {
+                        //amlNode = null;
+                        htmlNode = htmlElement;
+                        htmlNodeName = htmlElement.id || apf.xmlToXpath(htmlElement).toLowerCase();
+                        //amlNode.queryNodes("//product[1]")[0]; 
+                        debugger;
+                    //}
+*/
+                    //else {
+                    /*
+                        var multiselectValue = amlNode.value;
+                        //debugger;
+                        apf.console.info("multiselect found");
+                        htmlNodeName = "multiselect";
+                        htmlNode = htmlElement;
+                    */
+                    //}
+                }
             }
 
             // is multiselect widget
@@ -253,13 +277,16 @@ apf.uirecorder.capture = {
             }
 */
             if (!htmlNode) {
+                
                 if (amlNode && amlNode.nodeName != "lm") {
                     htmlNode = amlNode.$ext;
                     htmlNodeName = "$ext";
                     //if (eventName == "mousedown") debugger;
                 }
                 else {
+
                     amlNode = null;
+                    htmlNodeName = apf.xmlToXpath(htmlElement).toLowerCase();
                     htmlNode = htmlElement;
                 }
             }
@@ -277,6 +304,7 @@ apf.uirecorder.capture = {
             name        : eventName,
             detailList  : []
         }
+
         //if (htmlElement)    actionObj.htmlElement   = htmlElement;
         if (amlNode)        actionObj.amlNode       = amlNode;
         if (e && e.clientX) actionObj.x             = parseInt(e.clientX);
@@ -310,10 +338,10 @@ apf.uirecorder.capture = {
             if (!htmlNode.scrollTop && htmlNode.scrollTop != 0) debugger;
         }
         
-        if (multiselectValue != undefined) {
-            actionObj.multiselectValue = multiselectValue;
-        }
-        
+        if (multiselect != undefined) actionObj.multiselect = multiselect;
+        if (multiselectValue != undefined) actionObj.multiselectValue = multiselectValue;
+        if (multiselectItem != undefined) actionObj.multiselectItem = multiselectItem;
+            
         // process detailList
         // set init action, overwriting first (mousemove) action
         if (apf.uirecorder.actionList.length == 0) {
@@ -446,7 +474,7 @@ apf.uirecorder.capture = {
             // warning for AML nodes with no id defined
             var testId = (apf.uirecorder.isTesting) ? apf.uirecorder.playback.$curTestXml.getAttribute("name") : apf.uirecorder.capture.$curTestId;
             for (var elementName in actionObj.detailList[0]) {
-                if (elementName.indexOf("html[") == 0) {
+                if (elementName.indexOf("html[") == 0 && elementName != "html[1]") {
                     //apf.console.info("captureAction: curKeyActionIdx: " + apf.uirecorder.playback.$curKeyActionIdx); //apf.uirecorder.playback.$getKeyActionIdx(eventName));
                     //apf.console.info("captureAction: actionIdx: " + apf.uirecorder.playback.$curActionIdx);
                     apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.NO_ID, {
@@ -577,7 +605,7 @@ apf.uirecorder.capture = {
      */
     captureEvent : function(eventName, e) {
         if (!e) debugger;
-
+        if (eventName.charAt(0) == "$") return;
         var amlNode = e.amlNode || e.currentTarget;
         if (eventName == "movefocus")
             amlNode = e.toElement;
@@ -627,6 +655,9 @@ apf.uirecorder.capture = {
             else
                 targetName = "trashbin";
         }
+        
+        //if (targetName == "trashbin" && eventName == "beforeload") debugger;
+        if (targetName.indexOf("a:application") == 0) return;
 
         // elapsed time since start of recording/playback
         var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
@@ -679,6 +710,8 @@ apf.uirecorder.capture = {
             return
         }
 
+        if (targetName.indexOf("a:application") == 0) return;
+
         if (apf.isArray(value) && value.length == 1) 
             value = value[0];
             
@@ -712,6 +745,8 @@ apf.uirecorder.output.testLog.push("capturePropertyChange(): property change \""
             return
         }
 
+        if (targetName.indexOf("a:application") == 0) return;
+
         // elapsed time since start of recording/playback
         var time        = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
         var dataObj = {
@@ -720,11 +755,11 @@ apf.uirecorder.output.testLog.push("capturePropertyChange(): property change \""
         }
         if (params.amlNode) {
             if (!dataObj.value) dataObj.value = {};
-                dataObj.value.amlNode = apf.serialize(params.amlNode).split("<").join("&lt;").split(">").join("&gt;");
+                dataObj.value.amlNode = params.amlNode.serialize(); //apf.serialize(params.amlNode).split("<").join("&lt;").split(">").join("&gt;");
         }
         if (params.xmlNode) {
             if (!dataObj.value) dataObj.value = {};
-                dataObj.value.xmlNode = apf.serialize(params.xmlNode).split("<").join("&lt;").split(">").join("&gt;");
+                dataObj.value.xmlNode = params.xmlNode.xml; //params.xmlNode.serialize(); //apf.serialize(params.xmlNode).split("<").join("&lt;").split(">").join("&gt;");
         }
         
         if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
@@ -917,7 +952,7 @@ apf.console.info("start playback");
                     for (var elName, nodes, ci = 0, cl = this.$keyActions[i].childNodes[di].childNodes.length; ci < cl; ci++) {
                         elName = this.$keyActions[i].childNodes[di].childNodes[ci].getAttribute("name");
                         if (!elName || elName == "trashbin" || elName == "html[1]") continue;
-                        if (elName.indexOf("a:application[1]") > -1) continue;
+//if (elName.indexOf("a:application[1]") > -1) continue;
 if (elName && elName.indexOf("text()") > -1) debugger;
                         for (var type in this.$detailTypes) {
                             if (!this.$keyActions[i].childNodes[di].childNodes[ci].selectSingleNode(type)) continue;
@@ -984,15 +1019,17 @@ if (elName && elName.indexOf("text()") > -1) debugger;
     $elementsAvailable : function(keyActionIdx) {
         // if there are elements to check
         if (this.$checkList[keyActionIdx] && this.$checkList[keyActionIdx].elementAvailable) {
-            for (var amlNode, i = 0, l = this.$checkList[keyActionIdx].elementAvailable.length; i < l; i++) {
+            for (var element, i = 0, l = this.$checkList[keyActionIdx].elementAvailable.length; i < l; i++) {
                 //if one element is not available return false
                 if (this.$checkList[keyActionIdx].elementAvailable[i].indexOf("html[") == 0) continue;
-                amlNode = (this.$checkList[keyActionIdx].elementAvailable[i].indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
+                element = (this.$checkList[keyActionIdx].elementAvailable[i].indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
                     ? apf.document.selectSingleNode(this.$checkList[keyActionIdx].elementAvailable[i].substr(8)) // search for amlNode based on xpath
                     : apf.document.getElementById(this.$checkList[keyActionIdx].elementAvailable[i]) // search for amlNode on screen 
                            || null
 
-                if (!amlNode || (amlNode && !(amlNode.$ext.clientTop >= 0 && amlNode.$ext.clientLeft >= 0 && amlNode.$ext.clientWidth >= 0 && amlNode.$ext.clientHeight >= 0))) {
+                if (!element 
+                    || (element && element.$ext && !(element.$ext.clientTop >= 0 && element.$ext.clientLeft >= 0 && element.$ext.clientWidth >= 0 && element.$ext.clientHeight >= 0))
+                ) {
                     // return false if not found
                     return false;//this.$checkList[keyActionIdx].elementAvailable[i];
                 }
@@ -1013,8 +1050,10 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         
         if (!this.$elementsAvailable(keyActionIdx)) {
             var curTime = new Date().getTime();
+            if (!this.$waitElementStartTime) debugger;
             if (curTime <= this.$waitElementStartTime + this.$testDelay + this.$elementWaitTimeout) {
                 // @todo create new error for wait elements
+                debugger;
                 apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ELEMENT_TIMEOUT, { 
                     val         : [this.$checkList[keyActionIdx].elementAvailable.join(", ")], 
                     testId      : this.$curTestXml.getAttribute("name"),
@@ -1032,6 +1071,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         // all elements available, continue playback
         clearInterval(this.$waitElementsInterval);
         this.$waitElementsInterval = "";
+        this.$waitElementStartTime = 0;
         delete this.$checkList[keyActionIdx].elementAvailable;
         
         apf.console.info("resumed by checkResults: elementsAvailable");
@@ -1122,7 +1162,8 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         else if (this.$playSpeed == "max") {
             // skip non-keyActions
             // execute actions between mousedown/mouseup
-            if (this.$curAction.getAttribute("keyActionIdx") == undefined) { 
+            if (this.$curAction.getAttribute("keyActionIdx") == undefined) {
+                apf.uirecorder.output.testLog.push(this.$curActionIdx + ". playAction(): max speed");
                 this.$testCheck();
                 return;
             }
@@ -1156,13 +1197,9 @@ if (elName && elName.indexOf("text()") > -1) debugger;
     },
     
     // execute user interaction for current action
-    $mouseTargetActions : ["mousedown", "mouseup", "mousescroll", "dblClick"],
+    $mouseTargetActions : ["mousedown", "mouseup", "mousescroll", "dblClick", "keydown", "keyup", "keypress"],
     $mouseMoveActions   : ["mousemove", "mousedown", "mouseup", "mousescroll", "dblClick"],
     $detailTypes        : {"events": "event", "properties": "property", "data": "dataItem"},
-    $checkEvents        : { // list of events where playback should wait before continuing playing 
-        "beforeload"        : "afterload",
-        "beforestatechange" : "afterstatechange"
-    },
     
     $execAction : function() {
         if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying) || apf.uirecorder.isPaused) {
@@ -1171,20 +1208,21 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             }
             return;
         }
-        if (this.$curAction.getAttribute("keyActionIdx") != undefined)
-            apf.uirecorder.output.testLog.push(this.$curAction.getAttribute("keyActionIdx") + ". execAction(): " + this.$curAction.getAttribute("name"));
+        var keyActionIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
+        if (keyActionIdx)
+            apf.uirecorder.output.testLog.push(keyActionIdx + ". execAction(): " + this.$curAction.getAttribute("name"));
 
         // reset capturedEvents
         if (!this.$pauseAfterAction)
             apf.uirecorder.capture.$capturedEventList = {};
         
 /*
-        if (apf.uirecorder.playback.$playSpeed == "max" && this.$curAction.getAttribute("keyActionIdx") == undefined) { 
+        if (apf.uirecorder.playback.$playSpeed == "max" && keyActionIdx == undefined) { 
             this.$testCheck();
             return;
         }
 */
-
+        //if (keyActionIdx == 6) debugger;
         //if (this.$curAction.getAttribute("name") != "mousemove")
             //apf.console.info("execAction: " + this.$curActionIdx + " (" + this.$curAction.getAttribute("name") + ")");
 //if (this.$curActionIdx == "181") debugger;     
@@ -1192,9 +1230,10 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         if (apf.uirecorder.playback.$mouseTargetActions.indexOf(this.$curAction.getAttribute("name")) > -1) {
             var xPos, yPos;
 
-            if (this.$curAction.getAttribute("amlNode")) {
-                if (this.$curAction.getAttribute("htmlNode")) {
-                    var htmlNode;
+            if (this.$curAction.getAttribute("htmlNode")) {
+                var htmlNode;
+                // htmlNodes part of amlNode
+                if (this.$curAction.getAttribute("amlNode")) {
                     var amlNode = (this.$curAction.getAttribute("amlNode").indexOf("html[") == 0 && apf && apf.document && apf.document.selectSingleNode) 
                         ? apf.document.selectSingleNode(this.$curAction.getAttribute("amlNode").substr(8)) // search for amlNode based on xpath
                         : apf.document.getElementById(this.$curAction.getAttribute("amlNode")) // search for amlNode with id 
@@ -1215,6 +1254,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                         htmlNode = amlNode.$ext;
                     else if (amlNode.$getActiveElements && amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")])
                         htmlNode = amlNode.$getActiveElements()[this.$curAction.getAttribute("htmlNode")];
+                    /*
                     else if (this.$curAction.getAttribute("htmlNode") == "multiselect") {
 						//debugger;
 						//htmlNode = amlNode.
@@ -1224,31 +1264,42 @@ if (elName && elName.indexOf("text()") > -1) debugger;
 						  //amlNode.setValue()
 						//}
 					}
-					
-                    // htmlNode not visible
-                    if (htmlNode) { 
-                        if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
-                            apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_VISIBLE, {
-                                val: (this.$curAction.getAttribute("htmlNode") != "$ext" ? this.$curAction.getAttribute("htmlNode") : this.$curAction.getAttribute("amlNode")), 
-                                testId: this.$curTestXml.getAttribute("name")
-                            }, true);
-                        }
+					*/
+                    else if (this.$curAction.getAttribute("multiselect") != undefined) {
+                        var xpath = this.$curAction.getAttribute("multiselectItem").substr(this.$curAction.getAttribute("multiselectItem").indexOf("/")+1);
+                        var xmlNode = amlNode.queryNode(xpath);
+                        var selectedItem = apf.xmldb.getHtmlNode(xmlNode, amlNode);
+                        htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode"), selectedItem);
                         
-                        // position of htmlNode
-                        var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
-                        if (this.$curAction.getAttribute("width") != "0")
-                            xPos = pos[0]-(parseInt(this.$curAction.getAttribute("absX"))-parseInt(this.$curAction.getAttribute("x"))) * ((htmlNode.offsetWidth/parseInt(this.$curAction.getAttribute("width"))));
-                        else
-                            xPos = parseInt(this.$curAction.getAttribute("x"));
-                        if (this.$curAction.getAttribute("height") != "0")
-                            yPos = pos[1]-(parseInt(this.$curAction.getAttribute("absY"))-parseInt(this.$curAction.getAttribute("y"))) * ((htmlNode.offsetHeight/parseInt(this.$curAction.getAttribute("height"))));
-                        else
-                            yPos = parseInt(this.$curAction.getAttribute("y"));
+                        //var htmlNode = apf.xmlToXpath(htmlElement, amlNode.$selected).toLowerCase();
+                        //apf.queryNodes(amlNode.$selected + htmlNode, apf.document)
                     }
                 }
+                // htmlNodes not part of amlNode
                 else {
-                    debugger;
-                } 
+                    htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode").substr(8), document.documentElement);
+                }
+                
+                // htmlNode not visible
+                if (htmlNode) { 
+                    if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
+                        apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_VISIBLE, {
+                            val: (this.$curAction.getAttribute("htmlNode") != "$ext" ? this.$curAction.getAttribute("htmlNode") : this.$curAction.getAttribute("amlNode")), 
+                            testId: this.$curTestXml.getAttribute("name")
+                        }, true);
+                    }
+                    
+                    // position of htmlNode
+                    var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
+                    if (this.$curAction.getAttribute("width") != "0")
+                        xPos = pos[0]-(parseInt(this.$curAction.getAttribute("absX"))-parseInt(this.$curAction.getAttribute("x"))) * ((htmlNode.offsetWidth/parseInt(this.$curAction.getAttribute("width"))));
+                    else
+                        xPos = parseInt(this.$curAction.getAttribute("x"));
+                    if (this.$curAction.getAttribute("height") != "0")
+                        yPos = pos[1]-(parseInt(this.$curAction.getAttribute("absY"))-parseInt(this.$curAction.getAttribute("y"))) * ((htmlNode.offsetHeight/parseInt(this.$curAction.getAttribute("height"))));
+                    else
+                        yPos = parseInt(this.$curAction.getAttribute("y"));
+                }
             }
         }
         
@@ -1270,7 +1321,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                         val         : ["multiselect", "item", this.$curAction.getAttribute("amlNode"), this.$curAction.getAttribute("multiselectValue"), amlNode.value], 
                         testId      : this.$curTestXml.getAttribute("name"),
                         action      : this.$curAction.getAttribute("name"),
-                        keyActionIdx: this.$curAction.getAttribute("keyActionIdx")
+                        keyActionIdx: keyActionIdx
                     });
                 }
                 //}
@@ -1367,6 +1418,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             this.$curActionIdx++;
             
             if (!apf.uirecorder.isPaused)
+                apf.uirecorder.output.testLog.push(this.$curActionIdx + ". testCheck(): goto next playAction()");
                 this.$playAction();
         }
         
@@ -1392,7 +1444,6 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                         apf.dispatchEvent("apftest_testcomplete");
                     }
 
-                    debugger;
                     apf.uirecorder.playback.reset();
                 }, 1000)
             }
@@ -1614,9 +1665,9 @@ apf.uirecorder.testing = {
                         
                         // error if no amlNode is targeted
                         // or htmlNode is not part of the targeted amlNode, either activeElements or $ext
-                        else if (!actionObj.amlNode 
-                            || actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[keyActionIdx][prop]]
-                            || apf.uirecorder.playback.$checkList[keyActionIdx][prop] == "$ext" && !actionObj.amlNode.$ext
+                        else if (actionObj.amlNode 
+                            && (actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[keyActionIdx][prop]]
+                            || apf.uirecorder.playback.$checkList[keyActionIdx][prop] == "$ext" && !actionObj.amlNode.$ext)
                         ) {
                             debugger;
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed: " + eventName + " not on correct htmlNode \"" + apf.uirecorder.playback.$checkList[keyActionIdx][prop] + "\"");
@@ -1631,7 +1682,8 @@ apf.uirecorder.testing = {
                         // or htmlNode is $ext, but not of targeted amlNode
                         else if (actionObj.htmlNode 
                              && ( (actionObj.htmlNode.name != "$ext" && apf.uirecorder.playback.$checkList[keyActionIdx][prop].indexOf(actionObj.htmlNode.name) == -1) 
-                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.playback.$checkList[keyActionIdx][prop].indexOf(actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)) == -1)) 
+                              || (actionObj.htmlNode.name == "$ext" && actionObj.amlNode && apf.uirecorder.playback.$checkList[keyActionIdx][prop].indexOf(actionObj.amlNode.id || apf.xmlToXpath(actionObj.amlNode)) == -1)
+                              ) 
                                 ) {
                             debugger;
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed: " + eventName + " not on correct htmlNode \"" + apf.uirecorder.playback.$checkList[keyActionIdx][prop] + "\"");
@@ -1897,7 +1949,9 @@ apf.uirecorder.output = {
             
             // set value
             if (action.value != undefined) aNode.setAttribute("value", action.value);
+            if (action.multiselect != undefined) aNode.setAttribute("multiselect", action.multiselect);
             if (action.multiselectValue != undefined) aNode.setAttribute("multiselectValue", action.multiselectValue);
+            if (action.multiselectItem != undefined) aNode.setAttribute("multiselectItem", action.multiselectItem);
             
             // set apf.activeElement
             if (action.activeElement) {
