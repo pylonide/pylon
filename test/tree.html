@@ -8,7 +8,7 @@
         
         <a:appsettings debug="1" />
         
-        <a:tree model="filesystem.xml"> 
+        <a:tree model="filesystem.xml" height="200"> 
             <a:bindings> 
                 <a:caption match="[@caption|@filename]" /> 
                 <a:icon match="[drive]" value="icoContact.png" /> 
@@ -25,7 +25,8 @@
           autoselect    = "false"
           prerender     = "false"
           openonadd     = "true"
-          canrename     = "false">
+          canrename     = "false"
+          height        = "200">
         </a:tree>
 
         <a:tree
@@ -34,7 +35,8 @@
           autoselect    = "false"
           prerender     = "false"
           openonadd     = "true"
-          canrename     = "false">
+          canrename     = "false"
+          height        = "200">
             <a:caption><?lm [@name] ?></a:caption>
         </a:tree>
 

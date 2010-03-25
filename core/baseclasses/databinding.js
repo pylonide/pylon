@@ -1386,7 +1386,7 @@ apf.DataBinding = function(){
         }
 
         //Optimize xmlroot position and set model async (unset the old one)
-        //@todo apf3.0 is this timer necessary?
+        //@todo apf3.0 this could be optimized by using apf.queue and only when not all info is there...
         clearTimeout(this.$dbTimer);
         if (!this.$amlLoaded) {
             var _self = this;
