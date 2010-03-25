@@ -533,7 +533,7 @@ apf.gallery = function(struct, tagName){
             _self.arrowsAreVisible = true;
             _self.$oNext.style.display = "block";
             _self.$oPrevious.style.display = "block";
-            apf.console.info("over")
+            
             apf.tween.multi(_self.$oNext, {
                 steps   : 15,
                 control : _self.arrowsVisible,
@@ -545,10 +545,7 @@ apf.gallery = function(struct, tagName){
                 onfinish : function() {
                     _self.$oNext.style.display = "block";
                     _self.$oPrevious.style.display = "block";
-                    apf.console.info("over complete")
-                    //alert(apf.getStyle(_self.$oNext, "opacity"))
                 }
-                
             });
         };
         
@@ -564,10 +561,7 @@ apf.gallery = function(struct, tagName){
                 : (e.relatedTarget 
                     ? e.relatedTarget 
                     : null);
-                    
-            if (target)
-                apf.console.info(target.className)
-                
+            
             if (apf.isChildOf(_self.$oImageContainer, target, true))
                 return;
                 
@@ -579,7 +573,7 @@ apf.gallery = function(struct, tagName){
                 _self.arrowsVisible.stop = true;
 
             _self.arrowsAreVisible = false;
-//alert(_self.getOpacity(_self.$oNext))
+
             apf.tween.multi(_self.$oNext, {
                 steps   : 15,
                 control : _self.arrowsInvisible,
@@ -591,7 +585,6 @@ apf.gallery = function(struct, tagName){
                 onfinish : function() {
                     _self.$oNext.style.display = "none";
                     _self.$oPrevious.style.display = "none";
-                    apf.console.info("out complete")
                 }
             });
         };
