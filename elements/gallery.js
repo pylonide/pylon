@@ -323,7 +323,7 @@ apf.gallery = function(struct, tagName){
     this.centerThumbnail = function(xmlNode) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         
-        if (htmlNode == this.$container.firstChild)
+        if (!htmlNode || htmlNode == this.$container.firstChild)
             return;
         
         var oLeft  = htmlNode.offsetLeft;
@@ -382,6 +382,10 @@ apf.gallery = function(struct, tagName){
     }
     
     this.addEventListener("$clear", function(){return false});
+    
+    this.addEventListener("afterload", function(){
+        this.$show();
+    });
     
     this.$resize = function() {
         this.maxLeft = this.$container.offsetLeft;
@@ -529,10 +533,7 @@ apf.gallery = function(struct, tagName){
             
             if (_self.arrowsInvisible)
                 _self.arrowsInvisible.stop = true;
-            
-            
-            
-            
+
             _self.arrowsAreVisible = true;
             _self.$oNext.style.display = "block";
             _self.$oPrevious.style.display = "block";
