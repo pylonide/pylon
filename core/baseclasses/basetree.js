@@ -671,8 +671,13 @@ apf.BaseTree = function(){
 
         //this.$hasLoadStatus(e.xmlNode, "loading")
         if (e.action == "insert" && e.result.length > 0) {
-            var container = this.$getLayoutNode("item", "container", htmlNode);
-            this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
+            if (this.$hasLoadStatus(e.xmlNode, "loaded")) {
+                var container = this.$getLayoutNode("item", "container", htmlNode);
+                this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
+            }
+            else if (this.$hasLoadStatus(e.xmlNode, "potential")) {
+                this.$setLoadStatus(e.xmlNode, "loaded");
+            }
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);
