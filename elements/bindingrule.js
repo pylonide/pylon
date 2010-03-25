@@ -172,7 +172,8 @@ apf.BindingRule = function(struct, tagName){
 
         //Reload parent to propagate change
         apf.queue.add("reload" + node.$uniqueId, function(){
-            node.reload();
+            if(!node.$amlDestroyed)
+                node.reload();
         });
 
         //Recompile ruleset
