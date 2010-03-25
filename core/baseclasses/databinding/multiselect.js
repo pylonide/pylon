@@ -952,6 +952,10 @@ apf.MultiselectBinding = function(){
         if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
+                //#ifdef __DEBUG
+                apf.console.log("Reloading multiselect based on \
+                                 attribute bind change: " + _self.serialize(true));
+                //#endif
                 _self.reload();
             });
         }

@@ -325,7 +325,7 @@ apf.BaseTree = function(){
                 loopNode = loopNode.parentNode;
             }
         }
-        
+
         var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,

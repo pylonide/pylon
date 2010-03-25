@@ -1121,10 +1121,13 @@ apf.DataBinding = function(){
                         initModel.call(this);
     
                     model = this.$model;
-                    this.$propsUsingMainModel[prop] = {
-                        xpath    : xpath,
-                        optimize : list[modelId] == 1
-                    };
+
+                    if (!this.hasFeature(apf.__MULTISELECT__) 
+                      && eachBinds[prop] != 2 || !eachBinds[prop]) //@experimental - should not set this because model will load these attributes
+                        this.$propsUsingMainModel[prop] = {
+                            xpath    : xpath,
+                            optimize : list[modelId] == 1
+                        };
                 }
             }
             
@@ -1384,10 +1387,15 @@ apf.DataBinding = function(){
 
         //Optimize xmlroot position and set model async (unset the old one)
         //@todo apf3.0 is this timer necessary?
-        //clearTimeout(this.$dbTimer);
-        //this.$dbTimer = $setTimeout(function(){
+        clearTimeout(this.$dbTimer);
+        if (!this.$amlLoaded) {
+            var _self = this;
+            this.$dbTimer = $setTimeout(function(){
+                apf.setModel(value, _self);
+            });
+        }
+        else
             apf.setModel(value, this);
-        //});
     };
 
     // #ifdef __WITH_VIRTUALVIEWPORT
