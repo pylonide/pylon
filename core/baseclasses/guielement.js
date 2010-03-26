@@ -749,7 +749,7 @@ apf.GuiElement.propHandlers = {
     "aml": function(value){
         //Clear??
         this.insertMarkup(value);
-    },
+    }
 
     /**
      * @attribute {String} sets this aml element to be editable
@@ -765,7 +765,7 @@ apf.GuiElement.propHandlers = {
      * @attribute {String} sets this aml element to be contenteditable
      * that loads new aml as children of this element.
      */
-    "contenteditable": function(value) {
+    ,"contenteditable": function(value) {
         this.implement(apf.ContentEditable);
         if (!this.hasFeature(apf.__VALIDATION__))
             this.implement(apf.Validation);
