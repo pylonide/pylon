@@ -121,7 +121,9 @@ apf.radiobutton = function(struct, tagName){
             return;
         }
         
-        var group = apf.nameserver.get("radiogroup", value);
+        var group = typeof value == "string"
+            ? apf.nameserver.get("radiogroup", value)
+            : value;
         if (!group) {
             group = apf.nameserver.register("radiogroup", value, 
                 new apf.$group());
@@ -420,6 +422,9 @@ apf.radiobutton = function(struct, tagName){
 
     this.$childProperty = "label";
     this.$loadAml = function(x){
+        if (this.parentNode.localName == "group")
+            this.$propHandlers["group"].call(this, this.parentNode);
+
         if (!this.group) {
             this.$propHandlers["group"].call(this,
                 "radiogroup" + this.parentNode.$uniqueId);
@@ -438,6 +443,7 @@ apf.$group = function(struct, tagName){
     this.$init(tagName || "radiogroup", apf.NODE_VISIBLE, struct);
     
     this.implement(
+        apf.StandardBinding,
         //#ifdef __WITH_DATAACTION
         apf.DataAction
         //#endif
@@ -508,8 +514,12 @@ apf.$group = function(struct, tagName){
     this.getValue = function(){
         return this.value;
     };
+
+    this.$draw = function(){
+        this.$ext = this.$int = this.$pHtmlNode;
+    }
 };
-apf.$group.prototype = new apf.StandardBinding();
+apf.$group.prototype = new apf.GuiElement();
 
 apf.aml.setElement("group", apf.$group);
 
