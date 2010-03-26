@@ -174,7 +174,8 @@ apf.dropdown = function(struct, tagName){
         if (!this.ignoreOverflow) {
             this.oSlider.style[apf.supportOverflowComponent
                 ? "overflowY"
-                : "overflow"] = "hidden";
+                : "overflow"] = "visible";
+            this.$container.style.overflowY = "hidden";
         }
         
         this.oSlider.style.display = "";
@@ -196,9 +197,7 @@ apf.dropdown = function(struct, tagName){
             height  : this.containerHeight,
             callback: function(container){
                 if (!_self.ignoreOverflow) {
-                    container.style[apf.supportOverflowComponent
-                        ? "overflowY"
-                        : "overflow"] = "auto";
+                    _self.$container.style.overflowY = "auto";
                 }
             }
         });
