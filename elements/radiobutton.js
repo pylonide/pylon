@@ -192,7 +192,8 @@ apf.radiobutton = function(struct, tagName){
     };
     
     this.addEventListener("prop.model", function(e){
-        this.$group.setProperty("model", e.value);
+        if (this.$group)
+            this.$group.setProperty("model", e.value);
     });
 
     /**
@@ -425,7 +426,7 @@ apf.radiobutton = function(struct, tagName){
         if (this.parentNode.localName == "group")
             this.$propHandlers["group"].call(this, this.parentNode);
 
-        if (!this.group) {
+        if (!this.$group) {
             this.$propHandlers["group"].call(this,
                 "radiogroup" + this.parentNode.$uniqueId);
         }
