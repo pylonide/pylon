@@ -125,8 +125,11 @@ apf.checkbox = function(struct, tagName){
         if (!this.$ext)
             return;
 
-        apf.setNodeValue(
-            this.$getLayoutNode("main", "label", this.$ext), value);
+        var lbl = this.$getLayoutNode("main", "label", this.$ext);
+        if (lbl.nodeType == 1)
+            lbl.innerHTML = value;
+        else
+            lbl.nodeValue = value;
     };
 
     /**
