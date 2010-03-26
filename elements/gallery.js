@@ -569,8 +569,10 @@ apf.gallery = function(struct, tagName){
                     {type: "fade", from: apf.getOpacity(_self.$oPrevious), to: 1, oHtml : _self.$oPrevious}
                 ],
                 onfinish : function() {
-                    _self.$oNext.style.display = "block";
+                    _self.$oNext.style.display     = "block";
                     _self.$oPrevious.style.display = "block";
+                    _self.$oNext.style.filter      = "";
+                    _self.$oPrevious.style.filter  = "";
                 }
             });
         };
