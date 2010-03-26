@@ -70,6 +70,8 @@ apf.gallery = function(struct, tagName){
     this.intSSlide     = apf.isIE ? 2 : 10;
     
     this.imageStack = {};
+    
+    this.noThumbArrows = false;
 };
 
 (function(){
@@ -129,6 +131,18 @@ apf.gallery = function(struct, tagName){
         }
         
         this.$container.style.width = thumbBarSize + "px";
+        
+        //Whether thumbnail arrows should be displayed or not
+        this.noThumbArrows = this.$container.offsetWidth < this.$container.parentNode.offsetWidth 
+            ? true 
+            : false;
+
+        if (this.noThumbArrows)
+            this.$setStyleClass(this.$oBar, "noArrows", null);
+        else
+            this.$setStyleClass(this.$oBar, "", ["noArrows"]);
+
+        this.calculateRange();
     };
     
     this.initiateThumbnailEvents = function() {
@@ -323,7 +337,7 @@ apf.gallery = function(struct, tagName){
     this.centerThumbnail = function(xmlNode) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         
-        if (!htmlNode || htmlNode == this.$container.firstChild)
+        if (!htmlNode || htmlNode == this.$container.firstChild || this.noThumbArrows)
             return;
         
         var oLeft  = htmlNode.offsetLeft;
@@ -388,9 +402,13 @@ apf.gallery = function(struct, tagName){
     });
     
     this.$resize = function() {
+        
+    };
+    
+    this.calculateRange = function() {
         this.maxLeft = this.$container.offsetLeft;
         this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth);
-    };
+    }
 
     this.$draw = function(){
         this.$getNewContext("main");
@@ -436,11 +454,13 @@ apf.gallery = function(struct, tagName){
             _self.$previous();
         };
         
-        this.maxLeft = this.$container.offsetLeft;
-        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth);
+        this.calculateRange();
         this.slideFinish = true;
         
         this.$oArrowPrev.onmouseover = function() {
+            if (_self.noThumbArrows)
+                return;
+                
             clearInterval(_self.tmrSlide);
             
             _self.tmrSlide = setInterval(function() {
@@ -457,6 +477,9 @@ apf.gallery = function(struct, tagName){
         };
         
         this.$oArrowNext.onmouseover = function() {
+            if (_self.noThumbArrows)
+                return;
+            
             clearInterval(_self.tmrSlide);
             
             _self.tmrSlide = setInterval(function() {
@@ -473,7 +496,7 @@ apf.gallery = function(struct, tagName){
         };
         
         this.$oArrowPrev.onclick = function() {
-            if (!_self.slideFinish)
+            if (!_self.slideFinish || _self.noThumbArrows)
                 return;
 
             _self.slideFinish = false;
@@ -496,11 +519,10 @@ apf.gallery = function(struct, tagName){
         };
         
         this.$oArrowNext.onclick = function() {
-            if (!_self.slideFinish)
+            if (!_self.slideFinish || _self.noThumbArrows)
                 return;
 
             _self.slideFinish = false;
-
             var oLeft = _self.$container.offsetLeft;
             var newLeft = oLeft - 200 < _self.minLeft 
                 ? _self.minLeft 
