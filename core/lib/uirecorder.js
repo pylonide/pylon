@@ -201,7 +201,7 @@ apf.uirecorder.capture = {
         if (!apf.uirecorder.$inited) return;
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement) && apf.findHost(htmlElement).tagName) ? apf.findHost(htmlElement) : null;
-//if (eventName == "mousedown") apf.console.info("mousedown captured");
+
         if (apf.uirecorder.playback.$getKeyActionIdx(eventName) !== false)
             apf.uirecorder.output.testLog.push(apf.uirecorder.playback.$getKeyActionIdx(eventName) + ". $captureAction(): captured action: " + eventName);
         // search for related htmlNode
@@ -237,11 +237,14 @@ apf.uirecorder.capture = {
             //apf.queryNodes(htmlNode.substr(8), apf.document)
           
             // multiselect item
-            var multiselectValue;
+            var multiselectValue = null;
+            var multiselect = null;
+            var multiselectItem = null;
+
             if (eventName != "mousemove") {
                 if (amlNode && amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
-                    var multiselect = true;
-                    var multiselectItem = apf.xmlToXpath(amlNode.selected);
+                    multiselect = true;
+                    multiselectItem = apf.xmlToXpath(amlNode.selected);
                     htmlNode = htmlElement;
                     htmlNodeName = apf.xmlToXpath(htmlElement, amlNode.$selected).toLowerCase();
 //debugger;
@@ -284,14 +287,16 @@ apf.uirecorder.capture = {
                     //if (eventName == "mousedown") debugger;
                 }
                 else {
-
                     amlNode = null;
                     htmlNodeName = apf.xmlToXpath(htmlElement).toLowerCase();
                     htmlNode = htmlElement;
+                    if (htmlNodeName.indexOf("html[") != 0) debugger;
                 }
             }
             else if (htmlElement) {
+                htmlNodeName = apf.xmlToXpath(htmlElement).toLowerCase();
                 htmlNode = htmlElement;
+                if (htmlNodeName.indexOf("html[") != 0) debugger;
             }
         }
         
@@ -310,6 +315,18 @@ apf.uirecorder.capture = {
         if (e && e.clientX) actionObj.x             = parseInt(e.clientX);
         if (e && e.clientY) actionObj.y             = parseInt(e.clientY);
         if (value)          actionObj.value         = value;
+
+// ignore repeating mousemoves
+/*
+if (apf.uirecorder.actionList.length) {
+//    if (eventName == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name && actionObj.time == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].time && actionObj.x == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].x && actionObj.y == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].y) {
+    if (eventName == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name && actionObj.time == apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].time) {
+        debugger;
+        if (eventName != "mousemove") debugger;
+        return;
+    }
+}
+*/
         /*
         if (eventName == "mousedown") {
             this.$setAsKeyAction = true;
@@ -321,8 +338,33 @@ apf.uirecorder.capture = {
         if (this.$keyActionList.indexOf(eventName) > -1) { // || this.$setAsKeyAction  
             actionObj.keyActionIdx = this.$keyActionIdx;
             this.$keyActionIdx++;
+
+            // set caption of htmlElementCaption
+            if (htmlElement) {
+                var htmlCaption = "";
+                switch (htmlElement.nodeName.toLowerCase()) {
+                    case "a":
+                        htmlCaption = "link: " + htmlElement.innerHTML;
+                        break;
+                    case "input":
+                        htmlCaption = "textfield: " + htmlElement.value;
+                        break;
+                    case "img":
+                        htmlCaption = "image: " + htmlElement.alt;
+                        break;
+                    case "div":
+                        htmlCaption = "div: " + htmlElement.innerHTML
+                        break;
+                }
+            }
+            actionObj.htmlCaption = htmlCaption;
         }
         
+        
+        // set htmlElement
+        if (htmlElement)
+            actionObj.htmlElement = htmlElement;
+
         // set properties of htmlNode
         if (htmlNode) {
             var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode);
@@ -338,7 +380,7 @@ apf.uirecorder.capture = {
             if (!htmlNode.scrollTop && htmlNode.scrollTop != 0) debugger;
         }
         
-        if (multiselect != undefined) actionObj.multiselect = multiselect;
+        if (multiselect) actionObj.multiselect = multiselect;
         if (multiselectValue != undefined) actionObj.multiselectValue = multiselectValue;
         if (multiselectItem != undefined) actionObj.multiselectItem = multiselectItem;
             
@@ -360,6 +402,7 @@ apf.uirecorder.capture = {
         }
         
         // combine mousemove actions
+/*
         if (apf.uirecorder.actionList.length > 1 && eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
             for (var elementName in apf.uirecorder.detailList) {
                 if (!apf.uirecorder.capture.firstMousemoveObj.detailList[0]) apf.uirecorder.capture.firstMousemoveObj.detailList[0] = {};
@@ -382,12 +425,37 @@ apf.uirecorder.capture = {
             index       = apf.uirecorder.capture.firstMousemoveObj.index;
         }
         else {
-            actionObj.detailList[0] = apf.uirecorder.detailList;
-            apf.uirecorder.detailList = {};
-            
+*/      
+
+            for (var elName in apf.uirecorder.detailList) {
+                actionObj.detailList[0] = apf.uirecorder.detailList;
+                apf.uirecorder.detailList = {};
+                break;
+            }
+
+            // no default keyAction, like mousemove
+            if (this.$keyActionList.indexOf(eventName) == -1) {
+                // check for certain events, or any prop/model change
+                for (var elName in actionObj.detailList[0]) {
+                    if (actionObj.detailList[0][elName].events && actionObj.detailList[0][elName].events.length) {
+                        for (var i = 0, l = actionObj.detailList[0][elName].events.length; i < l; i++) {
+                            if (actionObj.detailList[0][elName].events[i].name == "beforeload") {
+                                actionObj.keyActionIdx = this.$keyActionIdx;
+                                this.$keyActionIdx++;
+                            }
+                        }
+                    }
+                    // property change / model data change
+                    if ((actionObj.detailList[0][elName].properties && actionObj.detailList[0][elName].properties.length) || (actionObj.detailList[0][elName].data && actionObj.detailList[0][elName].data.length)) {
+                        actionObj.keyActionIdx = this.$keyActionIdx;
+                        this.$keyActionIdx++;
+                    }
+                }
+            }            
+
             delayObj = actionObj;
             index = actionObj.index = apf.uirecorder.actionList.length;
-        }
+//        }
         
         // save action object
         apf.uirecorder.actionList.push(actionObj);
@@ -407,8 +475,10 @@ apf.uirecorder.capture = {
 
         // delayed capturing of events
         var recursion = false;
+
         $setTimeout = function(f, ms){
-            if (recursion || !apf.uirecorder.$inited)
+            //if (recursion || !apf.uirecorder.$inited)
+            if (!apf.uirecorder.$inited)
                 return;
             
             //Record current mouseEvent
@@ -479,7 +549,6 @@ apf.uirecorder.capture = {
                     //apf.console.info("captureAction: actionIdx: " + apf.uirecorder.playback.$curActionIdx);
                     apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.NO_ID, {
                         val         : elementName, 
-                        testId      : testId,
                         action      : eventName,
                         keyActionIdx: apf.uirecorder.playback.$getKeyActionIdx(eventName)
                     });
@@ -499,7 +568,7 @@ apf.uirecorder.capture = {
             apf.exec(f)
         else
             f();
-            
+
         apf.uirecorder.capture.$setDelayedDetails(state.index, state.eventName, state.actionIdx, state.keyActionIdx);
     },
     
@@ -512,8 +581,12 @@ apf.uirecorder.capture = {
             apf.uirecorder.actionList[index].delayTime = time;
             
             // set detailList
-            if (!apf.uirecorder.actionList[index].detailList[1]) 
-                apf.uirecorder.actionList[index].detailList[1] = apf.uirecorder.detailList;
+            if (!apf.uirecorder.actionList[index].detailList[1]) { 
+                for (var elName in apf.uirecorder.detailList) {
+                    apf.uirecorder.actionList[index].detailList[1] = apf.uirecorder.detailList;
+                    break;
+                }
+            }
             // merge detailList
             else {
                 for (var elementName in apf.uirecorder.detailList) {
@@ -533,7 +606,10 @@ apf.uirecorder.capture = {
                         }
                     }
                 }
-            }  
+            }
+            
+            apf.uirecorder.detailList = {};
+             
         //for (var elementName in apf.uirecorder.detailList) {
             /*
             if (!apf.uirecorder.actionList[index].detailList) apf.uirecorder.actionList[index].detailList = {};
@@ -588,8 +664,6 @@ apf.uirecorder.capture = {
                 }
             }
         }
-
-        apf.uirecorder.detailList = {};
 
         if (apf.activeElement && apf.activeElement.parentNode)
             apf.uirecorder.actionList[index].activeElement = apf.activeElement.id || apf.xmlToXpath(apf.activeElement);
@@ -782,7 +856,7 @@ apf.uirecorder.playback = {
     $curKeyActionIdx        : 0,
     $skipNextAction         : false,
     $playSpeed              : "realtime",
-    $maxSpeedDelay          : 40,   // delay in centiseconds (1/100)
+    $maxSpeedDelay          : 0,   // delay in centiseconds (1/100)
     $timeoutTimer           : null,
     $startTestDelay         : 0,
     $testDelay              : 0,
@@ -799,7 +873,7 @@ apf.uirecorder.playback = {
         "beforestatechange" : "afterstatechange",
         "beforeswitch"      : "afterswitch"
     },
-    $checkNodes             : ["DOMNodeInsertedIntoDocument"],
+    $checkNodes             : ["mousedown"],
     
     // reset playback
     reset : function() {
@@ -972,11 +1046,10 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                 }
 
                                 else if (type == "events") {
-/*
                                     // add events with a value
                                     // add specific events
                                     //if (node.getAttribute("value") != undefined) {
-                                    if (this.$checkNodes.indexOf(node.getAttribute("name") >-1)) {
+                                    if (this.$checkNodes.indexOf(node.getAttribute("name")) > -1) {
                                         if (!this.$checkList[i]) this.$checkList[i] = {};
                                         if (!this.$checkList[i].details) this.$checkList[i].details = [];
                                         if (!this.$checkList[i].details[dIdx]) this.$checkList[i].details[dIdx] = {};
@@ -984,7 +1057,6 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                         if (!this.$checkList[i].details[dIdx].events[elName]) this.$checkList[i].details[dIdx].events[elName] = {};
                                         this.$checkList[i].details[dIdx].events[elName][node.getAttribute("name")] = node.value;
                                     }
-*/
 
                                     // add event combo's from $checkEvents list like beforeload/afterload
                                     if (elName == "model") debugger;
@@ -1051,12 +1123,10 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         if (!this.$elementsAvailable(keyActionIdx)) {
             var curTime = new Date().getTime();
             if (!this.$waitElementStartTime) debugger;
-            if (curTime <= this.$waitElementStartTime + this.$testDelay + this.$elementWaitTimeout) {
+            if (curTime >= this.$waitElementStartTime + this.$testDelay + this.$elementWaitTimeout) {
                 // @todo create new error for wait elements
-                debugger;
                 apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ELEMENT_TIMEOUT, { 
                     val         : [this.$checkList[keyActionIdx].elementAvailable.join(", ")], 
-                    testId      : this.$curTestXml.getAttribute("name"),
                     action      : this.$keyActions[keyActionIdx].getAttribute("name"),
                     keyActionIdx: keyActionIdx
                 });
@@ -1082,18 +1152,30 @@ if (elName && elName.indexOf("text()") > -1) debugger;
     $playAction : function() {
         //apf.console.info("playAction on: " + this.$curActionIdx);
         if (!(apf.uirecorder.isTesting || apf.uirecorder.isPlaying) || apf.uirecorder.isPaused) return;
-        // check if all actions are executed, if so end test
-        if (this.$curTestXml.childNodes.length <= this.$curActionIdx) {
-            this.$testCheck();
-            return;
-        }
         
-        this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
+        if (this.$playSpeed == "realtime") {
+            // check if all actions are executed, if so end test
+            if (this.$curTestXml.childNodes.length <= this.$curActionIdx) {
+                this.$testCheck();
+                return;
+            }
+            
+            this.$curAction     = this.$curTestXml.childNodes[this.$curActionIdx];
+        }
+        else if (this.$playSpeed == "max") {
+            // check if all actions are executed, if so end test
+            if (this.$keyActions.length <= this.$curKeyActionIdx) {
+                this.$testCheck();
+                return;
+            }
+            this.$curAction     = this.$keyActions[this.$curKeyActionIdx];
+        }
+/*        
         if (this.$playSpeed == "max" && this.$curAction.getAttribute("keyActionIdx") == undefined) {
             this.$testCheck();
             return;
         }
-        
+*/        
         //if (this.$curAction.getAttribute("name") != "mousemove")
             //apf.console.info("$playAction: keyAction (" + this.$curAction.getAttribute("keyActionIdx") + ")");
         
@@ -1103,15 +1185,15 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             //apf.console.info("playAction: popup found");
             // if needed wait for mouseup (after mousedown) to prevent mousedown/mouseup combo being disturbed
             if (apf.uirecorder.output.$popupOnMouseup && this.$curTestXml.childNodes[this.$curActionIdx-1] && this.$curTestXml.childNodes[this.$curActionIdx-1].getAttribute("name") == "mouseup") {
-                apf.console.info("$playAction: open popup");
+                //apf.console.info("$playAction: open popup");
                 apf.uirecorder.output.$showPopup();
                 return;
             }
         }
-
+if (!this.$curAction) debugger;
         // check for availability of needed elements
         if (this.$curAction.getAttribute("keyActionIdx") != undefined) {
-            this.$curKeyActionIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
+            //this.$curKeyActionIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
 
             apf.uirecorder.output.testLog.push(this.$curKeyActionIdx + ". playAction(): " + this.$curAction.getAttribute("name"));
 
@@ -1160,14 +1242,6 @@ if (elName && elName.indexOf("text()") > -1) debugger;
             }
         } 
         else if (this.$playSpeed == "max") {
-            // skip non-keyActions
-            // execute actions between mousedown/mouseup
-            if (this.$curAction.getAttribute("keyActionIdx") == undefined) {
-                apf.uirecorder.output.testLog.push(this.$curActionIdx + ". playAction(): max speed");
-                this.$testCheck();
-                return;
-            }
-            
             // skip mousedown when multiselect selection is made, selection occurs using setValue();
             if (["mousedown"].indexOf(this.$curAction.getAttribute("name")) > -1 && this.$curAction.getAttribute("amlNode") != undefined && this.$curAction.getAttribute("htmlNode") != "multiselect") {
                 var keyIdx = parseInt(this.$curAction.getAttribute("keyActionIdx"));
@@ -1191,8 +1265,24 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                 this.$testCheck();
                 return;
             }
-            
-            this.$execAction();
+
+            //if (this.$curKeyActionIdx > 0) { 
+                var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - apf.uirecorder.capture.$startTime);
+                if (timeout > 0) {
+                    apf.uirecorder.timeoutTimer = setTimeout(function() {
+                        apf.uirecorder.playback.$execAction();
+                    }, timeout);
+                }
+                
+                // timeout smaller or equal to 0, execute immediatly
+                else {
+                    this.$execAction();
+                }
+            //}
+            // first action
+            //else {
+                //this.$execAction();
+            //}
         }
     },
     
@@ -1243,8 +1333,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                     if (!amlNode) {
                         debugger;
                         apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
-                            val     : this.$curAction.getAttribute("amlNode"), 
-                            testId  : this.$curTestXml.getAttribute("name")
+                            val     : this.$curAction.getAttribute("amlNode")
                         });
                         return;
                     }
@@ -1265,30 +1354,40 @@ if (elName && elName.indexOf("text()") > -1) debugger;
 						//}
 					}
 					*/
-                    else if (this.$curAction.getAttribute("multiselect") != undefined) {
+                    else if (this.$curAction.getAttribute("multiselect") == "true") {
                         var xpath = this.$curAction.getAttribute("multiselectItem").substr(this.$curAction.getAttribute("multiselectItem").indexOf("/")+1);
                         var xmlNode = amlNode.queryNode(xpath);
-                        var selectedItem = apf.xmldb.getHtmlNode(xmlNode, amlNode);
-                        htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode"), selectedItem);
-                        
+                        if (xmlNode) {
+                            var selectedItem = apf.xmldb.getHtmlNode(xmlNode, amlNode);
+                            htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode"), selectedItem);
+                        }
+                        else {
+                            if (this.$curAction.getAttribute("htmlNode") != ".")
+                                htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode").substr(8), document.documentElement);
+                            else
+                                htmlNode = amlNode.$ext;
+                        }
                         //var htmlNode = apf.xmlToXpath(htmlElement, amlNode.$selected).toLowerCase();
                         //apf.queryNodes(amlNode.$selected + htmlNode, apf.document)
                     }
                 }
                 // htmlNodes not part of amlNode
                 else {
+                    if (this.$curAction.getAttribute("htmlNode").indexOf("html[") != 0) debugger;
                     htmlNode = apf.queryNode(this.$curAction.getAttribute("htmlNode").substr(8), document.documentElement);
                 }
                 
                 // htmlNode not visible
-                if (htmlNode) { 
+                if (htmlNode) {
+                    /*
+                     * ignore visibility check for now, could become visible AFTER action is executed
                     if (htmlNode.offsetTop == 0 && htmlNode.offsetLeft == 0 && htmlNode.offsetWidth == 0 && htmlNode.offsetHeight == 0) {
                         apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_VISIBLE, {
-                            val: (this.$curAction.getAttribute("htmlNode") != "$ext" ? this.$curAction.getAttribute("htmlNode") : this.$curAction.getAttribute("amlNode")), 
-                            testId: this.$curTestXml.getAttribute("name")
-                        }, true);
+                            val: [(this.$curAction.getAttribute("htmlNode") != "$ext" ? this.$curAction.getAttribute("htmlNode") : this.$curAction.getAttribute("amlNode"))] 
+                        });
                     }
-                    
+                    */
+
                     // position of htmlNode
                     var pos = apf.getAbsolutePosition(htmlNode, htmlNode.parentNode)
                     if (this.$curAction.getAttribute("width") != "0")
@@ -1319,7 +1418,6 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                 if (amlNode.value != this.$curAction.getAttribute("multiselectValue")) {
                     apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
                         val         : ["multiselect", "item", this.$curAction.getAttribute("amlNode"), this.$curAction.getAttribute("multiselectValue"), amlNode.value], 
-                        testId      : this.$curTestXml.getAttribute("name"),
                         action      : this.$curAction.getAttribute("name"),
                         keyActionIdx: keyActionIdx
                     });
@@ -1355,39 +1453,33 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         
         // execute mouse action
         if (this.$curAction.getAttribute("name") === "keypress") {
-            if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay);
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
         }
         else if (this.$curAction.getAttribute("name") === "keydown") {
-            if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay); 
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay); 
             this.$o3.sendKeyDown(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (this.$curAction.getAttribute("name") === "keyup") {
-            if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay);
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.sendKeyUp(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (this.$curAction.getAttribute("name") === "mousedown") {
-            if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay);
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay);
             if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
                 //apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mousedown");
                 this.$o3.mouseLeftDown();
             }
         }
         else if (this.$curAction.getAttribute("name") === "mouseup") {
-            if (this.$playSpeed == "max")
-                this.$o3.wait(this.$maxSpeedDelay);
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay);
             if (!(this.$playSpeed == "max" && this.$curAction.getAttribute("htmlNode") == "multiselect")) {
                 //apf.console.info(this.$curAction.getAttribute("amlNode") + ": " + "mouseup");
                 this.$o3.mouseLeftUp();
             }
         }
         else if (this.$curAction.getAttribute("name") === "dblClick") {
-            if (this.$playSpeed == "max") 
-                this.$o3.wait(this.$maxSpeedDelay);
+            //if (this.$playSpeed == "max") this.$o3.wait(this.$maxSpeedDelay);
             this.$o3.mouseLeftDown();
             this.$o3.mouseLeftUp();
             this.$o3.mouseLeftDown();
@@ -1414,12 +1506,21 @@ if (elName && elName.indexOf("text()") > -1) debugger;
         }
 
         // more actions to be executed
-        if (this.$curTestXml.childNodes.length > this.$curActionIdx+1) {
+        if (this.$playSpeed == "realtime" && this.$curTestXml.childNodes.length > this.$curActionIdx+1) {
             this.$curActionIdx++;
-            
-            if (!apf.uirecorder.isPaused)
+
+            if (!apf.uirecorder.isPaused) {
                 apf.uirecorder.output.testLog.push(this.$curActionIdx + ". testCheck(): goto next playAction()");
                 this.$playAction();
+            }
+        }
+        else if (this.$playSpeed == "max" && this.$keyActions.length > this.$curKeyActionIdx+1) {
+            this.$curKeyActionIdx++;
+
+            if (!apf.uirecorder.isPaused) {
+                apf.uirecorder.output.testLog.push(this.$curActionIdx + ". testCheck(): goto next playAction()");
+                this.$playAction();
+            }
         }
         
         // test complete, process results
@@ -1445,7 +1546,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                     }
 
                     apf.uirecorder.playback.reset();
-                }, 1000)
+                }, 2000)
             }
             else {
                 apf.uirecorder.capture.stop();
@@ -1481,7 +1582,6 @@ apf.uirecorder.testing = {
                     debugger;
                     apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.CHECK_TIMEOUT, { 
                         val         : [this.$waitForCheckList[i].type, this.$waitForCheckList[i].name, this.$waitForCheckList[i].elName], 
-                        testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                         action      : eventName,
                         keyActionIdx: keyActionIdx
                     });
@@ -1540,7 +1640,6 @@ apf.uirecorder.testing = {
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". $waitFor(): check failed after \"" + eventName + "\": property \"" + this.$waitForCheckList[i].name + "\" of \"" + this.$waitForCheckList[i].elName + "\" has property value of \"" + apf.uirecorder.capture.$capturedPropertyChangeList[this.$waitForCheckList[i].elName][this.$waitForCheckList[i].name] + "\" instead of \"" + this.$waitForCheckList[i].value + "\"");
                             apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
                                 val         : [this.$waitForCheckList[i].type, this.$waitForCheckList[i].name, this.$waitForCheckList[i].elName, this.$waitForCheckList[i].value, apf.uirecorder.capture.$capturedPropertyChangeList[this.$waitForCheckList[i].elName][this.$waitForCheckList[i].name]], 
-                                testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                 action      : eventName,
                                 keyActionIdx: keyActionIdx
                             });
@@ -1566,7 +1665,6 @@ apf.uirecorder.testing = {
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed after \"" + eventName + "\": model data \"" + this.$waitForCheckList[i].name + "\" of \"" + this.$waitForCheckList[i].elName + "\" has property value of \"" + apf.uirecorder.capture.$capturedPropertyChangeList[this.$waitForCheckList[i].elName][this.$waitForCheckList[i].name] + "\" instead of \"" + this.$waitForCheckList[i].value + "\"");
                             apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
                                 val         : [this.$waitForCheckList[i].type, this.$waitForCheckList[i].name, this.$waitForCheckList[i].elName, this.$waitForCheckList[i].value, apf.uirecorder.capture.$capturedModelChangeList[this.$waitForCheckList[i].elName][this.$waitForCheckList[i].name]], 
-                                testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                 action      : eventName,
                                 keyActionIdx: keyActionIdx
                             });
@@ -1673,7 +1771,6 @@ apf.uirecorder.testing = {
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed: " + eventName + " not on correct htmlNode \"" + apf.uirecorder.playback.$checkList[keyActionIdx][prop] + "\"");
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
                                 val: [eventName, apf.uirecorder.playback.$checkList[keyActionIdx][prop]], 
-                                testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"), 
                                 action  : eventName + " (" + actionIdx + ")"
                             });
                         }
@@ -1689,7 +1786,6 @@ apf.uirecorder.testing = {
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed: " + eventName + " not on correct htmlNode \"" + apf.uirecorder.playback.$checkList[keyActionIdx][prop] + "\"");
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
                                 val: [eventName, apf.uirecorder.playback.$checkList[keyActionIdx][prop]], 
-                                testId  : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                 action  : eventName + " (" + actionIdx + ")"
                             });
                         }
@@ -1712,7 +1808,6 @@ apf.uirecorder.testing = {
                             else if (actionObj.detailList[0][elName].amlNode.value != apf.uirecorder.playback.$checkList[keyActionIdx][prop][elName]) {
                                 apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
                                     val         : ["multiselect", "item", elName], 
-                                    testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                     action      : eventName,
                                     keyActionIdx: apf.uirecorder.playback.$getKeyActionIdx(eventName)
                                 });
@@ -1753,7 +1848,6 @@ apf.uirecorder.testing = {
                                     /*
                                     apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.NODE_NOT_EXIST, {
                                         val         : elName, 
-                                        testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                         action      : eventName,
                                         keyActionIdx: keyActionIdx
                                     });
@@ -1822,7 +1916,6 @@ apf.uirecorder.testing = {
                                         /*
                                         apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_NOT_SET, { 
                                             val         : [dType, name, elName], 
-                                            testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                             action      : eventName,
                                             keyActionIdx: apf.uirecorder.playback.$getKeyActionIdx(eventName)
                                         });
@@ -1831,7 +1924,6 @@ apf.uirecorder.testing = {
                                     else if (!valMatch) {
                                         apf.uirecorder.output.setTestResult("warning", apf.uirecorder.output.warnings.VALUE_DIFFERENT, { 
                                             val         : [dType, name, elName, apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx][dType][elName][name], newVal], 
-                                            testId      : apf.uirecorder.playback.$curTestXml.getAttribute("name"),
                                             action      : eventName,
                                             keyActionIdx: apf.uirecorder.playback.$getKeyActionIdx(eventName)
                                         });
@@ -1912,17 +2004,30 @@ apf.uirecorder.output = {
             testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
             testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
         }
-        
+
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
         for (var prevNode, action, aNode, amlNodeName, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
             action = apf.uirecorder.actionList[i];
+            // skip current action if next action is played at same time
+            if (apf.uirecorder.actionList[i+1] && action.time == apf.uirecorder.actionList[i+1].time) continue;
+            
+            // skip small mousemove between certain actions, like between mousedown/mouseup
+            /*
+            if (action.name == "mousemove" && apf.uirecorder.actionList[i-1] && apf.uirecorder.actionList[i-1].name == "mousedown" && apf.uirecorder.actionList[i+1] && apf.uirecorder.actionList[i+1].name == "mouseup") {
+                continue;
+            }
+            */
+            
             aNode = testXml.ownerDocument.createElement("action");
             aNode.setAttribute("name"       , action.name);
             aNode.setAttribute("x"          , action.x);
             aNode.setAttribute("y"          , action.y);
             aNode.setAttribute("time"       , action.time);
             if (action.delayTime) aNode.setAttribute("delayTime"  , action.delayTime);
-            if (action.keyActionIdx >= 0) aNode.setAttribute("keyActionIdx"  , action.keyActionIdx);
+            if (action.keyActionIdx != undefined) {
+                aNode.setAttribute("keyActionIdx"  , action.keyActionIdx);
+                if (action.htmlCaption) aNode.setAttribute("caption", action.name + " (" + action.htmlCaption + ")");
+            }
             
             if (action.ignore) { 
                 aNode.setAttribute("ignore", action.ignore);
@@ -1949,7 +2054,7 @@ apf.uirecorder.output = {
             
             // set value
             if (action.value != undefined) aNode.setAttribute("value", action.value);
-            if (action.multiselect != undefined) aNode.setAttribute("multiselect", action.multiselect);
+            if (action.multiselect != undefined) aNode.setAttribute("multiselect", action.multiselect.toString());
             if (action.multiselectValue != undefined) aNode.setAttribute("multiselectValue", action.multiselectValue);
             if (action.multiselectItem != undefined) aNode.setAttribute("multiselectItem", action.multiselectItem);
             
@@ -2025,8 +2130,8 @@ apf.uirecorder.output = {
     
     // set warning/error/notice
     setTestResult : function(type, msg, values) {
-        if (values.testId)
-            if (!apf.uirecorder.testResults[type][values.testId]) apf.uirecorder.testResults[type][values.testId] = [];
+        var testName = apf.uirecorder.playback.$curTestXml.getAttribute("name");
+        if (!apf.uirecorder.testResults[type][testName]) apf.uirecorder.testResults[type][testName] = [];
         
         var message = msg;
 
@@ -2043,12 +2148,10 @@ apf.uirecorder.output = {
 
         // search for duplicates
         var found = false;        
-        if (values.testId) {
-            for (var i = 0, l = apf.uirecorder.testResults[type][values.testId].length; i < l; i++) {
-                if (apf.uirecorder.testResults[type][values.testId][i].message == message) {
-                    found = true;
-                    break;
-                }
+        for (var i = 0, l = apf.uirecorder.testResults[type][testName].length; i < l; i++) {
+            if (apf.uirecorder.testResults[type][testName][i].message == message) {
+                found = true;
+                break;
             }
         }
         
@@ -2081,8 +2184,7 @@ apf.uirecorder.output = {
             if (type == "error") {
                 var isTesting = apf.uirecorder.isTesting;
                 apf.uirecorder.output.setTestResult("notice", apf.uirecorder.output.notices.TEST_FAILED, { 
-                    val: apf.uirecorder.playback.$curTestXml.getAttribute("name"), 
-                    testId: apf.uirecorder.playback.$curTestXml.getAttribute("name")
+                    val: testName
                 });
 
                 apf.uirecorder.playback.stop();
@@ -2091,9 +2193,9 @@ apf.uirecorder.output = {
             }
 
             // save message            
-            apf.uirecorder.testResults[type][values.testId].push({
+            apf.uirecorder.testResults[type][testName].push({
                 action      : values.action, 
-                testId      : values.testId, 
+                testId      : testName, 
                 keyActionIdx: values.keyActionIdx, 
                 elName      : values.elName, 
                 name        : values.name, 
@@ -2150,19 +2252,19 @@ apf.uirecorder.output = {
         var xml = apf.getXml("<testResults />");
         var types = ["error", "warning", "notice"];
         var resultNode;
+        var testId = apf.uirecorder.playback.$curTestXml.getAttribute("name");
+        
         for (var type, ti = 0, tl = types.length; ti < tl; ti++) {
             type = types[ti];
-            for (var testId in apf.uirecorder.testResults[type]) {
-                if (apf.uirecorder.testResults[type][testId].length) {
-                    for (var i = 0, l = apf.uirecorder.testResults[type][testId].length; i < l; i++) {
-                        resultNode = xml.ownerDocument.createElement(type);
-                        //resultNode.setAttribute("type", type);
-                        resultNode.setAttribute("testId", testId);
-                        if (apf.uirecorder.testResults[type][testId][i].action)
-                            resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action + " (" + apf.uirecorder.testResults[type][testId][i].keyActionIdx + ")");
-                        resultNode.appendChild(xml.ownerDocument.createTextNode(apf.uirecorder.testResults[type][testId][i].message));
-                        xml.appendChild(resultNode);
-                    }
+            if (apf.uirecorder.testResults[type] && apf.uirecorder.testResults[type][testId] && apf.uirecorder.testResults[type][testId].length) {
+                for (var i = 0, l = apf.uirecorder.testResults[type][testId].length; i < l; i++) {
+                    resultNode = xml.ownerDocument.createElement(type);
+                    //resultNode.setAttribute("type", type);
+                    resultNode.setAttribute("testId", testId);
+                    if (apf.uirecorder.testResults[type][testId][i].action)
+                        resultNode.setAttribute("action", apf.uirecorder.testResults[type][testId][i].action + " (" + apf.uirecorder.testResults[type][testId][i].keyActionIdx + ")");
+                    resultNode.appendChild(xml.ownerDocument.createTextNode(apf.uirecorder.testResults[type][testId][i].message));
+                    xml.appendChild(resultNode);
                 }
             }
         }
@@ -2182,7 +2284,7 @@ apf.uirecorder.output = {
             // test succesfull
             resultNode = xml.ownerDocument.createElement("notice");
             resultNode.setAttribute("testId", testId);
-            resultNode.appendChild(xml.ownerDocument.createTextNode("test \"" + testId + "\" was completed succesfully"));
+            resultNode.appendChild(xml.ownerDocument.createTextNode("test \"" + testId + "\" was  succesfully"));
             xml.appendChild(resultNode);
         }
         if (numWarnings == 0) {
