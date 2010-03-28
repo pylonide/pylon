@@ -239,7 +239,7 @@ apf.xmldb = new (function(){
     this.$listeners = [];
     this.addNodeListener = function(xmlNode, o, uId){
         // #ifdef __DEBUG
-        if (!o.$xmlUpdate && !o.setProperty)
+        if (!o || (!o.$xmlUpdate && !o.setProperty))
             throw new Error(apf.formatErrorString(1040, null, 
                 "Adding Node listener", 
                 "Interface not supported."));
