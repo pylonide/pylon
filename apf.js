@@ -473,7 +473,7 @@ var apf = {
         this.hasVideo                  = !!document.createElement("video")["canPlayType"];
         this.hasAudio                  = !!document.createElement("audio")["canPlayType"];
         this.hasGeolocation            = !!navigator.geolocation;
-        this.supportHashChange         = ("onhashchange" in self) && !apf.isIE7Emulate || apf.isIE8;
+        this.supportHashChange         = ("onhashchange" in self) && !apf.isIE;// && !apf.isIE7Emulate || apf.isIE8;
         
         // Run through HTML5's new input types to see if the UA understands any.
         //   This is put behind the tests runloop because it doesn't return a
