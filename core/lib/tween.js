@@ -320,10 +320,11 @@ var ID        = "id",
             info.$int = oHtml.$int;
             oHtml     = oHtml.$ext;
         }
-
-        if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
-            oHtml.style.position = "relative";
-
+        try{ //@TODO hack where currentStyle is still undefined
+            if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
+                oHtml.style.position = "relative";
+        }catch(e){}
+        
         var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
             isTransform = (info.type == TRANSFORM);
 
