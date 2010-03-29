@@ -194,7 +194,6 @@ apf.gallery = function(struct, tagName){
             this.calcThumbBarSize();
         
         this.$oImage.onload = function() {
-            _self.loading = false;
             _self.$hideLoader();
             _self.$oImageBase.src = _self.$oImage.src;
             _self.last = _self.current;
@@ -230,9 +229,6 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
             _self.$oImage.style.display    = "block";
            
-            //Keep loaded image to won't show loader once again
-            _self.imageStack[_self.$applyBindRule("src", _self.current)] = true;
-            
             apf.tween.single(_self.$oImage, {
                 steps : _self.stepShow,
                 type  : "fade",
@@ -240,28 +236,14 @@ apf.gallery = function(struct, tagName){
                 from  : 0,
                 to    : 1,
                 onfinish: function(){
-                
+                    _self.loading = false;
                 }
             });
+            
+            //Keep loaded image to won't show loader once again
+            _self.imageStack[_self.$applyBindRule("src", _self.current)] = true;
         }
     };
-    
-    /*
-     * If this function is still commented out, you can remove it
-     * 
-     this.createCopyOfImage = function() {
-        var id = "gal_img" + this.getPos();
-        var src = this.$applyBindRule("src", this.current);
-        
-        this.imageStack[src] = id;
-        
-        var ihtmlNode = new Image();
-            ihtmlNode.id  = id;
-            ihtmlNode.src = src;
-            ihtmlNode.style.display = "none";
-            
-        this.$oViewport.appendChild(ihtmlNode);
-    };*/
     
     this.$refresh = function() {
         if (!this.imageStack[this.$applyBindRule("src", this.current)])
@@ -275,21 +257,16 @@ apf.gallery = function(struct, tagName){
             if (_self.$amlDestroyed)
                 return;
             
-            if (!_self.loading) {
-                apf.tween.single(_self.$oImage, {
-                    steps : _self.stepHide,
-                    type  : "fade",
-                    anim  : apf.tween.NORMAL,
-                    from  : 1,
-                    to    : 0,
-                    onfinish: function(){
-                        _self.setImagePath(_self.current);
-                    }
-                });
-            }
-            else {
-                _self.setImagePath(_self.current);
-            }
+            apf.tween.single(_self.$oImage, {
+                steps : _self.stepHide,
+                type  : "fade",
+                anim  : apf.tween.NORMAL,
+                from  : 1,
+                to    : 0,
+                onfinish: function(){
+                    _self.setImagePath(_self.current);
+                }
+            });
         }, apf.isIE ? 80 : 100);
     };
     
@@ -326,7 +303,6 @@ apf.gallery = function(struct, tagName){
     };
     
     this.setImagePath = function(xmlNode) {
-        this.loading = true;
         this.$oImage.src = this.$applyBindRule("src", xmlNode) 
             || this.defaultimage 
             || this.defaultthumb;
@@ -340,6 +316,12 @@ apf.gallery = function(struct, tagName){
         this.select(this.current = this.previous);
     };
     
+    this.addEventListener("beforeselect", function(e){
+        apf.console.info("loading: "+this.loading)
+        if (this.loading)
+            return false;
+    });
+    
     this.addEventListener("afterselect", function(e){
         e = e || event;
         
@@ -348,6 +330,8 @@ apf.gallery = function(struct, tagName){
         
         if (this.thumbnailMode == "bar")
             this.centerThumbnail(this.current);
+        
+        this.loading = true;
         
         this.setDescription();
         this.$refresh();
