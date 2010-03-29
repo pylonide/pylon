@@ -175,7 +175,7 @@ apf.history = {
             return;
         }
 
-        if (!apf.supportHashChange && apf.isIE && !timed) {
+        if (apf.isIE && !apf.isIE8 && !timed) {
             this.to_name = name;
             return $setTimeout(function(){
                 apf.history.setHash(apf.history.to_name, true);
@@ -186,15 +186,15 @@ apf.history = {
         if (!this.inited)
             return this.init(name);
 
-        if (!apf.supportHashChange && apf.isIE) {
+        if (apf.isIE && !apf.isIE8) {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
             h.innerHTML = this.length;
             this.lastHtml = this.iframe.document.body.innerHTML;
-        }
+        };
 
-        (!apf.supportHashChange && apf.isIE ? this.iframe : window).location.href = "#" + name;
+        (apf.isIE && !apf.isIE8 ? this.iframe : window).location.href = "#" + name;
         
         if (!apf.isIE && !apf.isIphone)
             apf.history.lastUrl = location.href.toString();
