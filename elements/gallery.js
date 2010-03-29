@@ -64,12 +64,14 @@ apf.gallery = function(struct, tagName){
     this.tmrRefresh    = null;
     this.tmrSlide      = null;
     
-    this.stepShow      = apf.isIE ? 15 : 20;
+    this.stepShow      = apf.isIE ? 10 : 15;
+    this.stepShowFast  = apf.isIE ? 5 : 8;
     this.stepSlide     = apf.isIE ? 25 : 30;
-    this.stepHide      = 10
+    this.stepHide      = apf.isIE ? 5 : 7;
     this.intSSlide     = apf.isIE ? 2 : 10;
     
     this.imageStack = {};
+    this.isOnStack = false;
     
     this.noThumbArrows = false;
 };
@@ -229,16 +231,27 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
             _self.$oImage.style.display    = "block";
            
-            apf.tween.single(_self.$oImage, {
-                steps : _self.stepShow,
-                type  : "fade",
-                anim  : apf.tween.NORMAL,
-                from  : 0,
-                to    : 1,
-                onfinish: function(){
-                    _self.loading = false;
+            if (!_self.isOnStack) {
+                apf.tween.single(_self.$oImage, {
+                    steps : _self.stepShow,
+                    type  : "fade",
+                    anim  : apf.tween.NORMAL,
+                    from  : 0,
+                    to    : 1,
+                    onfinish: function(){
+                        _self.loading = false;
+                    }
+                });
+            }
+            else {
+                if (apf.isIE){
+                    _self.$oImage.style.filter = "alpha(opacity=100)";
                 }
-            });
+                else {
+                    _self.$oImage.style.opacity = 1;
+                }
+                _self.loading = false;
+            }
             
             //Keep loaded image to won't show loader once again
             _self.imageStack[_self.$applyBindRule("src", _self.current)] = true;
@@ -246,7 +259,11 @@ apf.gallery = function(struct, tagName){
     };
     
     this.$refresh = function() {
-        if (!this.imageStack[this.$applyBindRule("src", this.current)])
+        this.isOnStack = this.imageStack[this.$applyBindRule("src", this.current)] 
+            ? true 
+            : false; 
+        
+        if (!this.isOnStack)
             this.$showLoader();
         
         var _self = this;
@@ -257,16 +274,22 @@ apf.gallery = function(struct, tagName){
             if (_self.$amlDestroyed)
                 return;
             
-            apf.tween.single(_self.$oImage, {
-                steps : _self.stepHide,
-                type  : "fade",
-                anim  : apf.tween.NORMAL,
-                from  : 1,
-                to    : 0,
-                onfinish: function(){
-                    _self.setImagePath(_self.current);
-                }
-            });
+            if (!_self.isOnStack) {
+                apf.tween.single(_self.$oImage, {
+                    steps : _self.stepHide,
+                    type  : "fade",
+                    anim  : apf.tween.NORMAL,
+                    from  : 1,
+                    to    : 0,
+                    onfinish: function(){
+                        _self.setImagePath(_self.current);
+                    }
+                });
+            }
+            else {
+                _self.setImagePath(_self.current);
+            }
+            
         }, apf.isIE ? 80 : 100);
     };
     
@@ -317,7 +340,6 @@ apf.gallery = function(struct, tagName){
     };
     
     this.addEventListener("beforeselect", function(e){
-        apf.console.info("loading: "+this.loading)
         if (this.loading)
             return false;
     });
