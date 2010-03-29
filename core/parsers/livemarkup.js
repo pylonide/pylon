@@ -1317,7 +1317,7 @@ apf.lm = new (function(){
                                 }
                                 else
                                     v = xpath_macro[last_ns ? c_statexpath : 8];
-								logw();
+								
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
