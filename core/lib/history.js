@@ -175,7 +175,7 @@ apf.history = {
             return;
         }
 
-        if (apf.isIE && !apf.isIE8 && !timed) {
+        if (!apf.supportHashChange && apf.isIE  && !timed) {
             this.to_name = name;
             return $setTimeout(function(){
                 apf.history.setHash(apf.history.to_name, true);
@@ -186,7 +186,7 @@ apf.history = {
         if (!this.inited)
             return this.init(name);
 
-        if (apf.isIE && !apf.isIE8) {
+        if (!apf.supportHashChange && apf.isIE) {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
@@ -194,12 +194,12 @@ apf.history = {
             this.lastHtml = this.iframe.document.body.innerHTML;
         };
 
-        (apf.isIE && !apf.isIE8 ? this.iframe : window).location.href = "#" + name;
+        (!apf.supportHashChange && apf.isIE ? this.iframe : window).location.href = "#" + name;
         
         if (!apf.isIE && !apf.isIphone)
             apf.history.lastUrl = location.href.toString();
         //else if (apf.isIE8)
-            //this.page = name;
+        //    this.page = name;
     },
 
     timer : null,
