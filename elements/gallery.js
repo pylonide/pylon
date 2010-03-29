@@ -229,7 +229,10 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
             _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
             _self.$oImage.style.display    = "block";
-                
+           
+            //Keep loaded image to won't show loader once again
+            _self.imageStack[_self.$applyBindRule("src", _self.current)] = true;
+            
             apf.tween.single(_self.$oImage, {
                 steps : _self.stepShow,
                 type  : "fade",
@@ -243,8 +246,26 @@ apf.gallery = function(struct, tagName){
         }
     };
     
+    /*
+     * If this function is still commented out, you can remove it
+     * 
+     this.createCopyOfImage = function() {
+        var id = "gal_img" + this.getPos();
+        var src = this.$applyBindRule("src", this.current);
+        
+        this.imageStack[src] = id;
+        
+        var ihtmlNode = new Image();
+            ihtmlNode.id  = id;
+            ihtmlNode.src = src;
+            ihtmlNode.style.display = "none";
+            
+        this.$oViewport.appendChild(ihtmlNode);
+    };*/
+    
     this.$refresh = function() {
-        this.$showLoader();
+        if (!this.imageStack[this.$applyBindRule("src", this.current)])
+            this.$showLoader();
         
         var _self = this;
         clearInterval(this.tmrRefresh);
@@ -328,8 +349,6 @@ apf.gallery = function(struct, tagName){
         if (this.thumbnailMode == "bar")
             this.centerThumbnail(this.current);
         
-        //this.imageStack[this.current.getAttribute("name")] = this.current;
-            
         this.setDescription();
         this.$refresh();
     });
@@ -398,6 +417,7 @@ apf.gallery = function(struct, tagName){
     this.addEventListener("$clear", function(){return false});
     
     this.addEventListener("afterload", function(){
+        this.imageStack = {};
         this.$show();
     });
     
