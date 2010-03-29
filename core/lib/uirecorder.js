@@ -60,11 +60,13 @@ apf.uirecorder.capture = {
         
         document.documentElement.onmousedown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
+            apf.console.info("mousedown");
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         }
 
         document.documentElement.onmouseup = function(e) {
-            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return; //apf.uirecorder.isPaused || 
+            if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return; //apf.uirecorder.isPaused ||
+            apf.console.info("mouseup");
             apf.uirecorder.capture.$captureAction("mouseup", e || event);
         }
         
@@ -341,23 +343,27 @@ if (apf.uirecorder.actionList.length) {
 
             // set caption of htmlElementCaption
             if (htmlElement) {
-                var htmlCaption = "";
+                var targetValue = "";
                 switch (htmlElement.nodeName.toLowerCase()) {
                     case "a":
-                        htmlCaption = "link: " + htmlElement.innerHTML;
+                        targetValue = htmlElement.innerHTML
                         break;
                     case "input":
-                        htmlCaption = "textfield: " + htmlElement.value;
+                        targetValue = htmlElement.value;
                         break;
                     case "img":
-                        htmlCaption = "image: " + htmlElement.alt;
+                        targetValue = htmlElement.alt || htmlElement.src;
                         break;
                     case "div":
-                        htmlCaption = "div: " + htmlElement.innerHTML
+                        targetValue = htmlElement.innerHTML
                         break;
                 }
             }
-            actionObj.htmlCaption = htmlCaption;
+            actionObj.target = {
+                nodeName    : htmlElement.nodeName.toLowerCase(),
+                value       : targetValue,
+                caption     : htmlElement.nodeName.toLowerCase() + ":" + targetValue
+            }
         }
         
         
@@ -434,25 +440,46 @@ if (apf.uirecorder.actionList.length) {
             }
 
             // no default keyAction, like mousemove
+/*
             if (this.$keyActionList.indexOf(eventName) == -1) {
+                var isKeyAction = false;
                 // check for certain events, or any prop/model change
                 for (var elName in actionObj.detailList[0]) {
                     if (actionObj.detailList[0][elName].events && actionObj.detailList[0][elName].events.length) {
                         for (var i = 0, l = actionObj.detailList[0][elName].events.length; i < l; i++) {
                             if (actionObj.detailList[0][elName].events[i].name == "beforeload") {
-                                actionObj.keyActionIdx = this.$keyActionIdx;
-                                this.$keyActionIdx++;
+                                isKeyAction = true;
                             }
                         }
                     }
                     // property change / model data change
                     if ((actionObj.detailList[0][elName].properties && actionObj.detailList[0][elName].properties.length) || (actionObj.detailList[0][elName].data && actionObj.detailList[0][elName].data.length)) {
-                        actionObj.keyActionIdx = this.$keyActionIdx;
-                        this.$keyActionIdx++;
+                        isKeyAction = true;
                     }
                 }
-            }            
-
+                
+                if (isKeyAction || this.setNextMousemoveAsKeyAction) {
+                    if (this.setNextMousemoveAsKeyAction && eventName == "mousemove") {
+                        this.setNextMousemoveAsKeyAction = false;
+                    }
+                    // if action is mousemove, set previous mousemove as keyaction too
+                    else if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name == "mousemove") {
+                        apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].keyActionIdx = this.$keyActionIdx;
+                        this.$keyActionIdx++;
+                    }
+                    // if action is mousemove, set next mousemove as keyaction too
+                    else if (eventName == "mousemove" && apf.uirecorder.actionList[apf.uirecorder.actionList.length-1].name != "mousemove") {
+                        apf.uirecorder.capture.setNextMousemoveAsKeyAction = true;
+                    }
+                    else {
+                        debugger;
+                    }
+                    
+                    actionObj.keyActionIdx = this.$keyActionIdx;
+                    this.$keyActionIdx++;
+                }
+            }
+*/
             delayObj = actionObj;
             index = actionObj.index = apf.uirecorder.actionList.length;
 //        }
@@ -690,7 +717,7 @@ if (apf.uirecorder.actionList.length) {
         var targetName;
 
         // aml element
-        if (amlNode && amlNode.parentNode && amlNode.tagName) {
+        if (amlNode && amlNode.parentNode && amlNode.tagName && !apf.xmlToXpath(amlNode) != "html[1]") {
             targetName = amlNode.id || apf.xmlToXpath(amlNode);
             if (targetName.indexOf("/text()") > -1) {
                 targetName = targetName.substr(0, targetName.length - "/text()[x]".length);    
@@ -749,6 +776,7 @@ if (apf.uirecorder.actionList.length) {
 
         // save events to detailList
         if (!apf.uirecorder.detailList[targetName]) apf.uirecorder.detailList[targetName] = {
+            caption     : targetName,
             amlNode     : amlNode,
             events      : [],
             properties  : [],
@@ -871,9 +899,10 @@ apf.uirecorder.playback = {
     $checkEvents            : { // list of events where playback should wait before continuing playing 
         "beforeload"        : "afterload",
         "beforestatechange" : "afterstatechange",
-        "beforeswitch"      : "afterswitch"
+        "beforeselect"      : "afterselect"
+//        "beforeswitch"      : "afterswitch"
     },
-    $checkNodes             : ["mousedown"],
+    $checkEvent             : ["mousedown", "afterload", "prop.visible", "load", "afterstatechange", "afterselect", "afterswitch", "hashchange"],
     
     // reset playback
     reset : function() {
@@ -1019,6 +1048,17 @@ apf.console.info("start playback");
                 */
             }
             
+            if (this.$keyActions[i].getAttribute("targetType") != undefined) {
+                if (!this.$checkList[i]) this.$checkList[i] = {}
+                this.$checkList[i].targetType = this.$keyActions[i].getAttribute("targetType");
+
+                if (this.$keyActions[i].getAttribute("targetType") == "a" && this.$keyActions[i].getAttribute("targetValue") != undefined) {
+                    if (!this.$checkList[i]) this.$checkList[i] = {}
+                    this.$checkList[i].targetValue = this.$keyActions[i].getAttribute("targetValue");
+                }
+            }
+
+            
             // set checks to compare value of properties, events and data, check in checkResults()
             //if (apf.uirecorder.isTesting) {
                 for (var dIdx, di = 0, dl = this.$keyActions[i].childNodes.length; di < dl; di++) {
@@ -1049,7 +1089,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                     // add events with a value
                                     // add specific events
                                     //if (node.getAttribute("value") != undefined) {
-                                    if (this.$checkNodes.indexOf(node.getAttribute("name")) > -1) {
+                                    if (this.$checkEvent.indexOf(node.getAttribute("name")) > -1) {
                                         if (!this.$checkList[i]) this.$checkList[i] = {};
                                         if (!this.$checkList[i].details) this.$checkList[i].details = [];
                                         if (!this.$checkList[i].details[dIdx]) this.$checkList[i].details[dIdx] = {};
@@ -1059,7 +1099,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                     }
 
                                     // add event combo's from $checkEvents list like beforeload/afterload
-                                    if (elName == "model") debugger;
+                                    /*
                                     if (this.$checkEvents[node.getAttribute("name")] && elName != "model") {
                                         if (!this.$checkList[i]) this.$checkList[i] = {};
                                         if (!this.$checkList[i].waitEvents) this.$checkList[i].waitEvents = [];
@@ -1068,6 +1108,7 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                         this.$checkList[i].waitEvents[dIdx][elName].push(node.getAttribute("name"));
                                         this.$checkList[i].waitEvents[dIdx][elName].push(this.$checkEvents[node.getAttribute("name")]);
                                     }
+                                    */
                                 }
 
                                 // add model data changes
@@ -1815,6 +1856,28 @@ apf.uirecorder.testing = {
                         }
                         break;
                     */
+                    case "targetType":
+                        // action not on same type of element
+                        if (actionObj.target.nodeName != apf.uirecorder.playback.$checkList[keyActionIdx][prop]) {
+                            //@todo raise warning/error
+                            debugger;
+                        }
+                        // check passed
+                        else {
+                            delete apf.uirecorder.playback.$checkList[keyActionIdx][prop];
+                        }
+                        break;
+                    case "targetValue":
+                        // action not on same type of element
+                        if (actionObj.target.value != apf.uirecorder.playback.$checkList[keyActionIdx][prop]) {
+                            //@todo raise warning/error
+                            debugger;
+                        }
+                        // check passed
+                        else {
+                            delete apf.uirecorder.playback.$checkList[keyActionIdx][prop];
+                        }
+                        break; 
                     case "details":
 //                    case "properties":
 //                    case "events":
@@ -1896,7 +1959,7 @@ apf.uirecorder.testing = {
                                         // delete from checkList
                                         delete apf.uirecorder.playback.$checkList[keyActionIdx][prop][checkIdx][dType][elName][name];
                                         
-                                        if (eventName == "mousedown" && apf.uirecorder.playback.$keyActions[keyActionIdx+1].getAttribute("name") == "mouseup") {
+                                        if (eventName == "mousedown" && apf.uirecorder.playback.$keyActions[keyActionIdx+1] && apf.uirecorder.playback.$keyActions[keyActionIdx+1].getAttribute("name") == "mouseup") {
                                             // set pause after mouseup
                                             apf.uirecorder.playback.$pauseAfterAction = {
                                                 action: "mouseup",
@@ -2026,7 +2089,11 @@ apf.uirecorder.output = {
             if (action.delayTime) aNode.setAttribute("delayTime"  , action.delayTime);
             if (action.keyActionIdx != undefined) {
                 aNode.setAttribute("keyActionIdx"  , action.keyActionIdx);
-                if (action.htmlCaption) aNode.setAttribute("caption", action.name + " (" + action.htmlCaption + ")");
+                if (action.target) {
+                    if (action.target.caption) aNode.setAttribute("caption", action.name + " (" + action.target.caption + ")");
+                    if (action.target.nodeName) aNode.setAttribute("targetType", action.target.nodeName);
+                    if (action.target.value) aNode.setAttribute("targetValue", action.target.value);
+                }
             }
             
             if (action.ignore) { 
