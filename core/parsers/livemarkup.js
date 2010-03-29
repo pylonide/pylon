@@ -226,6 +226,7 @@ apf.lm = new (function(){
             5 : "_xpt(_n,",
             6 : "_valst(_n,",
             7 : "_valed(_n,",
+            8 : "_valattr(_n,",
             "foreach"   : "_nods(_n,",
             "each"      : "_nods(_n,",
             "local"     : "_nod(_n,",
@@ -1315,8 +1316,8 @@ apf.lm = new (function(){
                                         last_tok = "=";
                                 }
                                 else
-                                    v = xpath_macro[last_ns ? c_statexpath : 0];
-
+                                    v = xpath_macro[last_ns ? c_statexpath : 8];
+								logw();
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
@@ -1326,7 +1327,7 @@ apf.lm = new (function(){
                         }
                         break;
                     case 7: // -------- { -------- code mode
-                        if (last_tok == "=") // 0x7 flags code-in-missing-quotes <a i={x}/>
+                        if ( !s[sl - 1] && last_tok == "=") // 0x7 flags code-in-missing-quotes <a i={x}/>
                             o[ol++] = "\\\"", s[sl++] = scope | 0x70000000;
                         else
                             s[sl++] = scope | 0x40000000
@@ -1941,6 +1942,16 @@ apf.lm_exec = new (function(){
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
     }
 
+	var __valattrrx = /(["'])/g;
+    function __valattr(n, x){
+        if (!n)
+            return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+          && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
+          &&  n.nodeValue.replace(__valattrrx,"\\$1") || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
+    }
+
+	
     // value of model node by xpath
     function __valm(m, x){
         var n;
@@ -2391,7 +2402,7 @@ apf.lm_exec = new (function(){
     this.compile = function(code){
         // up-scope much used functions (see if it helps?)
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
-        _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng;
+        _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
         eval(code);
         return _f;
     }
