@@ -1943,12 +1943,15 @@ apf.lm_exec = new (function(){
     }
 
 	var __valattrrx = /(["'])/g;
+	function __valattrrp(m,a){
+		return m=='"'?"&quot;":"&apos;";
+	}
     function __valattr(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,"\\$1") || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
     }
 
 	
