@@ -387,7 +387,7 @@ apf.lm = new (function(){
         },
 
         // centralized code fragments used in parser/generator
-        cf_block_o     = "(function(){var _o=[],_l=0;",
+        cf_block_o     = "(function(){var _o=[],_l=0;\n",
         cf_block_c     = ";return _l==1?_o[0]:_o.join('');})()",
         cf_async_o     = "_async(_n,_c,_a,_w,_f,this,",
         cf_async_m     = "',_a[++_a.i]||[",
@@ -395,26 +395,26 @@ apf.lm = new (function(){
         cf_mode_output,
         cf_str_output  = "_o[_l++]=",
         cf_def_output  = "",
-        cf_func_o      = "{var _o=[],_l=0,_n=this;",
+        cf_func_o      = "{var _o=[],_l=0,_n=this;\n",
         cf_func_c      = ";\nreturn _l==1?_o[0]:_o.join('');}",
 
         // compile chunks used in compile/match
-        cc_async_o     = "(_a=_a||{}).i=0;try{",
-        cc_async_c     = "}catch(_e){if(_e.x)return;throw(_e);}",
+        cc_async_o     = "(_a=_a||{}).i=0;try{\n",
+        cc_async_c     = "}catch(_e){if(_e.x)return;throw(_e);}\n",
         //cc_async_o     = "(_a=_a||{}).i=0;",
         //cc_async_c     = "",
-        cc_pc_o          = "(_a=_a||{}).i=0;try{_pc(_w);",
+        cc_pc_o        = "(_a=_a||{}).i=0;try{_pc(_w);",
         cc_pc_c        = "}catch(_e){if(_e.x)return;throw(_e);}",
         cc_opt_o       = "with(_w){",
         cc_opt_c       = "}",
         cc_v_blk_o     = "var _o=[],_l=0;_o[_l++]=",
-        cc_v_blk_ob    = "var _o=[],_l=0;",
+        cc_v_blk_ob    = "var _o=[],_l=0;\n",
         cc_v_blk_c     = ";\nreturn _ret(_l==1?_o[0]:_o.join(''));",
         cc_v_blk_cb    = ";\n_c(_ret(_l==1?_o[0]:_o.join('')),apf.SUCCESS,apf.$lmx);apf.$lmx=null;",
         cc_v_ret_o     = "return _ret(",
         cc_v_ret_c     = ");",
         cc_v_cb_o      = "_c(_ret(",
-        cc_v_cb_c      = "),apf.SUCCESS,apf.$lmx);apf.$lmx=null;",
+        cc_v_cb_c      = "),apf.SUCCESS,apf.$lmx);apf.$lmx=null;\n",
 
         cc_o_blk_o     = "var _r=",
         cc_o_blk_ob    = "var _r;",
@@ -1638,6 +1638,7 @@ apf.lm = new (function(){
             }; // string only
         }
         if (o_asyncs || cfg.alwayscb) {
+
             if (cfg.event) { // event
                 if (parse_mode == 1)
                     o[3] = "";
@@ -1646,7 +1647,7 @@ apf.lm = new (function(){
             else if (c_xpathmode) { // object return
                 if (parse_mode == 1) {
                     o[3]    = (o[3] != cf_block_o) ? cc_o_blk_o : cc_o_blk_ob,
-                    o[ol++] = cc_o_blk_cb;
+                    o[ol++] = cc_o_blk_cb; 
                 }
                 else
                     o[3] = cc_o_cb_o, o[ol++] = cc_o_cb_c;
@@ -1658,17 +1659,34 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_cb_o, o[ol++] = cc_v_cb_c;
             }
-
-            if (cfg.withopt)
-                o[2] = cc_opt_o, o[ol++] = cc_opt_c;
-
-            if (o_asyncs) {
-                if (cfg.precall)
-                    o[1] = cc_pc_o, o[ol++] = cc_pc_c;
-                else
-                    o[1] = cc_async_o, o[ol++] = cc_async_c;
+			
+            if (o_asyncs) { 
+				// for parse_mode == 1 we can squeeze in before [3] and cb close
+				// else we put var _r= in 3 and put our ending last and put
+				// the cb at the end
+				if(parse_mode==1){
+					if (cfg.precall)
+						o[2] = cc_pc_o, o[ol-1] = cc_pc_c + o[ol-1];
+					else
+						o[2] = cc_async_o, o[ol-1] = cc_async_c + o[ol-1];
+				}else{
+					o[ol++] = o[3] + '_r' + o[ol-2];
+					if (cfg.precall)
+						o[2] = cc_pc_o, o[3] = cc_o_blk_o, o[ol-2] = cc_pc_c;
+					else
+						o[2] = cc_async_o, o[3] = cc_o_blk_o, o[ol-2] = cc_async_c;
+				}
+				/*
+				if (cfg.precall)
+					o[2] = cc_pc_o, o[ol++] = cc_pc_c;
+				else
+					o[2] = cc_async_o, o[ol++] = cc_async_c;
+				*/
             }
 
+            if (cfg.withopt)
+                o[1] = cc_opt_o, o[ol++] = cc_opt_c;
+				
             o[0] = cfg.event 
                 ? cc_fe_async_o
                 : ((c_xpathmode == 1 || c_xpathmode == 3) ? cc_fc_async_o : cc_f_async_o);
