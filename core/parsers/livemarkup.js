@@ -1582,9 +1582,15 @@ apf.lm = new (function(){
                 str :istr
             };
 		}
+		// lets see if we need to fetch precompiled cachemarker
+		var c,f;
+		if(istr.charAt(0) == '~' && (c=istr.match(/~~(c\d+)~~/))){
+			if(c=apf.lm_exec[c[0]]) return c;
+			alert("ERROR, undefined live markup cache marker found:"+istr);
+			return {type:2,str:istr};
+		}
 			
-        var c, f,
-            key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
+        var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.editable && 0x400) | (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
@@ -2403,11 +2409,31 @@ apf.lm_exec = new (function(){
     }
 
     this.compile = function(code){
-        // up-scope much used functions (see if it helps?)
+        // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
         eval(code);
         return _f;
     }
+
+	var LMBEGINCACHE;
+	/*LIVEMARKUP BEGIN CACHE
+	var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
+	_nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
+	this.c342 = function(_n,_a,_w){
+		..cached LM function..
+	}
+	this.c342.type = 2; 
+	this.c342.xpaths = {...}; 
+	this.c342.props = {...};
+	this.c723 = function(....){
+	
+	}
+	// replace
+	d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
+	_async(_n,_c,_a,_w,_f,this,
+	_async(_n,_c,_a,_w,apf.lm_exec.c342,this,
+	LIVEMARKUP END CACHE*/
+	var LMENDCACHE;
 })();
 // #endif
