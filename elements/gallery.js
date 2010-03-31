@@ -357,8 +357,11 @@ apf.gallery = function(struct, tagName){
         
         if (this.$oZoomIcon) {
             var _self = this;
+            var url = this.$applyBindRule("url", this.current);
             this.$oZoomIcon.onclick = function() {
-                window.location.href = _self.$applyBindRule("url", _self.current) || "";
+                _self.dispatchEvent("zoomclick", {url: url, selected: _self.current});
+                if (url)
+                    window.location.href = url;
             };
         }
         
