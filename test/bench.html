@@ -1,0 +1,153 @@
+<html>
+ <head>
+  <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+  <script LANGUAGE="JavaScript" type="text/javascript">//<![CDATA[
+  function testa(y){}  
+  function testb(y){}  
+  function testc(y){}  
+  function testd(y){}  
+  function teste(y){}  
+  function testf(y){}  
+  function testg(y){}  
+  function testh(y){}  
+  function testj(y){}  
+  function testk(y){}  
+  function testl(y){}  
+  function testm(y){}  
+  function testn(y){}  
+  function testb(y){}  
+  function testv(y){}  
+  function testc(y){}  
+  function testx(y){}  
+  function testz(y){}  
+
+  function test(y){
+	return y;
+  }
+
+  function bench(){
+		var t = {
+			$vx : 0,
+			$vy : 1,/*
+			$vw : 100,
+			$vh : 100,
+			$x : 0,
+			$y : 0,
+			$w : 100,
+			$h : 100,
+			$vx1 : 0,
+			$vy1 : 1,
+			$vw1 : 100,
+			$vh1 : 100,
+			$x1 : 0,
+			$y1 : 0,
+			$w1 : 100,
+			$h1 : 100,*/
+			
+			$rotation : 10
+		};
+		
+		var i =0;
+		var x = "h''''e\"\"\"llaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaao";
+		x = {
+
+		};
+		var d = 0xffffffff;
+		var a = [];
+		var d = function(){
+		};
+		var e = function(){
+			this.$_vxy = "124 1234 1",
+			this.$_vwh = "1234 12341",
+			this.$_x = "1",
+			this.$_y ="1",
+			this.$_w = "1",
+			this.$_h = "1"	
+
+			this.toString = function(){
+				return ["<av:shape coordorigin='",
+						this.$_vxy,"' coordsize='",this.$_vwh,"' style='rotate:",this.$_r,
+						";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
+						";' fill='t' stroke='t'>",
+						(this.$fill?"<av:fill color='"+this.$fill+"'/>":""), // gradient fill is of course different
+						(this.$stroke?"<av:stroke color='"+this.$stroke+"'/>":""),
+						"<av:path v='",this.$path,"'/></av:shape>"].join('');
+			};
+		};
+		
+		d.prototype = new e();
+
+		var t = new d();
+		t.append = function(a){
+			a.push("<av:shape coordorigin='",
+					this.$_vxy,"' coordsize='",this.$_vwh,"' style='rotate:",this.$_r,
+					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
+					";' fill='t' stroke='t'>",
+					(this.$fill?"<av:fill color='"+this.$fill+"'/>":""), // gradient fill is of course different
+					(this.$stroke?"<av:stroke color='"+this.$stroke+"'/>":""),
+					"<av:path v='",this.$path,"'/></av:shape>");
+		}
+		
+		var b = [];
+		for(var i =0;i<5000;i++)b[i] = t;
+		
+		apf.profile_loop(1,function(){
+			b.join('');
+		});
+		apf.profile_loop(1,function(){
+			var a = [];
+			for(var i =0;i<5000;i++)
+				b[i].append(a);
+			a.join('');
+		});
+		var x = "!341234!@314!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31!341234!@31";
+		apf.profile_loop(1,function(){
+			for(var i = 0;i<100000;i++)
+				x.charAt(0)=='{';
+		});
+		/*
+		apf.profile_loop(1,function(){
+			var a = [];
+			for(var i =0;i<5000;i++)
+				b[i].append(a);
+			a.join('');
+		});
+		
+		apf.profile_loop(1,function(){
+			for(var j = 0;j<5000;j++)
+					a.push("<av:shape coordorigin='",
+					(d&0x0000400?0:x.$vx)," ",(d&0x0000800?0:x.$vy),"' coordsize='",
+					(d&0x0001000?100:x.$vw)," ",(d&0x0002000?100:x.$vh),"' style='",
+					(d&0x0004000?0:x.$r),";left:",(d&0x0000040?0:x.$_x),";top:",
+					(d&0x0000080?0:x.$_y),";width:",(d&0x0000100?100:x.$_w),";height:",
+					(d&0x0000040?100:x.$_h),";' fill='t' stroke='t'>",
+					(x.$fill?"<av:fill color='"+x.$fill+"'/>":""), 
+					(x.$stroke?"<av:stroke color='"+x.$stroke+"'/>":""),
+					"<av:path v='",x.$path,"'>",
+					"</av:shape>");			
+
+			a.join('');
+		}
+		);*/
+		
+//			a.push(new String("ABCABCABCABCABCABCABCABC"));
+		//var b = 
+		
+	/*	apf.profile_loop(100,function(){
+			var a = [];
+			for(var i =0;i<1000;i++)	
+				b.x(i,i,i,i);
+			a.join('');
+		});
+		*/
+	}
+  //]]>
+  </script>
+  
+ </head>
+ <body onload="bench()">
+	<div id="drawnode" style2="width:300px;height:300px;background-color:black">
+	</div>
+	
+ </body>
+</html>
