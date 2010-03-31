@@ -355,6 +355,13 @@ apf.gallery = function(struct, tagName){
         
         this.loading = true;
         
+        if (this.$oZoomIcon) {
+            var _self = this;
+            this.$oZoomIcon.onclick = function() {
+                window.location.href = _self.$applyBindRule("url", _self.current) || "";
+            };
+        }
+        
         this.setDescription();
         this.$refresh();
     });
@@ -646,4 +653,6 @@ apf.gallery = function(struct, tagName){
 }).call(apf.gallery.prototype = new apf.BaseList());
 
 apf.aml.setElement("gallery", apf.gallery);
+
+apf.aml.setElement("url", apf.BindingRule);
 //#endif
