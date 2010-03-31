@@ -70,6 +70,7 @@ apf.history = {
     page  : null,
     past  : [],
     future: [],
+    delay : 1,
 
     init  : function(defName, getVar, delay){
         if (this.inited)
@@ -114,11 +115,13 @@ apf.history = {
                         if (top.apf.isIE7Emulate) {\
                             clearTimeout(top.apf.history.ie7timer);\
                             top.apf.history.ie7timer = setTimeout(function(){\
-                                top.apf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                                var o = document.getElementsByTagName('h1')[nr];\
+                                if (!o || !o.id) return;\
+                                top.apf.history.hasChanged(o.id, true);\
                             }, 100);\
                         }\
                         else {\
-                            top.apf.history.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                            top.apf.history.hasChanged(document.getElementsByTagName('h1')[nr].id, true);\
                         }\
                         lastURL = document.body.scrollTop;\
                     }\
@@ -178,7 +181,7 @@ apf.history = {
         if (!apf.supportHashChange && apf.isIE  && !timed) {
             this.to_name = name;
             return $setTimeout(function(){
-                apf.history.setHash(apf.history.to_name, true);
+                apf.history.setHash(apf.history.to_name, true, force);
             }, 200);
         }
 
@@ -190,7 +193,7 @@ apf.history = {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
-            h.innerHTML = this.length;
+            h.innerHTML = name;
             this.lastHtml = this.iframe.document.body.innerHTML;
         };
 
@@ -203,8 +206,8 @@ apf.history = {
     },
 
     timer : null,
-    changePage: function(page){
-        if (apf.isIE && !apf.isIE8) {
+    changePage: function(page, force){
+        if (!apf.supportHashChange && apf.isIE) {
             this.page = page;
             this.changingHash = true;
             clearTimeout(this.timer);
@@ -250,9 +253,9 @@ apf.history = {
         return idx;
     },
 
-    hasChanged: function(page){
-        if (page == this.page) return;
-        this.changePage(page);
+    hasChanged: function(page, force){
+        if (page == this.page && !force) return;
+        this.changePage(page, force);
 
         this.changing = true;
         apf.dispatchEvent("hashchange", {page: page, index: this.update(page)});
