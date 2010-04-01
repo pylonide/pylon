@@ -667,10 +667,16 @@ apf.BaseList = function(){
             }
         }
         else if (elImage) {
-            if (elImage.nodeType == 1)
-                elImage.setAttribute("style", "background-image:url("
-                    + apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode))
-                    + ")");
+            if (elImage.nodeType == 1) {
+                if ((elImage.tagName || "").toLowerCase() == "img") {
+                    elImage.setAttribute("src", apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode)));
+                }
+                else {
+                    elImage.setAttribute("style", "background-image:url("
+                        + apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode))
+                        + ")");
+                }
+            }
             else {
                 if (apf.isSafariOld) { //@todo this should be changed... blrgh..
                     var p   = elImage.ownerElement.parentNode,

@@ -37,7 +37,6 @@
 apf.gallery = function(struct, tagName){
     this.$init(tagName || "gallery", apf.NODE_VISIBLE, struct);
     
-    this.thumbheight   = 50;
     this.imageheight   = 400;
     
     this.defaultthumb  = null;
@@ -88,12 +87,6 @@ apf.gallery = function(struct, tagName){
         this.$oZoomIcon.style.display = this.zoomIcon ? "block" : "none";
     };
     
-    this.$propHandlers["thumbheight"] = function(value) {
-        value = parseInt(value);
-        if (value > 0)
-            this.thumbheight = value;
-    };
-    
     this.$propHandlers["imageheight"] = function(value) {
         value = parseInt(value);
         if (value > 0)
@@ -122,7 +115,7 @@ apf.gallery = function(struct, tagName){
     };
     
     this.calcThumbBarSize = function() {
-        var nodes     = this.$container.childNodes;
+        var nodes     = this.$oThumbs.childNodes;
         var nodes_len = nodes.length;
         
         var thumbBarSize = 0;
@@ -132,10 +125,10 @@ apf.gallery = function(struct, tagName){
             }
         }
         
-        this.$container.style.width = thumbBarSize + "px";
+        this.$oThumbs.style.width = thumbBarSize + "px";
         
         //Whether thumbnail arrows should be displayed or not
-        this.noThumbArrows = this.$container.offsetWidth < this.$container.parentNode.offsetWidth 
+        this.noThumbArrows = this.$oThumbs.offsetWidth < this.$oThumbs.parentNode.offsetWidth 
             ? true 
             : false;
 
@@ -148,12 +141,18 @@ apf.gallery = function(struct, tagName){
     };
     
     this.initiateThumbnailEvents = function() {
-        var thumbs     = this.$container.childNodes;
+        var thumbs     = this.$oThumbs.childNodes;
         var thumbs_len = thumbs.length;
         var _self      = this;
         
+        var tHeight, tWidth = null;
+        var iHeight, iWidth;
+        
         for (var i = 0; i < thumbs_len; i++) {
             if ((thumbs[i].className || "").indexOf("thumbnail") > -1) {
+                if (tHeight == null)
+                    tHeight = thumbs[i].offsetHeight - apf.getVerBorders(thumbs[i]);
+                
                 thumbs[i].onmouseover = function(e) {
                     _self.$hoverThumb(e, this);
                 };
@@ -161,6 +160,19 @@ apf.gallery = function(struct, tagName){
                 thumbs[i].onmouseout = function(e) {
                     _self.$hoverThumb(e, this);
                 };
+                
+                var images = thumbs[i].childNodes;
+                    images_len = images.length;
+                    
+                for (var j = 0; j < images_len; j++) {
+                    if ((images[j].tagName || "").toLowerCase() == "img") {
+                        iHeight = images[j].offsetHeight;
+                        iWidth = images[j].offsetWidth;
+                        
+                        images[j].style.height = tHeight + "px";
+                        thumbs[i].style.width = images[j].style.width = parseInt(iWidth * tHeight/iHeight) + "px";
+                    }
+                }
             }
         }
     };
@@ -191,16 +203,19 @@ apf.gallery = function(struct, tagName){
         this.$showLoader();
         
         this.$oImageContainer.style.height = this.$oViewport.style.height = this.imageheight + "px";
+
+        this.initiateThumbnailEvents();
         
-        if (this.thumbnailMode == "bar")
+        if (this.thumbnailMode == "bar") {
             this.calcThumbBarSize();
+        }
         
         this.$oImage.onload = function() {
             _self.$hideLoader();
             _self.$oImageBase.src = _self.$oImage.src;
             _self.last = _self.current;
             _self.$setSiblings();
-            _self.initiateThumbnailEvents();
+            
             
             //Get image dimension
             _self.$oImageBase.style.display = "block";
@@ -372,17 +387,17 @@ apf.gallery = function(struct, tagName){
     this.centerThumbnail = function(xmlNode) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         
-        if (!htmlNode || htmlNode == this.$container.firstChild || this.noThumbArrows)
+        if (!htmlNode || htmlNode == this.$oThumbs.firstChild || this.noThumbArrows)
             return;
         
         var oLeft  = htmlNode.offsetLeft;
         var oWidth = htmlNode.offsetWidth;
         var _self  = this;
         
-        var ocLeft = this.$container.offsetLeft;
+        var ocLeft = this.$oThumbs.offsetLeft;
         
         var tCenteredPos  = -1 * oLeft - parseInt((oWidth + apf.getMargin(htmlNode)[0]) / 2);
-        var vpCenteredPos = parseInt(this.$container.parentNode.offsetWidth / 2)
+        var vpCenteredPos = parseInt(this.$oThumbs.parentNode.offsetWidth / 2)
         
         var newLeft = tCenteredPos + this.maxLeft + vpCenteredPos;
         
@@ -392,7 +407,7 @@ apf.gallery = function(struct, tagName){
                 ? this.minLeft
                 : newLeft);
 
-        apf.tween.single(this.$container, {
+        apf.tween.single(this.$oThumbs, {
             steps   : 15, 
             type    : "left", 
             anim    : apf.tween.EASEOUT,
@@ -442,8 +457,8 @@ apf.gallery = function(struct, tagName){
     };
     
     this.calculateRange = function() {
-        this.maxLeft = this.$container.offsetLeft;
-        this.minLeft = -1 * (this.$container.offsetWidth - this.$container.parentNode.offsetWidth);
+        this.maxLeft = this.$oThumbs.offsetLeft;
+        this.minLeft = -1 * (this.$oThumbs.offsetWidth - this.$oThumbs.parentNode.offsetWidth);
     }
 
     this.$draw = function(){
@@ -466,7 +481,8 @@ apf.gallery = function(struct, tagName){
         this.$oBar      = this.$getLayoutNode("main", "bar", this.$ext);
         this.$oDescr    = this.$getLayoutNode("main", "descr", this.$ext);
         this.$oLoader   = this.$getLayoutNode("main", "loader", this.$ext);
-        this.$container = this.$getLayoutNode("main", "thumbs", this.$ext);
+        this.$oThumbs   = this.$getLayoutNode("main", "thumbs", this.$ext);
+        this.$container = this.$oThumbs;
         
         this.$oArrowPrev = this.$getLayoutNode("main", "arrow_prev", this.$ext);
         this.$oArrowNext = this.$getLayoutNode("main", "arrow_next", this.$ext);
@@ -500,10 +516,10 @@ apf.gallery = function(struct, tagName){
             clearInterval(_self.tmrSlide);
             
             _self.tmrSlide = setInterval(function() {
-                var oLeft = _self.$container.offsetLeft;
+                var oLeft = _self.$oThumbs.offsetLeft;
                 
                 if (oLeft + 1 > _self.minLeft && oLeft < _self.maxLeft) {
-                    _self.$container.style.left = (oLeft + 1) + "px";
+                    _self.$oThumbs.style.left = (oLeft + 1) + "px";
                 }
             }, _self.intSSlide);
         };
@@ -519,10 +535,10 @@ apf.gallery = function(struct, tagName){
             clearInterval(_self.tmrSlide);
             
             _self.tmrSlide = setInterval(function() {
-                var oLeft = _self.$container.offsetLeft;
+                var oLeft = _self.$oThumbs.offsetLeft;
                 
                 if (oLeft > _self.minLeft && oLeft - 1 < _self.maxLeft) { 
-                    _self.$container.style.left = (oLeft - 1) + "px";
+                    _self.$oThumbs.style.left = (oLeft - 1) + "px";
                 }
             }, _self.intSSlide);
         };
@@ -537,12 +553,12 @@ apf.gallery = function(struct, tagName){
 
             _self.slideFinish = false;
             
-            var oLeft   = _self.$container.offsetLeft;
+            var oLeft   = _self.$oThumbs.offsetLeft;
             var newLeft = oLeft + 200 > _self.maxLeft 
                 ? _self.maxLeft 
                 : oLeft + 200;
             
-            apf.tween.single(_self.$container, {
+            apf.tween.single(_self.$oThumbs, {
                 steps   : _self.stepSlide, 
                 type    : "left", 
                 anim    : apf.tween.EASEOUT,
@@ -559,12 +575,12 @@ apf.gallery = function(struct, tagName){
                 return;
 
             _self.slideFinish = false;
-            var oLeft = _self.$container.offsetLeft;
+            var oLeft = _self.$oThumbs.offsetLeft;
             var newLeft = oLeft - 200 < _self.minLeft 
                 ? _self.minLeft 
                 : oLeft - 200;
             
-            apf.tween.single(_self.$container, {
+            apf.tween.single(_self.$oThumbs, {
                 steps   : _self.stepSlide, 
                 type    : "left", 
                 anim    : apf.tween.EASEOUT,
