@@ -15,6 +15,51 @@ apf.drawctx = function(){
             // pull off outer {}
             x.slice(1,-1);
         }
+		
+		var dbglut = [
+			'sx',
+			'sy',
+			'ox',
+			'oy',
+			'cx',
+			'cy',
+			'x',
+			'y',
+			'w',
+			'h',
+			'vx',
+			'vy',
+			'vw',
+			'vh',
+			'r'
+		];
+		this.dbgstr = function(s){
+			for(var a = s.split(' '),m = 0, i = 0;i<a.length;i++)for(j = 0;j<dbglut.length;j++)
+				if(dbglut[j] == a[i]){m = m|(1<<j);break;}
+			return m.toString(16);
+		}
+		this.dbgmsk = function(n){
+			var s= '', values = [
+				this.$sx,
+				this.$sy,
+				this.$ox,
+				this.$oy,
+				this.$cx,
+				this.$cx,
+				this.$x,
+				this.$y,
+				this.$w,
+				this.$h,
+				this.$vx,
+				this.$vy,
+				this.$vw,
+				this.$vh,
+				this.$r
+			];
+			for(var x =1, i=0;i<31;i++,x=x<<1)
+				if(n&x) s+= (s?'   ':'')+dbglut[i]+'=('+values[i]+')';
+			return s;
+		}
 
 		// style is 'incremental' replace of style params by dynamic or static values
 		this.style = function(st){
@@ -137,6 +182,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 
         // do the position part of the styling
         this.style_pos = function(m,s,d){
+
             var v = this.$vml_node || this.$vml_void
 			// now generate/set variables based on modify masks
 			if( m&0x000003f ){ // any of our transform values modified?
@@ -150,25 +196,27 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 								"if( (_t=",(s&0x0000002?(s&0x0000020?"h*_sy":"h*("+(d&0x0000002?this.$sy:"this.$sy")+")"):"h"),") != this.$_h )v.style.height = this.$_h = _t;\n"].join('');
 						if(!d&0x000003f){ // none of the transform props or are dynamic
 							// create a setPos function with immediate set
-							var code = "var v = this.$vml_node || this.$vml_void;\n"+this.$c_trans;
-							apf.logw(code);
-							
+							var code = "var v = this.$vml_node || this.$vml y
 							this.setPos = c[code] || (c[code] = new Function("x","y","h","w",code));
 						} else this.setPos = this.pos_defer; 
 					} else this.setPos = this.pos_immediate;
 				}
 			}
 			if(m&0x0000c00)this.$c_vxy = (d&0x0000c00)?"if((_t=("+this.$vx+")+' '+("+this.$vy+"))!=this.$_vxy)v.coordorigin = this.$_vxy = _t;\n":(v.coordorigin=this.$_vxy = this.$vx+' '+this.$vy, "");
-			if(m&0x0003000)this.$c_xwh = (d&0x0003000)?"if((_t=("+this.$vw+")+' '+("+this.$vh+"))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize=this.$_vwh = this.$vw+' '+this.$vh, "");
+
+			// if we dont have vwh defined, we need to update it with wh if they changed
 			if(m&0x0004000)this.$c_r = (d&0x0004000)?"if((_t=("+this.$r+"))!=this.$_r)v.rotate = this.$_r = _t%360;\n":(v.rotation = this.$_r = this.$r%360,"");
 			if(m&0x00003ff)this.$c_xyhw = (d&0x00003c0)?"var x = "+(d&0x0000040?"("+this.$x+")":"this.$_x")+", y = "+(d&0x0000080?"("+this.$y+")":"this.$_y")+
 											   ", w = "+(d&0x0000100?"("+this.$h+")":"this.$_h")+", h = "+(d&0x0000200?"("+this.$w+")":"this.$_w")+";\n":
-											(this.setPos(this.$x,this.$y,this.$h,this.$w),"var x = this.$_x, y = this.$_y, w = this.$_w, h = this.$_h;\n");
-		
+											(this.setPos(this.$x,this.$y,this.$w,this.$h),"var x = this.$_x, y = this.$_y, w = this.$_w, h = this.$_h;\n");
+
+			if(!(s&0x0003000) && (m&0x0000300)){
+				this.$c_vwh = (d&0x0000300)?"if((_t=(this.$_w)+' '+(this.$_h))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize = this.$_vwh = this.$_w+' '+this.$_h, "");
+			}else if(m&0x0003000)this.$c_vwh = (d&0x0003000)?"if((_t=("+this.$vw+")+' '+("+this.$vh+"))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize=this.$_vwh = this.$vw+' '+this.$vh, "");
+			
 			// generate repaint function
 			// TODO: add dynamic style and dynamic path
 			if(d&m){
-				// lets generate repaint cause we have modified dynamics
 				var code = "var v = this.$vml_node || this.$vml_void;\n"+
 						   this.$c_xyhw+
 						   this.$c_trans+
@@ -241,15 +289,18 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 			// lets call our repaint list
 			for( i=0, l=(d=this.$repainter).length;i<l;i++ )
 				d[i].repaint();
+			apf.logw(this.toString());
 		}
         
 		this.toString = function(){
 			// join all our children in a string
 			this.$to_string_inited = true;
 			this.$child_new.length = 0;
-			return "<av:group coordorigin='0 0' coordsize='400 300' style='margin:0;padding:0;display:block;width:400px;height:300px;' >"+
-					this.$children.join('') + 
-					 "</av:group>";
+			return ["<av:group coordorigin='",
+					this.$_vxy,"' coordsize='",this.$_vwh,"' style='display:block;rotation:",this.$_r,
+					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,";'>",
+						this.$children.join(''), 
+					 "</av:group>"].join('');
 		}        
 	}).call(this.group_node.prototype = new this.node_vml, this.group_node);
 	//------------------------------------------------------------------------
@@ -259,7 +310,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 		if(!s) s = {};
 		s.x = x, s.y = y, s.w = w, s.h = h,
 		s.vx = 0, s.vy = 0, s.vw = 100, s.vh = 100;
-		s.p = "m0 0l100 0 100 10 10 20 30 100 0 100 0 50 10 20 30 40 10 20 30 50x";
+		s.p = "m0 0l100 0 100 100 0 100x";
 		// check if we want a new packed or unpacked shape. we cannot change packed to unpacked 
 		var t = new this.shape_node(s, parent || this.root);
 		return t;
@@ -287,10 +338,12 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
 					";' fill='t' stroke='t'>",
 					"<av:fill color='"+this.$f+"' opacity='0.5'/>", // gradient fill is of course different
-					"<av:stroke color='blue' weight='1'/>",/*
+					"<av:stroke color='blue' weight='1'/>",
+					"<av:path v='",this.$p,"'/></av:shape>"].join('');
+					
+					/*
 					(this.$fill?"<av:fill color='"+this.$fill+"'/>":""), // gradient fill is of course different
 					(this.$stroke?"<av:stroke color='"+this.$stroke+"'/>":""),*/
-					"<av:path v='",this.$p,"'/></av:shape>"].join('');
 			//apf.logw(t);
 		};
 	}).call(this.shape_node.prototype = new this.node_vml, this.shape_node);
@@ -301,19 +354,19 @@ function draw(){
 
 	var r=[];
 	apf.profile_loop(1,function(){
-		for(var i = 0;i<40;i++)
-			r[i] = ctx.rect(10,10,60,60,{p:1,f:'{anim(t,"red","green","blue"}',cx:0.5,cy:0.5,r:"{t}"});
+		for(var i = 0;i<1;i++)
+			r[i] = ctx.rect(400,300,60,60,{cx:0.5,cy:0.5,r:"{t}"});
 		ctx.repaint();
 	});
 	var x = 0;
 	window.setInterval(function(){
-		for(i = 0;i<40;i++){
-			var y = x+33*(i+1), z= x+45*(i+1);
-			r[i].style({r:2*y,x:y%400,y:y%300,sx2:0.5*Math.sin(0.1*y)+0.5,sy2:0.5*Math.sin(0.1*y)+0.5,ox:10});
-		}
+		//for(i = 0;i<40;i++){
+		//	var y = x+33*(i+1), z= x+45*(i+1);
+	//		r[i].style({r:y,x:y%400,y:y%300,sx2:0.5*Math.sin(0.1*y)+0.5,sy2:0.5*Math.sin(0.1*y)+0.5,ox:10});
+	//	}
+		ctx.root.style({r:x});
 		x +=1;
-	},20);
-	
+	},20);	
 	/*
 	style = {
 		// pack or not pack
