@@ -166,8 +166,8 @@ apf.gallery = function(struct, tagName){
                     
                 for (var j = 0; j < images_len; j++) {
                     if ((images[j].tagName || "").toLowerCase() == "img") {
-                        iHeight = images[j].offsetHeight;
-                        iWidth = images[j].offsetWidth;
+                        iHeight = images[j].offsetHeight || images[j].height;
+                        iWidth = images[j].offsetWidth || images[j].width;
                         
                         images[j].style.height = tHeight + "px";
                         thumbs[i].style.width = images[j].style.width = parseInt(iWidth * tHeight/iHeight) + "px";
