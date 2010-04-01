@@ -1572,7 +1572,7 @@ apf.lm = new (function(){
     this.resetCache = function(){
         cache = {};
     };
-	
+	var lmcache_rx = /^\s*~~(c\d+)~~/;
     this.compile = function(istr, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -1583,9 +1583,9 @@ apf.lm = new (function(){
             };
 		}
 		// lets see if we need to fetch precompiled cachemarker
-		var c,f;
-		if(istr.charAt(0) == '~' && (c=istr.match(/~~(c\d+)~~/))){
-			if(c=apf.lm_exec[c[0]]) return c;
+		var c, f;
+		if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
+            if(c=apf.lm_exec[c[1]]) return c;
 			alert("ERROR, undefined live markup cache marker found:"+istr);
 			return {type:2,str:istr};
 		}
