@@ -173,7 +173,8 @@ apf.history = {
      * @param {Boolean} timed   whether to add a delay to setting the value.
      */
     setHash : function(name, timed, force){
-        if (this.changing || this.page == name || !force && location.hash == "#" + name) {
+        if (this.changing || this.page == name || !force
+          && decodeURIComponent(location.hash) == "#" + decodeURIComponent(name)) {
             this.to_name = name;
             return;
         }
