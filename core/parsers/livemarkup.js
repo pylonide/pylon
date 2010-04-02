@@ -1076,7 +1076,7 @@ apf.lm = new (function(){
                     case 9: // -------- [ --------
                         // lets see if we are an xpath
                         if (s[sl - 1] == "'" || s[sl - 1] == '"' || 
-							((last_type != 3 || last_tok=='$') && last_tok != ")") ) {
+							((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
                             if (last_model)
                                 o_xpathpairs.push(last_model, "#"), o_models++;
                             last_model = null;
