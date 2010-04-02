@@ -175,7 +175,9 @@ apf.gallery = function(struct, tagName){
                                 this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
                             }
                             
-                            _self.calcThumbBarSize();
+                            if (_self.thumbnailMode == "bar") {
+                                _self.calcThumbBarSize();
+                            }
                         }
                     }
                 }
@@ -288,9 +290,9 @@ apf.gallery = function(struct, tagName){
             this.$showLoader();
         
         var _self = this;
-        clearInterval(this.tmrRefresh);
-        _self.tmrRefresh = setInterval(function() {
-            clearInterval(_self.tmrRefresh);
+        clearTimeout(this.tmrRefresh);
+        _self.tmrRefresh = window.setTimeout(function() {
+            clearTimeout(_self.tmrRefresh);
             
             if (_self.$amlDestroyed)
                 return;
@@ -519,9 +521,9 @@ apf.gallery = function(struct, tagName){
             if (_self.noThumbArrows)
                 return;
                 
-            clearInterval(_self.tmrSlide);
+            clearTimeout(_self.tmrSlide);
             
-            _self.tmrSlide = setInterval(function() {
+            _self.tmrSlide = window.setTimeout(function() {
                 var oLeft = _self.$oThumbs.offsetLeft;
                 
                 if (oLeft + 1 > _self.minLeft && oLeft < _self.maxLeft) {
@@ -531,16 +533,16 @@ apf.gallery = function(struct, tagName){
         };
         
         this.$oArrowPrev.onmouseout = function() {
-            clearInterval(_self.tmrSlide);
+            clearTimeout(_self.tmrSlide);
         };
         
         this.$oArrowNext.onmouseover = function() {
             if (_self.noThumbArrows)
                 return;
             
-            clearInterval(_self.tmrSlide);
+            clearTimeout(_self.tmrSlide);
             
-            _self.tmrSlide = setInterval(function() {
+            _self.tmrSlide = window.setTimeout(function() {
                 var oLeft = _self.$oThumbs.offsetLeft;
                 
                 if (oLeft > _self.minLeft && oLeft - 1 < _self.maxLeft) { 
@@ -550,7 +552,7 @@ apf.gallery = function(struct, tagName){
         };
         
         this.$oArrowNext.onmouseout = function() {
-            clearInterval(_self.tmrSlide);
+            clearTimeout(_self.tmrSlide);
         };
         
         this.$oArrowPrev.onclick = function() {
