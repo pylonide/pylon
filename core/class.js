@@ -431,7 +431,7 @@ apf.Class.prototype = new (function(){
         //if there's xpath: Add apf.DataBinding if not inherited. 
         //Add compiled binding rule. Load databinding if not loaded. 
         //#ifdef __WITH_DATABINDING
-        if (exclNr == 2 || fParsed.xpaths && fParsed.xpaths.length && exclNr != 1) {
+        if (exclNr == 2 || fParsed.xpaths.length && exclNr != 1) {
             if (!this.hasFeature(apf.__DATABINDING__))
                 this.implement(apf.StandardBinding);
             
