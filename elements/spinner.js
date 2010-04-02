@@ -83,6 +83,8 @@ apf.spinner = function(struct, tagName){
     this.min     = -64000;
     this.focused = false;
     this.value   = 0;
+    
+    this.realtime = false;
 };
 
 (function() {
@@ -95,7 +97,9 @@ apf.spinner = function(struct, tagName){
         //#endif
     );
 
-    this.$supportedProperties.push("width", "value", "max", "min", "caption");
+    this.$supportedProperties.push("width", "value", "max", "min", "caption", "realtime");
+
+    this.$booleanProperties["realtime"] = true;
 
     this.$propHandlers["value"] = function(value) {
         value = parseInt(value) || 0;
@@ -275,7 +279,11 @@ apf.spinner = function(struct, tagName){
                     newval = value + step;
                     if (newval <= _self.max && newval >= _self.min) {
                         value += step;
-                        _self.oInput.value = Math.round(value);
+                        value = Math.round(value);
+                        _self.oInput.value = value;
+                        
+                        if (_self.realtime)
+                            _self.change(value);
                     }
                     else {
                         _self.oInput.value = step < 0
@@ -334,6 +342,9 @@ apf.spinner = function(struct, tagName){
                     _self.oInput.value = value <= _self.max
                         ? value
                         : _self.max;
+                    
+                    if (_self.realtime)
+                       _self.change(value <= _self.max ? value : _self.max);
                 };
 
             apf.setStyleClass(this, "plusDown", ["plusHover"]);
@@ -359,6 +370,9 @@ apf.spinner = function(struct, tagName){
                     _self.oInput.value = value >= _self.min
                         ? value
                         : _self.min;
+                    
+                    if (_self.realtime)
+                       _self.change(value >= _self.min ? value : _self.min);
                 };
 
             apf.setStyleClass(this, "minusDown", ["minusHover"]);
