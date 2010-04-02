@@ -9,29 +9,16 @@ apf.drawctx = function(){
 	(function(node){
 		this.constructor = node;
 		// code cache and expression parser 
-		var pe = parse_expression||apf.lm.parseExpression, pf = parseFloat;
-        var c = {}
+		var pe = parse_expression||apf.lm.parseExpression, pf = parseFloat, c = {}
+        
         function parse_expression(x){
-            // pull off outer {}
             x.slice(1,-1);
         }
 		
 		var dbglut = [
-			'sx',
-			'sy',
-			'ox',
-			'oy',
-			'cx',
-			'cy',
-			'x',
-			'y',
-			'w',
-			'h',
-			'vx',
-			'vy',
-			'vw',
-			'vh',
-			'r'
+			'sx','sy','ox','oy','cx','cy',
+			'x','y','w','h','vx','vy','vw','vh','r',
+            'f','s','o','fo','so','sw'
 		];
 		this.dbgstr = function(s){
 			for(var a = s.split(' '),m = 0, i = 0;i<a.length;i++)for(j = 0;j<dbglut.length;j++)
@@ -40,21 +27,9 @@ apf.drawctx = function(){
 		}
 		this.dbgmsk = function(n){
 			var s= '', values = [
-				this.$sx,
-				this.$sy,
-				this.$ox,
-				this.$oy,
-				this.$cx,
-				this.$cx,
-				this.$x,
-				this.$y,
-				this.$w,
-				this.$h,
-				this.$vx,
-				this.$vy,
-				this.$vw,
-				this.$vh,
-				this.$r
+				this.$sx,this.$sy,this.$ox,this.$oy,this.$cx,this.$cx,
+				this.$x,this.$y,this.$w,this.$h,this.$vx,this.$vy,this.$vw,this.$vh,this.$r,
+                this.$f,this.$s,this.$o,this.$fo,this.$so,this.$sw
 			];
 			for(var x =1, i=0;i<31;i++,x=x<<1)
 				if(n&x) s+= (s?'   ':'')+dbglut[i]+'=('+values[i]+')';
@@ -65,26 +40,32 @@ apf.drawctx = function(){
 		this.style = function(st){
 			var t, m = 0, s = this.$isset||0, d = this.$isdyn||0;
 			
-			// please do NOT multiline this code, compact variable change bitmask/default/compile code
-			if((t=st.sx||st['scale-x'])	   !=undefined && this.$sx!=((t==1||t==null)?(s=s&0xffffffe,t=1):(s=s|0x0000001,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000001,c[t]||(c[t]=pe(t))):(d=d&0xffffffe,pf(t)))))m=m|0x0000001,this.$sx=t;
-			if((t=st.sy||st['scale-y'])	   !=undefined && this.$sy!=((t==1||t==null)?(s=s&0xffffffd,t=1):(s=s|0x0000002,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000002,c[t]||(c[t]=pe(t))):(d=d&0xffffffd,pf(t)))))m=m|0x0000002,this.$sy=t;
-			if((t=st.ox||st['offset-x'])   !=undefined && this.$ox!=((t==0||t==null)?(s=s&0xffffffb,t=0):(s=s|0x0000004,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000004,c[t]||(c[t]=pe(t))):(d=d&0xffffffb,pf(t)))))m=m|0x0000004,this.$ox=t;
-			if((t=st.oy||st['offset-y'])   !=undefined && this.$oy!=((t==0||t==null)?(s=s&0xffffff7,t=0):(s=s|0x0000008,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000008,c[t]||(c[t]=pe(t))):(d=d&0xffffff7,pf(t)))))m=m|0x0000008,this.$oy=t;
-			if((t=st.cx||st['center-x'])   !=undefined && this.$cx!=((t==0||t==null)?(s=s&0xfffffef,t=0):(s=s|0x0000010,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000010,c[t]||(c[t]=pe(t))):(d=d&0xfffffef,pf(t)))))m=m|0x0000010,this.$cx=t;
-			if((t=st.cy||st['center-y'])   !=undefined && this.$cy!=((t==0||t==null)?(s=s&0xfffffdf,t=0):(s=s|0x0000020,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000020,c[t]||(c[t]=pe(t))):(d=d&0xfffffdf,pf(t)))))m=m|0x0000020,this.$cy=t;
-			if((t=st.x||st.left)           !=undefined && this.$x !=((t==1||t==null)?(s=s&0xfffffbf,t=1):(s=s|0x0000040,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000040,c[t]||(c[t]=pe(t))):(d=d&0xfffffbf,pf(t)))))m=m|0x0000040,this.$x=t;
-			if((t=st.y||st.top)            !=undefined && this.$y !=((t==1||t==null)?(s=s&0xfffff7f,t=1):(s=s|0x0000080,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000080,c[t]||(c[t]=pe(t))):(d=d&0xfffff7f,pf(t)))))m=m|0x0000080,this.$y=t;
-			if((t=st.w||st.width)          !=undefined && this.$w !=((t==0||t==null)?(s=s&0xffffeff,t=0):(s=s|0x0000100,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000100,c[t]||(c[t]=pe(t))):(d=d&0xffffeff,pf(t)))))m=m|0x0000100,this.$w=t;
-			if((t=st.h||st.height)         !=undefined && this.$h !=((t==0||t==null)?(s=s&0xffffdff,t=0):(s=s|0x0000200,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000200,c[t]||(c[t]=pe(t))):(d=d&0xffffdff,pf(t)))))m=m|0x0000200,this.$h=t;
-			if((t=st.vx||st['view-left'])  !=undefined && this.$vx!=((t==0||t==null)?(s=s&0xffffbff,t=0):(s=s|0x0000400,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000400,c[t]||(c[t]=pe(t))):(d=d&0xffffbff,pf(t)))))m=m|0x0000400,this.$vx=t;
-			if((t=st.vy||st['view-top'])   !=undefined && this.$vy!=((t==0||t==null)?(s=s&0xffff7ff,t=0):(s=s|0x0000800,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000800,c[t]||(c[t]=pe(t))):(d=d&0xffff7ff,pf(t)))))m=m|0x0000800,this.$vy=t;
-			if((t=st.vw||st['view-width']) !=undefined && this.$vw!=(      (t==null)?(s=s&0xfffefff,t=100):(s=s|0x0001000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0001000,c[t]||(c[t]=pe(t))):(d=d&0xfffefff,pf(t)))))m=m|0x0001000,this.$vw=t;
-			if((t=st.vh||st['view-height'])!=undefined && this.$vh!=(      (t==null)?(s=s&0xfffdfff,t=100):(s=s|0x0002000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0002000,c[t]||(c[t]=pe(t))):(d=d&0xfffdfff,pf(t)))))m=m|0x0002000,this.$vh=t;
-			if((t=st.r||st.rotation)       !=undefined && this.$r !=((t==0||t==null)?(s=s&0xfffbfff,t=0):(s=s|0x0004000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0004000,c[t]||(c[t]=pe(t))):(d=d&0xfffbfff,pf(t)))))m=m|0x0004000,this.$r=t;
+			// please do NOT multiline this code, its only errorcheckable when it aligns
+			if((t=st.sx||st['scale-x'])	      !=undefined && this.$sx!=((t==1||t==null)?(s=s&0xffffffe,t=1):   (s=s|0x0000001,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000001,c[t]||(c[t]=pe(t))):(d=d&0xffffffe,pf(t)))))m=m|0x0000001,this.$sx=t;
+			if((t=st.sy||st['scale-y'])	      !=undefined && this.$sy!=((t==1||t==null)?(s=s&0xffffffd,t=1):   (s=s|0x0000002,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000002,c[t]||(c[t]=pe(t))):(d=d&0xffffffd,pf(t)))))m=m|0x0000002,this.$sy=t;
+			if((t=st.ox||st['offset-x'])      !=undefined && this.$ox!=((t==0||t==null)?(s=s&0xffffffb,t=0):   (s=s|0x0000004,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000004,c[t]||(c[t]=pe(t))):(d=d&0xffffffb,pf(t)))))m=m|0x0000004,this.$ox=t;
+			if((t=st.oy||st['offset-y'])      !=undefined && this.$oy!=((t==0||t==null)?(s=s&0xffffff7,t=0):   (s=s|0x0000008,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000008,c[t]||(c[t]=pe(t))):(d=d&0xffffff7,pf(t)))))m=m|0x0000008,this.$oy=t;
+			if((t=st.cx||st['center-x'])      !=undefined && this.$cx!=((t==0||t==null)?(s=s&0xfffffef,t=0):   (s=s|0x0000010,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000010,c[t]||(c[t]=pe(t))):(d=d&0xfffffef,pf(t)))))m=m|0x0000010,this.$cx=t;
+			if((t=st.cy||st['center-y'])      !=undefined && this.$cy!=((t==0||t==null)?(s=s&0xfffffdf,t=0):   (s=s|0x0000020,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000020,c[t]||(c[t]=pe(t))):(d=d&0xfffffdf,pf(t)))))m=m|0x0000020,this.$cy=t;
+			if((t=st.x||st.left)              !=undefined && this.$x !=((t==1||t==null)?(s=s&0xfffffbf,t=1):   (s=s|0x0000040,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000040,c[t]||(c[t]=pe(t))):(d=d&0xfffffbf,pf(t)))))m=m|0x0000040,this.$x=t;
+			if((t=st.y||st.top)               !=undefined && this.$y !=((t==1||t==null)?(s=s&0xfffff7f,t=1):   (s=s|0x0000080,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000080,c[t]||(c[t]=pe(t))):(d=d&0xfffff7f,pf(t)))))m=m|0x0000080,this.$y=t;
+			if((t=st.w||st.width)             !=undefined && this.$w !=((t==0||t==null)?(s=s&0xffffeff,t=0):   (s=s|0x0000100,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000100,c[t]||(c[t]=pe(t))):(d=d&0xffffeff,pf(t)))))m=m|0x0000100,this.$w=t;
+			if((t=st.h||st.height)            !=undefined && this.$h !=((t==0||t==null)?(s=s&0xffffdff,t=0):   (s=s|0x0000200,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000200,c[t]||(c[t]=pe(t))):(d=d&0xffffdff,pf(t)))))m=m|0x0000200,this.$h=t;
+			if((t=st.vx||st['view-left'])     !=undefined && this.$vx!=((t==0||t==null)?(s=s&0xffffbff,t=0):   (s=s|0x0000400,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000400,c[t]||(c[t]=pe(t))):(d=d&0xffffbff,pf(t)))))m=m|0x0000400,this.$vx=t;
+			if((t=st.vy||st['view-top'])      !=undefined && this.$vy!=((t==0||t==null)?(s=s&0xffff7ff,t=0):   (s=s|0x0000800,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0000800,c[t]||(c[t]=pe(t))):(d=d&0xffff7ff,pf(t)))))m=m|0x0000800,this.$vy=t;
+			if((t=st.vw||st['view-width'])    !=undefined && this.$vw!=((t==null)?      (s=s&0xfffefff,t=100): (s=s|0x0001000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0001000,c[t]||(c[t]=pe(t))):(d=d&0xfffefff,pf(t)))))m=m|0x0001000,this.$vw=t;
+			if((t=st.vh||st['view-height'])   !=undefined && this.$vh!=((t==null)?      (s=s&0xfffdfff,t=100): (s=s|0x0002000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0002000,c[t]||(c[t]=pe(t))):(d=d&0xfffdfff,pf(t)))))m=m|0x0002000,this.$vh=t;
+			if((t=st.r||st.rotation)          !=undefined && this.$r !=((t==0||t==null)?(s=s&0xfffbfff,t=0):   (s=s|0x0004000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0004000,c[t]||(c[t]=pe(t))):(d=d&0xfffbfff,pf(t)))))m=m|0x0004000,this.$r=t;
+			if((t=st.f||st.fill)              !=undefined && this.$f !=((t==null)?      (s=s&0xfff7fff,t=null):(s=s|0x0008000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0008000,c[t]||(c[t]=pe(t))):(d=d&0xfff7fff,pf(t)))))m=m|0x0008000,this.$f=t;
+			if((t=st.s||st.stroke)            !=undefined && this.$s !=((t==null)?      (s=s&0xffeffff,t=null):(s=s|0x0010000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0010000,c[t]||(c[t]=pe(t))):(d=d&0xffeffff,pf(t)))))m=m|0x0010000,this.$s=t;
+			if((t=st.o||st.opacity)           !=undefined && this.$o !=((t==1||t==null)?(s=s&0xffdffff,t=1):   (s=s|0x0020000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0020000,c[t]||(c[t]=pe(t))):(d=d&0xffdffff,pf(t)))))m=m|0x0020000,this.$o=t;
+			if((t=st.fo||st['fill-opacity'])  !=undefined && this.$fo!=((t==1||t==null)?(s=s&0xffbffff,t=1):   (s=s|0x0040000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0040000,c[t]||(c[t]=pe(t))):(d=d&0xffbffff,pf(t)))))m=m|0x0040000,this.$fo=t;
+			if((t=st.so||st['stroke-opacity'])!=undefined && this.$so!=((t==1||t==null)?(s=s&0xff7ffff,t=1):   (s=s|0x0080000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0080000,c[t]||(c[t]=pe(t))):(d=d&0xff7ffff,pf(t)))))m=m|0x0080000,this.$so=t;
+			if((t=st.sw||st['stroke-weight']) !=undefined && this.$sw!=((t==1||t==null)?(s=s&0xfefffff,t=1):   (s=s|0x0100000,t=t.indexOf&&t.indexOf('{')!=-1?(d=d|0x0100000,c[t]||(c[t]=pe(t))):(d=d&0xfefffff,pf(t)))))m=m|0x0100000,this.$sw=t;
             
 			this.$f = st.$f;
 			this.$p = st.p;
-            this.style_pos(m,s,d);
+            this._style(m,s,d);
 			this.$isdyn = d, this.$isset = s;
         }
         
@@ -181,9 +162,8 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
         this.$vml_void = {style:{}};
 
         // do the position part of the styling
-        this.style_pos = function(m,s,d){
-
-            var v = this.$vml_node || this.$vml_void
+        this._style = function(m,s,d){
+            var v = this.$vml_node || this.$vml_void;
 			// now generate/set variables based on modify masks
 			if( m&0x000003f ){ // any of our transform values modified?
 				if(((s^this.$isset)|((d|this.$isdyn)&m))&0x000003f){ // refresh only if isset changed or any of our dynamics have changed
@@ -196,7 +176,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 								"if( (_t=",(s&0x0000002?(s&0x0000020?"h*_sy":"h*("+(d&0x0000002?this.$sy:"this.$sy")+")"):"h"),") != this.$_h )v.style.height = this.$_h = _t;\n"].join('');
 						if(!d&0x000003f){ // none of the transform props or are dynamic
 							// create a setPos function with immediate set
-							var code = "var v = this.$vml_node || this.$vml y
+							var code = "var v = this.$vml_node || this.$vml;\n" + this.$c_xywh; 
 							this.setPos = c[code] || (c[code] = new Function("x","y","h","w",code));
 						} else this.setPos = this.pos_defer; 
 					} else this.setPos = this.pos_immediate;
@@ -205,17 +185,19 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 			if(m&0x0000c00)this.$c_vxy = (d&0x0000c00)?"if((_t=("+this.$vx+")+' '+("+this.$vy+"))!=this.$_vxy)v.coordorigin = this.$_vxy = _t;\n":(v.coordorigin=this.$_vxy = this.$vx+' '+this.$vy, "");
 
 			// if we dont have vwh defined, we need to update it with wh if they changed
-			if(m&0x0004000)this.$c_r = (d&0x0004000)?"if((_t=("+this.$r+"))!=this.$_r)v.rotate = this.$_r = _t%360;\n":(v.rotation = this.$_r = this.$r%360,"");
+			//if(m&0x0004000)this.$c_r = (d&0x0004000)?"if((_t=("+this.$r+"))!=this.$_r)v.rotate = this.$_r = _t%360;\n":(v.rotation = this.$_r = parseFloat(this.$r)%360,"");
 			if(m&0x00003ff)this.$c_xyhw = (d&0x00003c0)?"var x = "+(d&0x0000040?"("+this.$x+")":"this.$_x")+", y = "+(d&0x0000080?"("+this.$y+")":"this.$_y")+
 											   ", w = "+(d&0x0000100?"("+this.$h+")":"this.$_h")+", h = "+(d&0x0000200?"("+this.$w+")":"this.$_w")+";\n":
 											(this.setPos(this.$x,this.$y,this.$w,this.$h),"var x = this.$_x, y = this.$_y, w = this.$_w, h = this.$_h;\n");
 
 			if(!(s&0x0003000) && (m&0x0000300)){
 				this.$c_vwh = (d&0x0000300)?"if((_t=(this.$_w)+' '+(this.$_h))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize = this.$_vwh = this.$_w+' '+this.$_h, "");
-			}else if(m&0x0003000)this.$c_vwh = (d&0x0003000)?"if((_t=("+this.$vw+")+' '+("+this.$vh+"))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize=this.$_vwh = this.$vw+' '+this.$vh, "");
+			}else if(m&0x0003000) this.$c_vwh = (d&0x0003000)?"if((_t=("+this.$vw+")+' '+("+this.$vh+"))!=this.$_vwh)v.coordsize = this.$_vwh = _t;\n":(v.coordsize=this.$_vwh = this.$vw+' '+this.$vh, "");
 			
-			// generate repaint function
-			// TODO: add dynamic style and dynamic path
+            // fill stuff (if we are a proper shape)
+            //if our fill is set to null we have to remove our 'fill'
+            
+            
 			if(d&m){
 				var code = "var v = this.$vml_node || this.$vml_void;\n"+
 						   this.$c_xyhw+
@@ -229,6 +211,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 				this.repaint = null;// set repaint to nothing, and remove from parent repaint queue
 			}
 		};
+        
 	}).call(this.node_vml.prototype = new this.node, this.node_vml);
 
 	//-----------------------------------------------------------------------
@@ -289,7 +272,6 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 			// lets call our repaint list
 			for( i=0, l=(d=this.$repainter).length;i<l;i++ )
 				d[i].repaint();
-			apf.logw(this.toString());
 		}
         
 		this.toString = function(){
@@ -330,16 +312,18 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 	
 	(function(shape_node){
 		this.constructor = shape_node;
-		
+
 		this.toString = function(){
+            
 			if(this.$vml_node) return "[object]";
 			return ["<av:shape coordorigin='",
-					this.$_vxy,"' coordsize='",this.$_vwh,"' style='rotation:",this.$_r,
+					this.$_vxy,"' coordsize='",this.$_vwh,"' style='rotation:0",//this.$_r,
 					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
-					";' fill='t' stroke='t'>",
-					"<av:fill color='"+this.$f+"' opacity='0.5'/>", // gradient fill is of course different
-					"<av:stroke color='blue' weight='1'/>",
-					"<av:path v='",this.$p,"'/></av:shape>"].join('');
+					";'>",
+                        "<av:fill color='"+this.$f+"' opacity='0.5'/>", // gradient fill is of course different
+                        "<av:stroke color='blue' weight='1'/>",
+                        "<av:path v='",this.$p,"'/>",
+                     "</av:shape>"].join('');
 					
 					/*
 					(this.$fill?"<av:fill color='"+this.$fill+"'/>":""), // gradient fill is of course different
@@ -354,8 +338,8 @@ function draw(){
 
 	var r=[];
 	apf.profile_loop(1,function(){
-		for(var i = 0;i<1;i++)
-			r[i] = ctx.rect(400,300,60,60,{cx:0.5,cy:0.5,r:"{t}"});
+		for(var i = 0;i<3;i++)
+			r[i] = ctx.rect(400,300,160,160,{cx:0.5,cy:0.5,r:"{r}",f:"blue"});
 		ctx.repaint();
 	});
 	var x = 0;
@@ -364,7 +348,7 @@ function draw(){
 		//	var y = x+33*(i+1), z= x+45*(i+1);
 	//		r[i].style({r:y,x:y%400,y:y%300,sx2:0.5*Math.sin(0.1*y)+0.5,sy2:0.5*Math.sin(0.1*y)+0.5,ox:10});
 	//	}
-		ctx.root.style({r:x});
+		//ctx.root.style({r:x});
 		x +=1;
 	},20);	
 	/*
