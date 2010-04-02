@@ -150,7 +150,7 @@ apf.gallery = function(struct, tagName){
         
         for (var i = 0; i < thumbs_len; i++) {
             if ((thumbs[i].className || "").indexOf("thumbnail") > -1) {
-                if (tHeight == null)
+                if (tHeight == null || tHeight <= 0)
                     tHeight = thumbs[i].offsetHeight - apf.getVerBorders(thumbs[i]);
                 
                 thumbs[i].onmouseover = function(e) {
@@ -170,7 +170,7 @@ apf.gallery = function(struct, tagName){
                             var iHeight = this.offsetHeight || this.height;
                             var iWidth = this.offsetWidth || this.width;
                             
-                            if (iHeight > 0 && iWidth > 0) {
+                            if (iHeight > 0 && iWidth > 0 && tHeight > 0) {
                                 this.style.height = tHeight + "px";
                                 this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
                             }
