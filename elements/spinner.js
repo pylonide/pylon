@@ -186,6 +186,8 @@ apf.spinner = function(struct, tagName){
         if (this.oLeft)
             this.$setStyleClass(this.oLeft, "" ["leftFocus"]);
         
+        this.setValue(this.oInput.value);
+        
         this.focused = false;
     };
 
@@ -207,7 +209,7 @@ apf.spinner = function(struct, tagName){
     }, true);
 
     this.addEventListener("keyup", function(e) {
-        this.setValue(this.oInput.value);
+        //this.setValue(this.oInput.value);
     }, true);
     //#endif
     
