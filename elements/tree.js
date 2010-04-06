@@ -130,6 +130,8 @@
  */
 apf.tree = function(struct, tagName){
     this.$init(tagName || "tree", apf.NODE_VISIBLE, struct);
+    
+    this.checkNodes = [];
 };
 
 (function(){
@@ -168,6 +170,14 @@ apf.tree = function(struct, tagName){
     //@todo apf3.0 retest this completely
     function $afterRenameMode(){
     }
+    
+    this.addEventListener("afterload", function() {
+        for (var i = 0, l = this.checkNodes.length; i < l; i++) {
+            this.check(this.checkNodes[i], false);
+        }
+        
+        this.checkNodes = [];
+    });
     
     //@todo please upgrade all the event calls to the 21st century, it hurts my eyes.
     this.$initNode = function(xmlNode, state, Lid){
@@ -336,6 +346,10 @@ apf.tree = function(struct, tagName){
                 this.$applyBindRule("caption", xmlNode));
         }
         
+        if (this.$applyBindRule("checked", xmlNode) == "true") {
+            this.checkNodes.push(xmlNode);
+        }
+        
         var strTooltip = this.$applyBindRule("tooltip", xmlNode)
         if (strTooltip)
             oItem.setAttribute("title", strTooltip);
@@ -397,4 +411,6 @@ apf.tree = function(struct, tagName){
 }).call(apf.tree.prototype = new apf.BaseTree());
 
 apf.aml.setElement("tree", apf.tree);
+
+apf.aml.setElement("checked", apf.BindingRule);
 // #endif

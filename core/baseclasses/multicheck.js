@@ -110,6 +110,8 @@ apf.MultiCheck = function(){
             list        : this.checkedList,
             xmlNode     : xmlNode
         });
+        
+        this.$executeSingleValue("checked", "checked", xmlNode, "true");
     };
     
     /**
@@ -145,6 +147,8 @@ apf.MultiCheck = function(){
             list        : this.checkedList,
             xmlNode     : xmlNode
         });
+        
+        this.$executeSingleValue("checked", "checked", xmlNode, "false");
     };
 
     /**
