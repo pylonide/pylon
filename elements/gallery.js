@@ -37,7 +37,7 @@
 apf.gallery = function(struct, tagName){
     this.$init(tagName || "gallery", apf.NODE_VISIBLE, struct);
     
-    this.imageheight   = 400;
+    this.imageheight   = "auto";
     
     this.defaultthumb  = null;
     this.defaultimage  = null;
@@ -88,9 +88,9 @@ apf.gallery = function(struct, tagName){
     };
     
     this.$propHandlers["imageheight"] = function(value) {
-        value = parseInt(value);
-        if (value > 0)
-            this.imageheight = value;
+        this.imageheight = value == "auto" 
+            ? "auto" 
+            : parseInt(value);
     };
     
     this.$propHandlers["thumb-mode"] = function(value) {
@@ -210,7 +210,8 @@ apf.gallery = function(struct, tagName){
         this.$oImage.src = "about:blank";
         this.$showLoader();
         
-        this.$oImageContainer.style.height = this.$oViewport.style.height = this.imageheight + "px";
+        if (this.imageheight !== "auto")
+            this.$oImageContainer.style.height = this.$oViewport.style.height = this.imageheight + "px";
 
         this.initiateThumbnailEvents();
         
@@ -224,35 +225,42 @@ apf.gallery = function(struct, tagName){
             _self.last = _self.current;
             _self.$setSiblings();
             
-            
             //Get image dimension
             _self.$oImageBase.style.display = "block";
             var imgWidth  = _self.$oImageBase.offsetWidth || _self.$oImageBase.width;
             var imgHeight = _self.$oImageBase.offsetHeight || _self.$oImageBase.height;
             _self.$oImageBase.style.display = "none";
             
-            //Get viewport dimension
-            var vpWidth  = _self.$oViewport.offsetWidth;
-            var vpHeight = _self.$oViewport.offsetHeight;
-            
-            //New image dimensions
-            var nHeight = imgHeight, nWidth = imgWidth;
-            
-            if (nHeight > vpHeight) {
-                nWidth  = parseInt(imgWidth * (vpHeight / nHeight));
-                nHeight = vpHeight;
+            if (_self.imageheight !== "auto") {
+                //Get viewport dimension
+                var vpWidth  = _self.$oViewport.offsetWidth;
+                var vpHeight = _self.$oViewport.offsetHeight;
+                
+                //New image dimensions
+                var nHeight = imgHeight, nWidth = imgWidth;
+                
+                if (nHeight > vpHeight) {
+                    nWidth  = parseInt(imgWidth * (vpHeight / nHeight));
+                    nHeight = vpHeight;
+                }
+                
+                if (nWidth > vpWidth) {
+                    nHeight = parseInt(nHeight * (vpWidth / nWidth));
+                    nWidth  = vpWidth;
+                }
+                
+                _self.$oImage.style.width      = nWidth + "px";
+                _self.$oImage.style.height     = nHeight + "px";
+                _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
+                _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
+            }
+            else {
+                _self.$oImageContainer.style.width  = imgWidth + "px";
+                _self.$oImageContainer.style.height = imgHeight + "px";
+                _self.$oImageContainer.style.margin = "0 auto";
             }
             
-            if (nWidth > vpWidth) {
-                nHeight = parseInt(nHeight * (vpWidth / nWidth));
-                nWidth  = vpWidth;
-            }
-            
-            _self.$oImage.style.width      = nWidth + "px";
-            _self.$oImage.style.height     = nHeight + "px";
-            _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
-            _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
-            _self.$oImage.style.display    = "block";
+            _self.$oImage.style.display = "block";
            
             if (!_self.isOnStack) {
                 apf.tween.single(_self.$oImage, {
@@ -456,6 +464,7 @@ apf.gallery = function(struct, tagName){
     this.addEventListener("$clear", function(){return false});
     
     this.addEventListener("afterload", function(){
+        this.$setStyleClass(this.$ext, this.$baseCSSname + this.thumbnailMode + "Mode");
         this.imageStack = {};
         this.$show();
     });
@@ -494,8 +503,6 @@ apf.gallery = function(struct, tagName){
         
         this.$oArrowPrev = this.$getLayoutNode("main", "arrow_prev", this.$ext);
         this.$oArrowNext = this.$getLayoutNode("main", "arrow_next", this.$ext);
-        
-        this.$setStyleClass(this.$ext, this.thumbnailMode + "Mode");
         
         var rules = "var o = apf.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
