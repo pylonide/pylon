@@ -796,8 +796,12 @@ apf.xmldb = new (function(){
         if (apf.xmldb.disableRSB)
             return;
 
-        var xmlNode = args[1] && args[1].length && args[1][0] || args[1],
-            mdlId   = apf.xmldb.getXmlDocId(xmlNode), 
+        var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
+        
+        if (xmlNode.nodeType == 2)
+            xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
+        
+        var mdlId   = apf.xmldb.getXmlDocId(xmlNode), 
             model   = apf.nameserver.get("model", mdlId);
         if (!model && apf.isO3)
             model = self[mdlId];
