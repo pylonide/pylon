@@ -332,7 +332,7 @@ var apf = {
          * @type {Boolean}
          */
         this.isIE7        = !found && this.isIE == 7 && (found = true);
-        
+
         //Mode detection
         if (this.isIE == 7 && document.documentMode == 7) {
             apf.isIE7        = true;

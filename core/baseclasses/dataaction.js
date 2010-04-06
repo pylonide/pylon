@@ -424,12 +424,29 @@ apf.DataAction = function(){
      * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
      * @param {String}      value    the new value of the node
      */
-    this.$executeSingleValue = function(atName, setName, xmlNode, value){
+    this.$executeSingleValue = function(atName, setName, xmlNode, value, getArgList){
         var xpath, args, rule = this.$getBindRule(setName, xmlNode);
         
         //recompile bindrule to create nodes
+        if (!rule) {
+            //#ifdef __DEBUG
+            if (this.$getBindRule(setName))
+                throw new Error("There is no rule that matches the xml node for this operation.\
+                                 Please make sure you are matching a node and using the value to \
+                                 specify it's value <a:" + setName + " match='person' \
+                                 value='[@name]' /> : " + xmlNode.xml); //@todo make apf Error
+            else
+            //#endif
+                return false;
+        }
         
-        var compiled = rule.cvalue || rule.cmatch;
+        var compiled = rule.value ? rule.cvalue : rule.cmatch;
+        if (!compiled) {
+            if (rule.value)
+                compiled = rule.compile("value");
+            else
+                return false;
+        }
         
         //#ifdef __DEBUG
         //If not one xpath segment then error
@@ -512,6 +529,13 @@ apf.DataAction = function(){
             }
 
             args = [xmlNode, value, xpath];
+        }
+        
+        if (getArgList) {
+            return {
+                func : atAction,
+                args : args
+            };
         }
 
         //Use Action Tracker

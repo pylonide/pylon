@@ -130,8 +130,6 @@
  */
 apf.tree = function(struct, tagName){
     this.$init(tagName || "tree", apf.NODE_VISIBLE, struct);
-    
-    this.checkNodes = [];
 };
 
 (function(){
@@ -171,14 +169,6 @@ apf.tree = function(struct, tagName){
     function $afterRenameMode(){
     }
     
-    this.addEventListener("afterload", function() {
-        for (var i = 0, l = this.checkNodes.length; i < l; i++) {
-            this.check(this.checkNodes[i], false);
-        }
-        
-        this.checkNodes = [];
-    });
-    
     //@todo please upgrade all the event calls to the 21st century, it hurts my eyes.
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
@@ -215,6 +205,7 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
+        // #ifdef __WITH_MULTICHECK
         if (this.$mode) {
             var elCheck = this.$getLayoutNode("item", "check");
             if (elCheck) {
@@ -222,7 +213,11 @@ apf.tree = function(struct, tagName){
                     "var o = apf.lookup(" + this.$uniqueId + ");\
                     o.checkToggle(this, true);\o.$skipSelect = true;");
 
-                if (this.isChecked(xmlNode))
+                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    this.$checkedList.push(xmlNode);
+                    this.$setStyleClass(oItem, "checked");
+                }
+                else if (this.isChecked(xmlNode))
                     this.$setStyleClass(oItem, "checked");
             }
             else {
@@ -247,6 +242,7 @@ apf.tree = function(struct, tagName){
                 return false;
             }
         }
+        //#endif
         
         var ocAction = this.opencloseaction || "ondblclick";
         
@@ -344,10 +340,6 @@ apf.tree = function(struct, tagName){
         if (elCaption) {
             apf.setNodeValue(elCaption,
                 this.$applyBindRule("caption", xmlNode));
-        }
-        
-        if (this.$applyBindRule("checked", xmlNode) == "true") {
-            this.checkNodes.push(xmlNode);
         }
         
         var strTooltip = this.$applyBindRule("tooltip", xmlNode)

@@ -41,7 +41,7 @@ apf.MultiCheck = function(){
 
     this.multicheck  = true;
     this.checklength = 0;
-    this.checkedList = [];
+    this.$checkedList = [];
 
     /**** Public Methods ****/
     
@@ -59,16 +59,20 @@ apf.MultiCheck = function(){
      *
      */
     this.check = function(xmlNode, userAction){ 
-        if (userAction && this.disabled || this.checkedList.indexOf(xmlNode) > -1)
+        if (userAction && this.disabled || this.$checkedList.indexOf(xmlNode) > -1)
+            return;
+        
+        if (userAction
+          && this.$executeSingleValue("checked", "checked", xmlNode, "true") !== false)
             return;
         
         if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
             return false;
         
-        if (!this.multicheck && this.checkedList.length)
+        if (!this.multicheck && this.$checkedList.length)
             this.clearChecked(true);
 
-        this.checkedList.push(xmlNode);
+        this.$checkedList.push(xmlNode);
         
         // #ifdef __WITH_MULTICHECK_TREE
         if (this.$isTreeArch) {
@@ -85,7 +89,7 @@ apf.MultiCheck = function(){
                 
                 all = true;
                 for (var i = 0; i < nodes.length; i++) {
-                    if (this.checkedList.indexOf(nodes[i]) == -1) {
+                    if (this.$checkedList.indexOf(nodes[i]) == -1) {
                         all = false;
                         break;
                     }
@@ -96,7 +100,7 @@ apf.MultiCheck = function(){
                         : "partial", ["partial", "checked"]);
                 
                 if (all) //logical assumption that parent cannot be selected at this point
-                    this.checkedList.push(pNode);
+                    this.$checkedList.push(pNode);
                 
                 pNode = this.getTraverseParent(pNode);
             }
@@ -107,11 +111,9 @@ apf.MultiCheck = function(){
             "checked", ["partial"]);
         
         this.dispatchEvent("aftercheck", {
-            list        : this.checkedList,
+            list        : this.$checkedList,
             xmlNode     : xmlNode
         });
-        
-        this.$executeSingleValue("checked", "checked", xmlNode, "true");
     };
     
     /**
@@ -126,7 +128,11 @@ apf.MultiCheck = function(){
      *
      */
     this.uncheck = function(xmlNode, userAction){
-        if (userAction && this.disabled || this.checkedList.indexOf(xmlNode) == -1)
+        if (userAction && this.disabled || this.$checkedList.indexOf(xmlNode) == -1)
+            return;
+        
+        if (userAction
+          && this.$executeSingleValue("checked", "checked", xmlNode, "false") !== false)
             return;
         
         // #ifdef __WITH_MULTICHECK_TREE
@@ -139,16 +145,14 @@ apf.MultiCheck = function(){
         }) === false)
             return false;
 
-        this.checkedList.remove(xmlNode);
+        this.$checkedList.remove(xmlNode);
         this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
             "", ["checked", "partial"]);
         
         this.dispatchEvent("afteruncheck", {
-            list        : this.checkedList,
+            list        : this.$checkedList,
             xmlNode     : xmlNode
         });
-        
-        this.$executeSingleValue("checked", "checked", xmlNode, "false");
     };
 
     /**
@@ -170,19 +174,19 @@ apf.MultiCheck = function(){
             xmlNode = apf.xmldb.getNode(htmlNode)
         }
 
-        if (this.checkedList.indexOf(xmlNode) > -1)
-            this.uncheck(xmlNode);
+        if (this.$checkedList.indexOf(xmlNode) > -1)
+            this.uncheck(xmlNode, userAction);
         else
-            this.check(xmlNode);
+            this.check(xmlNode, userAction);
     };
     
     /**
      * Checks a set of items
      *
      * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
-     * @param {boolean} 
-     * @param {boolean} 
-     * @param {boolean} whether to not call any events
+     * @param {boolean} uncheck
+     * @param {boolean} noClear
+     * @param {boolean} noEvent whether to not call any events
      * @event  beforecheck  Fires before a check is made
      *   object:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
@@ -195,8 +199,24 @@ apf.MultiCheck = function(){
         if (!xmlNodeList.indexOf)
             xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
             //@todo is this need for ie8 and/or other browsers
-        
-        if (userAction && this.disabled) return;
+
+        if (userAction){
+            if (this.disabled) 
+                return;
+            
+            var changes = [];
+            for (var c, i = 0; i < xmlNodeList.length; i++) {
+                c = this.$executeSingleValue("checked", "checked", xmlNodeList[i], "false", true)
+                if (c === false) break;
+                changes.push(c);
+            }
+    
+            if (changes.length) {
+                return this.$executeAction("multicall", changes, "checked", 
+                  xmlNodeList[0], null, null, 
+                  xmlNodeList.length > 1 ? xmlNodeList : null);
+            }
+        }
         
         if (!noEvent && this.dispatchEvent("beforecheck", {
             list : xmlNodeList
@@ -212,14 +232,14 @@ apf.MultiCheck = function(){
         var i;
         if (uncheck) {
             for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.checkedList.remove(xmlNodeList[i]);
+                this.$checkedList.remove(xmlNodeList[i]);
                 this.$setStyleClass(
                     apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
             }
         }
         else {
             for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.checkedList.push(xmlNodeList[i]);
+                this.$checkedList.push(xmlNodeList[i]);
                 this.$setStyleClass(
                     apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
             }
@@ -233,24 +253,24 @@ apf.MultiCheck = function(){
                 if (!nodes.length) {
                     if (forceChange) {
                         if (uncheck) {
-                            _self.checkedList.remove(xmlNode);
+                            _self.$checkedList.remove(xmlNode);
                             _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                                 "", ["checked"]);
                             return 0;
                         }
                         else {
-                            if (_self.checkedList.indexOf(xmlNode) == -1) {
-                                _self.checkedList.push(xmlNode);
+                            if (_self.$checkedList.indexOf(xmlNode) == -1) {
+                                _self.$checkedList.push(xmlNode);
                                 _self.$setStyleClass(
                                     apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
                             }
                             return 1;
                         }
                     }
-                    return _self.checkedList.indexOf(xmlNode) > -1 ? 1 : 0;
+                    return _self.$checkedList.indexOf(xmlNode) > -1 ? 1 : 0;
                 }
 
-                var isInList = _self.checkedList.indexOf(xmlNode) != -1,
+                var isInList = _self.$checkedList.indexOf(xmlNode) != -1,
                     shouldBeChanged = forceChange
                         || xmlNodeList.indexOf(xmlNode) > -1 && (uncheck
                             ? !isInList
@@ -281,14 +301,14 @@ apf.MultiCheck = function(){
                 
                 if (all) {
                     if (!isInList) {
-                        _self.checkedList.push(xmlNode);
+                        _self.$checkedList.push(xmlNode);
                         apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                             "checked", ["partial"]);
                     }
                 }
                 else{
                     if (isInList)
-                        _self.checkedList.remove(xmlNode);
+                        _self.$checkedList.remove(xmlNode);
 
                     apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
                         partial ? "partial" : "", ["partial", "checked"]);
@@ -321,20 +341,20 @@ apf.MultiCheck = function(){
      */
     this.clearChecked = function(noEvent){
         if (!noEvent && this.dispatchEvent("beforeuncheck", {
-            xmlNode : this.checkedList
+            xmlNode : this.$checkedList
         }) === false)
             return false;
         
-        for (var i = this.checkedList.length - 1; i >= 0; i--) {
+        for (var i = this.$checkedList.length - 1; i >= 0; i--) {
             this.$setStyleClass(
-                apf.xmldb.getHtmlNode(this.checkedList[i], this), "", ["checked"]);
+                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
         }
         
-        this.checkedList.length = 0;
+        this.$checkedList.length = 0;
         
         if (!noEvent) {
             this.dispatchEvent("afteruncheck", {
-                list : this.checkedList
+                list : this.$checkedList
             });
         }
     };
@@ -346,7 +366,7 @@ apf.MultiCheck = function(){
      * @return  {Boolean} whether the element is selected.
      */
     this.isChecked = function(xmlNode){
-        return this.checkedList.indexOf(xmlNode) > -1;
+        return this.$checkedList.indexOf(xmlNode) > -1;
     };
 
     /**
@@ -362,13 +382,13 @@ apf.MultiCheck = function(){
             r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
                 : apf.getXmlDom().createDocumentFragment();
-            for (i = 0; i < this.checkedList.length; i++)
+            for (i = 0; i < this.$checkedList.length; i++)
                 apf.xmldb.cleanNode(r.appendChild(
-                    this.checkedList[i].cloneNode(true)));
+                    this.$checkedList[i].cloneNode(true)));
         }
         else {
-            for (r = [], i = 0; i < this.checkedList.length; i++)
-                r.push(this.checkedList[i]);
+            for (r = [], i = 0; i < this.$checkedList.length; i++)
+                r.push(this.$checkedList[i]);
         }
 
         return r;
@@ -390,17 +410,42 @@ apf.MultiCheck = function(){
         this.checkList(nodes);
     };
     
+    this.addEventListener("beforeload", function(){
+        this.clearChecked(true);
+    });
+    
+    this.addEventListener("afterload", function(){
+        if (this.$checkedList.length)
+            this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
+    });
+    
+    this.addEventListener("xmlupdate", function(e){
+        if (e.action == "synchronize" || e.action == "update") {
+            //@todo list support!
+            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
+            var c2 = this.isChecked(e.xmlNode);
+            if (c1 != c2) {
+                if (c1) {
+                    this.check(e.xmlNode);
+                }
+                else {
+                    this.uncheck(e.xmlNode);
+                }
+            }
+        }
+    });
+    
     //#ifdef __WITH_PROPERTY_BINDING
     this.addEventListener("aftercheck", function(){
         //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.checkedList.length)
-            this.setProperty("checklength", this.checkedList.length);
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
     });
     
     this.addEventListener("afteruncheck", function(){
         //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.checkedList.length)
-            this.setProperty("checklength", this.checkedList.length);
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
     });
     //#endif
 };

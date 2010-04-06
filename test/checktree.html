@@ -24,7 +24,7 @@
           skin="checktree">
             <a:model>
                 <data>
-                    <folder caption="Folder 1" checked="true">
+                    <folder caption="Folder 1">
                         <file caption="File 1" ></file>
                         <file caption="File 2" checked="true"></file>
                         <file caption="File 3"></file>
@@ -38,7 +38,7 @@
             </a:model>
             <a:each match="[folder|file]">
                 <a:caption match="[@caption]" />
-                <!--a:checked match="[@checked]" /-->
+                <a:checked value="[@checked]" />
             </a:each>
         </a:tree>
         

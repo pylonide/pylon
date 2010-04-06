@@ -31,7 +31,7 @@ apf.draw.vml = {
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
         if(!apf.isIE8){
             apf.importCssString("v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
-            r.$int.innerHTML = "\
+            r.$ext.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                             background:url(images/spacer.gif);width:"+
                             r.width+"px;height:"+r.height+"px;'>\
@@ -41,9 +41,9 @@ apf.draw.vml = {
                             r.width+'px;height:'+r.height+
                             "px;overflow:hidden;'>\
                 </div>";
-            r.vmlroot = r.$int.lastChild;
+            r.vmlroot = r.$ext.lastChild;
        } else {
-            r.$int.innerHTML = "\
+            r.$ext.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                             background:url(images/spacer.gif);width:"+
                             r.width+"px;height:"+r.height+"px;'>\
@@ -53,7 +53,7 @@ apf.draw.vml = {
                             r.width+'px;height:'+r.height+
                             "px;overflow:hidden;'>\
                 </iframe>";
-            r.vmliframe = r.$int.lastChild;
+            r.vmliframe = r.$ext.lastChild;
             r.vmliframe.allowTransparency=true;
             var doc = r.vmliframe.contentWindow.document;
             doc.open();

@@ -167,7 +167,8 @@ apf.preview = function(struct, tagName){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
         this.oImage = this.$getLayoutNode("main", "image", this.$ext);
-        this.oImg   = this.$int.getElementsByTagName("img")[0];
+        if (this.oImage.nodeType == 1)
+            this.oImg   = this.oImage.getElementsByTagName("img")[0];
         if (this.localName == "preview") {
             var _self = this;
             this.$ext.onclick = function() {

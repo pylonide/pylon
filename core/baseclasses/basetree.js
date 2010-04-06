@@ -743,14 +743,17 @@ apf.BaseTree = function(){
                 if (this.$tempsel)
                     this.$selectTemp();
 
+                // #ifdef __WITH_MULTICHECK
                 if (this.$mode && !ctrlKey) {
                     var sel = this.getSelection();
                     if (!sel.length || !this.multiselect)
-                        this.checkToggle(this.caret);
+                        this.checkToggle(this.caret, true);
                     else
-                        this.checkList(sel, this.isChecked(this.selected), true);
+                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
                 }
-                else if (ctrlKey || !this.isSelected(this.caret))
+                else 
+                //#endif
+                if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, true);
                 return false;
             case 46:
