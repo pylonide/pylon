@@ -317,13 +317,18 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
             
 			if(this.$vml_node) return "[object]";
 			return ["<av:shape coordorigin='",
+					this.$_vxy,"' opacity='50%' fillcolor='rgb(0,255,2550.5)' path='",this.$p,"' coordsize='",this.$_vwh,"' style='filters:alpha(opacity:40);rotation:0",//this.$_r,
+					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
+					";'/>"].join('')
+                    /*
+			return ["<av:shape coordorigin='",
 					this.$_vxy,"' coordsize='",this.$_vwh,"' style='rotation:0",//this.$_r,
 					";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,
 					";'>",
                         "<av:fill color='"+this.$f+"' opacity='0.5'/>", // gradient fill is of course different
-                        "<av:stroke color='blue' weight='1'/>",
+                       "<av:stroke color='blue' weight='1'/>",
                         "<av:path v='",this.$p,"'/>",
-                     "</av:shape>"].join('');
+                     "</av:shape>"].join('');*/
 					
 					/*
 					(this.$fill?"<av:fill color='"+this.$fill+"'/>":""), // gradient fill is of course different
@@ -338,19 +343,34 @@ function draw(){
 
 	var r=[];
 	apf.profile_loop(1,function(){
-		for(var i = 0;i<3;i++)
-			r[i] = ctx.rect(400,300,160,160,{cx:0.5,cy:0.5,r:"{r}",f:"blue"});
+		for(var i = 0;i<100;i++)
+			r[i] = ctx.rect(4*i,300,160,160,{cx:0.5,cy:0.5,r:"{r}",f:"blue"});
 		ctx.repaint();
 	});
 	var x = 0;
-	window.setInterval(function(){
+    var t = 0;
+    apf.profile_loop(1,function(){
+    for(var i = 0;i<100;i++){
+    
+    var y =  r[i].$vml_node;
+        y.style.left = (i*4+t)%400;
+        //y.fillcolor = 'red';
+        //y.firstChild.opacity = 0.5;
+    }
+//    , x = y.firstChild;
+   //  y.removeChild(x);
+   //  y.insertAdjacentHTML( 'beforeend',"<av:fill color='red'/>");
+   //  x = y.lastChild;
+  //  x.color='red';
+  //  x.opacity=1;
+  //  x.color='red';
+  
 		//for(i = 0;i<40;i++){
 		//	var y = x+33*(i+1), z= x+45*(i+1);
-	//		r[i].style({r:y,x:y%400,y:y%300,sx2:0.5*Math.sin(0.1*y)+0.5,sy2:0.5*Math.sin(0.1*y)+0.5,ox:10});
-	//	}
+        //	r[i].style({r:y,x:y%400,y:y%300,sx2:0.5*Math.sin(0.1*y)+0.5,sy2:0.5*Math.sin(0.1*y)+0.5,ox:10});
+        //	}
 		//ctx.root.style({r:x});
-		x +=1;
-	},20);	
+	});	
 	/*
 	style = {
 		// pack or not pack
