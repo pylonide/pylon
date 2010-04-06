@@ -102,6 +102,7 @@ apf.caldropdown = function(struct, tagName){
     this.captionFormat = "yyyy-mm-dd";
 
     this.$sliderHeight = 0;
+    this.isOpen        = false;
 
     this.$calVars      = {
         day          : null,
@@ -356,7 +357,7 @@ apf.caldropdown = function(struct, tagName){
      */
     this.slideToggle = function(e, userAction) {
         if (!e) e = event;
-        if (userAction && !this.disabled)
+        if (userAction && this.disabled)
             return;
 
         if (this.isOpen)
@@ -421,7 +422,7 @@ apf.caldropdown = function(struct, tagName){
      * Hides the container with the calendar using a slide effect.
      */
     this.slideUp = function() {
-        if (this.isOpen == 2) return false;
+        if (!this.isOpen) return false;
         if (this.dispatchEvent("slideup") === false) return false;
 
         this.isOpen = false;
@@ -462,11 +463,6 @@ apf.caldropdown = function(struct, tagName){
         //#endif
     });
 
-    function setMaxCount() {
-        if (this.isOpen == 2)
-            this.slideDown();
-    }
-
     // Private functions
     this.$blur = function() {
         this.slideUp();
@@ -501,7 +497,6 @@ apf.caldropdown = function(struct, tagName){
             .selectSingleNode("LoadList[@element='" + this.name + "']");
         if (!loadlist) return;
 
-        this.isOpen = 2;
         this.form.processLoadRule(loadlist, true, [loadlist]);
 
         return false;
