@@ -308,6 +308,27 @@ apf.rpc = function(struct, tagName){
         this.$methods[name].callback = func;
     };
 
+    /**
+     * Sets the target url for a method on this object.
+     * Example:
+     * <code>
+     *  comm.setCallback("login", "scripts/login.php");
+     *
+     *  comm.login(user, pass);
+     * </code>
+     * @param {String} name the name of the method defined on this object.
+     * @param {String} url  the target url of method defined on this object.
+     */
+    this.setUrl = function(name, url) {
+        // #ifdef __DEBUG
+        if (!this.$methods[name])
+            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+                "Trying to set callback: method not found."));
+        // #endif
+
+        this.$methods[name].setProperty("url", url);
+    };
+
     this.$convertArgs = function(name, args){
         if (!this.namedArguments)
             return Array.prototype.slice.call(args);

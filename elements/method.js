@@ -73,7 +73,7 @@ apf.method = function(struct, tagName){
     this.$booleanProperties["ignore-offline"] = true;
 
     this.$supportedProperties.push("name", "receive", "async", "caching",
-        "ignore-offline", "method-name", "type");
+        "ignore-offline", "method-name", "type", "url");
 
     this.$propHandlers["ignore-offline"] = function(value){
         this.ignoreOffline = value;
