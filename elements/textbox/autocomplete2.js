@@ -133,8 +133,8 @@ this.$btndown = function(oHtml, e){
                                 
                                 if (!values.contains(v)) {
                                     changes.push({
-                                        func : "setValueByXpath",
-                                        args : [_self.xmlData, v, select, true]
+                                        action : "setValueByXpath",
+                                        args   : [_self.xmlData, v, select, true]
                                     });
                                 }
                             }
@@ -142,8 +142,8 @@ this.$btndown = function(oHtml, e){
                         for (i = 0; i < values.length; i++) {
                             if (!checked.contains(values[i])) {
                                 changes.push({
-                                    func : "removeNode",
-                                    args : [n[i].nodeType != 1
+                                    action : "removeNode",
+                                    args   : [n[i].nodeType != 1
                                      ? n[i].parentNode || n[i].ownerElement || n[i].selectSingleNode("..")
                                      : n[i]]
                                 });
@@ -275,13 +275,13 @@ this.addEventListener("popuphide", function(){
             var changes = [];
             if (oldNode) {
                 changes.push({
-                    func : "removeNode",
-                    args : [oldNode]
+                    action : "removeNode",
+                    args   : [oldNode]
                 });
             }
 
             changes.push({
-                func : "appendChild",
+                action : "appendChild",
                 args   : [this.xmlData, newNode, null, null, select]
             });
             

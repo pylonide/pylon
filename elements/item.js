@@ -193,6 +193,9 @@ apf.item  = function(struct, tagName){
             this.$lastHotkey = value;
             var _self = this;
             apf.registerHotkey(value, function(){
+                if (_self.disabled || !_self.visible)
+                    return;
+                
                 //hmm not very scalable...
                 var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
                 for (var i = 0; i < buttons.length; i++) {

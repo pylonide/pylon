@@ -860,6 +860,8 @@ apf.datagrid = function(struct, tagName){
             
             h = apf.all[nodes[i].getAttribute("hid")];
             
+            h = apf.all[nodes[i].getAttribute("hid")];
+            
             //@todo fake optimization
             cell = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
 
@@ -925,6 +927,8 @@ apf.datagrid = function(struct, tagName){
             }
         }
         
+        if (!h) debugger;
+
         if (!h.editor) //No editor specified
             return;
 

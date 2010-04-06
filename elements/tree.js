@@ -290,7 +290,7 @@ apf.tree = function(struct, tagName){
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
-                'if (this.dorename && !o.mode)\
+                + 'if (this.dorename && !o.mode)\
                     o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\

@@ -182,7 +182,7 @@ apf.button  = function(struct, tagName){
      */
     this.$booleanProperties["default"] = true;
     this.$supportedProperties.push("icon", "value", "tooltip", "state",
-        "color", "caption", "action", "target", "default", "submenu");
+        "color", "caption", "action", "target", "default", "submenu", "hotkye");
 
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
@@ -201,6 +201,9 @@ apf.button  = function(struct, tagName){
     };
 
     this.$propHandlers["value"] = function(value){
+        if (!this.state && !this.submenu)
+            return;
+        
         if (value === undefined)
             value = !this.value;
         this.value = value;
@@ -226,9 +229,49 @@ apf.button  = function(struct, tagName){
         else
             this.$setStyleClass(this.$ext, this.$baseCSSname + "Empty");
 
-        if (this.oCaption)
+        if (this.oCaption.nodeType == 1)
+            this.oCaption.innerHTML = String(value || "").trim();
+        else
             this.oCaption.nodeValue = String(value || "").trim();
     };
+
+    //#ifdef __WITH_HOTKEY
+    /**
+     * @attribute {String} hotkey the key combination a user can press
+     * to active the function of this element. Use any combination of
+     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * space, a minus or plus sign as a seperator.
+     * Example:
+     * <code>
+     *  <a:button hotkey="Ctrl-Z">Undo</a:button>
+     * </code>
+     */
+    this.$propHandlers["hotkey"] = function(value){
+        if (this.$hotkey)
+            apf.setNodeValue(this.$hotkey, value);
+
+        if (this.$lastHotkey)
+            apf.removeHotkey(this.$lastHotkey);
+
+        if (value) {
+            this.$lastHotkey = value;
+            var _self = this;
+            apf.registerHotkey(value, function(){
+                //hmm not very scalable...
+                _self.$setState("Over", {});
+
+                $setTimeout(function(){
+                    _self.$setState("Out", {});
+                }, 200);
+
+                if (_self.$clickHandler && _self.$clickHandler())
+                    _self.$updateState (e || event, "click");
+                else
+                    _self.dispatchEvent("click");
+            });
+        }
+    }
+    //#endif
 
     //#ifdef __AMLTOOLBAR || __INC_ALL
 

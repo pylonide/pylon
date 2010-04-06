@@ -65,6 +65,10 @@ apf.frame    = function(struct, tagName){
 
     this.$focussable     = false;
     
+    //#ifdef __WITH_CONTENTEDITABLE
+    this.$editableCaption = ["caption"]
+    //#endif
+    
     /**** Properties and Attributes ****/
     
     /**

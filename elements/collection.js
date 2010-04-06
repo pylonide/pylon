@@ -36,15 +36,19 @@
  * @since       0.4
  */
 apf.collection = function(struct, tagName){
-    this.$init(tagName || "collection", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "collection", apf.NODE_HIDDEN, struct);
 };
 
 apf.docklet = function(struct, tagName){
-    this.$init(tagName || "docklet", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "docklet", apf.NODE_HIDDEN, struct);
 };
 
 (function(){
     this.$focussable = false;
+    
+    this.$propHandlers["visible"] = function(value){
+        alert(value);
+    }
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode && this.parentNode.$int != this.$pHtmlNode)

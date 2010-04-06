@@ -244,8 +244,8 @@ apf.dropdown = function(struct, tagName){
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Over"]);
         
         this.$setLabel(e.selection.length
-         ? this.$applyBindRule("caption", this.selected)
-         : "");
+          ? this.$applyBindRule("caption", this.selected)
+          : "");
     });
     
     function setMaxCount() {

@@ -565,7 +565,7 @@ apf.textbox  = function(struct, tagName){
                     //e.returnValue = false
             });
         }
-
+        
         this.$input.onselectstart = function(e){
             if (!e) e = event;
             e.cancelBubble = true;
