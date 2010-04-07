@@ -122,7 +122,7 @@ apf.lm = new (function(){
             "var": 1, "for": 1, "while": 1, "do": 1, "if": 1, "else": 1,
             "switch": 1, "case": 1, "break": 1, "continue": 1, "default": 1,
             "function":2, "return": 1, "try": 1, "catch": 1, "throw":1,
-            "debugger": 1, "alert": 1, "delete": 1, "export": 1, "import": 1,
+            "debugger": 1, "alert": 1, "confirm": 1,"setTimeout": 1,"setInterval": 1,"delete": 1, "export": 1, "import": 1,
             "label": 1, "foreach":1, "each": 1, "node": 1, "local": 1, "yield": 1,
             "let":1, "finally":1, "delete":1
         },
@@ -606,7 +606,7 @@ apf.lm = new (function(){
                             o[ol-1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
                             o[ol++] = "\n", v = 1, sl -= 2;
                         }
-                        if (v && parse_mode && !statement_lut[tok]) // inject output
+                        if (v && parse_mode && !statement_lut[tok] && !call_exclusion[tok]) // inject output
                             o[ol++] = (nesting ? cf_str_output : cf_mode_output);
 
                         if (last_dot > 0 && tok.charAt(0) != ".") // store property
