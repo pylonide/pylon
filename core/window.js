@@ -969,8 +969,8 @@ apf.window = function(){
                 apf.window.$focusevent();
             }
             //#endif
-            //#endif
         }
+        //#endif
         
         apf.dispatchEvent("mousedown", {
             htmlEvent : e,
