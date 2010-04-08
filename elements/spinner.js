@@ -149,6 +149,14 @@ apf.spinner = function(struct, tagName){
         return this.value;
     };
     
+    this.increment = function() {
+        this.change(parseInt(this.oInput.value) + 1);
+    };
+    
+    this.decrement = function() {
+        this.change(parseInt(this.oInput.value) - 1);
+    };
+    
     //#endif
 
     this.$enable = function() {
@@ -219,14 +227,6 @@ apf.spinner = function(struct, tagName){
                 break;
         }
     }, true);
-    
-    this.increment = function() {
-        this.change(parseInt(this.oInput.value) + 1);
-    };
-    
-    this.decrement = function() {
-        this.change(parseInt(this.oInput.value) - 1);
-    };
 
     this.addEventListener("keyup", function(e) {
         //this.setValue(this.oInput.value);
