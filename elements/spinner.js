@@ -202,15 +202,31 @@ apf.spinner = function(struct, tagName){
     this.addEventListener("keydown", function(e) {
         var key = e.keyCode,
 
-        keyAccess = (key < 8 || (key > 8 && key < 37 && key !== 12)
+        keyAccess = (key < 8 || (key > 9 && key < 37 && key !== 12)
             || (key > 40 && key < 46) || (key > 46 && key < 48)
-            || (key > 57 && key < 96) || (key > 105 && key < 109)
+            || (key > 57 && key < 96) || (key > 105 && key < 109 && key !== 107)
             || (key > 109 && key !== 189));
 
-       if (keyAccess)
-           return false;
-
+        if (keyAccess)
+            return false;
+           
+        switch(key) {
+            case 38://Arrow up
+                this.increment();
+                break;
+            case 40://Arrow down
+                this.decrement();
+                break;
+        }
     }, true);
+    
+    this.increment = function() {
+        this.change(parseInt(this.oInput.value) + 1);
+    };
+    
+    this.decrement = function() {
+        this.change(parseInt(this.oInput.value) - 1);
+    };
 
     this.addEventListener("keyup", function(e) {
         //this.setValue(this.oInput.value);
