@@ -1484,6 +1484,7 @@ apf.lm = new (function(){
                         }
                         break;
                     case 15: // -------- end --------
+                        if(start_tok != "//")
                         throw {
                             t: "Unexpected end whilst parsing comment",
                             p: pos
