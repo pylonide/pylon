@@ -79,7 +79,7 @@ apf.Anchoring = function(){
             if (!this.$anchoringEnabled && !this.$setLayout("anchoring"))
                 return;
             
-            if (!value)
+            if (!value && value !== 0)
                 this.$ext.style[prop] = "";
 
             //@note Removed apf.isParsing here to activate general queuing
@@ -92,7 +92,7 @@ apf.Anchoring = function(){
             if (!this.$anchoringEnabled && !this.$setLayout("anchoring"))
                 return;
 
-            if (!value)
+            if (!value && value !== 0)
                 this.$ext.style[prop] = "";
 
             //@note Removed apf.isParsing here to activate general queuing            
@@ -136,10 +136,10 @@ apf.Anchoring = function(){
         this.removeEventListener("DOMNodeInserted", reparent); 
 
         if (this.right)
-            this.$ext.style.left = this.$ext.offsetLeft;
+            this.$ext.style.left = apf.getHtmlLeft(this.$ext);
 
         if (this.bottom)
-            this.$ext.style.top = this.$ext.offsetTop;
+            this.$ext.style.top = apf.getHtmlTop(this.$ext);
 
         this.removeEventListener("prop.visible", visibleHandler);
 
@@ -225,8 +225,10 @@ apf.Anchoring = function(){
         if (!this.$amlLoaded || e.currentTarget != this)
             return;
 
-        if (!e.$moveWithinParent && this.$parsed) //@todo hmm weird state check
+        if (!e.$isMoveWithinParent && this.$parsed) //@todo hmm weird state check
             this.$moveAnchoringRules(e.$oldParentHtmlNode);
+        //else if (e.relatedNode == this) //@todo test this
+            //e.currentTarget.$setLayout("anchoring");
     }
 
     this.$moveAnchoringRules = function(oldParent, updateNow){
@@ -240,7 +242,8 @@ apf.Anchoring = function(){
         this.$rule_header = getRuleHeader.call(this);
         rules = this.$rule_header + "\n" + this.$rule_v + "\n" + this.$rule_h;
 
-        this.$ext.style.display = "none";
+        //@todo sometimes the content is not displayed anymore (when reparenting by xinclude)
+        //this.$ext.style.display = "none";
 
         l.setRules(this.$pHtmlNode, this.$uniqueId + "_anchors", rules);
         l.queue(this.$pHtmlNode, this);
@@ -259,11 +262,11 @@ apf.Anchoring = function(){
             \
             var pWidth = " + (this.$pHtmlNode == this.$pHtmlDoc.body
                 ? "apf.getWindowWidth()" //@todo only needed for debug?
-                : "oHtml.parentNode.offsetWidth") + ";\
+                : "apf.getHtmlInnerWidth(oHtml.parentNode)") + ";\
             \
             var pHeight = " + (this.$pHtmlNode == this.$pHtmlDoc.body
                 ? "apf.getWindowHeight()" //@todo only needed for debug?
-                : "oHtml.parentNode.offsetHeight") + ";\
+                : "apf.getHtmlInnerHeight(oHtml.parentNode)") + ";\
             }catch(e){\
             }";
     }
@@ -277,10 +280,6 @@ apf.Anchoring = function(){
 
      //#ifdef __WITH_SKIN_CHANGE
     this.$recalcAnchoring = function(queueDelay){
-        var diff     = apf.getDiff(this.$ext);
-        this.$hordiff = diff[0];
-        this.$verdiff = diff[1];
-        
         this.$updateQueue = this.$updateQueue | HORIZONTAL | VERTICAL;
         this.$updateLayout();
         l.queue(this.$pHtmlNode, this);
@@ -322,26 +321,11 @@ apf.Anchoring = function(){
             return;
         }
         //#endif
-        
+
         if (!this.$parsed) {
             if (!this.$ext.getAttribute("id"))
                 apf.setUniqueHtmlId(this.$ext);
 
-            var diff    = apf.getDiff(this.$ext);
-            this.$hordiff     = diff[0];
-            this.$verdiff     = diff[1];
-            if (this.$getOption) {
-                this.$minheight    = Math.max(parseInt(this.$getOption("main", "minheight")) || 0, parseInt(this.getAttribute("minheight")) || 0) || 0;
-                this.$maxheight    = Math.min(parseInt(this.$getOption("main", "maxheight")) || 0, parseInt(this.getAttribute("maxheight")) || 100000) || 100000;
-                this.$minwidth     = Math.max(parseInt(this.$getOption("main", "minwidth")) || 0, parseInt(this.getAttribute("minwidth")) || 0) || 0;
-                this.$maxwidth     = Math.min(parseInt(this.$getOption("main", "maxwidth")) || 0, parseInt(this.getAttribute("maxwidth")) || 100000) || 100000;
-            }
-            else {
-                this.$minheight    = 0;
-                this.$maxheight    = 100000;
-                this.$minwidth     = 0;
-                this.$maxwidth     = 100000;
-            }
             this.$rule_header = getRuleHeader.call(this);
             this.$parsed      = true;
         }
@@ -356,7 +340,9 @@ apf.Anchoring = function(){
             if ("absolute|fixed|relative".indexOf(apf.getStyle(this.$ext, "position")) == -1) //@todo apf3.1 the IDE doesn't like this
                 this.$ext.style.position = "absolute";
         }
-        else if (this.left || this.top || this.right || this.bottom || this.$anchors.length) {
+        else if (this.left || this.left ===  0 || this.top || this.top === 0 
+          || this.right || this.right === 0 || this.bottom || this.bottom === 0 
+          || this.$anchors.length) {
             if ("absolute|fixed".indexOf(apf.getStyle(this.$ext, "position")) == -1)
                 this.$ext.style.position = "absolute";
         }
@@ -364,15 +350,19 @@ apf.Anchoring = function(){
         var rules;
         if (this.$updateQueue & HORIZONTAL) {
             rules = [];
+            
+            this.$hordiff = apf.getWidthDiff(this.$ext);
 
-            var left  = this.left  || this.$anchors[3],
-                right = this.right || this.$anchors[1],
-                width = this.width;
+            var left  = this.$anchors[3] || this.left,
+                right = this.$anchors[1] || this.right,
+                width = this.width, hasLeft = left || left === 0,
+                hasRight = right || right === 0, 
+                hasWidth = width || width === 0;
 
             if (right && typeof right == "string")
                 right = setPercentage(right, "pWidth");
 
-            if (left) {
+            if (hasLeft) {
                 if (parseInt(left) != left) {
                     left = setPercentage(left,  "pWidth");
                     rules.push("oHtml.style.left = (" + left + ") + 'px'");
@@ -380,7 +370,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.left = left + "px";
             }
-            if (!left && right) {
+            if (!hasLeft && hasRight) {
                 if (parseInt(right) != right) {
                     right = setPercentage(right, "pWidth");
                     rules.push("oHtml.style.right = (" + right + ") + 'px'");
@@ -388,23 +378,24 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.right = right + "px";
             }
-            if (width) {
+            if (hasWidth) {
                 if (parseInt(width) != width) {
                     width = setPercentage(width, "pWidth");
-                    rules.push("oHtml.style.width = Math.max(" + this.$minwidth 
-                        + ", Math.min(" + this.$maxwidth + ", "
+                    rules.push("oHtml.style.width = Math.max(" 
+                        + (this.minwidth - this.$hordiff)
+                        + ", Math.min(" + (this.maxwidth - this.$hordiff) + ", "
                         + width + " - " + this.$hordiff + ")) + 'px'");
                 }
                 else {
-                    this.$ext.style.width = (width > this.$hordiff + this.$minwidth
-                        ? (width < this.$hordiff + this.$maxwidth
-                            ? width - this.$hordiff
-                            : this.$maxwidth)
-                        : this.$minwidth) + "px";
+                    this.$ext.style.width = ((width > this.minwidth
+                        ? (width < this.maxwidth
+                            ? width
+                            : this.maxwidth)
+                        : this.minwidth) - this.$hordiff) + "px";
                 }
             }
 
-            if (right != null && left != null) {
+            if (hasLeft && hasRight) { //right != null && left != null) {
                 rules.push("oHtml.style.width = (pWidth - (" + right
                     + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
             }
@@ -417,14 +408,18 @@ apf.Anchoring = function(){
         if (this.$updateQueue & VERTICAL) {
             rules = [];
 
-            var top    = this.top    || this.$anchors[0],
-                bottom = this.bottom || this.$anchors[2],
-                height = this.height;
+            this.$verdiff = apf.getHeightDiff(this.$ext);
+
+            var top    = this.$anchors[0] || this.top,
+                bottom = this.$anchors[2] || this.bottom,
+                height = this.height, hasTop = top || top === 0,
+                hasBottom = bottom || bottom === 0, 
+                hasHeight = height || height === 0;
 
             if (bottom && typeof bottom == "string")
                 bottom = setPercentage(bottom, "pHeight");
 
-            if (top) {
+            if (hasTop) {
                 if (parseInt(top) != top) {
                     top = setPercentage(top, "pHeight");
                     rules.push("oHtml.style.top = (" + top + ") + 'px'");
@@ -432,30 +427,31 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.top = top + "px";
             }
-            if (!top && bottom) {
+            if (!hasTop && hasBottom) {
                 if (parseInt(bottom) != bottom) {
                     rules.push("oHtml.style.bottom = (" + bottom + ") + 'px'");
                 }
                 else
                     this.$ext.style.bottom = bottom + "px";
             }
-            if (height) {
+            if (hasHeight) {
                 if (parseInt(height) != height) {
                     height = setPercentage(height, "pHeight");
-                    rules.push("oHtml.style.height = Math.max(" + this.$minheight 
-                        + ", Math.min(" + this.$maxheight + ", "
+                    rules.push("oHtml.style.height = Math.max(" 
+                        + (this.minheight - this.$verdiff)
+                        + ", Math.min(" + (this.maxheight - this.$verdiff) + ", "
                         + height + " - " + this.$verdiff + ")) + 'px'");
                 }
                 else {
-                    this.$ext.style.height = (height > this.$verdiff + this.$minheight
-                        ? (height < this.$verdiff + this.$maxheight
-                            ? height - this.$verdiff
-                            : this.$maxheight)
-                        : this.$minheight) + "px";
+                    this.$ext.style.height = ((height > this.minheight
+                        ? (height < this.maxheight
+                            ? height
+                            : this.maxheight)
+                        : this.minheight) - this.$verdiff) + "px";
                 }
             }
 
-            if (bottom != null && top != null) {
+            if (hasTop && hasBottom) { //bottom != null && top != null) {
                 rules.push("oHtml.style.height = (pHeight - (" + bottom +
                     ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
             }

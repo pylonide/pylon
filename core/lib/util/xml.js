@@ -245,7 +245,12 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             apf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
     }
     else {
+        var oldValue      = xmlNode.nodeValue;
         xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
+        
+        //AML support - getters/setters would be awesome
+        if (xmlNode.$triggerUpdate)
+            xmlNode.$triggerUpdate(null, oldValue);
 
         if (applyChanges)
             apf.xmldb.applyChanges("synchronize", xmlNode.parentNode

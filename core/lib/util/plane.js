@@ -44,7 +44,7 @@ apf.plane = {
         var plane    = this.plane;
         this.current = o;
         //o.parentNode.appendChild(plane);
-
+ 
         if (!dontAppend) {
             this.lastZ = this.current.style.zIndex;
             this.current.style.zIndex = 100000;
@@ -54,15 +54,11 @@ apf.plane = {
         }
         
         var pWidth = (plane.parentNode == document.body
-            ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetWidth - (apf.isIE < 8 ? 2 : 4)
-                : window.innerWidth)
+            ? apf.getWindowWidth()
             : plane.parentNode.offsetWidth);
-
+ 
         var pHeight = (plane.parentNode == document.body
-            ? (apf.isIE //@todo apf3.0 test this: was offsetParent 
-                ? document.documentElement.offsetHeight - (apf.isIE < 8 ? 2 : 4)
-                : window.innerHeight)
+            ? apf.getWindowHeight()
             : plane.parentNode.offsetHeight);
         
         if (copyCursor) {
@@ -103,7 +99,7 @@ apf.plane = {
             this.isChildOf(this.plane, document.activeElement);
             #endif */
         
-        if (this.lastZ) {
+        if (this.lastZ !== null) {
             if (this.current.style.zIndex == 100000)
                 this.current.style.zIndex = this.lastZ;
             this.lastZ = null;

@@ -36,17 +36,17 @@ apf.XhtmlElement = function(struct, tagName){
 
 (function(){
     this.$xae = function(type, fn){
-        if (!this.$ext) return;
-
-        apf.addListener(this.$ext, type, this.$de);
         this.$xoe.apply(this, arguments);
+        
+        if (this.$ext)
+            apf.addListener(this.$ext, type, this.$de);
     };
     
     this.$xre = function(type, fn) {
-        if (!this.$ext) return;
-        
-        apf.removeListener(this.$ext, type, this.$de);
         apf.AmlElement.prototype.removeEventListener.apply(this, arguments);
+        
+        if (this.$ext)
+            apf.removeListener(this.$ext, type, this.$de);
     }
     
     this.$handlePropSet = function(name, value, force){

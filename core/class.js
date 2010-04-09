@@ -224,7 +224,7 @@ apf.Class.prototype = new (function(){
     var FUN   = "function",
         OBJ   = "object",
         UNDEF = "undefined",
-        SEL   = "selected|selection"
+        SEL   = "selected|selection|model"
         PROP  = "prop.",
         MODEL = "model",
         VALUE = "value";
@@ -401,6 +401,7 @@ apf.Class.prototype = new (function(){
     this.$setDynamicProperty = function(prop, pValue){
         var exclNr = this.$attrExcludePropBind[prop],
             options;
+            
         //@todo apf3.0, please generalize this - cache objects, seems slow
         if (SEL.indexOf(prop) > -1) {
             options = {
@@ -412,7 +413,10 @@ apf.Class.prototype = new (function(){
             options = {nostring : true};
         }
         else if (exclNr === 0) {
-            options = {parsecode : true};
+            options = {parsecode : true 
+             /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) 
+                ? true : false 
+             /* #endif */};
         }
 
         //Compile pValue through JSLT parser
@@ -421,6 +425,10 @@ apf.Class.prototype = new (function(){
         //Special case for model due to needed extra signalling
         if (prop == MODEL)
             (this.$modelParsed = fParsed).instruction = pValue
+        // #ifdef __DEBUG 
+        else if (exclNr === 0)
+            this.$lastFParsed = fParsed;
+        // #endif
 
         //if it's only text return setProperty()
         if (fParsed.type == 2) {
@@ -471,7 +479,7 @@ apf.Class.prototype = new (function(){
                     continue;
                 }
 
-                if (!node || typeof node != OBJ || !node.$regbase) {
+                if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
                     node  = self[o[0]];
                 }
@@ -772,6 +780,7 @@ apf.Class.prototype = new (function(){
     /**** Event Handling ****/
 
     apf.eventDepth = 0;
+    this.eventDepth = 0;
 
     /**
      * Calls all functions that are registered as listeners for an event.
@@ -788,6 +797,7 @@ apf.Class.prototype = new (function(){
         var arr, result, rValue, i, l;
 
         apf.eventDepth++;
+        this.eventDepth++;
 
         e = options && options.name ? options : e;
 
@@ -795,7 +805,13 @@ apf.Class.prototype = new (function(){
             result = false;
         }
         else {*/
-            if (!e || !e.currentTarget) {
+            //#ifdef __DEBUG
+            if (options && !options.bubbles && options.currentTarget && options.currentTarget != this)
+                throw new Error("Invalid use of options detected in dispatch Event");
+            //#endif
+        
+            //@todo rewrite this and all dependencies to match w3c
+            if ((!e || !e.currentTarget) && (!options || !options.currentTarget)) {
                 if (!(options || (options = {})).currentTarget)
                     options.currentTarget = this;
 
@@ -808,6 +824,8 @@ apf.Class.prototype = new (function(){
                     }
                 }
             }
+            
+            //@todo this should be the bubble point
             
             if (options && options.captureOnly) {
                 return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
@@ -830,21 +848,21 @@ apf.Class.prototype = new (function(){
             }
         //}
         
-        //#ifdef __WITH_EVENT_BUBBLING
-        if ((e && e.bubbles && !e.cancelBubble || options && options.bubbles) && this != apf) {
-            rValue = (this.parentNode || apf).dispatchEvent(eventName, null, e 
-                || (e = new apf.AmlEvent(eventName, options)));
-
-            if (typeof rValue != UNDEF)
-                result = rValue;
-        }
-        //#endif
-        
         var p;
         while (this.$removalQueue.length) {
             p = this.$removalQueue.shift();
             p[0].remove(p[1]); 
         }
+        
+        //#ifdef __WITH_EVENT_BUBBLING
+        if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != apf) {
+            rValue = (this.parentNode || this.ownerElement || apf).dispatchEvent(eventName, options, e);
+            // || (e = new apf.AmlEvent(eventName, options))
+
+            if (typeof rValue != UNDEF)
+                result = rValue;
+        }
+        //#endif
         
         if (--apf.eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
@@ -856,6 +874,8 @@ apf.Class.prototype = new (function(){
         ) {
             apf.queue.empty();
         }
+        
+        this.eventDepth--;
 
         //#ifdef __WITH_UIRECORDER
         if (apf.uirecorder) {
@@ -895,11 +915,17 @@ apf.Class.prototype = new (function(){
         if (eventName.substr(0, 2) == "on")
             eventName = eventName.substr(2);
 
-        var stack = useCapture ? this.$captureStack : this.$eventsStack;
-        if (!stack[eventName])
-            stack[eventName] = [];
-        if (stack[eventName].indexOf(callback) == -1)
-            stack[eventName].unshift(callback);
+        var s, stack = useCapture ? this.$captureStack : this.$eventsStack;
+        if (!(s = stack[eventName]))
+            s = stack[eventName] = [];
+        if (s.indexOf(callback) == -1)
+            s.unshift(callback);
+        
+        //@todo is this the best way?
+        for (var i = this.$removalQueue.length - 1; i >= 0; i--) {
+            if (this.$removalQueue[i][0] == s && this.$removalQueue[i][1] == callback)
+                this.$removalQueue.removeIndex(i);
+        }
         
         var f;
         if (f = this.$eventsStack["$event." + eventName])
@@ -914,9 +940,14 @@ apf.Class.prototype = new (function(){
      * @param  {function} callback  the function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
-        var stack = useCapture ? this.$captureStack : this.$eventsStack;
-        if (stack[eventName])
-            this.$removalQueue.push([stack[eventName], callback]);
+        var stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
+        
+        //@todo is this the best way?
+        if (stack)
+            if (this.eventDepth)
+                this.$removalQueue.push([stack, callback]);
+            else
+                stack.remove(callback);
     };
 
     /**
@@ -947,7 +978,9 @@ apf.Class.prototype = new (function(){
         if (this.$destroy)
             this.$destroy();
 
-        this.dispatchEvent("DOMNodeRemoved");
+        this.dispatchEvent("DOMNodeRemoved", {
+            bubbles : !apf.isDestroying
+        });
         this.dispatchEvent("DOMNodeRemovedFromDocument");
 
         apf.all[this.$uniqueId] = undefined;

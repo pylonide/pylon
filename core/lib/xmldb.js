@@ -258,7 +258,7 @@ apf.xmldb = new (function(){
                 var amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
                 if (amlNode) {
                     var model = apf.all[uId[3]];
-                    var xpath = model.$propBinds[uId[1]][uId[2]].root;
+                    var xpath = model.$propBinds[uId[1]][uId[2]].listen; //root
                     
                     amlNode.$execProperty(uId[2], xpath
                         ? model.data.selectSingleNode(xpath)
@@ -267,15 +267,19 @@ apf.xmldb = new (function(){
             }) - 1;
         }
         else {
-            id = this.$listeners.push(function(args){
-                var amlNode = apf.all[uId];
-                if (amlNode)
-                    amlNode.$xmlUpdate.apply(amlNode, args);
-            }) - 1;
+            //@todo apf3 potential cleanup problem
+            id = "e" + uId;
+            if (!this.$listeners[id]) {
+                this.$listeners[id] = function(args){
+                    var amlNode = apf.all[uId];
+                    if (amlNode)
+                        amlNode.$xmlUpdate.apply(amlNode, args);
+                };
+            }
         }
 
-        if (!listen || listen.indexOf(id) == -1)
-            xmlNode.setAttribute(this.xmlListenTag, listen ? listen + ";" + id : id);
+        if (!listen || listen.indexOf(id + ";") == -1)
+            xmlNode.setAttribute(this.xmlListenTag, (listen ? listen + id : id) + ";");
 
         return xmlNode;
     };
@@ -650,7 +654,7 @@ apf.xmldb = new (function(){
             this.notifyQueued(); //empty queue
 
         var listen, uId, uIds, i, j, hash, info, amlNode, runTimer, found;
-        while (loopNode && loopNode.nodeType != 9) {
+        while (loopNode && loopNode.nodeType == 1) {
             //Get List of Node this.$listeners ID's
             listen = loopNode.getAttribute(this.xmlListenTag);
 
@@ -751,6 +755,8 @@ apf.xmldb = new (function(){
         
         clearTimeout(notifyTimer);
         for (var uId in notifyQueue) {
+            if (!uId) continue;
+            
             var q       = notifyQueue[uId];
             var func    = this.$listeners[uId];
             //!amlNode || 
@@ -901,6 +907,7 @@ apf.xmldb = new (function(){
 
             var Nodes = this.$xmlDocLut[k].selectNodes("//self::node()[@"
                 + this.xmlListenTag + "]");
+            if (!Nodes) continue;
 
             //Loop through Nodes and rebuild listen array
             for (var i = 0; i < Nodes.length; i++) {

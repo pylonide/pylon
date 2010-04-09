@@ -441,8 +441,8 @@ apf.flowchart = function(struct, tagName){
                             : [node.ownerElement || node.selectSingleNode(".."),
                                node.nodeName, value]);
                     changes.push({
-                        func: atAction,
-                        args: args
+                        action: atAction,
+                        args  : args
                     });
                 }
             }
@@ -657,8 +657,8 @@ apf.flowchart = function(struct, tagName){
                         : [node.ownerElement || node.selectSingleNode(".."),
                            node.nodeName, value]);
                 changes.push({
-                    func: atAction,
-                    args: args
+                    action: atAction,
+                    args  : args
                 });
             }
         }
@@ -699,8 +699,8 @@ apf.flowchart = function(struct, tagName){
 
         for (; i < l; i++) {
             changes.push({
-                func : "removeNode",
-                args : [xmlNodeArray[i]]
+                action : "removeNode",
+                args   : [xmlNodeArray[i]]
             });
         }
 
@@ -762,8 +762,8 @@ apf.flowchart = function(struct, tagName){
             ids.push(id);
 
             changes.push({
-                func : "removeNode",
-                args : [xmlNodeArray[i]]
+                action : "removeNode",
+                args   : [xmlNodeArray[i]]
             });
         }
 
@@ -773,8 +773,8 @@ apf.flowchart = function(struct, tagName){
                 for (k = 0, l = ids.length; k < l; k++) {
                     if (this.$flowVars.xmlConnections[id2][j].ref == ids[k]) {
                         changes.push({
-                            func : "removeNode",
-                            args : [this.$flowVars.xmlConnections[id2][j].xmlNode]
+                            action : "removeNode",
+                            args   : [this.$flowVars.xmlConnections[id2][j].xmlNode]
                         });
                     }
                 }

@@ -40,11 +40,20 @@ apf.page = function(struct, tagName){
 (function(){
     this.canHaveChildren = true;
     //#ifdef __WITH_CONTENTEDITABLE
-    this.$canEdit        = false;
+    //this.$canEdit        = false;
     //#endif
     this.$focussable     = false;
     this.buttons         = false;
     this.closebtn        = false;
+
+    //#ifdef __WITH_CONTENTEDITABLE
+    this.$getEditableCaption = function(){
+        if (!this.parentNode.$hasButtons)
+            return false;
+
+        return [this.parentNode.$getLayoutNode("button", "caption", this.$button), "caption"];
+    }
+    //#endif
 
     //#ifdef __WITH_CONVENIENCE_API
     /**
@@ -219,7 +228,7 @@ apf.page = function(struct, tagName){
           || !e.$oldParent)
             return;
 
-        if (!e.$moveWithinParent 
+        if (!e.$isMoveWithinParent 
           && this.skinName != this.parentNode.skinName) {
             this.$destroy(); //clean up button
         }

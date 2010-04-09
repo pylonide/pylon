@@ -70,7 +70,8 @@ apf.script = function(){
             }
             else if (this.type == "application/livemarkup"
               || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
-                this.$setDynamicProperty("$data", code);
+                var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
+                func(window.event);
             }
         }
     });
@@ -88,8 +89,9 @@ apf.script = function(){
             apf.exec(code);
         }
         else if (this.type == "application/livemarkup"
-          || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
-            this.$setDynamicProperty("$data", code);
+          || this.type == "application/lm") {
+            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
+            func(window.event);
         }
     });
 }).call(apf.script.prototype = new apf.AmlElement());

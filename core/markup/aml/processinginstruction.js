@@ -47,6 +47,10 @@ apf.AmlProcessingInstruction = function(isPrototype){
         return "<?" + this.target + "\n" + apf.xmlentities(this.nodeValue) + "\n?>";
     };
     
+    this.reload = function(){
+        this.$handlePropSet("data", this.data);
+    }
+    
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         calcdata : 0 //Start in code mode
@@ -54,6 +58,10 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.getAttribute = function(){};
     this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+    
+    this.$setValue = function(value){
+        this.setProperty("data", value);
+    }
     
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
@@ -79,6 +87,12 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$ext.host = this;
 
         this.$setDynamicProperty("calcdata", this.data);
+        
+        //#ifdef __DEBUG
+        if (this.target.match(/\-debug$/)) {
+            apf.console.info(this.$lastFParsed.toString());
+        }
+        //#endif
     }, true);
     
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){

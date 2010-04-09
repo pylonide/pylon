@@ -233,6 +233,14 @@ apf.spinner = function(struct, tagName){
     }, true);
     //#endif
     
+    this.increment = function() {
+        this.change(parseInt(this.oInput.value) + 1);
+    };
+    
+    this.decrement = function() {
+        this.change(parseInt(this.oInput.value) - 1);
+    };
+    
     /**
      * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
      * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 

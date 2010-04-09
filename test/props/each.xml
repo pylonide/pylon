@@ -1,0 +1,2 @@
+<props><each><group caption="General"><prop caption="match" editor="textbox" value="[@match]" description="an xpath statement which selects the nodes
+which will be rendered."/></group></each></props>

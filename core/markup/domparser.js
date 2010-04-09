@@ -55,10 +55,11 @@ apf.DOMParser.prototype = new (function(){
         var xmlNode;
         if (this.caseInsensitive) {
             //replace(/&\w+;/, ""). replace this by something else
-            var str = xmlStr.replace(RE[0], "").replace(RE[1], " ")
+            //.replace(RE[1], " ")
+            var str = xmlStr.replace(RE[0], "")
               .replace(RE[2], //.replace(/^[\r\n\s]*/, "")
                 function(m){ return m.toLowerCase(); });
-        
+
             /* @todo apf3.0 integrate this
             x.ownerDocument.setProperty("SelectionNamespaces",
                                     "xmlns:a='" + apf.ns.aml + "'");
@@ -86,7 +87,7 @@ apf.DOMParser.prototype = new (function(){
         else {
             xmlNode = apf.getXmlDom(xmlStr, null, this.preserveWhiteSpace || apf.debug).documentElement;
         }
-        
+
         return this.parseFromXml(xmlNode, options);
     };
     
@@ -166,9 +167,9 @@ apf.DOMParser.prototype = new (function(){
                       && (nodelist[newNode.$parsePrio] = []))).push(newNode); //for second pass
                 }
             }
-            
+
             amlNode.firstChild = cNodes[0];
-            amlNode.lastChild  = cNodes[l - 1];
+            amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
 
         if (options.delay) {
@@ -356,6 +357,7 @@ apf.DOMParser.prototype = new (function(){
                         "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
                 //#endif
                 o = new apf.aml.processingInstructions[target]();
+
                 o.target = o.nodeName  = target;
                 o.data   = o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;

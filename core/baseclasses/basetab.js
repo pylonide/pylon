@@ -756,7 +756,7 @@ apf.BaseTab = function(){
     this.addEventListener("DOMNodeInserted",function(e){
         var amlNode = e.currentTarget;
         
-        if (amlNode.localName != "page" || e.relatedNode != this)
+        if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
             return;
 
         if (!e.$beforeNode) {

@@ -34,7 +34,7 @@
  *  <a:window visible="true" width="500" height="400">
  *      <a:table id="tableTest" 
  *        columns = "80, *"
- *        margin  = "10 10 10 10"
+ *        edge    = "10 10 10 10"
  *        padding = "5"
  *        bottom  = "35"
  *        top     = "0">
@@ -83,16 +83,14 @@ apf.table = function(struct, tagName){
 };
 
 (function(){
-    var l = apf.layout;
-    
     /**** Properties and Attributes ****/
     
-    this.$focussable     = false;
-    this.$update         = false;
+    this.$focussable = false;
+    this.$update     = false;
     
-    this.columns    = "100,*";
+    this.columns    = "150,200";
     this.padding    = 2;
-    this.margin     = "5 5 5 5";
+    this.$edge      = [5, 5, 5, 5];
     this.cellheight = 19;
     
     /**
@@ -102,55 +100,266 @@ apf.table = function(struct, tagName){
      *  <a:table columns="150, *, 20%" />
      * </code>
      * @attribute {String} padding      the space between each element. Defaults to 2.
-     * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
+     * @attribute {String} edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
      * Example:
      * <code>
-     *  <a:table margin="10 10 40 10" />
+     *  <a:table edge="10 10 40 10" />
      * </code>
-     * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row. Defaults to 19.
      */
-    this.$supportedProperties.push("columns", "padding", "margin", 
+    this.$supportedProperties.push("columns", "padding", "edge", 
         "cellheight", "span");
     
-    this.$propHandlers["columns"]    =
-    this.$propHandlers["padding"]    =
-    this.$propHandlers["margin"]     =
-    this.$propHandlers["cellheight"] = function(value){
-        if (!this.$update && apf.loaded)
-            l.queue(this.$ext, this.$updateObj);
-        this.$update = true;
-    };
-    
-    function visibleHandler(){
-        var p = this.parentNode;
-        if (!p.$update && apf.loaded)
-            l.queue(p.$ext, p.$updateObj);
-        p.$update = true;
+    this.$propHandlers["columns"] = function(value){
+        if (!value.match(/^(\d+\%?\s*(?:,\s*|\s*$))+$/)) {
+            //#ifdef __DEBUG
+            apf.console.warn("Invalid column string found for table: " + value);
+            //#endif
+            return;
+        }
+        
+        var col, colsize = this.$columns = value.splitSafe(",");
+
+        var total = 0, cols = this.$table.getElementsByTagName("col");
+        if (cols.length) {
+            for (var sz, i = 0, l = Math.min(cols.length, colsize.length); i < l; i++) {
+                cols[i].style.width = (sz = colsize[i]).indexOf("%") > -1 ? sz : sz + "px";
+                total += parseInt(sz);
+            }
+        }
+        
+        var start = cols.length - colsize.length;
+        if (start > 0) {
+            for (var i = cols.length - start; i < cols.length; i++) {
+                cols[i].parentNode.removeChild(cols[i]);
+            }
+        }
+        else if (start < 0) {
+            for (var i = colsize.length + start; i < colsize.length; i++) {
+                col = this.$table.appendChild(document.createElement("col"));
+                col.style.width = (sz = colsize[i]).indexOf("%") > -1 ? sz : sz + "px";
+                col.setAttribute("valign", "top");
+                total += parseInt(sz);
+            }
+        }
+
+        this.$table.style.width = String(value).indexOf("%") > -1 
+            ? "auto" 
+            : (total + ((colsize.length - 1) * this.padding) 
+                + this.$edge[0] + this.$edge[2]) + "px";
+
+        var cells = this.$tbody.firstChild.getElementsByTagName("td");
+        for (var i = cells.length - 1; i >= 0; i--)
+            cells[i].parentNode.removeChild(cells[i]);
+        
+        for (var c, i = 0; i < colsize.length; i++) {
+            c = this.$tbody.firstChild.appendChild(document.createElement("td"));
+            if (colsize[i].indexOf("%") > -1)
+                c.appendChild(document.createElement("div")).style.width = "50px";
+        }
+        
+        if (start && this.$amlLoaded)
+            visibleHandler({sync: true, parentNode: this});
     }
+
+    this.$propHandlers["padding"] = function(value){
+        var cells = this.$table.getElementsByTagName("td");
+        var lastCol, lastRow, cell, lRow = this.$tbody.lastChild;
+        for (var i = this.$columns.length, l = cells.length; i < l; i++) {
+            lastCol = (cell = cells[i]).parentNode.lastChild == cell;
+            lastRow = cell.parentNode == lRow;
+            cell.style.padding = "0px " + (lastCol ? 0 : value) + "px " + (lastRow ? 0 : value) + "px 0px";
+        }
+    }
+    
+    this.$propHandlers["edge"] = function(value){
+        this.$table.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
+    }
+    
+    function visibleHandler(e){
+        var table = e.parentNode || this.parentNode;
+        if (e.sync || e.value && !this.$altExt || !e.value && this.$altExt) {
+            var nodes = table.childNodes;
+            
+            var cells = apf.getArrayFromNodelist(table.$tbody.getElementsByTagName("td"));
+            var rows  = table.$tbody.getElementsByTagName("tr");
+            var empty = [], row = 1, cs, rs, collen = table.$columns.length;
+            var z = table.$columns.length, lastCol, lastRow;
+            for (var node, td, last, l = nodes.length, i = 0; i < l; i++) {
+                if ((node = nodes[i]).visible === false)
+                    continue;
+
+                td = node.$altExt = last = cells[z++];
+                
+                if (!rows[row])
+                    table.$tbody.appendChild(document.createElement("tr"));
+                
+                rows[row].appendChild(td);
+                td.appendChild(node.$ext);
+                td.setAttribute("colspan", cs = Math.min(collen - (empty[0] || 0), parseInt(node.colspan || node.span || 1)));
+                
+                td.setAttribute("rowspan", rs = parseInt(node.rowspan || 1));
+                
+                if (!empty[0])
+                    empty[0] = 0;
+                empty[0] += cs;
+
+                if (rs > 1) {
+                    for (var k = 1; k < rs; k++) {
+                        if (!empty[k])
+                            empty[k] = 0;
+                        empty[k] += cs;
+                    }
+                }
+
+                if (empty[0] >= collen) {
+                    lastCol = true;
+                    empty.shift();
+                    row++;
+                }
+                else lastCol = false;
+
+                td.style.padding = "0px " + (lastCol ? 0 : table.padding) 
+                    + "px " + (i == l - 1 ? 0 : table.padding) + "px 0px";
+            }
+            
+            for (;z < cells.length; z++)
+                cells[z].parentNode.removeChild(cells[z]);
+            
+            if (e.sync) return;
+
+            if (e.value)
+                table.$addTd(nodes[l - 1]); //what if it's not visible
+            else {
+                //last.parentNode.removeChild(last);
+                this.$altExt = null;
+            }
+        }
+    }
+    
+    this.$addTd = function(amlNode){
+        var cells = this.$table.getElementsByTagName("td");
+        var total = 0;
+        for (var cell, i = 0; i < cells.length; i++) {
+            total += 1 + (parseInt((cell = cells[i]).getAttribute("colspan") || 1) - 1) 
+                + (parseInt((cell = cells[i]).getAttribute("rowspan") || 1) - 1);
+        }
+        
+        if (total % this.$columns.length == 0) { //New Row
+            var row = this.$tbody.appendChild(document.createElement("tr"));
+        }
+        else
+            row = cells[cells.length - 1].parentNode;
+
+        //Add a new cell in the last row
+        var cel = row.appendChild(document.createElement("td"));
+        cel.style.position = "relative";
+        
+        if (amlNode.colspan || amlNode.span)
+            cel.setAttribute("colspan", amlNode.colspan || amlNode.span);
+        if (amlNode.rowspan)
+            cel.setAttribute("rowspan", amlNode.rowspan);
+
+        cel.appendChild(amlNode.$ext);
+
+        amlNode.$altExt = cel;
+    }
+    
+    var propHandlers = {
+        "width" : function(value){
+            this.$ext.style.width = "";/*value 
+                ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
+                : "";*/
+        },
+        
+        "height" : function(value){
+            this.$ext.style.height = value 
+                ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
+                : "";
+        },
+        
+        "margin" : function(value){
+            this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
+        },
+        
+        "colspan" : function(value){
+            if (!value)
+                this.$altExt.removeAttribute("colspan");
+            else
+                this.$altExt.setAttribute("colspan", value);
+            
+            visibleHandler.call(this, {sync: true});
+        },
+        
+        "rowspan" : function(value){
+            if (!value)
+                this.$altExt.removeAttribute("rowspan");
+            else
+                this.$altExt.setAttribute("rowspan", value);
+        
+            visibleHandler.call(this, {sync: true});
+        },
+        
+        "valign" : function(value){
+            this.$altExt.valign = value;
+        },
+        
+        "align" : function(value){
+            this.$altExt.align = value;
+        }
+    }
+    propHandlers.span = propHandlers.colspan;
     
     //@todo move this to enableTable, disableTable
     this.register = function(amlNode){
-        amlNode.$propHandlers["width"]  = 
-        amlNode.$propHandlers["height"] = 
-        amlNode.$propHandlers["margin"] = 
-        amlNode.$propHandlers["span"]   = this.$updateObj.updateTrigger;
+        if (amlNode.$altExt) //@todo hack, need to rearch layouting
+            return;
+
+        amlNode.$propHandlers["left"]   = 
+        amlNode.$propHandlers["top"]    = 
+        amlNode.$propHandlers["right"]  = 
+        amlNode.$propHandlers["bottom"] = apf.K;
+        
+        for (var prop in propHandlers) {
+            amlNode.$propHandlers[prop] = propHandlers[prop];
+        }
         
         amlNode.addEventListener("prop.visible", visibleHandler);
 
-        l.queue(this.$ext, this.$updateObj);
-        this.$update = true;
+        this.$addTd(amlNode);
+        
+        if (amlNode.margin)
+            propHandlers.margin.call(amlNode, amlNode.margin);
+        
+        //Why was this commented out?
+        if (amlNode.$ext.tagName == "INPUT") {
+            //amlNode.$ext.style.width = "100%";
+        }
+        else
+            amlNode.$ext.style.width = "auto";
+        
+        if (this.lastChild == amlNode)
+            this.$propHandlers["padding"].call(this, this.padding);
     }
     
     this.unregister = function(amlNode){
-        amlNode.$propHandlers["width"]  = 
-        amlNode.$propHandlers["height"] = 
-        amlNode.$propHandlers["margin"] = 
-        amlNode.$propHandlers["span"]   = null;
+        amlNode.$propHandlers["left"]   = 
+        amlNode.$propHandlers["top"]    = 
+        amlNode.$propHandlers["right"]  = 
+        amlNode.$propHandlers["bottom"] = null;
+        
+        for (var prop in propHandlers) {
+            delete amlNode.$propHandlers[prop];
+        }
         
         amlNode.removeEventListener("prop.visible", visibleHandler);
         
-        l.queue(this.$ext, this.$updateObj);
-        this.$update = true;
+        visibleHandler.call(amlNode, {value: false}); //maybe parent is already reset here?
+        
+        if (amlNode.margin)
+            amlNode.$ext.style.margin = "";
+        
+        if (amlNode.width)
+            amlNode.$ext.style.width = "";
     }
     /*
          this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
@@ -161,378 +370,77 @@ apf.table = function(struct, tagName){
     /**** DOM Hooks ****/
     
     this.addEventListener("DOMNodeRemoved", function(e){
-        if (this.$isWaitingOnDisplay || !this.$updateObj)
+        if (e.$doOnlyAdmin || e.currentTarget == this)
             return;
 
-        if (e.currentTarget == this) {
-            var p = this;
-            while (p) {
-                p.unwatch("visible", this.$updateObj.propChange);
-                p = p.parentNode;
-            }
-        }
-        else if (e.relatedNode == this){
+        if (e.relatedNode == this){
             this.unregister(e.currentTarget);
             e.currentTarget.$setLayout();
         }
     });
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (this.$isWaitingOnDisplay || e.currentTarget != this)
+        if (e.currentTarget == this || e.currentTarget.nodeType != 1)
             return;
 
-        if (e.currentTarget == this) {
-            var p = this;
-            while (p) {
-                p.watch("visible", this.$updateObj.propChange);
-                p = p.parentNode;
+        if (e.relatedNode == this) {
+            if (e.$isMoveWithinParent) {
+                visibleHandler.call(e.currentTarget, {sync: true}); 
+            }
+            else {
+                e.currentTarget.$setLayout("table");
+                if (e.currentTarget.nextSibling)
+                    visibleHandler.call(e.currentTarget, {sync: true});
             }
         }
-        else if (e.relatedNode == this && !e.$moveWithinParent)
-            e.currentTarget.$setLayout("table");
     });
     
-    /**
-     * @macro
-     */
-    function setPercentage(expr, value){
-        return typeof expr == "string" 
-            ? expr.replace(apf.percentageMatch, "((" + value + " * $1)/100)")
-            : expr;
-    }
-    
-    this.$isWaitingOnDisplay = false;
-    this.$updateTable = function(){ //@todo prevent this from being called so much
-        if (!this.$update)
-            return;
-
-        //@todo when not visible make all property settings rule based
-        //@todo isnt there a better way for doing this? (faster)
-        //#ifdef __WITH_PROPERTY_WATCH
-        if (!this.$ext.offsetWidth) {
-            this.$isWaitingOnDisplay = true;
-            this.watch("visible", this.$updateObj.propChange);
-            
-            var p = this.parentNode;
-            while(p) {
-                p.watch("visible", this.$updateObj.propChange);
-                p = p.parentNode;
-            }
-            
-            return;
-        }
-        //#endif
-        
-        this.cellheight = parseInt(this.cellheight);
-        this.padding    = parseInt(this.padding);
-        
-        var id;
-        var pWidth      = "pWidth",
-            pHeight     = "pHeight",
-
-            cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/),
-            collength   = cols.length,
-            margin      = apf.getBox(this.margin),
-            rowheight   = [],
-
-            oCols       = [],
-            jNodes      = this.childNodes,
-            col, row, oExt, diff, j, m, cellInfo, span, jNode;
-
-        this.ids = [this.$ext];
-        for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
-            jNode = jNodes[i];
-            if (jNode.nodeType != 1 && jNode.nodeType != 7 
-              || jNode.nodeFunc == apf.NODE_HIDDEN || jNode.visible === false)
-                continue;
-            
-            //#ifdef __WITH_ANCHORING
-            if (jNode.hasFeature(apf.__ANCHORING__))
-                jNode.$disableAnchoring();
-            //#endif
-            
-            m = apf.getBox(String(jNode.margin));
-            //for (j = 0; j < 4; j++)
-                //m[j] += this.padding;
-
-            diff = apf.getDiff(jNode.$ext);
-            oExt = jNode.$ext;
-            if (!oExt.getAttribute("id")) 
-                apf.setUniqueHtmlId(oExt);
-            if (apf.isIE)
-                oExt.style.position = "absolute"; //Expensive
-            
-            span = jNode.span;
-            
-            cellInfo = {
-                span    : span == "*" ? collength - (c % collength) : parseInt(span) || 1,
-                m       : m,
-                height  : setPercentage(jNode.height, pHeight),
-                width   : jNode.width,
-                oHtml   : oExt,
-                hordiff : diff[0],
-                verdiff : diff[1],
-                id      : (apf.hasHtmlIdsInJs 
-                    ? oExt.getAttribute("id")
-                    : "document.getElementById('" + oExt.getAttribute("id") + "')")
-                //"ids[" + (this.ids.push(oExt) - 1) + "]"
-            }
-            
-            nodes.push(cellInfo);
-            
-            row = Math.floor(c / collength);
-            c += cellInfo.span; //no check on span overflow
-            
-            if (cellInfo.height == "*" || rowheight[row] == "*") {
-                rowheight[row] = "*";
-                cellInfo.height = null;
-            }
-            else if(cellInfo.height && parseInt(cellInfo.height) != cellInfo.height) {
-                rowheight[row] = cellInfo.height;
-            }
-            else if(typeof rowheight[row] != "string") {
-                rowheight[row] = Math.max(rowheight[row] || 0, 
-                    parseFloat(cellInfo.height || this.cellheight));
-                    //+ cellInfo.m[0] + cellInfo.m[2]);
-            }
-        }
-        var dt = new Date().getTime();
-        
-        if (nodes.length == 0) 
-            return;
-
-        var total, combCol, fillCol = null, fillRow = null;
-        var rule = [
-            "var ids = apf.all[" + this.$uniqueId + "].ids",
-            "var total = 0, pHeight = ids[0].offsetHeight - " 
-                + ((rowheight.length - 1) * this.padding + margin[0] + margin[2]),
-            "var pWidth  = ids[0].offsetWidth - " 
-                + ((collength - 1) * this.padding + margin[1] + margin[3]) 
-        ];
-        
-        /*for (i = 0; i < this.ids.length; i++) {
-            rule.push("var item" + i + " = ids[" + i + "]");
-        }*/
-
-        //Set column widths (only support for one *)
-        for (total = 0, i = 0; i < collength; i++) {
-            if (cols[i] == "*")
-                fillCol = i;
-            else {
-                if (parseFloat(cols[i]) != cols[i]) {
-                    rule.push("var colw" + i + "; total += colw" 
-                        + i + " = " + cols[i]);
-                    cols[i] = "colw" + i;
-                }
-                else
-                    total += cols[i] = parseFloat(cols[i]);
-            }
-        }
-        if (fillCol !== null) {
-            rule.push("var colw" + fillCol + " = " + pWidth 
-                    + " - total - " + total);
-            cols[fillCol] = "colw" + fillCol;
-        }
-        
-        //Set column start position
-        var colstart = [margin[3]];
-        rule.push("var coll0 = " + margin[3]);
-        for (i = 1; i < collength; i++) {
-            if (typeof colstart[i-1] == "number" && typeof cols[i-1] == "number") {
-                colstart[i] = colstart[i-1] + cols[i-1] + this.padding;
-            }
-            else {
-                rule.push("var coll" + i + " = coll" + (i - 1) + " + colw" 
-                    + (i - 1) + " + " + this.padding);
-                colstart[i] = "coll" + i;
-            }
-        }
-        
-        //Set row heights
-        rule.push("total = 0");
-        var needcalc = false;
-        for (total = 0, i = 0; i < rowheight.length; i++) {
-            if (rowheight[i] == "*")
-                fillRow = i;
-            else {
-                if (parseFloat(rowheight[i]) != rowheight[i]) {
-                    needcalc = true;
-                    rule.push("var rowh" + i + "; total += rowh" 
-                        + i + " = " + rowheight[i]);
-                    rowheight[i] = "rowh" + i;
-                }
-                else
-                    total += rowheight[i] = parseFloat(rowheight[i]);
-            }
-        }
-        if (fillRow !== null) {
-            needcalc = true;
-            rule.push("var rowh" + fillRow + " = " + pHeight 
-                    + " - total - " + total);
-            rowheight[fillRow] = "rowh" + fillRow;
-        }
-        
-        if (!needcalc && !this.aData)
-            this.$ext.style.height = (total + ((rowheight.length-1) * this.padding) + margin[0] + margin[2]) + "px";
-        
-        //Set column start position
-        var rowstart = [margin[0]];
-        rule.push("var rowt0 = " + margin[0]);
-        for (i = 1; i < rowheight.length; i++) {
-            if (typeof rowstart[i-1] == "number" && typeof rowheight[i-1] == "number") {
-                rowstart[i] = rowstart[i-1] + rowheight[i-1] + this.padding;
-            }
-            else {
-                rule.push("var rowt" + i + " = rowt" + (i - 1) + " + rowh" 
-                    + (i - 1) + " + " + this.padding);
-                rowstart[i] = "rowt" + i;
-            }
-        }
-        
-        //Set all cells
-        for (c = 0, i = 0; i < nodes.length; i++) {
-            cellInfo = nodes[i]
-            col      = c % collength;
-            row      = Math.floor(c / collength);
-            c       += cellInfo.span; //no check on span overflow
-            id       = cellInfo.id;
-            
-            //Top
-            if (typeof rowstart[row] == "number")
-                cellInfo.oHtml.style.top = (rowstart[row] + cellInfo.m[0]) + "px";
-            else
-                rule.push(id + ".style.top    = rowt" 
-                    + row + " + " + cellInfo.m[0] + " + 'px'");
-            
-            //Left
-            if (typeof colstart[col] == "number")
-                cellInfo.oHtml.style.left = (colstart[col] + cellInfo.m[3]) + "px";
-            else
-                rule.push(id + ".style.left   = coll" 
-                    + col + " + " + cellInfo.m[3] + " + 'px'");
-            
-            //Width
-            if (cellInfo.span && cellInfo.span > 1 && !cellInfo.width) {
-                var cTotal = 0;
-                for (combCol = [], j = 0; j < cellInfo.span; j++) {
-                    if (typeof cols[col + j] == "number") {
-                        cTotal += cols[col + j];
-                    }
-                    else {
-                        combCol.push("colw" + (col + j));
-                        cTotal -= 1000000;
-                    }
-                    
-                    //if (j != cellInfo.span - 1)
-                        //cTotal += this.padding;
-                }
-
-                var spanPadding = (cellInfo.span - 1) * this.padding;
-                if (cTotal > 0) {
-                    cellInfo.oHtml.style.width = (cTotal 
-                        + spanPadding - (cellInfo.m[1] + cellInfo.m[3] 
-                        + cellInfo.hordiff)) + "px";
-                }
-                else {
-                    if (cTotal > -1000000)
-                        combCol.push(cTotal + 1000000);
-                    rule.push(id + ".style.width = (" + combCol.join(" + ") 
-                        + " + " + spanPadding + " - " + (cellInfo.m[1] + cellInfo.m[3] 
-                        + cellInfo.hordiff) + ") + 'px'");
-                }
-            }
-            else {
-                if (parseFloat(cellInfo.width) == cellInfo.width
-                  || typeof cols[col] == "number")
-                    cellInfo.oHtml.style.width = ((cellInfo.width || cols[col]) 
-                        - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
-                else
-                    rule.push(id + ".style.width = (" 
-                        + (cellInfo.width || "colw" + col) + " - " 
-                        + (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff) 
-                        + ") + 'px'");
-            }
-
-            //Height
-            if (parseFloat(cellInfo.height) == cellInfo.height
-                || typeof rowheight[row] == "number")
-                cellInfo.oHtml.style.height = ((cellInfo.height || rowheight[row]
-                    - (cellInfo.m[0] + cellInfo.m[2])) - cellInfo.verdiff) + "px";
-            else
-                rule.push(id + ".style.height = (" 
-                    + (cellInfo.height || "rowh" + row) + " - " 
-                    + (cellInfo.m[0] + cellInfo.m[2] + cellInfo.verdiff)
-                    + ") + 'px'");
-        }
-
-        //rule.join("\n"), true);
-        apf.layout.setRules(this.$ext, "table", (rule.length 
-            ? "try{" + rule.join(";}catch(e){};\ntry{") + ";}catch(e){};" 
-            : ""), true);
-        apf.layout.queue(this.$ext);
-        //Set size of table if necesary here...
-        this.$update = false;
-    };
-    
     this.$draw = function(){
-        var _self = this;
-        this.$updateObj = {
-            $updateLayout : function(){
-                _self.$updateTable();
-            },
-            updateTrigger : function(value){
-                if (!_self.$update && apf.loaded)
-                    l.queue(_self.$ext, _self.$updateObj);
-                _self.$update = true;
-            },
-            //#ifdef __WITH_PROPERTY_WATCH
-            propChange : function (name, old, value){
-                if (_self.$update && apf.isTrue(value) && _self.$ext.offsetWidth) {
-                    _self.$updateTable();
-                    apf.layout.activateRules(_self.$ext);
-                    
-                    var p = _self;
-                    while (p) {
-                        p.unwatch("visible", _self.$updateObj.propChange);
-                        p = p.parentNode;
-                    }
-                    
-                    _self.$isWaitingOnDisplay = false;
-                }
-            }
-            //#endif
-        }
-        
-        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        this.$ext.className = "table " + (this.getAttributeNode("class") || "");
+        this.$pHtmlNode.insertAdjacentHTML("beforeend", "<div><table cellSpacing='0' cellPadding='0'><tbody><tr class='first'></tr></tbody></table></div>");
+        this.$ext = this.$pHtmlNode.lastChild;
+        this.$table = this.$ext.firstChild;
+        this.$tbody = this.$table.firstChild;
+        this.$ext.className = "table " + (this.getAttribute("class") || "");
         this.$int = this.$ext;
         this.$ext.host = this;
 
-        if (!this.$ext.getAttribute("id")) 
-            apf.setUniqueHtmlId(this.$ext);
-
-        this.$htmlId = apf.hasHtmlIdsInJs 
-            ? this.$ext.getAttribute("id")
-            : "document.getElementById('" + this.$ext.getAttribute("id") + "')";
-        
-        //this.$ext.style.height = "80%"
-        //this.$ext.style.top       = 0;
-        this.$ext.style.position  = "relative";
-        this.$ext.style.minHeight = "10px";
-        
         if (this.getAttribute("class")) 
             apf.setStyleClass(this.$ext, this.getAttribute("class"));
-
-        if (!apf.isIE && !apf.table.$initedcss) {
-            apf.importCssString(".table>*{position:absolute}");
-            apf.table.$initedcss = true;
-        }
+        
+        //#ifdef __WITH_LAYOUT
+        apf.layout.setRules(this.$ext, "table",
+            "apf.all[" + this.$uniqueId + "].$resize()", true);
+        apf.layout.queue(this.$ext);
+        //#endif
+        
+        this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
+    //@todo implement percentage by using fixed and add functionality here
+    this.$resize = function(){
+        if (this.$table.offsetWidth >= this.$ext.offsetWidth)
+            this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
+                - apf.getWidthDiff(this.$ext))) + "px";
+        else {
+            this.$ext.style.minWidth = "";
+            this.minwidth = this.$originalMin[0];
+        }
+
+        if (this.$table.offsetHeight >= this.$ext.offsetHeight)
+            this.$ext.style.minHeight = (this.minheight = Math.max(0, this.$table.offsetHeight 
+                - apf.getHeightDiff(this.$ext))) + "px";
+        else {
+            this.$ext.style.minHeight = "";
+            this.minheight = this.$originalMin[1];
+        }
+    }
+    
     this.$loadAml = function(x){
-        if (!this.width && (apf.getStyle(this.$ext, "position") == "absolute"
-          || this.left || this.top || this.right || this.bottom || this.anchors))
-            this.$ext.style.width  = "100%"
+        this.$amlLoaded = false; //@todo hack
+
+        if (!this.$columns)
+            this.$propHandlers.columns.call(this, this.columns);
+        this.$amlLoaded = true; //@todo hack
     };
 }).call(apf.table.prototype = new apf.GuiElement());
 

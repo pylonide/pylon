@@ -23,8 +23,10 @@
 apf.AmlAttr = function(ownerElement, name, value){
     this.$init();
     
-    this.ownerElement  = ownerElement;
-    this.ownerDocument = ownerElement.ownerDocument;
+    if (ownerElement) {
+        this.ownerElement  = ownerElement;
+        this.ownerDocument = ownerElement.ownerDocument;
+    }
     
     this.nodeName  = this.name  = name;
     this.nodeValue = this.value = value;
@@ -68,21 +70,23 @@ apf.AmlAttr = function(ownerElement, name, value){
     this.$setValue = function(value){
         this.nodeValue = this.value = value;
         this.specified = true;
-        
+
         //@todo apf3.0 domattr
-        /*host.dispatchEvent("DOMAttrModified", {
+        this.ownerElement.dispatchEvent("DOMAttrModified", {
             relatedNode : this,
             attrChange  : this.MODIFICATION,
-            attrName    : name,
+            attrName    : this.name,
             newValue    : value,
-            prevValue   : null, //@todo apf3.0
-            bubble      : true
-        });*/
+            prevValue   : this.$lastValue || "",
+            bubbles     : true
+        });
+        
+        this.$lastValue = value;
     };
     
-    this.$triggerUpdate = function(e){
+    this.$triggerUpdate = function(e, oldValue){
         var name  = this.name,
-            value = this.value,
+            value = this.value || this.nodeValue,
             host  = this.ownerElement;
 
         if (name == "id" && !this.specified && host.id) {
@@ -128,11 +132,13 @@ apf.AmlAttr = function(ownerElement, name, value){
                 attrChange  : this.MODIFICATION,
                 attrName    : name,
                 newValue    : value,
-                prevValue   : null, //@todo apf3.0
-                bubble      : true
+                prevValue   : this.$lastValue || "",
+                bubbles     : true
             });
         }
         else this.specified = true;
+            
+        this.$lastValue = value;
     };
     
     //@todo apf3.0 domattr

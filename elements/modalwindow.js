@@ -167,6 +167,7 @@ apf.AmlWindow = function(struct, tagName){
     this.showdragging      = false;
     this.kbclose           = false;
     this.$focussable       = apf.KEYBOARD;
+    this.$editableCaption  = ["title"];
 
     /**** Public Methods ****/
 

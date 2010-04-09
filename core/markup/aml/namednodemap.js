@@ -47,6 +47,7 @@ apf.AmlNamedNodeMap = function(host){
         this.push(node);
         
         node.ownerElement = this.$host;
+        node.ownerDocument = this.$host.ownerDocument;
         node.$triggerUpdate();
     };
     

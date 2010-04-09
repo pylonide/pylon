@@ -43,7 +43,7 @@ apf.Focussable = function(){
      */
     this.focus = function(noset, e, nofix){
         if (!noset) {
-            if (this.$isWindowContainer) {
+            if (this.$isWindowContainer > -1) {
                 apf.window.$focusLast(this, e, true);
             }
             else {
@@ -58,11 +58,10 @@ apf.Focussable = function(){
             return this;
         }
 
-        if (this.$focus)
+        if (this.$focus && !this.editable)
             this.$focus(e);
 
         this.dispatchEvent("focus", apf.extend({
-            srcElement : this,
             bubbles    : true
         }, e));
         return this;
@@ -85,7 +84,6 @@ apf.Focussable = function(){
             apf.window.$blur(this);
 
         this.dispatchEvent("blur", apf.extend({
-            srcElement : this,
             bubbles    : !e || !e.cancelBubble
         }, e));
         return this;

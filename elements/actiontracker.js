@@ -99,9 +99,12 @@
 apf.actiontracker = function(struct, tagName){
     this.$init(tagName || "actiontracker", apf.NODE_HIDDEN, struct);
     
-    this.$stackDone   = [];
-    this.$stackUndone = [];
-    this.$execStack   = [];
+    this.$undostack = [];
+    this.$redostack = [];
+    this.$execstack = [];
+    //#ifdef __ENABLE_ACTIONTRACKER_TRANSACTIONS
+    this.$transtack = {};
+    //#endif
 };
 
 (function(){
@@ -110,25 +113,47 @@ apf.actiontracker = function(struct, tagName){
     this.realtime   = true;
     this.undolength = 0;
     this.redolength = 0;
+    //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+    this.length     = 0;
+    this.position   = 0;
+    //#endif
 
     /**
      * @attribute {Number}  !undolength the length of the undo stack.
      * @attribute {Number}  !redolength the length of the redo stack.
+     * @attribute {Number}  !length     the length of the undo/redo stack combined. Use this attribute to bind a slider's max attribute to.
+     * @attribute {Number}  position    the position within the total length (same value as undolength). Use this attribute to bind a slider's value attribute to.
      * @attribute {Boolean} realtime    whether changes are immediately send to
      * the datastore, or held back until purge() is called.
      */
     this.$booleanProperties = {};
     this.$booleanProperties["realtime"] = true;
-    this.$supportedProperties = ["realtime", "undolength", "redolength", "alias"];
+    this.$supportedProperties = ["realtime", "undolength", "redolength", "alias", "length", "position"];
     this.$handlePropSet = function(prop, value, force){
         //Read only properties
         switch (prop) {
             case "undolength":
-                this.undolength = this.$stackDone.length;
+                this.undolength = this.$undostack.length;
+                //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+                this.setProperty("position", this.position = this.undolength);
+                //#endif
                 break;
             case "redolength":
-                this.redolength = this.$stackUndone.length;
+                this.redolength = this.$redostack.length;
                 break;
+            //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+            case "position":
+                var d = this.undolength - (this.position = value);
+                if (d > 0)
+                    change.call(this, d, false, true);
+                else if (d < 0)
+                    change.call(this, -1 * d);
+                
+                break;
+            case "length":
+                this.length = this.undolength + this.redolength;
+                break;
+            //#endif
             //#ifdef __WITH_ALIAS
             case "alias":
                 apf.GuiElement.propHandlers.alias.call(this, value);
@@ -142,7 +167,42 @@ apf.actiontracker = function(struct, tagName){
         if (this.parentNode)
             this.parentNode.$at = this;
     });
+    
+    //#ifdef __ENABLE_ACTIONTRACKER_HTML5
+    this.item = function(index){
+        if (index < this.$undostack.length)
+            return this.$undostack[index];
 
+        return this.$redostack[index - this.$undostack.length];
+    }
+    
+    this.add = function(data, title){
+        throw new Error("Not implemented yet");
+    }
+    
+    this.remove = function(index){
+        throw new Error("Not implemented yet");
+    }
+    
+    this.clearUndo = function(){
+        this.setProperty("undolength", this.$undostack.length = 0);
+        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+        this.setProperty("length", this.$redostack.length);
+        //#endif
+        
+        this.dispatchEvent("afterchange", {action: "clear-undo"});
+    }
+    
+    this.clearRedo = function(){
+        this.setProperty("redolength", this.$redostack.length = 0);
+        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+        this.setProperty("length", this.$undostack.length);
+        //#endif
+        
+        this.dispatchEvent("afterchange", {action: "clear-redo"});
+    }
+    //#endif
+    
     /**
      * Adds a new action handler which can be used by any actiontracker.
      * @param {String} action Specifies the name of the action
@@ -201,17 +261,17 @@ apf.actiontracker = function(struct, tagName){
      */
     this.execute = function(options){
         if (this.dispatchEvent("beforechange", options) === false)
-            return;
+            return false;
 
         //Execute action
         var UndoObj = new apf.UndoData(options, this);
-        if (options.action)
+        if (options.action && !options.transaction)
             apf.actiontracker.actions[options.action](UndoObj, false, this);
 
         //Add action to stack
-        UndoObj.id = this.$stackDone.push(UndoObj) - 1;
+        UndoObj.id = this.$undostack.push(UndoObj) - 1;
 
-        this.setProperty("undolength", this.$stackDone.length);
+        this.setProperty("undolength", this.$undostack.length);
 
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
         if (typeof apf.offline != "undefined") {
@@ -230,8 +290,12 @@ apf.actiontracker = function(struct, tagName){
             this.$addToQueue(UndoObj, false);
 
         //Reset Redo Stack
-        this.$stackUndone.length = 0;
-        this.setProperty("redolength", this.$stackUndone.length);
+        this.$redostack.length = 0;
+        this.setProperty("redolength", this.$redostack.length);
+        
+        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+        this.setProperty("length", this.$undostack.length);
+        //#endif
 
         this.dispatchEvent("afterchange", {
             action   : "do"
@@ -242,21 +306,27 @@ apf.actiontracker = function(struct, tagName){
     };
 
     //deprecated??
-    this.$addActionGroup = function(done, rpc){
+    /*this.$addActionGroup = function(done, rpc){
         var UndoObj = new apf.UndoData("group", null, [
             //@todo apf.copyArray is deprecated and no longer exists
             apf.copyArray(done, UndoData), apf.copyArray(rpc, UndoData)
         ]);
-        this.$stackDone.push(UndoObj);
-        this.setProperty("undolength", this.$stackDone.length);
+        this.$undostack.push(UndoObj);
+        this.setProperty("undolength", this.$undostack.length);
+        
+        //@todo reset redo here?
+        
+        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+        this.setProperty("length", this.$undostack.length);
+        //#endif
 
         this.dispatchEvent("afterchange", {action: "group", done: done});
-    };
+    };*/
 
     /**
      * Synchronizes all held back changes to the data store.
      * @todo I don't really know if this stacking into the parent is
-     * still used, for instance for apf.Transactions. please think
+     * still used, for instance for apf.Transaction. please think
      * about it.
      */
     this.purge = function(nogrouping, forcegrouping){//@todo, maybe add noReset argument
@@ -264,9 +334,9 @@ apf.actiontracker = function(struct, tagName){
 
         //@todo Check if this still works together with transactions
         if (true) {//nogrouping && parent
-            if (this.$execStack.length) {
-                this.$execStack[0].undoObj.saveChange(this.$execStack[0].undo, this);
-                this.$lastExecStackItem = this.$execStack[this.$execStack.length - 1];
+            if (this.$execstack.length) {
+                this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this);
+                this.$lastExecStackItem = this.$execstack[this.$execstack.length - 1];
             }
         }
         else if (parent) {
@@ -274,22 +344,235 @@ apf.actiontracker = function(struct, tagName){
                 Copy Stacked Actions as a single
                 grouped action to parent ActionTracker
             */
-            //parent.$addActionGroup(this.$stackDone, stackRPC);
+            //parent.$addActionGroup(this.$undostack, stackRPC);
             
             //Reset Stacks
             this.reset();
         }
     };
+    
+    //#ifdef __ENABLE_ACTIONTRACKER_TRANSACTIONS
+    /**
+     * Starts recording a transaction. The transaction can either be committed
+     * or rolled back. Changes won't be executed until committed for xml data 
+     * nodes. For apf based data nodes (i.e. aml nodes) changes are executed
+     * immediately and reverted on rollback.
+     * @see element.actiontracker.method.commit
+     * @see element.actiontracker.method.rollback
+     */
+    this.begin = function(dataNode){
+        //Currently only supports nodes inheriting from apf.Class
+        //In the future this same method should be used for xml dom elements
+        //that support the mutation events
+        if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
+            dataNode.$stack = this.$transtack[dataNode.$uniqueId] = [];
+
+            dataNode.addEventListener("DOMCharacterDataModified", domCharMod);
+            dataNode.addEventListener("DOMAttrModified",          domCharMod);
+            dataNode.addEventListener("DOMNodeInserted",          domNodeIns);
+            dataNode.addEventListener("DOMNodeRemoved",           domNodeRem);
+        }
+        //Assuming normal actiontracker use
+        else {
+            //@todo (for mike) for the new rsb method to work properly, it should 
+            //be really easy to add xml changes to the actiontracker using this 
+            //begin commit method. We could add an at.exec(function(){}) that lasts
+            //during the length of the function. Point is that we need to change
+            //the xmldb to somehow find the right actiontracker, because we don't
+            //have mutation events yet. One way is to add an a_at="" attribute
+            //that can be lookup up to find actiontracker listeners. 
+            
+            //Set listener
+            //if (dataNode) 
+                //apf.xmldb.setNodeListener();
+            
+            var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
+            if (this.$transtack[id]) {
+                throw new Error("Existing transaction found!");
+            }
+            
+            this.$transtack[id] = [];
+            this.$transtack[id].$native = true;
+            
+            if (!this.$execute) {
+                this.$execute = this.execute;
+                this.execute = function(options){
+                    var inTrans = false;
+                    
+                    //Find transaction
+                    if (options.selNode)
+                        inTrans = this.$transtack[options.selNode.getAttribute(apf.xmldb.xmlIdTag)];
+                    
+                    //Either stack or execute immediately
+                    if (inTrans)
+                        inTrans.push(options);
+                    else
+                        this.$execute(options);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Rolls back a transaction
+     */
+    this.rollback = function(dataNode){
+        if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
+            id = dataNode.$uniqueId;
+            var stack = this.$transtack[id];
+            
+            //undo all changes (in reverse order)
+            for (var s, i = stack.length - 1; i >= 0; i--) {
+                s = stack[i];
+                apf.actiontracker.actions[s.action].call(s, true, this);
+            }
+
+            dataNode.removeEventListener("DOMCharacterDataModified", domCharMod);
+            dataNode.removeEventListener("DOMAttrModified",          domCharMod);
+            dataNode.removeEventListener("DOMNodeInserted",          domNodeIns);
+            dataNode.removeEventListener("DOMNodeRemoved",           domNodeRem);
+            delete dataNode.$stack;
+        }
+        else
+            id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
+        
+        delete this.$transtack[id];
+    }
+    
+    /**
+     * Commits a transaction
+     */
+    this.commit = function(dataNode){
+        if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
+            id = dataNode.$uniqueId;
+            var stack = this.$transtack[id];
+            if (!stack) {
+                //#ifdef __DEBUG
+                apf.console.log("Commit called without transaction started");
+                //#endif
+                return;
+            }
+            
+            if (stack.length)
+                this.execute({
+                    xmlNode     : dataNode,
+                    action      : "multicall",
+                    transaction : true,
+                    args        : stack
+                });
+
+            dataNode.removeEventListener("DOMCharacterDataModified", domCharMod);
+            dataNode.removeEventListener("DOMAttrModified",          domCharMod);
+            dataNode.removeEventListener("DOMNodeInserted",          domNodeIns);
+            dataNode.removeEventListener("DOMNodeRemoved",           domNodeRem);
+            delete dataNode.$stack;
+        }
+        else {
+            id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
+            var stack = this.$transtack[id];
+            
+            if (stack.length)
+                this.execute({
+                    xmlNode : dataNode,
+                    action  : "multicall",
+                    args    : stack
+                });
+        }
+        
+        delete this.$transtack[id];
+    }
+    
+    this.transact = function(func, dataNode){
+        this.begin(dataNode);
+        func();
+        this.commit(dataNode);
+    }
+    
+    var domCharMod = function(e){
+        if (e.$didtrans || !e.currentTarget.$amlLoaded)
+            return;
+
+        var context = e.name == "DOMAttrModified"
+            ? e.relatedNode
+            : e.currentTarget;
+
+        this.$stack.push({
+            action : context.nodeType == 2
+              ? "setAttribute"
+              : "setTextNode",
+            args   : context.nodeType == 2
+              ? [e.currentTarget, e.attrName, e.newValue]
+              : [e.currentTarget, e.newValue],
+            extra  : {
+                name     : e.attrName,
+                oldValue : e.prevValue
+            }
+        });
+        
+        e.$didtrans = true;
+    };
+    
+    var domNodeIns = function(e){
+        if (e.$didtrans) 
+            return;
+
+        var n = e.currentTarget;
+        if (n.nodeType == 1) {
+            this.$stack.push({
+                action  : "appendChild",
+                args    : [e.relatedNode, n, n.nextSibling],
+                xmlNode : n
+            });
+        }
+        else if (n.nodeType == 2) {
+            this.$stack.push({
+                action : "setAttribute",
+                args   : [n.ownerElement, n.nodeName, n.nodeValue],
+                extra  : {
+                    name : n.nodeValue
+                }
+            });
+        }
+        else {
+            this.$stack.push({
+                action : "setTextNode",
+                args   : [n, n.nodeValue],
+                extra  : {}
+            });
+        }
+
+        e.$didtrans = true;
+    };
+    
+    var domNodeRem = function(e){
+        if (e.$didtrans) 
+            return;
+            
+        this.$stack.push({
+            action : "removeNode",
+            args   : [e.currentTarget],
+            extra  : {
+                parent      : e.relatedNode,
+                removedNode : e.currentTarget,
+                beforeNode  : e.currentTarget.nextSibling
+            }
+        });
+        e.$didtrans = true;
+    };
+    //#endif
 
     /**
      * Empties the action stack. After this method is run running undo
      * or redo will not do anything.
      */
     this.reset = function(){
-        this.$stackDone.length = this.$stackUndone.length = 0;
+        this.$undostack.length = this.$redostack.length = 0;
 
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
+        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+        this.setProperty("length", 0);
+        //#endif
 
         this.dispatchEvent("afterchange", {action: "reset"});
     };
@@ -309,8 +592,8 @@ apf.actiontracker = function(struct, tagName){
     };
 
     function change(id, single, undo, rollback){
-        var undoStack = undo ? this.$stackDone : this.$stackUndone, //local vars switch
-            redoStack = undo ? this.$stackUndone : this.$stackDone; //local vars switch
+        var undoStack = undo ? this.$undostack : this.$redostack, //local vars switch
+            redoStack = undo ? this.$redostack : this.$undostack; //local vars switch
 
         if (!undoStack.length) return;
         
@@ -344,8 +627,8 @@ apf.actiontracker = function(struct, tagName){
             }
 
             //Set Changed Value
-            this.setProperty("undolength", this.$stackDone.length);
-            this.setProperty("redolength", this.$stackUndone.length);
+            this.setProperty("undolength", this.$undostack.length);
+            this.setProperty("redolength", this.$redostack.length);
             return UndoObj;
         }
 
@@ -373,11 +656,11 @@ apf.actiontracker = function(struct, tagName){
                                    state. The entire undo and redo stack will \
                                    be cleared to prevent further corruption\
                                    This is a serious error, please contact \
-                                   a specialist.");
+                                   the system administrator.");
                 //#endif
 
-                this.$stackDone   = [];
-                this.$stackUndone = [];
+                this.$undostack = [];
+                this.$redostack = [];
 
                 //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
                 if (typeof apf.offline != "undefined") {
@@ -451,7 +734,7 @@ apf.actiontracker = function(struct, tagName){
                     @todo: Think about adding ignore-fail to settings and 
                            actiontracker.
                 */
-                this.$execStack = [];
+                this.$execstack = [];
                 
                 var oError = new Error(apf.formatErrorString(0, this, 
                     "Executing action",
@@ -495,9 +778,9 @@ apf.actiontracker = function(struct, tagName){
             to keep the stack clean
         */
         //@todo Implement this for isGroup if deemed useful
-        if (!isGroup && this.$execStack.length && !UndoObj.state
-          && this.$execStack[this.$execStack.length - 1].undoObj == UndoObj) {
-            this.$execStack.length--;
+        if (!isGroup && this.$execstack.length && !UndoObj.state
+          && this.$execstack[this.$execstack.length - 1].undoObj == UndoObj) {
+            this.$execstack.length--;
 
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
             //We want to maintain the stack for sync
@@ -515,10 +798,10 @@ apf.actiontracker = function(struct, tagName){
         var idx, undoObj, qItem;
         // Add the item to the queue
         if (isGroup) { //@todo currently no offline support for grouped actions
-            qItem = this.$execStack.shift();
+            var undoObj, qItem = this.$execstack.shift();
             for (var i = 0; i < UndoObj.length; i++) {
                 undoObj = UndoObj[i];
-                this.$execStack.unshift({
+                this.$execstack.unshift({
                     undoObj : (undoObj.tagName 
                         ? undoObj 
                         : new apf.UndoData(undoObj, this)).preparse(undo, this),
@@ -526,7 +809,7 @@ apf.actiontracker = function(struct, tagName){
                 });
             }
             if (qItem)
-                this.$execStack.unshift(qItem);
+                this.$execstack.unshift(qItem);
 
             return;
         }
@@ -536,7 +819,7 @@ apf.actiontracker = function(struct, tagName){
             undo   : undo
 
         };
-        idx = this.$execStack.push(qItem) - 1;
+        this.$execstack.push(qItem) - 1;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
@@ -544,7 +827,7 @@ apf.actiontracker = function(struct, tagName){
         //#endif
 
         //The queue was empty, yay! we're gonna exec immediately
-        if (this.$execStack.length == 1 && this.realtime)
+        if (this.$execstack.length == 1 && this.realtime)
             UndoObj.saveChange(undo, this);
     };
 
@@ -553,7 +836,7 @@ apf.actiontracker = function(struct, tagName){
             These thow checks are so important, that they are also executed
             in release mode.
         */
-        if (!this.$execStack[0] || this.$execStack[0].undoObj != UndoObj){
+        if (!this.$execstack[0] || this.$execstack[0].undoObj != UndoObj){
             throw new Error(apf.formatErrorString(0, this, "Executing Next \
                 action in queue", "The execution stack was corrupted. This is \
                 a fatal error. The application should be restarted. You will \
@@ -564,7 +847,7 @@ apf.actiontracker = function(struct, tagName){
         UndoObj.state = null;
 
         //Remove the action item from the stack
-        var lastItem = this.$execStack.shift();
+        var lastItem = this.$execstack.shift();
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
@@ -572,43 +855,43 @@ apf.actiontracker = function(struct, tagName){
         //#endif
 
         //Check if there is a new action to execute;
-        if (!this.$execStack[0] || lastItem == this.$lastExecStackItem)
+        if (!this.$execstack[0] || lastItem == this.$lastExecStackItem)
             return;
 
         // @todo you could optimize this process by using multicall, but too much for now
 
         //Execute action next in queue
-        this.$execStack[0].undoObj.saveChange(this.$execStack[0].undo, this, callback);
+        this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this, callback);
     };
 
     //#ifdef __WITH_OFFLINE_TRANSACTIONS
     this.$loadQueue = function(stack, type){
         if (type == "queue") {
             //#ifdef __DEBUG
-            if (this.$execStack.length) { //@todo
+            if (this.$execstack.length) { //@todo
                 throw new Error("oops");
             }
             //#endif
 
-            this.$execStack = stack;
+            this.$execstack = stack;
         }
 
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
         else if (type == "undo") {
             //#ifdef __DEBUG
-            if (this.$stackDone.length) //@todo
+            if (this.$undostack.length) //@todo
                 throw new Error("oops");
             //#endif
 
-            this.$stackDone = stack;
+            this.$undostack = stack;
         }
         else if (type == "redo") {
             //#ifdef __DEBUG
-            if (this.$stackUndone.length) //@todo
+            if (this.$redostack.length) //@todo
                 throw new Error("oops");
             //#endif
 
-            this.$stackUndone = stack;
+            this.$redostack = stack;
         }
         //#endif
 
@@ -619,346 +902,21 @@ apf.actiontracker = function(struct, tagName){
     };
 
     this.$getQueueLength = function(){
-        return this.$execStack.length;
+        return this.$execstack.length;
     };
 
     this.$startQueue = function(callback){
-        if (!this.$execStack[0] || this.$execStack[0].undoObj.state) //@todo This is gonna go wrong, probably
+        if (!this.$execstack[0] || this.$execstack[0].undoObj.state) //@todo This will probably cause a bug
             return false;
 
         //Execute action next in queue
-        this.$execStack[0].undoObj.saveChange(this.$execStack[0].undo, this, callback);
+        this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this, callback);
     };
     //#endif
 }).call(apf.actiontracker.prototype = new apf.AmlElement());
 
 apf.aml.setElement("actiontracker", apf.actiontracker);
 
-/**
- * UndoData is the command object for the actiontracker. Each instance of this class
- * contains information about a single event in the application. It can be undone
- * and it knows how to synchronize the change to a (remote) data source.
- *
- * @constructor
- * @default_private
- */
-apf.UndoData = function(settings, at){
-    this.localName  = "UndoData";
-    this.extra      = {};
-    //#ifdef __WITH_RSB
-    this.rsbQueue   = {};
-    this.$dontapply = false;
-    //#endif
-    apf.extend(this, settings);
-
-    if (at)
-        this.at = at;
-    //Copy Constructor
-    else if (settings && settings.tagName == "UndoData") {
-        this.args    = settings.args.slice();
-        //#ifdef __WITH_RSB
-        this.rsbArgs = settings.rsbArgs.slice();
-        //#endif
-    }
-    //Constructor
-    else {
-        /*
-            @todo: Please check the requirement for this and how to solve
-            this. Goes wrong with multiselected actions!
-        */
-        this.selNode = this.selNode || (this.action == "removeNode"
-            ? this.args[0]
-            : (this.amlNode
-                ? this.amlNode.selected
-                : null));
-    }
-
-    var options, _self = this;
-
-    // #ifdef __WITH_OFFLINE_TRANSACTIONS
-    var serialState;
-    this.$export = function(){
-        if (serialState) //Caching
-            return serialState;
-
-        serialState = {
-            action    : this.action,
-            //#ifdef __WITH_RSB
-            rsbModel  : this.rsbModel ? this.rsbModel.name : null,
-            rsbQueue  : this.rsbQueue,
-            //#endif
-            at        : this.at.name,
-            timestamp : this.timestamp,
-            parsed    : options ? options.parsed : null, //errors when options is not defined
-            userdata  : options ? options.userdata : null,
-            extra     : {}
-        };
-
-        //#ifdef __WITH_RSB
-        //this can be optimized
-        var rsb = this.rsbModel ? this.rsbModel.rsb : apf.remote;
-        //#endif
-
-        //Record arguments
-        var sLookup = (typeof apf.offline != "undefined" && apf.offline.sLookup)
-            ? apf.offline.sLookup
-            : (apf.offline.sLookup = {});
-        if (!sLookup.count) sLookup.count = 0;
-        var xmlNode, xmlId, args = this.args.slice();
-
-        for (var i = 0; i < args.length; i++) {
-            if (args[i] && args[i].nodeType) {
-                if (!serialState.argsModel) {
-                    var model = apf.nameserver.get("model",
-                        apf.xmldb.getXmlDocId(args[i]));
-
-                    if(model)
-                        serialState.argsModel = model.name || model.$uniqueId;
-                }
-
-                args[i] = serializeNode(args[i]);
-            }
-        }
-
-        var item, name;
-        for (name in this.extra) {
-            item = this.extra[name];
-            serialState.extra[name] = item && item.nodeType
-                ? serializeNode(item)
-                : item;
-        }
-
-        //check this state and the unserialize function state and check the args and extra props
-        serialState.args = args;
-
-        //#ifdef __DEBUG
-        if (!serialState.argsModel)
-            apf.console.warn("Could not determine model for serialization \
-                of undo state. Will not be able to undo the state when the \
-                server errors. This creates a potential risk of loosing \
-                all changes on sync!")
-        //#endif
-
-        return serialState;
-
-        function serializeNode(xmlNode){
-            /*
-                If it's an attribute or directly connected to the root of the
-                model we'll just record the xpath
-            */
-            if (xmlNode.nodeType == 2
-              || apf.isChildOf(model.data, xmlNode, true)) {
-                xmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
-                return {
-                    xpath  : rsb.xmlToXpath(xmlNode, model.data, true),
-                    lookup : xmlId
-                };
-            }
-            // So we've got a disconnected branch, lets serialize it
-            else {
-                var contextNode = xmlNode;
-                while (contextNode.parentNode && contextNode.parentNode.nodeType == 1) //find topmost parent
-                    contextNode = xmlNode.parentNode;
-
-                xmlId = contextNode.getAttribute(apf.xmldb.xmlIdTag);
-                if (!xmlId) {
-                    xmlId = "serialize" + sLookup.count++;
-                    contextNode.setAttribute(apf.xmldb.xmlIdTag, xmlId);
-                }
-
-                var obj = {
-                    xpath  : rsb.xmlToXpath(xmlNode, contextNode, true),
-                    lookup : xmlId
-                }
-
-                if (!sLookup[xmlId]) {
-                    contextNode.setAttribute(apf.xmldb.xmlDocTag,
-                        apf.xmldb.getXmlDocId(contextNode));
-
-                    sLookup[xmlId] = contextNode;
-                    obj.xml        = contextNode.xml || contextNode.serialize();
-                }
-
-                return obj;
-            }
-        }
-    };
-
-    this.$import = function(){
-        //#ifdef __WITH_RSB
-        if (this.rsbModel)
-            this.rsbModel = apf.nameserver.get("model", this.rsbModel);
-        //#endif
-
-        if (this.argsModel) {
-            var model = apf.nameserver.get("model", this.argsModel)
-                || apf.lookup(this.argsModel);
-
-            //Record arguments
-            var sLookup =  (typeof apf.offline != "undefined" && apf.offline.sLookup)
-                ? apf.offline.sLookup
-                : (apf.offline.sLookup = {});
-            if (!sLookup.count) sLookup.count = 0;
-
-            var args = this.args,
-                //#ifdef __WITH_RSB
-                rsb  = this.rsbModel ? this.rsbModel.rsb : apf.remote,
-                //#endif
-                xmlNode, i, l, item, name;
-
-            for (i = 0, l = args.length; i < l; i++) {
-                if (args[i] && args[i].xpath)
-                    args[i] = unserializeNode(args[i], model);
-            }
-
-            for (name in this.extra) {
-                item = this.extra[name];
-                if (item && item.xpath)
-                    this.extra[name] = unserializeNode(item, model);
-            }
-
-            this.args = args;
-        }
-
-        options = {
-            undoObj   : this,
-            userdata  : this.userdata,
-            parsed    : this.parsed
-        }
-
-        //#ifdef __WITH_LOCKING
-        if (this.timestamp) {
-            options.actionstart = this.timestamp;
-            options.headers     = {"X-APF-ActionStart": this.timestamp};
-        }
-        //#endif
-
-        return this;
-
-        function unserializeNode(xmlSerial, model){
-            if (xmlSerial.xml) {
-                xmlNode = apf.xmldb.getXml(xmlSerial.xml);
-                sLookup[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = xmlNode;
-            }
-            else if (xmlSerial.lookup) {
-                xmlNode = sLookup[xmlSerial.lookup];
-
-                //#ifdef __DEBUG
-                if (!xmlSerial.xpath) //@todo
-                    throw new Error("Serialization error");
-                //#endif
-            }
-            else
-                xmlNode = null;
-
-            return rsb.xpathToXml(xmlSerial.xpath, xmlNode || model.data);
-        }
-    };
-    //#endif
-
-    //#ifdef __WITH_RSB
-    //Send RSB Message..
-    this.processRsbQueue = function(){
-        if (this.rsbModel)
-            this.rsbModel.rsb.processQueue(this);
-    };
-
-    this.clearRsbQueue = function(){
-        this.rsbQueue = 
-        this.rsbModel = null;
-    };
-    //#endif
-
-    /**
-     * Save the change to a data source.
-     * @param {Boolean} undo whether the change is undone.
-     */
-    this.saveChange = function(undo, at, callback){
-        //Grouped undo/redo support
-        if (this.action == "group") {
-            var rpcNodes = this.args[1];
-            at.$addToQueue(rpcNodes, undo, true);
-            return at.$queueNext(this);
-        }
-
-        var dataInstruction;
-        if (this.xmlActionNode) {
-            dataInstruction = this.xmlActionNode.getAttribute(undo ? "undo" : "set");
-            if (undo && !dataInstruction)
-                dataInstruction = this.xmlActionNode.getAttribute("set");
-        }
-
-        if (!dataInstruction) {
-            //#ifdef __WITH_RSB
-            this.processRsbQueue();
-            //#endif
-            return at.$queueNext(this);
-        }
-
-        this.state = undo ? "restoring" : "saving";
-
-        //#ifdef __DEBUG
-        if (!options || options._pc === true) {
-            //@todo apf3.0 turn this into a proper apf error
-            throw new Error("Error in data instruction:" + dataInstruction);
-        }
-        //#endif
-        
-        if (options._pc == -2) {
-            return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode}, 
-                this, callback);
-        }
-        
-        //options._precall = false;
-        options.callback = function(data, state, extra){
-            extra.amlNode = _self.amlNode;
-            return at.$receive(data, state, extra, _self, callback);
-        }
-        options.ignoreOffline = true;
-
-        apf.saveData(dataInstruction, options);
-    };
-
-    this.preparse = function(undo, at, multicall){
-        var dataInstruction;
-        if (this.xmlActionNode) {
-            dataInstruction = this.xmlActionNode.getAttribute(undo ? "undo" : "set");
-            if (undo && !dataInstruction)
-                dataInstruction = this.xmlActionNode.getAttribute("set");
-        }
-
-        if (!dataInstruction)
-            return this;
-
-        options = apf.extend({
-            //undoObj   : this,
-            xmlNode   : this.action == "multicall" 
-              ? this.args[0].xmlNode
-              : this.selNode || this.xmlNode,
-            userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
-            multicall : multicall,
-            undo      : undo,
-            _pc       : true,
-            callback  : function(data, state, extra){
-                options._pc = -2;
-            }
-        }, this.extra);
-
-        //#ifdef __WITH_LOCKING
-        if (this.timestamp) {
-            options.actionstart = this.timestamp;
-            options.headers     = {"X-JPF-ActionStart": this.timestamp};
-        }
-        //#endif
-
-        apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
-        
-        if (options._pc === true)
-            options._pc = -1; //if this is set then it overwrites the values set by livemarkup
-        
-        return this;
-    };
-};
 /* #elseif __WITH_DATAACTION
 apf.actiontracker = function(){
     this.execute = function(){
@@ -971,295 +929,4 @@ apf.actiontracker = function(){
     
     this.reset = function(){}
 }
-
-apf.UndoData = function(){
-    this.localName = "UndoData";
-    this.extra   = {};
-}
 #endif */
-
-//#ifdef __WITH_ACTIONTRACKER || __WITH_DATAACTION
-/**
- * Default actions, that are known to the actiontracker
- * @todo test if the .extra speed impact matters
- * @todo ifdef the undo sections to only be there when the actiontracker is enabled
- * @private
- */
-apf.actiontracker.actions = {
-    "setTextNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        // Set Text Node
-        if (!undo)
-            apf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
-        else //Undo Text Node Setting
-            apf.xmldb.setTextNode(q[0], UndoObj.extra.oldValue, q[2]);
-    },
-
-    "setAttribute" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        // Set Attribute
-        if (!undo) {
-            //Set undo info
-            UndoObj.extra.name = q[1];
-            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
-
-            apf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
-        }
-        // Undo Attribute Setting
-        else {
-            if (!UndoObj.extra.oldValue)
-                apf.xmldb.removeAttribute(q[0], q[1]);
-            else
-                apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[3]);
-        }
-    },
-
-    "removeAttribute" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        // Remove Attribute
-        if (!undo) {
-            // Set undo info
-            UndoObj.extra.name = q[1];
-            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
-
-            apf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
-        }
-        //Undo Attribute Removal
-        else
-            apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[2]);
-    },
-
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    "setAttributes" : function(UndoObj, undo){
-        var prop, q = UndoObj.args;
-
-        // Set Attribute
-        if (!undo) {
-            // Set undo info
-            var oldValues = {};
-            for (prop in q[1]) {
-                oldValues[prop] = q[0].getAttribute(prop);
-                q[0].setAttribute(prop, q[1][prop]);
-            }
-            UndoObj.extra.oldValues = oldValues;
-
-            apf.xmldb.applyChanges("attribute", q[0], UndoObj);
-        }
-        //Undo Attribute Setting
-        else {
-            for (prop in UndoObj.oldValues) {
-                if (!UndoObj.extra.oldValues[prop])
-                    q[0].removeAttribute(prop);
-                else
-                    q[0].setAttribute(prop, UndoObj.extra.oldValues[prop]);
-            }
-
-            apf.xmldb.applyChanges("attribute", q[0], UndoObj);
-        }
-    },
-
-    "replaceNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        //Set Attribute
-        if (!undo)
-            apf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
-        //Undo Attribute Setting
-        else
-            apf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
-    },
-
-    "addChildNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        //Add Child Node
-        if (!undo)
-            apf.xmldb.addChildNode(q[0], q[1], q[2], q[3], UndoObj);
-        //Remove Child Node
-        else
-            apf.xmldb.removeNode(UndoObj.extra.addedNode);
-    },
-
-    "appendChild" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        //Append Child Node
-        if (!undo)
-            apf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
-        //Remove Child Node
-        else
-            apf.xmldb.removeNode(UndoObj.xmlNode);//q[1]
-    },
-
-    "moveNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        //Move Node
-        if (!undo)
-            apf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
-        //Move Node to previous position
-        else
-            apf.xmldb.moveNode(UndoObj.extra.oldParent, q[1],
-                UndoObj.extra.beforeNode, q[3]);
-    },
-
-    "removeNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
-
-        //Remove Node
-        if (!undo)
-            apf.xmldb.removeNode(q[0], q[1], UndoObj);
-        //Append Child Node
-        else
-            apf.xmldb.appendChild(UndoObj.extra.parent,
-                UndoObj.extra.removedNode, UndoObj.extra.beforeNode);
-    },
-
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    "removeNodeList" : function(UndoObj, undo){
-        if (undo) {
-            var d = UndoObj.extra.removeList;
-            for (var i = d.length - 1; i >= 0; i--) {
-                apf.xmldb.appendChild(d[i].pNode,
-                    d[i].removedNode, d[i].beforeNode);
-            }
-        }
-        else
-            apf.xmldb.removeNodeList(UndoObj.args, UndoObj);
-    },
-
-    "setUndoObject" : function(UndoObj, undo){
-        var q = UndoObj.args;
-        UndoObj.xmlNode = q[0];
-    },
-
-    "group" : function(UndoObj, undo, at){
-        if (!UndoObj.$stackDone) {
-            var done = UndoObj.args[0];
-            UndoObj.$stackDone = done;
-            UndoObj.$stackUndone = [];
-        }
-
-        at[undo ? "undo" : "redo"](UndoObj.$stackDone.length, false,
-            UndoObj.$stackDone, UndoObj.$stackUndone);
-    },
-    
-    "setProperty" : function(UndoObj, undo){
-        var q = UndoObj.args;//amlNode, name, value
-
-        if (!undo) {
-            UndoObj.extra.oldValue = q[0][q[1]];
-            q[0].setProperty(q[1], q[2], q[3], q[4]);
-        }
-        // Undo 
-        else {
-            q[0].setProperty(q[1], UndoObj.extra.oldValue);
-        }
-    },
-    
-    "setValueByXpath" : function(UndoObj, undo){
-        var q = UndoObj.args;//xmlNode, value, xpath
-        // Setting NodeValue and creating the node if it doesnt exist
-        if (!undo) {
-            if (UndoObj.extra.newNode) {
-                apf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
-            }
-            else {
-                var newNodes = [];
-                apf.setNodeValue(q[0], q[1], true, {
-                    undoObj  : UndoObj,
-                    xpath    : q[2],
-                    newNodes : newNodes,
-                    forceNew : q[3]
-                });
-    
-                UndoObj.extra.newNode = newNodes[0];
-            }
-        }
-        // Undo Setting NodeValue
-        else {
-            if (UndoObj.extra.newNode) {
-                UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
-                apf.xmldb.removeNode(UndoObj.extra.newNode);
-            }
-            else
-                apf.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
-        }
-    },
-
-    //@todo please change .func to .action for constency reasons
-    "multicall" : function(UndoObj, undo, at){
-        var i, l,
-            q       = UndoObj.args,
-            dUpdate = apf.xmldb.delayUpdate;
-        apf.xmldb.delayUpdate = true;
-
-        // Set Calls
-        if (!undo) {
-            for (i = 0, l = q.length; i < l; i++) {
-                if (!q[i].extra)
-                    q[i].extra = {};
-                //#ifdef __WITH_RSB
-                if (q[0].rsbModel)
-                    q[i].rsbQueue = q[0].rsbQueue;
-                //#endif
-                apf.actiontracker.actions[q[i].func](q[i], false, at);
-            }
-            //#ifdef __WITH_RSB
-            if (q[0].rsbModel) {
-                UndoObj.rsbModel = q[0].rsbModel;
-                UndoObj.rsbQueue = q[0].rsbQueue;
-            }
-            //#endif
-        }
-        // Undo Calls
-        else {
-            for (i = q.length - 1; i >= 0; i--)
-                apf.actiontracker.actions[q[i].func](q[i], true, at);
-        }
-
-        apf.xmldb.delayUpdate = dUpdate;
-
-        //if (!dUpdate)
-            //apf.xmldb.notifyQueued();
-    },
-
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    "addRemoveNodes" : function(UndoObj, undo){
-        var i, l, q = UndoObj.args;
-
-        // Set Text Node
-        if (!undo) {
-            // Add
-            for (i = 0, l = q[1].length; i < l; i++){
-                apf.xmldb.appendChild(q[0], q[1][i],
-                    null, null, null, UndoObj);
-            }
-
-            // Remove
-            for (i = 0, l = q[2].length; i < l; i++)
-                apf.xmldb.removeNode(q[2][i], null, UndoObj);
-        }
-        // Undo Text Node Setting
-        else {
-            // Add
-            for (i = 0, l = q[2].length; i < l; i++)
-                apf.xmldb.appendChild(q[0], q[2][i]);
-
-            // Remove
-            for (i = 0, l = q[1].length; i < l; i++)
-                apf.xmldb.removeNode(q[1][i]);
-        }
-    }
-};
-
-//#endif

@@ -1220,10 +1220,6 @@ apf.layout = {
     },
 
     processQueue : function(){
-        clearTimeout(this.timer);
-        this.timer = null;
-        this.$hasQueue = false;
-
         var i, id, l, qItem, list;
 
         for (i = 0; i < this.dlist.length; i++) {
@@ -1233,26 +1229,35 @@ apf.layout = {
                 this.dlist[i].show();
         }
 
-        for (id in this.qlist) {
-            qItem = this.qlist[id];
-
-            if (qItem[1])
-                apf.layout.compileAlignment(qItem[1]);
-
-            list = qItem[2];
-            for (i = 0, l = list.length; i < l; i++) {
-                if (list[i])
-                    list[i].$updateLayout();
+        do {
+            var qlist = this.qlist;
+            this.qlist = {};
+            
+            this.$hasQueue = false;
+            
+            for (id in qlist) {
+                qItem = qlist[id];
+    
+                if (qItem[1])
+                    apf.layout.compileAlignment(qItem[1]);
+    
+                list = qItem[2];
+                for (i = 0, l = list.length; i < l; i++) {
+                    if (list[i])
+                        list[i].$updateLayout();
+                }
+    
+                apf.layout.activateRules(qItem[0]);
             }
-
-            apf.layout.activateRules(qItem[0]);
-        }
-
+        } while (this.$hasQueue);
+        
         if (apf.hasSingleRszEvent)
             apf.layout.forceResize();
 
-        this.qlist = {};
         this.dlist = [];
+        
+        clearTimeout(this.timer);
+        this.timer = null;
     },
     
     //#endif
@@ -1569,6 +1574,7 @@ apf.layoutParser = function(parentNode, pMargin){
     this.RULES   = [];
 
     this.parentNode = parentNode;
+
     if (!this.parentNode.getAttribute("id"))
         apf.setUniqueHtmlId(this.parentNode);
 

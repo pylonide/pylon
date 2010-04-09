@@ -189,10 +189,10 @@ apf.htmlCleaner = (function() {
          * embedded.
          *
          * @param  {String}  html
-         * @param  {Boolean} bStrict
+         * @param  {Boolean} noEntities
          * @type   {String}
          */
-        parse: function(html, bStrict, noParagraph) {
+        parse: function(html, noEntities, noParagraph) {
             if (!exportRE) {
                 // compile 'em regezz
                 exportRE = [
@@ -219,7 +219,7 @@ apf.htmlCleaner = (function() {
             else if (html == "<br>")
                 html = "";
 
-            html = (apf.xmlentities ? apf.xmlentities(html) : html)
+            html = (!noEntities && apf.xmlentities ? apf.xmlentities(html) : html)
                        .replace(exportRE[0], "</li>")
                        .replace(exportRE[1], "")
                        .replace(exportRE[2], "")

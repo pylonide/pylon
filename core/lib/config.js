@@ -195,8 +195,9 @@ apf.extend(apf.config, {
         "debug" : function(value) {
             //#ifdef __DEBUG
             if (value) {
+                apf.$debugwin.activate();
                 apf.addEventListener("load", function(){
-                    $setTimeout("apf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    //$setTimeout("apf.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
                     apf.removeEventListener("load", arguments.callee);
                 });
             }

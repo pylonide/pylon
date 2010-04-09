@@ -318,6 +318,9 @@ apf.AmlNode = function(){
             amlNode.removeNode(isMoveWithinParent, noHtmlDomEdit);
         amlNode.parentNode = this;
 
+        if (beforeNode)
+            index = this.childNodes.indexOf(beforeNode);
+
         if (beforeNode) {
             amlNode.nextSibling = beforeNode;
             amlNode.previousSibling = beforeNode.previousSibling;
@@ -367,9 +370,12 @@ apf.AmlNode = function(){
               && apf.findHost(iframelist[0].parentNode) == amlNode);
 
             //!apf.isGecko && 
-            if (!noHtmlDomEdit && amlNode.$ext && !containsIframe) {
-                amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
-                    beforeNode && beforeNode.$ext || null);
+            if (!noHtmlDomEdit && amlNode.$ext) {// && !containsIframe
+                //!isMoveWithinParent || 
+                if (!amlNode.$altExt || amlNode.$altExt.parentNode == amlNode.$pHtmlNode) {
+                    amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
+                        beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null);
+                }
             }
         }
 
@@ -418,21 +424,21 @@ apf.AmlNode = function(){
         }
         //#endif
 
-        this.parentNode.childNodes.remove(this);
-        
         //If we're not loaded yet, just remove us from the aml to be parsed
         if (this.$amlLoaded && !apf.isDestroying) {
             //this.parentNode.$aml.removeChild(this.$aml);
-
-            if (!noHtmlDomEdit && this.$ext && this.$ext.parentNode)
-                this.$ext.parentNode.removeChild(this.$ext);
 
             this.dispatchEvent("DOMNodeRemoved", {
                 relatedNode  : this.parentNode,
                 bubbles      : true,
                 $doOnlyAdmin : doOnlyAdmin
             });
+            
+            if (!noHtmlDomEdit && !doOnlyAdmin && this.$ext && this.$ext.parentNode)
+                this.$ext.parentNode.removeChild(this.$ext);
         }
+        
+        this.parentNode.childNodes.remove(this);
 
         if (this.parentNode.firstChild == this)
             this.parentNode.firstChild = this.nextSibling;
@@ -562,6 +568,8 @@ apf.AmlNode = function(){
      * @returns {NodeList} list of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
+        if (!apf) return;
+        
         if (!apf.XPath)
             apf.runXpath();
         return apf.XPath.selectNodes(sExpr,
@@ -577,6 +585,8 @@ apf.AmlNode = function(){
      * @returns {AmlNode} the first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
+        if (!apf) return;
+        
         if (!apf.XPath)
             apf.runXpath();
         return apf.XPath.selectNodes(sExpr,

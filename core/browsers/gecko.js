@@ -100,6 +100,9 @@ apf.runGecko = function(){
     };
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
         var o = document.createElement("div");
 
         if (!s) {
@@ -124,12 +127,43 @@ apf.runGecko = function(){
      ****************************************************************************/
     function Error(nr, msg){
         // #ifdef __DEBUG
-        if (!apf.debugwin.useDebugger) 
-            apf.debugwin.errorHandler(msg, "", 0);
+        if (!apf.$debugwin.nativedebug) 
+            apf.$debugwin.errorHandler(msg, "", 0);
         // #endif
         
         this.message = msg;
         this.nr = nr;
+    }
+    
+    apf.getHtmlLeft = function(oHtml){
+        return (oHtml.offsetLeft
+            + (parseInt(apf.getStyle(oHtml.parentNode, "border-left-width")) || 0));
+    }
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (2 * (parseInt(apf.getStyle(p, "border-left-width")) || 0))
+            - (parseInt(apf.getStyle(p, "border-right-width")) || 0));
+    }
+    apf.getHtmlTop = function(oHtml){
+        return (oHtml.offsetTop
+            + (parseInt(apf.getStyle(oHtml.parentNode, "border-top-width")) || 0));
+    }
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (2 * (parseInt(apf.getStyle(p, "border-top-width")) || 0))
+            - (parseInt(apf.getStyle(p, "border-bottom-width")) || 0));
+    }
+    apf.getBorderOffset = function(oHtml){
+        return [-1 * (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0),
+            -1 * (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)];
     }
 }
 

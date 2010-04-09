@@ -34,7 +34,7 @@
  * @inherits apf.DataAction
  * @inherits apf.Rename
  *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Ruben Daniels (ruben AT javeline DOT com)
  * @version     %I%, %G%
  * @since       0.8
  * @default_private
@@ -129,9 +129,8 @@ apf.BaseTree = function(){
         (function(node){
             var nodes = node.selectNodes(xpath);
             //for (var i = nodes.length - 1; i >= 0; i--) {
-            for (var o, i = 0; i < nodes.length; i++) {
-                if (o = apf.xmldb.getHtmlNode(nodes[i], _self))
-                    _self.slideToggle(o, 1, true);
+            for (var i = 0; i < nodes.length; i++) {
+                _self.slideToggle(apf.xmldb.getHtmlNode(nodes[i], _self), 1, true);
                 arguments.callee(nodes[i]);
             }
         })(this.xmlRoot);
@@ -144,10 +143,8 @@ apf.BaseTree = function(){
         var pNodes = this.xmlRoot.selectNodes(".//" + this.each
           .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
         
-        for (var o, i = pNodes.length - 1; i >=0; i--) {
-            if (o = apf.xmldb.getHtmlNode(pNodes[i], this))
-                this.slideToggle(o, 2, true);
-        }
+        for (var i = pNodes.length - 1; i >=0; i--)
+            this.slideToggle(apf.xmldb.getHtmlNode(pNodes[i], this), 2, true);
     };
     
     /**
@@ -211,8 +208,6 @@ apf.BaseTree = function(){
     
     var lastOpened = {};
     /**
-     * @event expand Fires when a tree leaf is expanded from collapsed view to
-     *               reveal its children leaves.
      * @private
      */
     this.slideOpen = function(container, xmlNode, immediate){
@@ -247,7 +242,6 @@ apf.BaseTree = function(){
         if (immediate || container.scrollHeight > 1000) {
             container.style.height = "auto";
             container.style.overflow = "visible";
-            this.dispatchEvent("expand", {xmlNode: xmlNode});
             return;
         }
 
@@ -273,14 +267,11 @@ apf.BaseTree = function(){
                     container.style.overflow = "visible";
                     container.style.height = "auto";
                 }
-                _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
         });
     };
 
     /**
-     * @event collapse Fires when a tree leaf is collapsed from expanded view to
-     *                 conceal its children leaves.
      * @private
      */
     this.slideClose = function(container, xmlNode, immediate){
@@ -307,11 +298,9 @@ apf.BaseTree = function(){
         if (immediate) {
             container.style.height = 0;
             container.style.display = "none";
-            this.dispatchEvent("collapse", {xmlNode: xmlNode});
             return;
         }
 
-        var _self = this;
         apf.tween.single(container, {
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
@@ -321,7 +310,6 @@ apf.BaseTree = function(){
             interval: this.$animSpeed,
             onfinish: function(container, data){
                container.style.display = "none";
-               _self.dispatchEvent("collapse", {xmlNode: xmlNode});
             }
         });
     };
@@ -337,7 +325,7 @@ apf.BaseTree = function(){
                 loopNode = loopNode.parentNode;
             }
         }
-
+        
         var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,
@@ -351,7 +339,7 @@ apf.BaseTree = function(){
                 || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0),
 
             htmlNode         = this.$initNode(xmlNode, state, Lid, depth),
-            container        = this.$getLayoutNode("item", "container", htmlNode),
+            container        = this.$getLayoutNode("item", "container"),
             eachLength;
 
         if (!startcollapsed && !this.nocollapse)
@@ -409,17 +397,14 @@ apf.BaseTree = function(){
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
-                var isChildOfHtmlNode = !apf.isChildOf(htmlNode, container, true)
-                htmlNode = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
-                if (isChildOfHtmlNode && removeContainer)
+                apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
+                if (!apf.isChildOf(htmlNode, container, true) && removeContainer) 
                     var container = apf.insertHtmlNode(container, 
                         htmlParentNode, beforeNode);
-                else
-                	var container = this.$getLayoutNode("item", "container", htmlNode);
             }
             else {
                 htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
+                if (!apf.isChildOf(htmlParentNode, container, true) && removeContainer) 
                     htmlParentNode.insertBefore(container, beforeNode);
             }
 
@@ -683,13 +668,8 @@ apf.BaseTree = function(){
 
         //this.$hasLoadStatus(e.xmlNode, "loading")
         if (e.action == "insert" && e.result.length > 0) {
-            if (this.$hasLoadStatus(e.xmlNode, "loaded")) {
-                var container = this.$getLayoutNode("item", "container", htmlNode);
-                this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
-            }
-            else if (this.$hasLoadStatus(e.xmlNode, "potential")) {
-                this.$setLoadStatus(e.xmlNode, "loaded");
-            }
+            var container = this.$getLayoutNode("item", "container", htmlNode);
+            this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);
@@ -743,17 +723,14 @@ apf.BaseTree = function(){
                 if (this.$tempsel)
                     this.$selectTemp();
 
-                // #ifdef __WITH_MULTICHECK
                 if (this.$mode && !ctrlKey) {
                     var sel = this.getSelection();
                     if (!sel.length || !this.multiselect)
-                        this.checkToggle(this.caret, true);
+                        this.checkToggle(this.caret);
                     else
-                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
+                        this.checkList(sel, this.isChecked(this.selected), true);
                 }
-                else 
-                //#endif
-                if (ctrlKey || !this.isSelected(this.caret))
+                else if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, true);
                 return false;
             case 46:

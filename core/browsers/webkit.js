@@ -145,6 +145,9 @@ apf.runWebkit = function(){
     };
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
         if (!s) {
             s = apf.html_entity_decode(xmlNode.serialize 
                 ? xmlNode.serialize(true)
@@ -160,6 +163,34 @@ apf.runWebkit = function(){
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
 
+    apf.getHtmlLeft = function(oHtml){
+        return oHtml.offsetLeft;
+    }
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (parseInt(apf.getStyle(p, "border-left-width")) || 0)
+            - (parseInt(apf.getStyle(p, "border-right-width")) || 0));
+    }
+    apf.getHtmlTop = function(oHtml){
+        return oHtml.offsetTop
+    }
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (parseInt(apf.getStyle(p, "border-top-width")) || 0)
+            - (parseInt(apf.getStyle(p, "border-bottom-width")) || 0));
+    }
+    apf.getBorderOffset = function(oHtml){
+        return [0,0];
+    }
+    
     if (apf.runNonIe)
         apf.runNonIe();
 };

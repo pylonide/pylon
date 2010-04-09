@@ -218,6 +218,8 @@ apf.MultiCheck = function(){
             }
         }
         
+        if (userAction && this.disabled) return;
+        
         if (!noEvent && this.dispatchEvent("beforecheck", {
             list : xmlNodeList
         }) === false)

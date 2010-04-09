@@ -148,7 +148,7 @@ apf.ContentEditable.plugin("fontstyle", function() {
 
     this.submit = function(e, sStyle) {
         if (!sStyle) {
-            var el = e.target || e.srcElement;
+            el = e.target || e.srcElement;
             while (el.tagName.toLowerCase() != "a" && el.className != "editor_popup")
                 el = el.parentNode;
             sStyle = el.getAttribute("rel");

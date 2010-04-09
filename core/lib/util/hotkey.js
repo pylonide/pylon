@@ -57,7 +57,7 @@ apf.keyNames = {
 apf.registerHotkey = function(hotkey, handler){
     var hashId = 0, key;
 
-    var keys = hotkey.splitSafe("\\-|\\+| ", null, true),
+    var keys = hotkey.splitSafe("\\-|\\+", null, true),
         bHasCtrl = false,
         bHasMeta = false;
     for (var i = 0; i < keys.length; i++) {
@@ -90,7 +90,7 @@ apf.registerHotkey = function(hotkey, handler){
             if (apf.isMac && e.metaKey)
                 e.ctrlKey = true;
             var hashId = 0 | (e.ctrlKey ? 1 : 0)
-                | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
+                | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0); //(e.shiftKey ? 2 : 0) | 
 
             var key = apf.keyNames[e.keyCode];
             if (!hashId && !key) //Hotkeys should always have one of the modifiers
@@ -101,6 +101,10 @@ apf.registerHotkey = function(hotkey, handler){
             if (handler) {
                 handler();
                 e.returnValue = false;
+                
+                // #ifdef __WITH_QUEUE
+                apf.queue.empty();
+                // #endif
             }
         });
     }

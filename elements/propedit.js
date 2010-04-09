@@ -24,106 +24,18 @@
 //@todo There is a lot of dead code in here (also in the skin) remove it
 
 /**
- * Element providing a sortable, selectable grid containing scrollable 
- * information. Grid columns can be reordered and resized.
- * Example:
- * This example shows a datagrid width several columns mixing percentage and
- * fixed size columns.
- * <code>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:bindings>
- *          <a:column type="icon" width="16" value="newspaper.png" />
- *          <a:column caption="Date" value="[publication/@date]" width="70" />
- *          <a:column caption="Title" width="180" value="[title]" />
- *          <a:column caption="Subtitle" value="[subtitle]" width="100%" />
- *      </a:each>
- *      <a:model>
- *          <records>
- *              <record field1="b" field2="b" field3="c" field4="d" field5="e" />
- *              <record field1="g" field2="b" field3="c" field4="d" field5="e" />
- *          </records>
- *      </model>
- *  </spreadsheet>
- * </code>
- * Example:
- * This example shows a propedit (property editor) component. The propedit 
- * component is an alias for the datagrid. It has a different skin and different
- * defaults. See {@link element.datagrid.attribute.template the template attribute}.
- * <code>
- *  <a:propedit template="mdlTemplate" />
- * </code>
+ * Element providing a two column grid with properties and values. The values
+ * are editable using apf elements.
  *
  * @constructor
- * @define datagrid, spreadsheet, propedit
+ * @define propedit
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Cache   
- * @inherits apf.StandardBinding
- *
- * @event beforelookup  Fires before the value lookup UI is shown.
- *   cancelable: Prevents the lookup value from being processed.
- *   object:
- *   {String}      value     the value that has been found.
- *   {XMLElement}  xmlNode   the selected node.
- *   {HTMLElement} htmlNode  the node that is updated.
- * @event afterlookup   Fires after a lookup value is processed.
- *   object:
- *   {Mixed}       value     the value that has been found.
- *   {XMLElement}  xmlNode   the selected node.
- *   {HTMLElement} htmlNode  the node that is updated.
- *   {Nodeset}     nodes     ???.
- * @event multiedit     Fires before a multiedit request is done. Used to display the UI.
- *   object:
- *   {XMLElement} xmlNode   the selected node.
- *   {XMLElement} dataNode  the {@link term.datanode data node}.
- *   Example:
- *   <code>
- *      <a:propedit 
- *        lookupaml      = "tmpLookup"
- *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
- *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
- *        onmultiedit    = "loadMultiEdit(event, this)">
- *          <a:bindings>
- *              <a:template match="[self::product]" value="mdlProps:product" />
- *          </bindings>
- *      </propedit>
- *
- *      <a:template id="tmpLookup" autoinit="true">
- *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
- *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
- *            automatch="[false]">
- *              <a:bindings>
- *                  <a:caption match="[self::picture]"><![CDATA[
- *                      {name} | {description}
- *                  ]]></caption>
- *                  <!-- use @descfield -->
- *                  <a:caption><![CDATA[[
- *                      var field = n.parentNode.getAttribute("descfield");
- *                      %(value(field) || "[Geen Naam]");
- *                  ]]]></caption>
- *                  <a:icon match="[self::product]" value="package_green.png" />
- *                  <a:icon value="table.png" />
- *                  <a:each match="[node()[local-name()]]" />
- *              </bindings>
- *              <a:actions />
- *          </list>
- *          
- *          <a:toolbar>
- *              <a:bar>
- *                  <a:button id="btnLkpPrev" disabled="true" 
- *                      onclick="...">&lt; Previous</button>
- *                  <a:spinner id="spnLookup" width="40" 
- *                      min="1" max="1" onafterchange="..." />
- *                  <a:button id="btnLkpNext" disabled="true" 
- *                      onclick="...">Next &gt;</button>
- *              </bar>
- *          </toolbar>
- *      </template>
- *   </code>
+ * @inherits apf.DataBinding
  */
 apf.propedit    = function(struct, tagName){
     this.$init(tagName || "propedit", apf.NODE_VISIBLE, struct);
@@ -167,9 +79,9 @@ apf.propedit    = function(struct, tagName){
     this.$useiframe      = 0;
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    /*this.$attrExcludePropBind = apf.extend({
         properties : 1
-    }, this.$attrExcludePropBind);
+    }, this.$attrExcludePropBind);*/
     
     /**
      * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
@@ -234,16 +146,28 @@ apf.propedit    = function(struct, tagName){
         var _self = this;
         var propLoadObj = { //Should probably exist only once if expanded with xmlUpdate
             load : function(data){
+                _self.$loadingProps = false;
+                
                 if (typeof data == "string")
                     data = apf.getXml(data);
 
                 _self.$properties = data;
                 if (_self.xmlRoot)
                     _self.load(_self.xmlRoot);
-            }
+            },
+            
+            clear : function(){
+                _self.$loadingProps = false;
+            },
+            
+            xmlRoot : this.xmlRoot
         };
 
+        if (!value)
+            debugger;
+
         var xml;
+        this.$loadingProps = true;
         if (typeof value == "string") {
             if (value.substr(0, 1) == "<") 
                 propLoadObj.load(value);
@@ -255,6 +179,9 @@ apf.propedit    = function(struct, tagName){
             value.register(propLoadObj);
         }
         else {
+            if (this.$properties == value)
+                return;
+
             //Assuming value is xml node
             //#ifdef __DEBUG
             setTimeout(function(){
@@ -264,6 +191,8 @@ apf.propedit    = function(struct, tagName){
             propLoadObj.load(value);
             #endif */
         }
+        
+        delete this.$properties;
     };
     
     this.$canLoadData = function(){
@@ -590,11 +519,7 @@ apf.propedit    = function(struct, tagName){
     
     this.$getProperties = function(xmlNode){
         if (this.properties) {
-            if (!this.$properties) {
-                //@todo wait
-                return false;
-            }
-            else return this.$properties;
+            return this.$properties || false;
         }
         else if (this.$bindings.properties) {
             var props = this.$bindings.properties;
@@ -613,10 +538,10 @@ apf.propedit    = function(struct, tagName){
         
         var output = [];
         var docId = this.documentId = apf.xmldb.getXmlDocId(p);
-        
+
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(xmlNode, this); //@todo apf3 potential cleanup problem
-        apf.xmldb.addNodeListener(this.xmlRoot, this);
+        //apf.xmldb.addNodeListener(this.xmlRoot, this);
 
         var _self = this, doc = p.ownerDocument;
         (function walk(nodes, parent, depth){
@@ -692,8 +617,10 @@ apf.propedit    = function(struct, tagName){
     }
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        return;
-        if (this.$lastEditor[0] == UndoObj.amlNode) {
+        if (xmlNode != this.xmlRoot)
+            return;
+
+        if (UndoObj && this.$lastEditor[0] == UndoObj.amlNode) {
             this.$lastEditor[1].firstChild.innerHTML = 
                 ((apf.lm.compile(this.$lastEditor[2].getAttribute("value"), {
                     nostring: true
@@ -713,7 +640,28 @@ apf.propedit    = function(struct, tagName){
                         nostring: true
                     }))(this.xmlRoot) || "") || "";
             }
+        }
+    }
+    
+    this.$hideEditor = function(remove){
+        if (this.$lastEditor) {
+            //this.$lastEditor[0].$blur();
+            this.$lastEditor[0].setProperty("visible", false);
             
+            if (remove) {
+                var pNode = this.$lastEditor[0].$ext.parentNode;
+                pNode.removeChild(this.$lastEditor[0].$ext);
+                pNode.removeAttribute("id");
+                delete pNode.onresize;
+            }
+            
+            var nodes = this.$lastEditor[1].childNodes;
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!nodes[i].host)
+                    nodes[i].style.display = "";
+            }
+            
+            delete this.$lastEditor;
         }
     }
     
@@ -733,19 +681,12 @@ apf.propedit    = function(struct, tagName){
         this.$setStyleClass(htmlNode, "selected");
         this.$selected = htmlNode;
         
-        if (this.$lastEditor) {
-            //this.$lastEditor[0].$blur();
-            this.$lastEditor[0].setProperty("visible", false);
-            
-            var nodes = this.$lastEditor[1].childNodes;
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!nodes[i].host)
-                    nodes[i].style.display = "";
-            }
-        }
+        this.$hideEditor();
         
         var prop = apf.xmldb.getNode(htmlNode);
         var _self = this;
+        
+        this.setProperty("selected", prop);
         
         /*
             - editor (name of widget, lm function returning amlNode or lm template ref)
@@ -757,7 +698,10 @@ apf.propedit    = function(struct, tagName){
         if (ceditor.type == 2) {
             //#ifdef __DEBUG
             if (!editor) {
-                throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
+                if (prop.childNodes.length) //It's a group
+                    return;
+                else 
+                    throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
             }
             //#endif
             
@@ -766,11 +710,13 @@ apf.propedit    = function(struct, tagName){
                 var info   = {
                     htmlNode : editParent,
                     width    : "100%+2",
+                    height   : 19,
                     style    : "position:relative;z-index:10000",
                     value    : "[{" + this.id + ".root}::" 
                         + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
                         + "]",
-                    focussable : false
+                    focussable : false,
+                    realtime   : true
                 };
                 
                 //@todo copy all non-known properties of the prop element
@@ -791,7 +737,7 @@ apf.propedit    = function(struct, tagName){
                 }
                 else if (!box[3])
                     oEditor.$ext.style.marginLeft = "-1px";
-                
+
                 //oEditor.$focussable = false;
                 /*oEditor.addEventListener("focus", function(){
                     _self.focus();
@@ -803,20 +749,34 @@ apf.propedit    = function(struct, tagName){
                 //delete oEditor.parentNode;
                 
                 //@todo set actiontracker
+                oEditor.$parentId = editParent.getAttribute("id");
+                oEditor.$parentRsz = editParent.onresize;
             }
             else {
                 oEditor = this.$editors[editor];
-                
-                if (oEditor.hasFeature(apf.__MULTISELECT__))
+
+                if (oEditor.hasFeature(apf.__MULTISELECT__)) {
                     oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
                         + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                }
 
                 oEditor.setAttribute("value", "[{" + this.id + ".root}::" 
                     + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
                     + "]");
 
                 oEditor.setProperty("visible", true);
+                if (oEditor.$ext.parentNode && oEditor.$ext.parentNode.nodeType == 1) {
+                    if (!oEditor.$parentRsz) 
+                        oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
+                    oEditor.$ext.parentNode.removeAttribute("id");
+                    delete oEditor.$ext.parentNode.onresize;
+                }
                 editParent.appendChild(oEditor.$ext);
+                editParent.setAttribute(editParent.$parentId);
+                if (oEditor.$parentRsz) {
+                    editParent.onresize = oEditor.$parentRsz;
+                    editParent.onresize();
+                }
             }
             
             /*setTimeout(function(){
@@ -844,6 +804,10 @@ apf.propedit    = function(struct, tagName){
         this.$lastEditor = [oEditor, editParent, prop];
     }
     
+    this.addEventListener("$clear", function(e){
+        this.$hideEditor(true);
+    });
+    
     /*this.addEventListener("blur", function(){
         if (this.$lastEditor)
             this.$lastEditor[0].$blur();
@@ -859,9 +823,10 @@ apf.propedit    = function(struct, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.$ext     = this.$getExternal();
-        this.$body     = this.$getLayoutNode("main", "body", this.$ext);
+        this.$body    = this.$getLayoutNode("main", "body", this.$ext);
         this.$head    = this.$getLayoutNode("main", "head", this.$ext);
         this.$pointer = this.$getLayoutNode("main", "pointer", this.$ext);
+        this.$container = this.$body;
 
         if (this.$head.firstChild)
             this.$head.removeChild(this.$head.firstChild);
@@ -1001,6 +966,10 @@ apf.propedit    = function(struct, tagName){
     
     this.$destroy = function(){
         apf.popup.removeContent(this.$uniqueId);
+        
+        for (var prop in this.$editors) {
+            this.$editors[prop].destroy();
+        }
         
         this.$ext.onclick = this.$body.onresize = null;
         

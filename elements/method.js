@@ -86,12 +86,12 @@ apf.method = function(struct, tagName){
     /**** DOM Handlers ****/
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (this.parentNode.$addMethod)
+        if (this.parentNode.$addMethod && e.currentTarget == this)
             this.parentNode.$addMethod(this);
     });
     
     this.addEventListener("DOMNodeRemoved", function(e){
-        if (this.parentNode.$removeMethod)
+        if (this.parentNode.$removeMethod && e.currentTarget == this)
             this.parentNode.$removeMethod(this);
     });
 

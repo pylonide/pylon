@@ -399,6 +399,8 @@ apf.DataAction = function(){
             //Allow the action and arguments to be changed by the event
             if (this.dispatchEvent(ev.name, null, ev) === false)
                 return false;
+            
+            delete ev.currentTarget;
         }
 
         //Call ActionTracker and return ID of Action in Tracker
@@ -411,6 +413,7 @@ apf.DataAction = function(){
             ev.name         = "after" + action.toLowerCase();
             ev.cancelBubble = false;
             delete ev.returnValue;
+            delete ev.currentTarget;
             this.dispatchEvent(ev.name, null, ev);
         }
 

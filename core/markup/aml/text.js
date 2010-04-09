@@ -65,7 +65,7 @@ apf.AmlText = function(isPrototype){
             newValue  : this.nodeValue = value
         });
         
-        if (this.$amlLoaded)
+        if (this.$amlLoaded && this.$ext)
             this.$ext.nodeValue = value;
     }
 

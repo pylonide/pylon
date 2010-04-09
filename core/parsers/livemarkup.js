@@ -1484,10 +1484,19 @@ apf.lm = new (function(){
                         }
                         break;
                     case 15: // -------- end --------
-                        if(start_tok != "//")
-                        throw {
-                            t: "Unexpected end whilst parsing comment",
-                            p: pos
+                        if(start_tok != "//"){
+                            throw {
+                                t: "Unexpected end whilst parsing comment",
+                                p: pos
+                            }
+                        } else {
+                            parse_mode = last_cmt_mode,
+                            tok = last_tok = last_cmt_tok,
+                            type = last_type = last_cmt_type;                        
+                            if (sl && !s[sl - 1]) { // close = macro
+                                o[ol - 1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
+                                o[ol++] = "\n", v = 1, sl -= 2;
+                            }  
                         };
                         break;
                 }
@@ -1925,11 +1934,11 @@ apf.lm_exec = new (function(){
     }
 
     function wmodel(m, x, t){
-        apf.console.warn("Live Markup warning in " + t + ", xpath on empty model: '" + m + "' xpath: '" + x + "'");
+        apf.console.log("Live Markup warning in " + t + ", xpath on empty model: '" + m + "' xpath: '" + x + "'");
     }
 
     function wlang(x, t){
-        apf.console.warn("Live Markup warning in " + t + ", language symbol not found: '" + x + "'");
+        apf.console.log("Live Markup warning in " + t + ", language symbol not found: '" + x + "'");
     }
 
     // xml parse function used by all livemarkup objects

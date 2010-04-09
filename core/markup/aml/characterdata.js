@@ -20,6 +20,7 @@
  */
 
 // #ifdef __WITH_AMLCHARACTERDATA
+//@todo apf3.0 The functions seem to not set nodeValue...
 apf.AmlCharacterData = function(){
     this.data = "";
     this.length = 0;

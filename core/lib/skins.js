@@ -23,9 +23,6 @@
 
 /**
  * @private
- * @define skin
- * @allowchild  style, presentation
- * @attribute src
  */
 apf.skins = {
     skins  : {},

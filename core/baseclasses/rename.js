@@ -325,94 +325,101 @@ apf.Rename = function(){
             this.$txt.onfocus     =
             this.$txt.onblur      = null;
         }
+        this.$txt = null;
     });
     
-    this.$init(function(){
-        if (!(this.$txt = document.getElementById("txt_rename"))) {
-            if (apf.hasContentEditable) {
-                this.$txt = document.createElement("DIV");
-                this.$txt.contentEditable = true;
-                if (apf.isIE6)
-                    this.$txt.style.width = "1px";
-                //this.$txt.canHaveHTML = false;
-            }
-            else {
-                this.$txt              = document.createElement("input");
-                this.$txt.id           = "txt_rename";
-                this.$txt.autocomplete = false;
-            }
-        
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
-                apf.sanitizeTextbox(this.$txt);
-            //#endif
-        
-            this.$txt.refCount         = 0;
-            this.$txt.id               = "txt_rename";
-            //this.$txt.style.whiteSpace = "nowrap";
-            apf.importCssString("#txt_rename{white-space:nowrap}");
-            this.$txt.onselectstart    = function(e){
-                (e || event).cancelBubble = true;
-            };
-            // #ifdef __WITH_WINDOW_FOCUS
-            //this.$txt.host = this;
+    this.$init(apf.Rename.initEditableArea);
+};
+
+apf.Rename.initEditableArea = function(){
+    if (!(this.$txt = document.getElementById("txt_rename"))) {
+        if (apf.hasContentEditable) {
+            this.$txt = document.createElement("DIV");
+            this.$txt.contentEditable = true;
+            if (apf.isIE6)
+                this.$txt.style.width = "1px";
+            //this.$txt.canHaveHTML = false;
+        }
+        else {
+            this.$txt              = document.createElement("input");
+            this.$txt.id           = "txt_rename";
+            this.$txt.autocomplete = false;
+        }
+    
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (apf.hasFocusBug)
             apf.sanitizeTextbox(this.$txt);
-            // #endif
-        
-            this.$txt.onmouseover = this.$txt.onmouseout = this.$txt.oncontextmenu =
-            this.$txt.onmousedown = function(e){ (e || event).cancelBubble = true; };
-        
-            this.$txt.onkeyup = function(){
-                if (!this.host.$autocomplete)
-                    return;
-        
-                this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
-            }
-        
-            this.$txt.select = function(){
-                if (!apf.hasMsRangeObject)
-                    return this.focus();
-        
-                var r = document.selection.createRange();
-                //r.moveEnd("character", this.$ext.innerText.length);
-                try {
-                    r.moveToElementText(this);
-        
-                    if (apf.isFalse(this.host.$getOption("main", "selectrename"))
-                      || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
-                        r.collapse(this.host.$renameStartCollapse);
-                } catch(e) {} //BUG!!!!
-        
-                r.select();
-            };
-        
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug) {
-                this.$txt.onfocus = function(){
-                    if (apf.window)
-                        apf.window.$focusfix2();
-                };
-            }
-            //#endif
-        
-            this.$txt.onblur = function(){
-                if (apf.isGecko)
-                    return; //bug in firefox calling onblur too much
-        
-                //#ifdef __WITH_WINDOW_FOCUS
-                if (apf.hasFocusBug)
-                    apf.window.$blurfix();
-                //#endif
-        
-                if (this.host.$autocomplete)
-                    return;
-        
-                this.host.stopRename(null, true);
+        //#endif
+    
+        this.$txt.refCount         = 0;
+        this.$txt.id               = "txt_rename";
+        //this.$txt.style.whiteSpace = "nowrap";
+        apf.importCssString("#txt_rename{white-space:nowrap}");
+        this.$txt.onselectstart    = function(e){
+            (e || event).cancelBubble = true;
+        };
+        // #ifdef __WITH_WINDOW_FOCUS
+        //this.$txt.host = this;
+        apf.sanitizeTextbox(this.$txt);
+        // #endif
+    
+        this.$txt.onmouseover = this.$txt.onmouseout = this.$txt.oncontextmenu =
+        //this.$txt.onkeydown   = 
+        this.$txt.onmousedown = function(e){ (e || event).cancelBubble = true; };
+    
+        this.$txt.onkeyup = function(e){
+            //(e || event).cancelBubble = true;
+            
+            if (!this.host.$autocomplete)
+                return;
+    
+            this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
+        }
+    
+        this.$txt.select = function(){
+            if (!apf.hasMsRangeObject)
+                return this.focus();
+    
+            var r = document.selection.createRange();
+            //r.moveEnd("character", this.$ext.innerText.length);
+            try {
+                r.moveToElementText(this);
+    
+                if (apf.isFalse(this.host.$getOption("main", "selectrename"))
+                  || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
+                    r.collapse(this.host.$renameStartCollapse);
+            } catch(e) {} //BUG!!!!
+    
+            r.select();
+        };
+    
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (apf.hasFocusBug) {
+            this.$txt.onfocus = function(){
+                if (apf.window)
+                    apf.window.$focusfix2();
             };
         }
-        
-        this.$txt.refCount++;
-    });
+        //#endif
+    
+        this.$txt.onblur = function(){
+            if (apf.isGecko)
+                return; //bug in firefox calling onblur too much
+    
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (apf.hasFocusBug)
+                apf.window.$blurfix();
+            //#endif
+    
+            if (this.host.$autocomplete)
+                return;
+    
+            this.host.stopRename(null, true);
+        };
+    }
+    
+    this.$txt.refCount++;
 }
+
 
 // #endif

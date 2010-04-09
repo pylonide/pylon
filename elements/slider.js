@@ -407,7 +407,7 @@ apf.slider = function(struct, tagName){
         }
 
         if (this.oLabel) {
-            var mask = this.mask.split(".");
+            var mask = typeof this.mask == "string" ? this.mask.split(".") : this.mask;
             
             switch(mask[0]) {
                 case "%":
@@ -503,25 +503,25 @@ apf.slider = function(struct, tagName){
                 //LEFT
                 if (this.$dir != "horizontal")
                     return;
-                this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
             case 38:
                 //UP
                 if (this.$dir != "vertical")
                     return;
-                this.setValue(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
                 break;
             case 39:
                 //RIGHT
                 if (this.$dir != "horizontal")
                     return;
-                this.setValue(this.value + (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value + (ctrlKey ? 0.01 : 0.1));
                 break;
             case 40:
                 //DOWN
                 if (this.$dir != "vertical")
                     return;
-                this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
+                this.change(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
             case 13:
                 //ENTER
@@ -693,13 +693,15 @@ apf.slider = function(struct, tagName){
             this.startValue = _self.value;
 
             if (_self.$dir == "horizontal") {
-                this.max = parseInt(apf.getStyle(_self.oSlider, "width"))
+                this.max = _self.oSlider.offsetWidth 
+                    - apf.getWidthDiff(_self.oSlider)
                     - this.offsetWidth;
                 this.min = parseInt(apf.getBox(
                     apf.getStyle(_self.oSlider, "padding"))[3]);
             }
             else {
-                this.max = parseInt(apf.getStyle(_self.oSlider, "height"))
+                this.max = _self.oSlider.offsetHeight
+                    - apf.getHeightDiff(_self.oSlider)
                     - this.offsetHeight;
                 this.min = parseInt(apf.getBox(
                     apf.getStyle(_self.oSlider, "padding"))[0]);

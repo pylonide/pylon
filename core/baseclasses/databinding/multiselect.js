@@ -800,7 +800,8 @@ apf.MultiselectBinding = function(){
 
         //For tree based nodes, update all the nodes up
         pNode = xmlNode ? xmlNode.parentNode : lastParent;
-        if (this.$isTreeArch && pNode && pNode.nodeType == 1) {
+        if (this.$isTreeArch && !this.$preventRecursiveUpdate 
+          && pNode && pNode.nodeType == 1) {
             do {
                 htmlNode = this.$findHtmlNode(pNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);

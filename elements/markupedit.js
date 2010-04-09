@@ -67,11 +67,12 @@ apf.markupedit = function(struct, tagName){
         apf.DataAction,
         //#endif
         apf.Rename,
-        apf.MultiSelect,
+        //apf.MultiSelect,
         apf.Cache
     );
 
     this.$isTreeArch  = true; // Tree Architecture for loading Data
+    this.$preventRecursiveUpdate = true;
     this.$focussable  = true; // This object can get the focus
     
     this.startcollapsed = true;
@@ -497,7 +498,7 @@ apf.markupedit = function(struct, tagName){
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         elValue.setAttribute("aname", name);
-        elValue.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
+        elValue.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
             event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
@@ -511,6 +512,8 @@ apf.markupedit = function(struct, tagName){
         elValue.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         if (pNode.style) {
+            this.$setStyleClass(this.$getLayoutNode("attribute"), "generated");
+            
             htmlNode = apf.insertHtmlNode(
                 this.$getLayoutNode("attribute"), 
                 pNode, 
@@ -745,7 +748,7 @@ apf.markupedit = function(struct, tagName){
             
             //Remove attribute if it no longer exists
             var name = elName.innerHTML;
-            if (!aLookup[name])
+            if (!name in aLookup) //aLookup[name])
                 deleteQueue.push(nodes[i]);
             //Change it
             else if(aLookup[name] != elValue.innerHTML) {
@@ -755,7 +758,7 @@ apf.markupedit = function(struct, tagName){
                 //Animate change here...
                 delete aLookup[name];
             } 
-            else if(aLookup[name])
+            else if(name in aLookup) //aLookup[name])
                 delete aLookup[name];
             
             elName.setAttribute("aname", name);
@@ -1424,7 +1427,7 @@ apf.markupedit = function(struct, tagName){
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).call(apf.markupedit.prototype = new apf.GuiElement());
+}).call(apf.markupedit.prototype = new apf.MultiSelect());
 
-apf.aml.setElement("markupdit", apf.markupedit);
+apf.aml.setElement("markupedit", apf.markupedit);
 // #endif

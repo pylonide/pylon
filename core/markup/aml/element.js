@@ -170,7 +170,6 @@ apf.AmlElement = function(struct, tagName){
             
             //@todo dispatch event for new name creation.
             //@todo old name disposal
-            
             apf.nameserver.register(this.localName, value, this)
             
             this.name = value;
@@ -261,13 +260,14 @@ apf.AmlElement = function(struct, tagName){
             return;
         }
 
+        var oldValue = a.nodeValue;
         a.$setValue(value);
         
         if (noTrigger || !this.$amlLoaded)
             return;
         
         //@todo apf3.0 domattr
-        a.$triggerUpdate();
+        a.$triggerUpdate(null, oldValue);
     };
     
     //@todo apf3.0 domattr

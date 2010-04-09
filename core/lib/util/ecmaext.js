@@ -30,11 +30,11 @@ if (typeof isFinite == "undefined") {
     }
 }
 
-apf.ARRAY    = 1;
-apf.NUMBER   = 2;
-apf.DATE     = 3;
-apf.BOOLEAN  = 4;
-apf.STRING   = 5;
+apf.NUMBER   = 1;
+apf.BOOLEAN  = 2;
+apf.STRING   = 3;
+apf.ARRAY    = 4;
+apf.DATE     = 5;
 apf.REGEXP   = 6;
 apf.FUNCTION = 7;
 

@@ -48,236 +48,19 @@
  *      </a:each>
  *  </a:datagrid>
  * </code>
- * Example:
- * This example shows a propedit (property editor) component. The propedit 
- * component is an alias for the datagrid. It has a different skin and different
- * defaults. See {@link element.datagrid.attribute.template the template attribute}.
- * <code>
- *  <a:propedit 
- *    columns    = "35%,65%" 
- *    model      = "mdlData" 
- *    properties = "[mdlProps::folder]" 
- *    width      = "300" 
- *    height     = "500" />
- * </code>
  *
  * @constructor
- * @define datagrid, spreadsheet, propedit
+ * @define datagrid
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.MultiSelect
- * @inherits apf.Cache   
- * @inherits apf.StandardBinding
- * @inherits apf.Rename
+ * @inherits apf.BaseTree
  *
- * @event beforelookup  Fires before the value lookup UI is shown.
- *   cancelable: Prevents the lookup value from being processed.
- *   object:
- *   {String}      value     the value that has been found.
- *   {XMLElement}  xmlNode   the selected node.
- *   {HTMLElement} htmlNode  the node that is updated.
- * @event afterlookup   Fires after a lookup value is processed.
- *   object:
- *   {Mixed}       value     the value that has been found.
- *   {XMLElement}  xmlNode   the selected node.
- *   {HTMLElement} htmlNode  the node that is updated.
- *   {Nodeset}     nodes     ???.
- * @event multiedit     Fires before a multiedit request is done. Used to display the UI.
- *   object:
- *   {XMLElement} xmlNode   the selected node.
- *   {XMLElement} dataNode  the {@link term.datanode data node}.
- *   Example:
- *   <code>
- *      <a:model id="mdlProps">
- *          <props>
- *              <folder>
- *                   <group caption="General">
- *                      <prop 
- *                        caption    = "Title" 
- *                        editor     = "textbox" 
- *                        value      = "[@caption]" 
- *                        required   = "true" />
- *                      <prop 
- *                        caption  = "Priority" 
- *                        editor   = "dropdown" 
- *                        value    = "[@priority]">
- *                           <item value="1">1</item> 
- *                           <item value="2">2</item> 
- *                           <item value="3">3</item> 
- *                           <item value="4">4</item> 
- *                           <item value="5">5</item> 
- *                      </prop>
- *                      <prop 
- *                        caption   = "(Align)" 
- *                        editor    = "textbox" 
- *                        value     = "[@align]">
- *                           <prop 
- *                             caption  = "Position" 
- *                             editor   = "dropdown" 
- *                             value    = "[@align-template]">
- *                               <item value="left">left</item> 
- *                               <item value="top">top</item> 
- *                               <item value="right">right</item> 
- *                               <item value="bottom">bottom</item> 
- *                           </prop>
- *                           <prop 
- *                             caption  = "Splitter" 
- *                             editor   = "checkbox" 
- *                             values   = "True|False"
- *                             value    = "[@splitter]" />
- *                           <prop 
- *                             caption  = "Edge" 
- *                             editor   = "slider" 
- *                             value    = "[@edge]" />
- *                           <prop 
- *                             caption  = "Some value" 
- *                             editor   = "spinner" 
- *                             value    = "[@some]" />
- *                      </prop>
- *                      <prop 
- *                         caption  = "Date" 
- *                         editor   = "caldropdown" 
- *                         value    = "[@date]" />
- *                   </group>
- *                   <group caption="Advanced">
- *                      <prop 
- *                        caption    = "Title" 
- *                        editor     = "textbox" 
- *                        value      = "[@caption]" 
- *                        required   = "true" />
- *                      <prop 
- *                        caption  = "Priority" 
- *                        editor   = "dropdown" 
- *                        value    = "[@priority]">
- *                           <item value="1">1</item> 
- *                           <item value="2">2</item> 
- *                           <item value="3">3</item> 
- *                           <item value="4">4</item> 
- *                           <item value="5">5</item> 
- *                      </prop>
- *                      <prop 
- *                        caption   = "(Align)" 
- *                        editor    = "textbox" 
- *                        value     = "[@align]">
- *                           <prop 
- *                             caption  = "Position" 
- *                             editor   = "dropdown" 
- *                             value    = "[@align-template]">
- *                               <item value="left">left</item> 
- *                               <item value="top">top</item> 
- *                               <item value="right">right</item> 
- *                               <item value="bottom">bottom</item> 
- *                           </prop>
- *                           <prop 
- *                             caption  = "Splitter" 
- *                             editor   = "checkbox" 
- *                             values   = "True|False"
- *                             value    = "[@splitter]" />
- *                           <prop 
- *                             caption  = "Edge" 
- *                             editor   = "slider" 
- *                             value    = "[@edge]" />
- *                           <prop 
- *                             caption  = "Some value" 
- *                             editor   = "spinner" 
- *                             value    = "[@some]" />
- *                      </prop>
- *                      <prop 
- *                         caption  = "Date" 
- *                         editor   = "caldropdown" 
- *                         value    = "[@date]" />
- *                   </group>
- *              </folder>
- *              <file>
- *                  <prop 
- *                    caption    = "Title" 
- *                    type       = "textbox" 
- *                    value      = "[@caption]" 
- *                    required   = "true" />
- *                  <prop 
- *                    caption  = "Priority" 
- *                    type     = "dropdown" 
- *                    value    = "[@priority]"
- *                    overview = "overview">
- *                       <item value="1">1</item> 
- *                       <item value="2">2</item> 
- *                       <item value="3">3</item> 
- *                       <item value="4">4</item> 
- *                       <item value="5">5</item> 
- *                  </prop>
- *              </file>
- *          </props>
- *      </a:model>
- *      
- *      <a:model id="mdlData">
- *          <folder caption="My Documents" priority="4" align="left-splitter-3" />
- *      </a:model>
- *       
- *      <a:propedit 
- *        lookupaml      = "tmpLookup"
- *        onbeforelookup = "clearLookup(event.xmlNode, event.value)" 
- *        onafterlookup  = "loadLookup(event.xmlNode, event.value, this)"
- *        onmultiedit    = "loadMultiEdit(event, this)">
- *          <a:bindings>
- *              <a:template match="[self::product]" value="mdlProps:product" />
- *          </bindings>
- *      </propedit>
- *
- *      <a:template id="tmpLookup" autoinit="true">
- *          <a:list id="lstLookup" skin="mnulist" style="width:auto;margin-bottom:3px" 
- *            model="mdlLookup" empty-message="No results" height="{lstLookup.length * 20}"
- *            automatch="[false]">
- *              <a:bindings>
- *                  <a:caption match="[self::picture]"><![CDATA[
- *                      {name} | {description}
- *                  ]]></caption>
- *                  <!-- use @descfield -->
- *                  <a:caption><![CDATA[[
- *                      var field = n.parentNode.getAttribute("descfield");
- *                      %(value(field) || "[Geen Naam]");
- *                  ]]]></caption>
- *                  <a:icon match="[self::product]" value="package_green.png" />
- *                  <a:icon value="table.png" />
- *                  <a:each match="[node()[local-name()]]" />
- *              </bindings>
- *              <a:actions />
- *          </list>
- *          
- *          <a:toolbar>
- *              <a:bar>
- *                  <a:button id="btnLkpPrev" disabled="true" 
- *                      onclick="...">&lt; Previous</button>
- *                  <a:spinner id="spnLookup" width="40" 
- *                      min="1" max="1" onafterchange="..." />
- *                  <a:button id="btnLkpNext" disabled="true" 
- *                      onclick="...">Next &gt;</button>
- *              </bar>
- *          </toolbar>
- *      </template>
- *   </code>
- * @binding caption   Determines the caption of a node.
- * @binding css       Determines a css class for a node.
- * Example:
- * In this example a node is bold when the folder contains unread messages:
- * <code>
- *  <a:tree model="messages.xml">
- *      <a:bindings>
- *          <a:caption match="[@caption]" />
- *          <a:css match="[folder/message[@unread]]" value="highlighUnread" />
- *          <a:icon match="[@icon]" />
- *          <a:icon match="[folder]" value="icoDir.png" />
- *          <a:each match="[folder|message]" />
- *      </a:bindings>
- *  </a:tree>
- * </code>
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
  * @binding description Determines the text that is displayed under the expanded row.
- * @binding template    Determines the template that sets the column definition (for the datagrid) or property definition (for property editor).
-
  */
 apf.datagrid = function(struct, tagName){
     this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
@@ -315,7 +98,7 @@ apf.datagrid = function(struct, tagName){
     this.$needsDepth     = true;
     
     //#ifdef __WITH_RENAME
-    this.$renameStartCollapse = false;
+    this.canrename = false; //@todo remove rename from basetree and move to tree.js
     //#endif
 
     /**
@@ -647,11 +430,6 @@ apf.datagrid = function(struct, tagName){
     };
 
     this.$blur = function(){
-        //#ifdef __WITH_RENAME
-        if (this.renaming)
-            this.stopRename(null, true);
-        //#endif
-
         //@todo fix this by fixing focussing for this component
         if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
             return;
@@ -776,7 +554,8 @@ apf.datagrid = function(struct, tagName){
                 oc.setAttribute("onmousedown",
                     "var o = apf.lookup(" + this.$uniqueId + ");\
                     o.slideToggle(this, null, null, true);\
-                    apf.cancelBubble(event, o);");
+                    event.cancelBubble = true;\
+                    apf.window.$mousedown(event);");
             
                 oc.setAttribute("ondblclick", "event.cancelBubble = true");
                 
@@ -860,8 +639,6 @@ apf.datagrid = function(struct, tagName){
             
             h = apf.all[nodes[i].getAttribute("hid")];
             
-            h = apf.all[nodes[i].getAttribute("hid")];
-            
             //@todo fake optimization
             cell = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
 
@@ -919,6 +696,9 @@ apf.datagrid = function(struct, tagName){
             htmlNode = (cell = htmlNode).parentNode;
         }
         
+        if (this.$lastEditor && this.$lastEditor[3] == htmlNode)
+            return;
+        
         var h, colId = cell.className.match(/(col\d+)/)[1];
         for (var i = 0; i < this.$headings.length; i++) {
             if (this.$headings[i].$className == colId) {
@@ -948,14 +728,23 @@ apf.datagrid = function(struct, tagName){
             - editor (name of widget, lm function returning amlNode or lm template ref)
             - children being aml nodes
         */
-        var editParent = cell;//this.$getLayoutNode("cell", "caption", cell);
+        var editParent = h.tree 
+          ? this.$getLayoutNode("cell", "caption", cell)
+          : cell;
+
         var oEditor, editor = h.editor; 
         var ceditor = apf.lm.compile(editor, {xpathmode: 2}); //@todo can this be more efficient?
     
         var nodes = editParent.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if (!nodes[i].host)
-                nodes[i].style.display = "none";
+            if (!nodes[i].host) {
+                if (nodes[i].nodeType == 1)
+                    nodes[i].style.display = "none";
+                else {
+                    this.$lastTextValue = nodes[i].nodeValue;
+                    nodes[i].nodeValue = ""; //@todo
+                }
+            }
         }
 
         if (ceditor.type == 2) {
@@ -963,13 +752,14 @@ apf.datagrid = function(struct, tagName){
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
                 var info   = {
                     htmlNode : editParent,
-                    width    : "100%-3",
                     style    : "position:relative;z-index:10000",
                     value    : "[{" + this.id + ".selected}::" 
                         + (v = h.value).substr(1, v.length - 2)  //only xpath value's supported for now
                         + "]",
                     focussable : false
                 };
+                if (!h.tree)
+                    info.width = "100%-3";
                 
                 //@todo copy all non-known properties of the prop element
 
@@ -982,7 +772,7 @@ apf.datagrid = function(struct, tagName){
                 }*/
 
                 oEditor = this.$editors[editor] = new constr(info);
-                
+
                 var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
                     oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
@@ -1025,9 +815,9 @@ apf.datagrid = function(struct, tagName){
             else {
                 oEditor = this.$editors[editor];
                 
-                /*if (oEditor.hasFeature(apf.__MULTISELECT__))
+                if (oEditor.hasFeature(apf.__MULTISELECT__))
                     oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");*/
+                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
 
                 oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
                     + (v = h.value).substr(1, v.length - 2) 
@@ -1035,6 +825,8 @@ apf.datagrid = function(struct, tagName){
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
+                
+                oEditor.setAttribute("width", h.tree ? "" : "100%-3");
             }
             
             /*setTimeout(function(){
@@ -1073,22 +865,26 @@ apf.datagrid = function(struct, tagName){
     
     this.addEventListener("beforeselect", function hideEditor(e){
         if (this.$lastEditor) {
+            var ed = this.$lastEditor;
+            this.$lastEditor = null;
+
             //this.$lastEditor[0].$blur();
-            this.$lastEditor[0].setProperty("visible", false);
-            if (!this.$lastEditor)
-                return;
+            ed[0].setProperty("visible", false);
             
-            var nodes = this.$lastEditor[1].childNodes;
+            var nodes = ed[1].childNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!nodes[i].host)
-                    nodes[i].style.display = "";
+                if (!nodes[i].host) {
+                    if (nodes[i].nodeType == 1)
+                        nodes[i].style.display = "";
+                    else if (!ed[0].value) {
+                        nodes[i].nodeValue = this.$lastTextValue; //@todo
+                    }
+                }
             }
             
-            this.$setStyleClass(this.$lastEditor[3], "", ["editing"]);
+            this.$setStyleClass(ed[3], "", ["editing"]);
             
-            this.$lastEditor = null;
-            
-            this.$focus();
+            this.focus();
         }
     });
     
@@ -1213,30 +1009,6 @@ apf.datagrid = function(struct, tagName){
             
             apf.convertIframe(this.oIframe, true);
 
-            // #ifdef __WITH_RENAME
-            this.oDoc.body.insertAdjacentHTML("beforeend", this.$txt.outerHTML);
-
-            var t     = this.$txt;
-            t.refCount--;
-            this.$txt = this.oDoc.body.lastChild;
-            this.$txt.parentNode.removeChild(this.$txt);
-            this.$txt.select = t.select;
-
-            this.$txt.ondblclick    = 
-            this.$txt.onselectstart = 
-            this.$txt.onmouseover   = 
-            this.$txt.onmouseout    = 
-            this.$txt.oncontextmenu = 
-            this.$txt.onmousedown   = function(e){ 
-                (e || (_self.oWin || window).event).cancelBubble = true; 
-            };
-
-            this.$txt.onfocus   = t.onfocus;
-            this.$txt.onblur    = t.onblur;
-            this.$txt.onkeyup   = t.onkeyup;
-            this.$txt.refCount  = 1;
-            // #endif
-            
             if (apf.getStyle(this.oDoc.documentElement, apf.isIE 
               ? "overflowY" : "overflow-y") == "auto") {
                 //@todo ie only

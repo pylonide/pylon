@@ -107,13 +107,15 @@ apf.label = function(struct, tagName){
      * @attribute {String} for the id of the element that receives the focus 
      * when the label is clicked on.
      */
-    this.$supportedProperties.push("caption", "value", "for");
-    this.$propHandlers["caption"] = 
-    this.$propHandlers["value"]   = function(value){
+    this.$supportedProperties.push("caption", "for", "textalign");
+    this.$propHandlers["caption"] = function(value){
         this.$caption.innerHTML = value;
     };
     this.$propHandlers["for"] = function(value){
         forElement = typeof value == "string" ? self[value] : value;
+    };
+    this.$propHandlers["textalign"] = function(value){
+        this.$caption.style.textAlign = value || "";
     };
 
     this.$draw = function(){
@@ -129,7 +131,7 @@ apf.label = function(struct, tagName){
         }
     };
     
-    this.$childProperty = "value";
+    this.$childProperty = "caption";
     
 }).call(apf.label.prototype = new apf.BaseSimple());
 

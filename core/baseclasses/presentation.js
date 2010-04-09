@@ -300,7 +300,7 @@ apf.Presentation = function(){
     this.$setStyleClass = apf.setStyleClass;
 
     function setLeechedSkin(e){
-        if (!this.$amlLoaded || e && (e.$moveWithinParent 
+        if (!this.$amlLoaded || e && (e.$isMoveWithinParent 
           || e.currentTarget != this))
             return;
 
@@ -535,6 +535,23 @@ apf.Presentation = function(){
 
         if (!this.$baseCSSname)
             this.$baseCSSname = oExt.className.trim().split(" ")[0];
+
+        //@todo what about setting this dynamic in an attribute???
+        //@todo is another place for this more efficient?
+        //@todo apf3.0 set this also for skin change
+        this.minwidth   = apf.getCoord(parseInt(this.$getOption("main", "minwidth")), 5);
+        this.minheight  = apf.getCoord(parseInt(this.$getOption("main", "minheight")), 5);
+        this.maxwidth   = apf.getCoord(parseInt(this.$getOption("main", "maxwidth")), 10000);
+        this.maxheight  = apf.getCoord(parseInt(this.$getOption("main", "maxheight")), 10000);
+
+        //#ifdef __WITH_CONTENTEDITABLE
+        //@todo slow??
+        var diff = apf.getDiff(oExt);
+        oExt.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+        oExt.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+        oExt.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
+        oExt.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
+        //#endif
 
         return oExt;
     };

@@ -193,18 +193,42 @@ apf.getData = function(instruction, options){
         : {str: instruction, type: 2}); 
 
     //@todo hack because we're not using compileNode.. an imperfection..
-    if (fParsed.type == 3){// parsed != "string" && (l = (x = parsed[1]).length)) {
-        if (fParsed.xpaths[0]) { //fParsed.asyncs) {
-            //if (l == 2 && x[1]) { //When there is a set model and not a generated xpath
-                //#ifdef __DEBUG
-                if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
-                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
-                }
-                //#endif
+    if (fParsed.type == 3){
+        if (fParsed.xpaths[0]) {
+            var model = fParsed.xpaths[0], xpath = fParsed.xpaths[1];
             
-                return gCallback(apf.nameserver.get("model", fParsed.xpaths[0])
-                    .data.selectSingleNode(fParsed.xpaths[1]), apf.SUCCESS, {});
-            //}
+            //@todo can this be async?
+            if (model == "#" || xpath == "#") { //When there is a set model and not a generated xpath
+                var m = (apf.lm.compile(instruction, {
+                    xpathmode: 5
+                }))();
+                
+                //@todo apf3 this needs to be fixed in live markup
+                if (typeof m != "string") {
+                    model = m.model && m.model.$isModel && m.model;
+                    if (model)
+                        xpath = m.xpath;
+                    else if (m.model) {
+                        model = apf.xmldb.findModel(m.model);
+                        xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                    }
+                    else {
+                        throw new Error();
+                    }
+                }
+                else model = null;
+            }
+            else {
+                model = apf.nameserver.get("model", model)
+            }
+            
+            //#ifdef __DEBUG
+            if (!model) {
+                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo apf3.0 make proper error
+            }
+            //#endif
+        
+            return gCallback(model.data.selectSingleNode(xpath), apf.SUCCESS, {});
         }
         else {
             //#ifdef __DEBUG
@@ -349,7 +373,10 @@ apf.setModel = function(instruction, amlNode){
 
     //Complex data fetch (possibly async) - data is loaded only once. 
     //Potential property binding has to take of the rest
-    apf.getData(instruction, {parsed: fParsed, callback: function(data, state, extra){
+    apf.getData(instruction, {
+      parsed   : fParsed, 
+      xmlNode  : amlNode && amlNode.xmlRoot,
+      callback : function(data, state, extra){
         //@todo apf3.0 call onerror on amlNode
         if (state != apf.SUCCESS) {
             throw new Error(apf.formatErrorString(0, null,
@@ -359,7 +386,7 @@ apf.setModel = function(instruction, amlNode){
         }
         
         if (!data)
-            return;
+            return amlNode.clear && amlNode.clear();
 
         if (typeof data == "string") {
             if (data.charAt(0) == "<")

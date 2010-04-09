@@ -41,8 +41,10 @@
  *  <a:radiobutton group="g1">Option 2</a:radiobutton>
  *
  *  <a:label>Choices</a:label>
- *  <a:radiobutton group="g2">Choice 1</a:radiobutton>
- *  <a:radiobutton group="g2">Choice 2</a:radiobutton>
+ *  <a:group id="g2" value="[mdlForm::choice]">
+ *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
+ *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
+ *  </a:grou>
  * </code>
  *
  * @constructor
@@ -113,6 +115,9 @@ apf.radiobutton = function(struct, tagName){
      * group; only one radiobutton within that parent can be checked.
      */
     this.$propHandlers["group"] = function(value){
+        if (!this.$amlLoaded)
+            return;
+        
         if (this.$group && this.$group.$removeRadio)
             this.$group.$removeRadio(this);
             
@@ -423,7 +428,10 @@ apf.radiobutton = function(struct, tagName){
 
     this.$childProperty = "label";
     this.$loadAml = function(x){
-        if (this.parentNode.localName == "group")
+        if (this.group)
+            this.$propHandlers["group"].call(this, this.group);
+        
+        else if (this.parentNode.localName == "group")
             this.$propHandlers["group"].call(this, this.parentNode);
 
         if (!this.$group) {

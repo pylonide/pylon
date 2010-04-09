@@ -82,7 +82,7 @@ apf.checkbox = function(struct, tagName){
     this.$notfromext = true;
     this.$focussable = true; // This object can get the focus
     this.checked     = false;
-    this.$values     = [1, 0]
+    this.$values     = [1, 0];
 
     /**** Properties and Attributes ****/
 
@@ -95,10 +95,10 @@ apf.checkbox = function(struct, tagName){
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
 
-        this.checked = (value !== undefined
+        this.checked = (typeof value != "undefined" && value !== null
             && value.toString() == this.$values[0].toString());
 
-        if (value !== null && value.toString() == this.$values[0].toString())
+        if (this.checked)
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         else
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
@@ -204,7 +204,8 @@ apf.checkbox = function(struct, tagName){
             [this.$baseCSSname + "Down", this.$baseCSSname + "Over"]);
         this.state = state; // Store the current state so we can check on it coming here again.
 
-        this.dispatchEvent(strEvent, e);
+        if (strEvent)
+            this.dispatchEvent(strEvent, e);
 
         /*if (state == "Down")
             apf.cancelBubble(e, this);

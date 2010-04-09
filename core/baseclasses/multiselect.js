@@ -277,8 +277,8 @@ apf.MultiSelect = function(){
         var changes = [];
         for (var i = 0; i < nodeList.length; i++) {
             changes.push({
-                func : "removeNode",
-                args : [nodeList[i]]
+                action : "removeNode",
+                args   : [nodeList[i]]
             });
         }
 
@@ -636,7 +636,8 @@ apf.MultiSelect = function(){
      *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
-        if (!this.selectable || userAction && this.disabled) return;
+        if (!this.selectable || userAction && this.disabled || this.editable) 
+            return;
         
         if (fakeselect == -1) {
 	      	fakeselect = false;
@@ -1323,7 +1324,7 @@ apf.MultiSelect = function(){
             delete this.$lastValue;
             return;
         }
-        
+
         if (!this.$attrBindings["eachvalue"] && !this.$amlLoaded
           && this.getAttribute("eachvalue")) {
             var _self = this;

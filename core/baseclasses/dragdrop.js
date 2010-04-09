@@ -230,8 +230,8 @@ apf.DragDrop = function(){
             l       = nodeList.length;
         for (; i < l; i++) {
             changes.push({
-                func : isMove ? "moveNode" : "appendChild",
-                args : [pNode, isMove
+                action : isMove ? "moveNode" : "appendChild",
+                args   : [pNode, isMove
                     ? nodeList[i]
                     : nodeList[i] = nodeList[i].cloneNode(true), beforeNode]
             });
@@ -534,7 +534,7 @@ apf.DragDrop = function(){
         this.$ext[apf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             if (_self.disabled)
                 return;
-            
+
             e = e || window.event;
             // #ifdef __SUPPORT_IPHONE
             if (apf.isIphone) {
@@ -555,9 +555,10 @@ apf.DragDrop = function(){
             _self.dragging = 0;
 
             if (!apf.isIphone && _self.allowdeselect
-              && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag)))
+              && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
+              && _self.$getLayoutNode("item", "select", this) != this))
                 return _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
-
+                
             //MultiSelect must have carret behaviour AND deselect at clicking white
             if (_self.$findValueNode)
                 fEl = _self.$findValueNode(srcEl);
@@ -572,7 +573,7 @@ apf.DragDrop = function(){
                 if (apf.isIphone)
                     old_e.preventDefault();
                 //#endif
-                
+
                 apf.DragServer.start(_self, srcEl, e);
             }
 
@@ -932,8 +933,11 @@ apf.DragServer = {
                    }));
 
         if (this.last && this.last != o)
-            this.dragout(this.last);
-            
+            this.dragout(this.last, e);
+
+        this.last = o;
+        this.lastFel = fEl;
+
         if (!candrop)
             return;
 
@@ -953,20 +957,19 @@ apf.DragServer = {
         //REQUIRED INTERFACE: __dragover()
         if (o && o.$dragover)
             o.$dragover(el, this.dragdata, candrop);
-
-        this.last = o;
-        this.lastFel = fEl;
     },
 
-    dragout : function(o){
+    dragout : function(o, e){
         //if (this.last == o) 
             //return false;
 
         this.lastFel = null;
 
         //EVENT: ondragout
-        if (o)
+        if (o) {
+            this.dragdata.htmlEvent = e;
             o.dispatchEvent("dragout", this.dragdata);
+        }
 
         //REQUIRED INTERFACE: __dragout()
         if (this.last && this.last.$dragout)
@@ -1030,7 +1033,7 @@ apf.DragServer = {
 
         //Exit if not allowed
         if (!candrop) {
-            this.dragout(o);
+            this.dragout(o, e);
             return false;
         }
 
@@ -1121,7 +1124,7 @@ apf.DragServer = {
         if (receiver)
             apf.DragServer.dragover(receiver, el, e);
         else if (apf.DragServer.last)
-            apf.DragServer.dragout(apf.DragServer.last);
+            apf.DragServer.dragout(apf.DragServer.last, e);
 
 
         apf.DragServer.lastTime = new Date().getTime();
@@ -1175,7 +1178,7 @@ apf.DragServer = {
 
         //Run Events
         if (apf.DragServer.host && host != apf.DragServer.host)
-            apf.DragServer.dragout(apf.DragServer.host);
+            apf.DragServer.dragout(apf.DragServer.host, e);
         var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
         apf.DragServer.stop(true, success);
     }
@@ -1241,6 +1244,8 @@ apf.MultiselectDragDrop = function() {
             return (this.lastDragNode = oDrag);
         }
         else {
+            var sel = this.$selected || this.$caret;
+            this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
         }
         
@@ -1292,7 +1297,7 @@ apf.MultiselectDragDrop = function() {
         this.oDrag = apf.insertHtmlNode(
             this.$getLayoutNode("dragindicator"), document.body);
 
-        this.oDrag.style.zIndex   = 1000000;
+        this.oDrag.style.zIndex   = 10000000;
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";

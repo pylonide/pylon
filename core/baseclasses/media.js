@@ -519,11 +519,10 @@ apf.Media = function(){
     };
 
     this.addEventListener("DOMNodeInserted", function(e){
-        var node = e.currentTarget;
-        if (node.parentNode != this)
+        if (e.relatedNode != this || e.currentTarget.nodeType != 1) //@todo shouldn't this check for localName?
             return;
 
-        this.$addSource(node);
+        this.$addSource(e.currentTarget);
     });
 
     this.addEventListener("DOMNodeRemoved", function(e){

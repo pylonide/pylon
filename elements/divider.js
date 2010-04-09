@@ -32,6 +32,9 @@ apf.divider = function(struct, tagName){
 
 (function() {
     this.$focussable = false;
+
+    this.implement(apf.ChildValue);
+    this.$childProperty = "caption";
     
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
@@ -43,18 +46,30 @@ apf.divider = function(struct, tagName){
         }
     });
     
+    /** 
+     * @attribute {String} caption the text displayed in the area defined by this 
+     * element. 
+     */
+    this.$supportedProperties.push("caption", "value", "for", "textalign");
+    this.$propHandlers["caption"] = function(value){
+        if (this.$caption) {
+            this.$caption.style.display = value ? "inline" : "";
+            this.$caption.innerHTML = value;
+        }
+    };
+    
     /**
      * @ref amlNode#show
      */
     this.show = function(){
-        this.$ext.style.display = "block";
+        this.setProperty("visible", true);
     };
     
     /**
      * @ref amlNode#hide
      */
     this.hide = function(){
-        this.$ext.style.display = "none";
+        this.setProperty("visible", false);
     };
     
     this.$canLeechSkin = true;
@@ -62,15 +77,14 @@ apf.divider = function(struct, tagName){
     /**
      * @private
      */
-    this.$loadAml = function(x) {
-        this.$aml = x;
-
+    this.$draw = function() {
         if (this.$isLeechingSkin) {
             this.$ext = apf.insertHtmlNode(
                 this.parentNode.$getLayoutNode("divider"), this.$pHtmlNode);
         }
         else {
-            this.$ext = this.$getExternal("main");
+            this.$ext     = this.$getExternal("main");
+            this.$caption = this.$getLayoutNode("main", "caption", this.$ext);
         }
     };
 }).call(apf.divider.prototype = new apf.Presentation);

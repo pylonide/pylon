@@ -70,7 +70,7 @@ apf.LiveMarkupPi = function(){
         //if (!this.xmlRoot)
             //return this.$ext.innerHTML = "loading...";
 
-        if (data && data.indexOf("<a:") > -1) {
+        if (typeof data == "string" && data.indexOf("<a:") > -1) {
             this.$ext.innerHTML = "";//data;
 
             this.$data = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
@@ -89,13 +89,13 @@ apf.LiveMarkupPi = function(){
                 for (var i = 0; i < nodes.length; i++)
                     nodes[i].destroy(true);
             }
-            
             this.$ext.innerHTML = data || "";
         }
     };
 }).call(apf.LiveMarkupPi.prototype = new apf.AmlProcessingInstruction(true));
 
 apf.aml.setProcessingInstruction("lm", apf.LiveMarkupPi);
+apf.aml.setProcessingInstruction("lm-debug", apf.LiveMarkupPi);
 apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 // #endif

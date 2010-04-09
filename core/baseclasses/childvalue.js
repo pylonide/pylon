@@ -25,11 +25,16 @@ apf.__CHILDVALUE__ = 1 << 27;
 apf.ChildValue = function(){
     if (!this.$childProperty)
         this.$childProperty = "value";
-    this.$regbase       = this.$regbase | apf.__CHILDVALUE__;
+    
+    this.$regbase = this.$regbase | apf.__CHILDVALUE__;
     
     var f;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
         if (e.currentTarget == this)
+            return;
+        
+        var hasNoProp = typeof this[this.$childProperty] == "undefined";
+        if (!hasNoProp)
             return;
         
         //Get value from xml (could also serialize children, but that is slower
@@ -45,11 +50,15 @@ apf.ChildValue = function(){
             this.setProperty(this.$childProperty, v);
     });
     
+    //@todo Should be buffered
+    this.addEventListener("DOMAttrModified", f);
     this.addEventListener("DOMNodeInserted", f);
     this.addEventListener("DOMNodeRemoved", f);
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (!this.getElementsByTagNameNS(this.namespaceURI, "*").length 
+        var hasNoProp = typeof this[this.$childProperty] == "undefined";
+        if (hasNoProp 
+          && !this.getElementsByTagNameNS(this.namespaceURI, "*", true).length 
           && (this.childNodes.length > 1 || this.firstChild 
           && (this.firstChild.nodeType == 1 
           || this.firstChild.nodeType != 7 
@@ -65,7 +74,7 @@ apf.ChildValue = function(){
             //#endif
                 this.setProperty(this.$childProperty, v);
         }
-        else if (typeof this[this.$childProperty] == "undefined")
+        else if (hasNoProp)
             this.$propHandlers[this.$childProperty].call(this, "");
     });
 };

@@ -62,7 +62,7 @@ apf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
-            //apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
@@ -376,39 +376,42 @@ apf.XPath = {
         return new apf.CodeCompilation(code).compile();
     },
 
-    doXpathFunc : function(contextNode, type, nodelist, arg2, arg3, xmlNode){
+    doXpathFunc : function(contextNode, type, nodelist, arg2, arg3, xmlNode, force){
         if (!nodelist || nodelist.length == 0)
             nodelist = "";
 
         if (type == "not")
             return !nodelist;
 
-        var arg1, i, l;
-        if (typeof nodelist == "object" || nodelist.dataType == apf.ARRAY) {
-            if (nodelist && !nodelist.length)
-                nodelist = [nodelist];
-            
-            var res = false, value;
-            for (i = 0, l = nodelist.length; i < l; i++) {
-                xmlNode = nodelist[i];
-                if (!xmlNode || typeof xmlNode == "string") {
-                    value = xmlNode;
+        if (!force) {
+            var arg1, i, l;
+            if (typeof nodelist == "object" || nodelist.dataType == apf.ARRAY) {
+                if (nodelist && !nodelist.length)
+                    nodelist = [nodelist];
+                
+                var res = false, value;
+                for (i = 0, l = nodelist.length; i < l; i++) {
+                    xmlNode = nodelist[i];
+                    if (!xmlNode || typeof xmlNode == "string"
+                      || "position|last|count|local-name|name".indexOf(type) > -1) {
+                        value = xmlNode;
+                    }
+                    else {
+                        if (xmlNode.nodeType == 1 && xmlNode.firstChild && xmlNode.firstChild.nodeType != 1)
+                            xmlNode = xmlNode.firstChild;
+                        value = xmlNode.nodeValue;
+                    }
+    
+                    if (res = arguments.callee.call(this, contextNode, type, value, arg2, arg3, xmlNode, true))
+                        return res;
                 }
-                else {
-                    if (xmlNode.nodeType == 1 && xmlNode.firstChild && xmlNode.firstChild.nodeType != 1)
-                        xmlNode = xmlNode.firstChild;
-                    value = xmlNode.nodeValue;
-                }
-
-                if (res = arguments.callee.call(this, contextNode, type, value, arg2, arg3, xmlNode))
-                    return res;
+                return res;
             }
-            return res;
+            else {
+                arg1 = nodelist;
+            }
         }
-        else {
-            arg1 = nodelist;
-        }
-
+        
         switch(type){
             case "position":
                 return apf.getChildNumber(contextNode) + 1;
@@ -426,8 +429,13 @@ apf.XPath = {
                 return arg1 ? arg1.length : 0;
             case "last":
                 return arg1 ? arg1[arg1.length-1] : null;
+            case "name":
+                var c = xmlNode || contextNode;
+                return c.nodeName || c.tagName;
             case "local-name":
-                return (xmlNode ? xmlNode.tagName : contextNode.tagName).split(":").pop();//[apf.TAGNAME]
+                var c = xmlNode || contextNode;
+                if (c.nodeType != 1) return false;
+                return c.tagName.split(":").pop();//[apf.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":
@@ -469,7 +477,7 @@ apf.XPath = {
         while (xmlNode.parentNode && xmlNode.parentNode.nodeType == 1)
             xmlNode = xmlNode.parentNode;
         
-        return xmlNode;
+        return xmlNode.parentNode;
     },
 
     selectNodes : function(sExpr, contextNode){
@@ -504,7 +512,8 @@ apf.XPath = {
                 : contextNode),//document.body*/
             sResult  = [];
 
-        info[0](rootNode, info[1], this.cache[sExpr], 1, 0, sResult);
+        if (rootNode)
+            info[0](rootNode, info[1], this.cache[sExpr], 1, 0, sResult);
 
         return sResult;
     }

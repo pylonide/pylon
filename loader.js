@@ -65,6 +65,7 @@ apf.$x = apf.$loader
         "core/lib/util/plane.js",
         "core/lib/util/popup.js",
         "core/lib/util/silverlight.js",
+        "core/lib/util/syntax.js",
         "core/lib/util/xml.js",
         "core/lib/util/xmldiff.js",
     
@@ -169,6 +170,8 @@ apf.$x = apf.$loader
         "core/markup/aml/event.js",
         "core/markup/aml/textrectangle.js",
         "core/markup/aml/processinginstruction.js",
+        "core/markup/aml/range.js",
+        "core/markup/aml/selection.js",
         
         "core/markup/xhtml/element.js",
         "core/markup/xsd/element.js",
@@ -176,6 +179,12 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "core/baseclasses/contenteditable2/clipboard.js",
+        "core/baseclasses/contenteditable2/commands.js",
+        "core/baseclasses/contenteditable2/interactive.js",
+        "core/baseclasses/contenteditable2/selectrect.js",
+        "core/baseclasses/contenteditable2/visualselect.js",
+    
         "core/markup/xhtml/ignore.js",
         "core/markup/xhtml/option.js",
         "core/markup/xhtml/body.js",
@@ -275,6 +284,9 @@ apf.$x = apf.$loader
         "elements/actions.js",
         "elements/actionrule.js",
         "elements/actiontracker.js",
+        "elements/actiontracker/undodata.js",
+        "elements/actiontracker/xmlactions.js",
+        
         "elements/application.js",
         "elements/appsettings.js",
         "elements/audio.js",
@@ -371,6 +383,8 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "core/baseclasses/contenteditable2/config.js",
+    
         "elements/audio/type_flash.js",
         "elements/audio/type_native.js",
         

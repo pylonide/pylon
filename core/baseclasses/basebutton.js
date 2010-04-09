@@ -162,6 +162,9 @@ apf.BaseButton = function(){
     };
 
     this.$setupEvents = function() {
+        if (this.editable)
+            return;
+        
         var _self = this;
 
         this.$ext.onmousedown = function(e) {
@@ -259,7 +262,7 @@ apf.BaseButton = function(){
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
     };
 
-    this.$blur = function(oBtn){
+    this.$blur = function(e){
         if (!this.$ext)
             return; //FIREFOX BUG!
 
@@ -277,8 +280,8 @@ apf.BaseButton = function(){
         }*/
         //#endif
 
-        if (oBtn)
-            this.$updateState(oBtn);//, "onblur"
+        if (e)
+            this.$updateState({});//, "onblur"
     };
 
     /*** Clearing potential memory leaks ****/

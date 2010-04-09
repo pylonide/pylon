@@ -165,6 +165,9 @@ var ID        = "id",
     },
     __pow   = Math.pow,
     __round = Math.round,
+    RUNNING  = 0,
+    STOPPING = 1,
+    STOPPED  = 2,
 
     queue = {},
 
@@ -332,6 +335,13 @@ var ID        = "id",
             ? modules[TRANSFORM + (info.subType || SCALE)]
             : modules[info.type] || modules.htmlcss;
 
+        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
+            isTransform = (info.type == TRANSFORM);
+
+        info.method = useCSSAnim ? info.type : isTransform
+            ? modules[TRANSFORM + (info.subType || SCALE)]
+            : modules[info.type] || modules.htmlcss;
+
         //#ifdef __DEBUG
         if (!info.method)
             throw new Error(apf.formatErrorString(0, this,
@@ -377,19 +387,24 @@ var ID        = "id",
             return apf.tween;
         }
 
+        if (info.control)
+            info.control.stop = function(){
+                info.control.state = STOPPING;
+                clearQueue(oHtml);
+                if (info.onstop)
+                    info.onstop(oHtml, info.userdata);
+            }
+
         var steps = info.color
                 ? calcColorSteps(info.anim, info.from, info.to, info.steps)
                 : calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
             stepFunction = function(step){
-                current = info;
-                if (info.control && info.control.stop) {
-                    info.control.stop = false;
-
-                    clearQueue(oHtml);
-                    if (info.onstop)
-                        info.onstop(oHtml, info.userdata);
+                if (info.control && info.control.state) {
+                    info.control.state = STOPPED;
                     return;
                 }
+                
+                current = info;
 
                 if (info.onbeforeeach
                   && info.onbeforeeach(oHtml, info.userdata) === false)
@@ -408,7 +423,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.stopped = true;
+                    info.control.state = STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -553,17 +568,23 @@ var ID        = "id",
                 oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
             return apf.tween;
         }
+        
+        if (info.control)
+            info.control.stop = function(){
+                info.control.state = STOPPING;
+                clearQueue(oHtml);
+                if (info.onstop)
+                    info.onstop(oHtml, info.userdata);
+            }
 
         var tweens       = info.tweens,
             stepFunction = function(step){
-                current = info;
-                if (info.control && info.control.stop) {
-                    info.control.stop = false;
-                    clearQueue(oHtml);
-                    if (info.onstop)
-                        info.onstop(oHtml, info.userdata);
+                if (info.control && info.control.state) {
+                    info.control.state = STOPPED;
                     return;
                 }
+                
+                current = info;
 
                 try {
                     for (var i = 0; i < steps.length; i++) {
@@ -580,7 +601,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.stopped = true;
+                    info.control.state = STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -766,15 +787,15 @@ return {
         return -dx / 2 * ((--t) * (t - 2) - 1) + x_min;
     },
     easeInCubic: function(t, x_min, dx) {
-        return dx * __pow(t, 3) + x_min;
+        return dx * Math.pow(t, 3) + x_min;
     },
     easeOutCubic: function(t, x_min, dx) {
         return dx * (__pow(t - 1, 3) + 1) + x_min;
     },
     easeInOutCubic: function(t, x_min, dx) {
         if ((t /= .5) < 1)
-            return dx / 2 * __pow(t, 3) + x_min;
-        return dx / 2 * (__pow(t - 2, 3) + 2) + x_min;
+            return dx / 2 * __(t, 3) + x_min;
+        return dx / 2 * (__(t - 2, 3) + 2) + x_min;
     },
     easeInQuart: function(t, x_min, dx) {
         return dx * __pow(t, 4) + x_min;

@@ -608,9 +608,7 @@ var apf = {
 
         //#ifdef __DEBUG
         apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("This is a debug build of Ajax.org Platform; be aware "
-            + "that\nexecution speed of this build is <strong>several times</strong> "
-            + "slower than a release build\nof Ajax.org Platform.");
+        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
         //#endif
 
         //mozilla root detection
@@ -621,7 +619,8 @@ var apf = {
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
-        apf.debugwin.init();
+        if (apf.$debugwin)
+            apf.$debugwin.start();
         //#endif
 
         //Load Browser Specific Code
@@ -891,7 +890,13 @@ var apf = {
                 messages : {}
             },
 
-            info  : {
+            log   : {
+                icon     : "bullet_green.png",
+                color    : "black",
+                messages : {}
+            },
+            
+            custom   : {
                 icon     : "bullet_green.png",
                 color    : "black",
                 messages : {}
@@ -920,7 +925,7 @@ var apf = {
          * @private
          */
         toggle : function(node, id){
-            var sPath = apf.debugwin ? apf.debugwin.resPath : apf.basePath + "core/debug/resources/";
+            var sPath = apf.$debugwin ? apf.$debugwin.resPath : apf.basePath + "core/debug/resources/";
             if (node.style.display == "block") {
                 node.style.display = "none";
                 node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
@@ -944,6 +949,8 @@ var apf = {
         },
 
         cache : [],
+        history : [],
+        typeLut : {time: "log", repeat: "log"},
         $lastmsg : "",
         $lastmsgcount : 0,
 
@@ -955,6 +962,26 @@ var apf = {
                 apf.console.write(msg, "repeat");
                 clearTimeout(apf.console.$timer);
             }
+        },
+        
+        teleportList : [],
+        teleport : function(log){
+            if (this.teleportModel)
+                log.setXml(this.teleportModel.data);
+            
+            this.teleportList.push(log);
+        },
+        setTeleportModel : function(mdl){
+            if (this.teleportModel == mdl)
+                return;
+            
+            this.teleportModel = mdl;
+            var xml = apf.getXml("<teleport />");
+            for (var i = 0; i < this.teleportList.length; i++) {
+                this.teleportList[i].setXml(xml);
+            }
+            
+            mdl.load(xml);
         },
 
         /**
@@ -991,13 +1018,16 @@ var apf = {
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
 
-            msg = (!nodate ? "[" + date + "] " : "")
+            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
                     + String(msg)
-                        .replace(/ /g, "&nbsp;")
-                        .replace(/\n/g, "\n<br />")
+                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
+                            if (tag) return tag;
+                            return "&nbsp;";
+                        })
+                        //.replace(/\n/g, "\n<br />")
                         .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = apf.debugwin
-                ? (apf.debugwin.resPath || "{imgpath}")
+            var sPath = apf.$debugwin && apf.$debugwin.resPath
+                ? apf.$debugwin.resPath
                 : apf.basePath + "core/debug/resources/";
 
             if (data) {
@@ -1011,18 +1041,15 @@ var apf = {
                     +  "</div></blockquote>";
             }
 
-            msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;"
-                + "line-height:15px;border-bottom:1px solid #EEE;background:url("
+            msg = "<div class='console_line' style='background:url("
                 + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
+            //deprecated
             if (!subtype)
                 subtype = "default";
 
-            if (!this.data[type].messages[subtype])
-                this.data[type].messages[subtype] = [];
-
-            this.data[type].messages[subtype].push(msg);
+            this.history.push([this.typeLut[type] || type, msg]);
 
             if (this.win && !this.win.closed)
                 this.showWindow(msg);
@@ -1033,7 +1060,21 @@ var apf = {
             this.debugInfo.push(msg);
 
             if (apf.dispatchEvent)
-                apf.dispatchEvent("debug", {message: msg});
+                apf.dispatchEvent("debug", {message: msg, type: type});
+        },
+        
+        clear : function(){
+            this.history = [];
+        },
+        
+        getAll : function(err, wrn, log) {
+            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
+            var out = [];
+            for (var i = 0, l = this.history.length; i < l; i++) {
+                if (hash[this.history[i][0]])
+                    out.push(this.history[i][1]);
+            }
+            return out.join("");
         },
         //#endif
 
@@ -1069,7 +1110,7 @@ var apf = {
          */
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.info(msg, subtype, data);
+            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "log", subtype, data);
             //#endif
         },
 
@@ -1082,7 +1123,7 @@ var apf = {
          */
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "info", subtype, data);
+            this.log(apf.htmlentities(msg).replace(/\n/g, "<br />"), subtype, data);
             //#endif
         },
 
@@ -2236,6 +2277,16 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
 
 var $setTimeout  = setTimeout;
 var $setInterval = setInterval;
+
+apf.setTimeout = function(f, t){
+    apf.eventDepth++;
+    return $setTimeout(function(){
+        f();
+        
+        if (--apf.eventDepth == 0)
+            apf.queue.empty();
+    }, t);
+}
 
 document.documentElement.className += " has_apf";
 apf.browserDetect();

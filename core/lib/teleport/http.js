@@ -357,15 +357,27 @@ apf.http = function(){
 
         // #ifdef __DEBUG
         if (!options.hideLogMessage) {
-            apf.console.info("[HTTP] Making request[" + id + "] using "
-                + (this.method || options.method || "GET") + " to " + url
-                + (autoroute
-                    ? "<span style='color:green'>[via: " + httpUrl + "]</span>"
-                    : ""),
-                "teleport",
-                new String(data && data.xml ? data.xml : data));
+            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
+                id      : id,
+                tp      : this,
+                type    : options.type,
+                method  : this.method || options.method || "GET",
+                url     : url,
+                route   : autoroute ? httpUrl : "",
+                data    : new String(data && data.xml ? data.xml : data),
+                start   : new Date()
+            }))
         }
+        
+        var headers = [];
         // #endif
+        
+        function setRequestHeader(name, value){
+            //#ifdef __DEBUG
+            headers.push(name + ": " + value);
+            //#endif
+            http.setRequestHeader(name, value);
+        }
 
         var errorFound = false;
         try {
@@ -407,22 +419,22 @@ apf.http = function(){
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {
-                http.setRequestHeader("Authorization", "Basic " 
+                setRequestHeader("Authorization", "Basic " 
                     + apf.crypto.Base64.encode(options.username + ":" + options.password))
             }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
             if (!apf.isWebkit)
-                http.setRequestHeader("User-Agent", "Ajax.org Teleport 3.0"); //@deprecated
-            http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                setRequestHeader("User-Agent", "Ajax.org Teleport 3.0"); //@deprecated
+            setRequestHeader("X-Requested-With", "XMLHttpRequest");
             if (!options.headers || !options.headers["Content-type"])
-                http.setRequestHeader("Content-type", this.contentType
+                setRequestHeader("Content-type", this.contentType
                     || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
 
             if (autoroute) {
-                http.setRequestHeader("X-Route-Request", url);
-                http.setRequestHeader("X-Proxy-Request", url);
-                http.setRequestHeader("X-Compress-Response", "gzip");
+                setRequestHeader("X-Route-Request", url);
+                setRequestHeader("X-Proxy-Request", url);
+                setRequestHeader("X-Compress-Response", "gzip");
             }
         }
         catch (e) {
@@ -446,9 +458,9 @@ apf.http = function(){
                         ? apf.getNoCacheUrl(httpUrl)
                         : httpUrl), async);
 
-                    http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                    setRequestHeader("X-Requested-With", "XMLHttpRequest");
                     if (!options.headers || !options.headers["Content-type"])
-                        http.setRequestHeader("Content-type", this.contentType
+                        setRequestHeader("Content-type", this.contentType
                             || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
 
                     this.queue[id].http = http;
@@ -496,8 +508,13 @@ apf.http = function(){
         //Set request headers
         if (options.headers) {
             for (var name in options.headers)
-                http.setRequestHeader(name, options.headers[name]);
+                setRequestHeader(name, options.headers[name]);
         }
+        
+        // #ifdef __DEBUG
+        if (!options.hideLogMessage)
+            this.queue[id].log.request(headers);
+        // #endif
 
         function handleError(){
             var msg = self.navigator.onLine
@@ -506,6 +523,13 @@ apf.http = function(){
 
             //#ifdef __DEBUG
             apf.console.warn(msg, "teleport");
+            if (!options.hideLogMessage)
+                _self.queue[id].log.response({
+                    //#ifdef __DEBUG
+                    end     : new Date(),
+                    //#endif
+                    message : msg
+                });
             //#endif
 
             var state = self.navigator && navigator.onLine
@@ -623,7 +647,8 @@ apf.http = function(){
         clearInterval(qItem.timer);
         //#endif
 
-        if (self.navigator && navigator.onLine === false && (location.protocol != "file:"
+        if (self.navigator && navigator.onLine === false 
+          && (location.protocol != "file:"
           || qItem.url.indexOf("http://") > -1))
             return false;
 
@@ -640,7 +665,7 @@ apf.http = function(){
             }
         }
         
-        // #ifdef __DEBUG
+        /* #ifdef __DEBUG
         if (!qItem.options.hideLogMessage) {
             apf.console.info("[HTTP] Receiving [" + id + "]"
                 + (http.isCaching
@@ -650,11 +675,14 @@ apf.http = function(){
                 "teleport",
                 http.responseText);
         }
-        // #endif
+        #endif */
 
         //Gonna check for validity of the http response
         var errorMessage = [],
             extra = {
+                //#ifdef __DEBUG
+                end      : new Date(),
+                //#endif
                 tpModule : this,
                 http     : http,
                 url      : qItem.url,
@@ -715,10 +743,15 @@ apf.http = function(){
                 }
             }
         }
-
+        
         //Process errors if there are any
         if (errorMessage.length) {
             extra.message = errorMessage.join("\n");
+
+            //#ifdef __DEBUG
+            if (qItem.log)
+                qItem.log.response(extra);
+            //#endif
 
             // Send callback error state
             if (!callback || !callback(extra.data, apf.ERROR, extra))
@@ -734,6 +767,11 @@ apf.http = function(){
 
             this.cache[qItem.url][qItem.options.data] = http.responseText;
         }
+        //#endif
+
+        //#ifdef __DEBUG
+        if (qItem.log)
+            qItem.log.response(extra);
         //#endif
 
         //Http call was successfull Success
@@ -773,7 +811,11 @@ apf.http = function(){
         apf.console.info("HTTP Timeout [" + id + "]", "teleport");
         // #endif
 
-        var noClear = callback ? callback(null, apf.TIMEOUT, {
+        var extra;
+        var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
+            //#ifdef __DEBUG
+            end     : new Date(),
+            //#endif
             userdata: qItem.options.userdata,
             http    : http,
             url     : qItem.url,
@@ -782,6 +824,12 @@ apf.http = function(){
             message : "HTTP Call timed out",
             retries : qItem.retries || 0
         }) : false;
+        
+        //#ifdef __DEBUG
+        if (qItem.log)
+            qItem.log.response(extra);
+        //#endif
+        
         if (!noClear)
             this.clearQueueItem(id);
     };
@@ -957,6 +1005,43 @@ apf.http = function(){
         };
     }
 };
+
+//#ifdef __DEBUG
+apf.teleportLog = function(extra){
+    var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
+    
+    this.setXml = function(pNode){
+        if (!xml) {
+            var doc = pNode.ownerDocument;
+            xml = doc.createElement(extra.tp.localName || extra.type || "http");
+            xml.appendChild(doc.createElement("request")).appendChild(doc.createTextNode(request || "-"));
+            xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
+        }
+        
+        apf.xmldb.appendChild(pNode, xml);
+    }
+    
+    this.request = function(headers){
+        request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
+
+        if (xml)
+            apf.setQueryValue(xml, "request/text()", request);
+        
+        this.request = function(){}
+    }
+    
+    var response = "";
+    this.response = function(extra){
+        var headers = extra.http.getAllResponseHeaders() ;
+        response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
+            + (headers ? headers : "\n")
+            + extra.http.responseText;
+        
+        if (xml)
+            apf.setQueryValue(xml, "response/text()", response);
+    }
+}
+//#endif
 
 // #endif
 

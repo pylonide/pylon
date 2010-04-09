@@ -77,6 +77,7 @@ apf.aml.setElement("include", apf.XiInclude);
             this.parentNode.$int.innerHTML = "";
         
         //@todo apf3.x the insertBefore seems like unnecessary overhead
+        //@todo apf3.x this seems flawed, now another root node is added to this document....
         if (xmlNode) {
             var node,
                 _self = this,
@@ -119,6 +120,9 @@ apf.aml.setElement("include", apf.XiInclude);
 
         var _self = this;
         apf.getData(path, apf.extend(this.options || {}, {
+            //#ifdef __DEBUG
+            type : "markup",
+            //#endif
             callback : function(xmlString, state, extra){
                 if (state != apf.SUCCESS) {
                     var oError = new Error(apf.formatErrorString(1007,

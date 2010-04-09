@@ -150,6 +150,8 @@ apf.Alignment = function(){
         this.removeEventListener("prop.visible", visibleHandler);
 
         remove.call(this);
+        
+        this.$alignmentEnabled = false;
     };
 
     /**
@@ -288,7 +290,7 @@ apf.Alignment = function(){
         if (!this.$amlLoaded || e.currentTarget != this)
             return;
 
-        if (!e.$moveWithinParent && this.aData 
+        if (!e.$isMoveWithinParent && this.aData 
           && this.aData.pHtml != this.$pHtmlNode) {
             this.aData.pHtml = this.$pHtmlNode;
             //this.aData = null;
@@ -302,11 +304,18 @@ apf.Alignment = function(){
     var propHandlers = {
         //#ifdef __WITH_ALIGN_TEMPLATES
         "align" : function(value){
-            this.aData.remove();
-            this.aData.template   = value;
-            this.splitter         = undefined;
-            this.aData.edgeMargin = this.edge || 0;
-            this.$enableAlignment();
+            if (value) {
+                /*this.aData.remove();
+                this.aData.template   = value;
+                this.splitter         = undefined;
+                this.aData.edgeMargin = this.edge || 0;
+                this.$enableAlignment();*/
+                this.$setLayout("alignment");
+            }
+            else {
+                this.$setLayout("anchoring");
+                this.$ext.style.display = "block";
+            }
         },
         //#endif
 

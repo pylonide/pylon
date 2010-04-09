@@ -30,8 +30,8 @@
  * shown.
  * <code>
  *  <a:list>
- *      <a:contextmenu menu="mnuXY" match="[computer]" />
- *      <a:contextmenu menu="mnuTest" />
+ *      <a:contextmenu menu="mnuRoot" match="[root]" />
+ *      <a:contextmenu menu="mnuItem" />
  *  </a:list>
  * </code>
  * @attribute {String} menu   the id of the menu element.

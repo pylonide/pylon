@@ -27,16 +27,25 @@ apf.__VALIDATION__ = 1 << 6;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
  *
- * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
- */
- // @attribute {String} margin   
-/**
- *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits apf.Alignment
+ * @inherits apf.Anchoring
+ * @inherits apf.Docking
+ * @inherits apf.DelayedRender
+ * @inherits apf.DragDrop
+ * @inherits apf.Focussable
+ * @inherits apf.Interactive
+ * @inherits apf.Transaction
+ * @inherits apf.Validation
+ *
+ * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
+ * @attribute {String} margin   
+ * @todo attribute align
  *
  * @attribute {mixed} left the left position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
@@ -130,11 +139,17 @@ apf.GuiElement = function(){
                 return type == "table";
             }
             // #endif
-           // #ifdef (__AMLVBOX || __AMLHBOX) && __AMLTABLE
-           else
-           // #endif  
+
             // #ifdef __AMLVBOX || __AMLHBOX
-            if (this.aData || this.align || "vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            else if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+                this.parentNode.register(this);
+                this.$disableCurrentLayout = null;
+                return type == this.parentNode.localName;
+            }
+            // #endif
+            
+            // #ifdef __WITH_ALIGNMENT
+            else if (this.align) {
                 if (!this.$alignmentEnabled) {
                     if (this.$disableCurrentLayout)
                         this.$disableCurrentLayout();
@@ -156,12 +171,14 @@ apf.GuiElement = function(){
         return type == "anchoring";
         // #endif
     }
+    
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget == this 
+          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
+            this.$setLayout();
+        }
+    }); 
 
-    /**
-     * @inherits apf.DelayedRender
-     * @inherits apf.Anchoring
-     * @inherits apf.Alignment
-     */
     this.implement(
         //#ifdef __WITH_ANCHORING
         apf.Anchoring
@@ -169,7 +186,7 @@ apf.GuiElement = function(){
         //#ifdef __WITH_ALIGNMENT
         ,apf.Alignment
         //#endif
-        //#ifdef __WITH_CONTENTEDITABLE2
+        //#ifdef __WITH_CONTENTEDITABLE
         ,apf.ContentEditable2
         //#endif
     );
@@ -406,11 +423,14 @@ apf.GuiElement = function(){
     this.addEventListener("contextmenu", function(e){
         // #ifdef __WITH_CONTENTEDITABLE2
         if (this.editable) {
-            apf.ContentEditable2.showContextMenu(this, e);
+            this.ownerDocument.execCommand("contextmenu", true, {
+                amlNode: this,
+                htmlEvent: e
+            });
             
             e.returnValue  = false;
             e.cancelBubble = true;
-            return;
+            return false;
         }
         // #endif
         
@@ -504,8 +524,7 @@ apf.GuiElement.propHandlers = {
      * The focussed element receives keyboard event.s
      */
     "focussable": function(value){
-        if (typeof value == "undefined")
-            this.focussable = true;
+        this.focussable = typeof value == "undefined" || value;
 
         if (!this.hasFeature(apf.__FOCUSSABLE__)) //@todo should this be on the prototype
             this.implement(apf.Focussable);
@@ -675,6 +694,13 @@ apf.GuiElement.propHandlers = {
     "tooltip" : function(value){
         this.$ext.setAttribute("title", value);
     },
+    
+    //#ifdef __WITH_ALIGNMENT
+    "align" : function(value){
+        if (value)
+            this.$setLayout("alignment");
+    },
+    //#endif
 
     //#ifdef __AMLCONTEXTMENU
     /**
@@ -755,7 +781,7 @@ apf.GuiElement.propHandlers = {
      * @attribute {String} sets this aml element to be editable
      * that loads new aml as children of this element.
      */
-    //#ifdef __WITH_CONTENTEDITABLE2
+    //#ifdef __WITH_CONTENTEDITABLE
     /*"editable": function(value){
         this.implement(apf.ContentEditable2);
         this.$propHandlers["editable"].apply(this, arguments);

@@ -47,6 +47,7 @@ apf.aml.setElement("skin", apf.skin);
 
 (function(){
     this.$parsePrio = "002";
+    this.$includesRemaining = 0;
     
     this.$propHandlers["src"] = function(value){
         this.$path = apf.getAbsolutePath(apf.hostPath, value)
@@ -120,6 +121,10 @@ apf.aml.setElement("skin", apf.skin);
     function loadSkinInclude(includeNode, xmlNode, path) {
         var _self = this;
 
+        //#ifdef __DEBUG
+        apf.console.info("Loading include file: " + apf.getAbsolutePath(path, includeNode.getAttribute("src")));
+        //#endif
+
         //#ifdef __WITH_DATA
         apf.getData(
         /*#else
@@ -130,23 +135,26 @@ apf.aml.setElement("skin", apf.skin);
             if (state != apf.SUCCESS) {
                 throw new Error("Could not load skin include");//@todo apf3.0 make this into a proper error
             }
-            
-            var newPart = apf.getXml(xmlString);
+
+            var newPart = apf.getXml(xmlString.substr(0, 8) == "<a:skin "
+                ? xmlString
+                : '<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
             apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
             includeNode.parentNode.removeChild(includeNode);
             
             var includeNodes = $xmlns(newPart, "include", apf.ns.aml);
+            _self.$includesRemaining += includeNodes.length;
             if (includeNodes.length) {
                 var path = apf.getDirname(extra.url);
                 for (var i = 0; i < includeNodes.length; i++) {
                     loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
                 }
             }
-            else if (!$xmlns(xmlNode, "include", apf.ns.aml).length) {
+            else if (--_self.$includesRemaining == 0) {
                 // #ifdef __DEBUG
                 apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 // #endif
-                
+
                 finish.call(_self, xmlNode);
             }
           }
@@ -216,6 +224,7 @@ apf.aml.setElement("skin", apf.skin);
             
             //#ifdef __WITH_SKIN_INCLUDES
             var includeNodes = $xmlns(xmlNode, "include", apf.ns.aml);
+            _self.$includesRemaining += includeNodes.length;
             if (includeNodes.length) {
                 var path = apf.getDirname(extra.url);
                 for (var i = 0; i < includeNodes.length; i++) {

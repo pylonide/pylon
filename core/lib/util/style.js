@@ -290,15 +290,22 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
             left = box.left,
             corr = (apf.isIE && apf.isIE < 8);
 
-        /*if (refParent != document.body) {
-            var pos = apf.getAbsolutePosition(refParent);
+        if (refParent && refParent != document.body) {
+            var pos = apf.getAbsolutePosition(refParent, null, true);
             top -= pos[1];
             left -= pos[0];
-        }*/
+        }
         
         if (!(apf.isIE && o == document.documentElement)) {
             left += document.body.scrollLeft || document.documentElement.scrollLeft || 0;
             top  += document.body.scrollTop  || document.documentElement.scrollTop  || 0;
+        }
+        
+        if (inclSelf && !refParent) {
+            left += parseInt(apf.getStyle(o, apf.descPropJs 
+                ? "borderLeftWidth" : "border-left-width")) || 0
+            top  += parseInt(apf.getStyle(o, apf.descPropJs 
+                ? "borderTopWidth" : "border-top-width")) || 0;
         }
 
         return [left - (corr ? 2 : 0), top - (corr ? 2 : 0)];

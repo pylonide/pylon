@@ -327,9 +327,8 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.menuIsPressed = this;
 
-        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
-        menu.display(pos[0],
-            pos[1] + this.$ext.offsetHeight, false, this,
+        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
+        menu.display(null, null, false, this,
             null, null, this.$ext.offsetWidth - 2);
 
         this.parentNode.hasMoved = false;

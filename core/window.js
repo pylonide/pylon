@@ -46,9 +46,9 @@ apf.window = function(){
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[APF Component : " + (this.name || "") + " (apf.window)]";
+        return "[apf.window]";
     };
-
+    
     /**
      * Retrieves the primary {@link element.actiontracker action tracker} of the application.
      */
@@ -560,8 +560,11 @@ apf.window = function(){
 
     //Dom handler
     function removeFocus(e){
-        if (e && e.currentTarget != this)
+        if (e && (e.currentTarget != this || e.$doOnlyAdmin))
             return;
+        
+        if (apf.document.activeElement == this)
+            apf.window.moveNext();
         
         if (this.$isWindowContainer) {
             apf.window.$tabList.remove(this);
@@ -636,8 +639,12 @@ apf.window = function(){
             else if (next < 0)
                 next = list.length - 1;
 
-            if (start == next && amlNode)
+            if (start == next && amlNode) {
+                if (list[0].$isWindowContainer)
+                    this.$focus(list[0], e);
+                
                 return false; //No visible enabled element was found
+            }
 
             amlNode = list[next];
         }
@@ -926,7 +933,7 @@ apf.window = function(){
             if ((p = apf.document.activeElement
               && apf.document.activeElement.$focusParent || lastFocusParent)
               && p.visible && p.modal && amlNode.$focusParent != p) {
-                apf.window.$focusLast(p, {mouse: true});
+                apf.window.$focusLast(p, {mouse: true, ctrlKey: e.ctrlKey});
             }
             else if (!amlNode && apf.document.activeElement) {
                 apf.window.$focusRoot();
@@ -939,19 +946,19 @@ apf.window = function(){
             }
             else if (!amlNode.disabled && amlNode.focussable !== false) {
                 if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
-                    apf.window.$focus(amlNode, {mouse: true});
+                    apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else if (amlNode.canHaveChildren == 2) {
                     if (!apf.config.allowBlur || !apf.document.activeElement 
                       || apf.document.activeElement.$focusParent != amlNode)
-                        apf.window.$focusLast(amlNode, {mouse: true});
+                        apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else {
-                    apf.window.$focusDefault(amlNode, {mouse: true});
+                    apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
             }
             else {
-                apf.window.$focusDefault(amlNode, {mouse: true});
+                apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
             }
     
             //#ifdef __WITH_WINDOW_FOCUS
@@ -1104,7 +1111,14 @@ apf.window = function(){
                 }
             }
             
-            var ev  = {delta: delta, target: e.target || e.srcElement},
+            var ev  = {
+              delta: delta, 
+              target   : e.target || e.srcElement, 
+              button   : e.button, 
+              ctrlKey  : e.ctrlKey, 
+              shiftKey : e.shiftKey, 
+              altKey   : e.altKey
+            },
                 res = apf.dispatchEvent("mousescroll", ev);
             if (res === false || ev.returnValue === false) {
                 if (e.preventDefault)
@@ -1130,9 +1144,7 @@ apf.window = function(){
 
         //#ifdef __WITH_DEBUG_WIN
         if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
-            if (!apf.debugwin.resPath)
-                apf.debugwin.init();
-            apf.debugwin.activate();
+            apf.$debugwin.activate();
         }
         //#endif
 
@@ -1182,10 +1194,11 @@ apf.window = function(){
             htmlEvent : e,
             bubbles   : true
         };
-
+        
         //#ifdef __WITH_HOTKEY
         //Hotkey
-        if (apf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
+        if (!isContentEditable && apf.dispatchEvent("hotkey", eInfo) === false 
+          || eInfo.returnValue === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             if (e.stopPropagation)
@@ -1223,10 +1236,14 @@ apf.window = function(){
         }
         //#endif
 
+        delete eInfo.currentTarget;
+
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        if (apf.document.activeElement && !apf.document.activeElement.disableKeyboard
-          && apf.document.activeElement.dispatchEvent("keydown", eInfo) === false) {
+        if ((apf.document.activeElement && !apf.document.activeElement.disableKeyboard
+          && !apf.document.activeElement.editable
+          && apf.document.activeElement.dispatchEvent("keydown", eInfo) 
+          || apf.dispatchEvent("keydown", eInfo)) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             if (apf.canDisableKeyCodes) {
@@ -1335,6 +1352,10 @@ apf.window = function(){
             this.$at.name = "default";
             apf.nameserver.register("actiontracker", "default", this.$at);
         }
+        
+        //#ifdef __WITH_CONTENTEDITABLE
+        this.undoManager = new apf.actiontracker();
+        //#endif
         //#endif
 
          // #ifdef __DEBUG

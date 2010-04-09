@@ -52,7 +52,7 @@ apf.popup = {
             //#endif
             
             //@todo can this cancelBubble just go?
-            //(e || event).cancelBubble = true;
+            (e || event).cancelBubble = true;
         };
         
         return content.ownerDocument;
@@ -120,7 +120,7 @@ apf.popup = {
                   : p.offsetHeight + p.scrollTop);
 
             popup.style.top = (moveUp 
-                ? (top - (options.height || o.height || o.content.offsetHeight))
+                ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
                 : top) + "px"
             popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
@@ -138,7 +138,11 @@ apf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : apf.tween.NORMAL,
-                    steps : apf.isIE ? 5 : 10
+                    steps : apf.isIE ? 5 : 10,
+                    onfinish : function(){
+                        if (apf.isIE)
+                            popup.style.filter = "";
+                    }
                 });
             }
             else {
@@ -148,7 +152,7 @@ apf.popup = {
 
                     popup.style.height = value + "px";
                     if (moveUp)
-                        popup.style.top = (top - value - options.y) + "px";
+                        popup.style.top = (top - value - (options.y || 0)) + "px";
                     else
                         popup.scrollTop = -1 * (i - steps) * ((options.height || o.height) / steps);
                     popup.style.display = "block";

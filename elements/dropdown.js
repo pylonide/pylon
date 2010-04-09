@@ -231,7 +231,7 @@ apf.dropdown = function(struct, tagName){
         /* #else
         this.oLabel.nodeValue = value || this["initial-message"] || "";//nodeValue
         #endif */
-        
+
         this.$setStyleClass(this.$ext, value ? "" : this.$baseCSSname + "Initial",
             !value ? [] : [this.$baseCSSname + "Initial"]);
     };

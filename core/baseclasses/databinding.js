@@ -315,10 +315,10 @@ apf.DataBinding = function(){
      * Reloads the data in this element.
      *
      */
-    this.reload = function(){
+    this.reload = this.reload || function(){
         this.load(this.xmlRoot, {cacheId: this.cacheId, force: true});
     };
-
+    
     /**
      * Loads data in to this element using binding rules to transform the
      * data in to a presentation.
@@ -619,7 +619,7 @@ apf.DataBinding = function(){
             return;//@todo apf3.0
 
         if (this.clearSelection)
-            this.clearSelection(!doEvent);
+            this.clearSelection(true);//!doEvent);//@todo move this to the $clear event in multiselect.js
 
         var lastHeight = this.$container.offsetHeight;
 

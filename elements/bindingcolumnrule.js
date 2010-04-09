@@ -164,7 +164,7 @@ apf.BindingColumnRule = function(struct, tagName){
                     "marginRight", "-" + vLeft, null, pNode.oWin); //Set
             
                 //headings and records have same padding-right
-                pNode.$int.style.paddingRight  =
+                pNode.$container.style.paddingRight  =
                 pNode.$head.style.paddingRight = vLeft;
             }
         }
@@ -250,7 +250,7 @@ apf.BindingColumnRule = function(struct, tagName){
                     typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
                 }
             }
-        })(pNode.$int.childNodes);
+        })(pNode.$container.childNodes);
         
         /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
@@ -309,7 +309,7 @@ apf.BindingColumnRule = function(struct, tagName){
         else*/
             hCaption.nodeValue = this.caption || caption || "";
         
-        this.$ext = this.$int = apf.insertHtmlNode($head, pNode.$head || pNode.$int);
+        this.$ext = this.$int = apf.insertHtmlNode($head, pNode.$head || pNode.$container);
         
         var dragging = false;
         var _self    = this;
@@ -384,7 +384,7 @@ apf.BindingColumnRule = function(struct, tagName){
                         if (!e) e = event;
 
                         pNode.$pointer.style.width = Math.max(10, 
-                            Math.min(pNode.$int.offsetWidth - pNode.$pointer.offsetLeft - 20, 
+                            Math.min(pNode.$container.offsetWidth - pNode.$pointer.offsetLeft - 20, 
                                 e.clientX - pos[0] - 1 + sLeft)) + "px";
                     };
                     

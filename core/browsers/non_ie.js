@@ -615,8 +615,23 @@ apf.runNonIe = function (){
             + (parseInt(apf.getStyle(oHtml, "margin-bottom")) || 0))]
     };
     
+    apf.getHtmlInnerWidth = function(oHtml){
+        return (oHtml.offsetWidth
+            - (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
+            - (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
+    }
+    apf.getHtmlInnerHeight = function(oHtml){
+        return (oHtml.offsetHeight
+            - (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
+            - (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
+    }
+    
     apf.getOpacity = function(oHtml) {
         return apf.getStyle(oHtml, "opacity");
+    };
+    
+    apf.setOpacity = function(oHtml, value){
+        oHtml.style.opacity = value;
     };
 }
 //#endif
