@@ -73,6 +73,13 @@ apf.gallery = function(struct, tagName){
     this.isOnStack = false;
     
     this.noThumbArrows = false;
+    
+    /**
+     * Possible values
+     * - image
+     * - flash
+     */
+    this.mediaType   = "image";
 };
 
 (function(){
@@ -286,7 +293,61 @@ apf.gallery = function(struct, tagName){
             
             //Keep loaded image to won't show loader once again
             _self.imageStack[_self.$applyBindRule("src", _self.current)] = true;
+        };
+    };
+    
+    this.$showVideo = function() {
+        if (this.mediaType == "flash") {
+            this.$hideLoader();
+            this.last = this.current;
+            this.$setSiblings();
+            
+            if (this.imageheight !== "auto") {
+                //Get viewport dimension
+                var vpWidth  = this.$oViewport.offsetWidth;
+                var vpHeight = this.$oViewport.offsetHeight;
+                
+                this.$oFlash["main"].style.width = vpWidth + "px";
+                this.$oFlash["main"].style.height = vpHeight + "px";
+                
+                this.$oFlash["embed"].setAttribute("width", vpWidth);
+                this.$oFlash["embed"].setAttribute("height", vpHeight);
+            }
+            else {
+                _self.$oImageContainer.style.width  = imgWidth + "px";
+                _self.$oImageContainer.style.height = imgHeight + "px";
+                _self.$oImageContainer.style.margin = "0 auto";
+            }
+            
+            this.$oFlash["main"].style.display = "block";
+            
+            if (!this.isOnStack) {
+                var _self = this;
+                apf.tween.single(this.$oFlash["main"], {
+                    steps : _self.stepShow,
+                    type  : "fade",
+                    anim  : apf.tween.NORMAL,
+                    from  : 0,
+                    to    : 1,
+                    onfinish: function(){
+                        _self.loading = false;
+                    }
+                });
+            }
+            else {
+                if (apf.isIE){
+                    this.$oFlash["main"].style.filter = "alpha(opacity=100)";
+                }
+                else {
+                    this.$oFlash["main"].style.opacity = 1;
+                }
+                this.loading = false;
+            }
+            
+            this.$oFlash["main"].style.display = "block";
         }
+        
+        this.imageStack[this.$applyBindRule("src", this.current)] = true;
     };
     
     this.$refresh = function() {
@@ -312,13 +373,21 @@ apf.gallery = function(struct, tagName){
                     anim  : apf.tween.NORMAL,
                     from  : 1,
                     to    : 0,
-                    onfinish: function(){
+                    onfinish: function() {
                         _self.setImagePath(_self.current);
+                        
+                        if (_self.mediaType !== "image") {
+                            _self.$showVideo();
+                        }
                     }
                 });
             }
             else {
                 _self.setImagePath(_self.current);
+                
+                if (_self.mediaType !== "image") {
+                    _self.$showVideo();
+                }
             }
             
         }, apf.isIE ? 80 : 100);
@@ -357,9 +426,20 @@ apf.gallery = function(struct, tagName){
     };
     
     this.setImagePath = function(xmlNode) {
-        this.$oImage.src = this.$applyBindRule("src", xmlNode) 
-            || this.defaultimage 
-            || this.defaultthumb;
+        var src = this.$applyBindRule("src", xmlNode);
+        
+        if (this.mediaType == "image") {
+            this.$oImage.src = src 
+                || this.defaultimage 
+                || this.defaultthumb;
+        }
+        else if (this.mediaType == "flash"){
+            this.$oFlash["param"].setAttribute("value", src);
+            this.$oFlash["embed"].setAttribute("src", src);
+        }
+        else {
+            alert("Not supported media type.");
+        }
     };
 
     this.$next = function() {
@@ -369,36 +449,6 @@ apf.gallery = function(struct, tagName){
     this.$previous = function() {
         this.select(this.current = this.previous);
     };
-    
-    this.addEventListener("beforeselect", function(e){
-        if (this.loading)
-            return false;
-    });
-    
-    this.addEventListener("afterselect", function(e){
-        e = e || event;
-        
-        if (e.selected)
-            this.current = e.selected;
-        
-        if (this.thumbnailMode == "bar")
-            this.centerThumbnail(this.current);
-        
-        this.loading = true;
-        
-        if (this.$oZoomIcon) {
-            var _self = this;
-            var url = this.$applyBindRule("url", this.current);
-            this.$oZoomIcon.onclick = function() {
-                _self.dispatchEvent("zoomclick", {url: url, selected: _self.current});
-                if (url)
-                    window.location.href = url;
-            };
-        }
-        
-        this.setDescription();
-        this.$refresh();
-    });
     
     this.centerThumbnail = function(xmlNode) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
@@ -461,12 +511,54 @@ apf.gallery = function(struct, tagName){
         this.$oLoader.style.filter = "";
     }
     
-    this.addEventListener("$clear", function(){return false});
+    this.addEventListener("$clear", function(){
+        return false
+    });
     
     this.addEventListener("afterload", function(){
         this.$setStyleClass(this.$ext, this.$baseCSSname + this.thumbnailMode + "Mode");
         this.imageStack = {};
         this.$show();
+    });
+    
+    this.addEventListener("beforeselect", function(e){
+        if (this.loading)
+            return false;
+        
+        if (e.selected)
+            this.current = e.selected;
+        
+        var mediaType = this.$applyBindRule("media-type", this.current);
+        this.mediaType = mediaType == "image" || mediaType == "flash"
+            ? mediaType 
+            : "image";
+    });
+    
+    this.addEventListener("afterselect", function(e){
+        if (this.thumbnailMode == "bar")
+            this.centerThumbnail(this.current);
+        
+        this.loading = true;
+        
+        if (this.$oZoomIcon) {
+            if (this.mediaType == "image") {
+                var _self = this;
+                var url = this.$applyBindRule("url", this.current);
+    
+                this.$oZoomIcon.style.display = "block";
+                this.$oZoomIcon.onclick = function() {
+                    _self.dispatchEvent("zoomclick", {url: url, selected: _self.current});
+                    if (url)
+                        window.location.href = url;
+                };
+            }
+            else {
+                this.$oZoomIcon.style.display = "none";
+            }
+        }
+        
+        this.setDescription();
+        this.$refresh();
     });
     
     this.$resize = function() {
@@ -503,6 +595,12 @@ apf.gallery = function(struct, tagName){
         
         this.$oArrowPrev = this.$getLayoutNode("main", "arrow_prev", this.$ext);
         this.$oArrowNext = this.$getLayoutNode("main", "arrow_next", this.$ext);
+        
+        this.$oFlash = {
+            main  : this.$getLayoutNode("main", "flash", this.$ext),
+            param : this.$getLayoutNode("main", "flash_param", this.$ext),
+            embed : this.$getLayoutNode("main", "flash_embed", this.$ext)
+        };
         
         var rules = "var o = apf.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
@@ -689,4 +787,5 @@ apf.gallery = function(struct, tagName){
 apf.aml.setElement("gallery", apf.gallery);
 
 apf.aml.setElement("url", apf.BindingRule);
+apf.aml.setElement("media-type", apf.BindingRule);
 //#endif
