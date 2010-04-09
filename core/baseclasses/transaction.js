@@ -100,6 +100,9 @@ apf.__TRANSACTION__ = 1 << 3;
  * @constructor
  * @baseclass
  *
+ * @inherits apf.StandardBinding
+ * @inherits apf.DataAction
+ * 
  * @event transactionconflict Fires when data in a transaction is being updated by an external process.
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -586,11 +589,6 @@ apf.GuiElement.propHandlers["transaction"] = function(value){
     if (!(this.transaction = apf.isTrue(value)))
         return;
 
-    /**
-     * @inherits apf.StandardBinding
-     * @inherits apf.DataAction
-     * @inherits apf.Transaction
-     */
     if (!this.hasFeature(apf.__DATABINDING__))
         this.implement(apf.StandardBinding);
 
