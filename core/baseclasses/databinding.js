@@ -76,7 +76,6 @@ apf.__DATABINDING__ = 1 << 1;
  *   {String} data  the retrieved data
  *
  * @constructor
- * @inherits apf.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -1416,10 +1415,11 @@ apf.DataBinding = function(){
     //#endif
 };
 // #ifdef __WITH_PRESENTATION
-    apf.DataBinding.prototype = apf.Presentation ? new apf.Presentation() : new apf.AmlElement();
+    apf.DataBinding.prototype = new apf.Presentation();
 /* #else
     apf.DataBinding.prototype = new apf.AmlElement();
 #endif*/
+
 apf.config.$inheritProperties["model"]           = 1;
 apf.config.$inheritProperties["empty-message"]   = 1;
 apf.config.$inheritProperties["loading-message"] = 1;
