@@ -475,6 +475,7 @@ var apf = {
         this.hasGeolocation            = !!navigator.geolocation;
         this.supportHashChange         = ("onhashchange" in self) && (!apf.isIE || apf.isIE >= 8);
         
+        //#ifdef __WITH_HTML5_TEST
         // Run through HTML5's new input types to see if the UA understands any.
         //   This is put behind the tests runloop because it doesn't return a
         //   true/false like all the other tests; instead, it returns an array
@@ -492,6 +493,7 @@ var apf = {
             "range":1, "color":1});
         t = null;
         delete t;
+        //#endif
 
         //Other settings
         this.maxHttpRetries = apf.isOpera ? 0 : 3;
@@ -2320,9 +2322,6 @@ if (!apf.basePath) {
 
     if (!apf.basePath)
         apf.basePath = "./";
-        
-        
-        
 }
 
 if (location.protocol == "file:" && !apf.isGecko && !apf.isWebkit) {

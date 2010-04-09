@@ -760,7 +760,7 @@ apf.$debugwin = {
             }
             
             setTimeout(function(){
-                apf.$debugwin.$iframe.src = apf.basePath + "/test/debugwin.html";
+                apf.$debugwin.$iframe.src = apf.basePath + "test/debugwin.html";
             });
         };
 
