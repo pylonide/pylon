@@ -1251,7 +1251,9 @@ var apf = {
      * @return {String} the absolute url.
      */
     getAbsolutePath : function(base, url){
-        return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
+        return url.charAt(0) == "/"
+            ? url
+            : (!url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url.replace(/^\//, ""));
     },
 
     /**
@@ -2253,6 +2255,7 @@ if (!apf.basePath) {
     if (apf.basePath) {
         var s = apf.basePath.split("/");
         var l = apf.getDirname(location.href).split("/"); l.pop();
+        
         for (var i = 0; i < s.length; i++) {
             if (s[0] == "..") {
                 l.pop();
@@ -2260,11 +2263,15 @@ if (!apf.basePath) {
             }
             else break;
         }
-        apf.basePath = l.join("/") + "/" + s.join("/");
+        
+        apf.basePath = apf.basePath.charAt(0) == "/" ? apf.basePath : l.join("/") + "/" + s.join("/");
     }
 
     if (!apf.basePath)
         apf.basePath = "./";
+        
+        
+        
 }
 
 if (location.protocol == "file:" && !apf.isGecko && !apf.isWebkit) {
