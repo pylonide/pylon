@@ -80,7 +80,7 @@ apf.AmlDocument = function(){
             .getElementsByTagName(tagName);
 
         if (tagName == "*" || docEl.tagName == tagName)
-            res.push(docEl);
+            res.unshift(docEl);
         return res;
     };
     
@@ -90,7 +90,7 @@ apf.AmlDocument = function(){
                 .getElementsByTagNameNS(nameSpaceURI, tagName);
 
         if (tagName == "*" || docEl.tagName == tagName && docEl.namespaceURI == nameSpaceURI)
-            res.push(docEl);
+            res.unshift(docEl);
         return res;
     };
 

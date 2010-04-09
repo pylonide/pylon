@@ -128,12 +128,14 @@ apf.$debugwin = {
             : null;
 
         if (!isForced) {
-            apf.console.error("Error on line " + linenr + "\n" + message
+            apf.$debugwin.apf.console.error((apf.$debugwin.apf != apf ? "[Debug Window Error]: " : "") 
+              + "Error on line " + linenr + "\n" + message
                 .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
                 .replace(/\n/g, "\n<br />"));
         }
         
-        apf.$debugwin.show();
+        if (apf.$debugwin.apf == apf) 
+            apf.$debugwin.show();
 
         return true;
     },

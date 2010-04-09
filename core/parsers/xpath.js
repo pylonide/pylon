@@ -132,7 +132,7 @@ apf.XPath = {
             prefix   = x[2],
             nodes, i, l;
 
-        if (inclSelf && (htmlNode.tagName == tagName || tagName == "*")) {
+        if (inclSelf && (htmlNode.tagName == tagName || tagName == "*" || tagName == "node()")) {
             if (data)
                 data[0](htmlNode, data[1], info, count + 1, 0, sResult);
             else

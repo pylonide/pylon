@@ -62,7 +62,7 @@ apf.script = function(){
     }
     
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget.nodeType != 1) {
+        if (e.currentTarget.nodeType == 3 || e.currentTarget.nodeType == 4) {
             var code = e.currentTarget.nodeValue;
             
             if (!this.type || this.type == "text/javascript") {
