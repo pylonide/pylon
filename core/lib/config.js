@@ -78,7 +78,7 @@ apf.extend(apf.config, {
             app.$int.style.backgroundImage = "";
             app.$int.style.backgroundRepeat = "";
         }
-    }
+    },
     //#endif
     skinset            : "default",
     name               : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
@@ -225,7 +225,7 @@ apf.extend(apf.config, {
         },
         "gridsize": function(value){
             this.$setGridSize(value);
-        }
+        },
         //#endif
         "debug" : function(value) {
             //#ifdef __DEBUG
