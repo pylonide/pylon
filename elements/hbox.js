@@ -69,9 +69,10 @@ apf.vbox = function(struct, tagName){
     
     this.padding    = 2;
     this.edge       = "5 5 5 5";
-    this.distribute = "none"; //none|even|weighted
     this.pack       = "start"; //start|center|end
     this.stretch    = true;
+    
+    var CSSFLOAT    = apf.isIE ? "styleFloat" : "cssFloat";
     
     /**
      * @attribute {String} padding      the space between each element. Defaults to 2.
@@ -80,7 +81,6 @@ apf.vbox = function(struct, tagName){
      * <code>
      *  <a:vbox edge="10 10 40 10" />
      * </code>
-     * @attribute {String} flex       
      * @attribute {String} pack       
      * @attribute {String} lean       
      */
@@ -89,7 +89,6 @@ apf.vbox = function(struct, tagName){
     
     this.$propHandlers["padding"]    =
     this.$propHandlers["edge"]       = 
-    this.$propHandlers["flex"]       = 
     this.$propHandlers["pack"]       = 
     this.$propHandlers["stretch"]    = function(value){
         if (!this.$update && apf.loaded)
@@ -168,7 +167,7 @@ apf.vbox = function(struct, tagName){
                 //e.currentTarget.$setLayout();
                 e.currentTarget.$ext.style.display = e.currentTarget.visible ? "block" : "none";
                 e.currentTarget.$ext.style.verticalAlign = "";
-                e.currentTarget.$ext.style.styleFloat = "";
+                e.currentTarget.$ext.style[CSSFLOAT] = "";
             }
         }
     });
@@ -361,7 +360,7 @@ apf.vbox = function(struct, tagName){
                     apf.layout.forceResize(amlNode.$ext);
                 
                 if (hbox)
-                    oExt.style.styleFloat = "";
+                    oExt.style[CSSFLOAT] = "";
             }
             else {
                 if (amlNode.$altExt) {
@@ -411,9 +410,9 @@ apf.vbox = function(struct, tagName){
                     apf.layout.forceResize(amlNode.$ext);
                 
                 if (hbox) {
-                    oExt.style.styleFloat = cellInfo.align && cellInfo.align != this.pack
+                    oExt.style[CSSFLOAT] = cellInfo.align && cellInfo.align != this.pack
                         ? (cellInfo.align == "start" ? "left" : "right")
-                        : "none";
+                        : "";
                 }
             }
             
