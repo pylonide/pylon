@@ -5,9 +5,6 @@
         <!--script src="apf_debug.js"></script-->
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
-        <script>//<!--
-            apf.$debugwin.start();
-        //--></script>
     </head>
     <body>
         <a:skin src="skins.xml" media-path="images/" icon-path="icons/" />
@@ -99,10 +96,10 @@
         <!-- removing this first bar bugs the layout engine -->
         <a:tab id="tabDebug" anchors="0 0 0 0" skin="demos_lowtab" activepage2="net">
             <a:page caption="Console" >
-                <a:text id="console" align="left" width="70%" scrolldown="true" behavior="addonly" contextmenu2="mnuOptions" focussable="true" style="border-right:1px solid #c3c3c3" />
+                <a:text id="apf_console" align="left" width="70%" scrolldown="true" behavior="addonly" contextmenu2="mnuOptions" focussable="true" style="border-right:1px solid #c3c3c3" />
                 <a:toolbar align="left-splitter" height="27" style="border-width:1px 1px 0 0;border-style:solid;border-color:#c3c3c3;">
                     <a:bar>
-                        <a:button onclick="apf.$debugwin.apf.console.clear();console.clear()" icon="arrow_redo.png" tooltip="Clear"></a:button>
+                        <a:button onclick="apf.$debugwin.apf.console.clear();apf_console.clear()" icon="arrow_redo.png" tooltip="Clear"></a:button>
                         <a:divider />
                         <!--a:button onclick="console.clear();console.setValue(apf.console.getAll())" 
                             state="true" value="true">All</a:button>

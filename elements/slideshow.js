@@ -571,7 +571,7 @@ apf.slideshow = function(struct, tagName){
         this.lastOverflow = document.documentElement.style.overflow == "hidden"
             ? "auto"
             : document.documentElement.style.overflow;
-            
+
         document.documentElement.style.overflow = "hidden";
     };
     

@@ -35,7 +35,7 @@ apf.storage.modules["gears.sql"] = {
     
     init: function(){
         this.factory = apf.nameserver.get("google", "gears");
-        this.database_name = apf.config.name + ".apf.offline.gears";
+        this.database_name = apf.config.name.substr(0, 46) + ".apf.offline.gears";
 
         this.$db = this.factory.create('beta.database', '1.0');
         this.$db.open(this.database_name);

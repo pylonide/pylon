@@ -59,7 +59,7 @@ apf.storage = {
         var provider = this.getProvider(name);
 
         //Install the provider
-        apf.storage = apf.extend(provider, this);
+        apf.storage = apf.extend(this, provider);
         apf.storage.init = null;
         
         //#ifdef __DEBUG
@@ -78,6 +78,7 @@ apf.storage = {
      *   air.file   data is stored in the air file based storage.
      *   air.sql    data is stored in the air sqlite storage.
      *   flash      data is stored in a small flash container.
+     *   gears      data is stored using the sqlite interface of gears.
      *   gears      data is stored using the sqlite interface of gears.
      *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
      */
@@ -122,17 +123,19 @@ apf.storage = {
      */
     autodetect : function(){
         for (var name in this.modules) {
-            if (name == "memory")
+            if ("memory|cooky".indexOf(name) > -1)
                 continue;
-                
+
             if (this.modules[name].isAvailable()) {
                 return name;
             }
         }
         
-        return this.modules.memory
-            ? "memory" 
-            : null;
+        return !location.host && this.modules.cookie
+            ? "cookie"
+            : (this.modules.memory
+                ? "memory" 
+                : null);
     },
 
     /**

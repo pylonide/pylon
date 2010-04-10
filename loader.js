@@ -101,9 +101,7 @@ apf.$x = apf.$loader
         
         "core/markup/domparser.js"
     )
-    .wait(function(){
-         alert(apf.Class)
-    })
+    .wait()
     .script(
         "core/window.js",
         "core/lib/config.js",
@@ -148,9 +146,7 @@ apf.$x = apf.$loader
         "core/lib/storage/gears.js",
         "core/lib/storage/html5.js",
         "core/lib/storage/memory.js",
-        //"lib/storage/deskrun.js",
-        //"lib/storage/deskrun.file.js",
-        //"lib/storage/deskrun.sql.js",
+        "core/lib/storage/cookie.js",
     
         "core/markup/aml/node.js"
     )
@@ -220,15 +216,22 @@ apf.$x = apf.$loader
         "core/debug/debug.js",
         "core/debug/debugwin.js",
         //"debug/profiler.js",
-    
         "core/baseclasses/alignment.js",
-        "core/baseclasses/anchoring.js",
-        "core/baseclasses/guielement.js",
+        "core/baseclasses/anchoring.js"
+    )
+    .wait()
+    .script(
+        "core/baseclasses/guielement.js"
+    )
+    .wait()
+    .script(
         "core/baseclasses/interactive.js",
         "core/baseclasses/childvalue.js",
         "core/baseclasses/cache.js",
-        "core/baseclasses/presentation.js",
-        
+        "core/baseclasses/presentation.js"
+    )
+    .wait()
+    .script(
         "core/baseclasses/databinding.js",
         "core/baseclasses/databinding/standard.js",
         "core/baseclasses/databinding/multiselect.js",
@@ -256,9 +259,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetab.js",
         "core/baseclasses/basestatebuttons.js"
     )
-    .wait(function(){
-         alert(apf.ContentEditable)
-    })
+    .wait()
     .script(
         "core/baseclasses/contenteditable/anchor.js",
         "core/baseclasses/contenteditable/blockquote.js",
@@ -288,8 +289,6 @@ apf.$x = apf.$loader
         "elements/actions.js",
         "elements/actionrule.js",
         "elements/actiontracker.js",
-        "elements/actiontracker/undodata.js",
-        "elements/actiontracker/xmlactions.js",
         
         "elements/application.js",
         "elements/appsettings.js",
@@ -333,7 +332,6 @@ apf.$x = apf.$loader
         "elements/loader.js",
         "elements/menu.js",
         "elements/modalwindow.js",
-        "elements/modalwindow/widget.js",
         "elements/model.js",
         "elements/notifier.js",
         "elements/page.js",
@@ -362,8 +360,6 @@ apf.$x = apf.$loader
         "elements/template.js",
         "elements/text.js",
         "elements/textbox.js",
-        "elements/textbox/masking.js",
-        "elements/textbox/autocomplete.js",
         "elements/toc.js",
         "elements/toolbar.js",
         "elements/tree.js",
@@ -387,6 +383,14 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "elements/actiontracker/undodata.js",
+        "elements/actiontracker/xmlactions.js",
+    
+        "elements/modalwindow/widget.js",
+        
+        "elements/textbox/masking.js",
+        "elements/textbox/autocomplete.js",
+        
         "elements/audio/type_flash.js",
         "elements/audio/type_native.js",
         

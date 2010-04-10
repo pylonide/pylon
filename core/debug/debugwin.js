@@ -32,9 +32,9 @@ function prettySize(size) {
 
 apf.$debugwin = {
     resPath     : "", //@todo
-    showtime    : apf.getcookie("apfdebug_console_date") !== "false",
-    nativedebug : apf.getcookie("apfdebug_debugger") == "true",
-    highlighthover : apf.getcookie("apfdebug_highlight_hover") != "false",
+    showtime    : true,
+    nativedebug : false,
+    highlighthover : true,
     
     cache : [],
     
@@ -60,9 +60,17 @@ apf.$debugwin = {
         
         apf.importCssString(".console_date{display:inline}");
         
-        txtCode.setValue(apf.getcookie("jsexec") || "");
-        codetype.setProperty("value", apf.getcookie("scriptype") || "Javascript");
-        txtModel.setValue(apf.getcookie("mdlvalue") || "");
+        //#ifdef __WITH_STORAGE
+        apf.storage.init();
+        
+        this.showtime       = apf.storage.get("apfdebug_console_date") !== "false",
+        this.nativedebug    = apf.storage.get("apfdebug_debugger") == "true",
+        this.highlighthover = apf.storage.get("apfdebug_highlight_hover") != "false",
+        
+        txtCode.setValue(apf.storage.get("jsexec") || "");
+        codetype.setProperty("value", apf.storage.get("scriptype") || "Javascript");
+        txtModel.setValue(apf.storage.get("mdlvalue") || "");
+        //#endif
         
         itmShowtime.setAttribute("checked", this.showtime);
         itmDebug.setAttribute("checked", this.nativedebug);
@@ -138,8 +146,8 @@ apf.$debugwin = {
     },
     
     updateLog : function(){
-        console.clear();
-        console.setValue(this.apf.console.getAll(
+        apf_console.clear();
+        apf_console.setValue(this.apf.console.getAll(
             btnError.value,
             btnWarn.value,
             btnLog.value
@@ -158,7 +166,7 @@ apf.$debugwin = {
     
     debugHandler : function(e){
         if ((self["btn" + e.type.uCaseFirst()] || btnLog).value || e.type == "custom")
-            console.setValue(e.message);
+            apf_console.setValue(e.message);
         
         if (e.type == "error" && tabDebug.activepagenr != 0) {
             errBox.setMessage(";<a href='javascript:void(0)' onclick='tabDebug.set(0);errBox.hide()'>" + e.message + "</a>");
@@ -553,13 +561,19 @@ apf.$debugwin = {
     },
     
     jRunCode : function(code, scripttype,  model){
-        apf.setcookie("jsexec", code);
-        apf.setcookie("scriptype", scripttype);
-        apf.setcookie("mdlvalue", model);
+        //#ifdef __WITH_STORAGE
+        apf.storage.put("jsexec", code);
+        apf.storage.put("scriptype", scripttype);
+        apf.storage.put("mdlvalue", model);
+        //#endif
         var islm = scripttype == 'Live Markup';
 
         this.apf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
-            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "\n<br />") + "</div></span>", "custom", null, null, null, true);
+            + code.replace(/ /g, "&nbsp;")
+                  .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/\n/g, "\n<br />") 
+            + "</div></span>", "custom", null, null, null, true);
 
         var _self = this;
         var doIt  = function(data){
@@ -678,19 +692,25 @@ apf.$debugwin = {
     },
     
     setShowTime : function(c){
-        apf.setcookie("apfdebug_console_date", c);
+        //#ifdef __WITH_STORAGE
+        apf.storage.put("apfdebug_console_date", c);
+        //#endif
         apf.setStyleRule('.console_date', 'display', c ? 'inline' : 'none');
         this.showtime = c;
     },
     
     setNativeDebug : function(c){
-        apf.setcookie("apfdebug_debugger", c);
+        //#ifdef __WITH_STORAGE
+        apf.storage.put("apfdebug_debugger", c);
+        //#endif
         this.nativedebug = c;
         window.onerror = this.nativedebug ? null : this.errorHandler;
     },
     
     setHighlightHover : function(c){
-        apf.setcookie("apfdebug_highlight_hover", c);
+        //#ifdef __WITH_STORAGE
+        apf.storage.put("apfdebug_highlight_hover", c);
+        //#endif
         this.highlighthover = c;
     },
     
@@ -768,6 +788,7 @@ apf.$debugwin = {
                     z-index: 100000000;\
                 }\
             ");
+            document.documentElement.style.overflow = "hidden";
             this.first = false;
             
             //src='debugwin.html' 

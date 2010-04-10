@@ -32,16 +32,19 @@ apf.storage.modules.html5 = {
                     ? "localhost.localdomain"
                     : location.hostname,
     initialized: true,
+    storage : apf.isIE
+                ? self.localStorage
+                : self.globalStorage,
     
     isAvailable: function(){
         try {
             // see: https://bugzilla.mozilla.org/show_bug.cgi?id=357323
-            var myStorage = globalStorage[this.domain];
+            var myStorage = this.storage[location.href];
         }
         catch(e){
             return false;
         }
-        
+
         return true;
     },
 
@@ -60,7 +63,7 @@ apf.storage.modules.html5 = {
         
         // try to store the value
         try {
-            var myStorage = globalStorage[this.domain];
+            var myStorage = this.storage[this.domain];
             myStorage.setItem(key, value);
         }
         catch(e) {
@@ -89,7 +92,7 @@ apf.storage.modules.html5 = {
         
         // @fixme: Simplify this bug into a testcase and
         // submit it to Firefox
-        var myStorage = globalStorage[this.domain];
+        var myStorage = this.storage[this.domain];
         var results = myStorage.getItem(key);
         
         if (results == null || results == "")
@@ -104,7 +107,7 @@ apf.storage.modules.html5 = {
         // simply enumerate through our array and save any string
         // that starts with __
         var found = {};
-        var myStorage = globalStorage[this.domain];
+        var myStorage = this.storage[this.domain];
         var tester = /^__([^_]*)_/;
         for (var i = 0; i < myStorage.length; i++) {
             var currentKey = myStorage.key(i);
@@ -140,7 +143,7 @@ apf.storage.modules.html5 = {
             ? "^([^_]{2}.*)$"
             : "^__" + namespace + "_(.*)$");
         
-        var myStorage = globalStorage[this.domain];
+        var myStorage = this.storage[this.domain];
         var keysArray = [];
         for (var i = 0; i < myStorage.length; i++) {
             var currentKey = myStorage.key(i);
@@ -172,7 +175,7 @@ apf.storage.modules.html5 = {
             ? "^[^_]{2}"
             : "^__" + namespace + "_");
         
-        var myStorage = globalStorage[this.domain];
+        var myStorage = this.storage[this.domain];
         for (var i = myStorage.length-1; i >= 0; i--) {
             if (namespaceTester.test(myStorage.key(i)) == true)
                 myStorage.removeItem(myStorage.key(i));
@@ -183,7 +186,7 @@ apf.storage.modules.html5 = {
         // get our full key name, which is namespace + key
         key = this.getFullKey(key, namespace);
         
-        var myStorage = globalStorage[this.domain];
+        var myStorage = this.storage[this.domain];
         myStorage.removeItem(key);
     },
     
