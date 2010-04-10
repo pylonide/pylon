@@ -383,8 +383,6 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
-        "core/baseclasses/contenteditable2/config.js",
-    
         "elements/audio/type_flash.js",
         "elements/audio/type_native.js",
         

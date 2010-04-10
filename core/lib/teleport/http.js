@@ -58,7 +58,7 @@
  *      callback: function(data, state, extra){
  *          if (state != apf.SUCCESS) {
  *              var oError = new Error(apf.formatErrorString(0, null,
- *                  "While loading data", "Could not load data" + extra.message));
+ *                  "While loading data", "Could not load data\n" + extra.message));
  *
  *              if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
  *                  return true;
@@ -528,7 +528,8 @@ apf.http = function(){
                     //#ifdef __DEBUG
                     end     : new Date(),
                     //#endif
-                    message : msg
+                    message : msg,
+                    http    : http
                 });
             //#endif
 

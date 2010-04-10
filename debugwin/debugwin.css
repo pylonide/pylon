@@ -1,0 +1,171 @@
+body, html, .has_apf{
+    background : white;
+    overflow : hidden;
+}
+
+body{
+    display : none;
+}
+
+.xmlhl{
+    color : #333;
+    text-decoration : none;
+}
+.xmlhl:hover{
+    text-decoration : underline;
+    color: #2c78bd;
+}
+
+.netview{
+    border : 1px solid #c3c3c3;
+    padding : 30px 5px 5px 5px;
+}
+
+.netview .label{
+    white-space : nowrap;
+    overflow : hidden;
+    text-overflow : ellipsis;
+}
+
+.reqview{
+    padding : 5px;
+    margin : -6px -5px -5px -5px;
+    border-top : 1px solid #c3c3c3;
+    overflow :auto;
+    width : 100%;
+    height : 100%;
+    background : white;
+}
+
+.reqview .head {
+    padding : 2px;
+}
+
+.reqview .head strong{
+    width : 150px;
+    float : left;
+    text-align : right;
+}
+.reqview .cookie strong{
+    width : 85px;
+}
+
+.reqview .head span{
+    display : block;
+    margin : 0 0 0 155px;
+    word-wrap : break-word;
+}
+.reqview .cookie span{
+    margin : 0 0 0 90px;
+}
+
+.raw{
+    font-size : 8pt;
+    font-family : Courier New;
+    white-space : nowrap;
+}
+
+.textview{
+    font-size : 8pt;
+    font-family: "Lucida Grande", Verdana;
+    white-space : nowrap;
+    padding : 5px;
+}
+
+.xmlview{
+    font-size : 9pt;
+    font-family: "Courier New", Courier;
+    padding : 5px;
+    margin : 0;
+}
+
+.tplist div{
+    padding : 3px 3px 3px 3px;
+    color : black;
+    font-size : 11px;
+    position : relative;
+}
+
+.tplist .size{
+    float : right;
+    font-size : 9px;
+}
+
+.tplist .status{
+    width  : 20px; 
+    text-align : center;
+    margin : -1px 5px 2px -1px;
+    padding : 2px;
+    float : left;
+    font-size : 9px;
+    background : #eee;
+    color : black;
+}
+
+.tplist .url{
+    font-size : 9px;
+    display : block;
+    width : 100%;
+    overflow : hidden;
+    margin : 3px 0 0 0;
+    color : gray;
+    white-space : nowrap;
+}
+
+.simplelistFocus .selected .url{
+    color : white;
+}
+
+.errorbox .console_date{
+    display : none;
+}
+.console_line{
+    min-height : 15px;
+    padding : 2px 2px 2px 22px;
+    line-height : 15px;
+    border-bottom : 1px solid #EEE;
+}
+
+.errorbox .console_line{
+    padding : 0 0 0 22px;
+    border-bottom : 0;
+    min-height : 19px;
+    word-wrap : break-word;
+}
+.errorbox a{
+    text-decoration : none;
+    color : red;
+}
+.errorbox a:hover{
+    text-decoration : underline;
+}
+
+.console_time{
+    background : url(resources/time.png) no-repeat 2px 2px;
+    color      : black;
+}
+
+.console_log{
+    background : url(resources/bullet_green.png) no-repeat 2px 2px;
+    color      : black;
+}
+
+.console_custom{
+    background : url(resources/bullet_green.png) no-repeat 2px 2px;
+    color      : black;
+}
+
+.console_warn{
+    background : url(resources/error.png) no-repeat 2px 2px;
+    color      : green;
+}
+
+.console_error{
+    background : url(resources/exclamation.png) no-repeat 2px 2px;
+    color      : red;
+}
+
+.console_repeat{
+    background : url(resources/bullet_green.png) no-repeat 2px 2px;
+    color      : #AAA;
+}

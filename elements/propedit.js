@@ -143,6 +143,9 @@ apf.propedit    = function(struct, tagName){
      * </code>
      */
     this.$propHandlers["properties"] = function(value){
+        if (!value)
+            return this.clear();
+        
         var _self = this;
         var propLoadObj = { //Should probably exist only once if expanded with xmlUpdate
             load : function(data){
@@ -162,9 +165,6 @@ apf.propedit    = function(struct, tagName){
             
             xmlRoot : this.xmlRoot
         };
-
-        if (!value)
-            debugger;
 
         var xml;
         this.$loadingProps = true;

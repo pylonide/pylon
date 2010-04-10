@@ -1555,13 +1555,13 @@ apf.layout.load = apf.layout.loadXml;//@todo temp need to rename
  * @private
  */
 apf.getWindowWidth = function(){
-    return apf.isIE ? document.documentElement.offsetWidth - (apf.isIE8 ? 4 : 0) : window.innerWidth;
+    return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
 }
 /**
  * @private
  */
 apf.getWindowHeight = function(){
-    return apf.isIE ? document.documentElement.offsetHeight - (apf.isIE8 ? 4 : 0) : window.innerHeight;
+    return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
 /**

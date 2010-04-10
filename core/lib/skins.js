@@ -49,12 +49,15 @@ apf.skins = {
         var base      = (refNode ? refNode.getAttribute("src").match(/\//) || path : "")
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
             : "";
-        var mediaPath = (xmlNode.getAttribute("media-path")
-            ? apf.getAbsolutePath(base || apf.hostPath, xmlNode.getAttribute("media-path"))
-            : (refNode ? refNode.getAttribute("media-path") : null));
-        var iconPath  = (xmlNode.getAttribute("icon-path")
-            ? apf.getAbsolutePath(base || apf.hostPath, xmlNode.getAttribute("icon-path"))
-            : (refNode ? refNode.getAttribute("icon-path") : null));
+        var mediaPath = xmlNode.getAttribute("media-path") ||
+            (refNode ? refNode.getAttribute("media-path") : null);
+        if (mediaPath !== null)
+            mediaPath = apf.getAbsolutePath(base || apf.hostPath, mediaPath);
+        var iconPath  = xmlNode.getAttribute("icon-path") || 
+            (refNode ? refNode.getAttribute("icon-path") : null);
+        if (iconPath !== null)
+            iconPath = apf.getAbsolutePath(base || apf.hostPath, iconPath);
+        
         if (!name)
             name = "default";
 

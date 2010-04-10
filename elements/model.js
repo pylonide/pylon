@@ -724,8 +724,8 @@ apf.model = function(struct, tagName){
                 var oError;
 
                 oError = new Error(apf.formatErrorString(1032,
-                    _self, "Inserting xml data", "Could not load data "
-                  + "Instruction:" + instruction + "\n"
+                    _self, "Inserting xml data", "Could not load data\n"
+                  + "Instruction: " + instruction + "\n"
                   + "Url: " + extra.url + "\n"
                   + "Info: " + extra.message + "\n\n" + data));
 
@@ -950,8 +950,8 @@ apf.model = function(struct, tagName){
                 var oError;
 
                 //#ifdef __DEBUG
-                oError = new Error(apf.formatErrorString(1032,
-                    _self, "Inserting xml data", "Could not insert data for "
+                oError = new Error(apf.formatErrorString(0,
+                    _self, "Inserting xml data", "Could not insert data\n"
                   + "Instruction:" + instruction + "\n"
                   + "Url: " + extra.url + "\n"
                   + "Info: " + extra.message + "\n\n" + data));

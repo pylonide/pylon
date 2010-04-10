@@ -1,1 +1,0 @@
-<props><include><group caption="General"><prop caption="src" editor="textbox" value="[@src]" description="the location of the aml file to include in this application."/></group></include></props>

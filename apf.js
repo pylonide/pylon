@@ -474,6 +474,10 @@ var apf = {
         this.hasAudio                  = !!document.createElement("audio")["canPlayType"];
         this.hasGeolocation            = !!navigator.geolocation;
         this.supportHashChange         = ("onhashchange" in self) && (!apf.isIE || apf.isIE >= 8);
+
+        this.windowHorBorder           = 
+        this.windowVerBorder           = apf.isIE8 && (!self.frameElement 
+            || parseInt(self.frameElement.frameBorder)) ? 4 : 0;
         
         //#ifdef __WITH_HTML5_TEST
         // Run through HTML5's new input types to see if the UA understands any.
@@ -887,38 +891,26 @@ var apf = {
          */
         data : {
             time  : {
-                icon     : "time.png",
-                color    : "black",
                 messages : {}
             },
 
             log   : {
-                icon     : "bullet_green.png",
-                color    : "black",
                 messages : {}
             },
             
             custom   : {
-                icon     : "bullet_green.png",
-                color    : "black",
                 messages : {}
             },
 
             warn  : {
-                icon     : "error.png",
-                color    : "green",
                 messages : {}
             },
 
             error : {
-                icon     : "exclamation.png",
-                color    : "red",
                 messages : {}
             },
             
             repeat : {
-                icon     : "bullet_green.png",
-                color    : "#AAA",
                 messages : {}
             }
         },
@@ -1043,9 +1035,8 @@ var apf = {
                     +  "</div></blockquote>";
             }
 
-            msg = "<div class='console_line' style='background:url("
-                + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
-                + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
+            msg = "<div class='console_line console_" 
+                + type + "' >" + msg + "\n<br style='line-height:0'/></div>";
 
             //deprecated
             if (!subtype)
@@ -1138,7 +1129,7 @@ var apf = {
          */
         warn : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "warn", subtype, data);
+            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "warn", subtype, data);
             //#endif
         },
 
@@ -1151,7 +1142,7 @@ var apf = {
          */
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "error", subtype, data);
+            this.write(msg.replace(/\n/g, "<br />"), "error", subtype, data);
             //#endif
         },
 
@@ -1222,9 +1213,12 @@ var apf = {
             else file = "Unknown filename";
 
             //Get serialized version of context
-            var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
-                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
-                .replace(/xmlns:a="[^"]*"\s*/g, "");
+            if (apf.$debugwin)
+                var amlStr = apf.$debugwin.$serializeObject(amlContext);
+            else
+                var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
+                    .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
+                    .replace(/xmlns:a="[^"]*"\s*/g, "");
 
             //Determine line number
             var diff, linenr = 0, w = amlContext.previousSibling
@@ -1246,11 +1240,13 @@ var apf = {
             str.push("aml file: [line: " + linenr + "] " + file);
         }
         if (control)
-            str.push("Control: '"
-                + (control.name
+            str.push("Element: "
+              + (apf.$debugwin
+                ? apf.$debugwin.$serializeObject(control)
+                : "'" + (control.name
                     || (control.$aml ? control.getAttribute("id") : null)
                     || "{Anonymous}")
-                + "' [" + control.tagName + "]");
+                    + "' [" + control.tagName + "]"));
         if (process)
             str.push("Process: " + process.replace(/ +/g, " "));
         if (message)
@@ -1258,7 +1254,7 @@ var apf = {
         if (outputname)
             str.push(outputname + ": " + output);
         if (amlContext)
-            str.push("\n===\n" + amlStr);
+            str.push("Related Markup: " + amlStr);
 
         return (apf.lastErrorMessage = str.join("\n"));
         /*#else
@@ -1275,6 +1271,7 @@ var apf = {
      * @return {String} the directory portion of a url.
      */
     getDirname : function(url){
+        //(?:\w+\:\/\/)?
         return ((url || "").match(/^([^#]*\/)[^\/]*(?:$|\#)/) || {})[1]; //Mike will check out how to optimize this line
     },
     
@@ -2294,7 +2291,26 @@ document.documentElement.className += " has_apf";
 apf.browserDetect();
 apf.Init.run("apf");
 
+
 //#ifndef __PACKAGED
+apf.getShortestPath = function(p1, p2) {
+    if (p1.charAt(0) == "/")
+        return p1;
+    
+    var s = p1.split("/");
+    var l = p2.split("/"); l.pop();
+    
+    for (var i = 0; i < s.length; i++) {
+        if (s[0] == "..") {
+            l.pop();
+            s.shift();
+        }
+        else break;
+    }
+    
+    return l.join("/") + "/" + s.join("/");
+}
+
 if (!apf.basePath) {
     var snodes = document.getElementsByTagName("script");
     for (var src, i = 0; i < snodes.length; i++) {
@@ -2305,23 +2321,9 @@ if (!apf.basePath) {
         }
     }
 
-    if (apf.basePath) {
-        var s = apf.basePath.split("/");
-        var l = apf.getDirname(location.href).split("/"); l.pop();
-        
-        for (var i = 0; i < s.length; i++) {
-            if (s[0] == "..") {
-                l.pop();
-                s.shift();
-            }
-            else break;
-        }
-        
-        apf.basePath = apf.basePath.charAt(0) == "/" ? apf.basePath : l.join("/") + "/" + s.join("/");
-    }
-
-    if (!apf.basePath)
-        apf.basePath = "./";
+    apf.basePath = apf.basePath
+      ? apf.getShortestPath(apf.basePath, apf.getDirname(location.href))
+      : "./";
 }
 
 if (location.protocol == "file:" && !apf.isGecko && !apf.isWebkit) {

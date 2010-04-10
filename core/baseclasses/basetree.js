@@ -123,6 +123,9 @@ apf.BaseTree = function(){
      * Expands all items in the tree
      */
     this.expandAll    = function(){
+        if (!this.xmlRoot)
+            return;
+        
         var xpath = this.each.split('|')
                         .join('[' + this.each.replace(/\|/g, " or ") + ']|.//'),
             _self = this;
@@ -140,6 +143,9 @@ apf.BaseTree = function(){
      * Collapses all items in the tree
      */
     this.collapseAll   = function(){
+        if (!this.xmlRoot)
+            return;
+        
         var pNodes = this.xmlRoot.selectNodes(".//" + this.each
           .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
         
@@ -151,6 +157,9 @@ apf.BaseTree = function(){
      * Selects a node and expands each parent of it.
      */
     this.expandAndSelect = function(xmlNode) {
+        if (!this.xmlRoot)
+            return;
+        
         var _self = this;
         (function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);

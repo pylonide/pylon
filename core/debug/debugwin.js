@@ -39,11 +39,16 @@ apf.$debugwin = {
     cache : [],
     
     apf  : (function(){
-        if (self.parent) {
+        apf.isDebugWindow = self.frameElement 
+            && self.frameElement.getAttribute("src").indexOf("debugwin.html") > -1;
+        
+        if (apf.isDebugWindow) {//assuming we are the debug window
             var upapf = self.parent.apf;
 
             apf.xmldb.$xmlDocLut = upapf.xmldb.$xmlDocLut;
             apf.xmldb.$listeners = upapf.xmldb.$listeners;
+            
+            (apf.$asyncObjects || (apf.$asyncObjects = {}))["$apf_ide_mdlProps"] = 1;
             
             return upapf;
         }
@@ -110,28 +115,20 @@ apf.$debugwin = {
     },
     
     start : function(){
-        window.onerror = this.nativedebug ? null : this.errorHandler;
-        
-        (apf.$asyncObjects || (apf.$asyncObjects = {}))["$apf_ide_mdlProps"] = 1;
+        if (!apf.isDebugWindow)
+            window.onerror = this.nativedebug ? null : this.errorHandler;
     },
     
     errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
 
-        var e = message 
-            ? {
-                message : message.indexOf("aml file") > -1
-                    ? message
-                    : "js file: [line: " + linenr + "] "
-                        + apf.removePathContext(apf.hostPath, filename) + "\n" + message
-            }
-            : null;
-
         if (!isForced) {
-            apf.$debugwin.apf.console.error((apf.$debugwin.apf != apf ? "[Debug Window Error]: " : "") 
-              + "Error on line " + linenr + "\n" + message
-                .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
-                .replace(/\n/g, "\n<br />"));
+            apf.$debugwin.apf.console.error(
+              (apf.$debugwin.apf != apf ? "[Debug Window Error]: " : "") 
+                + "Error on line " + linenr + " of " 
+                + apf.removePathContext(apf.hostPath, filename) + "\n" + message);
+                //.replace(/</g, "&lt;")
+                //.replace(/\n/g, "\n<br />")
         }
         
         if (apf.$debugwin.apf == apf) 
@@ -173,8 +170,19 @@ apf.$debugwin = {
         tabDebug.set(1);
         pgBrowse.set(0);
         
-        //find in markupeditor, if not there, show in showObject
-        mrkAml.expandAndSelect(node);
+        if (!mrkAml.xmlRoot) {
+            mrkAml.addEventListener("afterload", function(){
+                apf.$debugwin.showAmlNode(node);
+                mrkAml.removeEventListener("afterload", arguments.callee);
+            });
+        }
+        else {   
+            //find in markupeditor, if not there, show in showObject
+            mrkAml.expandAndSelect(node);
+    
+            if (mrkAml.selected != node)
+                this.showObject(null, node.getAttribute("id") || "", node);
+        }
     },
     
     toggleHighlight : function(debugwin, btn){
@@ -275,7 +283,7 @@ apf.$debugwin = {
 
         txtCurObject.setValue(name);
         trObject.clear("loading");
-        
+
         var _self = this;
         setTimeout(function(){
             if (!id && id !== 0)
@@ -375,7 +383,7 @@ apf.$debugwin = {
             //@todo
             return xml;
         }
-        
+
         for (prop in o) {
             obj = o[prop];
             
@@ -408,10 +416,14 @@ apf.$debugwin = {
             var str, hasMethods;
             switch (obj.dataType) {
                 case apf.STRING:
-                    item.setAttribute("value", '"' + obj
-                        .replace(/"/, "\\\"")
-                        .replace(/\n/g, "\\\\n")
-                        .replace(/\r/g, "\\\\r") + '"');
+                    if (obj.length > 10000) 
+                        item.setAttribute("value", "String of " + obj.length + " bytes (too large to display)");
+                    else 
+                        item.setAttribute("value", '"' + obj
+                          .replace(/"/g, "\\\"")
+                          .replace(/</g, "&lt;")
+                          .replace(/\n/g, "\\n")
+                          .replace(/\r/g, "\\r") + '"');
                 break;
                 case apf.NUMBER:
                     item.setAttribute("value", obj);
@@ -576,57 +588,13 @@ apf.$debugwin = {
                 var x = self.parent.eval(code);
             }
 
-            if (x === null)
-                x = "null";
-            else if (x === undefined)
-                x = "undefined";
-
-            try {
-                var str;
-                if (x.nodeType && (x.nodeType == 1 || x.nodeType == 7)) {
-                    if (x.serialize) //aml
-                        str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
-                            + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(self.parent.apf.$debugwin.apf.all[" 
-                            + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
-                    else if (x.style) //html
-                        str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
-                    else
-                        str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showXmlNode(apf.$debugwin.cache[" 
-                            + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
-                            + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
-
-                    _self.apf.console.write(str, "custom", null, null, null, true);
-                }
-                else if (typeof x == "object") {
-                    if (x.dataType == apf.ARRAY) {
-                        var out = ["Array { length: " + x.length];
-                    }
-                    else {
-                        var out = [x.toString(), "{"];
-                        for (prop in x) {
-                            if (out.length == 5) {
-                                out.push("more...");
-                                break;
-                            }
-                            if (typeof x[prop] != "function" && typeof x[prop] != "object" && x[prop] && prop.substr(0,1) != "$")
-                                out.push(prop + "=" + x[prop] + ", ");
-                        }
-                    }
-
-                    _self.apf.console.write("<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(" 
-                            + (_self.apf.$debugwin.cache.push(x) - 1) + ", \"" + code.split(";").pop() + "\")'>" 
-                            + out.join(" ") + " }</a>", "custom", null, null, null, true);
-                }
-                else {
-                    str = x.toString();
-                
-                    _self.apf.console.write(str
-                        .replace(/</g, "&lt;")
-                        .replace(/\n/g, "\n<br />"), "custom", null, null, null, true);
-                }
-            }catch(e){
+            var s = _self.$serializeObject(x, code);
+            if (typeof s == "string") {
+                _self.apf.console.write(s, "custom", null, null, null, true);
+            }
+            else {
                 _self.apf.console.write(x
-                    ? "Could not serialize object: " + e.message
+                    ? "Could not serialize object: " + s.message
                     : x, "error", null, null, null, true);
             }
         }
@@ -640,6 +608,60 @@ apf.$debugwin = {
             catch(e) {
                 this.apf.console.write(e.message, "error", null, null, null, true);
             }
+        }
+    },
+    
+    $serializeObject : function(x, code){
+        if (x === null)
+            x = "null";
+        else if (x === undefined)
+            x = "undefined";
+
+        try {
+            var str;
+            if (x.nodeType && (x.nodeType == 1 || x.nodeType == 7) && !x.style) {
+                if (x.serialize) //aml
+                    str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
+                        + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(self.parent.apf.$debugwin.apf.all[" 
+                        + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
+                //else if (x.style) //html
+                    //str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
+                else
+                    str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showXmlNode(apf.$debugwin.cache[" 
+                        + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
+                        + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
+
+                return str;
+            }
+            else if (typeof x == "object") {
+                if (x.dataType == apf.ARRAY) {
+                    var out = ["Array { length: " + x.length];
+                }
+                else {
+                    var out = [x.toString(), "{"];
+                    for (prop in x) {
+                        if (out.length == 5) {
+                            out.push("more...");
+                            break;
+                        }
+                        if (typeof x[prop] != "function" && typeof x[prop] != "object" && x[prop] && prop.substr(0,1) != "$")
+                            out.push(prop + "=" + x[prop] + ", ");
+                    }
+                }
+
+                return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(" 
+                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + code.split(";").pop() + "\")'>" 
+                        + out.join(" ") + " }</a>";
+            }
+            else {
+                str = x.toString();
+            
+                return str
+                    .replace(/</g, "&lt;")
+                    .replace(/\n/g, "\n<br />");
+            }
+        }catch(e){
+            return e;
         }
     },
 
@@ -676,7 +698,7 @@ apf.$debugwin = {
     show : function(){
         if (apf.loadScreen)
             apf.loadScreen.hide();
-        
+
         //Initialize css for showing debugwindow
         if (this.first) {
             if (apf.isIE) {
@@ -760,7 +782,7 @@ apf.$debugwin = {
             }
             
             setTimeout(function(){
-                apf.$debugwin.$iframe.src = apf.basePath + "test/debugwin.html";
+                apf.$debugwin.$iframe.src = apf.basePath + "debugwin/debugwin.html";
             });
         };
 
