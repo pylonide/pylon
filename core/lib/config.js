@@ -53,6 +53,33 @@ apf.extend(apf.config, {
     iphoneIconIsGlossy : false,
     iphoneFixedViewport: true,
     // #endif
+    //#ifdef __WITH_CONTENTEDITABLE
+    x                  : "",
+    y                  : "",
+    w                  : "",
+    h                  : "",
+    
+    snapcontainer      : true,
+    snapelement        : true,
+    snapguide          : true,
+    snapgrid           : false,
+    showgrid           : false,
+    gridsize           : 10,
+    
+    $setGridSize       : function(value){
+        if (value)
+            this.gridsize = value;
+        
+        if (this.showgrid) {
+            app.$int.style.backgroundImage = "url(images/grid/" + this.gridSize + ".gif)";
+            app.$int.style.backgroundRepeat = "repeat";
+        }
+        else {
+            app.$int.style.backgroundImage = "";
+            app.$int.style.backgroundRepeat = "";
+        }
+    }
+    //#endif
     skinset            : "default",
     name               : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
 
@@ -64,7 +91,7 @@ apf.extend(apf.config, {
     "empty-message"    : "No items",
     "loading-message"  : "Loading...",
     "offline-message"  : "You are currently offline.",
-
+    
     setDefaults : function(){
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (apf.isParsingPartial) {
@@ -191,6 +218,14 @@ apf.extend(apf.config, {
             if (apf.isDeskrun && value)
                 shell.norefresh = true;
         },
+        //#endif
+        //#ifdef __WITH_CONTENTEDITABLE
+        "showgrid": function(value){
+            this.$setGridSize();
+        },
+        "gridsize": function(value){
+            this.$setGridSize(value);
+        }
         //#endif
         "debug" : function(value) {
             //#ifdef __DEBUG

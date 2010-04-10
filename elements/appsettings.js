@@ -117,6 +117,13 @@ apf.appsettings = function(struct, tagName){
         "iphone-icon-is-glossy", "iphone-fixed-viewport", "layout", "skinset", 
         "language", "storage", "offline", "login"];
     this.$booleanProperties = {
+        //#ifdef __WITH_CONTENTEDITABLE
+        snapcontainer : 1,
+        snapelement   : 1,
+        snapguide     : 1,
+        snapgrid      : 1,
+        showgrid      : 1,
+        //#endif
         "debug":1,
         "disable-right-click":1,
         "allow-select":1,
