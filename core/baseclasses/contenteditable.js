@@ -1898,5 +1898,4 @@ apf.GuiElement.propHandlers["contenteditable"] = function(value) {
         this.implement(apf.Validation);
     this.$propHandlers["contenteditable"].apply(this, arguments);
 }
-
 // #endif

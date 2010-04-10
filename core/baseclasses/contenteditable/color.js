@@ -20,7 +20,6 @@
  */
 
 // #ifdef __ENABLE_EDITOR_COLOR || __INC_ALL
-
 apf.ContentEditable.colorPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;

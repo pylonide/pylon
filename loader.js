@@ -101,7 +101,9 @@ apf.$x = apf.$loader
         
         "core/markup/domparser.js"
     )
-    .wait()
+    .wait(function(){
+         alert(apf.Class)
+    })
     .script(
         "core/window.js",
         "core/lib/config.js",
@@ -246,14 +248,18 @@ apf.$x = apf.$loader
         "core/baseclasses/virtualviewport.js",
         //"baseclasses/xforms.js",
         "core/baseclasses/contenteditable.js",
-        
+
         "core/baseclasses/basebutton.js",
         "core/baseclasses/baselist.js",
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js",
-    
+        "core/baseclasses/basestatebuttons.js"
+    )
+    .wait(function(){
+         alert(apf.ContentEditable)
+    })
+    .script(
         "core/baseclasses/contenteditable/anchor.js",
         "core/baseclasses/contenteditable/blockquote.js",
         "core/baseclasses/contenteditable/charmap.js",
@@ -276,10 +282,8 @@ apf.$x = apf.$loader
         "core/baseclasses/contenteditable/search.js",
         "core/baseclasses/contenteditable/subsup.js",
         "core/baseclasses/contenteditable/tables.js",
-        "core/baseclasses/contenteditable/visualaid.js"
-    )
-    .wait()
-    .script(
+        "core/baseclasses/contenteditable/visualaid.js",
+    
         "elements/accordion.js",
         "elements/actions.js",
         "elements/actionrule.js",

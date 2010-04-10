@@ -625,8 +625,7 @@ var apf = {
         this.setCompatFlags();
 
         //#ifdef __WITH_DEBUG_WIN
-        if (apf.$debugwin)
-            apf.$debugwin.start();
+        apf.$debugwin.start();
         //#endif
 
         //Load Browser Specific Code
@@ -2326,7 +2325,8 @@ if (!apf.basePath) {
       : "./";
 }
 
-if (location.protocol == "file:" && !apf.isGecko && !apf.isWebkit) {
+//!apf.isGecko && 
+if (location.protocol == "file:" && !(apf.isWebkit || apf.isChrome)) {
     (function(global){
         // constants used for compression optimization
         var sUNDEF                = "undefined",
