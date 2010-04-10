@@ -414,9 +414,7 @@ apf.Class.prototype = new (function(){
         }
         else if (exclNr === 0) {
             options = {parsecode : true 
-             /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) 
-                ? true : false 
-             /* #endif */};
+             /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) ? true : false /* #endif */};
         }
 
         //Compile pValue through JSLT parser
