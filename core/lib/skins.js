@@ -48,15 +48,30 @@ apf.skins = {
             || xmlNode.getAttribute("id");
         var base      = (refNode ? refNode.getAttribute("src").match(/\//) || path : "")
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
-            : "";
-        var mediaPath = xmlNode.getAttribute("media-path") ||
-            (refNode ? refNode.getAttribute("media-path") : null);
+            : ""; //@todo make this absolute?
+
+        var mediaPath = null, iconPath = null;
+        mediaPath = xmlNode.getAttribute("media-path");
         if (mediaPath !== null)
             mediaPath = apf.getAbsolutePath(base || apf.hostPath, mediaPath);
-        var iconPath  = xmlNode.getAttribute("icon-path") || 
-            (refNode ? refNode.getAttribute("icon-path") : null);
+        else if (refNode) {
+            mediaPath = refNode.getAttribute("media-path");
+            if (mediaPath !== null)
+                mediaPath = apf.getAbsolutePath(apf.hostPath, mediaPath);
+            else
+                mediaPath = apf.getAbsolutePath(base || apf.hostPath, "images/");
+        }
+        
+        iconPath = xmlNode.getAttribute("icon-path");
         if (iconPath !== null)
             iconPath = apf.getAbsolutePath(base || apf.hostPath, iconPath);
+        else if (refNode) {
+            iconPath = refNode.getAttribute("icon-path");
+            if (iconPath !== null)
+                iconPath = apf.getAbsolutePath(apf.hostPath, iconPath);
+            else
+                iconPath = apf.getAbsolutePath(base || apf.hostPath, "icons/");
+        }
         
         if (!name)
             name = "default";
@@ -71,8 +86,8 @@ apf.skins = {
             this.skins[name] = {
                 base     : base,
                 name     : name,
-                iconPath : typeof iconPath != "string" && !iconPath ? "icons/" : iconPath,
-                mediaPath: typeof mediaPath != "string" && !mediaPath ? "images/" : mediaPath,
+                iconPath : iconPath,
+                mediaPath: mediaPath,
                 templates: {},
                 originals: {},
                 xml      : xmlNode
@@ -98,7 +113,7 @@ apf.skins = {
                 this.importSkinDef(nodes[i], base, name);
         }
 
-        this.purgeCss(mediaPath || base + "images/", iconPath || base + "icons/");
+        this.purgeCss(mediaPath, iconPath);
         
         if (this.queue[name]) {
             for (var prop in this.queue[name]) {
