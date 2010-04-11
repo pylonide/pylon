@@ -191,7 +191,7 @@ apf.Rename = function(){
         value =  startEmpty || !xmlNode
             ? ""
             : (xmlNode.nodeType != 1
-                ? unescape(decodeURI(xmlNode.nodeValue))
+                ? unescape(xmlNode.nodeValue) //decodeURI( - throws an error when using % in a non expected way
                 : (apf.isOnlyChild(xmlNode.firstChild, [3,4])
                     ? apf.queryValue(xmlNode)
                     : this.$applyBindRule("caption", this.$renameSubject))) || "";

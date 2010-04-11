@@ -79,9 +79,9 @@ apf.propedit    = function(struct, tagName){
     this.$useiframe      = 0;
     
     //1 = force no bind rule, 2 = force bind rule
-    /*this.$attrExcludePropBind = apf.extend({
-        properties : 1
-    }, this.$attrExcludePropBind);*/
+    this.$attrExcludePropBind = apf.extend({
+        properties : 3 //only when it has an xpath
+    }, this.$attrExcludePropBind);
     
     /**
      * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.

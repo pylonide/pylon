@@ -47,6 +47,7 @@ apf.$debugwin = {
 
             apf.xmldb.$xmlDocLut = upapf.xmldb.$xmlDocLut;
             apf.xmldb.$listeners = upapf.xmldb.$listeners;
+            apf.xmldb.$nodeCount = upapf.xmldb.$nodeCount;
             
             (apf.$asyncObjects || (apf.$asyncObjects = {}))["$apf_ide_mdlProps"] = 1;
             
@@ -636,7 +637,7 @@ apf.$debugwin = {
             if (x.nodeType && (x.nodeType == 1 || x.nodeType == 7) && !x.style) {
                 if (x.serialize) //aml
                     str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
-                        + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(self.parent.apf.$debugwin.apf.all[" 
+                        + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
                         + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
                 //else if (x.style) //html
                     //str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")

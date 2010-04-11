@@ -72,8 +72,10 @@ apf.markupedit = function(struct, tagName){
     );
 
     this.$isTreeArch  = true; // Tree Architecture for loading Data
-    this.$preventRecursiveUpdate = true;
     this.$focussable  = true; // This object can get the focus
+
+    this.$preventRecursiveUpdate = true;
+    this.$enableTextNodeHack     = true;
     
     this.startcollapsed = true;
     this.$animType      = 0;
@@ -172,7 +174,7 @@ apf.markupedit = function(struct, tagName){
     this.slideToggle = function(htmlNode, force, immediate){
         if (this.nocollapse) 
             return;
-        
+
         if (!htmlNode)
             htmlNode = this.$selected;
         
@@ -623,11 +625,12 @@ apf.markupedit = function(struct, tagName){
         
         var elBeginTail = this.$getLayoutNode("item", "begintail");
         var elEnd = this.$getLayoutNode("item", "endtag");
-        //@todo totally wrong, because text nodes besides element nodes are ignored.
         if (!(state&HAS_CHILD)) {
             elEnd.setAttribute("style", "display:none");
 
-            if (xmlNode.childNodes.length > 1 || xmlNode.childNodes.length == 1 && xmlNode.firstChild.nodeValue.trim()) {
+            if (this.$enableTextNodeHack && (xmlNode.childNodes.length > 1 
+              || xmlNode.childNodes.length == 1 
+              && xmlNode.firstChild.nodeValue.trim())) {
                 addTextnode.call(this, elAttributes, xmlNode.childNodes[0].nodeValue, Lid);
                 apf.setNodeValue(elBeginTail, "&lt;/" + xmlNode.tagName + "&gt;");
             }
@@ -790,7 +793,8 @@ apf.markupedit = function(struct, tagName){
         }
         
         //Add textnode if its not there yet
-        if (!doneFirstChild && xmlNode.childNodes.length == 1 
+        if (this.$enableTextNodeHack && !doneFirstChild 
+          && xmlNode.childNodes.length == 1 
           && xmlNode.childNodes[0].nodeType == 3) {
             addTextnode.call(this, elAttributes, xmlNode.childNodes[0].nodeValue);
             apf.setNodeValue(elBeginTail, "</" + xmlNode.tagName + ">");
@@ -910,6 +914,7 @@ apf.markupedit = function(struct, tagName){
     
     this.addEventListener("xmlupdate", xmlUpdateHandler);
     this.addEventListener("beforeload", function(e){
+        this.$enableTextNodeHack = !e.xmlNode.$regbase;
         this.each = e.xmlNode.$regbase
             ? "node()[not(@nomk = 'true')]"
             : "node()[local-name(.) and not(@nomk = 'true')]";

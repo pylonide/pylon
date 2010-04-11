@@ -224,7 +224,7 @@ apf.Class.prototype = new (function(){
     var FUN   = "function",
         OBJ   = "object",
         UNDEF = "undefined",
-        SEL   = "selected|selection|model"
+        SEL   = "model", //selected|selection|properties|
         PROP  = "prop.",
         MODEL = "model",
         VALUE = "value";
@@ -401,12 +401,12 @@ apf.Class.prototype = new (function(){
     this.$setDynamicProperty = function(prop, pValue){
         var exclNr = this.$attrExcludePropBind[prop],
             options;
-            
+
         //@todo apf3.0, please generalize this - cache objects, seems slow
-        if (SEL.indexOf(prop) > -1) {
+        if (SEL.indexOf(prop) > -1 || exclNr == 3) {
             options = {
                 xpathmode : 2,
-                parsecode : true
+                parsecode : true //@todo is this also good for exclNr 3 ?
             }
         }
         else if (exclNr == 2) {

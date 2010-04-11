@@ -43,6 +43,7 @@ apf.xmldb = new (function(){
     this.disableRSB   = false;
 
     this.$xmlDocLut   = [];
+    this.$nodeCount   = {};
 
     /**
      * @private
@@ -210,18 +211,17 @@ apf.xmldb = new (function(){
     
     this.getXml = apf.getXml;
 
-    this.nodeCount = {};
     /**
      * @private
      */
     this.nodeConnect = function(documentId, xmlNode, htmlNode, o){
-        if (!this.nodeCount[documentId])
-            this.nodeCount[documentId] = 0;
+        if (!this.$nodeCount[documentId])
+            this.$nodeCount[documentId] = 0;
 
         var xmlId;
         xmlId = xmlNode.getAttribute(this.xmlIdTag)
           || xmlNode.setAttribute(this.xmlIdTag, (xmlId = documentId
-               + "|" + ++this.nodeCount[documentId])) || xmlId;
+               + "|" + ++this.$nodeCount[documentId])) || xmlId;
 
         if (!o)
             return xmlId;
