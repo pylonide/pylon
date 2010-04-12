@@ -543,7 +543,6 @@ apf.$debugwin = {
         var lut = apf.xmldb.$xmlDocLut;
         var doc = xml.ownerDocument.documentElement;
         var id = xml.getAttribute(apf.xmldb.xmlIdTag);
-        if (!id) debugger;
         var docId = id.split("\|")[0];
         
         if (!lut[docId]) {

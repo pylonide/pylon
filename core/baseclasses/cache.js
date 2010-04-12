@@ -104,7 +104,6 @@ apf.Cache = function(){
         */
         if (this.hasFeature(apf.__MULTISELECT__)
           && this.$subTreeCacheContext && this.$subTreeCacheContext.oHtml) {
-            debugger;
             if (this.renderRoot) {
                 this.$subTreeCacheContext.parentNode.insertBefore(
                     this.$subTreeCacheContext.oHtml, this.$subTreeCacheContext.beforeNode);

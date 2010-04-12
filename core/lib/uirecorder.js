@@ -28,7 +28,9 @@ apf.uirecorder = {
     settingsXml         : null,     // output xml for test settings
     
     debug : function() {
+        //#ifdef __DEBUG
         debugger;
+        //#endif
     }
 } 
 
