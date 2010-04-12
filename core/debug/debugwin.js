@@ -599,7 +599,6 @@ apf.$debugwin = {
                         return;
                     }
                 }
-                alert(func.toString());
                 var x = func(data);
             }
             else {

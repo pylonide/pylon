@@ -985,7 +985,10 @@ apf.window = function(){
         });
 
         //Non IE/ iPhone selection handling
-        var canSelect = !(!apf.isIphone && !apf.isIE && (apf.document && !apf.config.allowSelect
+        if (apf.isIE || apf.isIphone)
+            return;
+
+        var canSelect = !((!apf.document
           && (!apf.isParsingPartial || amlNode)
           // #ifdef __WITH_DRAGMODE
           || apf.dragMode
@@ -994,7 +997,6 @@ apf.window = function(){
 
         if (canSelect) {
             amlNode = apf.findHost(e.target);
-            
             if (amlNode){
                 var isContentEditable = ta[(e.srcElement || e.target).tagName]
                     && !(e.srcElement || e.target).disabled
@@ -1003,9 +1005,11 @@ apf.window = function(){
                     && amlNode.$isContentEditable(e) && !amlNode.disabled;
             
                 //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-                if (!isContentEditable && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+                if (!isContentEditable 
+                  && !apf.config.allowSelect
+                  && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
                   && !amlNode.$allowSelect 
-                  && !amlNode.getElementsByTagNameNS(apf.ns.xhtml, "*").length)
+                  && !amlNode.$int) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
                     canSelect = false;
             }
         }
@@ -1021,18 +1025,19 @@ apf.window = function(){
     apf.addListener(document, "selectstart", function(e){
         if (!e) e = event;
 
-        var canSelect = !(apf.document && !apf.config.allowSelect
+        var canSelect = !(!apf.document
           // #ifdef __WITH_DRAGMODE
           || apf.dragMode
           // #endif
         );
 
+        var amlNode = apf.findHost(e.srcElement);
         if (canSelect) {
-            var amlNode = apf.findHost(e.srcElement);
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+            if (!apf.config.allowSelect 
+              && amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.$allowSelect 
-              && !amlNode.getElementsByTagNameNS(apf.ns.xhtml, "*").length)
+              && !amlNode.$int) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
         }
 
