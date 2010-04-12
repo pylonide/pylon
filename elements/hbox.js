@@ -604,16 +604,16 @@ apf.vbox = function(struct, tagName){
           ? (this.$totalPerc * 5) //@todo it's an illusion that percentage items smallest size is 5 (think their own min* and content)
           : this.$totalFixed - (vbox ? edge[2] : edge[1]) - 3)
             //#ifdef __WITH_CONTENTEDITABLE
-            - apf[hbox ? "getHorBorders" : "getVerBorders"](this.$ext)) 
+            - apf[hbox ? "getHorBorders" : "getVerBorders"](this.$ext)
             //#endif
-            + "px";
+            ) + "px";
         
         this["min" + (vbox ? "width" : "height")] = minSizeX + (vbox ? edge[1] + edge[3] : edge[0] + edge[2]);
         this.$ext.style["min" + (vbox ? "Width" : "Height")] = (minSizeX 
             //#ifdef __WITH_CONTENTEDITABLE
-            - apf[vbox ? "getHorBorders" : "getVerBorders"](this.$ext))
+            - apf[vbox ? "getHorBorders" : "getVerBorders"](this.$ext)
             //#endif
-            + "px";
+            ) + "px";
 
         this.$update = false;
     };

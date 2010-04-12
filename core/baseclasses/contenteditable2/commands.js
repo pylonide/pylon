@@ -60,7 +60,7 @@ apf.ContentEditable2.commands = (function(){
             options.parentNode = parentNode;
         }
         
-        if (!parentNode) debugger;
+        //if (!parentNode) debugger;
         
         var domParser = apf.document.$domParser;
         amlNode = domParser.parseFromXml(amlNode).firstChild.firstChild;
