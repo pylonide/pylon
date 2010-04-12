@@ -200,6 +200,7 @@ apf.uirecorder.capture = {
      * htmlNode    : specific container that holds the htmlElement described above
      */
     $captureAction : function(eventName, e, value) {
+    if (eventName == "mousedown") debugger;
         if (!apf.uirecorder.$inited) return;
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement) && apf.findHost(htmlElement).tagName) ? apf.findHost(htmlElement) : null;
@@ -601,103 +602,20 @@ if (apf.uirecorder.actionList.length) {
     
     // capture detailed event calls, property/model data changes
     $setDelayedDetails : function(index, eventName, actionIdx, keyActionIdx) {
-        var time = parseInt(new Date().getTime() - apf.uirecorder.capture.$startTime);
-        
-        // if object is mousemove delayTime is possibly set multiple times, take time with highest number
-        if (!apf.uirecorder.actionList[index].delayTime || time > apf.uirecorder.actionList[index].delayTime)
-            apf.uirecorder.actionList[index].delayTime = time;
-            
-            // set detailList
-            if (!apf.uirecorder.actionList[index].detailList[1]) { 
-                for (var elName in apf.uirecorder.detailList) {
-                    apf.uirecorder.actionList[index].detailList[1] = apf.uirecorder.detailList;
-                    break;
-                }
-            }
-            // merge detailList
-            else {
-                for (var elementName in apf.uirecorder.detailList) {
-                    // details for this element not exist yet
-                    if (!apf.uirecorder.actionList[index].detailList[1][elementName]) 
-                        apf.uirecorder.actionList[index].detailList[1][elementName] = apf.uirecorder.detailList[elementName]
-                    // merge details of this element
-                    else {
-                        for (var propName in apf.uirecorder.detailList) {
-                            if (propName == "amlNode") continue;
-                            if (apf.uirecorder.detailList[propName].length) {
-                                if (!apf.uirecorder.actionList[index].detailList[1][elementName][propName].length)
-                                    apf.uirecorder.actionList[index].detailList[1][elementName][propName] = apf.uirecorder.detailList[propName];
-                                else
-                                    apf.uirecorder.actionList[index].detailList[1][elementName][propName] = apf.uirecorder.actionList[index].detailList[1][elementName][propName].concat(apf.uirecorder.detailList[propName]);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            apf.uirecorder.detailList = {};
-             
-        //for (var elementName in apf.uirecorder.detailList) {
-            /*
-            if (!apf.uirecorder.actionList[index].detailList) apf.uirecorder.actionList[index].detailList = {};
-            if (!apf.uirecorder.actionList[index].detailList[elementName]) apf.uirecorder.actionList[index].detailList[elementName] = {
-                amlNode     : (apf.uirecorder.detailList[elementName] && apf.uirecorder.detailList[elementName].amlNode) ? apf.uirecorder.detailList[elementName].amlNode : null,
-                events      : [],
-                properties  : [],
-                data        : []
-            };
-            */
-            
-        //}
-
-        // create event list during testing, used to check if certain events are already called for an element
-        if (apf.uirecorder.isTesting) {
-            if (apf.uirecorder.actionList[index].detailList[1]) {
-                // loop throught elements
-                for (var elName in apf.uirecorder.actionList[index].detailList[1]) {
-                    if (apf.uirecorder.actionList[index].detailList[1][elName].events && apf.uirecorder.actionList[index].detailList[1][elName].events.length) {
-                        // loop through detailList events
-                        for (var i = 0, l = apf.uirecorder.actionList[index].detailList[1][elName].events.length; i < l; i++) {
-                            if (!this.$capturedEventList[elName]) this.$capturedEventList[elName] = [];
-                            this.$capturedEventList[elName].push(apf.uirecorder.actionList[index].detailList[1][elName].events[i].name);
-
-                            //if (apf.uirecorder.actionList[index].detailList[1][elName].events[i].name == "beforeload") debugger;
-                        }
-                    }
-                    // collect captured propchanges
-                    if (apf.uirecorder.actionList[index].detailList[1][elName].properties && apf.uirecorder.actionList[index].detailList[1][elName].properties.length) {
-                        // loop through detailList properties
-                        for (var val, i = 0, l = apf.uirecorder.actionList[index].detailList[1][elName].properties.length; i < l; i++) {
-                            if (!this.$capturedPropertyChangeList[elName]) this.$capturedPropertyChangeList[elName] = {};
-                            if (!this.$capturedPropertyChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].properties[i].name]) this.$capturedPropertyChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].properties[i].name] = {};
-                            val = (typeof apf.uirecorder.actionList[index].detailList[1][elName].properties[i].value == "string")
-                                ? apf.uirecorder.actionList[index].detailList[1][elName].properties[i].value
-                                : (apf.uirecorder.actionList[index].detailList[1][elName].properties[i].value.value != undefined)
-                                    ? apf.uirecorder.actionList[index].detailList[1][elName].properties[i].value.value
-                                    : apf.serialize(apf.uirecorder.actionList[index].detailList[1][elName].properties[i].value);
-                            this.$capturedPropertyChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].properties[i].name] = val;
-                        }
-                    }
-                    // collect captured model changes
-                    if (apf.uirecorder.actionList[index].detailList[1][elName].data && apf.uirecorder.actionList[index].detailList[1][elName].data.length) {
-                        // loop through detailList model changes
-                        for (var val, i = 0, l = apf.uirecorder.actionList[index].detailList[1][elName].data.length; i < l; i++) {
-                            if (!this.$capturedModelChangeList[elName]) this.$capturedModelChangeList[elName] = {};
-                            if (!this.$capturedModelChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].data[i].name]) this.$capturedModelChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].data[i].name] = {};
-                            val = (typeof apf.uirecorder.actionList[index].detailList[1][elName].data[i].value == "string") ? apf.uirecorder.actionList[index].detailList[1][elName].data[i].value : apf.serialize(apf.uirecorder.actionList[index].detailList[1][elName].data[i].value);
-                            this.$capturedModelChangeList[elName][apf.uirecorder.actionList[index].detailList[1][elName].data[i].name] = val;
-                        }
-                    }
-                }
-            }
-        }
-
+        // set active element, could be overridden with multiple setDelayedDetail calls
         if (apf.activeElement && apf.activeElement.parentNode)
             apf.uirecorder.actionList[index].activeElement = apf.activeElement.id || apf.xmlToXpath(apf.activeElement);
 
-        // 2nd check
-        if (apf.uirecorder.isTesting && eventName != "mousemove") {
-            apf.uirecorder.testing.$checkResults(apf.uirecorder.actionList[index], eventName, actionIdx, keyActionIdx, 1);
+        // set detailList
+        for (var elName in apf.uirecorder.detailList) {
+            apf.uirecorder.actionList[index].detailList.push(apf.uirecorder.detailList);
+            apf.uirecorder.detailList = {};
+            
+            // 2nd check
+            if (apf.uirecorder.isTesting && eventName != "mousemove") {
+                apf.uirecorder.testing.$checkResults(apf.uirecorder.actionList[index], eventName, actionIdx, keyActionIdx, apf.uirecorder.actionList[index].detailList.length-1);
+            }
+            break;
         }
     },
     
@@ -1062,7 +980,13 @@ apf.console.info("start playback");
             // set checks to compare value of properties, events and data, check in checkResults()
             //if (apf.uirecorder.isTesting) {
                 for (var dIdx, di = 0, dl = this.$keyActions[i].childNodes.length; di < dl; di++) {
+                    // ignore element nodes (activeElement)
+                    if (this.$keyActions[i].childNodes[di].nodeName != "details") continue;
+                    
                     dIdx = this.$keyActions[i].childNodes[di].getAttribute("index");
+                    if (!dIdx) debugger;
+                    
+                    if (this.$keyActions[i].childNodes[di].childNodes.length == 0) debugger;
                     for (var elName, nodes, ci = 0, cl = this.$keyActions[i].childNodes[di].childNodes.length; ci < cl; ci++) {
                         elName = this.$keyActions[i].childNodes[di].childNodes[ci].getAttribute("name");
                         if (!elName || elName == "trashbin" || elName == "html[1]") continue;
@@ -1089,14 +1013,14 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                     // add events with a value
                                     // add specific events
                                     //if (node.getAttribute("value") != undefined) {
-                                    if (this.$checkEvent.indexOf(node.getAttribute("name")) > -1) {
+                                    //if (this.$checkEvent.indexOf(node.getAttribute("name")) > -1) {
                                         if (!this.$checkList[i]) this.$checkList[i] = {};
                                         if (!this.$checkList[i].details) this.$checkList[i].details = [];
                                         if (!this.$checkList[i].details[dIdx]) this.$checkList[i].details[dIdx] = {};
                                         if (!this.$checkList[i].details[dIdx].events) this.$checkList[i].details[dIdx].events = {};
                                         if (!this.$checkList[i].details[dIdx].events[elName]) this.$checkList[i].details[dIdx].events[elName] = {};
                                         this.$checkList[i].details[dIdx].events[elName][node.getAttribute("name")] = node.value;
-                                    }
+                                    //}
 
                                     // add event combo's from $checkEvents list like beforeload/afterload
                                     /*
@@ -1121,6 +1045,10 @@ if (elName && elName.indexOf("text()") > -1) debugger;
                                     this.$checkList[i].details[dIdx].data[elName][node.getAttribute("name")] = node.text;
                                 }
                             }
+                            
+                            if (!this.$checkList[i]) debugger;
+                            if (!this.$checkList[i].details[dIdx]) debugger;
+                            if (!this.$checkList[i].details[dIdx].properties && !this.$checkList[i].details[dIdx].events && !this.$checkList[i].details[dIdx].data) debugger;
                         }
                     }
                 }                
@@ -1808,7 +1736,6 @@ apf.uirecorder.testing = {
                             && (actionObj.amlNode.$getActiveElement && !actionObj.amlNode.$getActiveElements()[apf.uirecorder.playback.$checkList[keyActionIdx][prop]]
                             || apf.uirecorder.playback.$checkList[keyActionIdx][prop] == "$ext" && !actionObj.amlNode.$ext)
                         ) {
-                            debugger;
                             apf.uirecorder.output.testLog.push(keyActionIdx + ". checkResults(): check failed: " + eventName + " not on correct htmlNode \"" + apf.uirecorder.playback.$checkList[keyActionIdx][prop] + "\"");
                             apf.uirecorder.output.setTestResult("error", apf.uirecorder.output.errors.ACTION_WRONG_TARGET, {
                                 val: [eventName, apf.uirecorder.playback.$checkList[keyActionIdx][prop]], 
@@ -2089,7 +2016,10 @@ apf.uirecorder.output = {
             if (action.delayTime) aNode.setAttribute("delayTime"  , action.delayTime);
             if (action.keyActionIdx != undefined) {
                 aNode.setAttribute("keyActionIdx"  , action.keyActionIdx);
-                if (action.target) {
+                if (action.amlNode) {
+                    if (action.amlNode.caption) aNode.setAttribute("caption", action.name + " (" + action.amlNode.caption + ")");
+                }
+                else if (action.target) {
                     if (action.target.caption) aNode.setAttribute("caption", action.name + " (" + action.target.caption + ")");
                     if (action.target.nodeName) aNode.setAttribute("targetType", action.target.nodeName);
                     if (action.target.value) aNode.setAttribute("targetValue", action.target.value);
@@ -2140,7 +2070,7 @@ apf.uirecorder.output = {
             // loop through detailList
             //if (action.detailList) {
             for (var detailNode, dli = 0, dll = action.detailList.length; dli < dll; dli++) {
-                detailNode = testXml.ownerDocument.createElement("details" + parseInt(dli+1));
+                detailNode = testXml.ownerDocument.createElement("details");
                 detailNode.setAttribute("index", dli);
                 
                 for (var elementName in action.detailList[dli]) {
