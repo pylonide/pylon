@@ -593,7 +593,7 @@ if (apf.uirecorder.actionList.length) {
        
         //Set the new stuff on the past action
         if (typeof f == "string")
-            apf.exec(f)
+            apf.jsexec(f)
         else
             f();
 

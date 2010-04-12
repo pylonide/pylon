@@ -255,7 +255,7 @@ apf.formatNumber = function(num, prefix){
  * @param {String} str  the javascript code to execute.
  * @return {String} the javascript code executed.
  */
-apf.exec = function(str, win){
+apf.jsexec = function(str, win){
     if (!str)
         return str;
     if (!win)

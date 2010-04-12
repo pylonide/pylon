@@ -186,7 +186,7 @@ apf.xml2json = function (xml, noattrs) {
  * @type  {Boolean}
  */
 apf.isJson = (function() {
-    var escapes  = /\\["\\\/bfnrtu]/g,
+    var escapes  = /\\["\\\/bfnrtu@]/g,
         values   = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
         brackets = /(?:^|:|,)(?:\s*\[)+/g,
         invalid  = /^[\],:{}\s]*$/;

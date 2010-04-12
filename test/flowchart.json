@@ -1,0 +1,28 @@
+{
+    "block": [
+        {
+            "\@id": "b1",
+            "\@cap-pos": "inside",
+            "\@type": "task",
+            "\@caption": "test",
+            "\@left": "221",
+            "\@top": "124",
+            "\@width": "46",
+            "\@height": "46",
+            "\@lock": "false",
+            "\@zindex": "1001"
+        },
+        {
+            "\@id": "b2",
+            "\@cap-pos": "inside",
+            "\@type": "task",
+            "\@caption": "test2",
+            "\@left": "221",
+            "\@top": "84",
+            "\@width": "46",
+            "\@height": "46",
+            "\@lock": "false",
+            "\@zindex": "1001"
+        }
+    ]
+}

@@ -782,13 +782,18 @@ apf.model = function(struct, tagName){
      */
     this.load = function(xmlNode, options){
         if (typeof xmlNode == "string") {
-            if (xmlNode.charAt(0) == "<") {
+            if (xmlNode.charAt(0) == "<") { //xml
                 if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
                 if (!apf.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
                 xmlNode = apf.getXmlDom(xmlNode, null, true).documentElement; //@todo apf3.0 whitespace issue
             }
+            //#ifdef __WITH_JSON2XML
+            else if (apf.isJson(xmlNode)) {
+                xmlNode = apf.json2Xml(xmlNode).documentElement
+            }
+            //#endif
             else
                 return this.$loadFrom(xmlNode, options);
         }
@@ -999,8 +1004,18 @@ apf.model = function(struct, tagName){
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
-            if (xmlNode.charAt(0) == "<")
+            if (xmlNode.charAt(0) == "<") {
+                if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
+                    xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
+                if (!apf.supportNamespaces)
+                    xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
+            }
+            //#ifdef __WITH_JSON2XML
+            else if (apf.isJson(xmlNode)) {
+                xmlNode = apf.json2Xml(xmlNode).documentElement
+            }
+            //#endif
             else
                 return this.$insertFrom(xmlNode, options);
         }

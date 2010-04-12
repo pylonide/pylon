@@ -40,7 +40,7 @@ apf.Cache = function(){
                                         PROPERTIES
     *********************************************************************/
     this.cache               = {};
-    this.subTreeCacheContext = null;
+    this.$subTreeCacheContext = null;
 
     this.caching  = true;
     this.$regbase = this.$regbase | apf.__CACHE__;
@@ -92,7 +92,7 @@ apf.Cache = function(){
     this.addEventListener("$clear", function(){
         if (!this.caching)
             return;
-            
+
         /*
             Check if we borrowed an HTMLElement
             We should return it where it came from
@@ -103,17 +103,19 @@ apf.Cache = function(){
             There might also be problems when removing the xmlroot
         */
         if (this.hasFeature(apf.__MULTISELECT__)
-            && this.subTreeCacheContext && this.subTreeCacheContext.oHtml) {
+          && this.$subTreeCacheContext && this.$subTreeCacheContext.oHtml) {
+            debugger;
             if (this.renderRoot) {
-                this.subTreeCacheContext.parentNode.insertBefore(
-                    this.subTreeCacheContext.oHtml, this.subTreeCacheContext.beforeNode);
+                this.$subTreeCacheContext.parentNode.insertBefore(
+                    this.$subTreeCacheContext.oHtml, this.$subTreeCacheContext.beforeNode);
             }
             else {
-                while (this.$container.childNodes.length)
-                    this.subTreeCacheContext.oHtml.appendChild(this.$container.childNodes[0]);
+                var container = this.$subTreeCacheContext.container || this.$container;
+                while (container.childNodes.length)
+                    this.$subTreeCacheContext.oHtml.appendChild(container.childNodes[0]);
             }
 
-            this.documentId = this.xmlRoot = this.cacheId = this.subTreeCacheContext = null;
+            this.documentId = this.xmlRoot = this.cacheId = this.$subTreeCacheContext = null;
         }
         else {
             /* If the current item was loaded whilst offline, we won't cache
@@ -162,13 +164,13 @@ apf.Cache = function(){
                 htmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId,
                 node   = this.$pHtmlDoc.getElementById(htmlId);
             if (node) 
-                cacheItem = getId ? false : this.$container; //@todo apf3.0 what's this GLOBAL var doing here?
+                cacheItem = id ? false : this.$container; //@todo what is the purpose of this statement?
             else {
                 for (var prop in this.cache) {
                     if (this.cache[prop] && this.cache[prop].nodeType) {
                         node = this.cache[prop].getElementById(htmlId);
                         if (node) {
-                            cacheItem = getId ? prop : this.cache[prop];
+                            cacheItem = id ? prop : this.cache[prop]; //@todo what is the purpose of this statement?
                             break;
                         }
                     }
@@ -181,13 +183,9 @@ apf.Cache = function(){
                     We can't clone it, because the updates will
                     get ambiguous, so we have to put it back later
                 */
-                
                 var oHtml = this.$findHtmlNode(
                     xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
-                /**
-                 * @private
-                 */
-                this.subTreeCacheContext = {
+                this.$subTreeCacheContext = {
                     oHtml      : oHtml,
                     parentNode : oHtml.parentNode,
                     beforeNode : oHtml.nextSibling,

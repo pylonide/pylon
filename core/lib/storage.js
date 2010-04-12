@@ -123,7 +123,7 @@ apf.storage = {
      */
     autodetect : function(){
         for (var name in this.modules) {
-            if ("memory|cooky".indexOf(name) > -1)
+            if ("memory|cookie".indexOf(name) > -1)
                 continue;
 
             if (this.modules[name].isAvailable()) {

@@ -63,7 +63,8 @@ apf.storage.modules.cookie = {
         value = apf.serialize(value);
         
         // store the value    
-        apf.setcookie(namespace + "~" + key, value);
+        apf.setcookie(namespace + "~" + key, value, 
+            new Date().getTime() + (60*60*24*365*10000));
     },
     
     /**

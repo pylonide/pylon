@@ -6,14 +6,14 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="0" />
+        <a:appsettings debug="1" />
         
         <a:model src="filesystem.xml" id="mdlFs" />
         
-        <a:datagrid id="dg" 
-          model   = "[mdlFs::drive/folder]" 
+        <a:datagrid id="dg"
+          model     = "[mdlFs::drive/folder]" 
           prerender = "false"
-          anchors = "10 10 10 10"> 
+          anchors   = "10 10 10 10"> 
             <a:each match="[file|folder|drive]">
                 <a:column width="200" value="[@caption|@filename]" editor="textbox" caption="Name" tree="true" icon="{[@icon] || 'Famfolder.gif'}"/> 
                 <a:column width="100%" value="[@value]" caption="Value" editor="slider" /> 

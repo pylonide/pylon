@@ -889,6 +889,33 @@ apf.MultiselectBinding = function(){
             ? this.$applyBindRule("insert", xmlNode)
             : false; << UNUSED */
 
+        //#ifdef __WITH_CACHE
+        var cId, cItem;
+        if (this.caching && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
+            if (this.$subTreeCacheContext || this.$needsDepth) {
+                //@todo
+                //We destroy the current items, because currently we 
+                //don't support multiple treecachecontexts
+                //and because datagrid needs to redraw depth
+                this.clearCacheItem(cId);
+            }
+            else {
+                this.$subTreeCacheContext = {
+                    oHtml      : cItem,
+                    container  : parent,
+                    parentNode : null,
+                    beforeNode : null
+                };
+
+                var htmlNode;
+                while (cItem.childNodes.length)
+                    parent.appendChild(htmlNode = cItem.childNodes[0]);
+                
+                return nodes;
+            }
+        }
+        //#endif
+
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) {
                 //#ifdef __WITH_MARKUPEDIT
@@ -898,9 +925,10 @@ apf.MultiselectBinding = function(){
                 continue;
             }
 
-            if (checkChildren)
-                htmlNode = this.$findHtmlNode(nodes[i].getAttribute(apf.xmldb.xmlIdTag)
-                    + "|" + this.$uniqueId);
+            if (checkChildren) {
+                htmlNode = this.$findHtmlNode(nodes[i]
+                    .getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+            }
 
             if (!htmlNode) {
                 //Retrieve DataBind ID

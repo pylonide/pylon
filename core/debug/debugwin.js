@@ -53,6 +53,8 @@ apf.$debugwin = {
             
             return upapf;
         }
+        
+        return apf;
     })(),
     
     init : function(){
@@ -63,10 +65,10 @@ apf.$debugwin = {
         
         //#ifdef __WITH_STORAGE
         apf.storage.init();
-        
-        this.showtime       = apf.storage.get("apfdebug_console_date") !== "false",
-        this.nativedebug    = apf.storage.get("apfdebug_debugger") == "true",
-        this.highlighthover = apf.storage.get("apfdebug_highlight_hover") != "false",
+
+        this.showtime       = apf.storage.get("apfdebug_console_date") !== false;
+        this.nativedebug    = apf.storage.get("apfdebug_debugger") == true;
+        this.highlighthover = apf.storage.get("apfdebug_highlight_hover") !== false;
         
         txtCode.setValue(apf.storage.get("jsexec") || "");
         codetype.setProperty("value", apf.storage.get("scriptype") || "Javascript");
@@ -376,7 +378,7 @@ apf.$debugwin = {
             var xml = apf.getXml("<obj />");
             var n = {};
             n[displayName] = o;
-            if (typeof o == "object" || o.dataType == apf.ARRAY)
+            if (typeof o == "object" || o && o.dataType == apf.ARRAY)
                 n.$isSingleValue = true;
             o = n;
         }
@@ -579,7 +581,7 @@ apf.$debugwin = {
         var _self = this;
         var doIt  = function(data){
             if (islm) {
-                var func = apf.lm.compile(code, {parsecode : true});
+                var func = apf.$debugwin.apf.lm.compile(code, {parsecode : true});
                 if (model) {
                     if (data = apf.$debugwin.apf.nameserver.get("model", model))
                         data = data.data;
@@ -597,6 +599,7 @@ apf.$debugwin = {
                         return;
                     }
                 }
+                alert(func.toString());
                 var x = func(data);
             }
             else {
@@ -717,6 +720,9 @@ apf.$debugwin = {
     
     first : true,
     show : function(){
+        if (apf.isDebugWindow)
+            return;
+        
         if (apf.loadScreen)
             apf.loadScreen.hide();
 

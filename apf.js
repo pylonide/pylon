@@ -192,7 +192,7 @@ var apf = {
     crypto        : {}, //namespace
     config        : {},
     _GET          : {},
-    $asyncObjects : {"apf.oHttp" : 1},
+    $asyncObjects : {"apf.oHttp" : 1, "apf.ajax": 1},
     
     /**
      * String specifying the basepath for loading apf from seperate files.
@@ -595,9 +595,21 @@ var apf = {
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
-    ajax : function(){
-        return this.oHttp.get.apply(this.oHttp, arguments);
-    },
+    ajax : (function(){
+        var f = function(){
+            return this.oHttp.get.apply(this.oHttp, arguments);
+        };
+        
+        f.exec = function(method, args, callback, options){
+            if (method == "ajax" && args[0]) {
+                var opt = args[1] || {};
+                return this.oHttp.exec(opt.method || "GET", [args[0]], 
+                    opt.callback, apf.extend(options || {}, opt));
+            }
+        };
+
+        return f;
+    })(),
     // #endif
 
     /**
@@ -768,12 +780,12 @@ var apf = {
                 "Could not load reference. Reference is null"));
 
         if (!strip)
-            return apf.exec(ref.toString(), win);
+            return apf.jsexec(ref.toString(), win);
 
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "")
                               .replace(/\}\s*$/, "");
 
-        return apf.exec(q, win);
+        return apf.jsexec(q, win);
     },
 
     /**

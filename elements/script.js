@@ -66,7 +66,7 @@ apf.script = function(){
             var code = e.currentTarget.nodeValue;
             
             if (!this.type || this.type == "text/javascript") {
-                apf.exec(code);
+                apf.jsexec(code);
             }
             else if (this.type == "application/livemarkup"
               || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
@@ -86,7 +86,7 @@ apf.script = function(){
         var code = s.join("\n");
         
         if (!this.type || this.type == "text/javascript") {
-            apf.exec(code);
+            apf.jsexec(code);
         }
         else if (this.type == "application/livemarkup"
           || this.type == "application/lm") {
