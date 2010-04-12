@@ -842,13 +842,13 @@ apf.model = function(struct, tagName){
 
         this.data = xmlNode;
         
+        this.dispatchEvent("afterload", {xmlNode: xmlNode});
+        
         for (var id in this.$amlNodes)
             this.$loadInAmlNode(this.$amlNodes[id]);
 
         for (id in this.$propBinds)
             this.$loadInAmlProp(id, xmlNode);
-
-        this.dispatchEvent("afterload", {xmlNode: xmlNode});
 
         return this;
     };
