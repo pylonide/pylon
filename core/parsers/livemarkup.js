@@ -296,7 +296,8 @@ apf.lm = new (function(){
         c_async_lut = apf.$asyncObjects || { // used to figure out if the thing before the. is an async obj
             "comm" :1,
             "rpc"  :1,
-            "http" :1
+            "http" :1,
+            "apf.ajax" :1
         },
         c_xpathmode,    // guess 'node' as the type for {} o_xpathpairs, 1 = node, 2 = nodes
         c_elemxpath,    // which xpath macro to use inside a ns'ed element
@@ -826,20 +827,22 @@ apf.lm = new (function(){
                                         }
                                     }
                                 }
-                                else if (last_dot > 1 && c_async_lut[v = last_tok.substring(0,last_dot)]) {// its an async call
+                                else {
+                                    if (last_dot > 1 && (c_async_lut[v = last_tok.substring(0,last_dot)] || c_async_lut[v = last_tok])) {// its an async call
                                     if (o[--ol] == " ")
                                         ol--;
                                     o[ol++] = cf_async_o, o[ol++] = v, o[ol++] = ",'";
                                     o[ol++] = last_tok.slice(last_dot + 1);
                                     o[ol++] = cf_async_m, s[sl++] = scope, s[sl++] = "async",
                                     scope = segment = ol, o_asyncs++;
-                                }
-                                else { // its a obj.prop() type call
-									if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
-										o_props[last_tok.slice(0,last_dot)] = 1;
-										
-                                    s[sl++] = scope, s[sl++] = o[ol++] = tok,
-                                    scope = segment = ol;
+                                    }
+                                    else { // its a obj.prop() type call
+                                        if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
+                                            o_props[last_tok.slice(0,last_dot)] = 1;
+                                            
+                                        s[sl++] = scope, s[sl++] = o[ol++] = tok,
+                                        scope = segment = ol;
+                                    }
                                 }
                             }
                             else { // function object call
