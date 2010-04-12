@@ -40,7 +40,7 @@ apf.$debugwin = {
     
     apf  : (function(){
         apf.isDebugWindow = self.frameElement 
-            && self.frameElement.getAttribute("src").indexOf("debugwin.html") > -1;
+            && self.frameElement.isDebugWin > -1;
         
         if (apf.isDebugWindow) {//assuming we are the debug window
             var upapf = self.parent.apf;
@@ -795,6 +795,7 @@ apf.$debugwin = {
             //src='debugwin.html' 
             document.body.insertAdjacentHTML("beforeend", "<div id='apf_debugwin'><iframe frameborder='0' width='100%' height='100%' /></div>");
             this.$iframe = (this.$ext = document.getElementById("apf_debugwin")).firstChild;
+            this.$iframe.isDebugWin = true;
 
             apf.getWindowWidth = function(){
                 return document.body.offsetWidth;
