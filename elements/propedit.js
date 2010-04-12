@@ -771,8 +771,9 @@ apf.propedit    = function(struct, tagName){
                     oEditor.$ext.parentNode.removeAttribute("id");
                     delete oEditor.$ext.parentNode.onresize;
                 }
+
                 editParent.appendChild(oEditor.$ext);
-                editParent.setAttribute(editParent.$parentId);
+                editParent.setAttribute("id", editParent.$parentId);
                 if (oEditor.$parentRsz) {
                     editParent.onresize = oEditor.$parentRsz;
                     editParent.onresize();

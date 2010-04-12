@@ -399,7 +399,8 @@ apf.MultiselectBinding = function(){
         apf.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
         
         //@todo apf3.0 cleanup?
-        this.$empty.style.height = (lastHeight && !apf.getStyle(this.$ext, "height") && className != "empty")
+        var extH = apf.getStyle(this.$ext, "height");
+        this.$empty.style.height = (lastHeight && (!extH || extH == "auto") && className != "empty")
             ? (Math.max(10, (lastHeight
                - apf.getHeightDiff(this.$empty)
                - apf.getHeightDiff(this.$ext))) + "px")
