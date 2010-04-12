@@ -1252,9 +1252,10 @@ var apf = {
             //Set file and line number
             str.push("aml file: [line: " + linenr + "] " + file);
         }
+
         if (control)
             str.push("Element: "
-              + (apf.$debugwin
+              + (apf.$debugwin && !apf.isDebugWindow
                 ? apf.$debugwin.$serializeObject(control)
                 : "'" + (control.name
                     || (control.$aml ? control.getAttribute("id") : null)

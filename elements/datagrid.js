@@ -707,8 +707,6 @@ apf.datagrid = function(struct, tagName){
             }
         }
         
-        if (!h) debugger;
-
         if (!h.editor) //No editor specified
             return;
 
