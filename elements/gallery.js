@@ -74,12 +74,8 @@ apf.gallery = function(struct, tagName){
     
     this.noThumbArrows = false;
     
-    /**
-     * Possible values
-     * - image
-     * - flash
-     */
-    this.mediaType   = "image";
+    this.mediaType = null;
+    this.supportedMediaTypes = ["image", "flash"];
 };
 
 (function(){
@@ -103,6 +99,14 @@ apf.gallery = function(struct, tagName){
     this.$propHandlers["thumb-mode"] = function(value) {
         this.thumbnailMode = value;
         this.$setStyleClass(this.$ext, value + "Mode", ["barMode", "gridMode"]);
+    };
+    
+    this.isSupportedType = function(type) {
+        for (var i = 0, l = this.supportedMediaTypes.length; i < l; i++) {
+            if (type == this.supportedMediaTypes[i])
+                return true;
+        }
+        return false;
     };
     
     this.$setSiblings = function() {
@@ -297,33 +301,24 @@ apf.gallery = function(struct, tagName){
     };
     
     this.$showVideo = function() {
+        this.$oImage.style.display = "none";
+        this.$hideLoader();
+        this.last = this.current;
+        this.$setSiblings();
+        
         if (this.mediaType == "flash") {
-            this.$hideLoader();
-            this.last = this.current;
-            this.$setSiblings();
+            //Get viewport dimension
+            var vpWidth  = this.$oViewport.offsetWidth;
+            var vpHeight = this.$oViewport.offsetHeight;
             
-            if (this.imageheight !== "auto") {
-                //Get viewport dimension
-                var vpWidth  = this.$oViewport.offsetWidth;
-                var vpHeight = this.$oViewport.offsetHeight;
-                
-                this.$oFlash["main"].style.width = vpWidth + "px";
-                this.$oFlash["main"].style.height = vpHeight + "px";
-                
-                this.$oFlash["embed"].setAttribute("width", vpWidth);
-                this.$oFlash["embed"].setAttribute("height", vpHeight);
-            }
-            else {
-                _self.$oImageContainer.style.width  = imgWidth + "px";
-                _self.$oImageContainer.style.height = imgHeight + "px";
-                _self.$oImageContainer.style.margin = "0 auto";
-            }
+            this.$oMedia.style.width = vpWidth + "px";
+            this.$oMedia.style.height = vpHeight + "px";
             
-            this.$oFlash["main"].style.display = "block";
+            this.$oMedia.style.display = "block";
             
             if (!this.isOnStack) {
                 var _self = this;
-                apf.tween.single(this.$oFlash["main"], {
+                apf.tween.single(this.$oMedia, {
                     steps : _self.stepShow,
                     type  : "fade",
                     anim  : apf.tween.NORMAL,
@@ -335,16 +330,10 @@ apf.gallery = function(struct, tagName){
                 });
             }
             else {
-                if (apf.isIE){
-                    this.$oFlash["main"].style.filter = "alpha(opacity=100)";
-                }
-                else {
-                    this.$oFlash["main"].style.opacity = 1;
-                }
+                this.$oMedia.style.filter = "alpha(opacity=100)";
+                this.$oMedia.style.opacity = 1;
                 this.loading = false;
             }
-            
-            this.$oFlash["main"].style.display = "block";
         }
         
         this.imageStack[this.$applyBindRule("src", this.current)] = true;
@@ -367,7 +356,7 @@ apf.gallery = function(struct, tagName){
                 return;
             
             if (!_self.isOnStack) {
-                apf.tween.single(_self.$oImage, {
+                apf.tween.single(_self.mediaType == "image" ? _self.$oMedia : _self.$oImage, {
                     steps : _self.stepHide,
                     type  : "fade",
                     anim  : apf.tween.NORMAL,
@@ -379,6 +368,9 @@ apf.gallery = function(struct, tagName){
                         if (_self.mediaType !== "image") {
                             _self.$showVideo();
                         }
+                        else {
+                            _self.$oMedia.style.display = "none";
+                        }
                     }
                 });
             }
@@ -387,6 +379,9 @@ apf.gallery = function(struct, tagName){
                 
                 if (_self.mediaType !== "image") {
                     _self.$showVideo();
+                }
+                else {
+                    _self.$oMedia.style.display = "none";
                 }
             }
             
@@ -433,13 +428,16 @@ apf.gallery = function(struct, tagName){
                 || this.defaultimage 
                 || this.defaultthumb;
         }
-        else if (this.mediaType == "flash"){
-            this.$oFlash["param"].setAttribute("value", src);
-            this.$oFlash["embed"].setAttribute("src", src);
+        else if (this.mediaType == "flash") {
+            this.loadMedia(this.mediaType, src);
         }
         else {
             alert("Not supported media type.");
         }
+    };
+    
+    this.loadMedia = function (mediaType, data) {
+        this.$oMedia.innerHTML = data;
     };
 
     this.$next = function() {
@@ -453,7 +451,7 @@ apf.gallery = function(struct, tagName){
     this.centerThumbnail = function(xmlNode) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         
-        if (!htmlNode || htmlNode == this.$oThumbs.firstChild || this.noThumbArrows)
+        if (!htmlNode || this.noThumbArrows)
             return;
         
         var oLeft  = htmlNode.offsetLeft;
@@ -461,6 +459,9 @@ apf.gallery = function(struct, tagName){
         var _self  = this;
         
         var ocLeft = this.$oThumbs.offsetLeft;
+        
+        if (htmlNode == this.$oThumbs.firstChild && ocLeft == 0)
+            return;
         
         var tCenteredPos  = -1 * oLeft - parseInt((oWidth + apf.getMargin(htmlNode)[0]) / 2);
         var vpCenteredPos = parseInt(this.$oThumbs.parentNode.offsetWidth / 2)
@@ -528,8 +529,8 @@ apf.gallery = function(struct, tagName){
         if (e.selected)
             this.current = e.selected;
         
-        var mediaType = this.$applyBindRule("media-type", this.current);
-        this.mediaType = mediaType == "image" || mediaType == "flash"
+        var mediaType = this.$applyBindRule("mediatype", this.current);
+        this.mediaType = this.isSupportedType(mediaType)
             ? mediaType 
             : "image";
     });
@@ -596,11 +597,7 @@ apf.gallery = function(struct, tagName){
         this.$oArrowPrev = this.$getLayoutNode("main", "arrow_prev", this.$ext);
         this.$oArrowNext = this.$getLayoutNode("main", "arrow_next", this.$ext);
         
-        this.$oFlash = {
-            main  : this.$getLayoutNode("main", "flash", this.$ext),
-            param : this.$getLayoutNode("main", "flash_param", this.$ext),
-            embed : this.$getLayoutNode("main", "flash_embed", this.$ext)
-        };
+        this.$oMedia = this.$getLayoutNode("main", "media", this.$ext);
         
         var rules = "var o = apf.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
@@ -787,5 +784,5 @@ apf.gallery = function(struct, tagName){
 apf.aml.setElement("gallery", apf.gallery);
 
 apf.aml.setElement("url", apf.BindingRule);
-apf.aml.setElement("media-type", apf.BindingRule);
+apf.aml.setElement("mediatype", apf.BindingRule);
 //#endif
