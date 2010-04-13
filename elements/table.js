@@ -401,6 +401,7 @@ apf.table = function(struct, tagName){
         this.$table = this.$ext.firstChild;
         this.$tbody = this.$table.firstChild;
         this.$ext.className = "table " + (this.getAttribute("class") || "");
+        //this.$ext.style.overflow = "hidden";
         this.$int = this.$ext;
         this.$ext.host = this;
 

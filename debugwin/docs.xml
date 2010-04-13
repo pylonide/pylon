@@ -29,248 +29,251 @@
 }    
 </style>
 
-<a:hbox anchors="0 0 0 0" edge="0">
-<a:table columns="200,50" edge="5 5 5 5" width="262" padding="2" class="doctree">
-    <a:textbox id="txtFilter" style="width:200px"
-      initial-message = "Search API docs"
-      skin            = "tbempty" 
-      onclear         = "doDocSearch();"
-      onkeyup         = "if (apf.isCharacter(event.keyCode)) { doDocSearch(this.getValue()) }"
-      onkeydown       = "
-        if (event.keyCode == 9){
-        }
-        else if (event.keyCode == 27) {
-            this.clear();
-            this.blur();
-        }
-        else if (event.keyCode == 13) {
-            doDocSearch(this.getValue(), true);
-        }
-        else if (event.keyCode == 40) {
-            var node = trDocs.queryNode('category');
-            if (node) {
-                setTimeout(function(){
-                    trDocs.setCaret(node);
-                    trDocs.focus();
-                });
-            }
-        }"
-    >
-    </a:textbox>
-    <a:dropdown
-        id    = "ddFilter"
-        value = "apf"
-        tabindex = "1"
-        onslideup = "if (txtFilter.value) { doDocSearch(txtFilter.value) }"
-      >
-         <a:item value="apf">APF</a:item>
-         <a:item value="o3">O3</a:item>
-    </a:dropdown>
-    <a:tree id="trDocs"
-      span            = "2"
-      height          = "*"
-      skin            = "tree_demosmenu"
-      model           = "mdlBrowseDocs"
-      prerender       = "false"
-      style           = "border:0;margin-top:5px;background:none;"
-      empty-message   = "No documents found"
-      removecontainer = "true"
-      reselectable    = "true"
-      ctrlselect      = "enter"
-      multiselect     = "false"
-      canrename       = "false"
-      autoselect      = "false"
-      onblur          = "this.setCaret()"
-      onafterload     = "this.setCaret();"
-      onafterchoose   = "openPage()"
-      onafterselect   = "if (event.selected) openPage()"
-      onselecttop     = "txtFilter.focus(null, {mouse:true});"
-      onkeydown       = "
-        if (event.keyCode == 27) {
-            txtFilter.clear();
-        }
-        else if (apf.isCharacter(event.keyCode)) {
-            txtFilter.setValue(String.fromCharCode(event.keyCode));
-            txtFilter.focus();
-            txtFilter.$focus({mouse:true});
-        }">
-        <a:bindings>
-            <a:caption>
-                [@n] {if (#[@p]) "({[@p].split('.').reverse().join(' ')})"}
-            </a:caption>
-            
-            <a:value>
-                {if (#[@p]) "[@p]."}{tagName()}.{[@n].toLowerCase()}.html
-            </a:value>
+<a:hbox id="hDocs" anchors="0 0 0 0" edge="0">
+    <a:vbox id="tvbox" padding="5" class="doctree" width="200">
+        <a:hbox padding="2" edge="0">
+            <a:textbox id="txtFilter" width="100%"
+              initial-message = "Search API docs"
+              skin            = "tbempty" 
+              onclear         = "doDocSearch();"
+              onkeyup         = "if (apf.isCharacter(event.keyCode)) { doDocSearch(this.getValue()) }"
+              onkeydown       = "
+                if (event.keyCode == 9){
+                }
+                else if (event.keyCode == 27) {
+                    this.clear();
+                    this.blur();
+                }
+                else if (event.keyCode == 13) {
+                    doDocSearch(this.getValue(), true);
+                }
+                else if (event.keyCode == 40) {
+                    var node = trDocs.queryNode('category');
+                    if (node) {
+                        setTimeout(function(){
+                            trDocs.setCaret(node);
+                            trDocs.focus();
+                        });
+                    }
+                }"
+            >
+            </a:textbox>
+            <a:dropdown
+                id    = "ddFilter"
+                width = "50"
+                value = "apf"
+                tabindex = "1"
+                onslideup = "if (txtFilter.value) { doDocSearch(txtFilter.value) }"
+              >
+                 <a:item value="apf">APF</a:item>
+                 <a:item value="o3">O3</a:item>
+            </a:dropdown>
+        </a:hbox>
     
-            <a:icon match="[node()[not(local-name()='category') and not(local-name()='subcat') and not(local-name()='more')]]" 
-                value="http://www.ajax.org/icns/[@icon|../@icon].png" />
-            <a:icon value="http://www.ajax.org/icns/Famfolder.gif" />
-            <a:selectable match="[node()[not(local-name()='more')]]" />
-            <!--j:tooltip match="@description" /-->
-            <!--a:select match="{apf.isSafari ? '[.]' : &quot;[node()[not(local-name()='section') or node()[local-name()='method' or local-name()='event' or local-name()='binding' or local-name()='attribute' or local-name()='element' or local-name()='property']]]&quot;}" /-->
-            <a:each match="[node()[local-name()]]" /><!-- and (not(local-name()='binding')
-                and not(local-name()='event') and not(local-name()='method') and not(local-name()='attribute')
-                and not(local-name()='property'))]]" />-->
-            <a:collapsed match = "[node()[@collapse='true']]" />
-            <!-- local-name()='subcat' and -->
-        </a:bindings>
-    </a:tree>
-</a:table>
-
-<a:bar id="refguide_container" skin="basic" style="border-width:0 0 0 1px;background:white;overflow:auto;padding:10px;">
-    <a:text id="txtInfoDocs" class="doc" visible="false"/>
-
-    <a:bar id="txtHome" skin="basic" class="dochome">
-        <h1>Ajax.org Documentation</h1>
-        <p>Reference of all aml elements and javascript objects.</p>
+        <a:tree id="trDocs"
+          height          = "100%"
+          skin            = "tree_demosmenu"
+          model           = "mdlBrowseDocs"
+          prerender       = "false"
+          style           = "border:0;margin-top:5px;background:none;"
+          empty-message   = "No documents found"
+          removecontainer = "true"
+          reselectable    = "true"
+          ctrlselect      = "enter"
+          multiselect     = "false"
+          canrename       = "false"
+          autoselect      = "false"
+          onblur          = "this.setCaret()"
+          onafterload     = "this.setCaret();"
+          onafterchoose   = "openPage()"
+          onafterselect   = "if (event.selected) openPage()"
+          onselecttop     = "txtFilter.focus(null, {mouse:true});"
+          onkeydown       = "
+            if (event.keyCode == 27) {
+                txtFilter.clear();
+            }
+            else if (apf.isCharacter(event.keyCode)) {
+                txtFilter.setValue(String.fromCharCode(event.keyCode));
+                txtFilter.focus();
+                txtFilter.$focus({mouse:true});
+            }">
+            <a:bindings>
+                <a:caption>
+                    [@n] {if (#[@p]) "({[@p].split('.').reverse().join(' ')})"}
+                </a:caption>
+                
+                <a:value>
+                    {if (#[@p]) "[@p]."}{tagName()}.{[@n].toLowerCase()}.html
+                </a:value>
         
-        <h2 style='color : #25a8e7;'>Latest user comments on the documentation</h2>
-        <a:list id="lc" model="{comm.getComments('latest');}"
-          bindings  = "bndComments"
-          caching   = "false" 
-          skin      = "listcomments">
+                <a:icon match="[node()[not(local-name()='category') and not(local-name()='subcat') and not(local-name()='more')]]" 
+                    value="http://www.ajax.org/icns/[@icon|../@icon].png" />
+                <a:icon value="http://www.ajax.org/icns/Famfolder.gif" />
+                <a:selectable match="[node()[not(local-name()='more')]]" />
+                <!--j:tooltip match="@description" /-->
+                <!--a:select match="{apf.isSafari ? '[.]' : &quot;[node()[not(local-name()='section') or node()[local-name()='method' or local-name()='event' or local-name()='binding' or local-name()='attribute' or local-name()='element' or local-name()='property']]]&quot;}" /-->
+                <a:each match="[node()[local-name()]]" /><!-- and (not(local-name()='binding')
+                    and not(local-name()='event') and not(local-name()='method') and not(local-name()='attribute')
+                    and not(local-name()='property'))]]" />-->
+                <a:collapsed match = "[node()[@collapse='true']]" />
+                <!-- local-name()='subcat' and -->
+            </a:bindings>
+        </a:tree>
+    </a:vbox>
+    
+    <a:bar id="refguide_container" width="100%" skin="basic" style="border-width:0 0 0 1px;background:white;overflow:auto;padding:10px;">
+        <a:text id="txtInfoDocs" class="doc" visible="false"/>
+    
+        <a:bar id="txtHome" skin="basic" class="dochome">
+            <h1>Ajax.org Documentation</h1>
+            <p>Reference of all aml elements and javascript objects.</p>
+            
+            <h2 style='color : #25a8e7;'>Latest user comments on the documentation</h2>
+            <a:list id="lc" model="{comm.getComments('latest');}"
+              bindings  = "bndComments"
+              caching   = "false" 
+              skin      = "listcomments">
+                <a:actions />
+            </a:list>
+        </a:bar>
+        
+        <h2 id="headNotes" class="usernotes" style="display:none">
+            <a href="javascript:void(0)" class="addnote" onclick="addNote(true);event.cancelBubble=true;">Add your own note</a>
+            User Contributed Notes
+        </h2>
+        
+        <a:bar id="barNote" minwidth="660" skin="basic"
+          model         = "mdlNote"
+          actiontracker = "atNote"
+          class         = "newnote"
+          width         = "670"
+          realtime      = "true"
+          visible       = "false">
+            <a:bar skin = "basic" class = "preview"
+              resizable     = "vertical"
+              minheight     = "28"
+              onresizestart = "
+              this.$int.style.overflow = 'hidden';
+              txtPreview.setHeight('100%-6');">
+                <!-- @todo the text element is not needed -->
+                <a:text id="txtPreview"
+                  model         = "mdlNote"
+                  class         = "listcomments"
+                  scrolldown    = "true"
+                  secure        = "true"
+                  empty-message = "Preview">
+                    <a:value><?lm {
+                        if (#[subject]) {
+                            <h3>[subject]</h3>
+                        }
+                        if (#[name]) {
+                            <blockquote>By <a href="http://[url]">[name]</a> on {new Date().format("mmm dd, yyyy")}</blockquote>
+                        }
+                        if (#[body]){
+                            <div class="message">{
+                                [body].trim()
+                                    .replace(/<code>([\s\S]*?)(?:<\/code>\s*\n?|$)|(\n)/g, function(m, m1, nl){
+                                        if (nl) return <br />;
+                                        return <pre class="code">{apf.highlightCode(m1)}</pre>;
+                                    });
+                            }</div>
+                        }
+                        if (!output().trim()) {
+                            <span class="emptypreview">Preview</span>
+                        }
+                    } ?></a:value>
+                </a:text>
+            </a:bar>
+    
+            <a:table id="form" 
+              minheight  = "175"
+              width      = "658"
+              columns    = "60, 215, 60, 100%"
+              margin     = "10 10 45 10"
+              cellheight = "20"
+              padding    = "8"
+              validgroup = "vgNote">
+                <a:label>Subject:</a:label>
+                <a:textbox value="[subject]" span="3" required="true" 
+                    minlength="4" invalidmsg="Invalid subject;The subject is required and should be at least 4 characters long." />
+                <a:label>Name:</a:label>
+                <a:textbox value="[name]" required="true" 
+                    minlength="3" invalidmsg="Invalid name;Your name is required and should be at least 3 characters long." />
+                <a:label>Website:</a:label>
+                <a:textbox value="[url]" datatype="a:website"
+                    invalidmsg="Invalid website;Please enter a correct website address." 
+                    onblur="if (this.value.indexOf('http://') > -1){
+                        this.change(this.value.replace('http://', ''));
+                    }"/>
+                <a:label span="*">
+                    Message (<a href="http://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> formatting allowed):
+                </a:label>
+                <a:textarea value="[body]" height="150" resizable="vertical" span="*" required="true" 
+                    minlength="1" invalidmsg="Invalid message;Please write a message here." />
+            </a:table>
+            
+            <a:label bottom="13" left="10" style="color:#333;font-size:9pt;">
+                To mark code (either javascript or xml) use <code> alert(1) </code>.
+            </a:label>
+            <a:button onclick="cancelAdding()" disabled="{form.disabled}"
+                right="110" bottom="10" width="60">Cancel</a:button>
+            <a:button onclick="if (vgNote.isValid()) mdlNote.submit()" disabled="{form.disabled || !atNote.undolength}"
+                default="true" bottom="10" right="7">Post</a:button>
+            <a:button default = "true"
+              bottom   = "10"
+              right    = "7"
+              disabled = "{form.disabled || !atNote.undolength}"
+              onclick  = "if (vgNote.isValid()) mdlNote.submit()">
+                    Post
+            </a:button>
+        </a:bar>
+        
+        <a:bindings id="bndComments">
+            <a:caption><?lm
+                <a href="#docs/[page]" style="float:right">{[page].split(".").pop()}</a>
+                <h3>[subject]</h3>
+                <blockquote>By {if ([url]){ <a href="http://[url]">[name]</a> } else { [name] }} on [date]
+                    {
+                    if ($[@new])
+                        <a href="javascript:void(0)" onclick="editNote()">\[Edit\]</a>
+                    }
+                </blockquote>
+                <div class="message">{
+                    [body]
+                        .trim()
+                        .replace(/(<[^>]+>)|(http:\/\/[^\s\n\r]+|www\.[^\s\n\r]+)/g, function(m, x, a){
+                            if (x) return x;
+                            return "<a href='" + a + "' target='_blank'>" + a + "</a>";
+                        })
+                        .replace(/<p>|<\/p>/g, "")
+                        .replace(/<code>([\s\S]*?)<\/code>\s*\n?|(\n)/g, function(m, m1, nl){
+                            if (nl) return "<br />";
+                            return '<pre class="code">' + apf.highlightCode(m1) + '</pre>';
+                        });
+                }</div>
+            ?></a:caption>
+            <a:each match="comment" />
+        </a:bindings>
+        
+        <a:list id="lstComments" caching="false" skin="listcomments"
+          model         = "mdlComments"
+          empty-message = "Be the first to write a note!"
+          focussable    = "false"
+          visible       = "false"
+          bindings      = "bndComments"
+          onafterload   = "
+            if (!this.visible)
+                return;
+            if (!this.length)
+                addNote(null, true);
+            else if (!atNote.undolength)
+                cancelAdding(true);
+          ">
             <a:actions />
         </a:list>
+    
+        <br style="line-height:30px" clear="all" />
     </a:bar>
-    
-    <h2 id="headNotes" class="usernotes" style="display:none">
-        <a href="javascript:void(0)" class="addnote" onclick="addNote(true);event.cancelBubble=true;">Add your own note</a>
-        User Contributed Notes
-    </h2>
-    
-    <a:bar id="barNote" minwidth="660" skin="basic"
-      model         = "mdlNote"
-      actiontracker = "atNote"
-      class         = "newnote"
-      width         = "670"
-      realtime      = "true"
-      visible       = "false">
-        <a:bar skin = "basic" class = "preview"
-          resizable     = "vertical"
-          minheight     = "28"
-          onresizestart = "
-          this.$int.style.overflow = 'hidden';
-          txtPreview.setHeight('100%-6');">
-            <!-- @todo the text element is not needed -->
-            <a:text id="txtPreview"
-              model         = "mdlNote"
-              class         = "listcomments"
-              scrolldown    = "true"
-              secure        = "true"
-              empty-message = "Preview">
-                <a:value><?lm {
-                    if (#[subject]) {
-                        <h3>[subject]</h3>
-                    }
-                    if (#[name]) {
-                        <blockquote>By <a href="http://[url]">[name]</a> on {new Date().format("mmm dd, yyyy")}</blockquote>
-                    }
-                    if (#[body]){
-                        <div class="message">{
-                            [body].trim()
-                                .replace(/<code>([\s\S]*?)(?:<\/code>\s*\n?|$)|(\n)/g, function(m, m1, nl){
-                                    if (nl) return <br />;
-                                    return <pre class="code">{apf.highlightCode(m1)}</pre>;
-                                });
-                        }</div>
-                    }
-                    if (!output().trim()) {
-                        <span class="emptypreview">Preview</span>
-                    }
-                } ?></a:value>
-            </a:text>
-        </a:bar>
-
-        <a:table id="form" 
-          minheight  = "175"
-          width      = "658"
-          columns    = "60, 215, 60, 100%"
-          margin     = "10 10 45 10"
-          cellheight = "20"
-          padding    = "8"
-          validgroup = "vgNote">
-            <a:label>Subject:</a:label>
-            <a:textbox value="[subject]" span="3" required="true" 
-                minlength="4" invalidmsg="Invalid subject;The subject is required and should be at least 4 characters long." />
-            <a:label>Name:</a:label>
-            <a:textbox value="[name]" required="true" 
-                minlength="3" invalidmsg="Invalid name;Your name is required and should be at least 3 characters long." />
-            <a:label>Website:</a:label>
-            <a:textbox value="[url]" datatype="a:website"
-                invalidmsg="Invalid website;Please enter a correct website address." 
-                onblur="if (this.value.indexOf('http://') > -1){
-                    this.change(this.value.replace('http://', ''));
-                }"/>
-            <a:label span="*">
-                Message (<a href="http://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> formatting allowed):
-            </a:label>
-            <a:textarea value="[body]" height="150" resizable="vertical" span="*" required="true" 
-                minlength="1" invalidmsg="Invalid message;Please write a message here." />
-        </a:table>
-        
-        <a:label bottom="13" left="10" style="color:#333;font-size:9pt;">
-            To mark code (either javascript or xml) use <code> alert(1) </code>.
-        </a:label>
-        <a:button onclick="cancelAdding()" disabled="{form.disabled}"
-            right="110" bottom="10" width="60">Cancel</a:button>
-        <a:button onclick="if (vgNote.isValid()) mdlNote.submit()" disabled="{form.disabled || !atNote.undolength}"
-            default="true" bottom="10" right="7">Post</a:button>
-        <a:button default = "true"
-          bottom   = "10"
-          right    = "7"
-          disabled = "{form.disabled || !atNote.undolength}"
-          onclick  = "if (vgNote.isValid()) mdlNote.submit()">
-                Post
-        </a:button>
-    </a:bar>
-    
-    <a:bindings id="bndComments">
-        <a:caption><?lm
-            <a href="#docs/[page]" style="float:right">{[page].split(".").pop()}</a>
-            <h3>[subject]</h3>
-            <blockquote>By {if ([url]){ <a href="http://[url]">[name]</a> } else { [name] }} on [date]
-                {
-                if ($[@new])
-                    <a href="javascript:void(0)" onclick="editNote()">\[Edit\]</a>
-                }
-            </blockquote>
-            <div class="message">{
-                [body]
-                    .trim()
-                    .replace(/(<[^>]+>)|(http:\/\/[^\s\n\r]+|www\.[^\s\n\r]+)/g, function(m, x, a){
-                        if (x) return x;
-                        return "<a href='" + a + "' target='_blank'>" + a + "</a>";
-                    })
-                    .replace(/<p>|<\/p>/g, "")
-                    .replace(/<code>([\s\S]*?)<\/code>\s*\n?|(\n)/g, function(m, m1, nl){
-                        if (nl) return "<br />";
-                        return '<pre class="code">' + apf.highlightCode(m1) + '</pre>';
-                    });
-            }</div>
-        ?></a:caption>
-        <a:each match="comment" />
-    </a:bindings>
-    
-    <a:list id="lstComments" caching="false" skin="listcomments"
-      model         = "mdlComments"
-      empty-message = "Be the first to write a note!"
-      focussable    = "false"
-      visible       = "false"
-      bindings      = "bndComments"
-      onafterload   = "
-        if (!this.visible)
-            return;
-        if (!this.length)
-            addNote(null, true);
-        else if (!atNote.undolength)
-            cancelAdding(true);
-      ">
-        <a:actions />
-    </a:list>
-
-    <br style="line-height:30px" clear="all" />
-</a:bar>
 </a:hbox>
 
 <a:script><![CDATA[

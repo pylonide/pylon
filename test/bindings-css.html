@@ -17,7 +17,7 @@
             <a:bindings> 
                 <a:caption match="[@name]" />
                 <a:each match="[person]" />
-                <a:css value="{apf.getChildNumber(%[.], *[../{myList.each}]) % 2 == 1 ? 'even' : 'odd'}" />
+                <a:css value="{index(*[../{myList.each}]) % 2 ? 'even' : 'odd'}" />
             </a:bindings> 
             <a:model> 
                 <data> 

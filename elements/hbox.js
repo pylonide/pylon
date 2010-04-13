@@ -270,6 +270,7 @@ apf.vbox = function(struct, tagName){
         
         var hasWidth = this.$ext.style.width;
         var hasHeight = this.$ext.style.height;
+        var hasDefinedHeight = this.height || this.top && this.bottom || this.anchors;
 
         var minSizeX = 0;
         var size = vbox ? "height" : "width";
@@ -298,11 +299,20 @@ apf.vbox = function(struct, tagName){
                 align   : amlNode.align,
                 width   : amlNode.width,
                 height  : amlNode.height,
-                minwidth : amlNode.minwidth || 0,
+                minwidth  : amlNode.minwidth || 0,
                 minheight : amlNode.minheight || 0,
                 oHtml   : oExt
             }
             cellInfo.isPerc = String(cellInfo[size]).indexOf("%") > -1;
+
+            //#ifdef __DEBUG
+            if (cellInfo.width && !String(cellInfo.width).match(/^\d+%?$/)) {
+                throw new Error ("Invalid width specified:" + cellInfo.width); //@todo turn into decent apf error
+            }
+            if (cellInfo.height && !String(cellInfo.height).match(/^\d+%?$/)) {
+                throw new Error ("Invalid height specified:" + cellInfo.height); //@todo turn into decent apf error
+            }
+            //#endif
 
             nodes.push(cellInfo);
 
@@ -313,11 +323,11 @@ apf.vbox = function(struct, tagName){
 
             //Set size
             var first = false;
-            if (!hasHeight && !this.height && cellInfo.isPerc) {
+            if (!hasHeight && !hasDefinedHeight && cellInfo.isPerc) {
                 delete cellInfo[size];
                 cellInfo.isPerc = false;
             }
-            
+
             if (cellInfo.isPerc) {
                 this.$createInt();
                 
@@ -438,7 +448,7 @@ apf.vbox = function(struct, tagName){
                     minSizeX = Math.max(minSizeX, cellInfo.height);
                     oExt.style.height = (cellInfo.height - diff[1]) + "px";
                 }
-                else if (this.height && this.stretch) {
+                else if (hasDefinedHeight && this.stretch) {
                     minSizeX = Math.max(minSizeX, cellInfo.minheight || 5);
                     heightAdj.push([oExt, diff[1], cellInfo.m]);
                 }
@@ -494,7 +504,7 @@ apf.vbox = function(struct, tagName){
                 //@todo add rule to layoutServer to adjust padding-bottom of this.$int
                 html = paddAdj.html[i];
                 if (this.$hasPerc) {
-                    //@todo if this.height || this.top && this.bottom (etc) set height
+                    //@todo if hasDefinedHeight set height
                     l.setRules(html, "boxp", me + ".$ext.style.padding" 
                         + (vbox ? "Bottom" : "Right") + " = (" 
                         + (this.$totalFixed - paddAdj.total) 
@@ -531,7 +541,7 @@ apf.vbox = function(struct, tagName){
             if (this.width)
                 this.$propHandlers["width"].call(this, this.width);
             else if (this.left && this.right)
-                this.$propHandlers["right"].call(this, this.bottom);
+                this.$propHandlers["right"].call(this, this.right);
             else
                 this.$ext.style.width = Math.max(0, width + oldP[1] - newP[1] + oldP[3] - newP[3]) + "px";
         }
@@ -546,7 +556,7 @@ apf.vbox = function(struct, tagName){
             }
         }
 
-        if (this.height && heightAdj.length) {
+        if (hasDefinedHeight && heightAdj.length) {
             var rules = ["var height = apf.all[" + this.$uniqueId + "].$ext.offsetHeight"];
             for (i = 0; i < heightAdj.length; i++) {
                 html = heightAdj[i][0];
@@ -640,7 +650,8 @@ apf.vbox = function(struct, tagName){
                 _self.$updateBox();
             },
             updateTrigger : function(value){
-                if (!_self.$update && apf.loaded)
+                //@todo this is called up the tree when nesting elements. Should be fixed when optimizing.
+                if (!_self.$update && _self.$amlLoaded)
                     l.queue(_self.$ext, _self.$updateObj);
                 _self.$update = true;
             },
@@ -665,6 +676,7 @@ apf.vbox = function(struct, tagName){
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
         this.$ext.className = this.localName + " " + (this.getAttribute("class") || "");
         this.$ext.style.whiteSpace = "nowrap";
+        this.$ext.style.overflow   = "hidden";
         this.$int = this.$ext;
         this.$ext.host = this;
 

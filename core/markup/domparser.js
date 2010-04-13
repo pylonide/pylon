@@ -93,11 +93,11 @@ apf.DOMParser.prototype = new (function(){
     
     //@todo prevent leakage by not recording .$aml
     this.parseFromXml = function(xmlNode, options){
-        var doc, docFrag, amlNode;
+        var doc, docFrag, amlNode, beforeNode;
         if (!options) 
             options = {};
         
-        if (!options.delayedRender) {
+        if (!options.delayedRender && !options.include) {
             //Create a new document
             if (options.doc) {
                 doc     = options.doc;
@@ -124,8 +124,14 @@ apf.DOMParser.prototype = new (function(){
                 amlNode.$int = options.htmlNode;
         }
         else {
-            amlNode = options.amlNode;
-            doc     = options.doc;
+            amlNode    = options.amlNode;
+            doc        = options.doc;
+            
+            if (options.include) {
+                var n = amlNode.childNodes;
+                var p = n.indexOf(options.beforeNode);
+                var rest = n.splice(p, n.length - p);
+            }
         }
 
         //Set parse context
@@ -171,6 +177,15 @@ apf.DOMParser.prototype = new (function(){
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
+        
+        if (options.include && rest.length) {
+            var index = n.length - 1;
+            n.push.apply(n, rest);
+            var last = n[index];
+            var next = n[index + 1];
+            (next.previousSibling = last).nextSibling = next;
+            amlNode.lastChild = n[n.length - 1];
+        }
 
         if (options.delay) {
             amlNode.$parseOptions = {

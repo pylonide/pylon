@@ -30,6 +30,7 @@ apf.XiInclude = function(struct, tagName){
 apf.xinclude.setElement("include", apf.XiInclude);
 apf.aml.setElement("include", apf.XiInclude);
 
+//@todo test defer="true" situation
 (function(){
     this.$parsePrio = "002";
 
@@ -51,8 +52,7 @@ apf.aml.setElement("include", apf.XiInclude);
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
             domParser.$shouldWait++;
-            this.$parseContext = domParser.$callCount > 0 //@todo this solution seems weird... the parse context thing should be rethought - optimization
-                && domParser.$parseContext || [this.parentNode];
+            this.$parseContext = domParser.$parseContext || [this.parentNode];
         }
         
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
@@ -76,25 +76,19 @@ apf.aml.setElement("include", apf.XiInclude);
         if (this.clear)
             this.parentNode.$int.innerHTML = "";
         
-        //@todo apf3.x the insertBefore seems like unnecessary overhead
-        //@todo apf3.x this seems flawed, now another root node is added to this document....
         if (xmlNode) {
-            var node,
-                _self = this,
-                nodes = domParser.parseFromXml(xmlNode, {
-                    doc : this.ownerDocument
-                  }).firstChild.childNodes,
-                pNode = this.parentNode,
-                i     = 0,
-                l     = nodes.length;
-            for (; i < l; ++i) {
-                (node = nodes[i]).parentNode = null; //@todo a little hackery
-                pNode.insertBefore(node, this);
-            }
+            domParser.parseFromXml(xmlNode, {
+                doc        : this.ownerDocument,
+                amlNode    : this.parentNode,
+                beforeNode : this,
+                include    : true
+            });
             
             if (!this.defer) {
-                var o  = (this.$parseContext[1] || (this.$parseContext[1] = {})),
-                    cb = o.callback;
+                var o     = (this.$parseContext[1] || (this.$parseContext[1] = {})),
+                    cb    = o.callback,
+                    _self = this;
+
                 o.callback = function(){
                     done.call(_self, xmlNode);
                     if (cb)
