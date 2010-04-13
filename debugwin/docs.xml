@@ -234,7 +234,7 @@
                 <h3>[subject]</h3>
                 <blockquote>By {if ([url]){ <a href="http://[url]">[name]</a> } else { [name] }} on [date]
                     {
-                    if ($[@new])
+                    if ([@new])
                         <a href="javascript:void(0)" onclick="editNote()">\[Edit\]</a>
                     }
                 </blockquote>
