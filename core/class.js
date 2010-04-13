@@ -651,7 +651,7 @@ apf.Class.prototype = new (function(){
         //Check if property has changed
         if (isChanged) {
             //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder) {
+            if (apf.uirecorder && apf.uirecorder.captureDetails) {
                 if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                     if (this.ownerDocument && this.$aml)
                         apf.uirecorder.capture.capturePropertyChange(this, prop, value); 
@@ -876,7 +876,7 @@ apf.Class.prototype = new (function(){
         this.eventDepth--;
 
         //#ifdef __WITH_UIRECORDER
-        if (apf.uirecorder) {
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (["debug"].indexOf(eventName) == -1) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
                 if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
                     if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording

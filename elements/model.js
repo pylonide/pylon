@@ -884,7 +884,7 @@ apf.model = function(struct, tagName){
         //#endif
 
         //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder) {
+            if (apf.uirecorder && apf.uirecorder.captureDetails) {
                 if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
                     if (this.ownerDocument && this.$aml) {
                         apf.uirecorder.capture.captureModelChange({
