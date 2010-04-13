@@ -184,7 +184,7 @@ apf.lm = new (function(){
         }, // special markers: ') ' tail of xpath macro. ')  ' func def, tok=')    ' its not an if while etc.
         markup_in_code_lut = {
             "} ":1, ")   ":1,// the } used when it wasnt a code-expression
-            "(":1, ")":1, ";":1, "&":1, "^":1, "|":1, ",":1, '"':1, "'":1, "=":1,
+            "(":1, /*")":1,*/ ";":1, "&":1, "^":1, "|":1, ",":1, '"':1, "'":1, "=":1,
             "!=":2,"+=":2, "-=":2, "/=":2, "*=":2, "?":1, "{":1, "}":1, ">":1, "[":1,
             "]":1, "+":1, ":":1, "else":1, "return":1
         },
