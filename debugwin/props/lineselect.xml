@@ -1,4 +1,4 @@
-<props><lineselect><group caption="GuiElement"><prop caption="span" editor="textbox" value="[@span]" description="the number of columns this element spans. Only used inside a table element."/><prop caption="left" editor="textbox" value="[@left]" description="the left position of this element. Depending
+<props><lineselect><group caption="GuiElement"><prop caption="span" editor="textbox" value="[@span]" description="the number of columns this element spans. Only used inside a table element."/><prop caption="margin" editor="textbox" value="[@margin]"/><prop caption="left" editor="textbox" value="[@left]" description="the left position of this element. Depending
 on the choosen layout method the unit can be pixels, a percentage or an
 expression."/><prop caption="top" editor="textbox" value="[@top]" description="the top position of this element. Depending
 on the choosen layout method the unit can be pixels, a percentage or an
