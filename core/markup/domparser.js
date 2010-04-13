@@ -251,7 +251,7 @@ apf.DOMParser.prototype = new (function(){
             }
         })(amlNode.childNodes);
         
-        if (!this.$callCount && !options.delay)
+        if (!--this.$callCount && !options.delay)
             apf.queue.empty();
         
         if (options.callback)

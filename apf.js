@@ -1867,6 +1867,7 @@ var apf = {
                     }
 
                     // #ifndef __SUPPORT_GWT
+                    document.documentElement.style.display = "block";
                     document.body.style.display = "block"; //might wanna make this variable based on layout loading...
                     // #endif
 
@@ -2305,6 +2306,8 @@ apf.setTimeout = function(f, t){
 }
 
 document.documentElement.className += " has_apf";
+document.documentElement.style.display = "none";
+
 apf.browserDetect();
 apf.Init.run("apf");
 

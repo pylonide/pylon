@@ -77,14 +77,15 @@ apf.isOnlyChild = function(node, nodeType){
  * @param {DOMNode} node the node for which the child position is determined.
  * @return {Number} the child position of the node.
  */
-apf.getChildNumber = function(node, sameTagname){
+apf.getChildNumber = function(node, fromList){
     var p = node.parentNode, j = 0;
     if (!p) return 0;
-    for (var i = 0, l = p.childNodes.length; i < l; i++) {
-        if (p.childNodes[i] == node)
+    if (!fromList)
+        fromList = p.childNodes;
+    for (var i = 0, l = fromList.length; i < l; i++) {
+        if (fromList[i] == node)
             return j;
-        if (!sameTagname || node.nodeType == 1 && node.tagName == p.childNodes[i].tagName)
-            j++;
+        j++;
     }
     return j;
 };
@@ -825,7 +826,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
             + "[" + (useJid && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.getChildNumber(lNode, true) + 1))
+                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.tagName)) + 1))
              + "]");
         lNode = lNode.parentNode;
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
