@@ -22,8 +22,6 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * @define bindings
- * @allowchild each
  * @binding each Determines the list of elements for which each
  * gets a visual representation within the element. It also can determine
  * the sequence of how the elements are visualized by offering a way to
