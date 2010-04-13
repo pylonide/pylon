@@ -78,7 +78,7 @@
             <!--a:item visible="false">Search in docs</a:item>
             <a:divider /-->
             <a:check id="itmShowtime" onclick="apf.$debugwin.setShowTime(this.checked);">Show time</a:check>
-            <a:check id="itmDebug" onclick="apf.$debugwin.setNativeDebug(this.checked);">Use browser debugger</a:check>
+            <a:check id="itmDebug" onclick="apf.$debugwin.apf.$debugwin.setNativeDebug(this.checked);">Use browser debugger</a:check>
             <a:divider />
             <a:item disabled="true">Copy log</a:item>
         </a:menu>
@@ -363,11 +363,17 @@
             <a:page caption="Script">
             </a:page>
             <a:page caption="Testing">
-            </a:page>
+            </a:page-->
             <a:page caption="Docs" id="docs" render="runtime">
                 <a:comment>this needs to be implemented using an include from ajax.org and a fallback locally</a:comment>
+                <a:style src="http://www.ajax.org/css/style.css">
+                    html, body, .has_apf{
+                        background : white;
+                        overflow : hidden;
+                    }
+                </a:style>
                 <a:include src="docs.xml" />
-            </a:page-->
+            </a:page>
         </a:tab>
         
         <a:script>//<!--

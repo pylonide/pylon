@@ -30,7 +30,7 @@
 </style>
 
 <a:hbox id="hDocs" anchors="0 0 0 0" edge="0">
-    <a:vbox id="tvbox" padding="5" class="doctree" width="200">
+    <a:vbox id="tvbox" padding="5" class="doctree" width="250">
         <a:hbox padding="2" edge="0">
             <a:textbox id="txtFilter" width="100%"
               initial-message = "Search API docs"
@@ -649,7 +649,7 @@ function doRealSearch(testBeginning, cacheId, value) {
         // ignore apf or o3 based on dropdown selection
         var ignoreNode;
         if (ddFilter.value == "apf")
-            ignoreNode = group.selectSingleNode("subcat[@n='O3']")
+            ignoreNode = group.selectSingleNode("category[@n='O3']")
         else if (ddFilter.value == "o3")
             ignoreNode = group.selectSingleNode("category[@n='APF']")
         

@@ -35,6 +35,16 @@ apf.style = function(struct, tagName){
 (function(){
     this.$focussable = false;
     
+    this.$propHandlers["src"] = function(value){
+        apf.getData(value, {
+            callback : function(data, state){
+                if (state == apf.SUCCESS) {
+                    apf.importCssString(data);
+                }
+            }
+        });
+    }
+    
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.type != "text/chartcss" && this.firstChild)
             apf.importCssString(this.firstChild.nodeValue);
