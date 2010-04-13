@@ -186,7 +186,7 @@ apf.lm = new (function(){
             "} ":1, ")   ":1,// the } used when it wasnt a code-expression
             "(":1, /*")":1,*/ ";":1, "&":1, "^":1, "|":1, ",":1, '"':1, "'":1, "=":1,
             "!=":2,"+=":2, "-=":2, "/=":2, "*=":2, "?":1, "{":1, "}":1, ">":1, "[":1,
-            "]":1, "+":1, ":":1, "else":1, "return":1
+            /*"]":1,*/ "+":1, ":":1, "else":1, "return":1
         },
         block_autoappend = { // token preceeding block signalling auto append
             '"':1, "'":1, ">":1, "]":1, "}":1
