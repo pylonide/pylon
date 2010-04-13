@@ -361,7 +361,8 @@ apf.lm = new (function(){
     macro_c.output      = ")"
     macro_o.reset       = "(_o=[],l=0",
     macro_c.reset       = ")"
-
+    macro_o.index       = "apf.getChildNumber(_n",
+    macro_c.index       = ")",
     macro_o.item        = "(_t[_t.length-1][_t[_t.length-2]-1]",
     macro_c.item        = ")",
     macro_o.first       = "(_t[_t.length-2]==1",
@@ -385,7 +386,8 @@ apf.lm = new (function(){
             _call     : ".call(_n",
             localName : macro_o.localName,
             tagName   : macro_o.tagName,
-            nodeValue : macro_o.nodeValue
+            nodeValue : macro_o.nodeValue,
+            index : macro_o.index
         },
 
         // centralized code fragments used in parser/generator
