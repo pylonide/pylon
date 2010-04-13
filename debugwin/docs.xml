@@ -138,11 +138,13 @@
         </a:bar>
         
         <h2 id="headNotes" class="usernotes" style="display:none">
-            <a href="javascript:void(0)" class="addnote" onclick="addNote(true);event.cancelBubble=true;">Add your own note</a>
+            <!--a href="javascript:void(0)" class="addnote" onclick="addNote(true);event.cancelBubble=true;">Add your own note</a-->
             User Contributed Notes
         </h2>
         
-        <a:bar id="barNote" minwidth="660" skin="basic"
+        <a:actiontracker id="atNote" />
+        <!-- @todo this is completely broken -->
+        <!--a:bar id="barNote" minwidth="660" skin="basic"
           model         = "mdlNote"
           actiontracker = "atNote"
           class         = "newnote"
@@ -155,7 +157,6 @@
               onresizestart = "
               this.$int.style.overflow = 'hidden';
               txtPreview.setHeight('100%-6');">
-                <!-- @todo the text element is not needed -->
                 <a:text id="txtPreview"
                   model         = "mdlNote"
                   class         = "listcomments"
@@ -226,7 +227,7 @@
               onclick  = "if (vgNote.isValid()) mdlNote.submit()">
                     Post
             </a:button>
-        </a:bar>
+        </a:bar-->
         
         <a:bindings id="bndComments">
             <a:caption><?lm
@@ -372,6 +373,7 @@ function addNewComment(){
 }
 
 function addNote(toggle, noAnim){
+    return;
     if (toggle && barNote.visible)
         return cancelAdding();
 
