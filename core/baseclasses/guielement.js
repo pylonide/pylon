@@ -137,11 +137,11 @@ apf.GuiElement = function(){
                 this.parentNode.register(this);
                 this.$disableCurrentLayout = null;
                 return type == "table";
-            }
+            }else
             // #endif
 
             // #ifdef __AMLVBOX || __AMLHBOX
-            else if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
                 this.parentNode.register(this);
                 this.$disableCurrentLayout = null;
                 return type == this.parentNode.localName;
