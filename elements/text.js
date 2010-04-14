@@ -43,10 +43,10 @@ apf.text = function(struct, tagName){
 
 (function(){
     this.implement(
-        apf.ChildValue,
         // #ifdef __WITH_CACHE
-        apf.Cache
+        apf.Cache,
         // #endif
+        apf.ChildValue
     );
 
     this.$focussable       = true; // This object can't get the focus
