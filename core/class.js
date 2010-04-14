@@ -416,6 +416,11 @@ apf.Class.prototype = new (function(){
             options = {parsecode : true 
              /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) ? true : false /* #endif */};
         }
+        
+        //#ifdef __DEBUG
+        if (apf.config.debugLm)
+            (options || (options = {})).nothrow = true;
+        //#endif
 
         //Compile pValue through JSLT parser
         var fParsed = apf.lm.compile(pValue, options);

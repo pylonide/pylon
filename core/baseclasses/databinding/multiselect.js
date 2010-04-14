@@ -891,7 +891,8 @@ apf.MultiselectBinding = function(){
 
         //#ifdef __WITH_CACHE
         var cId, cItem;
-        if (this.caching && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
+        if (this.$isTreeArch && this.caching 
+          && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
                 //We destroy the current items, because currently we 

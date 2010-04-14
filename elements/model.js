@@ -1063,16 +1063,16 @@ apf.model = function(struct, tagName){
 
     /**
      * Submit the data of the model to a data source.
+     * @param {String} instruction  the instruction for sending the data, or the url to send the data to.
      * @param {String} type         how to serialize the data.
      *   Possible values:
      *   xml, application/xml
      *   form, application/x-www-form-urlencoded
      *   json, application/json
-     * @param {String} instruction  the instruction for sending the data, or the url to send the data to.
      * @param {XMLElement} xmlNode  the data node to send to the server.
      */
      //@todo rewrite this for apf3.0
-    this.submit = function(instruction, type, xmlNode, useComponents, xSelectSubTree){
+    this.submit = function(instruction, type, xmlNode, options){
         if (!instruction)
             instruction = this.submission;
         
@@ -1123,11 +1123,11 @@ apf.model = function(struct, tagName){
         else if (type.indexOf("json") > -1)
             data = apf.convertXml(xmlNode, "json");
 
-        apf.saveData(instruction, {
+        apf.saveData(instruction, apf.extend({
             xmlNode  : xmlNode,
             data     : data,
             callback : cbFunc
-        });
+        }, options));
 
         this.dispatchEvent("aftersubmit");
     };

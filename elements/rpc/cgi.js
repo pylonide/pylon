@@ -101,15 +101,27 @@ apf.cgi = function(){
                     recur(o[j], stack + "%5B" + j + "%5D");//" + j + "
             }
             else if (typeof o == "object") {
-                for (prop in o) {
-                    //#ifdef __SUPPORT_SAFARI2
-                    if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
-                        continue;
-                    //#endif
-
-                    if (typeof o[prop] == "function")
-                        continue;
-                    recur(o[prop], stack + "%5B" + encodeURIComponent(prop) + "%5D");
+                if (o.nodeType) {
+                    try{
+                        var s = o.outerHTML || o.serialize && o.serialize() 
+                          || apf.getCleanCopy(o).xml;
+                    }
+                    catch(e){
+                        var s = "Could not serialize object";
+                    }
+                    vars.push(stack + "=" + encodeURIComponent(s));
+                }
+                else {
+                    for (prop in o) {
+                        //#ifdef __SUPPORT_SAFARI2
+                        if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
+                            continue;
+                        //#endif
+    
+                        if (typeof o[prop] == "function")
+                            continue;
+                        recur(o[prop], stack + "%5B" + encodeURIComponent(prop) + "%5D");
+                    }
                 }
             }
             else {
