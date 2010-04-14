@@ -117,6 +117,7 @@ apf.AmlAttr = function(ownerElement, name, value){
               (value.indexOf("{") > -1 || value.indexOf("[") > -1))) {
                 host.$setDynamicProperty(name, value);
                 
+                this.specified = true;
                 return;//@todo apf3.0 test this for disabled
             }
         }

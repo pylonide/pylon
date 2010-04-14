@@ -83,15 +83,17 @@ apf.$debugwin = {
         
         $apf_ide_mdl.load(this.apf.document.documentElement);//"debugwin.html");//
         
-        var _self = this;
+        var _self = this, excl = {"DIV":1,"BLOCKQUOTE":1,"SPAN":1,"I":1};
         this.$mmouseover = function(e){
+            if (!cbHighlightHover.checked)
+                return;
+            
             var oHtml = e.htmlEvent.srcElement || e.htmlEvent.target;
-            var xmlNode = oHtml.tagName == "DIV" || oHtml.tagName == "SPAN" 
+            var xmlNode = excl[oHtml.tagName] 
                 ? null
                 : apf.xmldb.findXmlNode(oHtml);
             
-            if (cbHighlightHover.checked)
-                _self.apf.$debugwin.highlightAmlNode(xmlNode, !xmlNode);
+            _self.apf.$debugwin.highlightAmlNode(xmlNode, !xmlNode);
             e.cancelBubble = true;
         }
         
@@ -556,6 +558,8 @@ apf.$debugwin = {
         var lut = apf.xmldb.$xmlDocLut;
         var doc = xml.ownerDocument.documentElement;
         var id = xml.getAttribute(apf.xmldb.xmlIdTag);
+        if (!id) 
+            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xml), xml);
         var docId = id.split("\|")[0];
         
         if (!lut[docId]) {
@@ -591,20 +595,21 @@ apf.$debugwin = {
             + "</div></span>", "custom", null, null, null, true);
 
         var _self = this;
-        var doIt  = function(data){
+        var doIt  = function(data, loaded){
             if (islm) {
                 var func = apf.$debugwin.apf.lm.compile(code, {parsecode : true});
-                if (model) {
+                if (model && !loaded) {
                     if (data = apf.$debugwin.apf.nameserver.get("model", model))
                         data = data.data;
                     if (!data) {
-                        var data = apf.getData(model, {
+                        var data = _self.apf.getData(model, {
+                            useXML   : true,
                             callback : function(data, state, extra){
                                 if (state == apf.SUCCESS) {
-                                    doIt(data);
+                                     doIt(data, true);
                                 }
                                 else {
-                                    throw new Error();
+                                    _self.apf.console.error("Could not find resource '" + model + "'\nMessage:" + extra.message);
                                 }
                             }
                         })
@@ -648,17 +653,21 @@ apf.$debugwin = {
 
         try {
             var str;
-            if (x.nodeType && (x.nodeType == 1 || x.nodeType == 7) && !x.style) {
-                if (x.serialize) //aml
-                    str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
-                        + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
-                        + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
-                //else if (x.style) //html
-                    //str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
+            if (x.nodeType && !x.style && (!x.serialize || x.nodeType == 1 || x.nodeType == 7)) {
+                if (x.nodeType == 1 || x.nodeType == 7) {
+                    if (x.serialize) //aml
+                        str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
+                            + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
+                            + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
+                    //else if (x.style) //html
+                        //str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
+                    else
+                        str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showXmlNode(apf.$debugwin.cache[" 
+                            + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
+                            + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
+                }
                 else
-                    str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showXmlNode(apf.$debugwin.cache[" 
-                        + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
-                        + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
+                    str = x.xml || x.serialize();
 
                 return str;
             }
@@ -714,12 +723,18 @@ apf.$debugwin = {
         this.showtime = c;
     },
     
-    setNativeDebug : function(c){
-        //#ifdef __WITH_STORAGE
-        apf.storage.put("apfdebug_debugger", c);
-        //#endif
+    setNativeDebug : function(c, admin){
+        if (!admin) {
+            //#ifdef __WITH_STORAGE
+            apf.storage.put("apfdebug_debugger", c);
+            //#endif
+            
+            this.apf.$debugwin.setNativeDebug(c, true);
+        }
+        else
+            window.onerror = this.nativedebug ? null : this.errorHandler;
+
         this.nativedebug = c;
-        window.onerror = this.nativedebug ? null : this.errorHandler;
     },
     
     setHighlightHover : function(c){

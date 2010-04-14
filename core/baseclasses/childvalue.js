@@ -30,8 +30,8 @@ apf.ChildValue = function(){
     
     var f;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
-        if (e.currentTarget == this 
-          || e.currentTarget.nodeType == 2 && e.relatedNode == this)
+        if (e && (e.currentTarget == this 
+          || e.currentTarget.nodeType == 2 && e.relatedNode == this))
             return;
 
         if (this.getAttribute(this.$childProperty))
@@ -55,6 +55,13 @@ apf.ChildValue = function(){
     this.addEventListener("DOMNodeInserted", f);
     this.addEventListener("DOMNodeRemoved", f);
     
+    this.$init(function(){
+        this.addEventListener("prop." + this.$childProperty, function(e){
+            if (!e.value)
+                f.call(this);
+        });
+    });
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var hasNoProp = typeof this[this.$childProperty] == "undefined";
         if (hasNoProp

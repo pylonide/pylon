@@ -707,6 +707,7 @@ apf.propedit    = function(struct, tagName){
             
             if (!this.$editors[editor]) {
                 var constr = apf.namespaces[apf.ns.aml].elements[editor];
+                var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
                 var info   = {
                     htmlNode : editParent,
                     width    : "100%+2",
@@ -716,8 +717,13 @@ apf.propedit    = function(struct, tagName){
                         + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
                         + "]",
                     focussable : false,
-                    realtime   : true
+                    realtime   : !isTextbox
                 };
+                if (isTextbox)
+                    info.onkeydown = function(e){
+                        if (e.keyCode == 13)
+                            this.change(this.getValue());
+                    }
                 
                 //@todo copy all non-known properties of the prop element
 

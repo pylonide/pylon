@@ -99,7 +99,7 @@ apf.label = function(struct, tagName){
     //#endif
     
     /** 
-     * @attribute {String} value the text displayed in the area defined by this 
+     * @attribute {String} caption the text displayed in the area defined by this 
      * element. Using the value attribute provides an alternative to using
      * the text using a text node.
      *

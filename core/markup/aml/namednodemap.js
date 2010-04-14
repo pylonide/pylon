@@ -63,9 +63,14 @@ apf.AmlNamedNodeMap = function(host){
             }
         }
         if (!item) return false;
-        
-        item.ownerElement.setProperty(name, "");
+
+        //@todo hack!
+        //this should be done properly
+        var oldValue = item.nodeValue;
+        item.nodeValue = item.value = "";
+        item.$triggerUpdate(null, oldValue);
         item.ownerElement = null;
+        item.nodeValue    = item.value = oldValue;
         
         return item;
     };

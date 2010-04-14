@@ -405,8 +405,8 @@ apf.Class.prototype = new (function(){
         //@todo apf3.0, please generalize this - cache objects, seems slow
         if (SEL.indexOf(prop) > -1 || exclNr == 3) {
             options = {
-                xpathmode : 2,
-                parsecode : true //@todo is this also good for exclNr 3 ?
+                xpathmode : 2
+                //parsecode : true //@todo is this also good for exclNr 3 ?
             }
         }
         else if (exclNr == 2) {

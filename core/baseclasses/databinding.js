@@ -202,7 +202,7 @@ apf.DataBinding = function(){
         //#ifdef __WITH_LANG_SUPPORT
         apf.$lm_has_lang = false;
         //#endif
-        
+
         /*#ifndef __DEBUG
         try {
         #endif */
@@ -1155,6 +1155,7 @@ apf.DataBinding = function(){
             return;
         
         delete this.$attrBindings[prop];
+        delete this.$propsUsingMainModel[prop]
         
         var models = rule.models;
         for (var i = 0; i < models.length; i++) {

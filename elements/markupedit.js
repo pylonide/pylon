@@ -747,7 +747,7 @@ apf.markupedit = function(struct, tagName){
             
             //Remove attribute if it no longer exists
             var name = elName.innerHTML;
-            if (!name in aLookup) //aLookup[name])
+            if (!aLookup[name])
                 deleteQueue.push(nodes[i]);
             //Change it
             else if(aLookup[name] != elValue.innerHTML) {
@@ -757,7 +757,7 @@ apf.markupedit = function(struct, tagName){
                 //Animate change here...
                 delete aLookup[name];
             } 
-            else if(name in aLookup) //aLookup[name])
+            else if(aLookup[name])
                 delete aLookup[name];
             
             elName.setAttribute("aname", name);
