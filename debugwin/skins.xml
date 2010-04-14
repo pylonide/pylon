@@ -310,11 +310,9 @@
             color               : white;
             font-weight         : bold;
             font-family         : Tahoma;
-            font-size           : 12px;
             padding             : 51px 0 0 0;
             overflow            : hidden;
             position            : relative;
-            border-bottom       : 1px solid #d8d8e0;
             border-top          : 1px solid #194a6f;
             background-image    : url(images/debugger_tab_backg.png);
             background-repeat   : repeat-x;
@@ -391,6 +389,7 @@
             width        : 100000px;
             height       : 41px;
             overflow     : visible;
+            font-size    : 12px;
         }
     
         .debug2010tab .btncontdebug DIV {
@@ -477,11 +476,7 @@
     
         .debug2010tab .page {
             clear            : both;
-            border-top       : 1px solid #d8d8e0;
-            border-left      : 1px solid #d8d8e0;
-            border-right     : 1px solid #d8d8e0;
             background-color : white;
-            padding          : 1px;
             overflow         : hidden;
             display          : none;
             height           : 100%;
@@ -788,7 +783,7 @@
         }
 
         .taFocus{
-            border-color : #327fbd;
+            background : #e4f1fb;
         }
 
         .taDisabled{
@@ -1181,6 +1176,21 @@
             height: 17px;
             float: left;
             margin: 4px 0 0 0;
+        }
+        
+        .tbright{
+            border-width : 0 0 0 1px;
+            border-style : solid;
+            border-color:#c3c3c3;
+        }
+        .tbleft{
+            border-width : 0 1px 0 0;
+            border-style : solid;
+            border-color:#c3c3c3;
+        }
+        
+        .tbbottom .subbar{
+            border-bottom : 0;
         }
     ]]></a:style>
 
@@ -2158,9 +2168,8 @@
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
-            background: #FFFFFF url("images/menu_context_left.gif") repeat-y top left;
-            margin: -1px 0 0 0;
-            _margin: 0 0 0 0;
+            background: #FFFFFF;
+            margin: 0 0 0 0;
             padding: 0;
             z-index: 10000;
             position: absolute;
@@ -2176,7 +2185,6 @@
             margin: 0;
             padding: 0;
             border: 0;
-            background: url("images/menu_context_right.gif") repeat-y top right;
         }
 
         .menu div{
@@ -2188,7 +2196,7 @@
             height: 13px;
         }
         .menu div.hover{
-            background: #25a8e7 url(images/menu_context_left_over.gif) repeat-y top left;
+            background: #25a8e7;
             color : white;
         }
 
@@ -2504,6 +2512,13 @@
     <a:style><![CDATA[
         .basic{
             position : relative;
+        }
+        
+        .prop_desc{
+            border:1px solid #c3c3c3;
+            border-width:0 0 0 1px;
+            background:#f1f1f1;
+            padding:3px;
         }
     ]]></a:style>
 

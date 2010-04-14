@@ -773,7 +773,7 @@ apf.$debugwin = {
                     left : 0;\
                     top : 0;\
                     right : 0;\
-                    bottom : 300px;\
+                    bottom : 350px;\
                     margin:0;\
                     overflow  : " + o[0] + ";\
                     overflow-x : " + o[1] + ";\
@@ -788,7 +788,7 @@ apf.$debugwin = {
                     position: fixed;\
                     bottom: 0px;\
                     text-align: left;\
-                    height: 300px;\
+                    height: 350px;\
                     background: #fff url(" + this.resPath + "splitter_handle_vertical.gif) no-repeat 1px 50%;\
                     width : 100%;\
                     left: 0px;\

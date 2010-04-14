@@ -7957,7 +7957,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/offline/state.js)SIZE(8067)TIME(1265032028)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/offline/state.js)SIZE(7978)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7979,8 +7979,6 @@ apf.offline = {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
 
 
 
@@ -16054,7 +16052,7 @@ apf.storage.modules['air.sql'] = {
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/teleport/http.js)SIZE(37105)TIME(1270937593)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/teleport/http.js)SIZE(37077)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16076,7 +16074,6 @@ apf.storage.modules['air.sql'] = {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -16193,55 +16190,6 @@ apf.http = function(){
     };
 
     
-    var namespace = apf.config.name + ".apf.http";
-
-    /**
-     * Saves the apf http cache to the available {@link core.storage storage engine}.
-     */
-    this.saveCache = function(){
-        
-        if (!apf.serialize)
-            throw new Error(apf.formatErrorString(1079, this,
-                "HTTP save cache",
-                "Could not find JSON library."));
-        
-
-        
-        apf.console.info("[HTTP] Loading HTTP Cache", "teleport");
-        
-
-        var strResult = apf.serialize(comm.cache);
-        apf.storage.put("cache_" + this.name, strResult,
-            apf.config.name + ".apf.http");
-    };
-
-    /**
-     * Loads the apf http cache from the available {@link core.storage storage engine}.
-     */
-    this.loadCache = function(){
-        var strResult = apf.storage.get("cache_" + this.name,
-            apf.config.name + ".apf.http");
-
-        
-        apf.console.info("[HTTP] Loading HTTP Cache", "steleport");
-        
-
-        if (!strResult)
-            return false;
-
-        this.cache = apf.unserialize(strResult);
-
-        return true;
-    };
-
-    /**
-     * Removes the stored http cache from the available {@link core.storage storage engine}.
-     */
-    this.clearCache = function(){
-        apf.storage.remove("cache_" + this.name,
-            apf.config.name + ".apf.http");
-    };
-    
 
     /**
      * Makes an http request that receives xml
@@ -16305,16 +16253,6 @@ apf.http = function(){
 
         if (apf.isNot(id)) {
             
-            if (this.cache[url] && this.cache[url][data]) {
-                var http = {
-                    responseText : this.cache[url][data],
-                    responseXML  : {},
-                    status       : 200,
-                    isCaching    : true
-                }
-            }
-            else
-            
                 var http = apf.getHttpReq();
 
             id = this.queue.push({
@@ -16326,22 +16264,10 @@ apf.http = function(){
             }) - 1;
 
             
-            if (http.isCaching) {
-                if (async)
-                    return $setTimeout("apf.lookup(" + this.$uniqueId
-                        + ").receive(" + id + ");", 50);
-                else
-                    return this.receive(id);
-            }
-            
         }
         else {
             var http = this.queue[id].http;
 
-            
-            if (http.isCaching)
-                http = apf.getHttpReq();
-            else
             
                 http.abort();
         }
@@ -16749,13 +16675,6 @@ apf.http = function(){
         }
 
         
-        if (qItem.options.caching) {
-            if (!this.cache[qItem.url])
-                this.cache[qItem.url] = {};
-
-            this.cache[qItem.url][qItem.options.data] = http.responseText;
-        }
-        
 
         
         if (qItem.log)
@@ -17030,7 +16949,7 @@ apf.teleportLog = function(extra){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/teleport/iframe.js)SIZE(5748)TIME(1265038748)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/lib/teleport/iframe.js)SIZE(5720)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17052,7 +16971,6 @@ apf.Init.run("http");
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -26038,12 +25956,6 @@ apf.MultiselectBinding = function(){
             
             //This should be moved into a function (used in setCache as well)
             
-            if (!parentHTMLNode && this.getCacheItem)
-                parentHTMLNode = this.getCacheItem(pNode.getAttribute(apf.xmldb.xmlIdTag)
-                    || (pNode.getAttribute(apf.xmldb.xmlDocTag)
-                         ? "doc" + pNode.getAttribute(apf.xmldb.xmlDocTag)
-                         : false));
-            
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
@@ -26198,32 +26110,6 @@ apf.MultiselectBinding = function(){
             ? this.$applyBindRule("insert", xmlNode)
             : false; << UNUSED */
 
-        
-        var cId, cItem;
-        if (this.$isTreeArch && this.caching 
-          && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
-            if (this.$subTreeCacheContext || this.$needsDepth) {
-                //@todo
-                //We destroy the current items, because currently we 
-                //don't support multiple treecachecontexts
-                //and because datagrid needs to redraw depth
-                this.clearCacheItem(cId);
-            }
-            else {
-                this.$subTreeCacheContext = {
-                    oHtml      : cItem,
-                    container  : parent,
-                    parentNode : null,
-                    beforeNode : null
-                };
-
-                var htmlNode;
-                while (cItem.childNodes.length)
-                    parent.appendChild(htmlNode = cItem.childNodes[0]);
-                
-                return nodes;
-            }
-        }
         
 
         for (var i = 0; i < nodes.length; i++) {
@@ -28482,7 +28368,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/contenteditable.js)SIZE(67930)TIME(1270937593)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/contenteditable.js)SIZE(67897)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29747,335 +29633,6 @@ apf.__CACHE__ = 1 << 2;
 
 
 
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have caching features. It takes care of
- * storing, retrieving and updating rendered data (in html form)
- * to overcome the waiting time while rendering the contents every time the
- * data is loaded.
- *
- * @constructor
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- */
-apf.Cache = function(){
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    this.cache               = {};
-    this.$subTreeCacheContext = null;
-
-    this.caching  = true;
-    this.$regbase = this.$regbase | apf.__CACHE__;
-
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-
-    this.addEventListener("$load", function(e){
-        if (!this.caching || e.forceNoCache)
-            return;
-
-        // retrieve the cacheId
-        if (!this.cacheId) {
-            this.cacheId = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag) || 
-                apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(e.xmlNode), e.xmlNode);//e.xmlNode
-        }
-
-        // Retrieve cached version of document if available
-        var fromCache = getCache.call(this, this.cacheId, e.xmlNode);
-        if (fromCache) {
-            if (fromCache == -1)
-                return false;
-
-            var nodes = this.getTraverseNodes();
-
-            //Information needs to be passed to the followers... even when cached...
-            if (nodes.length && this.autoselect)
-                this.select(nodes[0], null, null, null, true);
-            else
-                this.clearSelection(); //@todo apf3.0 was setProperty("selected", null
-
-            if (!nodes.length) {
-                // Remove message notifying user the control is without data
-                this.$removeClearMessage();
-                this.$setClearMessage(this["empty-message"], "empty");
-            }
-                
-            
-            //@todo move this to getCache??
-            if (nodes.length != this.length)
-                this.setProperty("length", nodes.length);
-            
-
-            return false;
-        }
-    });
-    
-    this.addEventListener("$clear", function(){
-        if (!this.caching)
-            return;
-
-        /*
-            Check if we borrowed an HTMLElement
-            We should return it where it came from
-
-            note: There is a potential that we can't find the exact location
-            to put it back. We should then look at it's position in the xml.
-            (but since I'm lazy it's not doing this right now)
-            There might also be problems when removing the xmlroot
-        */
-        if (this.hasFeature(apf.__MULTISELECT__)
-          && this.$subTreeCacheContext && this.$subTreeCacheContext.oHtml) {
-            if (this.renderRoot) {
-                this.$subTreeCacheContext.parentNode.insertBefore(
-                    this.$subTreeCacheContext.oHtml, this.$subTreeCacheContext.beforeNode);
-            }
-            else {
-                var container = this.$subTreeCacheContext.container || this.$container;
-                while (container.childNodes.length)
-                    this.$subTreeCacheContext.oHtml.appendChild(container.childNodes[0]);
-            }
-
-            this.documentId = this.xmlRoot = this.cacheId = this.$subTreeCacheContext = null;
-        }
-        else {
-            /* If the current item was loaded whilst offline, we won't cache
-             * anything
-             */
-            if (this.$loadedWhenOffline) {
-                this.$loadedWhenOffline = false;
-            }
-            else {
-                // Here we cache the current part
-                var fragment = this.$getCurrentFragment();
-                if (!fragment) return;//this.$setClearMessage(this["empty-message"]);
-
-                fragment.documentId = this.documentId;
-                fragment.xmlRoot    = this.xmlRoot;
-                
-                if (this.cacheId || this.xmlRoot)
-                    setCache.call(this, this.cacheId ||
-                        this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag) || "doc"
-                        + this.xmlRoot.getAttribute(apf.xmldb.xmlDocTag), fragment);
-            }
-        }
-    });
-
-    /**
-     * Checks the cache for a cached item by ID. If the ID is found the
-     * representation is loaded from cache and set active.
-     *
-     * @param  {String} id  the id of the cache element which is looked up.
-     * @param  {Object} xmlNode
-     * @return {Boolean}
-     *   Possible values:
-     *   true   the cache element is found and set active
-     *   false  otherwise
-     * @see    baseclass.databinding.method.load
-     * @private
-     */
-    function getCache(id, xmlNode){
-        /*
-            Let's check if the requested source is actually
-            a sub tree of an already rendered part
-        */
-        
-        if (xmlNode && this.hasFeature(apf.__MULTISELECT__) && this.$isTreeArch) {
-            var cacheItem,
-                htmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId,
-                node   = this.$pHtmlDoc.getElementById(htmlId);
-            if (node) 
-                cacheItem = id ? false : this.$container; //@todo what is the purpose of this statement?
-            else {
-                for (var prop in this.cache) {
-                    if (this.cache[prop] && this.cache[prop].nodeType) {
-                        node = this.cache[prop].getElementById(htmlId);
-                        if (node) {
-                            cacheItem = id ? prop : this.cache[prop]; //@todo what is the purpose of this statement?
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (cacheItem && !this.cache[id]) {
-                /*
-                    Ok so it is, let's borrow it for a while
-                    We can't clone it, because the updates will
-                    get ambiguous, so we have to put it back later
-                */
-                var oHtml = this.$findHtmlNode(
-                    xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
-                this.$subTreeCacheContext = {
-                    oHtml      : oHtml,
-                    parentNode : oHtml.parentNode,
-                    beforeNode : oHtml.nextSibling,
-                    cacheItem  : cacheItem
-                };
-
-                this.documentId = apf.xmldb.getXmlDocId(xmlNode);
-                this.cacheId    = id;
-                this.xmlRoot    = xmlNode;
-
-                //Load html
-                if (this.renderRoot)
-                    this.$container.appendChild(oHtml);
-                else {
-                    while (oHtml.childNodes.length)
-                        this.$container.appendChild(oHtml.childNodes[0]);
-                }
-
-                return true;
-            }
-        }
-        
-
-        //Checking Cache...
-        if (!this.cache[id]) return false;
-
-        //Get Fragment and clear Cache Item
-        var fragment    = this.cache[id];
-
-        this.documentId = fragment.documentId;
-        this.cacheId    = id;
-        this.xmlRoot    = fragment.xmlRoot;
-
-        this.clearCacheItem(id);
-
-        this.$setCurrentFragment(fragment);
-
-        return true;
-    }
-
-    /**
-     * Sets cache element and it's ID
-     *
-     * @param {String}           id        the id of the cache element to be stored.
-     * @param {DocumentFragment} fragment  the data to be stored.
-     * @private
-     */
-    function setCache(id, fragment){
-        if (!this.caching) return;
-
-        this.cache[id] = fragment;
-    }
-
-    /**
-     * Finds HTML presentation node in cache by ID
-     *
-     * @param  {String} id  the id of the HTMLElement which is looked up.
-     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
-     */
-    this.$findHtmlNode = function(id){
-        var node = this.$pHtmlDoc.getElementById(id);
-        if (node) return node;
-
-        for (var prop in this.cache) {
-            if (this.cache[prop] && this.cache[prop].nodeType) {
-                node = this.cache[prop].getElementById(id);
-                if (node) return node;
-            }
-        }
-
-        return null;
-    };
-
-    /**
-     * Removes an item from the cache.
-     *
-     * @param {String}  id       the id of the HTMLElement which is looked up.
-     * @param {Boolean} [remove] whether to destroy the Fragment.
-     * @see baseclass.databinding.method.clear
-     * @private
-     */
-    this.clearCacheItem = function(id, remove){
-        this.cache[id].documentId = 
-        this.cache[id].cacheId    =
-        this.cache[id].xmlRoot    = null;
-
-        if (remove)
-            apf.destroyHtmlNode(this.cache[id]);
-
-        this.cache[id] = null;
-    };
-
-    /**
-     * Removes all items from the cache
-     *
-     * @see baseclass.databinding.method.clearCacheItem
-     * @private
-     */
-    this.clearAllCache = function(){
-        for (var prop in this.cache) {
-            if (this.cache[prop])
-                this.clearCacheItem(prop, true);
-        }
-    };
-
-    /**
-     * Gets the cache item by it's id
-     *
-     * @param {String} id  the id of the HTMLElement which is looked up.
-     * @see baseclass.databinding.method.clearCacheItem
-     * @private
-     */
-    this.getCacheItem = function(id){
-        return this.cache[id];
-    };
-
-    /**
-     * Checks whether a cache item exists by the specified id
-     *
-     * @param {String} id  the id of the cache item to check.
-     * @see baseclass.databinding.method.clearCacheItem
-     * @private
-     */
-    this.$isCached = function(id){
-        return this.cache[id] || this.cacheId == id ? true : false;
-    };
-    
-    if (!this.$getCurrentFragment) {
-        this.$getCurrentFragment = function(){
-            var fragment = this.$container.ownerDocument.createDocumentFragment();
-    
-            while (this.$container.childNodes.length) {
-                fragment.appendChild(this.$container.childNodes[0]);
-            }
-    
-            return fragment;
-        };
-    
-        this.$setCurrentFragment = function(fragment){
-            this.$container.appendChild(fragment);
-    
-            if (!apf.window.hasFocus(this))
-                this.blur();
-        };
-    }
-    
-    /**
-     * @attribute {Boolean} caching whether caching is enabled for this element.
-     */
-    this.$booleanProperties["caching"] = true;
-    this.$supportedProperties.push("caching");
-
-    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        //Remove all cached Items
-        this.clearAllCache();
-    });
-};
-
-apf.GuiElement.propHandlers["caching"] = function(value) {
-    if (!apf.isTrue(value)) return;
-    
-    if (!this.hasFeature(apf.__CACHE__))
-        this.implement(apf.Cache);
-};
-
-
-
 
 /*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/rename.js)SIZE(13845)TIME(1271026883)*/
 
@@ -30803,7 +30360,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basetab.js)SIZE(39001)TIME(1270838606)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basetab.js)SIZE(38967)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30825,7 +30382,6 @@ apf.BaseButton = function(){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -31557,7 +31113,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basesimple.js)SIZE(1763)TIME(1269561670)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basesimple.js)SIZE(1729)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31579,7 +31135,6 @@ apf.__MEDIA__ = 1 << 20;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -31642,7 +31197,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basetree.js)SIZE(43462)TIME(1270937593)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basetree.js)SIZE(43527)TIME(1271236342)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31675,7 +31230,6 @@ apf.__ALIGNMENT__ = 1 << 29;
  * @baseclass
  *
  * @inherits apf.XForms
- * @inherits apf.MultiSelect
  * @inherits apf.Cache
  * @inherits apf.DataAction
  * @inherits apf.Rename
@@ -31697,6 +31251,7 @@ apf.BaseTree = function(){
 };
 
 (function() {
+    
     this.implement(
         
         
@@ -31706,9 +31261,9 @@ apf.BaseTree = function(){
         apf.DataAction,
         
         
-        apf.Cache
-        
+        apf.K
     );
+    
 
     /**** Properties and Attributes ****/
 
@@ -32785,7 +32340,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/baselist.js)SIZE(37374)TIME(1270162865)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/baselist.js)SIZE(37325)TIME(1271236342)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32807,10 +32362,6 @@ apf.__TRANSACTION__ = 1 << 3;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-
 
 
 
@@ -32901,15 +32452,16 @@ apf.BaseList = function(){
 };
 
 (function() {
+    
     this.implement(
         
-        apf.Cache,
+        
+        apf.DataAction,
         
         
-        apf.DataAction
-        
-        
+        apf.K
     );
+    
 
     /**** Properties and Attributes ****/
 
@@ -33720,7 +33272,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/virtualviewport.js)SIZE(28854)TIME(1269561670)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/virtualviewport.js)SIZE(28823)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33748,7 +33300,7 @@ apf.__VIRTUALVIEWPORT__ = 1 << 19;
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basestatebuttons.js)SIZE(23802)TIME(1270838606)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/core/baseclasses/basestatebuttons.js)SIZE(23768)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33770,7 +33322,6 @@ apf.__VIRTUALVIEWPORT__ = 1 << 19;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -43570,7 +43121,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/toc.js)SIZE(8376)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/toc.js)SIZE(8342)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43596,7 +43147,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/portal.js)SIZE(25107)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/portal.js)SIZE(25076)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43767,7 +43318,7 @@ apf.aml.setElement("move",   apf.ActionRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/flowchart.js)SIZE(50777)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/flowchart.js)SIZE(50799)TIME(1271236342)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43793,7 +43344,7 @@ apf.aml.setElement("move",   apf.ActionRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/graph.js)SIZE(21558)TIME(1257329184)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/graph.js)SIZE(21525)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44518,7 +44069,7 @@ apf.aml.setElement("check", apf.check);
 apf.aml.setElement("item",  apf.item);
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/modalwindow.js)SIZE(26206)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/modalwindow.js)SIZE(26173)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44544,7 +44095,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp.js)SIZE(90780)TIME(1269451399)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp.js)SIZE(90752)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45211,7 +44762,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/datagrid.js)SIZE(46585)TIME(1271109901)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/datagrid.js)SIZE(46462)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45233,10 +44784,6 @@ apf.aml.setElement("param", apf.param);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-
 
 
 
@@ -47581,7 +47128,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/list.js)SIZE(15894)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/list.js)SIZE(15866)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47603,7 +47150,6 @@ apf.aml.setElement("model", apf.model);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -48031,7 +47577,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/errorbox.js)SIZE(6093)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/errorbox.js)SIZE(6059)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48053,7 +47599,6 @@ apf.aml.setElement("list",      apf.list);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -49149,7 +48694,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/gallery.js)SIZE(26710)TIME(1271093061)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/gallery.js)SIZE(26677)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49267,7 +48812,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/lineselect.js)SIZE(4781)TIME(1257329184)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/lineselect.js)SIZE(4747)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49293,7 +48838,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/upload.js)SIZE(31593)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/upload.js)SIZE(31560)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49318,7 +48863,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/dropdown.js)SIZE(14957)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/dropdown.js)SIZE(14904)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49340,8 +48885,6 @@ apf.aml.setElement("comment", apf.comment);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
 
 
 
@@ -49864,7 +49407,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/menu.js)SIZE(16905)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/menu.js)SIZE(16872)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49886,7 +49429,6 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -50385,7 +49927,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/palette.js)SIZE(5978)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/palette.js)SIZE(5945)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50410,7 +49952,7 @@ apf.aml.setElement("menu", apf.menu);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/textbox.js)SIZE(24070)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/textbox.js)SIZE(24037)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50432,7 +49974,6 @@ apf.aml.setElement("menu", apf.menu);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -51225,7 +50766,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/tree.js)SIZE(17054)TIME(1271196962)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/tree.js)SIZE(16763)TIME(1271236342)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51247,11 +50788,6 @@ apf.aml.setElement("script", apf.script);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-
-
 
 
 
@@ -51303,12 +50839,6 @@ apf.aml.setElement("script", apf.script);
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
- * @inherits apf.XForms
- * @inherits apf.MultiSelect
- * @inherits apf.Cache
- * @inherits apf.DataAction
- * @inherits apf.Rename
  *
  * @binding insert Determines how new data is loaded when the user expands 
  * an item. For instance by clicking on the + button. This way only the root nodes
@@ -51602,7 +51132,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/bar.js)SIZE(4239)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/bar.js)SIZE(4205)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51624,7 +51154,6 @@ apf.aml.setElement("checked", apf.BindingRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -51855,7 +51384,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/radiobutton.js)SIZE(16245)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/radiobutton.js)SIZE(16212)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51877,7 +51406,6 @@ apf.aml.setElement("actions", apf.actions);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -52883,7 +52411,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/submitform.js)SIZE(30214)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/submitform.js)SIZE(30092)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53053,7 +52581,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/toolbar.js)SIZE(2821)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/toolbar.js)SIZE(2787)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53075,7 +52603,6 @@ apf.aml.setElement("drop", apf.BindingDndRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -53148,7 +52675,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/colorpicker.js)SIZE(12770)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/colorpicker.js)SIZE(12736)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53174,7 +52701,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/divider.js)SIZE(2934)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/divider.js)SIZE(2900)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53196,7 +52723,6 @@ apf.aml.setElement("toolbar", apf.toolbar);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -53977,7 +53503,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/browser.js)SIZE(6301)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/browser.js)SIZE(6267)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54090,7 +53616,7 @@ apf.event = function(struct, tagName){
 apf.aml.setElement("event", apf.event);
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/source.js)SIZE(1592)TIME(1257329184)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/source.js)SIZE(1566)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54116,7 +53642,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/flashplayer.js)SIZE(4101)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/flashplayer.js)SIZE(4071)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54323,7 +53849,7 @@ apf.aml.setElement("iconmap", apf.iconmap);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/progressbar.js)SIZE(8743)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/progressbar.js)SIZE(8709)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54374,7 +53900,7 @@ apf.aml.setElement("iconmap", apf.iconmap);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/chart.js)SIZE(9720)TIME(1268956869)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/chart.js)SIZE(9687)TIME(1271234998)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55388,7 +54914,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/tab.js)SIZE(3014)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/tab.js)SIZE(2955)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55410,8 +54936,6 @@ apf.aml.setElement("table", apf.table);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
 
 
 
@@ -55516,7 +55040,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/label.js)SIZE(4428)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/label.js)SIZE(4398)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55538,7 +55062,6 @@ apf.aml.setElement("teleport", apf.AmlElement);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -55759,7 +55282,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/button.js)SIZE(28756)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/button.js)SIZE(28694)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55781,8 +55304,6 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
 
 
 
@@ -57187,7 +56708,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/markupedit.js)SIZE(56251)TIME(1271026884)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/markupedit.js)SIZE(56118)TIME(1271236342)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57209,11 +56730,6 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-
-
 
 
 
@@ -57255,9 +56771,8 @@ apf.markupedit = function(struct, tagName){
         
         apf.DataAction,
         
-        apf.Rename,
-        //apf.MultiSelect,
-        apf.Cache
+        
+        apf.Rename
     );
 
     this.$isTreeArch  = true; // Tree Architecture for loading Data
@@ -58864,7 +58379,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/webdav.js)SIZE(44843)TIME(1268092872)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/webdav.js)SIZE(44816)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58916,7 +58431,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/text.js)SIZE(13588)TIME(1269561674)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/text.js)SIZE(13715)TIME(1271236713)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58938,7 +58453,6 @@ apf.aml.setElement("each", apf.BindingEachRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -58964,10 +58478,8 @@ apf.text = function(struct, tagName){
 
 (function(){
     this.implement(
-        apf.ChildValue,
         
-        apf.Cache
-        
+        apf.ChildValue
     );
 
     this.$focussable       = true; // This object can't get the focus
@@ -59011,9 +58523,7 @@ apf.text = function(struct, tagName){
     this.$propHandlers["value"] = function(value){
         var cacheObj = false;
 
-        if (value)
-            this.$removeClearMessage();
-        //@todo else
+        
 
         if (typeof value != "string")
             value = value ? value.toString() : "";
@@ -59028,17 +58538,13 @@ apf.text = function(struct, tagName){
         }
 
         if (this.addOnly) {
-            if (cacheObj)
-                cacheObj.contents += value;
-            else
+            
                 this.$container.insertAdjacentHTML("beforeend", value);
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
 
-            if (cacheObj)
-                cacheObj.contents = value;
-            else
+            
                 this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
 
@@ -59159,54 +58665,6 @@ apf.text = function(struct, tagName){
     };
     
 
-    
-    this.$getCurrentFragment = function(){
-        return {
-            nodeType : 1,
-            contents : this.$container.innerHTML
-        }
-    };
-
-    this.$setCurrentFragment = function(fragment){
-        this.$container.innerHTML = fragment.contents;
-        if (this.scrolldown)
-            this.$container.scrollTop = this.$container.scrollHeight;
-    };
-
-    this.$setClearMessage = this.$updateClearMessage = function(msg, className){
-        if (this.$lastClass)
-            this.$removeClearMessage();
-        //@todo move to setClearMessage
-        apf.setStyleClass(this.$ext, 
-            (this.$lastClass = this.$baseCSSname + (className || "Empty").uCaseFirst()));//"Empty");
-
-        if (msg) {
-            if (!this.height) {
-                if (this.$container.offsetHeight 
-                  && apf.getStyle(this.$container, "height") == "auto" 
-                  && (this.$changedHeight = true))
-                    this.$container.style.height = (this.$container.offsetHeight 
-                      - apf.getHeightDiff(this.$container)) + "px";
-                this.$container.innerHTML = msg;
-            }
-            this.$lastMsg = this.$container.innerHTML;
-        }
-    };
-
-    this.$removeClearMessage = function(){
-        if (this.$lastClass) {
-            apf.setStyleClass(this.$ext, "", [this.$lastClass]);
-            this.$lastClass = null;
-        }
-        
-        if (this.$container.innerHTML == this.$lastMsg) {
-            if (this.$changedHeight && !(this.$changedHeight = false))
-                this.$container.style.height = "";
-            this.$container.innerHTML = ""; //clear if no empty message is supported
-        }
-    };
-
-    this.caching = false; //Fix for now
     
 
     /**** Init ****/
@@ -60324,7 +59782,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/colorpicker2.js)SIZE(11146)TIME(1267660867)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/colorpicker2.js)SIZE(11113)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60401,7 +59859,7 @@ apf.aml.setElement("color",       apf.BindingRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/checkbox.js)SIZE(7310)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/checkbox.js)SIZE(7248)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60423,8 +59881,6 @@ apf.aml.setElement("color",       apf.BindingRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
 
 
 
@@ -60702,7 +60158,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/img.js)SIZE(7195)TIME(1270594868)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/img.js)SIZE(7166)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61399,7 +60855,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc.js)SIZE(20869)TIME(1270838607)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc.js)SIZE(20841)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61421,7 +60877,6 @@ apf.aml.setElement("color", apf.BindingColorRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 /**
@@ -62026,7 +61481,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/frame.js)SIZE(4708)TIME(1270640787)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/frame.js)SIZE(4674)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62052,7 +61507,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/axis.js)SIZE(14042)TIME(1257329184)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/axis.js)SIZE(14009)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62185,7 +61640,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/jsonrpc.js)SIZE(3148)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/jsonrpc.js)SIZE(3125)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62211,7 +61666,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/yql.js)SIZE(3985)TIME(1265666736)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/yql.js)SIZE(3962)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62237,7 +61692,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/soap.js)SIZE(10966)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/soap.js)SIZE(10943)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62263,7 +61718,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/jphp.js)SIZE(5897)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/jphp.js)SIZE(5874)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62289,7 +61744,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/xmlrpc.js)SIZE(11177)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/xmlrpc.js)SIZE(11154)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62315,7 +61770,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/header.js)SIZE(3085)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/header.js)SIZE(3062)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62341,7 +61796,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/rest.js)SIZE(3550)TIME(1269561673)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/rest.js)SIZE(3527)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62367,7 +61822,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/cgi.js)SIZE(7186)TIME(1271234270)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/rpc/cgi.js)SIZE(7163)TIME(1271234612)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62389,7 +61844,6 @@ apf.aml.setElement("method", apf.method);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 
 
 
@@ -62714,7 +62168,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp/muc.js)SIZE(19003)TIME(1268265666)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp/muc.js)SIZE(18976)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62740,7 +62194,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp/roster.js)SIZE(12504)TIME(1268265666)*/
+/*FILEHEAD(/var/lib/platform/source/trunk/elements/xmpp/roster.js)SIZE(12477)TIME(1271234611)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

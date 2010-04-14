@@ -5,6 +5,7 @@ body, html, .has_apf{
 
 body{
     display : none;
+    font-size : 8pt;
 }
 
 .xmlhl{

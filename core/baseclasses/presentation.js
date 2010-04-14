@@ -123,6 +123,16 @@ apf.Presentation = function(){
         if (!this.styleAttrIsObj && this.$amlLoaded)
             this.$ext.setAttribute("style", value);
     }
+    
+    /**
+     * @attribute {String} border turns borders on and off. Set sizes in the seq top, right, bottom, left.
+     */
+    this.$propHandlers["border"] = function(value){
+        if (!value)
+            this.$ext.style.borderWidth = "";
+        else
+            this.$ext.style.borderWidth = apf.getBox(value).join("px ") + "px";
+    }
 
     var oldClass;
     /**
