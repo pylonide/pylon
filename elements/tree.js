@@ -70,12 +70,6 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.XForms
- * @inherits apf.MultiSelect
- * @inherits apf.Cache
- * @inherits apf.DataAction
- * @inherits apf.Rename
- *
  * @binding insert Determines how new data is loaded when the user expands 
  * an item. For instance by clicking on the + button. This way only the root nodes
  * need to be loaded at the start of the application. All other children are

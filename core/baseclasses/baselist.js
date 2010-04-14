@@ -108,17 +108,20 @@ apf.BaseList = function(){
 };
 
 (function() {
+    //#ifdef __WITH_CACHE || __WITH_DATAACTION
     this.implement(
         //#ifdef __WITH_CACHE
         apf.Cache,
         //#endif
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        apf.DataAction,
         //#endif
         //#ifdef __WITH_XFORMS
         //apf.XForms,
         //#endif
+        apf.K
     );
+    //#endif
 
     /**** Properties and Attributes ****/
 

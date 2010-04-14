@@ -173,8 +173,9 @@ apf.flowchart = function(struct, tagName){
         //#ifdef __WITH_DATAACTION
         apf.DataAction,
         //#endif
+        //#ifdef __WITH_CACHE
         apf.Cache,
-        apf.MultiSelect,
+        //#endif
         apf.Rename
     );
 

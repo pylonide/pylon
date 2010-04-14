@@ -61,9 +61,10 @@ apf.markupedit = function(struct, tagName){
         //#ifdef __WITH_DATAACTION
         apf.DataAction,
         //#endif
-        apf.Rename,
-        //apf.MultiSelect,
-        apf.Cache
+        //#ifdef __WITH_CACHE
+        apf.Cache,
+        //#endif
+        apf.Rename
     );
 
     this.$isTreeArch  = true; // Tree Architecture for loading Data
