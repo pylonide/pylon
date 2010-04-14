@@ -995,9 +995,9 @@ apf.window = function(){
           // #endif
           ) && !ta[e.target.tagName]);
 
-        if (canSelect) {
-            amlNode = apf.findHost(e.target);
-            if (amlNode){
+        if (canSelect && amlNode) {
+            //amlNode = apf.findHost(e.target);
+            //if (amlNode){
                 var isContentEditable = ta[(e.srcElement || e.target).tagName]
                     && !(e.srcElement || e.target).disabled
                     || (e.srcElement && e.srcElement.isContentEditable)
@@ -1009,9 +1009,9 @@ apf.window = function(){
                   && !apf.config.allowSelect
                   && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
                   && !amlNode.$allowSelect 
-                  && !amlNode.$int) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
+                  && (!amlNode.$int || amlNode.$focussable)) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
                     canSelect = false;
-            }
+            //}
         }
        
         if (!canSelect && !cEditable) {

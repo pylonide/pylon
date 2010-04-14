@@ -849,7 +849,7 @@ apf.$debugwin = {
         
         var lastTime, timer, f;
         var start = $ext.offsetHeight;
-        var sY    = document.documentElement.offsetHeight - start - offset;
+        var sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? -1 : 1) * offset);
         document.onmousemove = f = function(e){
             if (!e) e = event;
             

@@ -29,7 +29,7 @@ apf.plane = {
             this.plane                  = document.createElement("DIV");
             document.body.appendChild(this.plane);
             this.plane.style.background = "url(images/spacer.gif)";
-            this.plane.style.position   = "absolute";
+            this.plane.style.position   = "fixed";
             this.plane.style.zIndex     = 100000000;
             this.plane.style.left       = 0;
             this.plane.style.top        = 0;
