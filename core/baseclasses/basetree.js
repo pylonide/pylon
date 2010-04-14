@@ -51,6 +51,7 @@ apf.BaseTree = function(){
 };
 
 (function() {
+    //#ifdef __WITH_RENAME || __WITH_DATAACTION || __WITH_CACHE
     this.implement(
         //#ifdef __WITH_XFORMS
         //apf.XForms,
@@ -62,9 +63,11 @@ apf.BaseTree = function(){
         apf.DataAction,
         //#endif
         //#ifdef __WITH_CACHE
-        apf.Cache
+        apf.Cache,
         //#endif
+        apf.K
     );
+    //#endif
 
     /**** Properties and Attributes ****/
 
