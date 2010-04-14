@@ -3,6 +3,7 @@
     <head>
         <script src="../apf.js"></script>
         <!--script src="apf_debugwin.js"></script-->
+        <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
     </head>
@@ -374,6 +375,59 @@
                     }
                 </a:style>
                 <a:include src="docs.xml" />
+            </a:page>
+            <a:page caption="Testing" id="testing" render="runtime">
+                <a:toolbar>
+                    <a:bar>
+                        <a:radiobutton group="rg2Browse" skin="toolbarbutton" checked="{pg2Browse.activepagenr == 0}" value="0">Tests</a:radiobutton>
+                        <a:radiobutton group="rg2Browse" skin="toolbarbutton" checked="{pg2Browse.activepagenr == 1}" value="1">Playlist</a:radiobutton>
+                    </a:bar>
+                </a:toolbar>
+                <a:pages anchors="25 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
+                    <a:model id="mdlTests"><data/></a:model>
+                    <a:page caption="Tests" render="runtime">
+                        <a:label>New Test</a:label>
+                        <a:textbox id="tbTestName" value="testName" />
+                        <a:button onclick="record()">Record</a:button>
+                        <a:button onclick="stop()">Stop</a:button>
+                        <a:button onclick="play()">Play</a:button>
+                        <a:list
+                            id = "lstTests"
+                            model="mdlTests"
+                            skin  = "simplelist"
+                            class = "tplist"
+                            each = "[test]"
+                        >
+                            <a:caption match="[@name]" />
+                        </a:list>
+                    </a:page>
+                    <a:page caption="Playlist" render="runtime">
+
+                    </a:page>
+                    
+                    <a:script type="application/livemarkup">//<!--
+                        var o3_mouseTranslate = [3,4];
+                        var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                            oninstallprompt : function(){ alert("can't find o3 plugin"); },
+                            product : 'O3Demo'
+                        });
+
+                        function record() {
+                            apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, tbTestName.value);
+                        }
+                        
+                        function stop() {
+                            apf.$debugwin.apf.uirecorder.capture.stop();
+                            mdlTests.appendXml(apf.$debugwin.apf.uirecorder.capture.outputXml);
+                            debugger;
+                        }
+                        
+                        function play() {
+                            apf.$debugwin.apf.uirecorder.playback.play(lstTests.selected, "realtime", $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+                        }
+                    //--></a:script>
+
+                </a:pages>
             </a:page>
         </a:tab>
         

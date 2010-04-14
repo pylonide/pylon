@@ -38,7 +38,8 @@ apf.uirecorder.capture = {
     
     // stop capturing, save recorded data in this.outputXml
     stop : function() {
-        apf.uirecorder.$inited = false;
+        apf.uirecorder.$inited      = false;
+        apf.uirecorder.isRecording  = false;
         this.$saveTest();
     },
     
@@ -435,7 +436,9 @@ apf.uirecorder.playback = {
     // init playback of action
     $playAction : function() {
         this.$curAction = this.$curTestXml.childNodes[this.$curActionIdx];
-        
+        if (this.$curAction.getAttribute("name") == "mousemove")
+            this.$nextAction();
+            
         if (this.$playSpeed == "realtime") {
             if (this.$playTimer) {
                 clearTimeout(this.$playTimer);
@@ -465,7 +468,6 @@ apf.uirecorder.playback = {
         // move mouse cursor to correct position
         // ssb
         if (window.external.o3) { //this.$o3.window
-        debugger;
             //apf.console.info(this.$curAction.getAttribute("name") + " moved");
             this.$o3.mouseTo(
                 parseInt(xPos) + this.$o3.window.clientX + this.$windowOffset.left, 
