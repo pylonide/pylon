@@ -81,14 +81,18 @@ body{
 
 .tplist div{
     padding : 3px 3px 3px 3px;
-    color : black;
     font-size : 11px;
     position : relative;
+}
+
+.tplist U {
+    font-weight:bold;
 }
 
 .tplist .size{
     float : right;
     font-size : 9px;
+    font-weight:normal;
 }
 
 .tplist .status{
@@ -98,8 +102,7 @@ body{
     padding : 2px;
     float : left;
     font-size : 9px;
-    background : #eee;
-    color : black;
+    font-weight:normal;
 }
 
 .tplist .url{
@@ -108,8 +111,8 @@ body{
     width : 100%;
     overflow : hidden;
     margin : 3px 0 0 0;
-    color : gray;
     white-space : nowrap;
+    font-weight:normal;
 }
 
 .simplelistFocus .selected .url{

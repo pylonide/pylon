@@ -304,109 +304,285 @@
         </a:main>
     </a:presentation>
 </a:divider>
-<a:tab name="demos_lowtab">
+<a:tab name="debugger_tab">
     <a:style><![CDATA[
-    .demos_tab {
-       color: #333;
-       font-family : Tahoma;
-       font-size : 8pt;
-       padding : 23px 0 0 0;
-       position : relative;
-       z-index:100;
-    }
+        .debug2010tab {
+            color               : white;
+            font-weight         : bold;
+            font-family         : Tahoma;
+            font-size           : 12px;
+            padding             : 51px 0 0 0;
+            overflow            : hidden;
+            position            : relative;
+            border-bottom       : 1px solid #d8d8e0;
+            border-top          : 1px solid #194a6f;
+            background-image    : url(images/debugger_tab_backg.png);
+            background-repeat   : repeat-x;
+            background-position : 0 0;
+        }
+        
+        .debug2010tab .apf_logo {
+            width               : 116px;
+            height              : 43px;
+            position            : absolute;
+            top                 : 4px;
+            left                : 17px;
+            background-image    : url(images/ajax_org_logo.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .debug2010tab .tab_divider {
+            width        : 0px;
+            height       : 31px;
+            position     : absolute;
+            border-left  : 1px solid #105e9c;
+            border-right : 1px solid #4c8cbf;
+        }
+        
+        .debug2010tab .tab_divider1 {
+            top  : 11px;
+            left : 147px;
+        }
+        
+        .debug2010tab .tab_divider2 {
+            top  : 11px;
+            left : 248px;
+        }
+        
+        .debug2010tab .tab_btn_edit {
+            width               : 35px;
+            height              : 36px;
+            position            : absolute;
+            top                 : 9px;
+            left                : 160px;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .debug2010tab .tab_btn_select {
+            width               : 35px;
+            height              : 36px;
+            position            : absolute;
+            top                 : 9px;
+            left                : 203px;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 -36px;
+            background-repeat   : no-repeat;
+        }
+        
+        .debug2010tab .tab_close {
+            width               : 18px;
+            height              : 18px;
+            position            : absolute;
+            top                 : 6px;
+            right               : 5px;
+            background-image    : url(images/debugger_close.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
     
-    .demos_tab .demobtn{
-        padding-left: 0;
-        margin-top : -19px;
-        position : absolute;
-        z-index : 100;
-    }
+        .debug2010tab .btncontdebug {
+            padding-left : 260px;
+            margin-top   : -41px;
+            position     : absolute;
+            z-index      : 100;
+            width        : 100000px;
+            height       : 41px;
+            overflow     : visible;
+        }
     
-    .demos_tab .demobtn div {
-        cursor: default;
-        display: block;
-        float: left;
-        margin: 0 3px 0 0;
-        padding: 0;
-    }
+        .debug2010tab .btncontdebug DIV {
+            cursor  : default;
+            display : block;
+            float   : left;
+            margin  : 0 3px 0 0;
+            padding : 0;
+        }
     
-    .demos_tab .demobtn div {
-        background: url(images/tab_but_topleft.png) no-repeat 0 0;
-        height: 20px;
-    }
+        .debug2010tab .btncontdebug DIV {
+            background : url(images/debugger_tab_left.png) no-repeat 0 -44px;
+            height     : 42px;
+        }
+        
+        .debug2010tab .btncontdebug DIV SPAN {
+            margin-top  : 13px;
+            float       : left;
+            text-shadow : 0 1px #1167ab;
+            filter      : dropshadow(color=#1167ab,offX=0,offY=1);
+        }
+        
+        .debug2010tab .btncontdebug DIV .btnClose {
+            width      : 9px;
+            height     : 9px;
+            position   : relative;
+            background : url(images/btnCloseTab.png) 0 0  no-repeat;
+            margin     : 3px 0 0 6px;
+            cursor     : pointer;
+        }
+        
+        .debug2010tab .btncontdebug DIV .btnClose:hover {
+            background-position : 0 -9px;
+        }
+    
+        .debug2010tab .btncontdebug DIV.curbtn {
+            background-position : 0 0;
+            color               : #327fbd;
+        }
+        
+        .debug2010tab .curbtn DIV SPAN {
+            margin-top  : 10px;
+            color       : #1167ab;
+            text-shadow : 0 1px #ffffff;
+            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+        }
+        
+        .debug2010tabFocus .curbtn {
+        }
+    
+        .debug2010tabFocus .curbtn SPAN {
+            border  : 1px dotted gray;
+            padding : 0px 3px 2px 3px;
+            margin  : 10px -4px 0 -4px;
+            display : block;
+        }
+    
+        .debug2010tab .btncontdebug DIV DIV {
+            height  : 42px;
+            margin  : 0 -3px 0 0;
+            padding : 4px 20px 0 20px;
+        }
+    
+        .debug2010tab .btncontdebug DIV DIV {
+            background : url(images/debugger_tab_right.png) no-repeat right -44px;
+        }
+    
+        .debug2010tab .btncontdebug DIV.curbtn DIV {
+            background-position : right 0;
+            height              : 42px;
+            padding-top         : 5px;
+        }
+        
+        .debug2010tabDisabled .btncontdebug DIV SPAN {
+            color : #bebebe;
+        }
+        
+        .debug2010tabDisabled .btncontdebug .curbtn {
+            border        : 0;
+            margin-top    : -4px;
+            margin-bottom : -1px;
+            padding       : 0;
+        }
+    
+        .debug2010tab .page {
+            clear            : both;
+            border-top       : 1px solid #d8d8e0;
+            border-left      : 1px solid #d8d8e0;
+            border-right     : 1px solid #d8d8e0;
+            background-color : white;
+            padding          : 1px;
+            overflow         : hidden;
+            display          : none;
+            height           : 100%;
+            position         : relative;
+            color            : black;
+            font-weight      : normal;
+        }
+    
+        .debug2010tab .page.curpage {
+            display : block;
+        }
 
-    .demos_tab .demobtn div.curbtn {
-        _position: relative;
-        margin-top: -4px;
-        margin-bottom: -1px;
-        background-position: 0 -19px;
-        height: 24px;
-        color: #327fbd;
-    }
-            
-    .demos_tabFocus .curbtn{
-    }
+        .debug2010tab .scrollerdebug {
+            position : absolute;
+            top      : 7px;
+            right    : 0px;
+            width    : 32px;
+            margin   : 0;
+            padding  : 0;
+            z-index  : 101;
+        }
     
-    .demos_tabFocus .curbtn span{
-        border: 1px dotted gray;
-        padding: 0px 3px 2px 3px;
-        margin : -1px -4px 0 -4px;
-        display: block;
-    }
+        .debug2010tab .scrollerdebug .scroller_btn_left,
+        .debug2010tab .scrollerdebug .scroller_btn_right {
+            position            : relative;
+            float               : left;
+            width               : 15px;
+            height              : 17px;
+            background-image    : url(images/tab_scroller_btns.gif);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            margin              : 0;
+            padding             : 0;
+        }
     
-    .demos_tab .demobtn div div {
-        height: 16px;
-        margin: 0 -4px 0 0;
-        padding : 4px 8px 0 8px;
-    }
-
-    .demos_tab .demobtn div div {
-        background: url(images/tab_but_topright.png) no-repeat right 0;
-    }
-
-    .demos_tab .demobtn div.curbtn div {
-        background-position: right -19px;
-        height: 24px;
-        padding-top: 5px;
-    }
-
-    .demos_tab .demos_tabpage {
-        clear: both;
-        border-top: 1px solid #d7d7df;
-        border-left: 1px solid #c3c3c3;
-        border-right: 1px solid #c3c3c3;
-        border-bottom: 1px solid #c3c3c3;
-        background: #fafbfc;
-        padding: 0;
-        overflow: hidden;
-        display : none;
-        height : 100%;
-        position : relative;
-        z-index: 99;
-    }
+        .debug2010tab .scrollerdebug .scroller_btn_right {
+            float               : right;
+            width               : 17px;
+            background-position : -15px 0;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .debug2010tab .scrollerdebug .scroller_btn_left.hover {
+            background-position : 0 -17px;
+        }
     
-    .demos_tab .demos_tabpage.curpage{
-        display : block;
-    }
-]]>
-    </a:style>
-    <a:style condition="apf.isIE6">
-    .demos_tab .demobtn div, .demos_tab .demobtn div div {
-        margin: 0 0 0 0;
-    }
-    .demos_tab .demos_tabFooter {
-        bottom: 11px;
-    }
-    </a:style>
+        .debug2010tab .scrollerdebug .scroller_btn_left.down {
+            background-position : 0 -34px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_left.disabled {
+            background-position : 0 -51px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.hover {
+            background-position : -15px -17px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.down {
+            background-position : -15px -34px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.disabled {
+            background-position : -15px -51px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE"><![CDATA[
+        .debug2010tab .scrollerdebug SPAN.hover {
+            background-position-y : -17px;
+        }
+    
+        .debug2010tab .scrollerdebug SPAN.down {
+            background-position-y : -34px;
+        }
+    
+        .debug2010tab .scrollerdebug SPAN.disabled {
+            background-position-y : -51px;
+        }
+    ]]></a:style>
     <a:presentation>
-        <a:main pages="." buttons="div">
-            <div class="demos_tab">
-                <div class="demobtn">
-                
+        <a:main 
+          pages    = "." 
+          buttons  = "div[1]" 
+          scroller = "div[2]">
+            <div class="debug2010tab">
+                <div class="btncontdebug">
+
                 </div>
+                <div class="scrollerdebug">
+                    <span class="scroller_btn_left"> </span>
+                    <span class="scroller_btn_right"> </span>
+                </div>
+                <div class="apf_logo"> </div>
+                <div class="tab_btn_edit"> </div>
+                <div class="tab_btn_select"> </div>
+                <div class="tab_divider tab_divider1"> </div>
+                <div class="tab_divider tab_divider2"> </div>
+                <div class="tab_close"> </div>
             </div>
         </a:main>
-        <a:button caption="div/span/text()">
+        <a:button caption="div/span/text()" btncontainer="div">
             <div class="btn">
                 <div>
                     <span>-</span>
@@ -414,8 +590,11 @@
             </div>
         </a:button>
         <a:page container="." inherit="true">
-            <div class="demos_tabpage"> </div>
+            <div class="page"> </div>
         </a:page>
+        <a:btnclose container=".">
+            <span class="btnClose"> </span>
+        </a:btnclose>
     </a:presentation>
 </a:tab>
 <a:button name="toolbarbutton">
@@ -796,48 +975,167 @@
         </a:empty>
     </a:presentation>
 </a:dropdown>
-<a:list name="simplelist">
+<a:list name="debugger_list">
     <a:style><![CDATA[
-        .simplelist{
-            overflow: auto;
-            position: relative;
-            border: 1px solid #c3c3c3;
-            background-color: #fafbfc;
-            cursor: default;
+        .debugg2010list {
+            overflow            : auto;
+            position            : relative;
+            border              : 1px solid #c3c3c3;
+            background-color    : #4278a3;
+            cursor              : default;
+            background-image    : url(images/debugger_list_backg.png);
+            background-position : right 0;
+            background-repeat   : repeat-y;
         }
-        .simplelist>.selected{
-            background-color: #f0f0f0;
-            color: black;
+    
+        .white {
+            background : white;
         }
-        .simplelistFocus>.selected{
-            color: white;
-            background-color: #25a8e7;
+    
+        .debugg2010list, 
+        .dragdebugg2010list {
+            font-family : Tahoma;
+            font-size   : 8pt;
         }
-
-        .simplelist .empty, .simplelist .offline, .simplelist .loading{
-            text-align: center;
-            padding: 8px 0 0 5px;
-            color: #AAA;
+    
+        .debugg2010list DIV, 
+        .dragdebugg2010list {
+            padding : 0;
+            height  : 34px;
+            margin  : 1px 0;
+        }
+        
+        .debugg2010list .even {
+            background-image    : url(images/debugger_list_even.png);
+            background-position : 0 0;
+            margin-right        : 1px;
+        }
+        
+        .debugg2010list .selected {
+            background-image    : url(images/debugger_list_selected.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+        }
+    
+        .debugg2010list SPAN.caption, 
+        .dragdebugg2010list SPAN.caption {
+            padding    : 1px 0 0 2px;
+            background : no-repeat 1px center;
+            height     : 34px;
+            margin     : 0;
+            position   : absolute;
+            top        : 0;
+            left       : 0;
+            right      : 0;
+        }
+    
+        .debugg2010list U, 
+        .dragdebugg2010list U {
+            text-decoration : none;
+            color           : white;
+            cursor          : default;
+            display         : block;
+            padding         : 2px 4px 2px 2px;
+            text-decoration : none;
+            white-space     : nowrap;
+            text-shadow     : 0 1px #456c8b;
+            filter          : dropshadow(color=#456c8b,offX=0,offY=1);
+        }
+    
+        .debugg2010listFocus .indicate U {
+        }
+    
+        .debugg2010list .selected U {
+            color       : #0a4b80;
+            text-shadow : 0 1px #ffffff;
+            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+        }
+        
+        .debugg2010listFocus .selected U, 
+        .dragdebugg2010list U {
+            color       : #0a4b80;
+            text-shadow : 0 1px #ffffff;
+            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+        }
+    
+        .debugg2010list #txt_rename {
+            border      : 1px solid #bbb;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : 0px;
+            cursor      : text;
+            height      : 13px;
+            display     : block;
+            outline     : none;
+        }
+    
+        .debugg2010list .empty, 
+        .debugg2010list .offline, 
+        .debugg2010list .loading {
+            text-align  : center;
+            padding     : 8px 0 0 5px;
+            color       : #AAA;
             font-weight : normal;
+        }
+    
+        .shortdebugg2010list {
+            border     : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width      : auto;
+        }
+        
+        .debugg2010listDrop {
+            border : 1px solid #25a8e7;
+        }
+    
+        .dragdebugg2010list_multiple {
+            border     : 2px solid black;
+            width      : 10px;
+            height     : 5px;
+            padding    : 0;
+            background : none;
+        }
+    
+        .dragdebugg2010list_multiple SPAN.caption {
+            display : none;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main container=".">
-            <div class='simplelist'>
+        <a:main 
+          container = "."
+          minwidth  = "100"
+          minheight = "50">
+            <div class="debugg2010list">
             </div>
         </a:main>
         <a:item
-            class     = "."
-            container = "."
-            caption   = "."
-            select    = "."
-        >
-            <div> </div>
+          class   = "."
+          caption = "span/u"
+          icon    = "span"
+          select  = ".">
+            <div>
+                <span class="caption">
+                    <u>-</u>
+                </span>
+            </div>
         </a:item>
         <a:dragindicator>
-            <div class='draglist'><span><u>-</u></span></div>
+            <div class="dragdebugg2010list">
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
         </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
         <a:empty caption=".">
             <div class="message">-</div>
         </a:empty>
