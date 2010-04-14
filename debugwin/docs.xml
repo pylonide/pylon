@@ -127,7 +127,7 @@
             <h1>Ajax.org Documentation</h1>
             <p>Reference of all aml elements and javascript objects.</p>
             
-            <h2 style='color : #25a8e7;'>Latest user comments on the documentation</h2>
+            <h2 style='color : #2582d1;'>Latest user comments on the documentation</h2>
             <a:list id="lc" model="{comm.getComments('latest');}"
               bindings  = "bndComments"
               caching   = "false" 
@@ -292,7 +292,7 @@
         if (parts.length) {
             loadNewDoc((last = parts.join("/")) + ".html");
 
-	        var q = [], s;
+            var q = [], s;
             var items = last.trim().split(".");//.reverse();
             for (var i = 0; i < items.length; i += 2) {
                 s = [];
@@ -301,14 +301,14 @@
                     items[i + 1] = "teleport module";
                 s.push(items[i + 1], items[i]);
             }
-	    }
-	    else {
-	        txtInfoDocs.hide();
+        }
+        else {
+            txtInfoDocs.hide();
             txtHome.show();
             lstComments.hide();
             barNote.hide();
             app.headNotes.style.display = "none";
-	    }
+        }
     }
     
     app = {gotoPage : gotoPage, docCache: {}, scrollToTop: function(){
@@ -319,17 +319,16 @@
 
 function initRefGuide() {
     app.headNotes = document.getElementById("headNotes");
-    app.aLock     = document.getElementById("apf_alock");
 
     refguide_container.$ext.onclick = function(e){
         if (!e) e = event;
-			var node = e.srcElement || e.target;
+        var node = e.srcElement || e.target;
+
         if (node.tagName != "A")
             return;
 
         var href = node.getAttribute("href");
-        if (!apf.isChildOf(app.aLock, node)
-          || href.substr(0, 5) != "file:"     
+        if (href.substr(0, 5) != "file:"     
           && (href.indexOf("javascript:") == 0
           || (apf.isIE && !apf.isIE8
             ? !href.match(/http\:\/\/www\.ajax\.org\/[^\/]*$/)
@@ -403,7 +402,7 @@ function addNote(toggle, noAnim){
 }
 
 function cancelAdding(noanim){
-    if (atNote.undolength && !confirm("Are you sure you want to discard your changes?"))
+    if (!self.barNote || atNote.undolength && !confirm("Are you sure you want to discard your changes?"))
         return false;
 
     if (mdlNote.data.parentNode)
@@ -693,4 +692,5 @@ function runFound(){
 
     app.gotoPage("docs/" + trDocs.value);
 }
+
 ]]></a:script>

@@ -20,6 +20,7 @@ body{
 .netview{
     border : 1px solid #c3c3c3;
     padding : 30px 5px 5px 5px;
+    background : #f5f5f5;
 }
 
 .netview .label{

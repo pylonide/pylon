@@ -125,6 +125,17 @@ apf.$debugwin = {
         apf.addEventListener("mousedown", function(){
             errBox.hide();
         });
+        
+        tabDebug.$ext.onmousemove = function(e){
+            if (!e) e = event;
+            document.body.style.cursor = e.clientY < 5 ? "s-resize" : "";
+        }
+        
+        tabDebug.$ext.onmousedown = function(e){
+            if (!e) e = event;
+            if (e.clientY < 5)
+                apf.$debugwin.apf.$debugwin.$startResize(e.clientY);
+        }
     },
     
     start : function(){
@@ -827,6 +838,50 @@ apf.$debugwin = {
             document.body.style.overflow = "";
             document.body.style.position = "";
         }*/
+    },
+    
+    $startResize : function(offset){
+        var $ext = this.$ext;
+        apf.plane.show(null, null, null, true);
+        apf.dragMode = true;
+
+        document.body.style.cursor = "s-resize";
+        
+        var lastTime, timer, f;
+        var start = $ext.offsetHeight;
+        var sY    = document.documentElement.offsetHeight - start - offset;
+        document.onmousemove = f = function(e){
+            if (!e) e = event;
+            
+            var offsetY = e.offsetY;
+            clearTimeout(timer);
+            if (lastTime && new Date().getTime() 
+              - lastTime < apf.mouseEventBuffer) {
+                var z = {
+                    clientX: e.clientX,
+                    clientY: e.clientY
+                }
+                timer = setTimeout(function(){
+                    $ext.style.height = (start + (sY - offsetY)) + "px";
+                }, 10);
+                return;
+            }
+            lastTime = new Date().getTime();
+            
+            $ext.style.height = (start + (sY - offsetY)) + "px";
+        }
+        document.onmouseup = function(e){
+            if (!e) e = event;
+            
+            document.body.style.cursor = "";
+            
+            document.onmousemove = 
+            document.onmouseup   = null;
+            
+            apf.dragMode = false;
+            
+            apf.plane.hide();
+        }
     },
     
     activate : function(){

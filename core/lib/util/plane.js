@@ -38,27 +38,28 @@ apf.plane = {
     },
 
     lastCursor : null,
-    show : function(o, dontAppend, copyCursor){
+    show : function(o, dontAppend, copyCursor, useRealSize){
         this.init();
 
         var plane    = this.plane;
-        this.current = o;
-        //o.parentNode.appendChild(plane);
- 
-        if (!dontAppend) {
-            this.lastZ = this.current.style.zIndex;
-            this.current.style.zIndex = 100000;
-        }
-        else {
-            this.plane.appendChild(o);
+        
+        if (o) {
+            this.current = o;
+            if (!dontAppend) {
+                this.lastZ = this.current.style.zIndex;
+                this.current.style.zIndex = 100000;
+            }
+            else {
+                this.plane.appendChild(o);
+            }
         }
         
         var pWidth = (plane.parentNode == document.body
-            ? apf.getWindowWidth()
+            ? useRealSize ? document.documentElement.offsetWidth : apf.getWindowWidth()
             : plane.parentNode.offsetWidth);
  
         var pHeight = (plane.parentNode == document.body
-            ? apf.getWindowHeight()
+            ? useRealSize ? document.documentElement.offsetHeight : apf.getWindowHeight()
             : plane.parentNode.offsetHeight);
         
         if (copyCursor) {
@@ -99,14 +100,16 @@ apf.plane = {
             this.isChildOf(this.plane, document.activeElement);
             #endif */
         
-        if (this.lastZ !== null) {
-            if (this.current.style.zIndex == 100000)
-                this.current.style.zIndex = this.lastZ;
-            this.lastZ = null;
+        if (this.current) {
+            if (this.lastZ !== null) {
+                if (this.current.style.zIndex == 100000)
+                    this.current.style.zIndex = this.lastZ;
+                this.lastZ = null;
+            }
+    
+            if (this.current.parentNode == this.plane)
+                this.plane.parentNode.appendChild(this.current);
         }
-
-        if (this.current.parentNode == this.plane)
-            this.plane.parentNode.appendChild(this.current);
         
         this.plane.style.display  = "none";
         

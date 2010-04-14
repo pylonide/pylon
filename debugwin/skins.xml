@@ -129,7 +129,7 @@
         .debugmarkup .selected dt,
         .debugmarkup .selected span,
         .debugmarkup .selected strong{
-            background-color : #25a8e7;
+            background-color : #2582d1;
             color : #FFFFFF;
         }
         .has_apf .debugmarkup .highlight{
@@ -750,7 +750,7 @@
         }
 
         .tbautoc div.hover{
-            background-color: #25a8e7;
+            background-color: #2582d1;
             color: white;
         }
     ]]></a:style>
@@ -889,7 +889,7 @@
         }
 
         .dropdownFocus .dropdownlabel{
-            background-color: #25a8e7;
+            background-color: #2582d1;
             color: #ffffff;
         }
         
@@ -937,7 +937,7 @@
         }
 
         .optionList span.hover {
-            background-color: #25a8e7;
+            background-color: #2582d1;
             color: #ffffff;
         }
 
@@ -1086,7 +1086,7 @@
         }
         
         .debugg2010listDrop {
-            border : 1px solid #25a8e7;
+            border : 1px solid #2582d1;
         }
     
         .dragdebugg2010list_multiple {
@@ -1272,7 +1272,7 @@
 
         .propedit .headings span.down b, .propedit .headings span.drag b{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }
 
         .propedit .headings span.ascending b{
@@ -1361,7 +1361,7 @@
 
         .propeditFocus .records .selected .celllabel dl{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }
 
         .propedit .records .cellselected dl{
@@ -1379,7 +1379,7 @@
         }
         .propeditFocus .records .cellselected{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }*/
 
         .propedit .move_pointer{
@@ -1474,7 +1474,7 @@
         }
 
         .propeditcontainerdropdown div.hover{
-            background-color: #25a8e7;
+            background-color: #2582d1;
             color: #ffffff;
         }
 
@@ -1642,7 +1642,7 @@
         }
         .propeditFocus .row .selected>span dl{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
             border: 1px solid #327fbd;
             position : relative;
             z-index : 10000;
@@ -1822,7 +1822,7 @@
 
         .datagrid .headings div.down, .datagrid .headings div.drag{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }
 
         .datagrid .headings div.drag{
@@ -1913,7 +1913,7 @@
         }
         .datagridFocus .records .selected, .datagridFocus .records .selected span{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }
         .datagrid .records .editing, .datagrid .records .editing span{
             background-color : white;
@@ -2196,7 +2196,7 @@
             height: 13px;
         }
         .menu div.hover{
-            background: #25a8e7;
+            background: #2582d1;
             color : white;
         }
 
@@ -2362,10 +2362,6 @@
 
         .labelDisabled{
             color: #bebebe;
-        }
-
-        .tiny {
-            font-size : 9px;
         }
 
         .error .label{
