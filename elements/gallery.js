@@ -20,6 +20,7 @@
  */
 
 // #ifdef __AMLGALLERY || __INC_ALL
+// #define __WITH_PRESENTATION 1
 
 /**
  * This component is used to view images. For each of them we can add a 
@@ -56,6 +57,8 @@ apf.gallery = function(struct, tagName){
      */
     this.thumbnailMode = "grid";
     this.title         = "text";
+    
+    this.thumbsInited    = false;
     
     this.nodes         = [];
     
@@ -161,7 +164,7 @@ apf.gallery = function(struct, tagName){
         for (var i = 0; i < thumbs_len; i++) {
             if ((thumbs[i].className || "").indexOf("thumbnail") > -1) {
                 if (tHeight == null || tHeight <= 0)
-                    tHeight = thumbs[i].offsetHeight - apf.getVerBorders(thumbs[i]);
+                    tHeight = (thumbs[i].offsetHeight || parseInt(thumbs[i].height)) - apf.getVerBorders(thumbs[i]);
                 
                 thumbs[i].onmouseover = function(e) {
                     _self.$hoverThumb(e, this);
@@ -176,22 +179,31 @@ apf.gallery = function(struct, tagName){
                     
                 for (var j = 0; j < images_len; j++) {
                     if ((images[j].tagName || "").toLowerCase() == "img") {
-                        images[j].onload = function() {
-                            var iHeight = this.offsetHeight || this.height;
-                            var iWidth = this.offsetWidth || this.width;
-                            
-                            if (iHeight > 0 && iWidth > 0 && tHeight > 0) {
-                                this.style.height = tHeight + "px";
-                                this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
-                            }
-                            
-                            if (_self.thumbnailMode == "bar") {
-                                _self.calcThumbBarSize();
+                        iHeight = images[j].offsetHeight || images[j].height;
+                        iWidth  = images[j].offsetWidth || images[j].width;
+                        
+                        if (iHeight > 0 && iWidth > 0 && tHeight > 0) {
+                            images[j].style.height = tHeight + "px";
+                            images[j].parentNode.style.width = images[j].style.width = parseInt(iWidth * tHeight/iHeight) + "px";
+                        }
+                        else {
+                            images[j].onload = function() {
+                                iHeight = this.offsetHeight || this.height;
+                                iWidth = this.offsetWidth || this.width;
+                                
+                                if (iHeight > 0 && iWidth > 0 && tHeight > 0) {
+                                    this.style.height = tHeight + "px";
+                                    this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        
+        if (_self.thumbnailMode == "bar") {
+            _self.calcThumbBarSize();
         }
     };
     
@@ -229,6 +241,10 @@ apf.gallery = function(struct, tagName){
             this.calcThumbBarSize();
         }
         
+        var propChange = function (name, old, value) {
+            alert("update")
+        }
+        
         this.$oImage.onload = function() {
             _self.$hideLoader();
             _self.$oImageBase.src = _self.$oImage.src;
@@ -259,14 +275,18 @@ apf.gallery = function(struct, tagName){
                     nWidth  = vpWidth;
                 }
                 
-                _self.$oImage.style.width      = nWidth + "px";
-                _self.$oImage.style.height     = nHeight + "px";
-                _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
-                _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
+                if (nWidth > 0 && nHeight > 0) {
+                    _self.$oImage.style.width      = nWidth + "px";
+                    _self.$oImage.style.height     = nHeight + "px";
+                    _self.$oImage.style.marginTop  = parseInt((vpHeight - nHeight) / 2) + "px";
+                    _self.$oImage.style.marginLeft = parseInt((vpWidth - nWidth) / 2) + "px";
+                }
             }
             else {
-                _self.$oImageContainer.style.width  = imgWidth + "px";
-                _self.$oImageContainer.style.height = imgHeight + "px";
+                if (imgWidth > 0 && imgHeight > 0) {
+                    _self.$oImageContainer.style.width  = imgWidth + "px";
+                    _self.$oImageContainer.style.height = imgHeight + "px";
+                }
                 _self.$oImageContainer.style.margin = "0 auto";
             }
             
@@ -345,6 +365,12 @@ apf.gallery = function(struct, tagName){
         
         if (!this.isOnStack)
             this.$showLoader();
+            
+        if (!this.thumbsInited) {
+            this.initiateThumbnailEvents();
+            this.thumbsInited = true;
+        }
+            
         
         var _self = this;
         clearTimeout(this.tmrRefresh);
@@ -545,15 +571,11 @@ apf.gallery = function(struct, tagName){
                 var _self = this;
                 var url = this.$applyBindRule("url", this.current);
     
-                this.$oZoomIcon.style.display = "block";
                 this.$oZoomIcon.onclick = function() {
                     _self.dispatchEvent("zoomclick", {url: url, selected: _self.current});
                     if (url)
                         window.location.href = url;
                 };
-            }
-            else {
-                this.$oZoomIcon.style.display = "none";
             }
         }
         
@@ -777,6 +799,26 @@ apf.gallery = function(struct, tagName){
                 }
             });
         };
+        
+        //if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
+          //  var _self      = this;
+            var propChange = function (name, old, value) {
+                alert("visible property watcher has been executed.")
+            }
+
+            this.$isWaitingOnDisplay = true;
+            this.watch("visible", propChange);
+            
+            var p = this.parentNode;
+            while(p) {
+                p.watch("visible", propChange);
+                p = p.parentNode;
+            }
+            
+            
+            //return;
+        //};
+
     };
 }).call(apf.gallery.prototype = new apf.BaseList());
 

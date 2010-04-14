@@ -1,0 +1,16 @@
+<div><div>
+<a:gallery
+  id          = "ss1"
+  thumbheight = "35"
+  autoselect  = "false"
+  title       = "text+number"
+  model       = "mdlSlideshow1"
+  thumb-mode  = "bar"
+  zoom-icon   = "true">
+    <a:each match="[picture]">
+        <a:src match="[@name]">../images/slideshow_img/[@name].jpg</a:src>
+        <a:caption match="[@title]"></a:caption>
+        <a:image match="[@name]">../images/slideshow_img/[@name]_small.jpg</a:image>
+    </a:each>
+</a:gallery>
+</div></div>

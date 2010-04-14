@@ -1,0 +1,17 @@
+<div><div id="prdGallery">
+<a:gallery
+  id            = "ss2"
+  model         = "mdlSlideshow1"
+  thumbheight="35"
+  autoselect="true"
+  title="text+number"
+
+  thumb-mode="grid"
+  >
+    <a:each match="[picture]">
+        <a:src match="[@name]">../images/slideshow_img/[@name].jpg</a:src>
+        <a:caption match="[@title]"></a:caption>
+        <a:image match="[@name]">../images/slideshow_img/[@name]_small.jpg</a:image>
+    </a:each>
+</a:gallery>
+</div></div>
