@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __AMLDATAGRID || __INC_ALL || __AMLSPREADSHEET || __AMLPROPEDIT
+// #ifdef __AMLDATAGRID || __INC_ALL || __AMLPROPEDIT
 
 /**
  * Element providing a sortable, selectable grid containing scrollable 
