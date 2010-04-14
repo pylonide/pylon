@@ -90,9 +90,11 @@ apf.text = function(struct, tagName){
     this.$propHandlers["value"] = function(value){
         var cacheObj = false;
 
+        // #ifdef __WITH_CACHE
         if (value)
             this.$removeClearMessage();
         //@todo else
+        //#endif
 
         if (typeof value != "string")
             value = value ? value.toString() : "";
@@ -107,17 +109,21 @@ apf.text = function(struct, tagName){
         }
 
         if (this.addOnly) {
+            // #ifdef __WITH_CACHE
             if (cacheObj)
                 cacheObj.contents += value;
             else
+            //#endif
                 this.$container.insertAdjacentHTML("beforeend", value);
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
 
+            // #ifdef __WITH_CACHE
             if (cacheObj)
                 cacheObj.contents = value;
             else
+            //#endif
                 this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
 
