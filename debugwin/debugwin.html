@@ -6,6 +6,7 @@
         <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
+        <link rel="stylesheet" href="docs.css" type="text/css" />
     </head>
     <body>
         <a:skin src="skins.xml" media-path="resources/" icon-path="resources/" />
@@ -95,7 +96,7 @@
         <a:errorbox id="errBox" left="-5" top="-13" />
     
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="docs">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="docs">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" class="tbbottom tbleft">
                     <a:bar>
@@ -115,8 +116,9 @@
                     </a:bar>
                 </a:toolbar>
                 <a:text id="apf_console" align="left-splitter" scrolldown="true" 
-                    behavior="addonly" contextmenu2="mnuOptions" focussable="true" 
-                    style="border:1px solid #c3c3c3;border-width:1px 1px 0 0;" />
+                    behavior   = "addonly" contextmenu2="mnuOptions" 
+                    focussable = "true" class="apf_console"
+                    border     = "1 1 0 0" />
                 <a:bar skin="basic" align="right" height="30" visible="{codetype.value == 'Live Markup'}">
                     <a:hbox flex="true">
                         <a:label>Datasource:</a:label>
@@ -125,7 +127,7 @@
                 </a:bar>
                 <a:textarea id="txtCode" realtime="true" align="right" 
                     onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
-                    style     = "border-width:0 0 1px 1px" />
+                    border    = "1 0 1 1" />
                 <a:toolbar align="right" height="25" class="tbbottom tbright">
                     <a:bar>
                         <a:hbox edge="2 0 0 2">
@@ -379,14 +381,9 @@
             </a:page-->
             <a:page caption="Docs" id="docs" render="runtime">
                 <a:comment>this needs to be implemented using an include from ajax.org and a fallback locally</a:comment>
-                <a:style src="http://www.ajax.org/css/style.css">
-                    html, body, .has_apf{
-                        background : white;
-                        overflow : hidden;
-                    }
-                </a:style>
                 <a:include src="docs.xml" />
             </a:page>
+            <a:comment>
             <a:page caption="Testing" id="testing" render="runtime">
                 <a:toolbar>
                     <a:bar>
@@ -440,6 +437,7 @@
 
                 </a:pages>
             </a:page>
+            </a:comment>
         </a:tab>
         
         <a:script>//<!--

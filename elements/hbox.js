@@ -676,7 +676,7 @@ apf.vbox = function(struct, tagName){
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
         this.$ext.className = this.localName + " " + (this.getAttribute("class") || "");
         this.$ext.style.whiteSpace = "nowrap";
-        this.$ext.style.overflow   = "hidden";
+        //this.$ext.style.overflow   = "hidden";
         this.$int = this.$ext;
         this.$ext.host = this;
 
