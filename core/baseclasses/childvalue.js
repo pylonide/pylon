@@ -30,11 +30,11 @@ apf.ChildValue = function(){
     
     var f;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
-        if (e.currentTarget == this)
+        if (e.currentTarget == this 
+          || e.currentTarget.nodeType == 2 && e.relatedNode == this)
             return;
-        
-        var hasNoProp = typeof this[this.$childProperty] == "undefined";
-        if (!hasNoProp)
+
+        if (this.getAttribute(this.$childProperty))
             return;
         
         //Get value from xml (could also serialize children, but that is slower
@@ -57,7 +57,7 @@ apf.ChildValue = function(){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var hasNoProp = typeof this[this.$childProperty] == "undefined";
-        if (hasNoProp 
+        if (hasNoProp
           && !this.getElementsByTagNameNS(this.namespaceURI, "*", true).length 
           && (this.childNodes.length > 1 || this.firstChild 
           && (this.firstChild.nodeType == 1 

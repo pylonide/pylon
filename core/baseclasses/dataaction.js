@@ -342,14 +342,14 @@ apf.DataAction = function(){
         if (this.disabled || this.contenteditable && action != "edit") 
             return; //hack
 
-        //#ifdef __DEBUG
-        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
-                         + " [" + (this.localName || "") + "]");
-        //#endif
-
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
+        //#endif
+
+        //#ifdef __DEBUG
+        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
+                         + " [" + (this.localName || "") + "]");
         //#endif
 
         //Get Rules from Array
