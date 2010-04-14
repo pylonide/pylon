@@ -20,8 +20,6 @@
  */
 
 // #ifdef __AMLBUTTON || __INC_ALL
-// #define __WITH_PRESENTATION 1
-// #define __AMLBASEBUTTON 1
 
 /**
  * Element displaying a clickable rectangle that visually confirms to the

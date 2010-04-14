@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_XMLRPC
-// #define __TP_RPC 1
 
 /**
  * Implementation of the XML-RPC protocol as a module for the RPC

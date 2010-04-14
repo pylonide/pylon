@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLLIST || __AMLSELECT || __AMLSELECT1 || __INC_ALL
-// #define __AMLBASELIST 1
 
 /**
  * Element displaying a skinnable list of options which can be selected.

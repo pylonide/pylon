@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_JSON
-// #define __TP_RPC 1
 
 /**
  * Implementation of the JSON-RPC protocol as a module for the RPC

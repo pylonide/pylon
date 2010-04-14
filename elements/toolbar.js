@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLTOOLBAR || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a bar containing buttons and other aml elements.

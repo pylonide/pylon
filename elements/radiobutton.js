@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLRADIOBUTTON || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a two state button which is one of a grouped set.

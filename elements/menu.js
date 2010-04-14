@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLMENU || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a skinnable menu of items which can be choosen.

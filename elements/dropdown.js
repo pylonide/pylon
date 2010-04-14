@@ -20,8 +20,6 @@
  */
 
 // #ifdef __AMLDROPDOWN || __INC_ALL
-// #define __AMLBASELIST 1
-// #define __WITH_GANIM 1
 
 /**
  * Element allowing a user to select a value from a list, which is 

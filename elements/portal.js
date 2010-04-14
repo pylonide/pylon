@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLPORTAL || __INC_ALL
-// #define __AMLMODALWINDOW 1
 
 /**
  * Element displaying a rectangle consisting of one or more columns

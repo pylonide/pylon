@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLERRORBOX || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element showing an error message when the attached element 

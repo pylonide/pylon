@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLBAR || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a skinnable rectangle which can contain other 

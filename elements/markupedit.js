@@ -20,11 +20,6 @@
  */
 
 // #ifdef __AMLMARKUPEDIT || __INC_ALL
-// #define __WITH_CACHE 1
-// #define __WITH_DATABINDING 1
-// #define __WITH_MULTISELECT 1
-// #define __WITH_PRESENTATION 1
-// #define __WITH_GANIM 1
 
 var HAS_CHILD = 1 << 1,
     IS_CLOSED = 1 << 2,

@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLDIVIDER || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a divider. For use in toolbars, menu's and such.

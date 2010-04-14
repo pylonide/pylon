@@ -20,8 +20,6 @@
  */
 
 // #ifdef __AMLTAB || __AMLPAGES || __AMLSWITCH || __INC_ALL
-// #define __WITH_PRESENTATION 1
-// #define __AMLBASETAB 1
 
 /**
  * Element displaying a page and several buttons allowing a

@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLLINESELECT || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying text with each line being selectable. This is especially

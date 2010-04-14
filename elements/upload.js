@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLUPLOAD || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element allowing the user to upload a file to a server. This element does 

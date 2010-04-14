@@ -20,10 +20,6 @@
  */
 
 // #ifdef __AMLSUBMITFORM || __INC_ALL
-// #define __WITH_DATABINDING 1
-// #define __WITH_PRESENTATION 1
-// #define __AMLBASETAB 1
-// #define __WITH_VALIDATION 1
 
 /**
  * Element allowing special form functionality to a set of AML

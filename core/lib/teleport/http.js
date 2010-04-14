@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_HTTP
-// #define __AMLTELEPORT 1
 
 /**
  * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 

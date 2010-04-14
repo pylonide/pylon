@@ -19,10 +19,6 @@
  *
  */
 
-// #ifdef __WITH_OFFLINE_STATE_REALTIME
-// #define __WITH_OFFLINE_STATE 1
-// #endif
-
 // #ifdef __WITH_OFFLINE_STATE
 
 /**

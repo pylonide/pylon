@@ -21,7 +21,6 @@
 apf.__CONTENTEDITABLE__  = 1 << 23;
 
 // #ifdef __WITH_CONTENTEDITABLE
-// #define __WITH_PRESENTATION 1
 
 /**
  * Baseclass of an element whose content is editable. This is usually an

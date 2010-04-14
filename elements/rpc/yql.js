@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_YQL
-// #define __TP_RPC 1
 
 /**
  * Implementation of the Yahoo! Query Language as a module for the RPC

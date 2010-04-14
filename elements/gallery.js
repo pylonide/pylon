@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLGALLERY || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * This component is used to view images. For each of them we can add a 

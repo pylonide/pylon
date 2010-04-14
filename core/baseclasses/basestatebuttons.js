@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLBASESTATEBUTTONS || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * @constructor

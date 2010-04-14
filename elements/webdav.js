@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_WEBDAV
-// #define __AMLTELEPORT 1
 
 /**
  * Element implementing WebDAV remote filesystem protocol.

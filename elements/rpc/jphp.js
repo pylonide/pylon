@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_JPHP
-// #define __TP_RPC 1
 
 /**
  * Implementation of an RPC protocol which encodes the data in a serialized 

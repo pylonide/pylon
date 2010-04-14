@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_XMPP_ROSTER
-// #define __AMLTELEPORT 1
 
 /**
  * Element implementing a Roster service for the apf.xmpp object.

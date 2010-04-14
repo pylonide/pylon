@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLLABEL || __INC_ALL
-// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying a text in the user interface, usually specifying

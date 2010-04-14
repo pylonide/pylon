@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLTEXT || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a rectangle containing arbitrary (X)HTML.

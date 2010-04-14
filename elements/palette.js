@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLPALETTE || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a set of choices to the user which allows

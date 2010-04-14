@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLIMG || __INC_ALL
-// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying a picture. This element can read databound resources.

@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLPROGRESSBAR || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element graphically representing a percentage value which increases

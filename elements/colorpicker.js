@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLCOLORPICKER || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element giving the user a visual choice of several colors presented in a

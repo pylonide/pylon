@@ -20,11 +20,6 @@
  */
 
 // #ifdef __AMLTREE || __INC_ALL
-// #define __WITH_CACHE 1
-// #define __WITH_DATABINDING 1
-// #define __WITH_MULTISELECT 1
-// #define __WITH_PRESENTATION 1
-// #define __WITH_TWEEN 1
 
 /**
  * Element displaying data in a list where each item in the list can contain

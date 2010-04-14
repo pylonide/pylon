@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLBASESIMPLE || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Baseclass of a simple element. This are usually displaying elements 

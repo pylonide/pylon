@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLTOC || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element acting as the navigational instrument for any

@@ -22,7 +22,6 @@
 apf.__VIRTUALVIEWPORT__ = 1 << 19;
 
 // #ifdef __WITH_VIRTUALVIEWPORT
-// #define __WITH_SCROLLBAR 1
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} can have a virtual viewport.

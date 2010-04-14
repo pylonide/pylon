@@ -20,10 +20,6 @@
  */
 
 // #ifdef __AMLDATAGRID || __INC_ALL || __AMLSPREADSHEET || __AMLPROPEDIT
-// #define __WITH_CACHE 1
-// #define __WITH_DATABINDING 1
-// #define __WITH_MULTISELECT 1
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element providing a sortable, selectable grid containing scrollable 

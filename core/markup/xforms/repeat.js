@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLREPEAT || __INC_ALL
-// #define __WITH_DATABINDING 1
 
 /**
  * Element that defines a template of aml which is repeated for a list of 

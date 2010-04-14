@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_IFRAME
-// #define __AMLTELEPORT 1
 
 /*
  * This object create a compatibility layer for environments where the

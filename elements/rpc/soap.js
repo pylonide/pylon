@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_SOAP
-// #define __TP_RPC 1
 
 /**
  * Implementation of the SOAP RPC protocol.

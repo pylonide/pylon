@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLSOURCE || __INC_ALL
-// #define __WITH_MEDIA 1
 
 /**
  * Element 

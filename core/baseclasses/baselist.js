@@ -20,10 +20,6 @@
  */
 
 // #ifdef __AMLBASELIST || __INC_ALL
-// #define __WITH_CACHE 1
-// #define __WITH_DATABINDING 1
-// #define __WITH_MULTISELECT 1
-// #define __WITH_PRESENTATION 1
 
 /**
  * Baseclass of elements that allows the user to select one or more items

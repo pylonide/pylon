@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLCHART || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displays a chart.

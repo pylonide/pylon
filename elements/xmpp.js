@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_XMPP
-// #define __AMLTELEPORT 1
 
 /**
  * Element implementing XMPP IM protocol.

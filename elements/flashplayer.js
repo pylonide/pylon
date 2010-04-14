@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __AMLFLASHPLAYER || __INC_ALL
-// #define __AMLBASESIMPLE 1
 
 /**
  * Element displaying the contents of a .swf (adobe flash) file.

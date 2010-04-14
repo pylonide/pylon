@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLBROWSER || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying the rendered contents of an URL.

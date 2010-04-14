@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLBASETAB || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Baseclass of a paged element. 

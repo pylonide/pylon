@@ -20,7 +20,6 @@
  */
 
 // #ifdef __TP_RPC_CGI
-// #define __TP_RPC 1
 
 /**
  * Implementation of the Common Gateway Interface (CGI) as a module for the RPC

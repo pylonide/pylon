@@ -20,7 +20,6 @@
  */
 
 // #ifdef __AMLFRAME || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Element displaying a frame with a caption, containing other elements. This

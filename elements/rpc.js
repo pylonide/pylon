@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __TP_RPC
-// #define __AMLTELEPORT 1
 
 /**
  * Baseclass for rpc in teleport. Modules are available for
