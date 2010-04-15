@@ -920,6 +920,8 @@ apf.model = function(struct, tagName){
                   : this.data);
             }
         }
+        
+        this.dispatchEvent("update", {xmlNode: xmlNode, action: action});
     };
 
     /**** INSERT ****/

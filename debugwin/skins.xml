@@ -3343,4 +3343,401 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+<a:modalwindow name="modalwindow">
+    <a:alias>window</a:alias>
+    <a:style><![CDATA[
+    .north{cursor: url(cursor/n-point.cur);}
+    .west{cursor: url(cursor/w-point.cur);}
+    .east{cursor: url(cursor/e-point.cur);}
+    .south{cursor: url(cursor/s-point.cur);}
+    .same{cursor: not-allowed;}
+
+    .window {
+        font-family: Tahoma;
+        font-size: 11px;
+        padding : 26px 0 5px 0;
+    }
+
+    .window .topLeft {
+        float: left;
+        background: url("images/window_lt.png") no-repeat top left;
+        width: 6px;
+        height: 27px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        margin-top : -26px;
+        _margin-right: -6px; /* IE6 bug fix */
+    }
+
+    .windowFocus{
+
+    }
+
+    .window .topRight {
+        float: right;
+        background: url("images/window_rt.png") no-repeat top left;
+        width: 5px;
+        height: 27px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        margin-top : -26px;
+        _margin-left: -5px; /* IE6 bug fix */
+    }
+
+    .window .title {
+        background: url("images/window_mt.png") repeat-x top left;
+        height: 21px;
+        color: #eeeeee;
+        position: relative;
+        margin: 0 5px 0 6px;
+        padding: 6px 0 0 20px;
+        border: 0;
+        font-weight: bold;
+        margin-top : -26px;
+        cursor : default;
+    }
+
+    .window .title img{
+        margin: -1px 3px 0 -1px;
+        position : absolute;
+        left : 2px;
+    }
+
+    .window .content {
+        background : #f5f5f5;
+        margin-left: 3px;
+        margin-right: 3px;
+        position : relative;
+        height : 100%;
+        background:#f5f5f5 url(images/page_bt.png) repeat-x top left;
+        border-right: 1px solid #dcd8d8;
+        border-top: 1px solid #dcd8d8;
+        border : 0; /* changed by ruben */
+    }
+
+    .windowMin .content{
+        overflow : hidden;
+    }
+
+    .window .borderRight{
+        background: url("images/window_border.png") repeat-y top right;
+        overflow : hidden;
+        width : 3px;
+        float : right;
+        height : 100%;
+        _margin-left: -3px; /* IE6 bug fix */
+    }
+
+    .window .borderLeft {
+        background: url("images/window_border.png") repeat-y top left;
+        overflow: hidden;
+        height : 100%;
+        float : left;
+        width : 3px;
+        _margin-right: -3px; /* IE6 bug fix */
+    }
+
+    .window .bottomLeft {
+        float: left;
+        background: url("images/window_lb_small.png") no-repeat top left;
+        width: 3px;
+        height: 4px;
+        _margin-right: -3px; /* IE6 bug fix */
+        margin-top: -1px;
+    }
+
+    .window .bottomRight {
+        float: right;
+        background: url("images/window_rb_small.png") no-repeat top left;
+        width: 3px;
+        height: 4px;
+        _margin-left: -3px; /* IE6 bug fix */
+        margin-top: -1px;
+    }
+
+    .window .bottomBar {
+        background: url("images/window_mb_small.png") repeat-x top left;
+        height: 4px;
+        color: #FFFFFF;
+        position: relative;
+        margin: -2px 3px 0 3px;
+        border-top: 1px solid #dcd8d8;
+    }
+
+    .window .bottom{
+        position : absolute;
+        bottom : 0;
+        width : 100%;
+    }
+
+    .cover{
+        /*background: url(images/spacer.gif);*/
+        background: white;
+        opacity: 0.3;
+        filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        height: expression(document.documentElement.offsetHeight);
+        z-index: 10000;
+    }
+
+    .window .title blockquote{
+        margin: 0;
+        width: 56px;
+        height: 21px;
+        position: absolute;
+        padding: 4px 4px 2px 2px;
+        top: 0;
+        right: 0;
+        /*background: url(images/title.gif) repeat-x;*/
+    }
+
+    .window .title blockquote div{
+        width: 10px;
+        height: 9px;
+        float: right;
+        padding: 3px;
+        background: no-repeat 3px 3px;
+        cursor: default;
+        _overflow: hidden; /* IE6 bug fix */
+    }
+
+    .window .title blockquote div.hover{
+        border : 1px solid white;
+        padding : 2px;
+        background-position : 2px -10px;
+        height : 10px;
+        background-color : transparent;
+    }
+    .window .title blockquote div.down{
+        background-color : black;
+    }
+
+    .window .title .max{
+        background-image: url(images/win_max.gif);
+    }
+    .windowMax .title .max{
+        background-image: url(images/win_restore.gif);
+    }
+    .window .title .min{
+        background-image: url(images/win_min.gif);
+    }
+    .windowMin .title .min{
+        background-image: url(images/win_restore.gif);
+    }
+    .window .title .close{
+        width: 11px;
+        background-image: url(images/win_x.gif);
+    }
+    .window .title span{
+        width: 16px;
+        height: 16px;
+        display: block;
+    }
+
+    #apf_outline{
+
+    }
+
+    #apf_outline.drag{
+        border: 2px solid black;
+        /*background: #CCC;*/
+        opacity: 0.4;
+        filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+    }
+
+    #apf_outline.resize{
+        border: 3px solid black;
+        background: #CCC;
+        opacity: 0.3;
+        filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+    }
+]]></a:style>
+    <a:presentation>
+        <a:main collapsed-height="30" min-width="150" min-height="80" container="div[6]" drag="div[3]" title="div[3]/text()" icon="div[3]/img" buttons="div[3]/blockquote">
+            <div class="window">
+                <div class="topLeft">
+                </div>
+                <div class="topRight">
+                </div>
+                <div class="title"><img src=""/>-<blockquote>
+                    </blockquote></div>
+                <div class="borderLeft">
+                </div>
+                <div class="borderRight">
+                </div>
+                <div class="content">
+                </div>
+                <div class="bottomLeft">
+                </div>
+                <div class="bottomRight">
+                </div>
+                <div class="bottomBar">
+                </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div>
+            </div>
+        </a:button>
+        <a:cover>
+            <div class="cover">
+            </div>
+        </a:cover>
+    </a:presentation>
+</a:modalwindow>
+<a:list name="list">
+    <a:style><![CDATA[
+        .list {
+            overflow         : auto;
+            position         : relative;
+            border           : 1px solid #c3c3c3;
+            background-color : white;
+            cursor           : default;
+        }
+    
+        .white {
+            background : white;
+        }
+    
+        .list, 
+        .draglist {
+            font-family : Tahoma;
+            font-size   : 8pt;
+        }
+    
+        .list DIV, 
+        .draglist {
+            padding : 0;
+            height  : 18px;
+        }
+    
+        .list SPAN, 
+        .draglist SPAN {
+            padding    : 0 0 0 20px;
+            background : no-repeat 1px center;
+            height     : 16px;
+            float      : left;
+        }
+    
+        .list U, 
+        .draglist U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : block;
+            padding         : 2px 4px 2px 2px;
+            text-decoration : none;
+            white-space     : nowrap;
+        }
+    
+        .listFocus .indicate U {
+            border  : 1px dotted #BBB;/*#25a8e7;*/
+            color   : black;
+            /*
+            background-color : #e4f4fc;
+            */
+            padding : 1px 3px 1px 1px;
+        }
+    
+        .list .selected U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .listFocus .selected U, 
+        .draglist U {
+            color            : white;
+            background-color : #25a8e7;
+        }
+    
+        .list #txt_rename {
+            border      : 1px solid #bbb;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : 0px;
+            cursor      : text;
+            height      : 13px;
+            display     : block;
+            outline     : none;
+        }
+    
+        .list .empty, 
+        .list .offline, 
+        .list .loading {
+            text-align  : center;
+            padding     : 8px 0 0 5px;
+            color       : #AAA;
+            font-weight : normal;
+        }
+    
+        .shortlist {
+            border     : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width      : auto;
+        }
+        
+        .listDrop {
+            border : 1px solid #25a8e7;
+        }
+    
+        .draglist_multiple {
+            border     : 2px solid black;
+            width      : 10px;
+            height     : 5px;
+            padding    : 0;
+            background : none;
+        }
+    
+        .draglist_multiple span {
+            display : none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          container = "."
+          minwidth  = "100"
+          minheight = "50">
+            <div class="list">
+            </div>
+        </a:main>
+        <a:item
+          class   = "."
+          caption = "span/u"
+          icon    = "span"
+          select  = "span">
+            <div>
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:item>
+        <a:dragindicator>
+            <div class="draglist">
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
 </a:skin>

@@ -56,13 +56,11 @@ apf.uirecorder.capture = {
         
         document.documentElement.onmousedown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
-            apf.console.info("mousedown");
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         }
 
         document.documentElement.onmouseup = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return; //apf.uirecorder.isPaused ||
-            apf.console.info("mouseup");
             apf.uirecorder.capture.$captureAction("mouseup", e || event);
         }
         
@@ -430,7 +428,7 @@ apf.uirecorder.playback = {
     
     // stop playing
     stop : function() {
-    
+        apf.uirecorder.isPlaying = false;
     },
     
     // init playback of action
@@ -522,6 +520,7 @@ apf.uirecorder.playback = {
         // stop playback
         else {
             //apf.uirecorder.output.createTestResultsXml();
+            this.stop();
             apf.dispatchEvent("apftest_testcomplete");
         }
     }
