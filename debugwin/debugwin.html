@@ -251,7 +251,8 @@
                         <span class="size">{prettySize((([response].match(/Content-Length: (\d+)/) || {})[1] || [response].split("\n\n")[1] || "").length)}</span>
                         <span class="status">{[response].split(" ")[1] || ""}</span>
                         apf.getFilename(url = [request].split("\n", 1)[0].split(" ")[1])
-                        <span class="url">\[{localName()}\] {url}</span>
+                        <span class="localname">\[{localName()}\]</span>
+                        <span class="url">{url}</span>
                     }</a:caption>
                     <a:css value="{index(*[../node()[local-name()]]) % 2 ? 'even' : 'odd'}" />
                     <a:actions />

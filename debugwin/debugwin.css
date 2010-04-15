@@ -92,19 +92,33 @@ body{
 }
 
 .tplist .size{
-    float : right;
+    position:absolute;
+    top:3px;
+    right:9px;
     font-size : 9px;
     font-weight:normal;
 }
 
 .tplist .status{
-    width  : 20px; 
-    text-align : center;
-    margin : -1px 5px 2px -1px;
-    padding : 2px;
-    float : left;
+    width  : 40px;
+    height:9px;
+    text-align : right;
     font-size : 9px;
     font-weight:normal;
+    position:absolute;
+    top:3px;
+    left:0;
+}
+
+.tplist .localname{
+    width  : 40px;
+    height:11px;
+    text-align : right;
+    font-size : 9px;
+    font-weight:normal;
+    position:absolute;
+    top:17px;
+    left:0;
 }
 
 .tplist .url{

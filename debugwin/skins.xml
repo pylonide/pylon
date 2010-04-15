@@ -976,9 +976,8 @@
             overflow            : auto;
             position            : relative;
             border              : 1px solid #c3c3c3;
-            background-color    : #4278a3;
+            background-color    : #d6dde5;
             cursor              : default;
-            background-image    : url(images/debugger_list_backg.png);
             background-position : right 0;
             background-repeat   : repeat-y;
         }
@@ -995,28 +994,31 @@
     
         .debugg2010list DIV, 
         .dragdebugg2010list {
-            padding : 0;
-            height  : 34px;
-            margin  : 1px 0;
+            padding       : 0;
+            height        : 30px;
+            border-top    : 1px solid #d6dde5;
+            border-bottom : 1px solid #d6dde5;
+            overflow      : hidden;
+            position      : relative;
         }
         
         .debugg2010list .even {
-            background-image    : url(images/debugger_list_even.png);
-            background-position : 0 0;
-            margin-right        : 1px;
+            
         }
         
         .debugg2010list .selected {
             background-image    : url(images/debugger_list_selected.png);
             background-position : 0 0;
             background-repeat   : repeat-x;
+            border-top          : 1px solid #1167ab;
+            border-bottom       : 1px solid #1167ab;
         }
     
         .debugg2010list SPAN.caption, 
         .dragdebugg2010list SPAN.caption {
             padding    : 1px 0 0 2px;
             background : no-repeat 1px center;
-            height     : 34px;
+            height     : 32px;
             margin     : 0;
             position   : absolute;
             top        : 0;
@@ -1027,30 +1029,28 @@
         .debugg2010list U, 
         .dragdebugg2010list U {
             text-decoration : none;
-            color           : white;
+            color           : black;
             cursor          : default;
-            display         : block;
-            padding         : 2px 4px 2px 2px;
             text-decoration : none;
             white-space     : nowrap;
-            text-shadow     : 0 1px #456c8b;
-            filter          : dropshadow(color=#456c8b,offX=0,offY=1);
+            position        : absolute;
+            top             : 0;
+            left            : 0;
+            right           : 0;
+            height          : 30px;
+            padding         : 2px 0 0 46px;
         }
     
         .debugg2010listFocus .indicate U {
         }
     
         .debugg2010list .selected U {
-            color       : #0a4b80;
-            text-shadow : 0 1px #ffffff;
-            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+            color : #d6dde5;
         }
         
         .debugg2010listFocus .selected U, 
         .dragdebugg2010list U {
-            color       : #0a4b80;
-            text-shadow : 0 1px #ffffff;
-            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+            color : white;
         }
     
         .debugg2010list #txt_rename {
@@ -1086,7 +1086,7 @@
         }
         
         .debugg2010listDrop {
-            border : 1px solid #2582d1;
+            border : 1px solid #25a8e7;
         }
     
         .dragdebugg2010list_multiple {
