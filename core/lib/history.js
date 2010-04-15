@@ -95,36 +95,25 @@ apf.history = {
         else if (apf.isIE) {
             var str =
                 "<style>\
-                    BODY, HTML{margin : 0;}\
-                    h1{height : 100px;margin : 0;padding : 0;}\
+                    BODY, HTML{margin:0}\
+                    h1{height:100px; margin:0; padding:0; overflow:hidden}\
                 </style>\
                 <body>\
                     <h1 id='" + name + "'>0</h1>\
                 </body>\
                 <script>\
                     var lastURL = -1;\
-                    if(document.all){\
+                    if (document.all)\
                         document.body.onscroll = checkUrl;\
-                    }else{\
+                    else\
                         setInterval('checkUrl()', 200);\
-                    }\
+                    \
                     function checkUrl(){\
-                        if (top.apf.isIE7Emulate && top.apf.history.lastHtml)\
-                            document.body.innerHTML = top.apf.history.lastHtml;\
-                        var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
-                        if (top.apf.isIE7Emulate) {\
-                            clearTimeout(top.apf.history.ie7timer);\
-                            top.apf.history.ie7timer = setTimeout(function(){\
-                                var o = document.getElementsByTagName('h1')[nr];\
-                                if (!o || !o.id) return;\
-                                top.apf.history.hasChanged(o.id, true);\
-                            }, 100);\
+                        var iScr = (document.all ? document.body : document.documentElement).scrollTop;\
+                        if (lastURL == iScr) return;\
+                        top.apf.history.hasChanged(document.getElementsByTagName('h1')[Math.round(iScr / 100)].id, true);\
+                        lastURL = iScr;\
                         }\
-                        else {\
-                            top.apf.history.hasChanged(document.getElementsByTagName('h1')[nr].id, true);\
-                        }\
-                        lastURL = document.body.scrollTop;\
-                    }\
                     checkUrl();\
                 </script>";
 
@@ -140,7 +129,6 @@ apf.history = {
             this.iframe = document.frames["nav"];// : document.getElementById("nav").contentWindow;
             //Check to see if url has been manually changed
             this.timer2 = setInterval(function(){
-                //status = apf.history.changingHash;
                 if (!apf.history.changingHash && location.hash != "#" + apf.history.page) {
                     var name = location.hash.replace(/^#/, "");
                     var page = apf.history.page;
@@ -194,16 +182,14 @@ apf.history = {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
-            h.innerHTML = name;
-            this.lastHtml = this.iframe.document.body.innerHTML;
-        };
+            h.innerHTML = "1";
+        }
 
         (!apf.supportHashChange && apf.isIE ? this.iframe : window).location.href = "#" + name;
         
-        if (!apf.isIE && !apf.isIphone)
+        if (!apf.isIE && !apf.isGecko && !apf.isIphone)
             apf.history.lastUrl = location.href.toString();
         //else if (apf.isIE8)
-        //    this.page = name;
     },
 
     timer : null,
@@ -261,6 +247,8 @@ apf.history = {
         this.changing = true;
         apf.dispatchEvent("hashchange", {page: page, index: this.update(page)});
         this.changing = false;
+
+        this.page = page;
     }
 };
 
