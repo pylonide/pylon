@@ -48,15 +48,15 @@
  *   {AMLElement} opener the element that was clicked upon when showing the context menu.
  */
 apf.radio = function(struct, tagName){
-    this.$init(tagName || "radio", apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "radio", apf.NODE_VISIBLE, struct);
 };
 
 apf.check = function(struct, tagName){
-    this.$init(tagName || "check", apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "check", apf.NODE_VISIBLE, struct);
 };
 
 apf.item  = function(struct, tagName){
-    this.$init(tagName || "item", apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -289,20 +289,6 @@ apf.item  = function(struct, tagName){
             [this.parentNode.$baseCSSname + "Disabled"]);
     };
 
-    /**
-     * @private
-     */
-    this.show = function(){
-        this.$ext.style.display = "block";
-    };
-
-    /**
-     * @private
-     */
-    this.hide = function(){
-        this.$ext.style.display = "none";
-    };
-
     /**** Dom Hooks ****/
 
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
@@ -337,7 +323,8 @@ apf.item  = function(struct, tagName){
         this.parentNode.hide();//true not focus?/
 
         this.parentNode.dispatchEvent("itemclick", {
-            value : this.value || this.caption
+            value       : this.value || this.caption,
+            relatedNode : this
         });
 
         //@todo Anim effect here?

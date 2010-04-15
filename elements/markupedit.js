@@ -482,7 +482,8 @@ apf.markupedit = function(struct, tagName){
             elValue.setAttribute("title", value);
 
         elName.setAttribute("aname", name);
-        elName.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
+        elName.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
+            apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
             event.cancelBubble=true;");
         elName.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
@@ -496,7 +497,8 @@ apf.markupedit = function(struct, tagName){
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         elValue.setAttribute("aname", name);
-        elValue.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
+        elValue.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
+            apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
             event.cancelBubble=true;");
         elValue.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
@@ -535,7 +537,8 @@ apf.markupedit = function(struct, tagName){
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
         
-        elTextNode.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
+        elTextNode.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
+            apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
         elTextNode.setAttribute("onmouseup", "\
             event.cancelBubble=true;\
             return false;");

@@ -347,34 +347,6 @@ apf.text = function(struct, tagName){
                 this.$ext = this.$container = node;
             }
         }
-        else {
-            this.$container.onselectstart = function(e){
-                (e ? e : event).cancelBubble = true;
-            };
-
-            this.$container.oncontextmenu = function(e){
-                if (!this.host.contextmenus)
-                    (e ? e : event).cancelBubble = true;
-            };
-
-            this.$container.style.cursor = "";
-
-            this.$container.onmouseover = function(e){
-                if (!self.STATUSBAR) return;
-                if (!e)
-                    e = event;
-
-                if (e.srcElement.tagName.toLowerCase() == "a") {
-                    if (!this.lastStatus)
-                        this.lastStatus = STATUSBAR.getStatus();
-                    STATUSBAR.status("icoLink.gif", e.srcElement.getAttribute("href"));
-                }
-                else if (this.lastStatus) {
-                    STATUSBAR.status(this.lastStatus[0], this.lastStatus[1]);
-                    this.lastStatus = false;
-                }
-            };
-        }
     };
 
     this.addEventListener("DOMNodeRemovedFromDocument", function() {

@@ -94,25 +94,39 @@
             <a:radio group="grSelect" value="prop">Select shows element properties</a:radio>
         </a:menu>
         
+        <a:menu id="mnuData">
+            <a:item value="doc">Find in documentation</a:item>
+            <a:divider />
+            <a:item id="itInspAml" value="aml">Inspect as AML</a:item>
+            <a:item id="itInspData" value="data">Inspect as Data</a:item>    
+            <a:item id="itInspObj" value="obj">Inspect as Object</a:item>
+            <a:divider id="div2" />
+            <a:item id="itInspRoot" value="root-data">Inspect element's root data</a:item>
+            <a:item id="itInspSel" value="sel-data">Inspect element's selected item</a:item>
+        </a:menu>
+        
         <a:errorbox id="errBox" left="-5" top="-13" />
     
         <!-- removing this first bar bugs the layout engine -->
         <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="browse">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" class="tbbottom tbleft">
-                    <a:bar>
+                    <a:bar style="padding-left:5px">
                         <a:button id="btnLog" onclick="apf.$debugwin.updateLog()" 
+                            skin="toolbar_radio"
                             state="true">Logs</a:button>
                         <a:button id="btnWarn" onclick="apf.$debugwin.updateLog()"  
+                            skin="toolbar_radio"
                             state="true" value="true">Warnings</a:button>
                         <a:button id="btnError" onclick="apf.$debugwin.updateLog()" 
+                            skin="toolbar_radio"
                             state="true" value="true">Errors</a:button>
                         <a:divider />
                         <a:button submenu="mnuOptions">Options</a:button>
                     </a:bar>
                 </a:toolbar>
                 <a:text id="apf_console" align="left-splitter" scrolldown="true" 
-                    behavior   = "addonly" contextmenu2="mnuOptions" 
+                    behavior   = "addonly" oncontextmenu="return apf.$debugwin.$handleDataContext(event);"
                     focussable = "true" class="apf_console"
                     border     = "1 1 0 0" />
                 <a:bar skin="basic" align="right" height="30" visible="{codetype.value == 'Live Markup'}">
@@ -162,6 +176,7 @@
                         <a:markupedit id="mrkAml" 
                           onmouseover="apf.$debugwin.$mmouseover.apply(this, arguments)" 
                           onmouseout="apf.$debugwin.$mmouseout.apply(this, arguments)" 
+                          oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);"
                           model="$apf_ide_mdl" render-root="true" align="left-splitter"
                           style="border-width:1px 1px 0 0">
                             <a:expanded match="[html]" />
@@ -178,9 +193,11 @@
                         ?></a:bar>
                     </a:page>
                     <a:page caption="Data" render="runtime">
-                        <a:markupedit id="mrkData" render-root="true" anchors="0 0 0 0" empty-message="No data loaded" />
+                        <a:markupedit id="mrkData" render-root="true" 
+                            anchors="0 0 0 0" empty-message="No data loaded"
+                            oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);" />
                     </a:page>
-                    <a:page caption="Objects" margin="5 5 5 5" render="runtime">
+                    <a:page caption="Objects" margin="5 5 5 5" render="runtime" style="border-top:1px solid #c3c3c3">
                         <a:model id="$apf_ide_mdlObject" />
                             
                         <a:textbox id="txtCurObject" edge="5" align="left" height="19" realtime="true"
@@ -228,13 +245,13 @@
             </a:page>
             <a:page caption="Net" id="net" render="runtime">
                 <a:toolbar align="top" height="25">
-                    <a:bar>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Markup</a:button>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Skin</a:button>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Rpc</a:button>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Xmpp</a:button>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">WebDav</a:button>
-                        <a:button state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Http</a:button>
+                    <a:bar style="padding-left:5px">
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Markup</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Skin</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Rpc</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Xmpp</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">WebDav</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Http</a:button>
                     </a:bar>
                 </a:toolbar>
                 

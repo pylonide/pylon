@@ -99,7 +99,7 @@ apf.$debugwin = {
         
         this.$mmouseout = function(e){
             self.apf.$debugwin.highlightAmlNode(null, true);
-            e.cancelBubble = true;
+            (e || event).cancelBubble = true;
         }
         
         $apf_ide_mdlProps.exec = function(method, args, callback, options){
@@ -137,6 +137,55 @@ apf.$debugwin = {
             if (!e) e = event;
             if (e.clientY < 5)
                 apf.$debugwin.apf.$debugwin.$startResize(e.clientY);
+        }
+        
+        mnuData.onitemclick = function(e){
+            if (this.$lastObj) {
+                switch(e.value){
+                    case "doc":
+                        apf.$debugwin.showDocs(this.$lastObj);
+                        break;
+                    case "aml":
+                        apf.$debugwin.showAmlNode(this.$lastObj);
+                        break;
+                    case "data":
+                        apf.$debugwin.showCmlNode(this.$lastObj);
+                        break;
+                    case "obj":
+                        apf.$debugwin.showObject(this.$lastObj);
+                        break;
+                    case "root-data":
+                        apf.$debugwin.showXmlNode(this.$lastObj.xmlRoot);
+                        break;
+                    case "sel-data":
+                        apf.$debugwin.showXmlNode(this.$lastObj.selected);
+                        break;
+                }
+                return;
+            };
+            
+            switch(e.value){
+                case "doc":
+                    eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showDocs"));
+                    break;
+                case "aml":
+                    eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showAmlNode"));
+                    break;
+                case "data":
+                    eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showXmlNode"));
+                    break;
+                case "obj":
+                    eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showObject"));    
+                    break;
+                case "root-data":
+                    var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
+                    apf.$debugwin.showXmlNode(hasData[0]);
+                    break;
+                case "sel-data":
+                    var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
+                    apf.$debugwin.showXmlNode(hasData[1]);
+                    break;
+            }
         }
     },
     
@@ -192,6 +241,10 @@ apf.$debugwin = {
         }
     },
     
+    showDocs : function(node) {
+        tabDebug.set("docs");
+    },
+    
     showAmlNode : function(node){
         tabDebug.set(1);
         pgBrowse.set(0);
@@ -207,7 +260,7 @@ apf.$debugwin = {
             mrkAml.expandAndSelect(node);
     
             if (mrkAml.selected != node)
-                this.showObject(null, node.getAttribute("id") || "", node);
+                this.showObject(node, node.getAttribute("id") || "");
         }
     },
     
@@ -303,9 +356,14 @@ apf.$debugwin = {
         }
     },
     
-    showObject : function(id, name, obj){
+    showObject : function(obj, id, name){
         tabDebug.set(1);
         pgBrowse.set(2);
+
+        if (!name && obj && obj.$regbase) {
+            name = obj.getAttribute("id") || "Aml Node";
+            id   = this.apf.$debugwin.cache.push(obj) - 1;
+        }
 
         txtCurObject.setValue(name);
         trObject.clear("loading");
@@ -579,6 +637,83 @@ apf.$debugwin = {
         mrkData.load(xml);
     },
     
+    $handleDataContext : function(ev, obj){
+        if (obj) {
+            this.apf.$debugwin.highlightAmlNode(null, true);
+            
+            if (obj.$regbase) {
+                itInspAml.hide();
+                itInspData.hide();
+                itInspObj.show();
+                
+                var hasData = [obj.xmlRoot, obj.selected];
+                itInspRoot.setProperty("visible", hasData[0] ? 1 : 0);
+                itInspSel.setProperty("visible", hasData[1] ? 1 : 0);
+                div2.setProperty("visible", hasData[0] || hasData[1] ? 1 : 0);
+            }
+            else {
+                itInspAml.hide();
+                itInspData.hide();
+                itInspObj.show();
+                
+                itInspRoot.hide();
+                itInspSel.hide();
+                div2.hide();
+            }
+            
+            mnuData.$lastObj = obj;
+            mnuData.display(ev.x, ev.y);
+            return false;
+        }
+        
+        e = ev && ev.htmlEvent;
+        if (!e) return;
+        
+        var el = e.srcElement || e.target;
+        while (el.tagName != "A" && el.tagName != "DIV")
+            el = el.parentNode;
+
+        if (el.tagName == "A") {
+            var cl = el.getAttribute("onclick");
+            if (cl.indexOf("showObject") > -1) {
+                itInspAml.hide();
+                itInspData.hide();
+                itInspObj.show();
+                
+                itInspRoot.hide();
+                itInspSel.hide();
+                div2.hide();
+            }
+            else if (cl.indexOf("showXmlNode") > -1) {
+                itInspAml.hide();
+                itInspData.show();
+                itInspObj.show();
+                
+                itInspRoot.hide();
+                itInspSel.hide();
+                div2.hide();
+            }
+            else if (cl.indexOf("showAmlNode") > -1) {
+                itInspAml.show();
+                itInspData.hide();
+                itInspObj.show();
+                
+                var hasData = eval(cl.replace(/showAmlNode/, "$hasAmlData"));
+                itInspRoot.setProperty("visible", hasData[0] ? 1 : 0);
+                itInspSel.setProperty("visible", hasData[1] ? 1 : 0);
+                div2.setProperty("visible", hasData[0] || hasData[1] ? 1 : 0);
+            }
+            
+            mnuData.$lastCl = cl;
+            mnuData.display(ev.x, ev.y);
+            return false;
+        }
+    },
+    
+    $hasAmlData : function(amlNode){
+        return [amlNode.xmlRoot, amlNode.selected];
+    },
+    
     jRunCode : function(code, scripttype,  model){
         //#ifdef __WITH_STORAGE
         apf.storage.put("jsexec", code);
@@ -653,7 +788,7 @@ apf.$debugwin = {
 
         try {
             var str;
-            if (x.nodeType && !x.style && (!x.serialize || x.nodeType == 1 || x.nodeType == 7)) {
+            if (x.nodeType && !x.style && (!x.$regbase || x.nodeType == 1 || x.nodeType == 7)) {
                 if (x.nodeType == 1 || x.nodeType == 7) {
                     if (x.serialize) //aml
                         str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
@@ -687,8 +822,8 @@ apf.$debugwin = {
                     }
                 }
 
-                return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(" 
-                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + code.split(";").pop() + "\")'>" 
+                return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(null, " 
+                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + code.split(";").pop().replace(/"/g, "\\&quot;") + "\")'>" 
                         + out.join(" ") + " }</a>";
             }
             else {
@@ -864,7 +999,7 @@ apf.$debugwin = {
         
         var lastTime, timer, f;
         var start = $ext.offsetHeight;
-        var sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? -1 : 1) * offset);
+        var sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? 0 : 1) * offset);
         document.onmousemove = f = function(e){
             if (!e) e = event;
             

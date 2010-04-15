@@ -209,38 +209,40 @@ apf.menu = function(struct, tagName){
         this.dispatchEvent("display");
 
         //Show / hide Child Nodes Based on XML
-        var last, i, node,
-            nodes = this.childNodes,
-            c     = 0,
-            l     = nodes.length, result;
-        for (i = 0; i < l; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1) continue;
-
-            result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = apf.lm.compile(node.match, {
-                xpathmode  : 3,
-                injectself : true
-            })))(xmlNode)
-
-            if (result) {
-                node.show();
-
-                if (node.localName == "divider") {
-                    last = node;
-                    if (c == 0)
-                        node.hide();
-                    c = 0;
+        if (xmlNode) {
+            var last, i, node,
+                nodes = this.childNodes,
+                c     = 0,
+                l     = nodes.length, result;
+            for (i = 0; i < l; i++) {
+                node = nodes[i];
+                if (node.nodeType != 1) continue;
+    
+                result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = apf.lm.compile(node.match, {
+                    xpathmode  : 3,
+                    injectself : true
+                })))(xmlNode)
+    
+                if (result) {
+                    node.show();
+    
+                    if (node.localName == "divider") {
+                        last = node;
+                        if (c == 0)
+                            node.hide();
+                        c = 0;
+                    }
+                    else c++;
                 }
-                else c++;
-            }
-            else {
-                node.hide();
-
-                if (!node.nextSibling && c == 0)
-                    last.hide();
+                else {
+                    node.hide();
+    
+                    if (!node.nextSibling && c == 0)
+                        last.hide();
+                }
             }
         }
-
+        
         if (this.oOverlay) {
             if (btnWidth) {
                 this.oOverlay.style.display = "block";
