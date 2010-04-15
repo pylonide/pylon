@@ -139,6 +139,11 @@ apf.$debugwin = {
                 apf.$debugwin.apf.$debugwin.$startResize(e.clientY);
         }
         
+        //@todo dirty hack! need to fix layout engine
+        browse.addEventListener("afterrender", function(){
+            trTools.hide();
+        });
+        
         mnuData.onitemclick = function(e){
             if (this.$lastObj) {
                 switch(e.value){
@@ -880,6 +885,48 @@ apf.$debugwin = {
         apf.storage.put("apfdebug_highlight_hover", c);
         //#endif
         this.highlighthover = c;
+    },
+    
+    firstEdit : true,
+    $setEditable : function(value){
+        if (value) {
+            if (this.firstEdit) {
+                apf.getData(apf.basePath + "/debugwin/editable.css", {
+                    callback: function(data){
+                        apf.importCssString(data);
+                    }
+                });
+                
+                apf.document.documentElement.insertMarkup(apf.basePath 
+                    + "/debugwin/editable.inc");
+                
+                this.firstEdit = false;
+            }
+            alert(1)
+            apf.document.documentElement
+                .setAttribute('editable', 'true');
+        }
+        else {
+            apf.document.documentElement
+                .removeAttribute('editable');
+        }
+    },
+    
+    setEditable : function(value){
+        this.apf.$debugwin.$setEditable(value);
+
+        if (value){
+            pgBrowse.setAttribute("anchors", "61 0 0 0");
+            mrkAml.setAttribute("border", "1 1 0 1");
+            tbEdit.show();
+            trTools.show();
+        }
+        else {
+            pgBrowse.setAttribute("anchors", "25 0 0 0");
+            mrkAml.setAttribute("border", "1 1 0 0");
+            tbEdit.hide();
+            trTools.hide();
+        }
     },
     
     first : true,

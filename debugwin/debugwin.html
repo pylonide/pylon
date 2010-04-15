@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <!--script src="../apf.js"></script-->
-        <script src="apf_debugwin.js"></script>
+        <script src="../apf.js"></script>
+        <!--script src="apf_debugwin.js"></script-->
         <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
@@ -76,6 +76,8 @@
             <folder caption="My Documents" priority="4" align="left-splitter-3" />
         </a:model>
         
+        <a:model id="$apf_ide_mdlTools" src="tools.xml" />
+        
         <a:menu id="mnuOptions">
             <!--a:item visible="false">Search in docs</a:item>
             <a:divider /-->
@@ -108,7 +110,7 @@
         <a:errorbox id="errBox" left="265" top="33" />
     
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="browse">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="browse">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -157,30 +159,59 @@
                         <a:radiobutton group="rgBrowse" skin="toolbarbutton" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
                         <a:button state="true" onclick="
-                            if (this.value) {
-                                //toolbox.show();
-                                apf.$debugwin.apf.document.documentElement
-                                    .setAttribute('editable', 'true');
-                            }
-                            else {
-                                //toolbox.hide();
-                                apf.$debugwin.apf.document.documentElement
-                                    .removeAttribute('editable');
-                            }
+                            apf.$debugwin.setEditable(this.value);
                         ">Edit</a:button>
                         <a:button state="true" onclick="apf.$debugwin.apf.$debugwin.toggleHighlight(apf.$debugwin, this)">Select</a:button>
                         <a:divider />
                         <a:button submenu="mnuBrowse">Options</a:button>
                     </a:bar>
+                    <a:bar id="tbEdit" visible="false" style="background:#f2f2f2;" height="36">
+                        
+                    </a:bar>
                 </a:toolbar>
                 <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}">
                     <a:page caption="AML" render="runtime">
+                        <a:tree id="trTools" skin="doctree" 
+                          width     = "150"
+                          align     = "left-splitter"
+                          value     = "Arrow"
+                          zindex    = "1000001"
+                          border    = "1 1 0 0"
+                          startcollapsed = "false"
+                          model     = "$apf_ide_mdlTools"
+                          eachvalue = "[@name]"
+                          caption   = "[@name]"
+                          each      = "[subcat|item]"
+                          icon      = "[@icon]"
+                          drag      = "[item]"
+                          ondragout = "
+                            apf.document.execCommand('mode', null, {
+                                mode  : 'add',
+                                value : this.selected.childNodes.length
+                                  ? apf.getFirstElement(this.selected)
+                                  : this.value.toLowerCase(), 
+                                ev    : event
+                            });
+                          "
+                          onafterselect = "
+                            if (this.value == 'Arrow' || !this.value) {
+                                //apf.ContentEditable2.setMode('cursor')
+                            }
+                            else if (this.value == 'Selection') {
+                                //apf.ContentEditable2.setMode('select')
+                            }
+                            else {
+                                //apf.ContentEditable2.setMode('add', this.value.toLowerCase());
+                            }
+                          ">
+                            <a:actions />
+                        </a:tree>
                         <a:markupedit id="mrkAml" 
                           onmouseover="apf.$debugwin.$mmouseover.apply(this, arguments)" 
                           onmouseout="apf.$debugwin.$mmouseout.apply(this, arguments)" 
                           oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);"
-                          model="$apf_ide_mdl" render-root="true" align="left-splitter"
-                          style="border-width:1px 1px 0 0">
+                          model="$apf_ide_mdl" render-root="true" align="middle-splitter"
+                          border="1 1 0 0">
                             <a:expanded match="[html]" />
                         </a:markupedit>
                         <a:propedit id="pe" columns="35%,65%" model="{mrkAml.selected}" 
@@ -394,8 +425,6 @@
             <!--a:page caption="Storage">
             </a:page>
             <a:page caption="Profiler">
-            </a:page>
-            <a:page caption="Script">
             </a:page-->
             <a:page caption="Docs" id="docs" render="runtime">
                 <a:comment>this needs to be implemented using an include from ajax.org and a fallback locally</a:comment>
@@ -551,6 +580,8 @@
                 </a:pages>
             </a:page>
             <a:page caption="Packager">
+            </a:page>
+            <a:page caption="Scripts">
             </a:page>
         </a:tab>
         

@@ -3740,4 +3740,147 @@
         </a:empty>
     </a:presentation>
 </a:list>
+<a:tree name="doctree">
+    <a:style><![CDATA[
+    .docutree{
+        overflow: auto;
+        position: relative;
+        border: 1px solid #c3c3c3;
+        background-color: white;
+        cursor: default;
+    }
+
+    .docutree DIV SPAN, .dragdoctree SPAN{
+        width: 15px;
+        height: 18px;
+        background: url(images/bullet_go.png) no-repeat 3px 5px;
+        display: block;
+        margin : -3px 3px 0 -3px;
+        float : left;
+    }
+
+    .docutree DIV.pluslast SPAN,
+    .docutree DIV.plus SPAN{background-image:url(images/plus.png)}
+    
+    .docutree DIV.minlast SPAN,
+    .docutree DIV.min SPAN{background-image:url(images/min.png)}
+
+    .docutree DIV, .dragdoctree{
+        padding: 6px 3px 1px 6px;
+        height: 18px;
+
+        font-size: 8pt;
+        background : #e6e6e6 no-repeat 205px;
+        border-bottom : 1px solid #bbb;
+        margin : 1px 0 0 0;
+        white-space : nowrap;
+        text-overflow : ellipsis;
+        overflow : hidden;
+        
+        font-family: Tahoma, Arial;
+        font-size: 8.5pt;
+    }
+    
+    .docutree .focusbug{
+        padding : 0;
+        height : auto;
+        background : inherit;
+        border : 0;
+        margin : 0;
+        overflow : visible;
+    }
+    
+    .docutreeFocus div.indicate{
+        padding: 5px 3px 1px 5px;
+        border : 1px dotted gray;
+        background-position : 204px;
+        background-color : #ddd;
+    }
+    
+    .docutree blockquote div, .dragdoctree{
+        background : #f9f9f9 no-repeat 12px;
+        padding-left : 31px;
+        padding-top : 4px;
+        border : 0;
+        margin : 0;
+        cursor : default;
+    }
+    
+    .dragdoctree{
+        /*opacity : 0.8;
+        filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);*/
+    }
+    
+    .docutree blockquote div.hover{
+        background-color : #eee;
+    }
+    
+    .docutree blockquote div.indicate, .dragdoctree{
+        color: white;
+        background-color: #25a8e7;
+    }
+    
+    .docutreeFocus blockquote div.indicate{
+        background-color : #ddd;
+        background-position : 12px;
+        padding : 4px 3px 1px 31px;
+        border : 0;
+        color: white;
+        background-color: #25a8e7;
+    }
+    
+    .docutree blockquote div span{
+        display : none;
+    }
+    
+    .docutree BLOCKQUOTE{
+        margin: 0;
+        display: none;
+        height: 0;
+        overflow: hidden;
+        background: repeat-y 0px center;
+    }
+    
+    .docutree .message{
+        text-align: center;
+        padding: 8px 10px 0 0;
+        color: #AAA;
+    }
+]]>
+    </a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="true" openclose="onmousedown">
+            <div class="docutree">
+
+            </div>
+        </a:main>
+        <a:item
+        class        = "."
+        caption      = "text()"
+        icon         = "."
+        openclose    = "span"
+        select       = "."
+        container    = "following-sibling::blockquote"
+    >
+            <div><span> </span>-
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragdoctree'>
+                <span> </span>-
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
 </a:skin>

@@ -1,0 +1,123 @@
+.idegrabber{
+    border : 1px solid midnightblue;
+    background : white;
+    width : 6px;
+    height : 6px;
+    position : absolute;
+    overflow : hidden;
+    z-index : 1000000;
+}
+
+.idegrabber:hover, .idegrabber_resizing{
+    background : midnightblue;
+    border-color : white;
+}
+.idegrabber_selected, .idegrabber_selected:hover{
+    background : #ddd;
+    border-color : gray white white gray;
+}
+.idegrabber_disabled, .idegrabber_disabled:hover{
+    background : gray;
+    border : 1px solid white;
+}
+
+.pointer_left, .pointer_right{
+    position : absolute;
+	border : 1px solid transparent;
+	overflow : hidden;
+	z-index : 1000000;
+	cursor : crosshair;
+}
+.pointer_left{
+    left : 0px;
+	top : 0px;
+	border-width : 0px 1px 1px 0px;
+}
+.pointer_right{
+	right : 0px;
+	bottom : 0px;
+	border-width : 1px 0px 0px 1px;
+}
+
+.new_element{
+    position : absolute;
+	border : 1px dotted black;
+	display : none;
+	overflow : hidden;
+	z-index : 1000000;
+}
+
+.bordertop{
+    border-top:1px solid #c3c3c3;
+}
+
+.editable .table, .editable .label, .editable .vbox, .editable .hbox{
+    border : 1px dotted gray;
+}
+
+.editable .tb, .editable .ta{
+    cursor : default;
+}
+
+.table .tb{
+    width : 100%;
+}
+
+.dragindicate{
+    overflow : hidden;
+    background : red;
+}
+
+.indicate_table{
+    background : transparent;
+    border : 2px solid red;
+}
+
+.indicate_common{
+    background : transparent;
+    border : 4px dashed #24a3f4;
+}
+
+.indicate_horizontal{
+    border-style : solid;
+}
+
+.dragreparent{
+    background : transparent;
+    border : 2px solid orange;   
+}
+
+.dragelsort{
+    background : transparent;
+    border : 10px solid #eee;   
+}
+
+#txt_rename.editable{
+    /*border : 1px solid #327fbd;*/
+    background : white;
+    width : auto;
+    display : inline;
+    min-width : 9px;
+    width : 100%;
+    padding : 0px 2px 0px 2px;
+    margin : 0px -2px -0px -2px;
+    cursor : text;
+    white-space : normal;
+}
+
+.apf_btn #txt_rename.editable{
+    width : 100%;
+    padding : 0;
+    margin : 0;
+    white-space : nowrap;
+}
+
+.window>.title>#txt_rename.editable{
+    background : black;
+    width : auto;
+}
+
+.buttonbar{
+    position : relative;
+    top : -2px;
+}
