@@ -594,98 +594,117 @@
 </a:tab>
 <a:button name="toolbarbutton">
     <a:style><![CDATA[
-        .menubar .toolbarbutton {
-            display: block;
-            height: 18px;
-            float: left;
-            cursor: default;
-            padding: 4px 8px 0 8px;
-            line-height: 13px;
-            text-decoration: none;
-            color: #000000;
+        .debugger_menubar .debugger_toolbarbutton {
+            display         : block;
+            height          : 15px;
+            float           : left;
+            cursor          : default;
+            line-height     : 13px;
+            text-decoration : none;
+            color           : #000000;
         }
 
-        .menubar .toolbarbuttonOver, .menubar .toolbarbuttonDown {
+        .debugger_menubar .debugger_toolbarbuttonOver, 
+        .debugger_menubar .debugger_toolbarbuttonDown {
             background : #45b3e8 url(images/menu_over.gif);
-            color : #ffffff;
+            color      : #ffffff;
         }
 
-        .menubar .toolbarbuttonDown, .menubar .toolbarbuttonDown {
+        .debugger_menubar .debugger_toolbarbuttonDown, 
+        .debugger_menubar .debugger_toolbarbuttonDown {
             background : #45b3e8 url(images/menu_down.gif);
-            color : #ffffff;
+            color      : #ffffff;
         }
 
-        .menubar .toolbarbuttonDisabled, .menubar .toolbarbuttonDisabled {
+        .debugger_menubar .debugger_toolbarbuttonDisabled, 
+        .debugger_menubar .debugger_toolbarbuttonDisabled {
             background : none;
-            color : #bebebe;
+            color      : #bebebe;
         }
 
-        .toolbar .subbar .toolbarbutton {
-            display: block;
-            height: 22px;
-            float: left;
-            cursor: default;
-            margin: 2px 1px 0 1px;
-            text-decoration: none;
-            color: #000000;
-            text-align: center;
-            padding: 0 4px 0 0;
-            line-height: 13px;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbutton {
+            display         : block;
+            height          : 15px;
+            float           : left;
+            cursor          : default;
+            margin          : 6px 1px 0 1px;
+            text-decoration : none;
+            color           : #000000;
+            text-align      : center;
+            padding         : 0 7px 0 0;
+            line-height     : 13px;
         }
 
-        .toolbar .subbar .toolbarbutton div {
-            float: left;
-            margin: 0;
-            height: 17px;
-            padding: 4px 4px 0 8px;
-            border: 0;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbutton DIV {
+            float        : left;
+            margin       : 0;
+            height       : 15px;
+            border       : 0;
+            padding-left : 7px;
         }
 
-        .toolbar .subbar .toolbarbuttonOver {
-            background: url("images/toolbar_a_hover_right.png") no-repeat top right;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonOver {
+            background-image    : url("images/debugger_toolbarbutton_right.png");
+            background-repeat   : no-repeat;
+            background-position : top right;
         }
 
-        .toolbar .subbar .toolbarbuttonOver div {
-            background: url("images/toolbar_a_hover.png") no-repeat top left;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonOver DIV {
+            background-image    : url("images/debugger_toolbarbutton_left.png");
+            background-repeat   : no-repeat;
+            background-position : top left;
+            color               : #555555;
         }
 
-        .toolbar .subbar .toolbarbuttonDown, .toolbar .subbar .toolbarbuttonChecked {
-            background: url("images/toolbar_a_down_right.png") no-repeat top right;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonDown, 
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonChecked {
+            background-image    : url("images/debugger_toolbarbutton_right.png");
+            background-repeat   : no-repeat;
+            background-position : right -15px;
         }
 
-        .toolbar .subbar .toolbarbuttonDown div, .toolbar .subbar .toolbarbuttonChecked div {
-            background: url("images/toolbar_a_down.png") no-repeat top left;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonDown DIV, 
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonChecked DIV {
+            background-image    : url("images/debugger_toolbarbutton_left.png");
+            background-repeat   : no-repeat;
+            background-position : left -15px;
+            color               : white;
         }
 
-        .toolbar .subbar .toolbarbuttonDisabled, .toolbar .subbar .toolbarbuttonDisabled div {
-            background: none;
-            color: #bebebe;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonDisabled, 
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonDisabled DIV {
+            background : none;
+            color      : #555555;
         }
 
-        .toolbar .subbar .toolbarbuttonIcon div{
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonIcon DIV {
             padding-left : 4px;
         }
 
-        .toolbar .subbar .toolbarbuttonEmpty div{
-            padding: 4px 0 0 7px;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonEmpty DIV {
+            padding : 4px 0 0 7px;
         }
 
-        .toolbar .subbar .toolbarbuttonIcon span{
-            display: block;
-            float:left;
-            width: 16px;
-            height: 16px;
-            margin: -2px 4px 0 0;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonIcon SPAN {
+            display : block;
+            float   : left;
+            width   : 16px;
+            height  : 16px;
+            margin  : -2px 4px 0 0;
         }
 
-        .toolbar .subbar .toolbarbuttonEmpty span{
-            margin: -1px 3px 0 0;
+        .debugger_toolbar .debugger_subbar .debugger_toolbarbuttonEmpty SPAN {
+            margin : -1px 3px 0 0;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main caption="div/text()" label="div/text()" background="div/span" icon="div/span">
-            <div class='toolbarbutton'><div><span> </span>-</div></div>
+        <a:main 
+          caption    = "div/text()" 
+          label      = "div/text()" 
+          background = "div/span" 
+          icon       = "div/span">
+            <div class="debugger_toolbarbutton"><div><span> </span>-</div></div>
         </a:main>
     </a:presentation>
 </a:button>
@@ -1138,76 +1157,78 @@
 </a:list>
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
-        .toolbar .menubar {
-            background: url(images/menubar_row.png) repeat-x top left;
-            height: 21px;
-            font-family: Verdana;
-            font-size: 11px;
-            border-bottom: 1px solid #c3c3c3;
-            position: relative;
+        .debugger_toolbar .debugger_menubar {
+            background    : url(images/menubar_row.png) repeat-x top left;
+            height        : 21px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            border-bottom : 1px solid #c3c3c3;
+            position      : relative;
         }
 
-        .toolbar .subbar {
-            background: url(images/toolbar_row.png) repeat-x top left;
-            height: 25px;
-            font-family: Verdana;
-            font-size: 11px;
-            border-bottom: 1px solid #c3c3c3;
-            position: relative;
-            padding: 0;
-            width : 100%;
+        .debugger_toolbar .debugger_subbar {
+            background    : url(images/toolbar_row.png) repeat-x top left;
+            height        : 25px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            border-bottom : 1px solid #c3c3c3;
+            position      : relative;
+            padding       : 0;
+            width         : 100%;
         }
         
-        .toolbar>.subbar>*{
+        .debugger_toolbar>.debugger_subbar>* {
             display : inline-block;
-            float : left;
-            margin : 2px;
+            float   : left;
+            margin  : 2px;
         }
         
-        .toolbar>.subbar>.hbox, .toolbar>.subbar>.vbox, .toolbar>.subbar>.table{
+        .debugger_toolbar>.debugger_subbar>.hbox, 
+        .debugger_toolbar>.debugger_subbar>.vbox, 
+        .debugger_toolbar>.debugger_subbar>.table {
             display : block;
-            float : none;
-            margin : 0;
+            float   : none;
+            margin  : 0;
         }
 
-        .toolbar>.subbar>.divider {
-            border-left: 1px solid #c3c3c3;
-            border-right: 1px solid #FFFFFF;
-            height: 17px;
-            float: left;
-            margin: 4px 0 0 0;
+        .debugger_toolbar>.debugger_subbar>.divider {
+            border-left  : 1px solid #c3c3c3;
+            border-right : 1px solid #FFFFFF;
+            height       : 17px;
+            float        : left;
+            margin       : 4px 0 0 0;
         }
         
-        .tbright{
+        .tbright {
             border-width : 0 0 0 1px;
             border-style : solid;
-            border-color:#c3c3c3;
+            border-color : #c3c3c3;
         }
-        .tbleft{
+        .tbleft {
             border-width : 0 1px 0 0;
             border-style : solid;
-            border-color:#c3c3c3;
+            border-color : #c3c3c3;
         }
         
-        .tbbottom .subbar{
+        .tbbottom .subbar {
             border-bottom : 0;
         }
     ]]></a:style>
 
     <a:presentation>
         <a:main container=".">
-            <div class="toolbar"> </div>
+            <div class="debugger_toolbar"> </div>
         </a:main>
         <a:bar container="." inherit="true">
-            <div class="subbar"> </div>
+            <div class="debugger_subbar"> </div>
         </a:bar>
         <a:menubar container="." inherit="true">
-            <div class="menubar">
+            <div class="debugger_menubar">
             </div>
         </a:menubar>
         <a:button link="toolbarbutton" inherit="true" />
         <a:divider inherit="true">
-            <div class='divider'> </div>
+            <div class="divider"> </div>
         </a:divider>
     </a:presentation>
 </a:toolbar>
