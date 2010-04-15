@@ -85,7 +85,7 @@ apf.$debugwin = {
         
         var _self = this, excl = {"DIV":1,"BLOCKQUOTE":1,"SPAN":1,"I":1};
         this.$mmouseover = function(e){
-            if (!cbHighlightHover.checked)
+            if (!cbHighlightHover.checked || mnuData.visible)
                 return;
             
             var oHtml = e.htmlEvent.srcElement || e.htmlEvent.target;
@@ -243,6 +243,8 @@ apf.$debugwin = {
     
     showDocs : function(node) {
         tabDebug.set("docs");
+        //debugger;
+        //node.$regbase
     },
     
     showAmlNode : function(node){
@@ -567,6 +569,7 @@ apf.$debugwin = {
         
         if (!pNode && displayName) {
             xml.firstChild.setAttribute("display", displayName);
+            xml.firstChild.setAttribute("name", ref);
             xml.firstChild.setAttribute("expand", "true");
             if (o.$isSingleValue)
                 apf.mergeXml(this.analyze(xml.firstChild, name), xml.firstChild);
@@ -791,7 +794,7 @@ apf.$debugwin = {
             if (x.nodeType && !x.style && (!x.$regbase || x.nodeType == 1 || x.nodeType == 7)) {
                 if (x.nodeType == 1 || x.nodeType == 7) {
                     if (x.serialize) //aml
-                        str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
+                        str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='if(!mnuData.visible) apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
                             + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
                             + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
                     //else if (x.style) //html

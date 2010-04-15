@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <script src="../apf.js"></script>
-        <!--script src="apf_debugwin.js"></script-->
+        <!--script src="../apf.js"></script-->
+        <script src="apf_debugwin.js"></script>
         <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
@@ -105,13 +105,13 @@
             <a:item id="itInspSel" value="sel-data">Inspect element's selected item</a:item>
         </a:menu>
         
-        <a:errorbox id="errBox" left="-5" top="-13" />
+        <a:errorbox id="errBox" left="265" top="33" />
     
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="browse">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="browse">
             <a:page caption="Console">
-                <a:toolbar align="left" width="70%" height="25" class="tbbottom tbleft">
-                    <a:bar style="padding-left:5px">
+                <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
+                    <a:bar style="padding-left:3px">
                         <a:button id="btnLog" onclick="apf.$debugwin.updateLog()" 
                             skin="toolbar_radio"
                             state="true">Logs</a:button>
@@ -138,7 +138,7 @@
                 <a:textarea id="txtCode" realtime="true" align="right" 
                     onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
                     border    = "1 0 1 1" />
-                <a:toolbar align="right" height="25" class="tbbottom tbright">
+                <a:toolbar align="right" height="25" border="0 0 0 1">
                     <a:bar>
                         <a:hbox edge="2 0 0 2">
                             <a:button skin="toolbarbutton" onclick="apf.$debugwin.jRunCode(txtCode.value, codetype.value, txtModel.value);" tooltip="Run the code (Ctrl-Enter)">
@@ -156,16 +156,18 @@
                         <a:radiobutton group="rgBrowse" skin="toolbarbutton" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
                         <a:radiobutton group="rgBrowse" skin="toolbarbutton" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
-                        <!--a:button state="true" onclick="
+                        <a:button state="true" onclick="
                             if (this.value) {
-                                top.toolbox.show();
-                                top.app.setAttribute('editable', 'true');
+                                //toolbox.show();
+                                apf.$debugwin.apf.document.documentElement
+                                    .setAttribute('editable', 'true');
                             }
                             else {
-                                top.toolbox.hide();
-                                top.app.setAttribute('editable', 'false');
+                                //toolbox.hide();
+                                apf.$debugwin.apf.document.documentElement
+                                    .removeAttribute('editable');
                             }
-                        ">Edit</a:button-->
+                        ">Edit</a:button>
                         <a:button state="true" onclick="apf.$debugwin.apf.$debugwin.toggleHighlight(apf.$debugwin, this)">Select</a:button>
                         <a:divider />
                         <a:button submenu="mnuBrowse">Options</a:button>
@@ -394,15 +396,13 @@
             <a:page caption="Profiler">
             </a:page>
             <a:page caption="Script">
-            </a:page>
-            <a:page caption="Testing">
             </a:page-->
             <a:page caption="Docs" id="docs" render="runtime">
                 <a:comment>this needs to be implemented using an include from ajax.org and a fallback locally</a:comment>
                 <a:include src="docs.xml" />
             </a:page>
-            <!--a:comment-->
-            <a:page caption="Macro Recorder" id="macro" render="runtime">
+            <a:divider />
+            <a:page caption="Macros" id="macro" render="runtime">
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
                         <a:window 
@@ -550,7 +550,8 @@
 
                 </a:pages>
             </a:page>
-            <!--/a:comment-->
+            <a:page caption="Packager">
+            </a:page>
         </a:tab>
         
         <a:script>//<!--

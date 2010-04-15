@@ -94,6 +94,7 @@ apf.menu = function(struct, tagName){
     
     this.anim   = true;
     this.zindex = 10000000;
+    this.visible = false;
 
     this.$booleanProperties["anim"] = true;
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){

@@ -47,6 +47,7 @@ apf.ChildValue = function(){
         }
         else
         //#endif
+        if (this[this.$childProperty] != v)
             this.setProperty(this.$childProperty, v);
     });
     

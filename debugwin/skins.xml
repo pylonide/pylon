@@ -402,6 +402,13 @@
             margin  : 0 3px 0 0;
             padding : 0;
         }
+        
+        .debug2010tab .btncontdebug .tabdiv{
+            display : block;
+            float : left;
+            width : 10px;
+            height : 10px;
+        }
     
         .debug2010tab .btncontdebug DIV {
             background : url(images/debugger_tab_left.png) no-repeat 0 -44px;
@@ -587,6 +594,9 @@
                 </div>
             </div>
         </a:button>
+        <a:divider inherit="true">
+            <span class="tabdiv"> </span>
+        </a:divider>
         <a:page container="." inherit="true">
             <div class="page"> </div>
         </a:page>
@@ -1257,6 +1267,11 @@
 </a:list>
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
+        .dbg_toolbar{
+            border : 0px solid #c3c3c3;
+            overflow : hidden;
+        }
+        
         .dbg_toolbar .dbg_menubar {
             background    : url(images/menubar_row.png) repeat-x top left;
             height        : 21px;
@@ -1297,21 +1312,6 @@
             height       : 17px;
             float        : left;
             margin       : 4px 0 0 0;
-        }
-        
-        .tbright {
-            border-width : 0 0 0 1px;
-            border-style : solid;
-            border-color : #c3c3c3;
-        }
-        .tbleft {
-            border-width : 0 1px 0 0;
-            border-style : solid;
-            border-color : #c3c3c3;
-        }
-        
-        .tbbottom .dbg_subbar {
-            border-bottom : 0;
         }
     ]]></a:style>
 

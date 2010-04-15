@@ -155,7 +155,7 @@ apf.ContentEditable2 = function() {
             apf.ContentEditable2.removeInteraction(this);
             
             //@todo hack!
-            apf.ContentEditable2.resize.hide();
+            //apf.ContentEditable2.resize.hide();
             
             apf.setStyleClass(this.$ext, "", ["editable"]);
         }

@@ -77,6 +77,9 @@ apf.divider = function(struct, tagName){
      * @private
      */
     this.$draw = function() {
+        if (this.parentNode.isPaged && this.parentNode.$buttons)
+            this.$pHtmlNode = this.parentNode.$buttons;
+        
         if (this.$isLeechingSkin) {
             this.$ext = apf.insertHtmlNode(
                 this.parentNode.$getLayoutNode("divider"), this.$pHtmlNode);
