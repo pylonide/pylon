@@ -58,8 +58,6 @@ apf.gallery = function(struct, tagName){
     this.thumbnailMode = "grid";
     this.title         = "text";
     
-    this.thumbsInited    = false;
-    
     this.nodes         = [];
     
     this.tmrRefresh    = null;
@@ -193,7 +191,8 @@ apf.gallery = function(struct, tagName){
                                 
                                 if (iHeight > 0 && iWidth > 0 && tHeight > 0) {
                                     this.style.height = tHeight + "px";
-                                    this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
+                                    if (this.parentNode)
+                                        this.parentNode.style.width = this.style.width = parseInt(iWidth * tHeight/iHeight) + "px";
                                 }
                             }
                         }
@@ -229,22 +228,18 @@ apf.gallery = function(struct, tagName){
     this.loading = false;
     this.$show = function() {
         var _self = this;
-        this.$oImage.src = "about:blank";
+        //this.$oImage.src = "about:blank";
         this.$showLoader();
         
         if (this.imageheight !== "auto")
             this.$oImageContainer.style.height = this.$oViewport.style.height = this.imageheight + "px";
-
+        
         this.initiateThumbnailEvents();
         
         if (this.thumbnailMode == "bar") {
             this.calcThumbBarSize();
         }
-        
-        var propChange = function (name, old, value) {
-            alert("update")
-        }
-        
+
         this.$oImage.onload = function() {
             _self.$hideLoader();
             _self.$oImageBase.src = _self.$oImage.src;
@@ -365,12 +360,6 @@ apf.gallery = function(struct, tagName){
         
         if (!this.isOnStack)
             this.$showLoader();
-            
-        if (!this.thumbsInited) {
-            this.initiateThumbnailEvents();
-            this.thumbsInited = true;
-        }
-            
         
         var _self = this;
         clearTimeout(this.tmrRefresh);
@@ -578,7 +567,6 @@ apf.gallery = function(struct, tagName){
                 };
             }
         }
-        
         this.setDescription();
         this.$refresh();
     });
@@ -764,8 +752,8 @@ apf.gallery = function(struct, tagName){
             e = e || event;
             var target = e.target || e.srcElement;
             
-            if (!_self.arrowsAreVisible)
-                return;
+            /*if (!_self.arrowsAreVisible)
+                return;*/
 
             target = e.toElement 
                 ? e.toElement 
@@ -775,7 +763,7 @@ apf.gallery = function(struct, tagName){
             
             if (apf.isChildOf(_self.$oImageContainer, target, true))
                 return;
-                
+            alert("onmouseout event")
             _self.arrowsInvisible = {
                 stop : false
             };
@@ -800,25 +788,19 @@ apf.gallery = function(struct, tagName){
             });
         };
         
-        //if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
-          //  var _self      = this;
-            var propChange = function (name, old, value) {
-                alert("visible property watcher has been executed.")
-            }
+        //Refresh when gallery is shown
+        var propChange = function (name, old, value) {
+            _self.initiateThumbnailEvents();
+        }
 
-            this.$isWaitingOnDisplay = true;
-            this.watch("visible", propChange);
-            
-            var p = this.parentNode;
-            while(p) {
-                p.watch("visible", propChange);
-                p = p.parentNode;
-            }
-            
-            
-            //return;
-        //};
+        this.$isWaitingOnDisplay = true;
+        this.watch("visible", propChange);
 
+        var p = this.parentNode;
+        while(p) {
+            p.watch("visible", propChange);
+            p = p.parentNode;
+        }
     };
 }).call(apf.gallery.prototype = new apf.BaseList());
 
