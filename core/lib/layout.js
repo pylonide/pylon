@@ -1268,7 +1268,11 @@ apf.layout = {
     getHtmlId : function(oHtml){
         //if(apf.hasSingleRszEvent) return 1;
         //else
+        try{
         return oHtml.getAttribute ? oHtml.getAttribute("id") : 1;
+    }catch(e){
+        debugger;
+    }
     },
 
     /**

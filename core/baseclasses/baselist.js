@@ -554,7 +554,6 @@ apf.BaseList = function(){
             }
         }
 
-        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.$applyBindRule("Caption", xmlNode);
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1) {

@@ -881,7 +881,7 @@ apf.slider = function(struct, tagName){
         // #endif
     };
 
-    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+    this.$loadAml = function(){
         if (this.max == 1000001)
             this.setProperty("max", 1);
         //this.$propHandlers["value"].call(this, this.value);
@@ -893,7 +893,7 @@ apf.slider = function(struct, tagName){
             "apf.all[" + this.$uniqueId + "].$resize()", true);
         apf.layout.queue(this.$ext);
         //#endif
-    });
+    };
 
     this.$destroy = function(){
         this.oKnob.onmousedown =

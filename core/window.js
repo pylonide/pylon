@@ -461,7 +461,7 @@ apf.window = function(){
             var next, node = amlNode, skip;
             while (node) {
                 if (!skip && node.focussable !== false && node.$focussable === true && !node.$tabList
-                  && (ignoreVisible || node.$ext.offsetHeight) && !node.disabled) {
+                  && (ignoreVisible || node.$ext && node.$ext.offsetHeight) && !node.disabled) {
                     this.$focus(node, e, true);
                     break;
                 }

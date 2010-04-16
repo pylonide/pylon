@@ -328,8 +328,21 @@ apf.tree = function(struct, tagName){
 
         var elCaption = this.$getLayoutNode("item", "caption");
         if (elCaption) {
-            apf.setNodeValue(elCaption,
-                this.$applyBindRule("caption", xmlNode));
+            //#ifdef __WITH_AML_IN_BINDINGS
+            if (elCaption.nodeType == 1 
+              && this.$cbindings.caption && this.$cbindings.caption.hasAml){
+                var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                
+                elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
+                    + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                apf.setNodeValue(elCaption, "");
+            }
+            else
+            //#endif
+            {
+                apf.setNodeValue(elCaption,
+                    this.$applyBindRule("caption", xmlNode));
+            }
         }
         
         var strTooltip = this.$applyBindRule("tooltip", xmlNode)
@@ -360,16 +373,19 @@ apf.tree = function(struct, tagName){
         }
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
-            /*if (elCaption.nodeType == 1)
-                elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
-            else
-                elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);*/
+            //if (elCaption.nodeType != 1)
+                //elCaption = elCaption.parentNode;
             
-            if (elCaption.nodeType != 1)
-                elCaption = elCaption.parentNode;
-
-            elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
+            if (elCaption.nodeType == 1) {
+                //#ifdef __WITH_AML_IN_BINDINGS
+                if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
+                //#endif
+                    elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
+            }
+            else
+                elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
         }
         
         var strTooltip = this.$applyBindRule("tooltip", xmlNode);
