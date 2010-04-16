@@ -510,6 +510,7 @@
                         </data>
                     </a:model>
                     
+                    <!-- @todo Linh, please move this to a seperate file -->
                     <a:script>//<!--
                         var o3_mouseTranslate = [3,4];
                         var macroList = [];
@@ -534,15 +535,16 @@
                         apf.$debugwin.apf.uirecorder.$o3 = $o3;
                         
                         // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
-                        (function loadData() {
-                            if ($o3.fs.get("macros.xml").exists)
-                                mdlMacro.load(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
-                            if ($o3.fs.get("playlists.xml").exists)
-                                mdlPlaylist.load(apf.getXml($o3.fs.get("playlists.xml").data) || apf.getXml("<data/>"));
-                            
-                            mdlMacro.addEventListener("update", saveMacros);
-                            mdlPlaylist.addEventListener("update", savePlaylists);
-                        })();
+                        if ($o3)
+                            (function loadData() {
+                                if ($o3.fs.get("macros.xml").exists)
+                                    mdlMacro.load(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
+                                if ($o3.fs.get("playlists.xml").exists)
+                                    mdlPlaylist.load(apf.getXml($o3.fs.get("playlists.xml").data) || apf.getXml("<data/>"));
+                                
+                                mdlMacro.addEventListener("update", saveMacros);
+                                mdlPlaylist.addEventListener("update", savePlaylists);
+                            })();
                         
                         function saveMacros(e) {
                             if ($o3.fs.get("macros.xml").data != mdlMacro.getXml().xml) {
