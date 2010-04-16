@@ -467,6 +467,7 @@
                                     <a:button id="btnPlay" width="50" onclick="playSingleMacro()">Play</a:button>
                                     <a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
                                     <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button>
+<!--a:checkbox id="cbMax">Max</a:checkbox-->
                                 </a:bar>
                             </a:toolbar>
                         <!--/a:bar-->
@@ -506,6 +507,10 @@
                     
                     <a:script>//<!--
                         var o3_mouseTranslate = [3,4];
+                        var macroList = [];
+                        var curMacroIdx = 0;
+                        var speed = "realtime";
+
                         var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
                             // o3 plugin not found
                             oninstallprompt : function(){
@@ -572,7 +577,8 @@
                             btnRec.setProperty("disabled", true);
 
                             // play selected macro
-                            apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, "realtime", $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+//speed = (cbMax.checked) ? "max" : "realtime";
+                            apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
                             apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlaybackComplete);
                         }
                         
@@ -584,7 +590,7 @@
 
                             // select current playing macro
                             apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "macro_playing");
-                            apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], "realtime", $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+                            apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
                             apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlayNextMacro);
                         }
                         
@@ -608,6 +614,11 @@
                             else {
                                 onPlaybackComplete(e);
                                 trPlaylist.select(trPlaylist.selected);
+                                
+                                // reset classes for macros
+                                for (var i = 0, l = macroList.length; i < l; i++) {
+                                    apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["macro_playing", "macro_finished"]);
+                                }
                             }
                         }
                         
@@ -620,8 +631,6 @@
                             trPlaylist.startRename();
                         }
                         
-                        var macroList = [];
-                        var curMacroIdx = 0;
                         function playPlaylist() {
                             if (!trPlaylist.selected) {
                                 alert("no playlist selected"); 
@@ -631,14 +640,11 @@
                                 ? trPlaylist.selected.selectNodes("test")
                                 : trPlaylist.selected.parentNode.selectNodes("test");
                             if (!macroList.length) {
-                                debugger;
                                 alert("no macros to play");
                                 return;
                             }
-                            for (var i = 0, l = macroList.length; i < l; i++) {
-                                apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["macro_playing", "macro_finished"]);
-                            }
                             curMacroIdx = 0;
+//speed = (cbMax.checked) ? "max" : "realtime";
                             playMacro();
                         }
                         

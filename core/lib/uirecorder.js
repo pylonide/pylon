@@ -266,7 +266,8 @@ apf.uirecorder.capture = {
             if (action.keyActionIdx != undefined) {
                 aNode.setAttribute("keyActionIdx"  , action.keyActionIdx);
                 if (action.amlNode) {
-                    aNode.setAttribute("caption", action.name + " (" + this.getCaption(action.amlNode) + ")");
+// caption not needed for debugwin, disabled for now
+//aNode.setAttribute("caption", action.name + " (" + this.getCaption(action.amlNode) + ")");
                     //if (action.amlNode.caption) aNode.setAttribute("caption", action.name + " (" + action.amlNode.caption + ")");
                 }
                 else if (action.target) {
@@ -464,8 +465,8 @@ apf.uirecorder.playback = {
     // init playback of action
     $playAction : function() {
         this.$curAction = this.$curTestXml.childNodes[this.$curActionIdx];
-        //if (this.$curAction.getAttribute("name") == "mousemove")
-            //this.$nextAction();
+        if (this.$curAction.getAttribute("name") == "mousemove")
+            this.$nextAction();
             
         if (this.$playSpeed == "realtime") {
             if (this.$playTimer) {
@@ -474,7 +475,6 @@ apf.uirecorder.playback = {
             }
             var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - this.$startTime);
             if (timeout > 0) {
-            apf.console.info("timeout: " + timeout);
                 this.$playTimer = setTimeout(function() {
                     apf.uirecorder.playback.$execAction();
                 }, timeout);
@@ -484,7 +484,12 @@ apf.uirecorder.playback = {
             else {
                 this.$execAction();
             }
-        } 
+        }
+        else {
+            this.$playTimer = setTimeout(function() {
+                apf.uirecorder.playback.$execAction();
+            }, 100);
+        }
     },
     
     $execAction : function() {
