@@ -1033,6 +1033,7 @@ apf.$debugwin = {
     hide : function(){
         this.$ext.style.display = "none";
         document.body.style.bottom = "0";
+        document.body.focus();
         
         /*if (apf.isIE8) {
             document.body.style.overflow = "";

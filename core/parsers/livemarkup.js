@@ -2432,7 +2432,8 @@ apf.lm_exec = new (function(){
             return  _a.ret[i]=(func)?obj[func].apply(obj,args):obj.apply(obj,args);
 
         var cb = function(data, state, extra){
-            delete _w._pc;
+            if (_w)
+                delete _w._pc;
             
             if (state != apf.SUCCESS){
                 _c(null, state, extra);

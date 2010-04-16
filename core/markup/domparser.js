@@ -130,7 +130,7 @@ apf.DOMParser.prototype = new (function(){
             if (options.include) {
                 var n = amlNode.childNodes;
                 var p = n.indexOf(options.beforeNode);
-                var rest = n.splice(p, n.length - p);
+                var rest = p ? n.splice(p, n.length - p) : [];
             }
         }
 

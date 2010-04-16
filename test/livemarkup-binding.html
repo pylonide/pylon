@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+
+        <a:list each="[mail]" align="right">
+            <a:caption><?lm
+                <a:button>test</a:button> [@name]
+            ?></a:caption>
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                    <mail name="Mail 2"></mail>
+                    <mail name="Mail 3"></mail>
+                </data>
+            </a:model>
+        </a:list>
+    </body>
+</html>

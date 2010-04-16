@@ -150,6 +150,7 @@ apf.BaseList = function(){
     };
     
     //@todo unsetter
+    //#ifdef __WITH_TEMPLATE
     this.$propHandlers["template"] = function(value){
         this.$template = typeof value == "object" 
           ? value 
@@ -212,6 +213,7 @@ apf.BaseList = function(){
         //@todo changing template
         this.$checkLoadQueue();
     };
+    //#endif
 
     /**** Keyboard support ****/
 
@@ -554,7 +556,7 @@ apf.BaseList = function(){
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1)
-                elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
+                elCaption.innerHTML = this.$applyBindRule("caption", xmlNode, null, null, elCaption);
             else
                 elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
         }
@@ -692,7 +694,7 @@ apf.BaseList = function(){
 
         if (elCaption) {
             apf.setNodeValue(elCaption,
-                this.$applyBindRule("caption", xmlNode));
+                this.$applyBindRule("caption", xmlNode, null, null, elCaption));
         }
         oItem.setAttribute("title", this.$applyBindRule("tooltip", xmlNode) || "");
 

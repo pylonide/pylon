@@ -241,12 +241,49 @@ apf.DataBinding = function(){
     };
     
     //@todo apf3.0 contentEditable support
-    this.$applyBindRule = function(name, xmlNode, defaultValue, callback){
+    //#ifdef __WITH_AML_IN_BINDINGS
+    this.$bindingQueue = [];
+    //#endif
+    this.$applyBindRule = function(name, xmlNode, defaultValue, callback, oHtml){
         var handler = this.$attrBindings[name] 
           && this.$attrBindings[name].cvalue || this.$cbindings[name];
 
-        return handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
+        var result = handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
+        
+        //#ifdef __WITH_AML_IN_BINDINGS
+        if (oHtml && result.indexOf("<a:") > -1) {
+            alert(result);
+            return "<div id='placeholder_" + this.$uniqueId + "_"
+                + (this.$bindingQueue.push(result, oHtml) - 1) + "'></div>";
+        }
+        //#endif
+        
+        return result;
     };
+
+    //#ifdef __WITH_AML_IN_BINDINGS
+    this.addEventListener("afterload", function(){
+        var div, doc = this.ownerDocument, domParser = doc.$domParser, 
+            docFrag = doc.createDocumentFragment(),
+            sStart  = "<a:application xmlns:a='" + apf.ns.aml + "'>",
+            sEnd    = "</a:application>";
+
+        for (var i = 0, l = this.$bindingQueue.length; i < l; i++) {
+            div = document.getElementById("placeholder_" 
+                + this.$uniqueId + "_" + i);
+            docFrag.$int = div.parentNode;
+            div.parentNode.removeChild(div);
+            domParser.parseFromXml(apf.getXml(sStart + this.$bindingQueue[i] + sEnd), { //@todo might be optimized by doing it only once
+                doc        : doc,
+                amlNode    : docFrag,
+                beforeNode : null,
+                include    : true
+            });
+        }
+        
+        this.$bindingQueue = [];
+    });
+    //#endif
     
     this.$hasBindRule = function(name){
         return this.$attrBindings[name] || this.$bindings 
