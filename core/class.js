@@ -423,7 +423,7 @@ apf.Class.prototype = new (function(){
         //#endif
 
         //Compile pValue through JSLT parser
-        //#ifdef __WITH_AML_IN_BINDINGS
+        //#ifdef __WITH_AML_BINDINGS
         if (pValue && pValue.dataType == apf.FUNCTION) {
              var fParsed = pValue;
              pValue = "";

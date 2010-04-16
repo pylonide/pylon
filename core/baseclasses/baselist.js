@@ -557,7 +557,7 @@ apf.BaseList = function(){
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1) {
-                //#ifdef __WITH_AML_IN_BINDINGS
+                //#ifdef __WITH_AML_BINDINGS
                 if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
                 //#endif
                     elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
@@ -698,7 +698,7 @@ apf.BaseList = function(){
         }
 
         if (elCaption) {
-            //#ifdef __WITH_AML_IN_BINDINGS
+            //#ifdef __WITH_AML_BINDINGS
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
                 var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));

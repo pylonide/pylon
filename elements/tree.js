@@ -328,7 +328,7 @@ apf.tree = function(struct, tagName){
 
         var elCaption = this.$getLayoutNode("item", "caption");
         if (elCaption) {
-            //#ifdef __WITH_AML_IN_BINDINGS
+            //#ifdef __WITH_AML_BINDINGS
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
                 var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
@@ -379,7 +379,7 @@ apf.tree = function(struct, tagName){
                 //elCaption = elCaption.parentNode;
             
             if (elCaption.nodeType == 1) {
-                //#ifdef __WITH_AML_IN_BINDINGS
+                //#ifdef __WITH_AML_BINDINGS
                 if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
                 //#endif
                     elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);

@@ -248,7 +248,7 @@ apf.DataBinding = function(){
         return handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
     };
 
-    //#ifdef __WITH_AML_IN_BINDINGS
+    //#ifdef __WITH_AML_BINDINGS
     var afterloadUpdate
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;

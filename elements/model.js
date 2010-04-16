@@ -327,7 +327,7 @@ apf.model = function(struct, tagName){
              delete this.$propBinds[id];
              return;
         }
-        //#ifdef __WITH_AML_IN_BINDINGS
+        //#ifdef __WITH_AML_BINDINGS
         if (amlNode.$noInitModel) {
             delete amlNode.$noInitModel;
             return;
@@ -400,7 +400,7 @@ apf.model = function(struct, tagName){
 
         if (this.data) {
             var xmlNode = 
-              //#ifdef __WITH_AML_IN_BINDINGS
+              //#ifdef __WITH_AML_BINDINGS
               amlNode.$noInitModel ? amlNode.xmlRoot : 
               //#endif
               (p.listen ? this.data.selectSingleNode(p.listen) : this.data);

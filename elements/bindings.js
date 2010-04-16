@@ -166,7 +166,7 @@ apf.ruleList.prototype = {
                     continue;
 
                 s.push(rule.match, rule.value);
-                //#ifdef __WITH_AML_IN_BINDINGS
+                //#ifdef __WITH_AML_BINDINGS
                 if (!hasAml && rule.value)
                     hasAml = rule.value.indexOf("<a:") > -1;
                 //#endif
@@ -175,7 +175,7 @@ apf.ruleList.prototype = {
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
             
-            //#ifdef __WITH_AML_IN_BINDINGS
+            //#ifdef __WITH_AML_BINDINGS
             c[name].hasAml = hasAml;
             //#endif
             
@@ -196,7 +196,7 @@ apf.ruleList.prototype = {
                     continue;
 
                 s.push(rule.match, rule.value);
-                //#ifdef __WITH_AML_IN_BINDINGS
+                //#ifdef __WITH_AML_BINDINGS
                 if (!hasAml && rule.value)
                     hasAml = rule.value.indexOf("<a:") > -1;
                 //#endif
@@ -205,7 +205,7 @@ apf.ruleList.prototype = {
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
             
-            //#ifdef __WITH_AML_IN_BINDINGS
+            //#ifdef __WITH_AML_BINDINGS
             c[name].hasAml = hasAml;
             //#endif
         }
