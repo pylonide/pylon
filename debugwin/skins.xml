@@ -307,6 +307,31 @@
         </a:main>
     </a:presentation>
 </a:divider>
+
+<a:divider name="divider_tab">
+    <a:style><![CDATA[
+        .divider_tab {
+            width        : 0px;
+            height       : 31px;
+            position     : absolute;
+            border-left  : 1px solid #105e9c;
+            border-right : 1px solid #4c8cbf;
+            z-index      : 110;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main 
+          container = "." 
+          caption   = "." 
+          minheight = "2" 
+          minwidth  = "0" 
+          maxwidth  = "0">
+            <div class="divider_tab">-</div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
 <a:tab name="tab">
     <a:style><![CDATA[
         .debug2010tab {
@@ -333,59 +358,8 @@
             background-repeat   : no-repeat;
         }
         
-        .debug2010tab .tab_divider {
-            width        : 0px;
-            height       : 31px;
-            position     : absolute;
-            border-left  : 1px solid #105e9c;
-            border-right : 1px solid #4c8cbf;
-        }
-        
-        .debug2010tab .tab_divider1 {
-            top  : 11px;
-            left : 147px;
-        }
-        
-        .debug2010tab .tab_divider2 {
-            top  : 11px;
-            left : 248px;
-        }
-        
-        .debug2010tab .tab_btn_edit {
-            width               : 35px;
-            height              : 36px;
-            position            : absolute;
-            top                 : 9px;
-            left                : 160px;
-            background-image    : url(images/debugger_tab_buttons.png);
-            background-position : 0 0;
-            background-repeat   : no-repeat;
-        }
-        
-        .debug2010tab .tab_btn_select {
-            width               : 35px;
-            height              : 36px;
-            position            : absolute;
-            top                 : 9px;
-            left                : 203px;
-            background-image    : url(images/debugger_tab_buttons.png);
-            background-position : 0 -36px;
-            background-repeat   : no-repeat;
-        }
-        
-        .debug2010tab .tab_close {
-            width               : 18px;
-            height              : 18px;
-            position            : absolute;
-            top                 : 6px;
-            right               : 5px;
-            background-image    : url(images/debugger_close.png);
-            background-position : 0 0;
-            background-repeat   : no-repeat;
-        }
-    
         .debug2010tab .btncontdebug {
-            padding-left : 260px;
+            padding-left : 303px;
             margin-top   : -41px;
             position     : absolute;
             z-index      : 100;
@@ -580,11 +554,6 @@
                     <span class="scroller_btn_right"> </span>
                 </div>
                 <div class="apf_logo"> </div>
-                <div class="tab_btn_edit"> </div>
-                <div class="tab_btn_select"> </div>
-                <div class="tab_divider tab_divider1"> </div>
-                <div class="tab_divider tab_divider2"> </div>
-                <div class="tab_close"> </div>
             </div>
         </a:main>
         <a:button caption="div/span/text()" btncontainer="div">
@@ -1499,7 +1468,7 @@
             text-overflow : ellipsis;
             padding       : 2px 1px 0px 3px;
             margin        : 0 -1px 0 -1px;
-            border-right  : 1px solid #cfcbc2;
+            /*border-right  : 1px solid #cfcbc2;*/
             border-left   : 1px solid #cfcbc2;
             display       : block;
             height        : 15px;
@@ -3182,6 +3151,135 @@
         </a:main>
     </a:presentation>
 </a:button>
+
+<a:button name="button_close">
+    <a:style><![CDATA[
+        .dgr_btn_close {
+            height              : 20px;
+            width               : 20px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_close.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_closeOver {
+            background-position:0 -20px;
+        }
+        
+        .dgr_btn_closeDown {
+            background-position:0 -40px;
+        }
+        
+        .dgr_btn_closeDisabled {
+            background-position:0 -60px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_close">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_edit">
+    <a:style><![CDATA[
+        .dgr_btn_edit {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_editOver {
+            background-position : -35px 0;
+        }
+        
+        .dgr_btn_editDown {
+            background-position : -70px 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_edit">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_select">
+    <a:style><![CDATA[
+        .dgr_btn_select {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 -36px;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_selectOver {
+            background-position : -35px -36px;
+        }
+        
+        .dgr_btn_selectDown {
+            background-position : -70px -36px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_select">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_save">
+    <a:style><![CDATA[
+        .dgr_btn_save {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 -72px;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_saveOver {
+            background-position : -35px -72px;
+        }
+        
+        .dgr_btn_saveDown {
+            background-position : -70px -72px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_save">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
 <a:tree name="tree_demosmenu">
     <a:style><![CDATA[
     .tree_demosmenu {
