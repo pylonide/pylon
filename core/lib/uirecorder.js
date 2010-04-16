@@ -7,7 +7,8 @@ apf.uirecorder = {
     $inited         : false,
     isRecording     : false,
     isPlaying       : false,
-    captureDetails  : false
+    captureDetails  : false,
+    $o3             : null
 } 
 
 apf.uirecorder.capture = {
@@ -15,6 +16,7 @@ apf.uirecorder.capture = {
     $curTestId      : "",   // name of test
     $startTime      : 0,    // time capturing is started
     $keyActionIdx   : 0,    // value given to keyActions
+    $keyActions     : [],   // list of keyactions
     outputXml       : null, // output generated after capturing
     
     $validKeys      : [37, 38, 39, 40, 27, 16, 17, 18, 13], //arrowkeys, Esc, shift, ctrl, alt, Enter
@@ -25,10 +27,13 @@ apf.uirecorder.capture = {
         apf.uirecorder.actionList       = [];
         apf.uirecorder.detailList       = {};
         apf.uirecorder.captureDetails   = captureDetails;
-        
+
         this.$curTestFile               = file;
         this.$curTestId                 = testId;
         this.$startTime                 = new Date().getTime();
+        this.$keyActionIdx              = 0;
+        this.$keyActions                = [];
+        this.outputXml                  = null
         
         apf.uirecorder.isRecording      = true;
 
@@ -53,7 +58,13 @@ apf.uirecorder.capture = {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("dblClick", e || event);
         }
-        
+/*
+        apf.uirecorder.$o3.DOM.onmousedown = function(e){
+            if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
+            apf.uirecorder.capture.$captureAction("mousedown", e || event);
+        };
+*/
+
         document.documentElement.onmousedown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
@@ -185,6 +196,7 @@ apf.uirecorder.capture = {
 
         if (["mousemove", "mousescroll"].indexOf(eventName) == -1) {
             actionObj.keyActionIdx = this.$keyActionIdx;
+            this.$keyActions.push(actionObj);
             this.$keyActionIdx++;
         }
         
@@ -214,15 +226,33 @@ apf.uirecorder.capture = {
             testXml.setAttribute("file", apf.uirecorder.capture.$curTestFile);
         }
 
+        var actionList = [];
+        /* special cases */
+        // only one click recorded
+        if (this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mouseup") {
+            actionList = this.$keyActions;
+            actionList[0].time = 0;
+            actionList[1].time = 100;
+            actionList[2] = {
+                detailList  : [],
+                time        : 200,
+                x           : actionList[1].x,
+                y           : actionList[1].y
+            };
+        }
+        else {
+            actionList = apf.uirecorder.actionList;
+        }
+        
         var detailTypes = {"events": "event", "properties": "property", "data": "dataItem"};
-        for (var prevNode, action, aNode, amlNodeName, i = 0, l = apf.uirecorder.actionList.length; i < l; i++) {
-            action = apf.uirecorder.actionList[i];
+        for (var prevNode, action, aNode, amlNodeName, i = 0, l = actionList.length; i < l; i++) {
+            action = actionList[i];
             // skip current action if next action is played at same time
-            if (apf.uirecorder.actionList[i+1] && action.time == apf.uirecorder.actionList[i+1].time) continue;
+            //if (actionList[i+1] && action.time == actionList[i+1].time) continue;
             
             // skip small mousemove between certain actions, like between mousedown/mouseup
             /*
-            if (action.name == "mousemove" && apf.uirecorder.actionList[i-1] && apf.uirecorder.actionList[i-1].name == "mousedown" && apf.uirecorder.actionList[i+1] && apf.uirecorder.actionList[i+1].name == "mouseup") {
+            if (action.name == "mousemove" && actionList[i-1] && actionList[i-1].name == "mousedown" && actionList[i+1] && actionList[i+1].name == "mouseup") {
                 continue;
             }
             */
@@ -434,8 +464,8 @@ apf.uirecorder.playback = {
     // init playback of action
     $playAction : function() {
         this.$curAction = this.$curTestXml.childNodes[this.$curActionIdx];
-        if (this.$curAction.getAttribute("name") == "mousemove")
-            this.$nextAction();
+        //if (this.$curAction.getAttribute("name") == "mousemove")
+            //this.$nextAction();
             
         if (this.$playSpeed == "realtime") {
             if (this.$playTimer) {
@@ -444,6 +474,7 @@ apf.uirecorder.playback = {
             }
             var timeout = parseInt(this.$curAction.getAttribute("time")) + this.$testDelay - (new Date().getTime() - this.$startTime);
             if (timeout > 0) {
+            apf.console.info("timeout: " + timeout);
                 this.$playTimer = setTimeout(function() {
                     apf.uirecorder.playback.$execAction();
                 }, timeout);
@@ -481,7 +512,6 @@ apf.uirecorder.playback = {
                 this.$o3.window);
         }
 
-        
         // execute action
         if (this.$curAction.getAttribute("name") === "keypress") {
             this.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));

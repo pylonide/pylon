@@ -4026,4 +4026,188 @@
         </a:empty>
     </a:presentation>
 </a:tree>
+<a:tree name="tree">
+    <a:style><![CDATA[
+        .tree{
+            border: 1px solid #c3c3c3;
+
+            background-color: white;
+            width: 200px;
+            height: 500px;
+            overflow: hidden;
+            cursor : default;
+
+            overflow: auto;
+        }
+
+        .tree SPAN, .dragtree SPAN{
+            width: 15px;
+            height: 18px;
+            background: no-repeat 3px 5px;
+            display: block;
+            margin-left: -15px;
+        }
+
+        .dragtree SPAN{
+            background : transparent;
+        }
+
+        .tree DIV.pluslast SPAN,
+        .tree DIV.plus SPAN{background-image:url(images/plus.png)}
+
+        .tree DIV.minlast SPAN,
+        .tree DIV.min SPAN{background-image:url(images/min.png)}
+
+        .tree DIV, .dragtree{
+            padding: 0;
+            height: 18px;
+            padding-left: 15px;
+
+            font-family: Tahoma, Arial;
+            font-size: 8.5pt;
+        }
+
+        .dragtree{
+            opacity : 0.5;
+            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+            background : none;
+        }
+
+        /*.tree DIV.root{
+            padding: 0;
+        }*/
+
+        .tree LABEL, .dragtree LABEL{
+            padding: 1px 0 0 20px;
+            background: no-repeat 1px 1px;
+            height: 16px;
+            white-space: nowrap;
+            margin-left: 0px;
+            display: block;
+            float: left;
+            margin-top: -18px;
+        }
+
+        .tree DIV.loading LABEL{
+
+        }
+        .tree DIV.loading SPAN{
+            background: no-repeat 0px 0px;
+        }
+
+        .tree U, .dragtree U{
+            text-decoration: none;
+            color: black;
+            cursor: default;
+            display: inline !important; display: block;
+            padding: 2px 4px 2px 2px;
+        }
+
+
+        .treeFocus .indicate U{
+            border: 1px dotted #BBB;/*#25a8e7;*/
+            padding: 1px 3px 1px 1px;
+            color : black;
+        }
+
+        .tree .selected U, .tree .dragAppend U{
+            background-color: #f0f0f0;
+            color: black;
+        }
+
+        .treeFocus .selected U, .treeFocus .dragAppend U, .dragtree U{
+            color: white;
+            background-color: #25a8e7;
+        }
+
+        .tree BLOCKQUOTE{
+            margin: 0;
+            padding: 0 0 0 20px;
+            display: none;
+            height: 0;
+            overflow: hidden;
+            background: repeat-y 0px center;
+        }
+        /*.tree BLOCKQUOTE.root{padding:0}*/
+
+        .tree #txt_rename{
+            border: 1px solid black;
+            padding: 1px 15px 1px 1px;
+            font-family: Tahoma;
+            font-size: 8pt;
+            color: black;
+            word-break: keep-all;
+            overflow: visible;
+            margin-top : -2px;
+            *margin-top: 0;
+            cursor: text;
+            height: 13px;
+            outline : none;
+        }
+
+        .tree DIV.dragInsert label{
+            border-top: 1px solid gray;
+            padding-top : 2px;
+            background-position : 1px 0;
+            height: 15px;
+            overflow: hidden;
+        }
+
+        .tree DIV.dragInsert U{
+            padding-top: 0;
+        }
+
+        /*.tree DIV.dragDenied label{
+            border-top: 2px solid red;
+            height: 14px;
+            overflow: hidden;
+            padding-top : 2px;
+            margin-top : -20px;
+            background-position : 1px 0;
+        }*/
+
+        .tree .empty, .tree .offline, .tree .loading{
+            text-align: center;
+            padding: 4px 0 2px 0;
+            color: #AAA;
+            font-weight : normal;
+        }
+
+        .tree .loading{
+            text-align : left;
+        }
+        
+        .tree .focusbug{
+            padding : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="tree">
+
+            </div>
+        </a:main>
+        <a:item
+            class        = "."
+            caption      = "label/u"
+            icon         = "label"
+            openclose    = "span"
+            select       = "label"
+            container    = "following-sibling::blockquote"
+        >
+            <div><span> </span><label><u>-</u></label></div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragtree'><span> </span><label><u>-</u></label></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading"><span> </span><label>Loading...</label></div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
 </a:skin>

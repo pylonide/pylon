@@ -188,3 +188,11 @@ body{
     background : url(resources/bullet_green.png) no-repeat 2px 2px;
     color      : #AAA;
 }
+
+.trPlaylist .macro_playing {
+    background-color: red;
+}
+
+.trPlaylist .macro_finished {
+    background-color: #ccc;
+}

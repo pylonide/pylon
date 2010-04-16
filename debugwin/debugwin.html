@@ -440,85 +440,69 @@
                             visible = "false"
                             anchors = "0 0 0 0"
                         >
-                            <a:label id="lblIE">To use this feature you need to install the o3 plugin. Click here to download the o3 plugin</a:label>
-                            <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 plugin. Click here to download the o3 plugin</a:label>
+                            <a:label id="lblIE">To use this feature you need to install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
+                            <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
                         </a:window>
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
                             <a:list
-                                width   = "200"
-                                align   = "left-splitter"
-                                id      = "lstMacro"
-                                skin    = "debugger_list"
-                                class = "tplist"
-                                model   = "mdlMacro"
-                                each    = "[test]"
+                                width    = "300"
+                                align    = "left-splitter"
+                                id       = "lstMacro"
+                                class    = "tplist"
+                                model    = "mdlMacro"
+                                each     = "[test]"
+                                caption  = "[@name]"
                             >
-                                <a:caption match="[@name]" />
-                                <a:drag match="[test]" />
+                                <a:drag match="[test]" copy="true" />
                             </a:list>
+                            
                             <a:toolbar
-                                width   = "200"
+                                width   = "300"
                                 height  = "25"
                                 bottom  = "0"
                             >
                                 <a:bar>
                                     <a:button id="btnRec" width="50" onclick="recordMacro()">Rec</a:button>
                                     <a:button id="btnStop" width="50" visible="false" onclick="stop()">Stop</a:button>
-                                    <a:button id="btnPlay" width="50" onclick="playMacro()">Play</a:button>
+                                    <a:button id="btnPlay" width="50" onclick="playSingleMacro()">Play</a:button>
+                                    <a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
+                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button>
                                 </a:bar>
                             </a:toolbar>
                         <!--/a:bar-->
                         <a:bar skin="basic" border="1 1 0 1" align="right" width="100%" height="100%" class="netview">
-                            <a:list 
-                                model   = "mdlPlaylist"
-                                each    = "[test]"
+                            <a:tree 
+                                anchors     = "0 0 0 0"
+                                id          = "trPlaylist"
+                                class       = "trPlaylist"
+                                model       = "mdlPlaylist"
+                                startcollapsed = "false"
                             >
-                                <a:caption match="[@name]" />
-                                <a:drop match="[test]" />
-                            </a:list>
-                            <!--a:table id="tableTest" 
-                                columns = "150, 100%"
-                            >
-                                <a:label>Playlist1</a:label>
-                                <a:list skin="debugger_list">
-                                    <a:item>Open Contact page</a:item>
-                                    <a:item>Log in</a:item>
-                                    <a:item>Search for product</a:item>
-                                </a:list>
-                                <a:label>Playlist2</a:label>
-                                <a:list skin="debugger_list">
-                                    <a:item>Open Contact page</a:item>
-                                    <a:item>Log in</a:item>
-                                    <a:item>Search for product</a:item>
-                                </a:list>
-                                <a:label span="*">Create new playlist</a:label>
-                            </a:table-->
+                                <a:each match="[playlist|test]">
+                                    <a:caption match="[@caption|@name]" />
+                                    <a:drag match="[test]" /> 
+                                    <a:drop 
+                                      match  = "[test]" 
+                                      target = "[playlist]" 
+                                      action = "tree-append" />
+                                    <a:drop 
+                                      match  = "[test]" 
+                                      target = "[test]" 
+                                      action = "insert-before" />
+                                </a:each>
+                            </a:tree>
                         </a:bar>
-
-                        <!--a:comment>
-                            <a:model id="mdlTests"><data/></a:model>
-                            <a:label>New Test</a:label>
-                            <a:textbox id="tbTestName" value="testName" />
-                            <a:button onclick="record()">Record</a:button>
-                            <a:button onclick="stop()">Stop</a:button>
-                            <a:button onclick="play()">Play</a:button>
-                            <a:list
-                                id      = "lstTests"
-                                model   = "mdlTests"
-                                skin    = "debugger_list"
-                                class   = "tplist"
-                                each    = "[test]"
-                            >
-                                <a:caption match="[@name]" />
-                            </a:list>
-                        </a:comment-->
                     </a:page>
                     <a:page caption="Playlist" render="runtime">
 
                     </a:page>
                     
                     <a:model id="mdlMacro"><data/></a:model>
-                    <a:model id="mdlPlaylist"><data/></a:model>
+                    <a:model id="mdlPlaylist">
+                        <data>
+                            <playlist caption="playlist1" />
+                        </data>
+                    </a:model>
                     
                     <a:script>//<!--
                         var o3_mouseTranslate = [3,4];
@@ -537,7 +521,30 @@
                             },
                             product : 'O3Demo'
                         });
+                        apf.$debugwin.apf.uirecorder.$o3 = $o3;
+                        
+                        // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
+                        (function loadData() {
+                            if ($o3.fs.get("macros.xml").exists)
+                                mdlMacro.load(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
+                            if ($o3.fs.get("playlists.xml").exists)
+                                mdlPlaylist.load(apf.getXml($o3.fs.get("playlists.xml").data) || apf.getXml("<data/>"));
+                            
+                            mdlMacro.addEventListener("update", saveMacros);
+                            mdlPlaylist.addEventListener("update", savePlaylists);
+                        })();
+                        
+                        function saveMacros(e) {
+                            if ($o3.fs.get("macros.xml").data != mdlMacro.getXml().xml) {
+                                $o3.fs.get("macros.xml").data = mdlMacro.getXml().xml;
+                            }
+                        };
 
+                        function savePlaylists(e) {
+                            if ($o3.fs.get("playlists.xml").data != mdlPlaylist.getXml().xml)
+                                $o3.fs.get("playlists.xml").data = mdlPlaylist.getXml().xml;
+                        };
+                        
                         function recordMacro() {
                             btnRec.setProperty("visible", false);
                             btnStop.setProperty("visible", true);
@@ -557,13 +564,28 @@
                             lstMacro.select(mdlMacro.data.lastChild);
                             lstMacro.startRename();
                         }
-                        
-                        function playMacro() {
+
+                        function playSingleMacro() {
+                            // set buttons state
                             btnPlay.setProperty("visible", false);
                             btnStop.setProperty("visible", true);
                             btnRec.setProperty("disabled", true);
+
+                            // play selected macro
                             apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, "realtime", $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
                             apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlaybackComplete);
+                        }
+                        
+                        function playMacro() {
+                            // set buttons state
+                            btnPlay.setProperty("visible", false);
+                            btnStop.setProperty("visible", true);
+                            btnRec.setProperty("disabled", true);
+
+                            // select current playing macro
+                            apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "macro_playing");
+                            apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], "realtime", $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+                            apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlayNextMacro);
                         }
                         
                         function onPlaybackComplete(e) {
@@ -573,8 +595,56 @@
                             btnPlay.setProperty("visible", true);
                             btnPlay.setProperty("disabled", false);
                         }
+                        
+                        function onPlayNextMacro(e) {
+                            apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "macro_finished");
+                            // check for more macro's to be played
+                            if (curMacroIdx + 1 < macroList.length) {
+                                curMacroIdx++;
+                                playMacro();
+                            }
+                            
+                            // all macro's played, end playback
+                            else {
+                                onPlaybackComplete(e);
+                                trPlaylist.select(trPlaylist.selected);
+                            }
+                        }
+                        
+                        function addPlaylist() {
+                            var playlist = mdlPlaylist.getXml().ownerDocument.createElement("playlist");
+                            playlist.setAttribute("caption", "playlist" + (mdlPlaylist.data.childNodes.length+1));
+                            mdlPlaylist.appendXml(playlist);
+                            
+                            trPlaylist.select(mdlPlaylist.data.lastChild);
+                            trPlaylist.startRename();
+                        }
+                        
+                        var macroList = [];
+                        var curMacroIdx = 0;
+                        function playPlaylist() {
+                            if (!trPlaylist.selected) {
+                                alert("no playlist selected"); 
+                                return;
+                            }
+                            macroList = (trPlaylist.selected.nodeName == "playlist") 
+                                ? trPlaylist.selected.selectNodes("test")
+                                : trPlaylist.selected.parentNode.selectNodes("test");
+                            if (!macroList.length) {
+                                debugger;
+                                alert("no macros to play");
+                                return;
+                            }
+                            for (var i = 0, l = macroList.length; i < l; i++) {
+                                apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["macro_playing", "macro_finished"]);
+                            }
+                            curMacroIdx = 0;
+                            playMacro();
+                        }
+                        
                         //var recordings = apf.storage.get("recordings", location.href.split("#")[0]);
                         //mdlMacro.load(recordings || "<recordings />");
+
                     //--></a:script>
 
                 </a:pages>

@@ -3,21 +3,21 @@
     <head>
         <title>Caldropdown Gen API</title>
         
-        <script src="trunk/apf.js"></script>
+        <script src="../apf.js"></script>
     </head>
     <body>
-        <a:skin src="skins2.xml" media-path="skinimg/" icon-path="icns/" />
+        <a:skin src="../skins.xml" />
 
         <a:tree align="left" width="200" height="300">
-           <a:each match="[root|account|folder|mail]">
-                <a:caption match="[@name]" />
+           <a:each match = "[root|account|folder|mail]">
+                <a:caption match = "[@name]" />
                 <a:drag match = "[folder|mail]" />
-                <a:drop match = "[folder]" 
+                <a:drop match  = "[folder]" 
                         target = "[folder|account]"
-                        action="tree-append" />
-                <a:drop match = "[mail]" 
+                        action = "tree-append" />
+                <a:drop match  = "[mail]" 
                         target = "[folder|account]"
-                        action="tree-append" />
+                        action = "tree-append" />
             </a:each>
             <a:model>
                 <data>
@@ -43,11 +43,11 @@
         </a:list>
      
         <a:bindings id="bndDragdrop">
-            <a:caption match="[@name]" />
-            <a:each match="[mail]" />
+            <a:caption match = "[@name]" />
+            <a:each match = "[mail]" />
             <a:drag match = "[mail]" />
             <a:drop
-              match = "[mail]"
+              match  = "[mail]"
               action = "list-append" />
         </a:bindings>
 
