@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin
+          src        = "../skins.xml" />
+
+        <a:appsettings debug="true" />
+			
+		<a:model id="mdlFlowchart" save-original="true"	src="filesystem.xml" />
+
+		<a:flowchart
+		  id          = "workflow"
+		  template    = "filesystem.xml"
+		  title       = "canvas"
+		  model       = "mdlFlowchart"
+		  align       = "right"
+		  >
+			<a:each match="[block]">
+				<a:left match="[@left]"></a:left>
+				<a:top match="[@top]"></a:top>
+				<a:id match="[@id]"></a:id>
+				<a:width match="[@width]"></a:width>
+				<a:height match="[@height]"></a:height>
+				<a:caption match="[@caption]" default="Untitled block"></a:caption>
+				<a:connection match="[block/connection]"></a:connection>
+			</a:each>
+		</a:flowchart>
+    </body>
+</html>

@@ -199,7 +199,7 @@ var apf = {
      * @type {String}
      */
     /*#ifdef __PACKAGED
-    basePath      : "./",
+    basePath      : "",
     #endif*/
 
     //#ifdef __PARSER_AML
@@ -2322,7 +2322,7 @@ apf.browserDetect();
 apf.Init.run("apf");
 
 
-//#ifndef __PACKAGED || __WITH_DEBUG_WIN
+//#ifdef !__PACKAGED || __WITH_DEBUG_WIN
 apf.getShortestPath = function(p1, p2) {
     if (p1.charAt(0) == "/")
         return p1;
@@ -2340,12 +2340,11 @@ apf.getShortestPath = function(p1, p2) {
     
     return l.join("/") + "/" + s.join("/");
 }
-
 if (!apf.basePath) {
     var snodes = document.getElementsByTagName("script");
     for (var src, i = 0; i < snodes.length; i++) {
         src = snodes[i].getAttribute("src");
-        if (src && src.match(/^(.*)apf\.js$/)) {
+        if (src && src.match(/^(.*)apf(?:_debug|_release)\.js$/)) {
             apf.basePath = RegExp.$1;
             break;
         }

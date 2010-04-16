@@ -75,7 +75,7 @@ apf.$debugwin = {
         codetype.setProperty("value", apf.storage.get("scriptype") || "Javascript");
         txtModel.setValue(apf.storage.get("mdlvalue") || "");
         
-        this.apf.$debugwin.setNativeDebug(this.nativedebug);
+        this.setNativeDebug(this.nativedebug);
         //#endif
         
         itmShowtime.setAttribute("checked", this.showtime);
