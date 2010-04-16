@@ -702,6 +702,125 @@
         </a:main>
     </a:presentation>
 </a:button>
+
+<a:button name="toolbarbutton2">
+    <a:style><![CDATA[
+        .dbg_menubar .toolbarbutton_tlook {
+            display         : block;
+            height          : 21px;
+            float           : left;
+            cursor          : default;
+            line-height     : 13px;
+            text-decoration : none;
+            color           : #000000;
+        }
+
+        .dbg_menubar .toolbarbutton_tlookOver, 
+        .dbg_menubar .toolbarbutton_tlookDown {
+            background : #45b3e8 url(images/menu_over.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .toolbarbutton_tlookDown, 
+        .dbg_menubar .toolbarbutton_tlookDown {
+            background : #45b3e8 url(images/menu_down.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .toolbarbutton_tlookDisabled, 
+        .dbg_menubar .toolbarbutton_tlookDisabled {
+            background : none;
+            color      : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlook {
+            display         : block;
+            height          : 21px;
+            float           : left;
+            cursor          : default;
+            margin          : 2px 1px 0 1px;
+            text-decoration : none;
+            color           : #000000;
+            text-align      : center;
+            padding         : 0 10px 0 0;
+            line-height     : 13px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlook DIV {
+            float   : left;
+            margin  : 0;
+            height  : 17px;
+            padding : 4px 0 0 10px;
+            border  : 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookOver {
+            background-image    : url("images/debugger_tbbtn_tablook_right.png");
+            background-repeat   : no-repeat;
+            background-position : right -21px;
+            color               : #555555;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookOver DIV {
+            background-image    : url("images/debugger_tbbtn_tablook_left.png");
+            background-repeat   : no-repeat;
+            background-position : left -21px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDown, 
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookChecked {
+            background-image    : url("images/debugger_tbbtn_tablook_right.png");
+            background-repeat   : no-repeat;
+            background-position : right 0;
+            color               : white;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDown DIV, 
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookChecked DIV {
+            background-image    : url("images/debugger_tbbtn_tablook_left.png");
+            background-repeat   : no-repeat;
+            background-position : left 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDisabled, 
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDisabled DIV {
+            background : none;
+            color      : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookIcon DIV {
+            padding-left : 4px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookEmpty DIV {
+            padding : 4px 0 0 7px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookIcon SPAN {
+            display : block;
+            float   : left;
+            width   : 16px;
+            height  : 16px;
+            margin  : -2px 4px 0 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookEmpty SPAN {
+            margin : -1px 3px 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "div/text()" 
+          label      = "div/text()" 
+          background = "div/span" 
+          icon       = "div/span">
+            <div class='toolbarbutton_tlook'><div><span> </span>-</div></div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
 <a:button name="toolbar_radio">
     <a:style><![CDATA[
         .dbg_menubar .dbg_toolbarbutton {
@@ -1356,6 +1475,9 @@
             height           : 17px;
             z-index          : 10;
             background-color : #e6e6e6;
+            background-image : url(images/debugger_propedit_title_backg.png);
+            background-repeat :repeat-x;
+            background-position:0 0;
             margin           : 0; /*margin : 0 16px 0 0; Temp disabled for non scrolling */
             white-space      : nowrap;
         }
@@ -1372,7 +1494,6 @@
 
         .propedit .headings SPAN B {
             font-weight   : normal;
-            background    : #e6e6e6 no-repeat 0 50%;
             overflow      : hidden;
             text-overflow : ellipsis;
             padding       : 2px 1px 0px 3px;
@@ -1382,6 +1503,7 @@
             display       : block;
             height        : 15px;
             font-weight   : bold;
+            color:#0a4b80;
         }
 
         .propedit .headings span.hover {
@@ -1448,11 +1570,31 @@
             font-weight : normal;
             padding     : 2px 1px 2px 3px;
             display     : block;
-            border      : 1px solid #cfcbc2;
+            border      : 1px solid #bdcedd;/* STEPX */
             overflow    : hidden;
             min-height  : 13px;
             margin      : 0 -1px 0 -1px;
-            cursor      : default;
+            cursor           : default;
+            background-color : #0a4b80;
+            color:white;
+        }
+        
+        .propedit .records .row BLOCKQUOTE .row SPAN DL {
+            background-color:white;
+            color:black;
+        }
+        
+        .propedit .records .row BLOCKQUOTE .row SPAN:first-child DL {
+            background-color:#146cb0;
+            color:white;
+            border:1px solid #0a4b80;
+        }
+        
+        .propedit .records .row BLOCKQUOTE .selected SPAN:first-child DL {
+            color            : #0a4b80;
+            background-image:url(images/debugger_propedit_selected.png);
+            background-position:0 0;
+            background-repeat:repeat-x;
         }
 
         .propedit .records DIV SPAN {
@@ -1718,7 +1860,7 @@
             padding  : 1px 1px 0 2px;
         }
     ]]></a:style>
-    <a:style>
+    <a:style><![CDATA[
         .propedit BLOCKQUOTE {
             margin : 0 0 0 15px;
         }
@@ -1740,13 +1882,15 @@
         }
         
         .propedit .row .selected>SPAN DL{
-            background-color : #f0f0f0;
-            color            : black;
+            color            : #0a4b80;
+            border           : 1px solid #0a4b80;
+            background-image:url(images/debugger_propedit_selected.png);
+            background-position:0 0;
+            background-repeat:repeat-x;
         }
         .propeditFocus .row .selected>SPAN DL {
-            color            : white;
-            background-color : #2582d1;
-            border           : 1px solid #327fbd;
+            color            : #0a4b80;
+            border           : 1px solid #0a4b80;
             position         : relative;
             z-index          : 10000;
         }
@@ -1783,7 +1927,7 @@
         
         .propedit .heading {
             width      : 100%;
-            background : #CCC;
+            background : #0a4b80;
         }
         
         .propedit .heading>SPAN {
@@ -1793,7 +1937,6 @@
         
         .propedit .heading>SPAN DL{
             border      : 0;
-            background  : #CCC;
             font-weight : bold;
             padding     : 2px 0 2px 17px;
         }
@@ -1816,7 +1959,7 @@
         .propedit .slider {
             margin : 5px 5px 0 3px;
         }
-    </a:style>
+    ]]></a:style>
 
     <a:presentation>
         <a:main
