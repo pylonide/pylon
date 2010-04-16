@@ -7,9 +7,9 @@
     </head>
     <body>
         <a:skin 
-          src        = "../../../../skins/platform/trunk/xml/_index.xml" 
-          media-path = "../../../../skins/platform/trunk/images/" 
-          icon-path  = "../../../../skins/platform/trunk/icons/" />
+          src        = "../../../skins/platform/trunk/xml/_index.xml"
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../icons/" />
           
         <a:appsettings debug="false" />
         
@@ -39,6 +39,9 @@
                 <a:caption match="[@caption]" />
                 <a:checked value="[@checked]" />
             </a:each>
+            <a:actions>
+                <a:check set="{apf.z=10}" />
+            </a:actions>
         </a:tree>
         
         <a:button action="undo" target="t1">Undo</a:button>

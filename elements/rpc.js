@@ -404,7 +404,8 @@ apf.rpc = function(struct, tagName){
 
         // Get Data
         var _self = this,
-            data  = this.createMessage(node["method-name"] || name, args); //function of module
+            data  = options.message 
+                || this.createMessage(node["method-name"] || name, args); //function of module
 
         function pCallback(data, state, extra){
             extra.data = data;

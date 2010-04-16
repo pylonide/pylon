@@ -39,7 +39,7 @@
  *      </a:menubar>
  *  </a:toolbar>
  * </code>
- * @define item, check, radio
+ * @define item
  * @constructor
  *
  * @event click Fires when a user presses the mouse button while over this element.
@@ -47,14 +47,6 @@
  *   {XMLElement} xmlContext the xml data node that was selected in the opener at the time of showing the context menu.
  *   {AMLElement} opener the element that was clicked upon when showing the context menu.
  */
-apf.radio = function(struct, tagName){
-    this.$init(tagName || "radio", apf.NODE_VISIBLE, struct);
-};
-
-apf.check = function(struct, tagName){
-    this.$init(tagName || "check", apf.NODE_VISIBLE, struct);
-};
-
 apf.item  = function(struct, tagName){
     this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
 };
@@ -74,7 +66,7 @@ apf.item  = function(struct, tagName){
     }, this.$attrExcludePropBind);
 
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
-                                   "checked", "selected", "disabled", "caption");
+                                   "checked", "selected", "disabled", "caption", "type");
 
     /**
      * @attribute {String} [submenu] the id of the menu that is shown
@@ -163,10 +155,10 @@ apf.item  = function(struct, tagName){
      * Example:
      * <code>
      *  <a:menu>
-     *      <a:radio group="example">item 1</a:radio>
-     *      <a:radio group="example">item 2</a:radio>
-     *      <a:radio group="example">item 3</a:radio>
-     *      <a:radio group="example">item 4</a:radio>
+     *      <a:item type="radio" group="example">item 1</a:item>
+     *      <a:item type="radio" group="example">item 2</a:item>
+     *      <a:item type="radio" group="example">item 3</a:item>
+     *      <a:item type="radio" group="example">item 4</a:item>
      *  </a:menu>
      * </code>
      */
@@ -236,10 +228,21 @@ apf.item  = function(struct, tagName){
     }
     
     /**
+     * @attribute {String} type the function of this item
+     * Possible values:
+     * item
+     * check
+     * radio
+     */
+    this.$propHandlers["type"] = function(value){
+        apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
+    }
+    
+    /**
      * @attribute {Boolean} checked whether the item is checked.
      */
     this.$propHandlers["checked"] = function(value){
-        if (this.localName != "check")
+        if (this.type != "check")
             return;
 
         if (apf.isTrue(value))
@@ -252,7 +255,7 @@ apf.item  = function(struct, tagName){
      * @attribute {Boolean} selected whether the item is selected.
      */
     this.$propHandlers["selected"] = function(value){
-        if (this.localName != "radio")
+        if (this.type != "radio")
             return;
 
         if (apf.isTrue(value))
@@ -308,10 +311,10 @@ apf.item  = function(struct, tagName){
     };
 
     this.$up = function(){
-        if (this.localName == "radio")
+        if (this.type == "radio")
             this.parentNode.select(this.group, this.value || this.caption);
 
-        else if (this.localName == "check")
+        else if (this.type == "check")
             this.$handlePropSet("checked", !this.checked);
 
         if (this.submenu) {
@@ -549,7 +552,7 @@ apf.item  = function(struct, tagName){
         }
         
         this.$ext = this.$getExternal(this.$isLeechingSkin
-          ? "item" //this.localName 
+          ? "item" //this.type 
           : "main", null, function($ext){
             var o = 'var o = apf.lookup(' + this.$uniqueId + '); if (o.disabled) return; o';
             $ext.setAttribute("onmouseup",   o + '.$up(event)');
@@ -564,8 +567,6 @@ apf.item  = function(struct, tagName){
         
         //@todo if not elItem try using own skin
 
-        apf.setStyleClass(this.$ext, this.localName);
-
         //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$container);
         this.$caption = this.$getLayoutNode("item", "caption", this.$ext)
         this.$icon    = this.$getLayoutNode("item", "icon", this.$ext);
@@ -574,7 +575,7 @@ apf.item  = function(struct, tagName){
         if (!isSkinSwitch && this.nextSibling && this.nextSibling.$ext)
             this.$ext.parentNode.insertBefore(this.$ext, this.nextSibling.$ext);
     };
-
+    
     /**
      * @private
      */
@@ -598,10 +599,7 @@ apf.item  = function(struct, tagName){
     });
 }).call(apf.item.prototype = new apf.Presentation());
 
-apf.radio.prototype =
-apf.check.prototype = apf.item.prototype;
-
-apf.aml.setElement("radio", apf.radio);
-apf.aml.setElement("check", apf.check);
+//apf.aml.setElement("radio", apf.radio);
+//apf.aml.setElement("check", apf.check);
 apf.aml.setElement("item",  apf.item);
 // #endif

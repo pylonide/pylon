@@ -287,24 +287,12 @@ apf.UndoData = function(settings, at){
 
         this.state = undo ? "restoring" : "saving";
 
-        //#ifdef __DEBUG
-        if (!options || options._pc === true) {
-            throw new Error("Error in data instruction:" + dataInstruction); //@todo apf3.0 turn this into a proper apf error
-        }
-        //#endif
-        
-        if (options._pc == -2) {
+        if (!options.asyncs) { //Precall didnt contain any async calls
             return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode}, 
                 this, callback);
         }
         
-        //options._precall = false;
-        options.callback = function(data, state, extra){
-            extra.amlNode = _self.amlNode;
-            return at.$receive(data, state, extra, _self, callback);
-        }
         options.ignoreOffline = true;
-
         apf.saveData(dataInstruction, options);
     };
 
@@ -320,16 +308,20 @@ apf.UndoData = function(settings, at){
             return this;
 
         options = apf.extend({
-            //undoObj   : this,
             xmlNode   : this.action == "multicall" 
               ? this.args[0].xmlNode
               : this.selNode || this.xmlNode,
             userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             undo      : undo,
-            _pc       : true,
+            precall   : true,
+            
+            //Callback is only for async calls
             callback  : function(data, state, extra){
-                options._pc = -2;
+                if (options.asyncs) { //Set by apf.saveData
+                    extra.amlNode = _self.amlNode;
+                    return at.$receive(data, state, extra, _self, callback);
+                }
             }
         }, this.extra);
 
@@ -341,9 +333,6 @@ apf.UndoData = function(settings, at){
         //#endif
 
         apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
-        
-        if (options._pc === true)
-            options._pc = -1; //if this is set then it overwrites the values set by livemarkup
         
         return this;
     };

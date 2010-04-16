@@ -186,11 +186,14 @@ apf.getData = function(instruction, options){
     var fParsed = options.fParsed || (instruction.indexOf("{") > -1 || instruction.indexOf("[") > -1
         ? apf.lm.compile(instruction, {
             withopt     : true, 
-            precall     : options._pc == -1 ? false : options._pc, //for the actiontracker
+            precall     : options.precall,
             alwayscb    : true, 
             simplexpath : true
           })
         : {str: instruction, type: 2}); 
+
+    if (options.precall)
+        options.asyncs = fParsed.asyncs;
 
     //@todo hack because we're not using compileNode.. an imperfection..
     if (fParsed.type == 3){

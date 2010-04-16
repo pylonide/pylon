@@ -98,7 +98,7 @@ apf.ActionRule = function(struct, tagName){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (!this.get)
             this.get = apf.serializeChildren(this.$aml).trim();
-        
+
         var actions = this.parentNode.$actions 
           || (this.parentNode.$actions = new apf.ruleList());
         
@@ -112,5 +112,6 @@ apf.aml.setElement("add",    apf.ActionRule);
 apf.aml.setElement("update", apf.ActionRule);
 apf.aml.setElement("copy",   apf.ActionRule);
 apf.aml.setElement("move",   apf.ActionRule);
+apf.aml.setElement("check",  apf.ActionRule);
 // #endif
 

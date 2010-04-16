@@ -63,7 +63,7 @@ apf.MultiCheck = function(){
             return;
         
         if (userAction
-          && this.$executeSingleValue("checked", "checked", xmlNode, "true") !== false)
+          && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
             return;
         
         if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
@@ -132,7 +132,7 @@ apf.MultiCheck = function(){
             return;
         
         if (userAction
-          && this.$executeSingleValue("checked", "checked", xmlNode, "false") !== false)
+          && this.$executeSingleValue("check", "checked", xmlNode, "false") !== false)
             return;
         
         // #ifdef __WITH_MULTICHECK_TREE
@@ -206,7 +206,7 @@ apf.MultiCheck = function(){
             
             var changes = [];
             for (var c, i = 0; i < xmlNodeList.length; i++) {
-                c = this.$executeSingleValue("checked", "checked", xmlNodeList[i], "false", true)
+                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], "false", true)
                 if (c === false) break;
                 changes.push(c);
             }

@@ -2430,28 +2430,35 @@ apf.lm_exec = new (function(){
 
         if (!obj.exec)
             return  _a.ret[i]=(func)?obj[func].apply(obj,args):obj.apply(obj,args);
-		
+
+        var cb = function(data, state, extra){
+            delete _w._pc;
+            
+            if (state != apf.SUCCESS){
+                _c(null, state, extra);
+            }
+            else{
+				apf.$lmx = extra;
+                _a.ret[i] = data;
+
+                if (_w)
+                    _f.call(_this,_n,_c,_w,_a);
+                else
+                    _f.call(_this,_n,_c,_a);
+            }
+        };
+
         if(_w && _w._pc){
             _w._pc = {
-                obj:obj,
-                func: func,
-                args:args,
-                _c:_c
+                obj     : obj,
+                func    : func,
+                args    : args,
+                message : obj.createMessage && obj.createMessage(func, args),
+                _c      : _c,
+                cb      : cb
             };
         }else{
-            obj.exec(func,args,function(data, state, extra){
-                if (state!= apf.SUCCESS){
-                    _c(null, state, extra);
-                }else{
-					apf.$lmx = extra;
-                    _a.ret[i] = data;
-
-                    if (_w)
-                        _f.call(_this,_n,_c,_w,_a);
-                    else
-                        _f.call(_this,_n,_c,_a);
-                }
-            });
+            obj.exec(func, args, cb);
         }
         throw({
             x:1
@@ -2460,10 +2467,10 @@ apf.lm_exec = new (function(){
 
     function _pc(_w){ // precall
         var o;
-        if(typeof(o = _w._pc) != "object" || !o)
+        if (typeof(o = _w._pc) != "object" || !o)
             return;
 
-        o.obj.exec(o.func,o.args, o._c);
+        o.obj.exec(o.func, o.args, o.cb, {message: o.message});
 
         throw({x:1});
     }
