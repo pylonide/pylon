@@ -126,6 +126,8 @@ apf.BaseList = function(){
     /**** Properties and Attributes ****/
 
     this.$focussable = true; // This object can get the focus
+    this.$isWindowContainer = -1;
+    
     this.multiselect = true; // Initially Disable MultiSelect
     this.mode        = "normal";
 
@@ -555,8 +557,12 @@ apf.BaseList = function(){
         //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.$applyBindRule("Caption", xmlNode);
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
-            if (elCaption.nodeType == 1)
-                elCaption.innerHTML = this.$applyBindRule("caption", xmlNode, null, null, elCaption);
+            if (elCaption.nodeType == 1) {
+                //#ifdef __WITH_AML_IN_BINDINGS
+                if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
+                //#endif
+                    elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
+            }
             else
                 elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
         }
@@ -693,8 +699,21 @@ apf.BaseList = function(){
         }
 
         if (elCaption) {
-            apf.setNodeValue(elCaption,
-                this.$applyBindRule("caption", xmlNode, null, null, elCaption));
+            //#ifdef __WITH_AML_IN_BINDINGS
+            if (elCaption.nodeType == 1 
+              && this.$cbindings.caption && this.$cbindings.caption.hasAml){
+                var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                
+                elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
+                    + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                apf.setNodeValue(elCaption, "");
+            }
+            else
+            //#endif
+            {
+                apf.setNodeValue(elCaption,
+                    this.$applyBindRule("caption", xmlNode));
+            }
         }
         oItem.setAttribute("title", this.$applyBindRule("tooltip", xmlNode) || "");
 

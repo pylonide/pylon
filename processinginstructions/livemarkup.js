@@ -33,6 +33,22 @@ apf.LiveMarkupPi = function(){
     this.$init();
 };
 
+/*
+    @todo optimize the pi, possible with this code:
+    var div, doc = this.ownerDocument, domParser = doc.$domParser, 
+        docFrag = doc.createDocumentFragment(),
+        sStart  = "<a:application xmlns:a='" + apf.ns.aml + "'>",
+        sEnd    = "</a:application>";
+    
+    docFrag.$int = div;
+    
+    domParser.parseFromXml(apf.getXml(sStart + this.$bindingQueue[i] + sEnd), { //@todo might be optimized by doing it only once
+        doc        : doc,
+        amlNode    : docFrag,
+        beforeNode : null,
+        include    : true
+    });
+*/
 (function(){
     this.mainBind = "data";
     
@@ -50,22 +66,24 @@ apf.LiveMarkupPi = function(){
     }
 
     this.$propHandlers["calcdata"] = function(data){
-        /*if (this.$data) {
-            var newXml = apf.getXml("<a:application xmlns:a='" 
-              + apf.ns.apf + "'>" + apf.xmlentities(data) + "</a:application>"); //@todo apf3.0 slow, rethink xmlentities
-            var oldXml = this.$data;
-            apf.xmlDiff(oldXml, newXml);
-            
-            return;
-        }*/
-
-//var dt = new Date().getTime();
-
         if (this.$data) {
+            // #ifdef __WITH_XMLDIFF
+            if (this.$useXmlDiff) {
+                var newXml = apf.getXml("<a:application xmlns:a='" 
+                  + apf.ns.apf + "'>" + apf.xmlentities(data) + "</a:application>"); //@todo apf3.0 slow, rethink xmlentities
+                var oldXml = this.$data;
+                apf.xmlDiff(oldXml, newXml);
+                
+                return;
+            }
+            //#endif
+            
             var nodes = this.$data.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--)
                 nodes[i].destroy(true);
         }
+
+//var dt = new Date().getTime();
 
         //if (!this.xmlRoot)
             //return this.$ext.innerHTML = "loading...";

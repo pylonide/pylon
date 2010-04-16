@@ -36,12 +36,14 @@ apf.$debugwin = {
     nativedebug : false,
     highlighthover : true,
     
-    cache : [],
-    
-    apf  : (function(){
+    cache : (function(){
         apf.isDebugWindow = self.frameElement 
             && self.frameElement.isDebugWin > -1;
-        
+
+        return apf.isDebugWindow ? self.parent.apf.$debugwin.cache : [];
+    })(),
+    
+    apf  : (function(){
         if (apf.isDebugWindow) {//assuming we are the debug window
             var upapf = self.parent.apf;
 

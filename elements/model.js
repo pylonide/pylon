@@ -323,10 +323,17 @@ apf.model = function(struct, tagName){
     
     this.$loadInAmlProp = function(id, xmlNode){
         var prop, node, p = this.$propBinds[id], amlNode = apf.all[id];
-        if(!amlNode){
+        if (!amlNode){
              delete this.$propBinds[id];
              return;
-        }           
+        }
+        //#ifdef __WITH_AML_IN_BINDINGS
+        if (amlNode.$noInitModel) {
+            delete amlNode.$noInitModel;
+            return;
+        }
+        //#endif
+                 
         for (prop in p) {
             if (node = p[prop].root ? xmlNode.selectSingleNode(p[prop].root) : xmlNode) {
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
@@ -392,7 +399,12 @@ apf.model = function(struct, tagName){
             p.listen = ".";
 
         if (this.data) {
-            var xmlNode = p.listen ? this.data.selectSingleNode(p.listen) : this.data;
+            var xmlNode = 
+              //#ifdef __WITH_AML_IN_BINDINGS
+              amlNode.$noInitModel ? amlNode.xmlRoot : 
+              //#endif
+              (p.listen ? this.data.selectSingleNode(p.listen) : this.data);
+
             if (xmlNode) {
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + amlNode.$uniqueId + "|" + prop + "|" + this.$uniqueId);
@@ -848,7 +860,7 @@ apf.model = function(struct, tagName){
         this.data = xmlNode;
         
         this.dispatchEvent("afterload", {xmlNode: xmlNode});
-        
+
         for (var id in this.$amlNodes)
             this.$loadInAmlNode(this.$amlNodes[id]);
 

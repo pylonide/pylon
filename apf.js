@@ -1162,7 +1162,17 @@ var apf = {
          * @param {mixed} obj the object for which the properties are displayed.
          */
         dir : function(obj){
-            this.info(apf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
+            var s = apf.$debugwin.$serializeObject(obj, "Inspected via apf.console.dir");
+            if (typeof s == "string") {
+                this.write(s, "custom", null, null, null, true);
+            }
+            else {
+                this.write(obj
+                    ? "Could not serialize object: " + s.message
+                    : obj, "error", null, null, null, true);
+            }
+            
+            //this.info(apf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
         
         //#ifdef __DEBUG

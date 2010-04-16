@@ -8,9 +8,9 @@
     <body>
         <a:skin src="../skins.xml" />
 
-        <a:list each="[mail]" align="right">
+        <a:list id="lst" each="[mail]" width="200" height="100" border="1" skin2="simplelist" canrename="false">
             <a:caption><?lm
-                <a:button>test</a:button> [@name]
+                <a:button>value: [@name]</a:button> [@name]
             ?></a:caption>
             <a:model>
                 <data>
@@ -20,5 +20,11 @@
                 </data>
             </a:model>
         </a:list>
+        
+        <a:button 
+          width   = "100"
+          onclick = "apf.console.dir(lst.selected);apf.xmldb.setAttribute(lst.selected, 'name', new Date().getTime())">
+            Test
+        </a:button>
     </body>
 </html>

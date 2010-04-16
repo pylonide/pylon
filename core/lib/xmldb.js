@@ -257,12 +257,12 @@ apf.xmldb = new (function(){
                 
                 var amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
                 if (amlNode) {
-                    var model = apf.all[uId[3]];
-                    var xpath = model.$propBinds[uId[1]][uId[2]].listen; //root
+                    //var model = apf.all[uId[3]];
+                    //var xpath = model.$propBinds[uId[1]][uId[2]].listen; //root
                     
-                    amlNode.$execProperty(uId[2], xpath
+                    amlNode.$execProperty(uId[2], xmlNode);/*xpath
                         ? model.data.selectSingleNode(xpath)
-                        : model.data);
+                        : model.data);*/
                 }
             }) - 1;
         }

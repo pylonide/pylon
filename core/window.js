@@ -483,8 +483,11 @@ apf.window = function(){
                     } while (node && !node.nextSibling && node != amlNode 
                       && !node.$isWindowContainer)
                     
-                    if (node == amlNode)
+                    if (node == amlNode) {
+                        if (node.$isWindowContainer)
+                            this.$focus(node, e, true);
                         return; //do nothing
+                    }
                     
                     if (node) {
                         if (node.$isWindowContainer) {
@@ -924,7 +927,8 @@ apf.window = function(){
         //#ifdef __WITH_FOCUS
         //Make sure the user cannot leave a modal window
         if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
-          && apf.config.allowBlur && amlNode.canHaveChildren != 2) {
+          && apf.config.allowBlur && amlNode.canHaveChildren != 2 
+          && !amlNode.$focusParent) {
             lastFocusParent = null;
             if (apf.document.activeElement)
                 apf.document.activeElement.blur();

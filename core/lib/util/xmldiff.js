@@ -742,7 +742,7 @@ apf.xmlDiff = function (doc1, doc2){
     }
     
     apf.queue.empty();
-    alert(new Date().getTime() - dt);
+    //alert(new Date().getTime() - dt);
     //#ifdef __DEBUG
     //apf.console.time("Diff time:" + (time = (new Date().getTime() - dt)));
     

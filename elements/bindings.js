@@ -156,7 +156,7 @@ apf.ruleList.prototype = {
     },
     
     compile : function(name){
-        var rules, s, c = this.$compiled;
+        var rules, s, c = this.$compiled, hasAml = false;
 
         if (name) {
             s     = [];
@@ -166,10 +166,18 @@ apf.ruleList.prototype = {
                     continue;
 
                 s.push(rule.match, rule.value);
+                //#ifdef __WITH_AML_IN_BINDINGS
+                if (!hasAml && rule.value)
+                    hasAml = rule.value.indexOf("<a:") > -1;
+                //#endif
             }
             
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
+            
+            //#ifdef __WITH_AML_IN_BINDINGS
+            c[name].hasAml = hasAml;
+            //#endif
             
             return c;
         }
@@ -178,20 +186,28 @@ apf.ruleList.prototype = {
             if (name == "each")
                 continue;
             
-            rules = this[name];
+            rules  = this[name];
             if (rules.dataType != apf.ARRAY)
                 continue;
             
-            s = [];
+            s = [], hasAml = false;
             for (var rule, i = 0, l = rules.length; i < l; i++) {
                 if (!(rule = rules[i]).match && !rule.value)
                     continue;
 
                 s.push(rule.match, rule.value);
+                //#ifdef __WITH_AML_IN_BINDINGS
+                if (!hasAml && rule.value)
+                    hasAml = rule.value.indexOf("<a:") > -1;
+                //#endif
             }
             
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
+            
+            //#ifdef __WITH_AML_IN_BINDINGS
+            c[name].hasAml = hasAml;
+            //#endif
         }
 
         this.$isCompiled = true;

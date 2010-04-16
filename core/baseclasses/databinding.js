@@ -241,47 +241,60 @@ apf.DataBinding = function(){
     };
     
     //@todo apf3.0 contentEditable support
-    //#ifdef __WITH_AML_IN_BINDINGS
-    this.$bindingQueue = [];
-    //#endif
     this.$applyBindRule = function(name, xmlNode, defaultValue, callback, oHtml){
         var handler = this.$attrBindings[name] 
           && this.$attrBindings[name].cvalue || this.$cbindings[name];
 
-        var result = handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
-        
-        //#ifdef __WITH_AML_IN_BINDINGS
-        if (oHtml && result.indexOf("<a:") > -1) {
-            alert(result);
-            return "<div id='placeholder_" + this.$uniqueId + "_"
-                + (this.$bindingQueue.push(result, oHtml) - 1) + "'></div>";
-        }
-        //#endif
-        
-        return result;
+        return handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
     };
 
     //#ifdef __WITH_AML_IN_BINDINGS
-    this.addEventListener("afterload", function(){
-        var div, doc = this.ownerDocument, domParser = doc.$domParser, 
-            docFrag = doc.createDocumentFragment(),
-            sStart  = "<a:application xmlns:a='" + apf.ns.aml + "'>",
-            sEnd    = "</a:application>";
-
-        for (var i = 0, l = this.$bindingQueue.length; i < l; i++) {
+    var afterloadUpdate
+    this.addEventListener("afterload", afterloadUpdate = function(){
+        var queue;
+        if (!this.$cbindings.queue || !this.$cbindings.queue.caption
+          || !(queue = this.$cbindings.queue.caption))
+            return;
+        
+        var div, doc = this.ownerDocument;
+        for (var lm, i = 0, l = queue.length; i < l; i++) {
             div = document.getElementById("placeholder_" 
                 + this.$uniqueId + "_" + i);
-            docFrag.$int = div.parentNode;
-            div.parentNode.removeChild(div);
-            domParser.parseFromXml(apf.getXml(sStart + this.$bindingQueue[i] + sEnd), { //@todo might be optimized by doing it only once
-                doc        : doc,
-                amlNode    : docFrag,
-                beforeNode : null,
-                include    : true
+            
+            lm = doc.createProcessingInstruction("lm", this.$cbindings.caption);
+            lm.$model  = this.$model;
+            lm.xmlRoot = queue[i]; //xmlNode
+            lm.$noInitModel = true;
+            lm.$useXmlDiff  = true;
+            lm.$focusParent = this;
+            lm.parentNode   = this;
+            lm.dispatchEvent("DOMNodeInsertedIntoDocument", {
+                pHtmlNode: div
             });
+            
+            delete queue[i];
+            queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
         }
-        
-        this.$bindingQueue = [];
+    });
+    
+    //Add and remove handler
+    this.addEventListener("xmlupdate", function(e){
+        if ("insert|add|synchronize|move".indexOf(e.action) > -1)
+            afterloadUpdate.call(this, e);
+        else if ("remove|move-away".indexOf(e.action) > -1) {
+            var queue;
+            if (!this.$cbindings.queue || !this.$cbindings.queue.caption
+              || !(queue = this.$cbindings.queue.caption))
+                return;
+
+            /*var htmlNode = apf.xmldb.findHtmlNode(e.xmlNode, this);
+            var captionNode = this.$getLayoutNode("caption", htmlNode);
+            var id = captionNode.getAttribute("id").split("_")[2];
+            var lm = queue[id];*/
+            var lm = queue[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+            lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
+            lm.destroy();
+        }
     });
     //#endif
     
@@ -1084,6 +1097,7 @@ apf.DataBinding = function(){
         var i, xpath, modelId, model,
             paths = fParsed.xpaths,
             list  = {};
+        //@todo when there is no model in xpath modelId == null...
         for (i = 0; i < paths.length; i+=2) {
             if (!list[(modelId = paths[i])])
                 list[modelId] = 1;

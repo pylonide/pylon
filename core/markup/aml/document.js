@@ -146,9 +146,9 @@ apf.AmlDocument = function(){
             null, nodeValue);
     };
     
-    this.createProcessingInstruction = function(nodeValue){
+    this.createProcessingInstruction = function(target, data){
         return this.$domParser.$createNode(this, this.NODE_PROCESSING_INSTRUCTION,
-            null, null, null, nodeValue);
+            null, null, target, data);
     };
     
     this.createCDATASection = function(nodeValue){

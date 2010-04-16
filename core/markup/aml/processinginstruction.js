@@ -65,7 +65,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
-        
         if (prop == "data") {
             this.$clearDynamicProperty("calcdata");
             this.$setDynamicProperty("calcdata", value);
@@ -79,8 +78,9 @@ apf.AmlProcessingInstruction = function(isPrototype){
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        var pHtmlNode;
-        if (this.parentNode.$bindingRule || !(pHtmlNode = this.parentNode.$int)) 
+        var pHtmlNode = e.pHtmlNode;
+        if (!pHtmlNode && (this.parentNode.$bindingRule 
+          || !(pHtmlNode = this.parentNode.$int))) 
             return;
 
         pHtmlNode.appendChild(this.$ext = document.createElement("span"));
@@ -95,8 +95,13 @@ apf.AmlProcessingInstruction = function(isPrototype){
         //#endif
     }, true);
     
-    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+    /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
         this.$clearDynamicProperty("calcdata");
-    });
+    });*/
+    
+    this.$destroy = function(){
+        this.$clearDynamicProperty("calcdata");
+        this.$propHandlers["calcdata"].call(this, "");
+    }
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 // #endif
