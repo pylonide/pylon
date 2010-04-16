@@ -703,7 +703,7 @@
     </a:presentation>
 </a:button>
 
-<a:button name="toolbarbutton2">
+<a:button name="radiotab">
     <a:style><![CDATA[
         .dbg_menubar .toolbarbutton_tlook {
             display         : block;
