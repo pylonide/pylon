@@ -1,0 +1,53 @@
+<category name="Elements" xmlns:a="http://ajax.org/2005/aml" >
+    <subcat name="Default">
+        <item name="Arrow" icon="Actions.png" />
+        <item name="Selection" icon="selection.gif" />
+    </subcat>
+    <subcat name="Containers">
+        <item name="Accordion" value="elements.accordion" icon="ui-accordion.png" />
+        <item name="Bar" value="elements.bar" icon="layout-select.png" />
+        <item name="Frame" value="elements.frame" icon="ui-group-box.png" />
+        <item name="Modalwindow" value="elements.modalwindow" icon="application-blue.png" />
+        <item name="Section" value="elements.section" icon="section.png"/>
+        <!-- add panel demo -->
+        <item name="Statusbar" value="elements.statusbar" icon="layout-select-footer.png"/>
+        <item name="Tab" value="elements.tab" icon="ui-tab-content.png"/>
+        <item name="Page" value="elements.page" icon="ui-tab-content.png"/>
+        <item name="Toolbar" value="elements.toolbar" icon="ui-toolbar.png"/>
+    </subcat>
+    <subcat name="Form elements">
+        <item name="Button" value="elements.button" icon="ui-button.png">
+            <a:button width="100" />
+        </item>
+        <item name="Caldropdown" value="elements.caldropdown" icon="ui-combo-box-calendar.png"/>
+        <item name="Calendar" value="elements.calendar" icon="data.png" />
+        <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png" />
+        <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png"/>
+        <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png" />
+        <item name="Editor" value="elements.editor" icon="ui-editor.png" />
+        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+        <item name="Label" value="elements.label" icon="ui-label.png"/>
+        <item name="Palette" value="elements.palette" icon="palette.png"/>
+        <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
+        <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
+        <item name="Slider" value="elements.slider" icon="ui-slider.png" />
+        <item name="Spinner" value="elements.spinner" icon="ui-spin.png" />
+        <item name="Text" value="elements.text" icon="ui-textarea.png" />
+        <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />
+        <item name="Textbox" value="elements.textbox" icon="ui-text-field.png" />
+        <!--<item name="Upload" value="elements.upload"/>-->
+    </subcat>
+    <subcat name="Selection elements">
+        <item name="Datagrid" value="elements.datagrid" icon="table-fugue.png" />
+        <item name="List" value="elements.list" icon="text_list_bullets.png"/>
+        <item name="Tree" value="elements.tree" icon="tree.png" />
+        <!--item name="Property editor" value="elements.propedit" icon="table.png" /-->
+        <item name="Menu" value="elements.menu" icon="ui-menu.png" />
+        <item name="Pager" value="elements.pager" icon="pager.png" />
+        <!--item name="Toc" value="elements.toc"/-->
+    </subcat>
+    <subcat name="Media">
+        <item name="Browser" value="elements.browser" icon="application-browser.png"/>
+        <item name="Img" value="elements.img" icon="image.png" />
+    </subcat>
+</category>

@@ -406,7 +406,7 @@
         .debug2010tab .btncontdebug .tabdiv{
             display : block;
             float : left;
-            width : 10px;
+            width : 15px;
             height : 10px;
         }
     
