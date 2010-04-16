@@ -1110,6 +1110,10 @@ apf.DragServer = {
             : 0) : c.clientY;
         var el = document.elementFromPoint(apf.DragServer.dragdata.x,
             apf.DragServer.dragdata.y);
+            if (!el) {
+                el = document.elementFromPoint(apf.DragServer.dragdata.x,
+                apf.DragServer.dragdata.y);
+            }
 
         dragdata.indicator.style.top = storeIndicatorTopPos;
         //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
@@ -1125,7 +1129,6 @@ apf.DragServer = {
             apf.DragServer.dragover(receiver, el, e);
         else if (apf.DragServer.last)
             apf.DragServer.dragout(apf.DragServer.last, e);
-
 
         apf.DragServer.lastTime = new Date().getTime();
     },
@@ -1169,6 +1172,10 @@ apf.DragServer = {
 
         var el = document.elementFromPoint(apf.DragServer.dragdata.x,
             apf.DragServer.dragdata.y);
+        if (!el) {
+            el = document.elementFromPoint(apf.DragServer.dragdata.x,
+            apf.DragServer.dragdata.y);
+        }
 
         indicator.style.top = storeIndicatorTopPos;
         //apf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
