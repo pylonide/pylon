@@ -2322,7 +2322,7 @@ apf.browserDetect();
 apf.Init.run("apf");
 
 
-//#ifndef __PACKAGED
+//#ifndef __PACKAGED || __WITH_DEBUG_WIN
 apf.getShortestPath = function(p1, p2) {
     if (p1.charAt(0) == "/")
         return p1;
@@ -2355,7 +2355,9 @@ if (!apf.basePath) {
       ? apf.getShortestPath(apf.basePath, apf.getDirname(location.href))
       : "./";
 }
+//#endif
 
+//#ifndef __PACKAGED
 apf.$loader = {
     queue : [[]],
     state : 0,

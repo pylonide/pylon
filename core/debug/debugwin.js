@@ -31,7 +31,6 @@ function prettySize(size) {
 }
 
 apf.$debugwin = {
-    resPath     : "", //@todo
     showtime    : true,
     nativedebug : false,
     highlighthover : true,
@@ -964,15 +963,6 @@ apf.$debugwin = {
                          apf.getStyleRule("html", "overflow-y") || "auto"];
             }
     
-            // #ifndef __PACKAGED
-            this.resPath = (apf.config.resourcePath || apf.basePath) + "core/debug/resources/";
-            /* #else
-            this.resPath = (apf.config.resourcePath || apf.basePath) + "resources/";
-            #endif */
-            /* #ifdef __WITH_CDN
-            this.resPath = apf.CDN + apf.VERSION + "/resources/";
-            #endif */
-
             apf.importCssString("\
                 html{\
                     height : 100%;\
@@ -1002,7 +992,6 @@ apf.$debugwin = {
                     bottom: 0px;\
                     text-align: left;\
                     height: 350px;\
-                    background: #fff url(" + this.resPath + "splitter_handle_vertical.gif) no-repeat 1px 50%;\
                     width : 100%;\
                     left: 0px;\
                     z-index: 100000000;\
