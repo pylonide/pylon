@@ -101,8 +101,7 @@ var test_list = {
 	83:["{\"hi$[main/test]\"}", "hitest"],
 	84:["{'hi\\$[main/test]'}", "hitest"],
 	85:["{'hi\\\\$[main/test]'}", "hi$[main/test]"],
-	86:["{each([folder])[@name]}", "F1F2F2"],
-	87:["{var x = [1,2,3];each(x)\"{item()}[folder/@name]\"}", "1F12F13F1"]
+	86:["{each([folder])[@name]}", "F1F2F2"]
 	
 	},
 	2:{
@@ -186,8 +185,8 @@ var test_list = {
 	77:["$[file<xml/>]", ""],
 	78:["$[file*[folder]]", ""],
 	79:["$[file%[folder]]", ""],
-	80:["[folder/@name]<xml/>{if(1)\"A{jsvar}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
-	81:["/*   */\n\n[folder/@name]<xml/>{/*  */\n\nif(1)/*  */\n\"A{jsvar/*  */}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
+	80:["[folder/@name]+<xml/>{if(1)\"A{jsvar}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
+	81:["/*   */\n\n[folder/@name]+<xml/>{/*  */\n\nif(1)/*  */\n\"A{jsvar/*  */}\";else 2;function test(){1;2;3;4;};test();}", "F1<xml/>A51234"],
 	82:["var x = [1,2,3,[4,5]];x[3][1]", "5"]
 	
 	}

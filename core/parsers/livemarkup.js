@@ -197,7 +197,11 @@ apf.lm = new (function(){
         },
         call_exclusion = {
             "alert": 1, "confirm" :1, "setTimeout":1, "setInterval":1, "switch":1,
-            "call":1, "return":1, "throw":1, "case":1, "catch":1
+            "call":1, "return":1, "throw":1, "case":1, "catch":1,
+            "abs":1,"acos":1,"asin":1,"atan":1,"atan2":1,"ceil":1,
+            "cos":1,"exp":1,"floor":1,"log":1,"max":1,"min":1,
+            "pow":1,"random":1,"round":1,"sin":1,"sqrt":1,"tan":1,"lin":1,"linear":1,
+            "idx":1
         },
         is_out_space = {
             " ":1, "\n":1
@@ -1919,6 +1923,35 @@ apf.lm = new (function(){
     this.setWarnLevel = function(lvl){
         apf.lm_exec.setWarnLevel(lvl);
     };
+    
+    this.parseExpression = function(istr, cfg){
+        if (!cfg)
+            cfg = emptyCfg;
+
+        o_props = {}, o_xpathpairs = [], o = [], s = [],
+        nesting = 0, xpath_lut_node = xpath_lut_node_normal;
+        str = istr, str_len = str.length;
+        ob = ol = scope = segment = o.length, cf_mode_output = cf_str_output;
+        c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
+        last_type = o_asyncs = last_line = 0;
+        parse_mode = 2;
+        
+        if (cfg.nothrow) {
+            str.replace(parserx, parser);
+        }
+        else {
+            try {
+                str.replace(parserx, parser);
+            }
+            catch(e) {
+                handleError(e,last_line);
+                return null;
+            }
+        }
+        return o.join('');
+    }
+
+    
 })();
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
@@ -2339,6 +2372,7 @@ apf.lm_exec = new (function(){
     }
 
     // Language processing
+//#ifdef __WITH_MULTI_LANG    
     var langrx = /(\\*)\$\[(.*?)\]/g;
     var lang = apf.language;
 
@@ -2347,24 +2381,35 @@ apf.lm_exec = new (function(){
     function _lngrx(tok,esc,x){	// language replacement regex callback
         apf.$lm_has_lang = 1;
 		if(esc)
-			return "$["+x+"]";
-         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lngrx"),/*#endif*/"");
+            return "$["+x+"]";
+        return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lngrx"),/*#endif*/"");
     }
+//#endif            
 
     function __ret(r){			// return function, translates $[lang] things in data
+//#ifdef __WITH_MULTI_LANG    
         if(r && r.indexOf && r.indexOf("$[")!=-1)
             return r.replace(langrx, _lngrx);
+//#endif            
         return r;
     }
 
     function __lng(x,x2){			// the language macro
+//#ifdef __WITH_MULTI_LANG    
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lng"),/*#endif*/"");
+/*#else
+        return "$["+x+"]"; 
+#endif*/        
     }
 
     function _lnged(x,x2){			// editable language macro
+//#ifdef __WITH_MULTI_LANG    
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lnged"),/*#endif*/"");
+/*#else
+        return "$["+x+"]"; 
+#endif*/        
     }
 
     function _injself(s){			// self inject helper func
@@ -2423,6 +2468,61 @@ apf.lm_exec = new (function(){
         throw({x:1});
     }
 
+    var _clut = apf.color?apf.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
+
+    function _cthex(c){
+        var t;
+        if((t=typeof(c))=='string'){
+            if(c.indexOf('#')==0){
+                if(c.length==7) return parseInt(c.slice(-1),16);
+                return parseInt(c.slice(-1),16); // compute repeat
+            }
+            if(t = _clut[a])return t;
+            if(c=c.match(_cparse)){
+                if((t=c[1]) == 'rgb'){
+                    return (((t=c[2])<0?0:(t>255?255:parseInt(t)))<<16)+
+                            (((t=c[3])<0?0:(t>255?255:parseInt(t)))<<8)+
+                            (((t=c[4])<0?0:(t>255?255:parseInt(t))));
+                } else { // hsv
+                    var h=parseFloat(c[2]),s=parseFloat(c[3]),v=parseFloat(c[4]),
+                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i))); 
+                    switch(i){
+                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);  
+                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff); 
+                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff); 
+                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff); 
+                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff); 
+                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff); 
+                    }
+                }
+            }
+        } else if(t=='number')return t;
+        return null;
+    }
+
+    function lin(f, a, b){
+        var fa = parseFloat(a), fb = parseFloat(b), fm = 1-(f = f<0?0:(f>1?1:f));
+        if(fa!=a || fb!=b)
+            return (((fa=_cthex(a))&0xff0000)*f+((fb=_cthex(b))&0xff0000)*fm)&0xff0000|
+                   ((fa&0xff00)*f+(fb&0xff00)*fm)&0xff00 |
+                   ((fa&0xff)*f+(fb&0xff)*fm)&0xff;
+        return f*fa+fm*fb;
+    }
+    
+    var abs = Math.abs, acos = Math.acos, asin = Math.asin,
+       atan = Math.atan, atan2 = Math.atan2, ceil = Math.ceil,
+       cos = Math.cos, exp = Math.exp, floor = Math.floor,
+       log = Math.log, max = Math.max, min = Math.min,
+       pow = Math.pow, random = Math.random, round = Math.round, 
+       sin = Math.sin, sqrt = Math.sqrt, tan = Math.tan, linear = lin;
+
+    function tsin(x){ return 0.5*sin(x)+0.5;}
+    function tcos(x){ return 0.5*cos(x)+0.5;}
+    function usin(x){ return 0.5-0.5*sin(x);}
+    function ucos(x){ return 0.5-0.5*cos(x);}
+    function snap(a,b){ return round(a/b)*b; }
+    function clamp(a,b,c){ return a<b?b:(a>c?c:a); }
+    
     this.compile = function(code){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
