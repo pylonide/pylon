@@ -958,6 +958,7 @@
 
         .tbFocus {
             border: 1px solid #327fbd;
+            border-left-color:#c3c3c3;
         }
 
         .tbDisabled {
