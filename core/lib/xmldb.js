@@ -706,7 +706,7 @@ apf.xmldb = new (function(){
                     }
 
                     //!this.delayUpdate && <- that doesnt work because of information that is destroyed
-                    if ("|remove|move-away|add|".indexOf("|" + action + "|") > -1) {
+                    if ("|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
                         if (this.$listeners[uId]) {
                             this.$listeners[uId]([action, xmlNode,
                                 loopNode, undoObj, oParent]);
@@ -736,6 +736,7 @@ apf.xmldb = new (function(){
         else if (runTimer) {
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
+            this.$hasQueue = true;
             notifyTimer = $setTimeout(function(){
                 //this.$hasQueue = true;
                 apf.xmldb.notifyQueued();

@@ -895,6 +895,8 @@ apf.Class.prototype = new (function(){
         }
         //#endif
         
+        delete options.currentTarget;
+        
         return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
     };
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+
+        <a:list each="[test]" caption="[@name]" align="left" width="200" drag="true" dragcopy="true">
+            <a:model>
+                <data>
+                    <test name="Test 1" />
+                    <test name="Test 2" />
+                    <test name="Test 3" />
+                </data>
+            </a:model>
+        </a:list>
+        
+        <a:model id="mdlTree">
+            <data>
+                <playlist caption="Playlist1" />
+            </data>
+        </a:model>
+        
+        <a:tree id="trTest" align="right" 
+          model="mdlTree" startcollapsed="false" canrename="false"> 
+            <a:each match="[playlist|test]">
+                <a:caption match = "[@caption|@name]" />
+        
+                <a:drag match="[test]" /> 
+                <a:drop 
+                  match  = "[test]" 
+                  target = "[playlist]" 
+                  action = "tree-append" />
+                <a:drop 
+                  match  = "[test]" 
+                  target = "[test]" 
+                  action = "insert-before" />
+            </a:each>
+        </a:tree>
+        
+    </body>
+</html>
