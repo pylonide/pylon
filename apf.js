@@ -1313,7 +1313,7 @@ var apf = {
      * @return {String} the absolute url.
      */
     getAbsolutePath : function(base, url){
-        return url.charAt(0) == "/"
+        return url && url.charAt(0) == "/"
             ? url
             : (!url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url.replace(/^\//, ""));
     },
