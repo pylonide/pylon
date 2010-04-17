@@ -198,9 +198,7 @@ var apf = {
      * String specifying the basepath for loading apf from seperate files.
      * @type {String}
      */
-    /*#ifdef __PACKAGED
     basePath      : "",
-    #endif*/
 
     //#ifdef __PARSER_AML
     /**
@@ -2344,7 +2342,7 @@ if (!apf.basePath) {
     var snodes = document.getElementsByTagName("script");
     for (var src, i = 0; i < snodes.length; i++) {
         src = snodes[i].getAttribute("src");
-        if (src && src.match(/^(.*)apf(?:_debug|_release)\.js$/)) {
+        if (src && src.match(/^(.*)apf(?:_debug|_release)?\.js$/)) {
             apf.basePath = RegExp.$1;
             break;
         }
