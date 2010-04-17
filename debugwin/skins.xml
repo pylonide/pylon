@@ -1434,6 +1434,183 @@
         </a:empty>
     </a:presentation>
 </a:list>
+<a:list name="macro_list">
+    <a:style><![CDATA[
+        .macro_list {
+            overflow            : auto;
+            position            : relative;
+            border              : 1px solid #c3c3c3;
+            background-color    : #c9d6e1;
+            cursor              : default;
+            background-position : right 0;
+            background-repeat   : repeat-y;
+        }
+    
+        .white {
+            background : white;
+        }
+    
+        .macro_list, 
+        .dragmacro_list {
+            font-family : Tahoma;
+            font-size   : 8pt;
+            font-weight : bold;
+        }
+    
+        .macro_list DIV, 
+        .dragmacro_list {
+            padding       : 0;
+            height        : 26px;
+            border-top    : 1px solid #c9d6e1;
+            border-bottom : 1px solid #c9d6e1;
+            overflow      : hidden;
+            position      : relative;
+            display       : block;
+            margin        : 0;
+            color         : #1167ab;
+        }
+        
+        .macro_list .even {
+            
+        }
+        
+        .macro_list .selected {
+            border-top       : 1px solid #d6dde5;
+            border-bottom    : 1px solid #d6dde5;
+            color            : #1167ab;
+            background-image : none;
+            background-color : #d6dde5;
+        }
+        
+        .macro_listFocus .selected {
+            border-top          : 1px solid #1167ab;
+            border-bottom       : 1px solid #1167ab;
+            color               : white;
+            background-image    : url(images/macro_list_selected.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+        }
+    
+        .macro_list SPAN.caption, 
+        .dragmacro_list SPAN.caption {
+            height              : 26px;
+            margin              : 0;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+            right               : 0;
+            background-repeat   : no-repeat;
+            background-position : 3px 8px;
+        }
+    
+        .macro_list SPAN.caption U, 
+        .dragmacro_list SPAN.caption U {
+            text-decoration : none;
+            cursor          : default;
+            text-decoration : none;
+            white-space     : nowrap;
+            position        : absolute;
+            top             : 0;
+            left            : 0;
+            right           : 0;
+            height          : 20px;
+            padding         : 6px 0 0 19px;
+        }
+    
+        .macro_listFocus .indicate U {
+        }
+    
+        .macro_list .selected U {
+            
+        }
+        
+        .macro_listFocus .selected U, 
+        .dragmacro_list U {
+            
+        }
+    
+        .macro_list #txt_rename {
+            border      : 1px solid #bbb;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : 0px;
+            cursor      : text;
+            height      : 13px;
+            display     : block;
+            outline     : none;
+        }
+    
+        .macro_list .empty, 
+        .macro_list .offline, 
+        .macro_list .loading {
+            text-align  : center;
+            padding     : 8px 0 0 5px;
+            color       : #AAA;
+            font-weight : normal;
+        }
+    
+        .shortmacro_list {
+            border     : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width      : auto;
+        }
+        
+        .macro_listDrop {
+            border : 1px solid #25a8e7;
+        }
+    
+        .dragmacro_list_multiple {
+            border     : 2px solid black;
+            width      : 10px;
+            height     : 5px;
+            padding    : 0;
+            background : none;
+        }
+    
+        .dragmacro_list_multiple SPAN.caption {
+            display : none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          container = "."
+          minwidth  = "100"
+          minheight = "50">
+            <div class="macro_list"> </div>
+        </a:main>
+        <a:item
+          class   = "."
+          caption = "span/u"
+          icon    = "span"
+          select  = ".">
+            <div>
+                <span class="caption">
+                    <u>-</u>
+                </span>
+            </div>
+        </a:item>
+        <a:dragindicator>
+            <div class="dragmacro_list">
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
         .dbg_toolbar{
