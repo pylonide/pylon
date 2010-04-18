@@ -1502,6 +1502,19 @@
             background-repeat   : no-repeat;
             background-position : 3px 8px;
         }
+        
+        .macro_list .ico, 
+        .dragmacro_list .ico {
+            width               : 16px;
+            height              : 16px;
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+            margin              : 0;
+            padding             : 0;
+            position            : absolute;
+            top                 : 5px;
+            left                : 2px;
+        }
     
         .macro_list SPAN.caption U, 
         .dragmacro_list SPAN.caption U {
@@ -1588,10 +1601,11 @@
         <a:item
           class   = "."
           caption = "span/u"
-          icon    = "span"
+          icon    = "span/blockquote"
           select  = ".">
             <div>
                 <span class="caption">
+                    <blockquote class="ico" onclick="apf.findHost(this).remove(this.parentNode);"> </blockquote>
                     <u>-</u>
                 </span>
             </div>
