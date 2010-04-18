@@ -1470,11 +1470,26 @@
             color         : #1167ab;
         }
         
+        .macro_list DIV SPAN .ico, 
+        .dragmacro_list DIV SPAN .ico {
+            width               : 16px;
+            height              : 16px;
+            background-image    : url(images/macro_del_ico.png);
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+            margin              : 0;
+            padding             : 0;
+            position            : absolute;
+            top                 : 5px;
+            left                : 2px;
+            display             : none;
+        }
+        
         .macro_list .even {
             
         }
         
-        .macro_list .selected {
+        .macro_list .hover {
             border-top       : 1px solid #d6dde5;
             border-bottom    : 1px solid #d6dde5;
             color            : #1167ab;
@@ -1482,7 +1497,12 @@
             background-color : #d6dde5;
         }
         
-        .macro_listFocus .selected {
+        .macro_list .hover SPAN .ico {
+            display : block;
+        }
+        
+        
+        .macro_list .selected {
             border-top          : 1px solid #1167ab;
             border-bottom       : 1px solid #1167ab;
             color               : white;
@@ -1501,19 +1521,6 @@
             right               : 0;
             background-repeat   : no-repeat;
             background-position : 3px 8px;
-        }
-        
-        .macro_list .ico, 
-        .dragmacro_list .ico {
-            width               : 16px;
-            height              : 16px;
-            background-repeat   : no-repeat;
-            background-position : 0 0;
-            margin              : 0;
-            padding             : 0;
-            position            : absolute;
-            top                 : 5px;
-            left                : 2px;
         }
     
         .macro_list SPAN.caption U, 
@@ -1601,7 +1608,7 @@
         <a:item
           class   = "."
           caption = "span/u"
-          icon    = "span/blockquote"
+          icon    = "span"
           select  = ".">
             <div>
                 <span class="caption">
