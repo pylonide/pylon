@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="browse">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -614,7 +614,8 @@
                             // check for more macro's to be played
                             if (curMacroIdx + 1 < macroList.length) {
                                 curMacroIdx++;
-                                playMacro();
+                                // short delay before playing next macro
+                                setTimeout(playMacro, 100);
                             }
                             
                             // all macro's played, end playback
