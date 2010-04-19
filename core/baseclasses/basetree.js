@@ -1047,8 +1047,11 @@ apf.BaseTree = function(){
         
         if (htmlNode.style)
             this.slideOpen(htmlNode, null, true);
-        else
-            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;");
+        else if (this.nocollapse)
+            htmlNode.setAttribute("style", "display:block;");
+        else 
+            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;"); 
+        
     }
     
     this.$removeEmptyMessage = function(htmlNode){
