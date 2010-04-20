@@ -30,6 +30,23 @@
             position            : absolute;
             right               : 5px;
             top                 : 0;
+            outline             : none;
+        }
+        
+        .macro_tree #txt_rename {
+            height              : 16px;
+            padding             : 3px 5px 0 10px;
+            background-image    : url(images/macro_root_back_left.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            color               : #1e7ecd;
+            position            : absolute;
+            right               : 5px;
+            top                 : 0;
+            word-break          : keep-all;
+            overflow            : visible;
+            cursor              : text;
+            outline             : none;
         }
 
         .macro_tree DIV.macro_rright {
@@ -175,7 +192,6 @@
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
-        .macro_tree DIV.last BLOCKQUOTE SPAN.macro_cont_middle DIV.macro_arrow,
         .macro_tree BLOCKQUOTE BLOCKQUOTE,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
@@ -240,7 +256,6 @@
         </a:empty>
     </a:presentation>
 </a:tree>
-
 <a:tree name="checktree">
     <a:style><![CDATA[
         .checktree {
@@ -2215,15 +2230,14 @@
             background : white;
         }
     
-        .macro_list, 
+        .macro_list,
         .dragmacro_list {
             font-family : Tahoma;
             font-size   : 8pt;
             font-weight : bold;
         }
     
-        .macro_list DIV, 
-        .dragmacro_list {
+        .macro_list DIV {
             padding       : 0;
             height        : 26px;
             border-top    : 1px solid #c9d6e1;
@@ -2235,8 +2249,7 @@
             color         : #1167ab;
         }
         
-        .macro_list DIV SPAN .ico, 
-        .dragmacro_list DIV SPAN .ico {
+        .macro_list DIV SPAN .ico {
             width               : 16px;
             height              : 16px;
             background-image    : url(images/macro_del_ico.png);
@@ -2276,8 +2289,7 @@
             background-repeat   : repeat-x;
         }
     
-        .macro_list SPAN.caption, 
-        .dragmacro_list SPAN.caption {
+        .macro_list SPAN.caption {
             height              : 26px;
             margin              : 0;
             position            : absolute;
@@ -2288,8 +2300,7 @@
             background-position : 3px 8px;
         }
     
-        .macro_list SPAN.caption U, 
-        .dragmacro_list SPAN.caption U {
+        .macro_list SPAN.caption U {
             text-decoration : none;
             cursor          : default;
             text-decoration : none;
@@ -2309,11 +2320,6 @@
             
         }
         
-        .macro_listFocus .selected U, 
-        .dragmacro_list U {
-            
-        }
-    
         .macro_list #txt_rename {
             border      : 1px solid #bbb;
             padding     : 1px 15px 1px 1px;
@@ -2347,21 +2353,37 @@
             width      : auto;
         }
         
-        .macro_listDrop {
-            border : 1px solid #25a8e7;
+        /* Drag & drop */
+        .dragmacro_list {
+            height:16px;
+            overflow:hidden;
+            position:absolute;
         }
-    
-        .dragmacro_list_multiple {
-            border     : 2px solid black;
-            width      : 10px;
-            height     : 5px;
-            padding    : 0;
-            background : none;
+        
+        .dragmacro_list DIV {
+            height:16px;
+            width:7px;
+            background-image:url(images/macro_child_backg_right.png);
+            background-position:right -15px;
+            background-repeat:no-repeat;
+            overflow:hidden;
+            float:left;
         }
-    
-        .dragmacro_list_multiple SPAN.caption {
-            display : none;
+        
+        .dragmacro_list SPAN U,
+        .dragmacro_list  U {
+            height:16px;
+            background-image:url(images/macro_child_backg_left.png);
+            background-position:left -15px;
+            background-repeat:no-repeat;
+            color:white;
+            text-decoration:none;
+            font-weight:normal;
+            padding:0 4px 0 11px;
+            float:left;
+            
         }
+        
     ]]></a:style>
 
     <a:presentation>
@@ -2388,6 +2410,7 @@
                 <span>
                     <u>-</u>
                 </span>
+                <div></div>
             </div>
         </a:dragindicator>
         <a:loading>

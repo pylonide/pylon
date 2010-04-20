@@ -484,12 +484,9 @@
                                 </a:bar>
                             </a:toolbar>
                         <!--/a:bar-->
-                        <a:bar skin="basic" border="1 1 0 1" align="right" width="100%" height="100%" class="netview">
+                        <a:bar skin="basic" border="1 1 0 1" align="right" class="netview">
                             <a:tree 
-                              top="0"
-                              left="0"
-                              width="500"
-                              bottom="0"
+                              anchors="0 0 0 0"
                               id         = "trPlaylist"
                               class      = "trPlaylist"
                               model      = "mdlPlaylist" 
@@ -506,7 +503,7 @@
                                       match  = "[test]" 
                                       target = "[test]" 
                                       action = "insert-before" />
-                                    <a:css match="[recording[not(node())]]" value="new_recording" />
+                                    <a:css match="[playlist[not(node())]]" value="new_recording" />
                                     <a:empty value="This is the text of the empty container" />
                                 </a:each>
                             </a:tree>
@@ -519,7 +516,18 @@
                     <a:model id="mdlMacro"><data/></a:model>
                     <a:model id="mdlPlaylist">
                         <data>
-                            <playlist caption="playlist1" />
+                            <playlist caption="playlist1">
+                                <test caption="1"></test>
+                                <test caption="2"></test>
+                                <test caption="3"></test>
+                                <test caption="4"></test>
+                            </playlist>
+                            <playlist caption="playlist2">
+                                <test caption="1"></test>
+                                <test caption="2"></test>
+                                <test caption="3"></test>
+                                <test caption="4"></test>
+                            </playlist>
                         </data>
                     </a:model>
                     
