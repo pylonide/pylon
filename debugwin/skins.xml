@@ -1,5 +1,732 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:tree name="macro_tree">
+    <a:style><![CDATA[
+        .macro_tree {
+            background-color : #edf2f8;
+            font-family      : Tahoma;
+            font-size        : 11px;
+            padding          : 7px 32px 7px 7px;
+            overflow-y       : hidden;
+            overflow-x       : auto;
+        }
+        
+        .macro_tree DIV.root,
+        .macro_tree DIV.empty {
+            position    : relative;
+            overflow    : visible;
+            padding-top : 19px;
+        }
+        
+        /* Root nodes */
+        .macro_tree DIV.macro_rcaption {
+            height              : 16px;
+            padding             : 3px 5px 0 10px;
+            background-image    : url(images/macro_root_back_left.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            color               : #1e7ecd;
+            display             : block;
+            position            : absolute;
+            right               : 5px;
+            top                 : 0;
+        }
+
+        .macro_tree DIV.macro_rright {
+            height              : 19px;
+            width               : 5px;
+            background-image    : url(images/macro_root_back_right.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            right               : 0;
+            top                 : 0;
+        }
+        
+        .macro_tree DIV.empty DIV.macro_rcaption,
+        .macro_tree DIV.empty DIV.macro_rright,
+        .macro_tree DIV.new_recording DIV.macro_rcaption,
+        .macro_tree DIV.new_recording DIV.macro_rright {
+            color : #aabccb;
+        }
+
+        .macro_tree DIV.macro_arrow {
+            display : none;
+        }
+        
+        .macro_tree BLOCKQUOTE {
+            margin   : 0 0 4px 0;
+            height   : 27px;
+            position : relative;
+            overflow : visible;
+            padding  : 0;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_xbutton {
+            position            : absolute;
+            top                 : 6px;
+            right               : -24px;
+            width               : 16px;
+            height              : 16px;
+            background-image    : url(images/macro_del_ico.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_left {
+            width               : 5px;
+            height              : 27px;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+            background-image    : url(images/macro_row_back_left.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
+            height              : 21px;
+            padding             : 6px 0 0 3px;
+            position            : absolute;
+            top                 : 0;
+            left                : 5px;
+            right               : 5px;
+            background-image    : url(images/macro_row_back_middle.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+            white-space         : nowrap;
+            text-overflow   : ellipsis;
+            break-word      : keep-all;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
+            width               : 5px;
+            height              : 27px;
+            position            : absolute;
+            top                 : 0;
+            right               : 0;
+            background-image    : url(images/macro_row_back_right.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_middle,
+        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_right,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_middle,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_right {
+            background-position : 0 -27px;
+        }
+
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
+            float       : left;
+            height      : 15px;
+        }
+        
+        /* Reset styles for other nodes */
+        .macro_tree BLOCKQUOTE DIV.macro_rcaption {
+            display             : block;
+            float               : right;
+            position            : relative;
+            width               : auto;
+            height              : 15px;
+            background-image    : url(images/macro_child_backg_left.png);
+            background-position : 0 -15px;
+            background-repeat   : no-repeat;
+            padding             : 0 5px 0 12px;
+            color               : white;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .macro_tree BLOCKQUOTE DIV.macro_rright {
+            display             : block;
+            float               : right;
+            position            : relative;
+            width               : 7px;
+            height              : 15px;
+            background-image    : url(images/macro_child_backg_right.png);
+            background-position : 0 -15px;
+            background-repeat   : no-repeat;
+            overflow            : hidden;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rright,
+        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rright {
+            background-position : 0 -30px;
+            color               : #aabccb;
+        }
+        
+        .macro_tree BLOCKQUOTE DIV.macro_arrow {
+            float               : right;
+            display             : block;
+            position            : relative;
+            width               : 7px;
+            height              : 13px;
+            background-image    : url(images/macro_white_arrow.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            margin              : 0 7px;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
+        .macro_tree DIV.last BLOCKQUOTE SPAN.macro_cont_middle DIV.macro_arrow,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_xbutton {
+            display : none;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="macro_tree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "div[1]/text()"
+          icon      = "."
+          check     = "."
+          openclose = "."
+          select    = "."
+          container = "blockquote/span[2]">
+            <div>
+                <div class="macro_rcaption">-</div>
+                <div class="macro_rright"></div>
+                <div class="macro_arrow"></div>
+                <blockquote> 
+                    <span class="macro_cont_left"> </span>
+                    <span class="macro_cont_middle"> </span>
+                    <span class="macro_cont_right"> </span>
+                    <span class="macro_xbutton"> </span>
+                </blockquote>
+            </div>
+        </a:item>
+        <a:dragindicator>
+            <div class="dragmacro_tree">
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption="div[1]/text()">
+            <div>
+                <div class="macro_rcaption">-</div>
+                <div class="macro_rright"></div>
+                <div class="macro_arrow"></div>
+                <blockquote> 
+                    <span class="macro_cont_left"> </span>
+                    <span class="macro_cont_middle"> </span>
+                    <span class="macro_cont_right"> </span>
+                    <span class="macro_xbutton"> </span>
+                </blockquote>
+            </div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+
+<a:tree name="checktree">
+    <a:style><![CDATA[
+        .checktree {
+            overflow         : auto;
+            position         : relative;
+            background-color : white;
+            cursor           : default;
+            border           : 1px solid #c3c3c3;
+            padding          : 3px;
+        }
+    
+        .trDefines {
+            background    : none;
+            border-bottom : 1px solid #c3c3c3;
+            border-top    : 1px solid #c3c3c3;
+            border-right  : none;
+            border-left   : none;
+            posittion     : relative;
+            padding-top   : 8px;
+        }
+    
+        .checktree SPAN, 
+        .dragchecktree SPAN {
+            width       : 15px;
+            height      : 18px;
+            background  : no-repeat 3px 5px;
+            display     : block;
+            margin-left : -29px;
+        }
+    
+        .dragchecktree SPAN {
+            background : transparent;
+        }
+    
+        .checktree DIV.pluslast SPAN,
+        .checktree DIV.plus SPAN {
+            background-image:url(images/plus.png);
+        }
+        
+        .checktree DIV.minlast SPAN,
+        .checktree DIV.min SPAN {
+            background-image:url(images/min.png);
+        }
+    
+        .checktree DIV, 
+        .dragchecktree {
+            padding      : 0;
+            height       : 18px;
+            padding-left : 29px;
+            font-family  : Tahoma, Arial;
+            font-size    : 8.5pt;
+            position     : relative;
+        }
+        
+        .checktree .focusbug {
+            padding-left : 0;
+            overflow     : auto;
+        }
+        
+        .dragchecktree {
+            opacity    : 0.5;
+            background : none;
+        }
+        
+        .checktree LABEL, 
+        .dragchecktree LABEL {
+            padding     : 1px 0 0 18px;
+            background  : no-repeat 1px center;
+            height      : 16px;
+            white-space : nowrap;
+            margin-left : 0px;
+            display     : block;
+            float       : left;
+            margin-top  : -18px;
+        }
+    
+        .checktree DIV.loading LABEL {
+            background : no-repeat 1px center;
+        }
+        
+        .checktree DIV.loading SPAN {
+            background : no-repeat 0px 0px;
+        }
+    
+        .checktree U, 
+        .dragchecktree U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : inline !important; display: block;
+            padding         : 2px 4px 2px 2px;
+        }
+        
+        .checktreeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#25a8e7;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .checktree BLOCKQUOTE {
+            margin     : 0;
+            padding    : 0 0 0 20px;
+            display    : none;
+            height     : 0;
+            overflow   : hidden;
+            background : repeat-y 0px center;
+        }
+    
+        .checktree #txt_rename {
+            border      : 1px solid black;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : -2px;
+            *margin-top : 0;
+            cursor      : text;
+            height      : 13px;
+            outline     : none;
+        }
+    
+        .checktree DIV.dragInsert label {
+            border-top : 2px solid black;
+            height     : 14px;
+            overflow   : hidden;
+        }
+    
+        .checktree DIV.dragInsert U, 
+        .checktree DIV.dragDenied U {
+            padding-top : 0;
+        }
+    
+        /*.checktree DIV.dragDenied label {
+            border-top          : 2px solid red;
+            height              : 14px;
+            overflow            : hidden;
+            padding-top         : 2px;
+            margin-top          : -20px;
+            background-position : 1px 0;
+        }*/
+        
+        .checktree .message {
+            text-align : center;
+            padding    : 8px 10px 0 0;
+            color      : #AAA;
+        }
+        
+        .checktree b {
+            overflow    : hidden;
+            margin      : 2px;
+            width       : 12px;
+            height      : 12px;
+            background  : url("images/tree_checkbox.png") no-repeat 0 -12px;
+            float       : left;
+            margin-left : -31px;
+        }
+        
+        .checktreeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#25a8e7;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .checktree .selected U, 
+        .checktree .dragAppend U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .checktreeFocus .selected U, 
+        .checktreeFocus .dragAppend U, 
+        .dragtree U {
+            color            : white;
+            background-color : #25a8e7;
+        }
+        
+        .checktree .checked b {
+            background-position : 0 -24px;
+        }
+        
+        .checktree .partial b {
+            background-position : 0 -48px;
+        }
+        
+        .checktreeDisabled .checked b, 
+        .checktreeDisabled .partial b, 
+        .checktreeDisabled b {
+            background-position : 0 -0px;
+        }
+    
+        .checktreeDisabled .checked U, 
+        .checktreeDisabled .partial U, 
+        .checktreeDisabled .indicate U, 
+        .checktreeDisabled U {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="checktree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "label/u/text()"
+          icon      = "label"
+          check     = "label/b"
+          openclose = "span"
+          select    = "label"
+          container = "following-sibling::blockquote">
+            <div>
+                <span> </span>
+                <label>
+                    <b> </b>
+                    <u>-</u>
+                </label>
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragchecktree'>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+
+
+<a:tree name="tree">
+    <a:style><![CDATA[
+        .tree {
+            border           : 1px solid #c3c3c3;
+            background-color : white;
+            width            : 200px;
+            height           : 500px;
+            overflow         : hidden;
+            cursor           : default;
+            position         : relative;
+            overflow         : auto;
+        }
+        
+        .trDefines {
+            background    : none;
+            border-bottom : 1px solid #c3c3c3;
+            border-top    : 1px solid #c3c3c3;
+            border-right  : none;
+            border-left   : none;
+            posittion     : relative;
+            padding-top   : 8px;
+        }
+    
+        .tree SPAN, 
+        .dragtree SPAN {
+            width       : 15px;
+            height      : 18px;
+            background  : no-repeat 3px 5px;
+            display     : block;
+            margin-left : -15px;
+        }
+    
+        .dragtree SPAN {
+            background : transparent;
+        }
+    
+        .tree DIV.pluslast SPAN,
+        .tree DIV.plus SPAN {
+            background-image : url(images/plus.png);
+        }
+        
+        .tree DIV.minlast SPAN,
+        .tree DIV.min SPAN {
+            background-image : url(images/min.png);
+        }
+    
+        .tree DIV, 
+        .dragtree {
+            padding      : 0;
+            height       : 18px;
+            padding-left : 15px;
+            overflow     : hidden;
+            font-family  : Tahoma, Arial;
+            font-size    : 8.5pt;
+        }
+        
+        .tree .focusbug {
+            padding-left : 0;
+        }
+        
+        .dragtree {
+            opacity    : 0.5;
+            filter     : progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+            background : none;
+        }
+        
+        /*.tree DIV.root {
+            padding : 0;
+        }*/
+    
+        .tree LABEL, 
+        .dragtree LABEL {
+            padding     : 1px 0 0 20px;
+            background  : no-repeat 1px 1px;
+            height      : 16px;
+            white-space : nowrap;
+            margin-left : 0px;
+            display     : block;
+            float       : left;
+            margin-top  : -18px;
+        }
+
+        .tree DIV.loading LABEL {
+        }
+        
+        .tree DIV.loading SPAN {
+            background : no-repeat 0px 0px;
+        }
+    
+        .tree U, 
+        .dragtree U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : inline !important; display: block;
+            padding         : 2px 4px 2px 2px;
+        }
+    
+        .treeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#25a8e7;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .tree .selected U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .treeFocus .selected U, 
+        .tree .dragAppend U, 
+        .dragtree U {
+            color            : white;
+            background-color : #25a8e7;
+        }
+    
+        .tree BLOCKQUOTE {
+            margin     : 0;
+            padding    : 0 0 0 20px;
+            display    : none;
+            height     : 0;
+            overflow   : hidden;
+            background : repeat-y 0px center;
+        }
+        
+        /*
+        .tree BLOCKQUOTE.root {
+            padding : 0;
+        }
+        */
+    
+        .tree #txt_rename {
+            border      : 1px solid black;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : -2px;
+            *margin-top : 0;
+            cursor      : text;
+            height      : 13px;
+            outline     : none;
+        }
+    
+        .tree DIV.dragInsert label {
+            border-top          : 1px dotted gray;
+            padding-top         : 2px;
+            background-position : 1px 0;
+            height              : 15px;
+            overflow            : hidden;
+        }
+    
+        .tree DIV.dragInsert U {
+            padding-top : 0;
+        }
+    
+        /*.tree DIV.dragDenied label {
+            border-top          : 2px solid red;
+            height              : 14px;
+            overflow            : hidden;
+            padding-top         : 2px;
+            margin-top          : -20px;
+            background-position : 1px 0;
+        }*/
+        
+        .tree .empty, 
+        .tree .offline, 
+        .tree .loading {
+            padding     : 4px 0 2px 0;
+            color       : #AAA;
+            font-weight : normal;
+        }
+        
+        .tree .loading {
+            text-align : left;
+        }
+        
+        .tree .message {
+            text-align : center;
+        }
+        
+        .tree .root {
+            position : relative;
+        }
+        
+        .treeDrop {
+            border : 1px solid #25a8e7;
+        }
+        
+        blockquote.dragInsert {
+            background : #f6f6f6;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .tree LABEL, 
+        .dragtree LABEL {
+            padding : 3px 0 0 20px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="tree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "label/u"
+          icon      = "label"
+          openclose = "span"
+          select    = "label"
+          container = "following-sibling::blockquote">
+            <div>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragtree'>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
 <a:button name="button_macro_play">
     <a:style><![CDATA[
         .dgr_btn_macro_play {
