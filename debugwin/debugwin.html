@@ -439,7 +439,7 @@
             <a:page caption="Macros" id="macro" render="runtime">
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
-                        <a:window 
+                        <!--a:window 
                             id      = "winNoPlugin"
                             modal   = "true"
                             visible = "false"
@@ -447,43 +447,54 @@
                         >
                             <a:label id="lblIE">To use this feature you need to install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
                             <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
-                        </a:window>
+                        </a:window-->
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
+                            <a:toolbar
+                              align    = "left"
+                              height="25"
+                              width    = "152"
+                              >
+                                <a:bar>
+                                    <a:label style="font-weight:bold;margin:3px 0 0 4px;">Recording Booth</a:label>
+                                </a:bar>
+                            </a:toolbar>
                             <a:list
-                                width    = "300"
-                                align    = "left-splitter"
+                                align    = "left"
                                 id       = "lstMacro"
                                 class    = "tplist"
                                 model    = "mdlMacro"
                                 each     = "[test]"
                                 caption  = "[@name]"
+                                skin     = "macro_list"
                             >
                                 <a:drag match="[test]" copy="true" />
                             </a:list>
                             
                             <a:toolbar
-                                width   = "300"
-                                height  = "25"
-                                bottom  = "0"
-                            >
+                              align="left-splitter"
+                              height = "61"
+                              skin   = "macro_toolbar">
                                 <a:bar>
-                                    <a:button id="btnRec" width="50" onclick="recordMacro()">Rec</a:button>
-                                    <a:button id="btnStop" width="50" visible="false" onclick="stop()">Stop</a:button>
-                                    <a:button id="btnPlay" width="50" onclick="playSingleMacro()">Play</a:button>
-                                    <a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
-                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button>
-<!--a:checkbox id="cbMax">Max</a:checkbox-->
+                                    <a:button id="btnRec" skin="button_macro_record" width="50" onclick="recordMacro()"></a:button>
+                                    <a:button id="btnStop" skin="button_macro_record" width="50" visible="false" onclick="stop()"></a:button>
+                                    <a:button id="btnPlay" skin="button_macro_play" width="50" onclick="playSingleMacro()"></a:button>
+                                    <!--a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
+                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button-->
+    <!--a:checkbox id="cbMax">Max</a:checkbox-->
                                 </a:bar>
                             </a:toolbar>
                         <!--/a:bar-->
                         <a:bar skin="basic" border="1 1 0 1" align="right" width="100%" height="100%" class="netview">
                             <a:tree 
-                                anchors     = "0 0 0 0"
-                                id          = "trPlaylist"
-                                class       = "trPlaylist"
-                                model       = "mdlPlaylist"
-                                startcollapsed = "false"
-                            >
+                              top="0"
+                              left="0"
+                              width="500"
+                              bottom="0"
+                              id         = "trPlaylist"
+                              class      = "trPlaylist"
+                              model      = "mdlPlaylist" 
+                              skin       = "macro_tree" 
+                              nocollapse = "true">
                                 <a:each match="[playlist|test]">
                                     <a:caption match="[@caption|@name]" />
                                     <a:drag match="[test]" /> 
@@ -495,9 +506,11 @@
                                       match  = "[test]" 
                                       target = "[test]" 
                                       action = "insert-before" />
+                                    <a:css match="[recording[not(node())]]" value="new_recording" />
+                                    <a:empty value="This is the text of the empty container" />
                                 </a:each>
                             </a:tree>
-                        </a:bar>
+                         </a:bar>
                     </a:page>
                     <a:page caption="Playlist" render="runtime">
 
@@ -520,14 +533,14 @@
                         var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
                             // o3 plugin not found
                             oninstallprompt : function(){
-                                winNoPlugin.setProperty("visible", true);
+                                //winNoPlugin.setProperty("visible", true); HERE
                                 if (apf.isIE) {
-                                    lblIE.setProperty("visible", false);
-                                    lblNoIE.setProperty("visible", true);
+                                    //lblIE.setProperty("visible", false); HERE
+                                    //lblNoIE.setProperty("visible", true); HERE
                                 }
                                 else {
-                                    lblNoIE.setProperty("visible", false);
-                                    lblIE.setProperty("visible", true);
+                                    //lblNoIE.setProperty("visible", false); HERE
+                                    //lblIE.setProperty("visible", true); HERE
                                 }
                             },
                             product : 'O3Demo'

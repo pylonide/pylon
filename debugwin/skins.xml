@@ -2204,6 +2204,7 @@
             overflow            : auto;
             position            : relative;
             border              : 1px solid #c3c3c3;
+            border-bottom       : 0;
             background-color    : #c9d6e1;
             cursor              : default;
             background-position : right 0;
@@ -2318,10 +2319,11 @@
             padding     : 1px 15px 1px 1px;
             font-family : Tahoma;
             font-size   : 8pt;
-            color       : black;
+            color       : white;
             word-break  : keep-all;
             overflow    : visible;
-            margin-top  : 0px;
+            margin-top  : 4px;
+            margin-left : 17px;
             cursor      : text;
             height      : 13px;
             display     : block;
@@ -2463,6 +2465,73 @@
         </a:divider>
     </a:presentation>
 </a:toolbar>
+
+<a:toolbar name="macro_toolbar">
+    <a:style><![CDATA[
+        .macro_toolbar {
+            border-right : 1px solid #c3c3c3; 
+            overflow : hidden;
+        }
+        
+        .macro_toolbar .macro_menubar {
+            background    : url(images/macro_toolbar_backg.png) repeat-x top left;
+            height        : 61px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            position      : relative;
+        }
+
+        .macro_toolbar .macro_subbar {
+            background    : url(images/macro_toolbar_backg.png) repeat-x top left;
+            height        : 61px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            position      : relative;
+            padding       : 4px 0 0 4px;
+            width         : 100%;
+        }
+        
+        .macro_toolbar>.macro_subbar>* {
+            display : inline-block;
+            float   : left;
+            margin  : 2px;
+        }
+        
+        .macro_toolbar>.macro_subbar>.hbox, 
+        .macro_toolbar>.macro_subbar>.vbox, 
+        .macro_toolbar>.macro_subbar>.table {
+            display : block;
+            float   : none;
+            margin  : 0;
+        }
+
+        .macro_toolbar>.macro_subbar>.divider {
+            border-left  : 1px solid #c3c3c3;
+            border-right : 1px solid #FFFFFF;
+            height       : 17px;
+            float        : left;
+            margin       : 4px 0 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="macro_toolbar"> </div>
+        </a:main>
+        <a:bar container="." inherit="true">
+            <div class="macro_subbar"> </div>
+        </a:bar>
+        <a:menubar container="." inherit="true">
+            <div class="macro_menubar">
+            </div>
+        </a:menubar>
+        <a:button inherit="true" />
+        <a:divider inherit="true">
+            <div class="divider"> </div>
+        </a:divider>
+    </a:presentation>
+</a:toolbar>
+
 <a:propedit name="propedit">
     <a:style><![CDATA[
         .propedit {
