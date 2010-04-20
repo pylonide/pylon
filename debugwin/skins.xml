@@ -766,6 +766,43 @@
     </a:presentation>
 </a:button>
 
+<a:button name="button_macro_playsmall">
+    <a:style><![CDATA[
+        .dgr_btn_macro_playsmall {
+            width               : 32px;
+            height              : 26px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_play_small.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_playsmallOver {
+        }
+        
+        .dgr_btn_macro_playsmallDown {
+            background-position : 0 -26px;
+        }
+        
+        .dgr_btn_macro_playsmallDisabled {
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "26" 
+          maxheight  = "26" 
+          minwidth   = "32" 
+          maxwidth   = "32">
+            <div class="dgr_btn_macro_playsmall">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
 
 <a:button name="button_macro_record">
     <a:style><![CDATA[
