@@ -1392,13 +1392,12 @@ var apf = {
         },
 
         checkAllCombined : function(){
-            for (var x, i = 0; i < this.cond.combined.length; i++) {
+            for (var i = 0; i < this.cond.combined.length; i++) {
                 if (!this.cond.combined[i]) continue;
 
                 if (this.checkCombined(this.cond.combined[i][2])) {
-                    x = this.cond.combined[i];
+                    this.cond.combined[i][0].call(this.cond.combined[i][1])
                     this.cond.combined[i] = null;
-                    x[0].call(x[1])
                 }
             }
         },
