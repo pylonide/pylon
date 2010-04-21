@@ -141,6 +141,16 @@
             height      : 15px;
         }
         
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rcaption,
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rright {
+            background-position : 0 -45px;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.finished DIV.macro_rcaption,
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.finished DIV.macro_rright {
+            background-position : 0 0;
+        }
+        
         /* Reset styles for other nodes */
         .macro_tree BLOCKQUOTE DIV.macro_rcaption {
             display             : block;
