@@ -204,8 +204,7 @@ apf.codeeditor = function(struct, tagName){
             this.change(this.getValue());
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
-        
-        //this.$editor.blur();
+        this.$editor.blur();
     };
     
     //@todo
