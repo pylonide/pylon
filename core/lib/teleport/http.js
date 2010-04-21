@@ -343,8 +343,10 @@ apf.http = function(){
                 http.onreadystatechange = function(){
                     if (!_self.queue[id] || http.readyState != 4)
                         return;
-
-                    _self.receive(id);
+                    if (async && arguments.callee.caller)
+                        setTimeout(function(){_self.receive(id)});
+                    else
+                        _self.receive(id);
                 }
             }
         }
