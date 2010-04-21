@@ -112,8 +112,8 @@
             background-position : 0 0;
             background-repeat   : repeat-x;
             white-space         : nowrap;
-            text-overflow   : ellipsis;
-            break-word      : keep-all;
+            text-overflow       : ellipsis;
+            break-word          : keep-all;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
@@ -179,6 +179,16 @@
             color               : #aabccb;
         }
         
+        .macro_tree DIV.playing BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.playing BLOCKQUOTE DIV.macro_rright {
+            background-position : 0 -45px;
+        }
+        
+        .macro_tree DIV.finished BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.finished BLOCKQUOTE DIV.macro_rright {
+            background-position : 0 0;
+        }
+        
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
             float               : right;
             display             : block;
@@ -229,10 +239,15 @@
         </a:item>
         <a:dragindicator>
             <div class="dragmacro_tree">
-                <span> </span>
-                <label>
-                    <u>-</u>
-                </label>
+                <div class="macro_rcaption">-</div>
+                <div class="macro_rright"></div>
+                <div class="macro_arrow"></div>
+                <blockquote> 
+                    <span class="macro_cont_left"> </span>
+                    <span class="macro_cont_middle"> </span>
+                    <span class="macro_cont_right"> </span>
+                    <span class="macro_xbutton"> </span>
+                </blockquote>
             </div>
         </a:dragindicator>
         <a:loading>
