@@ -754,7 +754,7 @@ apf.MultiSelect = function(){
 
                     if (this.$valueList.length && !fakeselect) {
                         //this.$selected = this.$selectedList[0];
-                        //this.selected = this.$valueList[0];
+                        this.selected = this.$valueList[0];
                     }
                 }
                 else
@@ -778,7 +778,7 @@ apf.MultiSelect = function(){
                 this.$caret = this.$indicate(htmlNode, xmlNode);
 
                 this.$selected   = this.$select(htmlNode, xmlNode);
-                //this.selected    = xmlNode;
+                this.selected    = xmlNode;
 
                 if (!fakeselect) {
                     this.$selectedList.push(htmlNode);
@@ -800,7 +800,7 @@ apf.MultiSelect = function(){
 
             this.$caret = this.$indicate(htmlNode, xmlNode);
             this.$selected  = this.$select(htmlNode, xmlNode);
-            //this.selected   = xmlNode;
+            this.selected   = xmlNode;
 
             this.$selectedList.push(htmlNode);
             this.$valueList.push(xmlNode);
@@ -969,7 +969,7 @@ apf.MultiSelect = function(){
         }
 
         this.$selected = sel || this.$selectedList[0];
-        //this.selected  = selected || this.$valueList[0];
+        this.selected  = selected || this.$valueList[0];
 
         this.dispatchEvent("afterselect", {
             selection   : this.$valueList,
