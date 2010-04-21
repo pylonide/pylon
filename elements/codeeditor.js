@@ -76,9 +76,12 @@ apf.codeeditor = function(struct, tagName){
     this.$propHandlers["value"] = function(value, prop, initial){
         var doc, key;
         if (this.caching) {
-            key = typeof value == "string"
-                ? value
-                : value.getAttribute(apf.xmldb.xmlIdTag);
+            if (typeof value == "string")
+                key = this.xmlRoot 
+                    ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
+                    : value;
+            else
+                key = value.getAttribute(apf.xmldb.xmlIdTag);
         }
         //Assuming document
         else if (value instanceof ace.Document){

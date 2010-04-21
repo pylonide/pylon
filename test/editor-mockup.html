@@ -20,7 +20,7 @@
         
         <a:tree id="tree" model="mdlDocs" each="[doc|folder]" caption="[@caption]" align="left-splitter" width="200" startcollapsed="false" />
         
-        <a:codeeditor id="ce" value="{tree.selected}" style="border:1px solid gray" align="right" syntax="[{tree.selected}::@syntax]" />
+        <a:codeeditor id="ce" model="{tree.selected}" value="[text()]" align="right" syntax="[@syntax]" />
         
         <a:model id="mdlDocs">
             <docs>
