@@ -784,14 +784,6 @@ apf.datagrid = function(struct, tagName){
                 oEditor.setAttribute("focussable", "true");
                 //delete oEditor.parentNode;
                 
-                oEditor.addEventListener("beforechange", function(e){
-                    return _self.dispatchEvent("beforechange", e);
-                });
-                
-                oEditor.addEventListener("afterchange", function(e){
-                    return _self.dispatchEvent("afterchange", e);
-                });
-                
                 oEditor.addEventListener("keydown", function(e){
                     if (e.keyCode == 13) {
                         hideEditor.call(_self);
@@ -805,6 +797,11 @@ apf.datagrid = function(struct, tagName){
                 });
                 
                 //@todo set actiontracker
+                
+                //Patch oEditor to forward change
+                oEditor.$executeAction = function(){
+                    this.parentNode.$executeAction.apply(this.parentNode, arguments);
+                }
             }
             else {
                 oEditor = this.$editors[editor];
