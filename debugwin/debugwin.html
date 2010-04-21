@@ -497,7 +497,7 @@
                                 </a:bar>
                             </a:toolbar>
                             <a:tree 
-                              anchors="25 0 0 0"
+                              anchors="25 0 0 61"
                               id         = "trPlaylist"
                               class      = "trPlaylist"
                               model      = "mdlPlaylist" 
@@ -518,6 +518,27 @@
                                     <a:empty value="This is the text of the empty container" />
                                 </a:each>
                             </a:tree>
+                            <div model="mdlPlaylist" class="playlist_buttons">
+                                <?lm
+                                    var btn_top = 27;
+                                    var cbx_top = 31;
+                                    var line_top = cbx_top + 4;
+                                    
+                                    foreach([playlist]) {
+                                        <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" />
+                                        <a:checkbox top="{cbx_top}" left="11" class="macro_cbx"></a:checkbox>
+                                        btn_top += 50;
+                                        cbx_top += 50;
+                                    }
+                                    
+                                    <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" />
+                                    <a:label top="{btn_top + 4}" left="67">Play checked playlists</a:label>
+                                    
+                                    <div class="vertical_line" style="top:{line_top}px; height:{btn_top - line_top + 13}px;"></div>
+                                    <div class="horizontal_line" style="top:{btn_top + 11}px;"></div>
+                                ?>
+                            </div>
+
                          </a:bar>
                     </a:page>
                     <a:page caption="Playlist" render="runtime">

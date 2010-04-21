@@ -4635,7 +4635,7 @@
 <a:checkbox name="checkbox">
     <a:style><![CDATA[
         .cbcontainer{
-            padding: 2px 2px 2px 16px;
+            padding: 2px 2px 2px 2px;
             _padding: 2px; /* IE6 fix */
             position: relative;
             overflow : hidden;
@@ -4651,7 +4651,6 @@
             padding: 1px 3px 2px 3px;
             margin : -2px 0 0 0;
             overflow: hidden;
-            display: block;
             float: left;
             line-height: 13px;
         }
@@ -4669,9 +4668,8 @@
             width: 12px;
             height: 12px;
             overflow: hidden;
-            position: absolute;
-            left: 2px;
-            top: 2px;
+            position: relative;
+            float:left;
             _position: relative; /* IE6 fix */
             _float: left; /* IE6 fix */
             _margin: -2px 4px 0 0; /* IE6 fix */
@@ -4720,6 +4718,7 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+
 <a:modalwindow name="modalwindow">
     <a:alias>window</a:alias>
     <a:style><![CDATA[

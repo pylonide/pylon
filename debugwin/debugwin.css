@@ -21,7 +21,7 @@ body{
     border : 1px solid #c3c3c3;
     border-top:0;
     padding : 30px 5px 5px 5px;
-    background : #f5f5f5;
+    background : #edf2f8;
 }
 
 .netview .label{
@@ -29,6 +29,34 @@ body{
     overflow : hidden;
     text-overflow : ellipsis;
 }
+
+.netview .playlist_buttons {
+    position : absolute;
+    top      : 25px;
+    left     : 0;
+    width    : 61px;
+    bottom   : 0;
+}
+
+.netview .playlist_buttons .vertical_line {
+    position     : absolute;
+    width        : 0;
+    border-left  : 1px solid white;
+    border-right : 1px solid #caced3;
+    left         : 17px;
+    z-index      : 400;
+}
+
+.netview .playlist_buttons .horizontal_line {
+    position      : absolute;
+    border-bottom : 1px solid white;
+    border-top    : 1px solid #caced3;
+    left          : 18px;
+    width         : 15px;
+    z-index       : 400;
+}
+
+
 
 .reqview{
     padding : 5px;
@@ -197,4 +225,12 @@ body{
 
 .trPlaylist .macro_finished {
     background-color: #ccc;
+}
+
+.macro_cbx {
+    z-index:500;
+}
+
+.macro_cbx SPAN {
+    display:none;
 }
