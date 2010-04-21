@@ -79,6 +79,12 @@ apf.datagrid = function(struct, tagName){
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
     
+    //#ifdef __WITH_DATAACTION
+    this.implement(
+        apf.DataAction
+    );
+    //#endif
+    
     /*this.$init(function() {
         this.addEventListener("keydown", keyHandler, true);
     });*/
