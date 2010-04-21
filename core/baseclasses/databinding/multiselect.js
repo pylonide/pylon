@@ -67,7 +67,7 @@ apf.MultiselectBinding = function(){
         drag      : 2,
         drop      : 2,
         dragcopy  : 2,
-        selected  : 2,
+        selected  : 3,
         //caret     : 2,
         each      : 1,
         "selection"             : 3, //only databound when has an xpath

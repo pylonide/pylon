@@ -754,7 +754,7 @@ apf.MultiSelect = function(){
 
                     if (this.$valueList.length && !fakeselect) {
                         //this.$selected = this.$selectedList[0];
-                        this.selected = this.$valueList[0];
+                        //this.selected = this.$valueList[0];
                     }
                 }
                 else
@@ -778,7 +778,7 @@ apf.MultiSelect = function(){
                 this.$caret = this.$indicate(htmlNode, xmlNode);
 
                 this.$selected   = this.$select(htmlNode, xmlNode);
-                this.selected    = xmlNode;
+                //this.selected    = xmlNode;
 
                 if (!fakeselect) {
                     this.$selectedList.push(htmlNode);
@@ -800,7 +800,7 @@ apf.MultiSelect = function(){
 
             this.$caret = this.$indicate(htmlNode, xmlNode);
             this.$selected  = this.$select(htmlNode, xmlNode);
-            this.selected   = xmlNode;
+            //this.selected   = xmlNode;
 
             this.$selectedList.push(htmlNode);
             this.$valueList.push(xmlNode);
@@ -969,7 +969,7 @@ apf.MultiSelect = function(){
         }
 
         this.$selected = sel || this.$selectedList[0];
-        this.selected  = selected || this.$valueList[0];
+        //this.selected  = selected || this.$valueList[0];
 
         this.dispatchEvent("afterselect", {
             selection   : this.$valueList,
@@ -1405,9 +1405,12 @@ apf.MultiSelect = function(){
     this.$propHandlers["selected"] = function(value, prop) {
         if (!value) value = this[prop] = null;
 
-        if (prop == "selected" && typeof value != "string" && value == this.selected) {
+        if (prop == "selected" && typeof value != "string") { // && value == this.selected
+            if (value && value.nodeType != 1)
+                value = value.nodeValue;
+            else
             //this.selected = null; //I don't remember why this is here. It removes the selected property without setting it again. (dropdown test)
-            return;
+                return;
         }
         
         //#ifdef __DEBUG
@@ -1553,8 +1556,13 @@ apf.MultiSelect = function(){
             if (this.$attrBindings[prop]) {
                 //Execute the selection query
                 nodes = this.$getDataNode(prop, this.xmlRoot);
-                if (nodes)
+                if (nodes && (nodes.length || nodes.nodeType == 1)) {
                     this.setProperty("selection", nodes);
+                    return;
+                }
+                
+                if (!nodes || nodes.length === 0)
+                    return;
                 
                 //Current model, it's an init selection, we'll clear the bind
                 /*if (typeof value == "string" 
@@ -1562,7 +1570,8 @@ apf.MultiSelect = function(){
                     this.$removeAttrBind(prop);
                 }*/
             }
-            else if (!value) {
+            
+            if (!value) {
                 this.clearSelection();
             }
             else {

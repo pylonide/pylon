@@ -658,7 +658,7 @@ apf.Class.prototype = new (function(){
         var s, r, arr, e, i, l,
             oldvalue = this[prop],
             eventName = PROP + prop;//@todo prop event should be called too;
-        
+
         //Try catch here, because comparison of a string with xmlnode gives and error in IE
         try{
             var isChanged = (typeof value == OBJ)

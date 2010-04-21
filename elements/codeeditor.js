@@ -54,7 +54,7 @@ apf.codeeditor = function(struct, tagName){
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
 
-    this.realtime          = false;
+    //this.realtime          = false;
     this.syntax            = "text";
     this.value             = "";
     this.multiline         = true;
@@ -118,15 +118,15 @@ apf.codeeditor = function(struct, tagName){
             js   : new ace.mode.JavaScript()
         };
     
-    this.$propHandlers["syntax"] = function(value, prop, initial){
+    this.$propHandlers["syntax"] = function(value, prop){
         this.$editor.getDocument().setMode(this.$modes[value]);
     };
     
-    this.$propHandlers["activeline"] = function(value, prop, initial){
+    this.$propHandlers["activeline"] = function(value, prop){
         this.$editor.setHighlightActiveLine(value);
     };
     
-    this.$propHandlers["selectstyle"] = function(value, prop, initial){
+    this.$propHandlers["selectstyle"] = function(value, prop){
         this.$editor.setSelectionStyle(value);
     };
     
