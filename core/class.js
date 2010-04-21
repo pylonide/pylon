@@ -657,11 +657,18 @@ apf.Class.prototype = new (function(){
     this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
         var s, r, arr, e, i, l,
             oldvalue = this[prop],
-            isChanged = (typeof value == OBJ)
-                ? value != (typeof oldvalue == OBJ ? oldvalue : null)
-                : String(oldvalue) !== String(value),
             eventName = PROP + prop;//@todo prop event should be called too;
         
+        //Try catch here, because comparison of a string with xmlnode gives and error in IE
+        try{
+            var isChanged = (typeof value == OBJ)
+                ? value != (typeof oldvalue == OBJ ? oldvalue : null)
+                : String(oldvalue) !== String(value);
+        }catch(e){
+            var isChanged = true;
+        }
+            
+            
         //Check if property has changed
         if (isChanged) {
             //#ifdef __WITH_UIRECORDER

@@ -144,6 +144,7 @@ body{
     padding : 2px 2px 2px 22px;
     line-height : 15px;
     border-bottom : 1px solid #EEE;
+    word-wrap : break-word;
 }
 
 .errorbox .console_line{

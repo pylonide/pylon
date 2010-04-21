@@ -6,7 +6,7 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="1" />
+        <a:appsettings debug="0" />
         
         <a:dropdown>
             <a:bindings> 
@@ -29,21 +29,21 @@
         <a:textbox id="txtTest" value="suppliers"/><br />
         <a:textbox value="{txtTest.value}"/>
 
-        <a:dropdown id="ddSearch"
+        <a:dropdown 
           model     = "mdlSearchCats"
           each      = "[category]"
           caption   = "[text()]"
           value     = "[mdlCat::category]"
           eachvalue = "[@name]" />
         
-        <a:dropdown id="ddSearch"
+        <a:dropdown 
           model     = "mdlSearchCats"
           each      = "[category]"
           caption   = "[text()]"
           default   = "suppliers"
           eachvalue = "[@name]" />
         
-        <a:dropdown id="ddSearch"
+        <a:dropdown 
           model     = "mdlSearchCats"
           each      = "[category]"
           caption   = "[text()]"
@@ -51,7 +51,7 @@
           eachvalue = "[@name]" />
         
         <!-- This will give a nice error
-        <a:dropdown id="ddSearch"
+        <a:dropdown 
           model     = "mdlSearchCats"
           each      = "[category]"
           caption   = "[text()]"
@@ -59,7 +59,14 @@
           eachvalue = "[@name]" />
         -->
         
-        <a:dropdown id="ddSearch"
+        <a:dropdown id="ddTreeBound"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[{tree.selected}::@name]"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown id="ddSelBound"
           model     = "mdlSearchCats"
           each      = "[category]"
           caption   = "[text()]"
@@ -83,5 +90,7 @@
                 <category name="wholesite">Hele Website</category-->
             </categories>
         </a:model>
+        
+        <a:tree id="tree" each="[category]" model="mdlSearchCats" caption="[text()]" />
     </body>
 </html>

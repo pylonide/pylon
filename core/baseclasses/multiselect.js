@@ -1342,7 +1342,8 @@ apf.MultiSelect = function(){
                     "Setting value attribute",
                     "Value attribute does not have legal value."));
             }*/
-            if (rule.models[0] == this.$model) {
+
+            if (rule.models[0] == this.$model && rule.cvalue.xpaths[0] != "#") {
                 throw new Error(apf.formatErrorString(0, this,
                     "Setting value attribute",
                     "Value should not point to the same model where the items\
@@ -1405,7 +1406,7 @@ apf.MultiSelect = function(){
         if (!value) value = this[prop] = null;
 
         if (prop == "selected" && typeof value != "string" && value == this.selected) {
-            this.selected = null;
+            //this.selected = null; //I don't remember why this is here. It removes the selected property without setting it again. (dropdown test)
             return;
         }
         
