@@ -251,7 +251,8 @@ apf.BaseTree = function(){
         }
         
         if (immediate || container.scrollHeight > 1000) {
-            container.style.height = "auto";
+            if (!this.nocollapse)
+                container.style.height = "auto";
             container.style.overflow = "visible";
             return;
         }
