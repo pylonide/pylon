@@ -57,15 +57,11 @@ apf.propedit    = function(struct, tagName){
         this.addEventListener("keydown", keyHandler, true);
     });
     
-    /*this.implement(
-        //#ifdef __WITH_RENAME
-        //apf.Rename
-        //#endif
-        //#ifdef __WITH_DRAGDROP
-        //apf.DragDrop,
-        //#endif
-        //apf.Cache,  
-    );*/
+    //#ifdef __WITH_DATAACTION
+    this.implement(
+        apf.DataAction
+    );
+    //#endif
     
     this.$focussable     = true; // This object can get the focus
     this.$isTreeArch     = true; // This element has a tree architecture
@@ -757,6 +753,11 @@ apf.propedit    = function(struct, tagName){
                 //@todo set actiontracker
                 oEditor.$parentId = editParent.getAttribute("id");
                 oEditor.$parentRsz = editParent.onresize;
+                
+                //Patch oEditor to forward change
+                oEditor.$executeAction = function(){
+                    this.parentNode.$executeAction.apply(this.parentNode, arguments);
+                }
             }
             else {
                 oEditor = this.$editors[editor];

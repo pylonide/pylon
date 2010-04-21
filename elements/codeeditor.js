@@ -73,7 +73,7 @@ apf.codeeditor = function(struct, tagName){
      * @attribute {String} value the text of this element
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
-    this.$propHandlers["value"] = function(value, prop, initial){
+    this.$propHandlers["value"] = function(value){
         var doc, key;
         if (this.caching) {
             if (typeof value == "string")
@@ -102,7 +102,8 @@ apf.codeeditor = function(struct, tagName){
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
                     ? value.nodeValue
                     : value.firstChild && value.firstChild.nodeValue || ""));
-            this.$cache[key] = doc;
+            if (key)
+                this.$cache[key] = doc;
         }
         
         doc.setMode(this.$modes[this.syntax]);
@@ -118,22 +119,22 @@ apf.codeeditor = function(struct, tagName){
             js   : new ace.mode.JavaScript()
         };
     
-    this.$propHandlers["syntax"] = function(value, prop){
+    this.$propHandlers["syntax"] = function(value){
         this.$editor.getDocument().setMode(this.$modes[value]);
     };
     
-    this.$propHandlers["activeline"] = function(value, prop){
+    this.$propHandlers["activeline"] = function(value){
         this.$editor.setHighlightActiveLine(value);
     };
     
-    this.$propHandlers["selectstyle"] = function(value, prop){
+    this.$propHandlers["selectstyle"] = function(value){
         this.$editor.setSelectionStyle(value);
     };
     
     this.addEventListener("xmlupdate", function(e){
         var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
         if (this.$cache[id]) {
-            //Update document
+            //@todo Update document
         }
     });
     

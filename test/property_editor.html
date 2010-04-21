@@ -150,7 +150,9 @@
         <a:propedit id="pe2" columns="35%,65%" model="{btnProp}" width="880" height="200" /-->
         
         <a:propedit id="pe" columns="35%,65%" model="mdlData" 
-            properties="[mdlProps::folder]" width="300" height="500" />
+            properties="[mdlProps::folder]" width="300" height="500" onbeforechange="alert(2)">
+            <a:change set="{alert(1)}" />
+        </a:propedit>
         
         <!--a:dropdown>
             <a:item>teasdasd</a:item>
