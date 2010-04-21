@@ -189,16 +189,6 @@
             color               : #aabccb;
         }
         
-        .macro_tree DIV.playing BLOCKQUOTE DIV.macro_rcaption,
-        .macro_tree DIV.playing BLOCKQUOTE DIV.macro_rright {
-            background-position : 0 -45px;
-        }
-        
-        .macro_tree DIV.finished BLOCKQUOTE DIV.macro_rcaption,
-        .macro_tree DIV.finished BLOCKQUOTE DIV.macro_rright {
-            background-position : 0 0;
-        }
-        
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
             float               : right;
             display             : block;

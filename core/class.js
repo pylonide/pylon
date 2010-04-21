@@ -899,14 +899,16 @@ apf.Class.prototype = new (function(){
         //#ifdef __WITH_UIRECORDER
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (["debug"].indexOf(eventName) == -1) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
-                if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
+                //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
                     if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
                         apf.uirecorder.capture.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
                     } 
-                }
+                //}
                 // when eventName == "load" all elements are loaded and drawn
+                /*
                 if (eventName == "load" && this.isIE != undefined)
                     apf.uirecorder.isLoaded = true;
+                */
             }
         }
         //#endif
