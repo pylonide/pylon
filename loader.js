@@ -257,7 +257,32 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js"
+        "core/baseclasses/basestatebuttons.js" /*,
+        
+    	"elements/editor/src/ace.js",
+    	"elements/editor/src/mode/Text.js",
+    	"elements/editor/src/mode/JavaScript.js",
+    	"elements/editor/src/mode/JavaScriptHighlightRules.js",
+    	"elements/editor/src/mode/Html.js",
+    	"elements/editor/src/mode/HtmlHighlightRules.js",
+    	"elements/editor/src/mode/Css.js",
+    	"elements/editor/src/mode/CssHighlightRules.js",
+    	"elements/editor/src/mode/Xml.js",
+    	"elements/editor/src/mode/XmlHighlightRules.js",
+    	"elements/editor/src/MEventEmitter.js",
+    	"elements/editor/src/Selection.js",
+    	"elements/editor/src/Document.js",
+    	"elements/editor/src/Tokenizer.js",
+    	"elements/editor/src/BackgroundTokenizer.js",
+    	"elements/editor/src/layer/Cursor.js",	
+    	"elements/editor/src/layer/Gutter.js",	
+    	"elements/editor/src/layer/Text.js",	
+    	"elements/editor/src/layer/Marker.js",	
+    	"elements/editor/src/ScrollBar.js",	
+    	"elements/editor/src/TextInput.js",
+    	"elements/editor/src/KeyBinding.js",	
+    	"elements/editor/src/Editor.js",	
+    	"elements/editor/src/VirtualRenderer.js"*/
     )
     .wait()
     .script(

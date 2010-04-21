@@ -96,8 +96,14 @@ apf.text = function(struct, tagName){
         //@todo else
         //#endif
 
-        if (typeof value != "string")
-            value = value ? value.toString() : "";
+        if (typeof value != "string") {
+            if (value.nodeType)
+                value = value.nodeType > 1 && value.nodeType < 5
+                    ? value.nodeValue
+                    : value.firstChild && value.firstChild.nodeValue || "";
+            else
+                value = value ? value.toString() : "";
+        }
 
         if (this.secure) {
             value = value.replace(/<a /gi, "<a target='_blank' ")

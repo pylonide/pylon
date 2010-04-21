@@ -1266,6 +1266,7 @@ apf.layout = {
     onresize  : {},
 
     getHtmlId : function(oHtml){
+        if (!oHtml) debugger;
         //if(apf.hasSingleRszEvent) return 1;
         //else
         return oHtml.getAttribute ? oHtml.getAttribute("id") : 1;

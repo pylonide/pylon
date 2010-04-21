@@ -36,6 +36,9 @@
  */
 apf.codeeditor = function(struct, tagName){
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
+    
+    this.documents = [];
+    this.$cache    = {};
 };
 
 (function(){
@@ -48,61 +51,89 @@ apf.codeeditor = function(struct, tagName){
         //#endif
     );
 
-    this.$editable         = true;
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
 
-    //this.realtime          = false;
+    this.realtime          = false;
+    this.syntax            = "text";
     this.value             = "";
-    this.isContentEditable = true;
     this.multiline         = true;
-
+    this.caching           = true;
+    
     /**
      * @attribute {Boolean} realtime whether the value of the bound data is
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
     this.$booleanProperties["realtime"]    = true;
-    this.$supportedProperties.push("value", "realtime");
+    this.$supportedProperties.push("value", "realtime", "syntax", 
+        "activeline", "selectstyle", "caching", "readonly");
 
     /**
      * @attribute {String} value the text of this element
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value, prop, initial){
-        if (!this.$input || !initial && this.getValue() == value)
-            return;
-
-        // Set Value
-        /*if (!initial && !value) //@todo apf3.x research the use of clear
-            this.clear();
-        else {*/
-            this.$input.innerHTML = value
-                .replace(/ /g, "&nbsp;")
-                .replace(/</g, "&lt;")
-                .replace(/\n/g, "<br />")
-        //}
-    };
-
-    /**
-     * @attribute {String} initial-message the message displayed by this element
-     * when it doesn't have a value set. This property is inherited from parent
-     * nodes. When none is found it is looked for on the appsettings element.
-     */
-    this.$propHandlers["initial-message"] = function(value){
-        if (value) {
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
-                this.$input.onblur();
-            //#endif
-            
-            //this.$propHandlers["value"].call(this, value, null, true);
+        var doc, key;
+        if (this.caching) {
+            key = typeof value == "string"
+                ? value
+                : value.getAttribute(apf.xmldb.xmlIdTag);
+        }
+        //Assuming document
+        else if (value instanceof ace.Document){
+            doc = value;
         }
         
-        if (!this.value)
-            this.clear();
+        if (!doc && key)
+            doc = this.$cache[key];
+        
+        if (!doc) {
+            if (value.nodeType) {
+                apf.xmldb.addNodeListener(value.nodeType == 1 
+                    ? value : value.parentNode, this);
+            }
+            
+            doc = new ace.Document(typeof value == "string"
+              ? value
+              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
+                    ? value.nodeValue
+                    : value.firstChild && value.firstChild.nodeValue || ""));
+            this.$cache[key] = doc;
+        }
+        
+        doc.setMode(this.$modes[this.syntax]);
+        this.$editor.setDocument(doc);
     };
-
+    
+    if (self.ace)
+        this.$modes = {
+            text : new ace.mode.Text(),
+            xml  : new ace.mode.Xml(),
+            html : new ace.mode.Html(),
+            css  : new ace.mode.Css(),
+            js   : new ace.mode.JavaScript()
+        };
+    
+    this.$propHandlers["syntax"] = function(value, prop, initial){
+        this.$editor.getDocument().setMode(this.$modes[value]);
+    };
+    
+    this.$propHandlers["activeline"] = function(value, prop, initial){
+        this.$editor.setHighlightActiveLine(value);
+    };
+    
+    this.$propHandlers["selectstyle"] = function(value, prop, initial){
+        this.$editor.setSelectionStyle(value);
+    };
+    
+    this.addEventListener("xmlupdate", function(e){
+        var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        if (this.$cache[id]) {
+            //Update document
+        }
+    });
+    
     /**** Public Methods ****/
 
     //#ifdef __WITH_CONVENIENCE_API
@@ -118,13 +149,7 @@ apf.codeeditor = function(struct, tagName){
     
     //@todo cleanup and put initial-message behaviour in one location
     this.clear = function(){
-        if (this["initial-message"]) {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
-        }
-        else {
-            this.$propHandlers["value"].call(this, "", null, true);
-        }
+        this.$propHandlers["value"].call(this, "", null, true);
         
         this.dispatchEvent("clear");//@todo this should work via value change
     }
@@ -134,8 +159,7 @@ apf.codeeditor = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.$input.innerHTML : this.$input.value;
-        return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
+        return this.$editor.getDocument().toString(); //@todo very inefficient
     };
     
     //#endif
@@ -144,93 +168,32 @@ apf.codeeditor = function(struct, tagName){
      * Selects the text in this element.
      */
     this.select   = function(){ 
-        try {
-            this.$input.select(); 
-        }
-        catch(e){}
+        
     };
 
     /**
      * Deselects the text in this element.
      */
-    this.deselect = function(){ this.$input.deselect(); };
-
+    this.deselect = function(){ 
+        
+    };
+    
+    this.scrollTo = function(){
+        
+    }
+    
     /**** Private Methods *****/
 
-    this.addEventListener("$clear", function(){
-        this.value = "";//@todo what about property binding?
-        
-        if (this["initial-message"] && apf.document.activeElement != this) {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
-        }
-        else {
-            this.$propHandlers["value"].call(this, "");
-        }
-        
-        if (!this.$input.tagName.toLowerCase().match(/input|textarea/i)) {
-            if (apf.hasMsRangeObject) {
-                try {
-                    var range = document.selection.createRange();
-                    range.moveStart("sentence", -1);
-                    //range.text = "";
-                    range.select();
-                }
-                catch(e) {}
-            }
-        }
-        
-        this.dispatchEvent("clear"); //@todo apf3.0
-    });
-
-    this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.$button && key == 27) {
-            this.clear();
-            this.blur();
-        }
-        
-        if (this.dispatchEvent("keydown", {
-            keyCode   : key,
-            ctrlKey   : ctrlKey,
-            shiftKey  : shiftKey,
-            altKey    : altKey,
-            htmlEvent : e}) === false)
-                return false;
-
-        // @todo: revisit this IF statement - dead code?
-        if (false && apf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
-            var text = window.clipboardData.getData("Text");
-            if ((text = this.dispatchEvent("keydown", {
-                text : this.onpaste(text)}) === false))
-                    return false;
-            if (!text)
-                text = window.clipboardData.getData("Text");
-
-            this.$input.focus();
-            var range = document.selection.createRange();
-            range.text = "";
-            range.collapse();
-            range.pasteHTML(text.replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;"));
-
-            return false;
-        }
-    };
-
-    var fTimer;
     this.$focus = function(e){
         if (!this.$ext || this.$ext.disabled)
             return;
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
-
-        if (this["initial-message"] && this.$input.value == this["initial-message"]) {
-            this.$propHandlers["value"].call(this, "", null, true);
-            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
-        }
+        
+        this.$editor.focus();
     };
 
     this.$blur = function(e){
-        return;
         if (!this.$ext)
             return;
         
@@ -238,259 +201,33 @@ apf.codeeditor = function(struct, tagName){
             this.change(this.getValue());
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
-
-        if (this["initial-message"] && this.$input.value == "") {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
-        }
-
-        clearInterval(fTimer);
+        
+        //this.$editor.blur();
     };
+    
+    //@todo
+    this.addEventListener("keydown", function(e){
+        //this.$editor.
+    }, true);
 
     /**** Init ****/
     
-    this.addEventListener("$load", function(){
-        if (!this.viewport.limit)
-            this.viewport.limit = 1;
-    });
-    
-    this.clear = function(nomsg, do_event){
-        if (this.clearSelection)
-            this.clearSelection(!do_event);
-
-        this.documentId = this.xmlRoot = this.cacheId = null;
-
-        if (!nomsg) {
-            this.viewport.offset = 0;
-            this.viewport.length = 0;
-            this.viewport.sb.update();
-    
-            this.$setClearMessage(this["empty-message"]);
-        }
-        else if(this.$removeClearMessage)
-           this.$removeClearMessage();
-        
-        this.viewport.cache = null;
-    };
-
-    this.viewport = {
-        offset : 0,
-        limit  : 2,
-        length : 0,
-        host   : this,
-        cache  : null,
-        
-        inited : false,
-        draw : function(){
-            this.inited = true;
-            var l = this.length = 388;
-            
-            this.sb = new apf.scrollbar({htmlNode: this.host.$pHtmlNode});
-            this.sb.overflow = "scroll";
-            
-            var limit = this.limit; this.limit = 0;
-            
-            var _self = this.host, vp = this;
-            this.sb.attach(this.host.$input, this, function(timed, pos){
-                if (vp.sb.realtime || !timed) {
-                    vp.change(l * pos, vp.limit, false);
-                }
-                else {
-                    clearTimeout(this.virtualVTimer);
-                    this.virtualVTimer = $setTimeout(function(){
-                        vp.change(Math.round(vp.length * pos), vp.limit, false);
-                    }, 300);
-                }
-            });
-        },
-        
-        findNewLimit : function(scrollTop){
-            this.limit = 50;
-        },
-        
-        /**
-         *  @todo   This method should be optimized by checking if there is
-         *          overlap between the new offset and the old one
-         */
-        change : function(offset, limit, updateScrollbar, noScroll){
-            var offsetN;
-
-            if (offset < 0) 
-                offset = 0;
-            
-            var s;
-            var nl = (s = this.host.value.split("\n")).length;
-            if (offset > nl - this.limit - 1) 
-                offsetN = Math.floor(nl - this.limit - 1);
-            else 
-                offsetN = Math.floor(offset);
-                
-            if (!limit)
-                limit = this.limit;
-            
-            //var offsetN = Math.floor(offset);
-
-            this.cache   = null;
-            var diff     = offsetN - this.offset,
-                oldLimit = this.limit;
-            if (diff * diff >= this.limit*this.limit) //there is no overlap
-                diff = false;
-            this.offset = offsetN;
-            
-            if (diff > 0) { //get last node before resize
-                var lastNode = this.host.$input.lastChild;
-                if (lastNode.nodeType != 1)
-                    lastNode = lastNode.previousSibling;
-            }
-            
-            /*if (limit && this.limit != limit)
-                this.resize(limit, updateScrollbar);
-            else */
-            if (updateScrollbar) {
-                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
-                this.sb.updatePos();
-            }
-
-            //this.viewport.prepare();
-            
-            this.host.$propHandlers["value"].call(this.host, (s.slice(offset, offset+limit) || []).join("\n"));
-        }
-    };
-    
-    //this.viewport.sb.parentNode = new apf.Class().$init();
-    //this.viewport.sb.parentNode.$input = this.$pHtmlNode;
-    //this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
-    
-    this.$isInViewport = function(xmlNode, struct){
-    };
-    
-    this.scrollTo = function(xmlNode, last){
-        var sPos = {};
-        this.$isInViewport(xmlNode, sPos);
-        this.viewport.change(sPos.position + (last ? this.viewport.limit - 1 : 0));
-    };
-    
     this.$draw = function(){
-        var _self = this;
-        
         //Build Main Skin
-        this.$ext = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmousedown", "this.host.dispatchEvent('mousedown', {htmlEvent : event});");
-            oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
-            oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
+        this.$ext   = this.$getExternal();
+        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+        
+        this.addEventListener("resize", function(e){
+            this.$editor.resize();
         });
-        this.$input    = this.$getLayoutNode("main", "content", this.$ext);
-        
-        this.viewport.host = this;
-        this.viewport.draw();
-        
-        //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$input, "scrollbar", "\
-            var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
-            s.update();\
-        ", true);
-        apf.layout.queue(this.$input);
-        //#endif
-        
-        this.$input.onselectstart = function(e){
-            if (!e) e = event;
-            e.cancelBubble = true;
-        }
-        this.$input.host = this;
 
-        this.$input.onkeydown = function(e){
-            e = e || window.event;
-            
-            return false;
-
-            //Change
-            if (!_self.realtime) {
-                var value = _self.getValue();
-                if (e.keyCode == 13 && value != this.value)
-                    _self.change(value);
-            }
-            else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
-                $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
-                    o.change(o.getValue())");
-
-            if (_self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
-              || e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
-              || e.keyCode == 85)) {
-                e.returnValue = false;
-                return false;
-            }
-
-            return _self.$keyHandler(e.keyCode, e.ctrlKey,
-                e.shiftKey, e.altKey, e);
-        };
-
-        this.$input.onkeyup = function(e){
-            if (!e)
-                e = event;
-
-            var keyCode = e.keyCode;
-            
-            if (_self.$button)
-                _self.$button.style.display = this.value ? "block" : "none";
-
-            if (_self.realtime) {
-                $setTimeout(function(){
-                    var v;
-                    if ((v = _self.getValue()) != _self.value)
-                        _self.change(v); 
-                    _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
-                });
-            }
-            else {
-                _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
-            }
-        };
-
-        if (!this.$input.tagName.toLowerCase().match(/input|textarea/)) {
-            this.isHTMLBox = true;
-
-            this.$input.unselectable    = "Off";
-            this.$input.contentEditable = true;
-            this.$input.style.width     = "1px";
-
-            this.$input.select = function(){
-                var r = document.selection.createRange();
-                r.moveToElementText(this);
-                r.select();
-            }
-        };
-
-        this.$input.deselect = function(){
-            if (!document.selection) return;
-
-            var r = document.selection.createRange();
-            r.collapse();
-            r.select();
-        };
+        this.$editor = new ace.Editor(new ace.VirtualRenderer(this.$input));
     };
 
     this.$loadAml = function() {
-        if (typeof this["initial-message"] == "undefined")
-            this.$setInheritedAttribute("initial-message");
-
         if (typeof this.realtime == "undefined")
             this.$setInheritedAttribute("realtime");
     }
-
-    this.addEventListener("DOMNodeRemovedFromDocument", function(){
-        if (this.$button)
-            this.$button.onmousedown = null;
-        
-        if (this.$input) {
-            this.$input.onkeypress     =
-            this.$input.onmouseup      =
-            this.$input.onmouseout     =
-            this.$input.onmousedown    =
-            this.$input.onkeydown      =
-            this.$input.onkeyup        =
-            this.$input.onselectstart  = null;
-        }
-    });
 // #ifdef __WITH_DATABINDING
 }).call(apf.codeeditor.prototype = new apf.StandardBinding());
 /* #else
