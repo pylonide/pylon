@@ -453,6 +453,7 @@
                               align    = "left"
                               height="25"
                               width    = "152"
+                              style="border-right:1px solid #c3c3c3;"
                               >
                                 <a:bar>
                                     <a:label style="font-weight:bold;margin:3px 0 0 4px;">Recording Booth</a:label>
@@ -485,8 +486,18 @@
                             </a:toolbar>
                         <!--/a:bar-->
                         <a:bar skin="basic" border="1 1 0 1" align="right" class="netview">
+                            <a:toolbar
+                              height = "25"
+                              left="0"
+                              top="0"
+                              right="0"
+                              >
+                                <a:bar>
+                                    <a:label style="font-weight:bold;margin:3px 0 0 4px;">Playlist Creator</a:label>
+                                </a:bar>
+                            </a:toolbar>
                             <a:tree 
-                              anchors="0 0 0 0"
+                              anchors="25 0 0 0"
                               id         = "trPlaylist"
                               class      = "trPlaylist"
                               model      = "mdlPlaylist" 
@@ -516,6 +527,7 @@
                     <a:model id="mdlMacro">
                         <data>
                             <test name="Recording 1" />
+                            <test name="Recording 2" />
                         </data>
                     </a:model>
                     <a:model id="mdlPlaylist">

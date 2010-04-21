@@ -19,6 +19,7 @@ body{
 
 .netview{
     border : 1px solid #c3c3c3;
+    border-top:0;
     padding : 30px 5px 5px 5px;
     background : #f5f5f5;
 }

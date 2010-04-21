@@ -1200,7 +1200,7 @@
             padding             : 51px 0 0 0;
             overflow            : hidden;
             position            : relative;
-            border-top          : 1px solid #194a6f;
+            /*border-top          : 1px solid #194a6f;*/
             background-image    : url(images/debugger_tab_backg.png);
             background-repeat   : repeat-x;
             background-position : 0 0;
@@ -2219,6 +2219,7 @@
             overflow            : auto;
             position            : relative;
             border              : 1px solid #c3c3c3;
+            border-top          :0;
             border-bottom       : 0;
             background-color    : #c9d6e1;
             cursor              : default;
@@ -2424,7 +2425,7 @@
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
         .dbg_toolbar{
-            border : 0px solid #c3c3c3;
+            border-bottom : 1px solid #c3c3c3;
             overflow : hidden;
         }
         
