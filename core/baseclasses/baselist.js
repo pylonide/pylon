@@ -151,6 +151,70 @@ apf.BaseList = function(){
             this.clear();
     };
     
+    //@todo unsetter
+    this.$propHandlers["template"] = function(value){
+        this.$template = typeof value == "object"
+          ? value
+          : apf.nameserver.get("template", value);
+
+        if (!this.$template) {
+            var f;
+            apf.addEventListener("parsestop", f = function(){
+                _self.$propHandlers["template"].call(_self, value);
+                apf.removeEventListener("parsestop", f);
+            });
+            return;
+        }
+
+        //this.setProperty("skin", "templatelist");
+
+        //@todo solve the model inheritance problem
+        this.$deInitNode = function(xmlNode, htmlNode){
+            var Lid = xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId;
+            this.$template.destroyInstance(Lid);
+
+            if (htmlNode)
+                htmlNode.parentNode.removeChild(htmlNode);
+        };
+
+        this.$updateNode = function(xmlNode, htmlNode, noModifier){
+            //Do nothing
+        };
+
+        this.$moveNode = function(xmlNode, htmlNode){
+            //@todo
+        };
+
+        var docFrag = document.createDocumentFragment();
+
+        this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+            /*this.$getNewContext("item");
+            var item = this.$getLayoutNode("item");
+            item.setAttribute("id", Lid);
+            var htmlNode = apf.insertHtmlNode(item, htmlParentNode || this.$container, beforeNode);*/
+            var htmlNode = document.createElement("div");
+            htmlNode.setAttribute("id", Lid);
+            docFrag.appendChild(htmlNode);
+
+            this.$template.getNewInstance(
+                this.$getLayoutNode("item", "container", htmlNode), Lid, xmlNode, true);
+            //docFrag.setProperty("model", xmlNode);
+        };
+
+        this.$fill = function(){
+            //Do nothing (optimization later?)
+            //apf.AmlParser.parseLastPass();
+            //apf.isParsing = false;
+
+            this.$container.appendChild(docFrag);
+
+            apf.queue.empty();
+        };
+
+        //@todo changing template
+        this.$checkLoadQueue();
+    };
+
     /**** Keyboard support ****/
 
     // #ifdef __WITH_KEYBOARD
@@ -231,7 +295,7 @@ apf.BaseList = function(){
                         + margin[1] + margin[3]))
                     : 1;
 
-                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                //margin = apf.getBox(apf.getStyle(selHtml, "margin"));
 
                 node   = this.getNextTraverseSelected(node, false);
                 if (node)

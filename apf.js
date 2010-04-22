@@ -420,6 +420,8 @@ var apf = {
         this.hasSingleRszEvent         = !apf.isIE;
         this.hasXPathHtmlSupport       = !apf.isIE;
         this.hasFocusBug               = apf.isIE;
+        this.hasHeightAutoDrawBug      = apf.isIE && apf.isIE < 8;
+        this.hasIndexOfNodeList        = !apf.isIE;
         this.hasReadyStateBug          = apf.isIE50;
         this.dateSeparator             = apf.isIE ? "-" : "/";
         this.canCreateStyleNode        = !apf.isIE;
@@ -1326,7 +1328,7 @@ var apf = {
      * @param {String}  [type]     set the type of a script tag, for later use
      * @type  {void}
      */
-    include : function(sourceFile, doBase, type, text){
+    include : function(sourceFile, doBase, type, text, callback){
         //#ifdef __DEBUG
         if (apf.started)
             apf.console.info("including js file: " + sourceFile);
@@ -1343,6 +1345,9 @@ var apf = {
         else 
             elScript.src   = sSrc;
         head.appendChild(elScript);
+
+        if (callback)
+            elScript[apf.isIE ? "onreadystatechange" : "onload"] = callback;
         
         return elScript;
     },
@@ -2435,9 +2440,7 @@ apf.$loader = {
     		xhr.send("");
     	}
     	else {
-    	    var scr = apf.include(oScr.src);
-
-            scr[apf.isIE ? "onreadystatechange" : "onload"] = done;
+    	    var scr = apf.include(oScr.src, null, null, null, done);
         }
     },
     

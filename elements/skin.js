@@ -252,7 +252,7 @@ apf.aml.setElement("skin", apf.skin);
         if (this.src || this.name)
             return;
         
-        apf.skins.Init(this);
+        apf.skins.Init(this.$aml || this);
         
         //@todo implied skin
         /*if (this.parentNode && this.parentNode.parentNode) {

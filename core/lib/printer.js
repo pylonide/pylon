@@ -38,7 +38,7 @@ apf.printer = {
         this.$aml   = aml;
         
         this.panel = document.body.appendChild(document.createElement("div"));
-        this.panel.id = "print_content";
+        this.panel.setAttribute("id", "print_content");
         this.panel.onmousedown = function(){
             apf.printer.hide();
         };

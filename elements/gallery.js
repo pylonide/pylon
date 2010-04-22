@@ -752,8 +752,8 @@ apf.gallery = function(struct, tagName){
             e = e || event;
             var target = e.target || e.srcElement;
             
-            /*if (!_self.arrowsAreVisible)
-                return;*/
+            if (!_self.arrowsAreVisible)
+                return;
 
             target = e.toElement 
                 ? e.toElement 
@@ -763,7 +763,7 @@ apf.gallery = function(struct, tagName){
             
             if (apf.isChildOf(_self.$oImageContainer, target, true))
                 return;
-            alert("onmouseout event")
+
             _self.arrowsInvisible = {
                 stop : false
             };

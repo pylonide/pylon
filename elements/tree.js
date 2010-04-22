@@ -375,7 +375,6 @@ apf.tree = function(struct, tagName){
         }
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
-        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             //if (elCaption.nodeType != 1)
                 //elCaption = elCaption.parentNode;

@@ -234,12 +234,13 @@ apf.runIE = function(){
     }
     
     apf.getHorBorders = function(oHtml){
-        return ((parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
+        return Math.max(0,
+              (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
             + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0))
     };
 
     apf.getVerBorders = function(oHtml){
-        return (0,
+        return Math.max(0,
               (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
             + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))
     };

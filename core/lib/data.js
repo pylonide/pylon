@@ -295,7 +295,7 @@ apf.getData = function(instruction, options){
                 url = instruction;
             }
             
-            apf.oHttp.exec(method, [url], gCallback, options);
+            apf.oHttp.exec(method, [url.replace(/\\/g, "")], gCallback, options);
         }
     }
     

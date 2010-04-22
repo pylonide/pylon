@@ -335,13 +335,6 @@ var ID        = "id",
             ? modules[TRANSFORM + (info.subType || SCALE)]
             : modules[info.type] || modules.htmlcss;
 
-        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
-            isTransform = (info.type == TRANSFORM);
-
-        info.method = useCSSAnim ? info.type : isTransform
-            ? modules[TRANSFORM + (info.subType || SCALE)]
-            : modules[info.type] || modules.htmlcss;
-
         //#ifdef __DEBUG
         if (!info.method)
             throw new Error(apf.formatErrorString(0, this,
@@ -787,15 +780,15 @@ return {
         return -dx / 2 * ((--t) * (t - 2) - 1) + x_min;
     },
     easeInCubic: function(t, x_min, dx) {
-        return dx * Math.pow(t, 3) + x_min;
+        return dx * __pow(t, 3) + x_min;
     },
     easeOutCubic: function(t, x_min, dx) {
         return dx * (__pow(t - 1, 3) + 1) + x_min;
     },
     easeInOutCubic: function(t, x_min, dx) {
         if ((t /= .5) < 1)
-            return dx / 2 * __(t, 3) + x_min;
-        return dx / 2 * (__(t - 2, 3) + 2) + x_min;
+            return dx / 2 * __pow(t, 3) + x_min;
+        return dx / 2 * (__pow(t - 2, 3) + 2) + x_min;
     },
     easeInQuart: function(t, x_min, dx) {
         return dx * __pow(t, 4) + x_min;

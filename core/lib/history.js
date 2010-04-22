@@ -78,7 +78,9 @@ apf.history = {
 
         if (delay)
             this.delay = delay;
-        var name = location.href.match(/#(.*)$/) && decodeURI(RegExp.$1) 
+
+        var name = apf.dispatchEvent("hashinit")
+          || location.href.match(/#(.*)$/) && decodeURI(RegExp.$1)
           || apf._GET[getVar || -1] || defName;
 
         this.inited = true;

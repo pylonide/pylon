@@ -94,7 +94,17 @@ apf.aml.setElement("include", apf.XiInclude);
                     if (cb)
                         cb.call(_self.ownerDocument);
                 };
-                domParser.$continueParsing.apply(domParser, this.$parseContext);
+
+                //@todo this is wrong... probably based on load order of last include element. Please rearchitect parse continuation.
+                if (domParser.$continueParsing.apply(domParser, this.$parseContext) === false) {
+                    var o2  = (domParser.$parseContext[1] || (domParser.$parseContext[1] = {})),
+                        cb2 = o.callback;
+                    o2.callback = function(){
+                        if (cb)
+                            cb.call(_self.ownerDocument);
+                        domParser.$continueParsing.apply(domParser, _self.$parseContext);
+                    };
+                }
             }
             else
                 done.call(this, xmlNode);

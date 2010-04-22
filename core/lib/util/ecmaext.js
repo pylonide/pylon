@@ -307,12 +307,18 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
  * Like Array.push, but only invoked when the value 'item' is already present
  * inside the array instance.
  *
- * @param {mixed} item
+ * @param {mixed} item, item, ...
  * @type  {Array}
  */
-Array.prototype.pushUnique = function(item){
+Array.prototype.pushUnique = function(){
+    var item,
+        i = 0,
+        l = arguments.length;
+    for (; i < l; ++i) {
+        item = arguments[i];
     if (this.indexOf(item) == -1)
         this.push(item);
+    }
     return this;
 };
 
