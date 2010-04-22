@@ -559,6 +559,7 @@ apf.BaseTree = function(){
         }
         
         var oPHtmlNode = htmlNode.parentNode,
+            tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.findHtmlNode(xmlNode.parentNode, this),
         //if(!pHtmlNode) return;
         
@@ -569,7 +570,8 @@ apf.BaseTree = function(){
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
-        container  = this.$getLayoutNode("item", "container", htmlNode);
+        
+        container = this.$getLayoutNode("item", "container", htmlNode);
 
         if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
             this.$removeEmptyMessage(pContainer);
@@ -584,7 +586,7 @@ apf.BaseTree = function(){
         }*/
         
         var msg;
-        if (!oPHtmlNode.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
+        if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
         
         if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
@@ -593,7 +595,6 @@ apf.BaseTree = function(){
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
         
-        var tParent  = this.getTraverseParent(xmlNode);
         this.$fixItem(tParent, apf.xmldb.findHtmlNode(tParent, this));
         this.$updateNode(oldXmlParent, apf.xmldb.findHtmlNode(oldXmlParent, this));
         if (this.getNextTraverse(xmlNode, true)) { //should use each here
