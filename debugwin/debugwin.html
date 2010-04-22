@@ -469,10 +469,11 @@
                               skin   = "macro_toolbar">
                                 <a:bar>
                                     <a:button id="btnRec" skin="button_macro_record" width="50" onclick="recordMacro()"></a:button>
-                                    <a:button id="btnStop" skin="button_macro_record" width="50" visible="false" onclick="stop()"></a:button>
+                                    <a:button id="btnStopRecord" skin="button_macro_stoprecord" width="50" visible="false" onclick="stopRecord()"></a:button>
                                     <a:button id="btnPlay" skin="button_macro_play" width="50" onclick="playSingleMacro()"></a:button>
-                                    <a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
-                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button>
+                                    <a:button id="btnStopPlay" skin="button_macro_stop" width="50" visible="false" onclick="stopPlay()"></a:button>
+                                    <!--a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
+                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button-->
                                 </a:bar>
                             </a:toolbar>
 
@@ -493,7 +494,7 @@
                                     <a:button onclick="atPlaylist.redo()">Redo</a:button>
                                 </a:bar>
                             </a:toolbar>
-                            <a:tree autorename="true"
+                            <a:tree
                               style="margin-left:61px;"
                               actiontracker = "atPlaylist"
                               id         = "trPlaylist"
@@ -515,7 +516,7 @@
                                     <a:css match="[playlist[not(node())]]" value="new_recording" />
                                     <a:empty match="[playlist[not(node())]]" value="Activate this Playlist by dropping a Recording here" />
                                 </a:each>
-                                <a:rename match="[playlist]" />
+                                <!--a:rename match="[playlist]" /-->
                             </a:tree>
                             <div model="mdlPlaylist" class="playlist_buttons">
                                 <?lm
@@ -524,13 +525,13 @@
                                     var line_top = cbx_top + 4;
                                     
                                     foreach([playlist]) {
-                                        <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playPlaylist(apf.xmldb.getXmlId(mdlPlaylist.queryNode('{apf.xmlToXpath(%[.]).substr(apf.xmlToXpath(%[.]).indexOf("/") + 1)}')))"/>
-                                        <a:checkbox top="{cbx_top}" left="11" class="macro_cbx"></a:checkbox>
+                                        <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playPlaylist(mdlPlaylist.queryNode('{apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)}').getAttribute('id'))"/>
+                                        <a:checkbox top="{cbx_top}" left="11" class="macro_cbx" id="cb{mdlPlaylist.queryNode(apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)).getAttribute('id')}"></a:checkbox>
                                         btn_top += 52;
                                         cbx_top += 52;
                                     }
                                     
-                                    <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" />
+                                    <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playCheckedPlaylists();" />
                                     <a:label top="{btn_top + 4}" left="67">Play checked playlists</a:label>
                                     
                                     <div class="vertical_line" style="top:{line_top}px; height:{btn_top - line_top + 13}px;"></div>
@@ -554,19 +555,19 @@
                     </a:model>
                     <a:model id="mdlPlaylist">
                         <data>
-                            <playlist caption="playlist1">
+                            <playlist caption="playlist1" id="p1">
                                 <test ref="m1"></test>
                                 <test ref="m2"></test>
                                 <test ref="m3"></test>
                                 <test ref="m4"></test>
                             </playlist>
-                            <playlist caption="playlist2">
+                            <playlist caption="playlist2" id="p2">
                                 <test ref="m1"></test>
                                 <test ref="m2"></test>
                                 <test ref="m3"></test>
                                 <test ref="m4"></test>
                             </playlist>
-                            <playlist caption="Playlist 3"/>
+                            <playlist caption="Playlist 3" id="p3"/>
                         </data>
                     </a:model>
                     
@@ -575,6 +576,8 @@
                         var o3_mouseTranslate = [3,4];
                         var macroList = [];
                         var curMacroIdx = 0;
+                        var curPlaylistIdx = 0;
+                        var playQueue = [];
                         var speed = "realtime";
 
                         var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
@@ -597,7 +600,7 @@
                         apf.$debugwin.apf.uirecorder.$o3 = $o3;
 
                         // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
-                        if ($o3)
+                        if ($o3) {
                             (function loadData() {
                                 if ($o3.fs.get("macros.xml").exists)
                                     loadMacros(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
@@ -609,7 +612,11 @@
                                 else
                                     loadPlaylists(mdlPlaylist.getXml());
                             })();
-
+                        }
+                        else {
+                            loadMacros(mdlMacro.getXml());
+                            loadPlaylists(mdlPlaylist.getXml());
+                        }
                         // check for changes in macro/playlist models
                         mdlMacro.addEventListener("update", updateMacros);
                         mdlPlaylist.addEventListener("update", updatePlaylists);
@@ -623,20 +630,20 @@
                             var playlist = mdlPlaylist.data.ownerDocument.createElement("playlist");
                             var playlistIdx = 1;
                             if (mdlPlaylist.data.lastChild.getAttribute("caption") == "playlist" + parseInt(mdlPlaylist.data.childNodes.length))
-                                playlistIdx = parseInt(mdlPlaylist.data.childNodes.length+1)
-                            else {
-                                var playlistCaptions = mdlPlaylist.getXml().selectNodes("playlist[contains(@caption, 'playlist')]");
-                                for (var ci = 0, cl = playlistCaptions.length; ci < cl; ci++) {
-                                    var caption = playlistCaptions[ci].getAttribute("caption");
-                                    if (caption.substr(0, 8) != "playlist") continue;
-                                    
-                                    if (parseInt(caption.substr(8)) > playlistIdx)
-                                        playlistIdx = parseInt(caption.substr(8));
-                                }
-                                playlistIdx++;
+                                playlistIdx = parseInt(mdlPlaylist.data.childNodes.length);
+
+                            var playlistCaptions = mdlPlaylist.getXml().selectNodes("playlist[contains(@caption, 'playlist')]");
+                            for (var ci = 0, cl = playlistCaptions.length; ci < cl; ci++) {
+                                var caption = playlistCaptions[ci].getAttribute("caption");
+                                if (caption.substr(0, 8) != "playlist") continue;
+                                
+                                if (parseInt(caption.substr(8)) > playlistIdx)
+                                    playlistIdx = parseInt(caption.substr(8));
                             }
+                            playlistIdx++;
                                 
                             if (!playlistIdx) debugger;
+                            playlist.setAttribute("id", "p" + playlistIdx);
                             playlist.setAttribute("caption", "playlist" + playlistIdx);
                             mdlPlaylist.appendXml(playlist);
                         }
@@ -651,7 +658,7 @@
                                 macros[mi].setAttribute("id", "m" + macroId);
                             }
 
-                            mdlMacro.load(xml);
+                            mdlMacro.load(apf.xmldb.cleanNode(xml));
                             
                             // if id's added save changes
                             if (macros.length)
@@ -677,12 +684,23 @@
                                 }
                             }
 
-                            mdlPlaylist.load(xml);
+                            mdlPlaylist.load(apf.xmldb.cleanNode(xml));
                         }
                         
                         function updateMacros(e) {
                             // look for references in mdlPlaylist on delete macro
-                            
+                            if (e.action == "remove") {
+                                var id = e.xmlNode.getAttribute("id");
+
+                                var playlists = mdlPlaylist.data.childNodes;
+                                for (var pi = 0, pl = playlists.length; pi < pl; pi++) {
+                                    var nodes = playlists[pi].selectNodes("test[@id='" + id + "']");
+                                    for (var ni = 0, nl = nodes.length; ni < nl; ni++) {
+                                        apf.xmldb.removeNode(nodes[ni]);
+                                    }
+                                }
+                                savePlaylists();
+                            }
                             saveMacros();
                         };
                         
@@ -720,34 +738,40 @@
                         
                         function recordMacro() {
                             btnRec.setProperty("visible", false);
-                            btnStop.setProperty("visible", true);
+                            btnStopRecord.setProperty("visible", true);
                             btnPlay.setProperty("disabled", true);
                             apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
                         }
 
-                        function stop() {
+                        function stopRecord() {
                             apf.$debugwin.apf.uirecorder.capture.stop();
-                            btnStop.setProperty("visible", false);
+                            btnStopRecord.setProperty("visible", false);
                             btnRec.setProperty("visible", true);
                             btnRec.setProperty("disabled", false);
-                            btnPlay.setProperty("visible", true);
                             btnPlay.setProperty("disabled", false);
                             var macroId = 0;
-                            while (mdlMacro.selectSingleNode("test[@id = 'm' + macroId]")) {
+
+                            while (mdlMacro.getXml().selectSingleNode("test[@id='m" + macroId + "']")) {
                                 macroId++;
                             }
-                            debugger;
+                            
                             apf.$debugwin.apf.uirecorder.capture.outputXml.setAttribute("id", "m" + macroId);
                             mdlMacro.appendXml(apf.$debugwin.apf.uirecorder.capture.outputXml);
 
                             lstMacro.select(mdlMacro.data.lastChild);
                             lstMacro.startRename();
                         }
-
+                        
+                        function stopPlay() {
+                            btnStopRecord.setProperty("visible", false);
+                            btnPlay.setProperty("visible", true);
+                            btnRec.setProperty("disabled", false);
+                        }
+                        
                         function playSingleMacro() {
                             // set buttons state
                             btnPlay.setProperty("visible", false);
-                            btnStop.setProperty("visible", true);
+                            btnStopPlay.setProperty("visible", true);
                             btnRec.setProperty("disabled", true);
 
                             apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlaybackComplete);
@@ -759,11 +783,6 @@
                         }
 
                         function playMacro() {
-                            // set buttons state
-                            btnPlay.setProperty("visible", false);
-                            btnStop.setProperty("visible", true);
-                            btnRec.setProperty("disabled", true);
-
                             apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlayNextMacro);
                             apf.$debugwin.apf.addEventListener("apftest_testfailed", onTestFailed);
 
@@ -777,18 +796,22 @@
                             apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlayNextMacro);
                             apf.$debugwin.apf.removeEventListener("apftest_testfailed", onTestFailed);
 
-                            btnStop.setProperty("visible", false);
-                            btnRec.setProperty("visible", true);
+                            btnStopPlay.setProperty("visible", false);
                             btnRec.setProperty("disabled", false);
                             btnPlay.setProperty("visible", true);
-                            btnPlay.setProperty("disabled", false);
                             
+                            // reset classes for macros
+                            resetMacroStyles();
+                        }
+                        
+                        // reset classes for macros
+                        function resetMacroStyles() {
                             // reset classes for macros
                             for (var i = 0, l = macroList.length; i < l; i++) {
                                 apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["playing", "finished"]);
                             }
                         }
-
+                        
                         function onPlayNextMacro(e) {
                             apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "finished", ["playing"]);
                             // check for more macro's to be played
@@ -798,11 +821,18 @@
                                 setTimeout(playMacro, 100);
                             }
                             
-                            // all macro's played, end playback
+                            // all macro's played, start next playlist or end test
                             else {
-                                $o3.DOM.onkeydown = null;
-                                onPlaybackComplete(e);
-                                trPlaylist.select(trPlaylist.selected);
+                                if (playQueue[curPlaylistIdx+1]) {
+                                    curPlaylistIdx++;
+                                    resetMacroStyles();
+                                    playPlaylist(playQueue[curPlaylistIdx]);
+                                }
+                                else {
+                                    $o3.DOM.onkeydown = null;
+                                    onPlaybackComplete(e);
+                                    trPlaylist.select(trPlaylist.selected);
+                                }
                             }
                         }
 
@@ -812,7 +842,9 @@
 
                         function playPlaylist(id) {
                             if (!id) debugger;
-                            var xml = apf.xmldb.getElementById(id); 
+                            //var xml = apf.xmldb.getElementById(id); 
+                            var xml = mdlPlaylist.data.selectSingleNode("playlist[@id='" + id + "']");
+                            if (!xml) debugger;
                             trPlaylist.select(xml);
                             if (!trPlaylist.selected) {
                                 alert("no playlist selected"); 
@@ -832,6 +864,21 @@
                             playMacro();
                         }
 
+                        function playCheckedPlaylists() {
+                            curPlaylistIdx = 0;
+                            var playlists = mdlPlaylist.data.selectNodes("playlist");
+                            playQueue = [];
+                            for (var id, i = 0, l = playlists.length; i < l; i++) {
+                                id = playlists[i].getAttribute("id");
+                                if (eval("cb" + id).checked) {
+                                    playQueue.push(id);
+                                }
+                            }
+                            
+                            if (playQueue.length)
+                                playPlaylist(playQueue[curPlaylistIdx]);
+                        }
+                        
                         function onKeyDown(e) {
                             // Esc key
                             if (e.keyCode == 27) {

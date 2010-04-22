@@ -862,6 +862,86 @@
 </a:button>
     
     
+<a:button name="button_macro_stoprecord">
+    <a:style><![CDATA[
+        .dgr_btn_macro_stoprecord {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_stoprecord.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_stoprecordOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_stoprecordDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_stoprecordDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_stoprecord">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
+<a:button name="button_macro_stop">
+    <a:style><![CDATA[
+        .dgr_btn_macro_stop {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_stop.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_stopOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_stopDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_stopDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_stop">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
 <a:markupedit name="markupedit">
     <a:style><![CDATA[
         .debugmarkup{

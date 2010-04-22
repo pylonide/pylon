@@ -434,8 +434,8 @@ apf.uirecorder.capture = {
         // default
         else {
             // caption for dragging element
-            if ( (this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[this.$keyActions.length-1].events["afterdrag"]) 
-                || (this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[0].events["dragstart"] && this.$keyActions[this.$keyActions.length-1].events["dragdrop"])
+            if ( (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[this.$keyActions.length-1].events["afterdrag"]) 
+                || (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[0].events["dragstart"] && this.$keyActions[this.$keyActions.length-1].events["dragdrop"])
                 )  {
                 specialAction = "drag ";
             }
@@ -785,6 +785,11 @@ apf.uirecorder.playback = {
     
     // init playback of action
     $playAction : function() {
+        // no actions to execute
+        if (!this.$curTestXml.childNodes.length) {
+            this.$nextAction();
+            return;
+        }
         this.$curAction = this.$curTestXml.childNodes[this.$curActionIdx];
         if (!this.$curAction) debugger;
 
