@@ -300,7 +300,8 @@ apf.runNonIe = function (){
      * @returns {String}
      */
     apf.getStyle = function(el, prop) {
-        return window.getComputedStyle(el, '')[prop];
+        var s = window.getComputedStyle(el, '');
+        return s ? s[prop] : "";
     };
     
     //XMLDocument.setProperty
