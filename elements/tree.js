@@ -273,7 +273,8 @@ apf.tree = function(struct, tagName){
                  if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
-                     o.select(this, event.ctrlKey, event.shiftKey, -1);';
+                     o.select(this, event.ctrlKey, event.shiftKey, -1);\
+                 apf.cancelBubble(event, o);';
             
             elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;' + (elSelect.getAttribute("onmouseout") || ""));
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -291,7 +292,8 @@ apf.tree = function(struct, tagName){
         else 
         //#endif 
         {
-            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey, -1);";
+            strMouseDown = "o.select(this, event.ctrlKey, event.shiftKey, -1);\
+                            apf.cancelBubble(event, o);";
         }
         
         if (ocAction != "ondblclick") {

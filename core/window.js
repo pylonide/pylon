@@ -910,7 +910,6 @@ apf.window = function(){
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};
     apf.addListener(document, "mousedown", this.$mousedown = function(e){
         e = e || window.event;
-
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target),
             cEditable = amlNode && amlNode.$editable

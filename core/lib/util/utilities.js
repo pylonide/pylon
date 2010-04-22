@@ -372,9 +372,18 @@ apf.removePathContext = function(base, url){
 apf.cancelBubble = function(e, o){
     e.cancelBubble = true;
     // #ifdef __WITH_FOCUS
-    if (o.$focussable && !o.disabled)
-        apf.window.$focus(o);
+    //if (o.$focussable && !o.disabled)
+        //apf.window.$focus(o);
     // #endif
+
+    /*if (apf.isIE)
+        o.$ext.fireEvent("on" + e.type, e);
+    else 
+        o.$ext.dispatchEvent(e.name, e);*/
+    
+    if (o.$ext["on" + e.type])
+        o.$ext["on" + e.type](e);
+    apf.window.$mousedown(e);
 };
 
 // #endif

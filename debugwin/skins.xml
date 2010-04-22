@@ -72,11 +72,12 @@
         }
         
         .macro_tree BLOCKQUOTE {
-            margin   : 0 0 4px 0;
-            height   : 27px;
-            position : relative;
-            overflow : visible;
-            padding  : 0;
+            margin      : 0 0 4px 0;
+            height      : 27px;
+            position    : relative;
+            overflow    : visible;
+            padding     : 0;
+            white-space : nowrap;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_xbutton {
@@ -111,9 +112,6 @@
             background-image    : url(images/macro_row_back_middle.png);
             background-position : 0 0;
             background-repeat   : repeat-x;
-            white-space         : nowrap;
-            text-overflow       : ellipsis;
-            break-word          : keep-all;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
@@ -136,10 +134,16 @@
             background-position : 0 -27px;
         }
 
-        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
-            float       : left;
-            height      : 15px;
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV{
+            float : left;
+            height : 15px;
+            cursor : default;
         }
+
+        /*.macro_tree BLOCKQUOTE SPAN.macro_cont_middle>DIV {
+            display     : inline-block;
+            height      : 15px;
+        }*/
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rcaption,
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rright {
@@ -233,7 +237,7 @@
                     <span class="macro_cont_left"> </span>
                     <span class="macro_cont_middle"> </span>
                     <span class="macro_cont_right"> </span>
-                    <span class="macro_xbutton"> </span>
+                    <span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span>
                 </blockquote>
             </div>
         </a:item>
@@ -2337,18 +2341,19 @@
         }
         
         .macro_list #txt_rename {
-            border      : 1px solid #bbb;
+            border      : 1px solid black;
+            background  : white;
             padding     : 1px 15px 1px 1px;
             font-family : Tahoma;
             font-size   : 8pt;
-            color       : white;
+            color       : #333;
             word-break  : keep-all;
             overflow    : visible;
             margin-top  : 4px;
             margin-left : 17px;
             cursor      : text;
             height      : 13px;
-            display     : block;
+            display     : inline-block;
             outline     : none;
         }
     
@@ -2416,7 +2421,7 @@
           select  = ".">
             <div>
                 <span class="caption">
-                    <blockquote class="ico" onclick="apf.findHost(this).remove(this.parentNode);"> </blockquote>
+                    <blockquote class="ico" onclick="apf.findHost(this).remove();"> </blockquote>
                     <u>-</u>
                 </span>
             </div>
@@ -2440,7 +2445,7 @@
 <a:toolbar name="toolbar">
     <a:style><![CDATA[
         .dbg_toolbar{
-            border-bottom : 1px solid #c3c3c3;
+			border : 0px solid #c3c3c3;
             overflow : hidden;
         }
         

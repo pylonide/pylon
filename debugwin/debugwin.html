@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <!--script src="../apf.js"></script-->
-        <script src="apf_debugwin.js"></script>
+        <script src="../apf.js"></script>
+        <!--script src="apf_debugwin.js"></script-->
         <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
@@ -107,7 +107,7 @@
             <a:item id="itInspSel" value="sel-data">Inspect element's selected item</a:item>
         </a:menu>
         
-        <a:errorbox id="errBox" left="265" top="33" />
+        <a:errorbox id="errBox" left="310" top="33" />
     
         <a:divider skin="divider_tab" top="11" left="147" />
         <a:button skin="button_edit" top="9" left="160" state="true" tooltip="Edit"
@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="macro">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -440,10 +440,9 @@
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
                             <a:toolbar
                               align    = "left"
-                              height="25"
-                              width2    = "152"
-                              width    = "352"
-                              style="border-right:1px solid #c3c3c3;"
+                              height   ="25"
+                              width   = "152"
+                              border   = "0 1 1 0"
                               >
                                 <a:bar>
                                     <a:label style="font-weight:bold;margin:3px 0 0 4px;">Recording Booth</a:label>
@@ -461,7 +460,7 @@
                                 <a:drag match="[test]" copy="true" />
                             </a:list>
                             <a:toolbar
-                              align="left-splitter"
+                              align  = "left-splitter"
                               height = "61"
                               skin   = "macro_toolbar">
                                 <a:bar>
@@ -474,19 +473,25 @@
                             </a:toolbar>
 
                         <!--/a:bar-->
-                        <a:bar skin="basic" border="1 1 0 1" align="right" class="netview">
+                        <a:bar skin="basic" border="1 0 0 1" align="right" class="netview">
                             <a:toolbar
                               height = "25"
-                              left="0"
-                              top="0"
-                              right="0"
+                              left   = "0"
+                              top    = "0"
+                              right  = "0"
+                              border = "0 0 1 0"
                               >
                                 <a:bar>
-                                    <a:label style="font-weight:bold;margin:3px 0 0 4px;">Playlist Creator</a:label>
+                                    <a:label style="font-weight:bold;margin:3px 10px 0 4px;">Playlist Creator</a:label>
+                                    
+                                    <a:divider />
+                                    <a:button onclick="atPlaylist.undo()">Undo</a:button>
+                                    <a:button onclick="atPlaylist.redo()">Redo</a:button>
                                 </a:bar>
                             </a:toolbar>
                             <a:tree 
                               anchors="25 0 0 61"
+                              actiontracker = "atPlaylist"
                               id         = "trPlaylist"
                               class      = "trPlaylist"
                               model      = "mdlPlaylist" 
@@ -542,18 +547,19 @@
                     </a:model>
                     <a:model id="mdlPlaylist">
                         <data>
-                            <playlist caption="playlist1">
-                                <test caption="1"></test>
-                                <test caption="2"></test>
-                                <test caption="3"></test>
-                                <test caption="4"></test>
+                            <playlist caption="Playlist 1">
+                                <test caption="Recording 1"></test>
+                                <test caption="Recording 2"></test>
+                                <test caption="Recording 3"></test>
+                                <test caption="Recording 4"></test>
                             </playlist>
-                            <playlist caption="playlist2">
-                                <test caption="1"></test>
-                                <test caption="2"></test>
-                                <test caption="3"></test>
-                                <test caption="4"></test>
+                            <playlist caption="Playlist 2">
+                                <test caption="Recording 1"></test>
+                                <test caption="Recording 2"></test>
+                                <test caption="Recording 3"></test>
+                                <test caption="Recording 4"></test>
                             </playlist>
+                            <playlist caption="Playlist 3"/>
                         </data>
                     </a:model>
                     

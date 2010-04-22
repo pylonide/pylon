@@ -638,7 +638,7 @@ apf.MultiSelect = function(){
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
         if (!this.selectable || userAction && this.disabled || this.editable) 
             return;
-        
+
         if (fakeselect == -1) {
 	      	fakeselect = false;
 	      	userAction = true;
@@ -710,7 +710,7 @@ apf.MultiSelect = function(){
 
             xmlNode = apf.xmldb.getNodeById(id);//, this.xmlRoot);
         }
-        
+
         if (!shiftKey && !ctrlKey && !force && !this.reselectable 
           && this.$valueList.length <= 1 && this.$valueList.indexOf(xmlNode) > -1)
             return;
