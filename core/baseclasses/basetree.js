@@ -545,7 +545,7 @@ apf.BaseTree = function(){
             this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
-    this.$moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
         if (!self.apf.debug && !htmlNode) 
             return;
             
@@ -593,8 +593,9 @@ apf.BaseTree = function(){
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
         
-        var tParent = this.getTraverseParent(xmlNode);
+        var tParent  = this.getTraverseParent(xmlNode);
         this.$fixItem(tParent, apf.xmldb.findHtmlNode(tParent, this));
+        this.$updateNode(oldXmlParent, apf.xmldb.findHtmlNode(oldXmlParent, this));
         if (this.getNextTraverse(xmlNode, true)) { //should use each here
             this.$fixItem(this.getNextTraverse(xmlNode, true),
                 apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
@@ -1041,6 +1042,7 @@ apf.BaseTree = function(){
         if (!xmlEmpty) return;
 
         var empty = apf.insertHtmlNode(xmlEmpty, htmlNode);
+        empty.setAttribute("empty", "true");
         var caption = this.$getLayoutNode("empty", "caption", empty);
 
         if (caption)
@@ -1061,7 +1063,7 @@ apf.BaseTree = function(){
             return;
 
         do {
-            if (cNode.className == "message") { //@todo hack
+            if (cNode.getAttribute("empty")) { //@todo hack
                 htmlNode.removeChild(cNode);
                 return;
             }

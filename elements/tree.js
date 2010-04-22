@@ -397,7 +397,7 @@ apf.tree = function(struct, tagName){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.$applyBindRule("css", xmlNode);
         if (cssClass || this.$dynCssClasses.length) {
-            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses);
+            this.$setStyleClass(htmlNode, cssClass, this.$dynCssClasses); //@todo overhead!
             if (cssClass && !this.$dynCssClasses.contains(cssClass))
                 this.$dynCssClasses.push(cssClass);
         }

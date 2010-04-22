@@ -651,12 +651,12 @@ apf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.$uniqueId);
-            var isInThis  = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var isInThis  = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true); //@todo this.getTraverseParent(xmlNode)
             var wasInThis = apf.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
-                this.$moveNode(xmlNode, htmlNode);
+                this.$moveNode(xmlNode, htmlNode, UndoObj.extra.oldParent);
             else if (isInThis) //Add if only current position is within this object
                 action = "add";
             else if (wasInThis) //Remove if only previous position is within this object
