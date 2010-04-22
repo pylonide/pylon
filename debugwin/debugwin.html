@@ -428,15 +428,19 @@
             <a:page caption="Macros" id="macro" render="runtime">
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
-                        <!--a:window 
-                            id      = "winNoPlugin"
+                        <a:window 
+                            id      = "winNoextension"
+                            skin    = "alert"
                             modal   = "true"
-                            visible = "false"
-                            anchors = "0 0 0 0"
+                            title   = "Please install the o3 browser extension"
+                            width   = "300" 
+                            height  = "{lblIE.visible ? 95: 105}"
+                            center  = "true"
                         >
-                            <a:label id="lblIE">To use this feature you need to install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
-                            <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 plugin. Download the <a href="o3plugin_dbg.exe">o3 plugin</a></a:label>
-                        </a:window-->
+                            <a:label id="lblIE">To use this feature you need to install the o3 browser extension. <br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
+                            <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 browser extension.<br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
+                        </a:window>
+                        
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
                             <a:toolbar
                               align    = "left"
@@ -489,7 +493,7 @@
                                     <a:button onclick="atPlaylist.redo()">Redo</a:button>
                                 </a:bar>
                             </a:toolbar>
-                            <a:tree 
+                            <a:tree autorename="true"
                               anchors="25 0 0 61"
                               actiontracker = "atPlaylist"
                               id         = "trPlaylist"
@@ -511,6 +515,7 @@
                                     <a:css match="[playlist[not(node())]]" value="new_recording" />
                                     <a:empty match="[playlist[not(node())]]" value="Activate this Playlist by dropping a Recording here" />
                                 </a:each>
+                                <a:rename match="[playlist]" />
                             </a:tree>
                             <div model="mdlPlaylist" class="playlist_buttons">
                                 <?lm
@@ -573,18 +578,18 @@
                         var speed = "realtime";
 
                         var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
-                            // o3 plugin not found
+                            // o3 browser extension not found
                             oninstallprompt : function(){
-                                //winNoPlugin.setProperty("visible", true); HERE
+                                winNoextension.setProperty("visible", true);
                                 if (apf.isIE) {
                                     apf.console.error("o3 not installed");
-                                    //lblIE.setProperty("visible", false); HERE
-                                    //lblNoIE.setProperty("visible", true); HERE
+                                    lblIE.setProperty("visible", true);
+                                    lblNoIE.setProperty("visible", false);
                                 }
                                 else {
                                     apf.console.error("o3 not available for this browser. Use IE instead.");
-                                    //lblNoIE.setProperty("visible", false); HERE
-                                    //lblIE.setProperty("visible", true); HERE
+                                    lblNoIE.setProperty("visible", true);
+                                    lblIE.setProperty("visible", false);
                                 }
                             },
                             product : 'O3Demo'

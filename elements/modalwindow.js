@@ -390,9 +390,9 @@ apf.AmlWindow = function(struct, tagName){
             if (this.oCover){
     			if (this.oCover.offsetParent) {
                     //@todo apf3.0 ie8 too high...
-                    this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
-                        document.documentElement.offsetHeight) + 'px';
-                    this.oCover.style.width  = this.oCover.offsetParent.scrollWidth + 'px';
+                    //this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
+                        //document.documentElement.offsetHeight) + 'px';
+                    //this.oCover.style.width  = "1000px";//this.oCover.offsetParent.scrollWidth + 'px';
     			}
                 this.oCover.style.display = "block";
             }
@@ -409,6 +409,9 @@ apf.AmlWindow = function(struct, tagName){
                 //this.$ext.style.position = "fixed";
             
             if (this.center) {
+                //#ifdef __WITH_LAYOUT
+                apf.layout.processQueue();
+                //#endif
                 var size = !this.$ext.offsetParent || this.$ext.offsetParent.tagName == "BODY"
                     ? [apf.getWindowWidth(), apf.getWindowHeight()]
                     : [this.$ext.offsetParent.offsetWidth, this.$ext.offsetParent.offsetHeight, 0, 0];
