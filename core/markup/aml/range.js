@@ -95,12 +95,24 @@ apf.AmlRange = function(doc){
     this.$detached      = false;
 
     this.toString = function(){
-        return this.$contents(true).serialize().replace(/<[^>]*>/g, "");
+        return "[apf.AmlRange]";
+        /*var n = this.$contents(true);
+        if (n.serialize)
+            return n.serialize().replace(/<[^>]*>/g, "");
+        else {
+            var str = [];
+            for (var i = 0, l = n.childNodes.length; i < l; i++) {
+                str.push(n.childNodes[0].serialize());
+            }
+            return str.join("\n");
+        }*/
     }
     
     var charNode = {2:1,3:1,4:1,7:1}
 
     this.setStart = function(refNode, offset, noEvent){
+        if (!refNode) return;
+        
         //#ifdef __DEBUG
         if (offset < 0 || offset > (charNode[refNode.nodeType] 
           ? refNode.nodeValue.length 
@@ -157,6 +169,8 @@ apf.AmlRange = function(doc){
         INVALID_STATE_ERR: Raised if detach() has already been invoked on this object.
      */
     this.setEnd = function(refNode, offset, noEvent){
+        if (!refNode) return;
+        
         //#ifdef __DEBUG
         if (offset < 0 || offset > (charNode[refNode.nodeType] 
           ? refNode.nodeValue.length 
@@ -379,7 +393,7 @@ apf.AmlRange = function(doc){
         }
 
         for (var prop in this) {
-            if (typeof this[prop] == "function")
+            if (typeof this[prop] == "function" && this[prop] != apf.Class.prototype[prop])
                 this[prop] = detachError;
         }
         

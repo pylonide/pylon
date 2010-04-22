@@ -937,4 +937,8 @@ apf.GuiElement.propHandlers = {
     //#endif
 };
 
+// #ifdef __WITH_CONTENTEDITABLE2
+apf.config.$inheritProperties["editable"] = apf.__GUIELEMENT__;
+// #endif
+
 // #endif

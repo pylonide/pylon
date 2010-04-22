@@ -420,6 +420,8 @@ apf.actiontracker = function(struct, tagName){
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
             id = dataNode.$uniqueId;
             var stack = this.$transtack[id];
+            if (!stack) 
+                return;
             
             //undo all changes (in reverse order)
             for (var s, i = stack.length - 1; i >= 0; i--) {

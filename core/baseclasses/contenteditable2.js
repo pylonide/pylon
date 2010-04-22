@@ -96,13 +96,30 @@ apf.ContentEditable2 = function() {
 
     this.editable = false;
     this.$canEdit = true;
-    this.$init(function(tagName, nodeFunc, struct){
+    /*this.$init(function(tagName, nodeFunc, struct){
          this.$inheritProperties["editable"] = 2;
-    });
+    });*/
     
     this.$booleanProperties["editable"] = true;
     this.$propHandlers["editable"] = function(value, prop){
         if (value) {
+            //#ifdef __WITH_DEBUG_WIN
+            if (!apf.ContentEditable2.inited) {
+                apf.getData(apf.basePath + "/debugwin/editable.css", {
+                    callback: function(data){
+                        apf.importCssString(data);
+                    }
+                });
+                
+                apf.addEventListener("load", function(){
+                    apf.document.documentElement.insertMarkup(apf.basePath 
+                        + "/debugwin/editable.inc");
+                });
+                
+                apf.ContentEditable2.inited = true;
+            }
+            //#endif
+            
             if (this.$canEdit) {
                 this.dragOutline = true; //@todo via config setting??
                 
@@ -118,6 +135,7 @@ apf.ContentEditable2 = function() {
                 if (!this.$focussable || !this.focussable)
                     apf.GuiElement.propHandlers.focussable.call(this, true);
                 
+                this.$lastFocussable = [this.$focussable, this.focussable];
                 this.$focussable = 
                 this.focussable  = true;
                 
@@ -147,12 +165,41 @@ apf.ContentEditable2 = function() {
         }
         else {
             if (this.$canEdit) {
-                //@todo
-                //apf.ContentEditable2.resize.deInitElement(this);
+                var n;
+                
+                //Unset draggable
+                if (n = this.getAttributeNode("draggable"))
+                    n.$triggerUpdate();
+                else
+                    (this.$propHandlers["draggable"]
+                      || apf.GuiElement.propHandlers["draggable"]).call(this, false);
+                
+                //Unset resizable
+                if (n = this.getAttributeNode("resizable"))
+                    n.$triggerUpdate();
+                else
+                    (this.$propHandlers["resizable"]
+                      || apf.GuiElement.propHandlers["resizable"]).call(this, false);
+                
+                //Unset focussable
+                this.$focussable = this.$lastFocussable[0];
+                this.focussable  = this.$lastFocussable[1];
+                if (!this.focussable)
+                    apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
+                
+                delete this.$isWindowContainer; //Should fall back to value from prototype
+                
+                if (this.ownerDocument.queryCommandEnabled("rename", false, this)) {
+                    delete this.$ext.ondblclick;
+                }
+                
+                apf.ContentEditable2.removeInteraction(this);
+                
+                var sel = this.ownerDocument.getSelection().$getNodeList();
+                if (sel.indexOf(this) > -1)
+                    this.ownerDocument.$getVisualSelect().hide()
             }
             this.isContentEditable = false;
-            
-            apf.ContentEditable2.removeInteraction(this);
             
             //@todo hack!
             //apf.ContentEditable2.resize.hide();
@@ -190,6 +237,4 @@ apf.ContentEditable2 = function() {
         
     });
 };
-
-apf.config.$inheritProperties["editable"] = 1;
 // #endif

@@ -795,7 +795,7 @@ apf.$debugwin = {
         else if (x === undefined)
             x = "undefined";
 
-        try {
+        //try {
             var str;
             if (x.nodeType && !x.style && (!x.$regbase || x.nodeType == 1 || x.nodeType == 7)) {
                 if (x.nodeType == 1 || x.nodeType == 7) {
@@ -842,9 +842,9 @@ apf.$debugwin = {
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "\n<br />");
             }
-        }catch(e){
+        /*}catch(e){
             return e;
-        }
+        }*/
     },
 
     consoleTextHandler: function(e) {
@@ -891,25 +891,12 @@ apf.$debugwin = {
     firstEdit : true,
     $setEditable : function(value){
         if (value) {
-            if (this.firstEdit) {
-                apf.getData(apf.basePath + "/debugwin/editable.css", {
-                    callback: function(data){
-                        apf.importCssString(data);
-                    }
-                });
-                
-                apf.document.documentElement.insertMarkup(apf.basePath 
-                    + "/debugwin/editable.inc");
-                
-                this.firstEdit = false;
-            }
-            alert(1)
             apf.document.documentElement
-                .setAttribute('editable', 'true');
+                .setAttribute("editable", "true");
         }
         else {
             apf.document.documentElement
-                .removeAttribute('editable');
+                .removeAttribute("editable");
         }
     },
     

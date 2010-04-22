@@ -203,10 +203,11 @@ apf.Interactive = function(){
         }
         //#endif
 
+        var ext = reparent && dragOutline ? oOutline : _self.$ext;
         var pos = posAbs
-            ? apf.getAbsolutePosition(_self.$ext, _self.$ext.offsetParent, true) 
-            : [parseInt(apf.getStyle(_self.$ext, "left")) || 0, 
-               parseInt(apf.getStyle(_self.$ext, "top")) || 0];
+            ? apf.getAbsolutePosition(ext, ext.offsetParent, true) 
+            : [parseInt(apf.getStyle(ext, "left")) || 0, 
+               parseInt(apf.getStyle(ext, "top")) || 0];
 
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
@@ -214,30 +215,32 @@ apf.Interactive = function(){
         //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
             //_self.$disableAnchoring();
 
-        //#ifdef __WITH_OUTLINE
-        if (posAbs && dragOutline) {
-            oOutline.className     = "drag";
-            
-            var diffOutline = apf.getDiff(oOutline);
-            _self.$ext.offsetParent.appendChild(oOutline);
-            oOutline.style.left    = pos[0] + "px";
-            oOutline.style.top     = pos[1] + "px";
-            oOutline.style.width   = (_self.$ext.offsetWidth - diffOutline[0]) + "px";
-            oOutline.style.height  = (_self.$ext.offsetHeight - diffOutline[1]) + "px";
-            
-            if (_self.editable)
-                oOutline.style.display = "block";
-        }
-        else
-        //#endif
-        {
-            if (_self.$ext.style.right) {
-                _self.$ext.style.left = pos[0] + "px";
-                _self.$ext.style.right = "";
+        if (!reparent) {
+            //#ifdef __WITH_OUTLINE
+            if (posAbs && dragOutline) {
+                oOutline.className     = "drag";
+                
+                var diffOutline = apf.getDiff(oOutline);
+                _self.$ext.offsetParent.appendChild(oOutline);
+                oOutline.style.left    = pos[0] + "px";
+                oOutline.style.top     = pos[1] + "px";
+                oOutline.style.width   = (_self.$ext.offsetWidth - diffOutline[0]) + "px";
+                oOutline.style.height  = (_self.$ext.offsetHeight - diffOutline[1]) + "px";
+                
+                if (_self.editable)
+                    oOutline.style.display = "block";
             }
-            if (_self.$ext.style.bottom) {
-                _self.$ext.style.top = pos[1] + "px";
-                _self.$ext.style.bottom = "";
+            else
+            //#endif
+            {
+                if (_self.$ext.style.right) {
+                    _self.$ext.style.left = pos[0] + "px";
+                    _self.$ext.style.right = "";
+                }
+                if (_self.$ext.style.bottom) {
+                    _self.$ext.style.top = pos[1] + "px";
+                    _self.$ext.style.bottom = "";
+                }
             }
         }
 
@@ -433,7 +436,6 @@ apf.Interactive = function(){
             tMax = myPos[1] + startPos[3];
             lMin = myPos[0] + startPos[2];
             tMin = myPos[1] + startPos[3];
-            document.title = tMax + ":" + tMin;
         }
 
         //#ifdef __WITH_PLANE

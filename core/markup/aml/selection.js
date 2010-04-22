@@ -84,7 +84,7 @@ apf.AmlSelection = function(doc){
     this.$ranges      = [];
     
     this.toString = function(){
-        return this.$ranges.join("");
+        return "[apf.AmlSelection]";// this.$ranges.join("");
     }
     
     /**
@@ -261,6 +261,13 @@ apf.AmlSelection = function(doc){
             nodes.push((r = this.$ranges[i]).startContainer.childNodes[r.startOffset]);
         }
         return nodes;
+    }
+    
+    this.$selectList = function(list){
+        this.removeAllRanges();
+        for (var i = 0; i < list.length; i++) {
+            this.addRange(new apf.AmlRange(this)).selectNode(list[i]);
+        }
     }
     
     this.$getFirstNode = function(){

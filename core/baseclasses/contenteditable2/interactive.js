@@ -34,7 +34,7 @@
     }
     
     var dragIndicator1, dragIndicator2, dragIndicator3, dragIndicator4, 
-        dragIndicator5, inited = false, indicators = [];
+        dragIndicator5, inited = false, indicators = [], outline;
     function init(){
         var div, classes = [null,
             "dragindicate", "dragindicate indicate_common indicate_horizontal",
@@ -50,18 +50,27 @@
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...
         }
         
+        outline = document.getElementById("apf_outline");
+        
         inited = true;
     }
     
     var lastReparent, movePosition;
     function doReparentDrag(el, amlNode, e){
-        var htmlNode = el.$ext;
-    
+        if (lastReparent == amlNode)
+            return;
+        
+        var htmlNode = outline;
+
         var pos1 = apf.getAbsolutePosition(amlNode.$int, null, true);
         var pos2 = apf.getAbsolutePosition(lastReparent ? lastReparent.$int : el.$ext.parentNode, null, true);
-        
+
         amlNode.$int.appendChild(htmlNode);
+        //amlNode.$int.appendChild(el.$ext);
+        //el.parentNode = amlNode;
         //this.$cancelInteractive();
+    
+        hideIndicators();
     
         dragIndicator5.style.left = pos1[0] + "px";
         dragIndicator5.style.top = pos1[1] + "px";
@@ -82,13 +91,6 @@
         htmlNode.style.top = (apf.getHtmlTop(htmlNode) - (pos1[1] - pos2[1])) + "px";
     
         lastReparent = amlNode;
-    
-        dragIndicator1.style.display = "none";
-        dragIndicator2.style.display = "none";
-        dragIndicator3.style.display = "none";
-        dragIndicator4.style.display = "none";
-    
-        //@todo this doesnt work
         el.$ext.onmousedown(e, true);
     }
 
@@ -165,7 +167,6 @@
                     var ext2 = el.$altExt || el.$ext;
                     var h = ext1.offsetWidth;
                     var pos = apf.getAbsolutePosition(ext1);
-                    document.title = lastReparent && lastReparent.serialize();
                     if (pos[0] + (h/2) > e.clientX) {
                         if (ext1.previousSibling != ext2) {
                             dragIndicator1.style.display = "block";
@@ -238,7 +239,7 @@
         },
         
         reparent : function(amlNode, el, e){
-            var htmlNode = el.$ext;
+            var htmlNode = outline || el.$ext;
 
             while (amlNode && !amlNode.$int)
                 amlNode = amlNode.parentNode;
@@ -255,7 +256,9 @@
             else {
                 if (lastAmlNode)
                     clearTimeout(lastAmlNode[4]);
-                if (el && amlNode != el && amlNode.$int && !apf.isChildOf(htmlNode.parentNode, amlNode.$int, true)) {
+                if (el && amlNode != el && amlNode.$int 
+                  && htmlNode.parentNode != amlNode.$int 
+                  && !apf.isChildOf(htmlNode, amlNode.$int, true)) {
                     if (el.$adding) {
                         lastAmlNode = [];
                         doReparentDrag(el, amlNode, ev);
@@ -641,7 +644,7 @@
             ["indicate_vbox", "indicate_hbox", "indicate_table", "indicate_common"]);
     
         var container = pEl.$int;
-        var htmlEl = el.$ext;//isDrag ? _self.$ext : el.$ext;
+        var htmlEl = isDrag ? outline : el.$ext;
         var d = dragInfo = {
             left   : apf.getHtmlLeft(htmlEl),
             top    : apf.getHtmlTop(htmlEl),
@@ -819,20 +822,21 @@
         }
     }
 
+    var lastPos;
     function beforedrag(e, reparent, add){
         var name, pEl;
 
         control.stop();
-
-        /*if (reparent && !add) {
-            pEl = apf.findHost(_self.$ext.parentNode);
+        if (lastReparent && !add) {
+            pEl = lastReparent;//apf.findHost(el.$pHtmlDoc.getElementById("apf_outline").parentNode);
             name = pEl.localName;
         }
-        else {*/
+        else {
             if (!e) e = event;
-            
             name = (pEl = this.parentNode).localName;
-        //}
+        }
+
+        lastPos = apf.getAbsolutePosition(outline, outline.offsetParent);
         
         if ("vbox|hbox|table".indexOf(name) > -1) {
             this.realtime  = true;
@@ -862,14 +866,14 @@
         lastReparent = null;
     
         var el = this;
-        var htmlNode = this.$ext;
+        var htmlNode = outline || this.$ext;
         
         if (el.$adding) {
             //this.$ext = oOutline;
         }
         
         var selected = apf.document.$getVisualSelect().getLastSelection();//.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
-    
+
         if (movePosition) {
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
                 //@todo review this... strange things
@@ -921,6 +925,8 @@
                         htmlNode.offsetWidth - diff[0], 
                         htmlNode.offsetHeight - diff[1], diff[0], diff[1]);*/
                 }
+                
+                apf.document.getSelection().$selectList(selected);
             }
             
             if (el.$stick) {
@@ -932,7 +938,7 @@
         hideIndicators();
         
         //@todo below requires rethink
-        if (selected.length > 1) {
+        if (selected.length > 1 && lastPos) {
             this.ownerDocument.execCommand("rollback");
             this.ownerDocument.execCommand("begin");
             
@@ -955,6 +961,8 @@
                         n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
                 }
             }
+            
+            lastPos = null;
                             
             //delete this.$amlNode;
             //this.$ext = oOutline;
@@ -1183,7 +1191,7 @@
         amlNode.removeEventListener("beforeresize", beforeresize);
         amlNode.removeEventListener("afterdrag",    afterdrag);
         amlNode.removeEventListener("afterresize",  afterresize);
-        
+
         delete amlNode.$stuck;
     }
 })();

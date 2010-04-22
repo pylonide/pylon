@@ -1616,7 +1616,7 @@
 
 <a:button name="radiotab">
     <a:style><![CDATA[
-        .dbg_menubar .toolbarbutton_tlook {
+        .dbg_menubar .radiotab {
             display         : block;
             height          : 21px;
             float           : left;
@@ -1626,88 +1626,89 @@
             color           : #000000;
         }
 
-        .dbg_menubar .toolbarbutton_tlookOver, 
-        .dbg_menubar .toolbarbutton_tlookDown {
+        .dbg_menubar .radiotabOver, 
+        .dbg_menubar .radiotabDown {
             background : #45b3e8 url(images/menu_over.gif);
             color      : #ffffff;
         }
 
-        .dbg_menubar .toolbarbutton_tlookDown, 
-        .dbg_menubar .toolbarbutton_tlookDown {
+        .dbg_menubar .radiotabDown, 
+        .dbg_menubar .radiotabDown {
             background : #45b3e8 url(images/menu_down.gif);
             color      : #ffffff;
         }
 
-        .dbg_menubar .toolbarbutton_tlookDisabled, 
-        .dbg_menubar .toolbarbutton_tlookDisabled {
+        .dbg_menubar .radiotabDisabled, 
+        .dbg_menubar .radiotabDisabled {
             background : none;
             color      : #bebebe;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlook {
+        .dbg_toolbar .dbg_subbar .radiotab {
             display         : block;
             height          : 21px;
             float           : left;
             cursor          : default;
-            margin          : 2px 1px 0 1px;
+            margin          : 5px 3px 0 1px;
             text-decoration : none;
             color           : #000000;
             text-align      : center;
             padding         : 0 10px 0 0;
             line-height     : 13px;
+            font-size       : 10px;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlook DIV {
+        .dbg_toolbar .dbg_subbar .radiotab DIV {
             float   : left;
             margin  : 0;
             height  : 17px;
-            padding : 4px 0 0 10px;
+            padding : 3px 0 1px 10px;
             border  : 0;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookOver {
+        .dbg_toolbar .dbg_subbar .radiotabOver {
             background-image    : url("images/debugger_tbbtn_tablook_right.png");
             background-repeat   : no-repeat;
             background-position : right -21px;
             color               : #555555;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookOver DIV {
+        .dbg_toolbar .dbg_subbar .radiotabOver DIV {
             background-image    : url("images/debugger_tbbtn_tablook_left.png");
             background-repeat   : no-repeat;
             background-position : left -21px;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDown, 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookChecked {
+        .dbg_toolbar .dbg_subbar .radiotabDown, 
+        .dbg_toolbar .dbg_subbar .radiotabChecked {
             background-image    : url("images/debugger_tbbtn_tablook_right.png");
             background-repeat   : no-repeat;
             background-position : right 0;
             color               : white;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDown DIV, 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookChecked DIV {
+        .dbg_toolbar .dbg_subbar .radiotabDown DIV, 
+        .dbg_toolbar .dbg_subbar .radiotabChecked DIV {
             background-image    : url("images/debugger_tbbtn_tablook_left.png");
             background-repeat   : no-repeat;
             background-position : left 0;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDisabled, 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookDisabled DIV {
+        .dbg_toolbar .dbg_subbar .radiotabDisabled, 
+        .dbg_toolbar .dbg_subbar .radiotabDisabled DIV {
             background : none;
             color      : #bebebe;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookIcon DIV {
+        .dbg_toolbar .dbg_subbar .radiotabIcon DIV {
             padding-left : 4px;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookEmpty DIV {
+        .dbg_toolbar .dbg_subbar .radiotabEmpty DIV {
             padding : 4px 0 0 7px;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookIcon SPAN {
+        .dbg_toolbar .dbg_subbar .radiotabIcon SPAN {
             display : block;
             float   : left;
             width   : 16px;
@@ -1715,7 +1716,7 @@
             margin  : -2px 4px 0 0;
         }
 
-        .dbg_toolbar .dbg_subbar .toolbarbutton_tlookEmpty SPAN {
+        .dbg_toolbar .dbg_subbar .radiotabEmpty SPAN {
             margin : -1px 3px 0 0;
         }
     ]]></a:style>
@@ -1726,7 +1727,7 @@
           label      = "div/text()" 
           background = "div/span" 
           icon       = "div/span">
-            <div class='toolbarbutton_tlook'><div><span> </span>-</div></div>
+            <div class='radiotab'><div><span> </span>-</div></div>
         </a:main>
     </a:presentation>
 </a:button>
