@@ -40,7 +40,7 @@ apf.xmldb = new (function(){
     this.xmlIdTag     = "a_id";
     this.xmlListenTag = "a_listen";
     this.htmlIdTag    = "id";
-    this.disableRSB   = false;
+    this.disableRDB   = false;
 
     this.$xmlDocLut   = [];
     this.$nodeCount   = {};
@@ -345,8 +345,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("text", tNode.parentNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["setTextNode", pNode, value, xpath], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj);
         // #endif
     };
 
@@ -366,8 +366,8 @@ apf.xmldb = new (function(){
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
         
         this.applyChanges("attribute", xmlNode, undoObj);
-        // #ifdef __WITH_RSB
-        this.applyRSB(["setAttribute", xmlNode, name, value, xpath], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj);
         // #endif
     };
 
@@ -391,8 +391,8 @@ apf.xmldb = new (function(){
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
         this.applyChanges("attribute", xmlNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["removeAttribute", xmlNode, name, xpath], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeAttribute", xmlNode, name, xpath], undoObj);
         // #endif
     };
 
@@ -424,8 +424,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("replacechild", newNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["replaceChild", oldNode, newNode, xpath], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["replaceChild", oldNode, newNode, xpath], undoObj);
         // #endif
         
         return newNode;
@@ -458,8 +458,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("add", xmlNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj);
         // #endif
 
         return xmlNode;
@@ -510,8 +510,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("add", xmlNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["appendChild", pNode, xmlNode.xml, beforeNode, unique, xpath], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["appendChild", pNode, xmlNode.xml, beforeNode, unique, xpath], undoObj);
         // #endif
 
         return xmlNode;
@@ -539,8 +539,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("move-away", xmlNode, undoObj);
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj); //note: important that transport of rsb is async
+        // #ifdef __WITH_RDB
+        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj); //note: important that transport of rdb is async
         // #endif
 
         //Set new id if the node change document (for safari this should be fixed)
@@ -577,8 +577,8 @@ apf.xmldb = new (function(){
             undoObj.extra.beforeNode  = xmlNode.nextSibling;
         }
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["removeNode", xmlNode, xpath], undoObj); //note: important that transport of rsb is async
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeNode", xmlNode, xpath], undoObj); //note: important that transport of rdb is async
         // #endif
 
         //Apply Changes
@@ -620,8 +620,8 @@ apf.xmldb = new (function(){
         if (undoObj)
             undoObj.extra.removeList = rData;
 
-        // #ifdef __WITH_RSB
-        this.applyRSB(["removeNodeList", xmlNodeList, null], undoObj);
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj);
         // #endif
     };
 
@@ -793,14 +793,14 @@ apf.xmldb = new (function(){
         }
     };
 
-    // #ifdef __WITH_RSB
+    // #ifdef __WITH_RDB
     /**
      * Sends Message through transport to tell remote databound this.$listeners
      * that data has been changed
      * @private
      */
-    this.applyRSB = function(args, undoObj){
-        if (apf.xmldb.disableRSB)
+    this.applyRDB = function(args, undoObj){
+        if (apf.xmldb.disableRDB)
             return;
 
         var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
@@ -822,14 +822,14 @@ apf.xmldb = new (function(){
             return;
         }
 
-        if (!model.rsb) return;
+        if (!model.rdb) return;
 
         // Add the messages to the undo object
         if (undoObj)
-            model.rsb.queueMessage(args, model, undoObj);
+            model.rdb.queueMessage(args, model, undoObj);
         // Or send message now
         else
-            model.rsb.sendChange(args, model);
+            model.rdb.sendChange(args, model);
     };
     //#endif
 

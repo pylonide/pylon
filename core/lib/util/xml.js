@@ -262,9 +262,9 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
                 || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                 undoObj);
     }
-    // #ifdef __WITH_RSB
+    // #ifdef __WITH_RDB
     if (applyChanges)
-        apf.xmldb.applyRSB(["setNodeValue", xmlNode, nodeValue], undoObj);
+        apf.xmldb.applyRDB(["setNodeValue", xmlNode, nodeValue], undoObj);
     // #endif
 };
 
@@ -778,7 +778,7 @@ apf.formatXml = function(strXml){
 };
 
 //@todo this function needs to be 100% proof, it's the core of the system
-//for RSB: xmlNode --> Xpath statement
+//for RDB: xmlNode --> Xpath statement
 apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (!xmlNode) //@todo apf3.0
         return "";
@@ -838,7 +838,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
     return str.join("/");
 };
     
-//for RSB: Xpath statement --> xmlNode
+//for RDB: Xpath statement --> xmlNode
 apf.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG

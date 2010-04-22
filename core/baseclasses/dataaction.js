@@ -252,10 +252,10 @@ apf.DataAction = function(){
         return true;
     };
 
-    //#ifdef __WITH_RSB
-    // @todo think about if this is only for rsb
+    //#ifdef __WITH_RDB
+    // @todo think about if this is only for rdb
     this.addEventListener("xmlupdate", function(e){
-        if (apf.xmldb.disableRSB != 2)
+        if (apf.xmldb.disableRDB != 2)
             return;
 
         for (var name in this.$actionsLog) {

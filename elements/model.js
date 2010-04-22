@@ -147,7 +147,7 @@ apf.model = function(struct, tagName){
         apf.nameserver.get("validation", value).register(this); //@todo error handling
     };
     
-    //#ifdef __WITH_RSB
+    //#ifdef __WITH_RDB
     //Connect to a remote smartbinding
     this.$propHandlers["remote"] = function(value, prop){
         this.unshare();
@@ -157,10 +157,10 @@ apf.model = function(struct, tagName){
     };
 
     this.share = function(xpath) {
-        this.rsb = apf.nameserver.get("remote", this.remote);
+        this.rdb = apf.nameserver.get("remote", this.remote);
 
         //#ifdef __DEBUG
-        if (!this.rsb || !this.rsb.sessions) {
+        if (!this.rdb || !this.rdb.sessions) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading AML into model",
                 "Could not find reference to remote smartbinding: '"
@@ -168,13 +168,13 @@ apf.model = function(struct, tagName){
         }
         //#endif
 
-        this.rsb.startSession(this, xpath || "//");
+        this.rdb.startSession(this, xpath || "//");
     };
 
     this.unshare = function(xpath) {
-        if (!this.rsb) return;
-        this.rsb.endSession(this, xpath || "//");
-        this.rsb = null;
+        if (!this.rdb) return;
+        this.rdb.endSession(this, xpath || "//");
+        this.rdb = null;
     };
     //#endif
 
@@ -890,8 +890,8 @@ apf.model = function(struct, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //@todo optimize by only doing this for add, sync etc actions
         
-        //#ifdef __WITH_RSB
-        if (this.rsb && !this.$at && UndoObj)
+        //#ifdef __WITH_RDB
+        if (this.rdb && !this.$at && UndoObj)
             this.$at = UndoObj.at;
         //#endif
 

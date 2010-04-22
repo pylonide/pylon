@@ -19,25 +19,22 @@
  *
  */
 
-// #ifdef __TP_XMPP_MUC
+// #ifdef __TP_XMPP_RDB
 
 /**
- * Interface implementing a Multi User Chat service for the apf.xmpp object.
- * The Multi User Chat class is a class that contains all the functions needed
- * to start, end, join, leave any XMPP/ Jabber chat room, and more.
- * @link http://xmpp.org/extensions/xep-0045.html
+ * Description
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       3.0
- * @classDescription This class intantiates a new XMPP MUC object
- * @return {apf.xmpp.Roster} A new XMPP MUC object
+ * @classDescription This class intantiates a new XMPP RDB object
+ * @return {apf.xmpp_rdb} A new XMPP RDB object
  * @type {Object}
  * @constructor
  */
-apf.xmpp_muc = function(){
+apf.xmpp_rdb = function(){
     var _self   = this,
-        mucVars = {
+        rdbVars = {
             created: {} // list of room ID's that the user created him/herself
         },
         // keep reference to access class constants in function scope chain
@@ -46,13 +43,13 @@ apf.xmpp_muc = function(){
         SID     = "SID",
         JID     = "JID",
         CONN    = "connected";
-    this.$mucRoster = new apf.xmpp_roster(this.$mucModel, {muc: true}, this.resource);
+    this.$rdbRoster = new apf.xmpp_roster(this.$mucModel, {muc: true}, this.resource);
 
     /*
-     * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are 
+     * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are
      * asynchronous - responses to each call return via the message poll/ push -
      * the only variable left for each request is the text body.
-     * 
+     *
      * @param {String}   sBody
      * @param {Function} [fCallback]
      * @private
@@ -92,7 +89,7 @@ apf.xmpp_muc = function(){
 
     /**
      * Get a list of available chat rooms from the XMPP server.
-     * 
+     *
      * @type {void}
      */
     this.queryRooms = function() {
@@ -108,7 +105,7 @@ apf.xmpp_muc = function(){
 
     /**
      * Adds/ registers a room to the local Roster instance.
-     * 
+     *
      * @param {String} sJID    Jabber ID of the room we're adding
      * @param {String} [sName] Optional name of the room
      */
@@ -118,21 +115,21 @@ apf.xmpp_muc = function(){
 
     /**
      * Checks if a specified Jabber ID is registered locally as a chatroom.
-     * 
+     *
      * @param {String} sJID Jabber ID to check
      * @type  {void}
      */
     this.$isRoom = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");
-        return this.$mucRoster.getEntity(parts[0], parts[1], null, true) 
+        return this.$mucRoster.getEntity(parts[0], parts[1], null, true)
             ? true
             : false;
     };
 
     /**
-     * Add a Jabber ID - who most probably just joined - to a chatroom and 
+     * Add a Jabber ID - who most probably just joined - to a chatroom and
      * thereby to the Roster.
-     * 
+     *
      * @param {String} sJID Jabber ID that just joined a chatroom
      * @type  {Object}
      */
@@ -143,7 +140,7 @@ apf.xmpp_muc = function(){
     /**
      * Provided a room, get all its info and capabilities.
      * Not implemented yet.
-     * 
+     *
      * @param {String} sRoom
      */
     this.queryRoomInfo = function(sRoom) {
@@ -213,7 +210,7 @@ apf.xmpp_muc = function(){
                 //         ...
                 //     ]]></item>
                 // </iq>
-                
+
                 // 'old' style data message passing
                 this.dispatchEvent("datachange", {
                     session : sRoom.split("@")[0],
@@ -365,7 +362,7 @@ apf.xmpp_muc = function(){
         this.getRoom(sRoom, function(bSuccess) {
             // a password may be returned from the 'muc-password' event handler
             if (bSuccess) {
-                _self.joinRoom(sRoom, _self.dispatchEvent("muc-password") || null, 
+                _self.joinRoom(sRoom, _self.dispatchEvent("muc-password") || null,
                     sNick, fCallback);
             }
             else {
@@ -405,7 +402,7 @@ apf.xmpp_muc = function(){
                 id    : this.$makeUnique("destroy")
             },
             "<query xmlns='" + oXmpp.NS.muc_owner + "'><destroy jid='"
-            + sRoom + (sReason 
+            + sRoom + (sReason
                 ? "'><reason>" + sReason + "</reason></destroy>"
                 : "'/>")
             + "</query>")

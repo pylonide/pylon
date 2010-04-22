@@ -37,7 +37,7 @@
  *  <a:appsettings>
  *      <a:offline providers="gears"
  *        resources     = "application|models|transactions|queue|state"
- *        rsb-timeout   = "10000"
+ *        rdb-timeout   = "10000"
  *        detect-url    = "network.txt"
  *        detection     = "auto"
  *        realtime      = "true"
@@ -85,7 +85,7 @@
  *   transactions   records the state of the actiontrackers so that these are available offline.
  *   queue          handles queuing of actions that can only be executed whilst online.
  *   state          records the state of all elements in this application on a property level.
- * @attribute {Number} rsb-timeout the number of milliseconds
+ * @attribute {Number} rdb-timeout the number of milliseconds
  * after the remote smartbindings server considers a client
  * offline and destroys all saved offline messages.
  * 
@@ -107,7 +107,7 @@ apf.offline = {
     autoInstall : false,
     storage     : null,
     inited      : false,
-    rsbTimeout  : 600000,//After 10 minutes, we assume the RSB messaged will be destroyed
+    rdbTimeout  : 600000,//After 10 minutes, we assume the RDB messaged will be destroyed
 
     init : function(aml){
         apf.makeClass(this);
@@ -126,8 +126,8 @@ apf.offline = {
                 /**
                  * @private
                  */
-                if (aml.getAttribute("rsb-timeout"))
-                    this.rsbTimeout = parseInt(aml.getAttribute("rsb-timeout"));
+                if (aml.getAttribute("rdb-timeout"))
+                    this.rdbTimeout = parseInt(aml.getAttribute("rdb-timeout"));
 
                 //Events
                 var a, i, attr = aml.attributes;
@@ -293,16 +293,16 @@ apf.offline = {
             this.detector.start();
         //#endif
 
-        //#ifdef __WITH_RSB
+        //#ifdef __WITH_RDB
         if (!this.initial) {
             /**
              * @private
              */
             this.initial = {
-                disableRSB : apf.xmldb.disableRSB //@todo record this in storage
+                disableRDB : apf.xmldb.disableRDB //@todo record this in storage
             }
         }
-        apf.xmldb.disableRSB = true;
+        apf.xmldb.disableRDB = true;
         //#endif
 
         this.inProcess = this.IDLE;
@@ -343,13 +343,13 @@ apf.offline = {
             this.detector.stop();
         //#endif
 
-        //#ifdef __WITH_RSB
+        //#ifdef __WITH_RDB
         //Check if we have to reload all models
         this.$checkRsbTimeout();
 
-        //Reset RSB in original state
+        //Reset RDB in original state
         if (this.initial)
-            apf.xmldb.disableRSB = this.initial.disableRSB;
+            apf.xmldb.disableRDB = this.initial.disableRDB;
         //#endif
 
         var callback = function(){
@@ -383,20 +383,20 @@ apf.offline = {
         return true;//success
     },
 
-    //#ifdef __WITH_RSB
+    //#ifdef __WITH_RDB
     /**
      *  If we've been offline for a long time,
      *  let's clear the models, we can't trust the data anymore
      */
     $checkRsbTimeout : function(){
-        if (!this.rsbTimeout)
+        if (!this.rdbTimeout)
             return;
 
-        var i, j, rsbs = apf.nameserver.getAll("remote");
-        for (i = 0; i < rsbs.length; i++) {
-            var rsb = rsbs[i];
+        var i, j, k, rdbs = apf.nameserver.getAll("remote");
+        for (i = 0; i < rdbs.length; i++) {
+            var rdb = rdbs[i];
             if (this.reloading
-              || this.onlineTime - this.offlineTime > this.rsbTimeout) {
+              || this.onlineTime - this.offlineTime > this.rdbTimeout) {
                 if (!this.reloading) {
                     if (this.dispatchEvent("beforereload") === false) {
                         //#ifdef __DEBUG
@@ -411,13 +411,13 @@ apf.offline = {
                     this.reloading = true;
                 }
 
-                rsb.discardBefore = this.onlineTime;
+                rdb.discardBefore = this.onlineTime;
 
-                for (j = 0; k < rsb.models.length; j++) {
-                    rsb.models[j].clear();
+                for (j = 0; k < rdb.models.length; j++) {
+                    rdb.models[j].clear();
 
                     // #ifdef __WITH_OFFLINE_MODEL
-                    apf.offline.models.addToInitQueue(rsb.models[j])
+                    apf.offline.models.addToInitQueue(rdb.models[j])
                     /* #else
                     rbs[i].models[j].init();
                     #endif */

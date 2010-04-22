@@ -82,7 +82,7 @@
  *   bubbles: yes
  *   object:
  *     {String}        data       the data-instruction of the changed data that
- *                                the RSB implementation can grok
+ *                                the RDB implementation can grok
  *
  * @define xmpp
  * @addnode teleport
@@ -108,7 +108,7 @@ apf.xmpp = function(struct, tagName){
     this.$reqStack   = [];
     this.$listening  = false;
     this.$listener   = null;
-    this.$sAJAX_ID   = this.$makeUnique("ajaxRSB");
+    this.$sAJAX_ID   = this.$makeUnique("ajaxRDB");
     this.$retryCount = 0;
     this.$RID        = null;
 };
@@ -128,8 +128,8 @@ apf.xmpp = function(struct, tagName){
             auth        : "jabber:iq:auth",
             roster      : "jabber:iq:roster",
             register    : "jabber:iq:register",
-            //#ifdef __WITH_RSB
-            datastatus  : "jabber:iq:rsbstatus",
+            //#ifdef __WITH_RDB
+            datastatus  : "jabber:iq:rdbstatus",
             //#endif
             data        : "jabber:x:data",
             stream      : "http://etherx.jabber.org/streams",
@@ -332,7 +332,7 @@ apf.xmpp = function(struct, tagName){
 
     this.$initMuc = function() {
         if (this.$canMuc) return;
-        this.setProperty("muc-model", "rsb");
+        this.setProperty("muc-model", "rdb");
     };
     // #endif
 
@@ -1007,7 +1007,7 @@ apf.xmpp = function(struct, tagName){
     /*
      * The connection has been terminated (set to state 'paused'). Theoretically
      * it could be resumed, but doing a complete reconnect would be more secure
-     * and stable for RSB and other implementations that rely on stable stream
+     * and stable for RDB and other implementations that rely on stable stream
      * traffic.
      *
      * Example:
@@ -1639,7 +1639,7 @@ apf.xmpp = function(struct, tagName){
                         message: sMsg
                     });
                 }
-                // #ifdef __WITH_RSB
+                // #ifdef __WITH_RDB
                 else if (sType == constants.MSG_NORMAL) {
                     var oX = oMsg.getElementsByTagName("x")[0];
                     if (!oX) continue;
@@ -1650,7 +1650,7 @@ apf.xmpp = function(struct, tagName){
                         fields : fieldsToObject(oX.getElementsByTagName("field"))
                     });
                 }
-                else if (sMsg && sType == constants.MSG_GROUPCHAT && sThread == "rsb") {
+                else if (sMsg && sType == constants.MSG_GROUPCHAT && sThread == "rdb") {
                     //#ifdef __DEBUG
                     apf.console.info("received the following from the server: "
                         + sMsg, "xmpp");
@@ -1814,7 +1814,7 @@ apf.xmpp = function(struct, tagName){
                     case constants.NS.muc_owner:
                         this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sFrom);
                         break;
-                    // #ifdef __WITH_RSB
+                    // #ifdef __WITH_RDB
                     case constants.NS.datastatus:
                         this.$mucSignal(constants.NS.datastatus, sFrom, aIQs[i]);
                         break;
@@ -2289,7 +2289,7 @@ apf.xmpp = function(struct, tagName){
         this.disconnect();
     });
 
-    // #ifdef __TP_XMPP_MUC && __WITH_RSB
+    // #ifdef __TP_XMPP_MUC && __WITH_RDB
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         var _self = this;
         $setTimeout(function() {

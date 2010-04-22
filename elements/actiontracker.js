@@ -374,7 +374,7 @@ apf.actiontracker = function(struct, tagName){
         }
         //Assuming normal actiontracker use
         else {
-            //@todo (for mike) for the new rsb method to work properly, it should 
+            //@todo (for mike) for the new rdb method to work properly, it should
             //be really easy to add xml changes to the actiontracker using this 
             //begin commit method. We could add an at.exec(function(){}) that lasts
             //during the length of the function. Point is that we need to change
@@ -760,8 +760,8 @@ apf.actiontracker = function(struct, tagName){
                 bubbles : true
             }, extra));
 
-            //#ifdef __WITH_RSB
-            //Send out the RSB message, letting friends know of our change
+            //#ifdef __WITH_RDB
+            //Send out the RDB message, letting friends know of our change
             UndoObj.processRsbQueue();
             //#endif
 
@@ -788,7 +788,7 @@ apf.actiontracker = function(struct, tagName){
                 apf.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
-            //#ifdef __WITH_RSB
+            //#ifdef __WITH_RDB
             UndoObj.clearRsbQueue();
             //#endif
 

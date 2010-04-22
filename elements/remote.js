@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_RSB
+//#ifdef __WITH_RDB
 
 /**
  * Element allowing data synchronization between multiple clients using the same
@@ -73,7 +73,7 @@
  * 
  * Advanced:
  * There is a very small theoretical risk that a user initiates and finishes an 
- * action during the latency period of the rsb communication. Usually this 
+ * action during the latency period of the rdb communication. Usually this
  * latency is no more than 100 to 300ms which is near impossible for such action
  * to be performed. Therefor this is deemed acceptable.
  * 
@@ -83,13 +83,13 @@
  * application architect.
  *
  * Another concern for offline use is the offline messaging feature of certain
- * collaborative protocols (i.e. xmpp). In many cases offline rsb messages should 
+ * collaborative protocols (i.e. xmpp). In many cases offline rdb messages should
  * not be stored after the user has been offline for longer then a certain time.
  * For instance 10 minutes. An accumulation of change messages would create a
  * serious scaling problem and is not preferred. apf.offline has built in support
- * for this type of timeout. By setting the rsb-timeout attribute it is aware
+ * for this type of timeout. By setting the rdb-timeout attribute it is aware
  * of when the server has timed out. When this timeout is reached the application 
- * will reload all its data from the server and discard all offline rsb 
+ * will reload all its data from the server and discard all offline rdb
  * messages before reconnecting to the server.
  *
  * @attribute {String} transport the name of the teleport element that provides a
@@ -140,7 +140,7 @@
  * @constructor
  *
  * @todo Think about wrapping multiple messages in a single call
- * @todo Make RSB support different encoding protocols (think REX)
+ * @todo Make RDB support different encoding protocols (think REX)
  */
 apf.remote = function(struct, tagName){
     this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
@@ -150,7 +150,7 @@ apf.remote = function(struct, tagName){
     this.lookup              = {};
     this.select              = [];
     this.sessions            = {};
-    this.rsbQueue            = {};
+    this.rdbQueue            = {};
     this.queueTimer          = null;
     this.pendingSessions     = {};
     this.pendingTerminations = {};
@@ -179,7 +179,7 @@ apf.remote = function(struct, tagName){
                 xpath: xpath
             };
             var _self = this;
-            this.transport.startRSB(id, function(sSession, iTime) {
+            this.transport.startRDB(id, function(sSession, iTime) {
                 _self.sessionStarted(sSession, iTime);
             });
         }
@@ -193,7 +193,7 @@ apf.remote = function(struct, tagName){
         var id = model.id + ":" + xpath;
         if (this.transport && this.transport.isConnected()) {
             delete this.pendingTerminations[id];
-            this.transport.endRSB(this.transport.normalizeEntity(id));
+            this.transport.endRDB(this.transport.normalizeEntity(id));
         }
         else {
             this.pendingTerminations[id] = model;
@@ -216,14 +216,14 @@ apf.remote = function(struct, tagName){
     };
     
     this.sendChange = function(args, model){
-        if (apf.xmldb.disableRSB)
+        if (apf.xmldb.disableRDB)
             return;
 
         clearTimeout(this.queueTimer);
-        //return this.transport.sendRSB(apf.serialize(args)); 
+        //return this.transport.sendRDB(apf.serialize(args));
         this.queueMessage(args, model, this);
         if (!apf.isO3) {
-            // use a timeout to batch consecutive calls into one RSB call
+            // use a timeout to batch consecutive calls into one RDB call
             var _self = this;
             this.queueTimer = $setTimeout(function() {
                 _self.processQueue(_self);
@@ -262,38 +262,38 @@ apf.remote = function(struct, tagName){
     };
     
     this.queueMessage = function(args, model, qHost){
-        if (!qHost.rsbQueue)
-            qHost.rsbQueue = {};
+        if (!qHost.rdbQueue)
+            qHost.rdbQueue = {};
 
-        if (!qHost.rsbQueue[model.id]) {
-            qHost.rsbQueue[model.id] = [];
-            qHost.rsbModel           = model;
+        if (!qHost.rdbQueue[model.id]) {
+            qHost.rdbQueue[model.id] = [];
+            qHost.rdbModel           = model;
         }
         // @todo do some more additional processing here...
-        qHost.rsbQueue[model.id].push(this.buildMessage(args, model));
+        qHost.rdbQueue[model.id].push(this.buildMessage(args, model));
     };
     
     this.processQueue = function(qHost){
         if (qHost === this)
             clearTimeout(this.queueTimer);
-        if (apf.xmldb.disableRSB) return;
+        if (apf.xmldb.disableRDB) return;
 
-        for (var model in qHost.rsbQueue) {
-            if (!qHost.rsbQueue[model].length) continue;
+        for (var model in qHost.rdbQueue) {
+            if (!qHost.rdbQueue[model].length) continue;
             //#ifdef __DEBUG
-            apf.console.info("Sending RSB message\n" + apf.serialize(qHost.rsbQueue[model]));
+            apf.console.info("Sending RDB message\n" + apf.serialize(qHost.rdbQueue[model]));
             //#endif
-            this.transport.sendRSB(model, apf.serialize(qHost.rsbQueue[model]));
+            this.transport.sendRDB(model, apf.serialize(qHost.rdbQueue[model]));
         }
-        qHost.rsbQueue = {};
+        qHost.rdbQueue = {};
     };
     
     this.receiveChange = function(oMessage, oSession){
-        if (apf.xmldb.disableRSB)
+        if (apf.xmldb.disableRDB)
             return;
 
         //#ifdef __WITH_OFFLINE
-        // @todo apf3.0 implement proper offline support in RSB
+        // @todo apf3.0 implement proper offline support in RDB
         if (apf.offline && apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
             queue.push(oMessage);
             return;
@@ -317,8 +317,8 @@ apf.remote = function(struct, tagName){
         //#endif
         
         var oError, beforeNode, xmlNode,
-            disableRSB       = apf.xmldb.disableRSB;
-        apf.xmldb.disableRSB = 2; //Feedback prevention
+            disableRDB       = apf.xmldb.disableRDB;
+        apf.xmldb.disableRDB = 2; //Feedback prevention
 
         // correct timestamp with the session baseline
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
@@ -386,7 +386,7 @@ apf.remote = function(struct, tagName){
                 aUndos[i].$dontapply = false;
         }
 
-        apf.xmldb.disableRSB = disableRSB;
+        apf.xmldb.disableRDB = disableRDB;
 
         if (oError)
             throw oError;
@@ -456,7 +456,7 @@ apf.remote = function(struct, tagName){
                 var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
                     sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
 
-                this.sendSyncRSB(e.from, sSession, iBaseline, sModel);
+                this.sendSyncRDB(e.from, sSession, iBaseline, sModel);
             }
             else if (e.type == "result") {
                 // @todo: replace the current XML with the document provided by the session owner

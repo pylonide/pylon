@@ -258,8 +258,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {void}
      */
     this.updateMessageHistory = function(sJID, sMsg, sThread) {
-        // #ifdef __WITH_RSB
-        if (sThread == "rsb") return true;
+        // #ifdef __WITH_RDB
+        if (sThread == "rdb") return true;
         // #endif
         if (!model || !(modelContent.chat || modelContent.muc)) return false;
 
