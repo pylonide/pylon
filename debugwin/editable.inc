@@ -1,4 +1,4 @@
-<a:menu id="mnuContentEditable" editable="false">
+<a:menu id="mnuContentEditable" editable="false" nomk="true">
     <a:item hotkey="Ctrl-Z" disabled="{!apf.window.undoManager.undolength}" onclick="apf.document.execCommand('undo')">Undo</a:item>
     <a:item hotkey="Ctrl-Y" disabled="{!apf.window.undoManager.redolength}" onclick="apf.document.execCommand('redo')">Redo</a:item>
     <a:divider />

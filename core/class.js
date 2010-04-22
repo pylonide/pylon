@@ -765,7 +765,7 @@ apf.Class.prototype = new (function(){
             //cancelable, needed for transactions
             if ((!e || e.returnValue !== false) && this.childNodes) {
                 var inheritType = aci[prop];
-                
+
                 (function recur(nodes) {
                     var i, l, node, n;
                     for (i = 0, l = nodes.length; i < l; i++) {
@@ -774,7 +774,7 @@ apf.Class.prototype = new (function(){
                             continue;
                         
                         //Pass through
-                        if ((inheritType == 1 || !(node.$regbase & inheritType)) 
+                        if (inheritType == 1
                           && !(n = node.$inheritProperties[prop]))
                             recur(node.childNodes);
                         //Set inherited property

@@ -120,7 +120,7 @@ apf.ContentEditable2 = function() {
             }
             //#endif
             
-            if (this.$canEdit) {
+            if (this.$canEdit && this.$ext && this.$ext.tagName != "BODY") {
                 this.dragOutline = true; //@todo via config setting??
                 
                 //Make this element draggable
@@ -164,7 +164,7 @@ apf.ContentEditable2 = function() {
             apf.setStyleClass(this.$ext, "editable");
         }
         else {
-            if (this.$canEdit) {
+            if (this.$canEdit && this.$ext && this.$ext.tagName != "BODY") {
                 var n;
                 
                 //Unset draggable
@@ -237,4 +237,8 @@ apf.ContentEditable2 = function() {
         
     });
 };
+
+apf.XhtmlElement.prototype.implement(apf.ContentEditable2);
+
+apf.config.$inheritProperties["editable"] = 2;
 // #endif

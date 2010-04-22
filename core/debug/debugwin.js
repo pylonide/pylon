@@ -32,7 +32,7 @@ function prettySize(size) {
 
 apf.$debugwin = {
     showtime    : true,
-    nativedebug : false,
+    nativedebug : apf.debug ? true : false,
     highlighthover : true,
     
     cache : (function(){
@@ -876,7 +876,7 @@ apf.$debugwin = {
             this.apf.$debugwin.setNativeDebug(c, true);
         }
         else
-            window.onerror = this.nativedebug ? null : this.errorHandler;
+            window.onerror = c ? null : this.errorHandler;
 
         this.nativedebug = c;
     },

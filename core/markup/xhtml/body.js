@@ -25,6 +25,10 @@ apf.XhtmlBodyElement = function(struct, tagName){
 };
 
 (function(){
+    //#ifdef __WITH_CONTENTEDITABLE
+    this.implement(apf.ContentEditable2);
+    //#endif
+    
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (!this.ownerDocument.body)
             this.ownerDocument.body = this;
