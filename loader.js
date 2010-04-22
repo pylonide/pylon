@@ -257,7 +257,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js",
+        "core/baseclasses/basestatebuttons.js"/*,
         
     	"elements/editor/src/ace.js",
     	"elements/editor/src/mode/Text.js",
@@ -282,7 +282,7 @@ apf.$x = apf.$loader
     	"elements/editor/src/TextInput.js",
     	"elements/editor/src/KeyBinding.js",	
     	"elements/editor/src/Editor.js",	
-    	"elements/editor/src/VirtualRenderer.js"
+    	"elements/editor/src/VirtualRenderer.js"*/
     )
     .wait()
     .script(
