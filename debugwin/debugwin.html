@@ -602,7 +602,7 @@
                                 if ($o3.fs.get("macros.xml").exists)
                                     loadMacros(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
                                 else
-                                    loadMacros(mdlPlaylist.getXml());
+                                    loadMacros(mdlMacro.getXml());
 
                                 if ($o3.fs.get("playlists.xml").exists)
                                     loadPlaylists(apf.getXml($o3.fs.get("playlists.xml").data) || apf.getXml("<data/>"));
