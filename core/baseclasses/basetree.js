@@ -1075,7 +1075,7 @@ apf.BaseTree = function(){
         if (htmlNode.style)
             this.slideOpen(htmlNode, null, true);
         else if (this.nocollapse)
-            htmlNode.setAttribute("style", "display:block;");
+            htmlNode.setAttribute("style", "display:inline-block;");
         else 
             htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;"); 
         

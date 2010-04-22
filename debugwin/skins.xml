@@ -6,16 +6,20 @@
             background-color : #edf2f8;
             font-family      : Tahoma;
             font-size        : 11px;
-            padding          : 7px 32px 7px 7px;
-            overflow-y       : hidden;
-            overflow-x       : auto;
+            padding          : 2px 32px 7px 7px;
+            overflow       : hidden;
+            position:relative;
+            float:left;
+            display:block;
+            width:auto;
         }
         
         .macro_tree DIV.root,
         .macro_tree DIV.empty {
             position    : relative;
-            overflow    : visible;
+            overflow    : hidden;
             padding-top : 19px;
+            display:block;
         }
         
         /* Root nodes */
@@ -75,9 +79,11 @@
             margin      : 0 0 4px 0;
             height      : 27px;
             position    : relative;
-            overflow    : visible;
+            overflow    : hidden;
             padding     : 0;
+            width:100%;
             white-space : nowrap;
+            display:inline-block;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_xbutton {
@@ -94,9 +100,9 @@
         .macro_tree BLOCKQUOTE SPAN.macro_cont_left {
             width               : 5px;
             height              : 27px;
-            position            : absolute;
-            top                 : 0;
-            left                : 0;
+            overflow:hidden;
+            position:relative;
+            display:inline-block;
             background-image    : url(images/macro_row_back_left.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
@@ -105,24 +111,26 @@
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
             height              : 21px;
             padding             : 6px 0 0 3px;
-            position            : absolute;
-            top                 : 0;
-            left                : 5px;
-            right               : 5px;
+            display:inline-block;
             background-image    : url(images/macro_row_back_middle.png);
             background-position : 0 0;
             background-repeat   : repeat-x;
+            white-space : nowrap;
+            width:auto;
+            overflow:hidden;
+            position:relative;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
             width               : 5px;
             height              : 27px;
-            position            : absolute;
-            top                 : 0;
-            right               : 0;
+            display:inline-block;
             background-image    : url(images/macro_row_back_right.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
+            overflow:hidden;
+            position:relative;
+            white-space : nowrap;
         }
         
         .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_left,
@@ -134,16 +142,15 @@
             background-position : 0 -27px;
         }
 
-        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV{
-            float : left;
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
+            display:inline-block;
+            overflow:hidden;
+            position:relative;
             height : 15px;
             cursor : default;
+            white-space : nowrap;
         }
 
-        /*.macro_tree BLOCKQUOTE SPAN.macro_cont_middle>DIV {
-            display     : inline-block;
-            height      : 15px;
-        }*/
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rcaption,
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rright {
@@ -158,7 +165,6 @@
         /* Reset styles for other nodes */
         .macro_tree BLOCKQUOTE DIV.macro_rcaption {
             display             : block;
-            float               : right;
             position            : relative;
             width               : auto;
             height              : 15px;
@@ -169,11 +175,11 @@
             color               : white;
             top                 : 0;
             right               : 0;
+            overflow:hidden;
         }
         
         .macro_tree BLOCKQUOTE DIV.macro_rright {
             display             : block;
-            float               : right;
             position            : relative;
             width               : 7px;
             height              : 15px;
@@ -183,6 +189,7 @@
             overflow            : hidden;
             top                 : 0;
             right               : 0;
+            overflow:hidden;
         }
         
         .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rcaption,
@@ -194,18 +201,19 @@
         }
         
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
-            float               : right;
-            display             : block;
+            display             : inline-block;
             position            : relative;
             width               : 7px;
             height              : 13px;
             background-image    : url(images/macro_white_arrow.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
-            margin              : 0 7px;
+            margin              : 0 4px 0 7px;
+            overflow:hidden;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
+        .macro_tree BLOCKQUOTE SPAN.last DIV.macro_arrow,
         .macro_tree BLOCKQUOTE BLOCKQUOTE,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
@@ -230,28 +238,12 @@
           select    = "."
           container = "blockquote/span[2]">
             <div>
-                <div class="macro_rcaption">-</div>
-                <div class="macro_rright"></div>
-                <div class="macro_arrow"></div>
-                <blockquote> 
-                    <span class="macro_cont_left"> </span>
-                    <span class="macro_cont_middle"> </span>
-                    <span class="macro_cont_right"> </span>
-                    <span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span>
-                </blockquote>
+                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote>
             </div>
         </a:item>
         <a:dragindicator>
             <div class="dragmacro_tree">
-                <div class="macro_rcaption">-</div>
-                <div class="macro_rright"></div>
-                <div class="macro_arrow"></div>
-                <blockquote> 
-                    <span class="macro_cont_left"> </span>
-                    <span class="macro_cont_middle"> </span>
-                    <span class="macro_cont_right"> </span>
-                    <span class="macro_xbutton"> </span>
-                </blockquote>
+                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote>
             </div>
         </a:dragindicator>
         <a:loading>
@@ -262,15 +254,7 @@
         </a:loading>
         <a:empty caption="div[1]/text()">
             <div>
-                <div class="macro_rcaption">-</div>
-                <div class="macro_rright"></div>
-                <div class="macro_arrow"></div>
-                <blockquote> 
-                    <span class="macro_cont_left"> </span>
-                    <span class="macro_cont_middle"> </span>
-                    <span class="macro_cont_right"> </span>
-                    <span class="macro_xbutton"> </span>
-                </blockquote>
+                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton"> </span></blockquote>
             </div>
         </a:empty>
     </a:presentation>
@@ -3885,6 +3869,7 @@
     <a:style><![CDATA[
         .basic{
             position : relative;
+            overflow:auto;
         }
         
         .prop_desc{

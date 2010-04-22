@@ -494,7 +494,7 @@
                                 </a:bar>
                             </a:toolbar>
                             <a:tree autorename="true"
-                              anchors="25 0 0 61"
+                              style="margin-left:61px;"
                               actiontracker = "atPlaylist"
                               id         = "trPlaylist"
                               class      = "trPlaylist"
@@ -526,8 +526,8 @@
                                     foreach([playlist]) {
                                         <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playPlaylist(apf.xmldb.getXmlId(mdlPlaylist.queryNode('{apf.xmlToXpath(%[.]).substr(apf.xmlToXpath(%[.]).indexOf("/") + 1)}')))"/>
                                         <a:checkbox top="{cbx_top}" left="11" class="macro_cbx"></a:checkbox>
-                                        btn_top += 50;
-                                        cbx_top += 50;
+                                        btn_top += 52;
+                                        cbx_top += 52;
                                     }
                                     
                                     <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" />
