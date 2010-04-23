@@ -73,11 +73,12 @@ apf.codeeditor = function(struct, tagName){
     this.$booleanProperties["caching"] = true;
     this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["showinvisibles"] = true;
+    this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["softtabs"] = true;
 
     this.$supportedProperties.push("value", "realtime", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
-        "tabsize", "softtabs");
+        "readonly", "tabsize", "softtabs");
 
     /**
      * @attribute {String} value the text of this element
@@ -148,6 +149,10 @@ apf.codeeditor = function(struct, tagName){
         this.$editor.setShowInvisibles(value);
     };
 
+    this.$propHandlers["readonly"] = function(value, prop, initial){
+        this.$editor.setReadOnly(value);
+    };
+    
     this.$propHandlers["tabsize"] = function(value, prop, initial){
         this.$editor.getDocument().setTabSize(parseInt(value));
     };
