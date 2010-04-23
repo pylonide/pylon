@@ -7,11 +7,11 @@
             font-family      : Tahoma;
             font-size        : 11px;
             padding          : 2px 32px 7px 7px;
-            overflow       : hidden;
-            position:relative;
-            float:left;
-            display:block;
-            width:auto;
+            overflow         : hidden;
+            position         : relative;
+            float            : left;
+            display          : block;
+            width            : auto;
         }
         
         .macro_tree DIV.root,
@@ -19,7 +19,7 @@
             position    : relative;
             overflow    : hidden;
             padding-top : 19px;
-            display:block;
+            display     : block;
         }
         
         /* Root nodes */
@@ -76,14 +76,21 @@
         }
         
         .macro_tree BLOCKQUOTE {
-            margin      : 0 0 4px 0;
-            height      : 27px;
-            position    : relative;
-            overflow    : hidden;
-            padding     : 0;
-            width:100%;
-            white-space : nowrap;
-            display:inline-block;
+            margin              : 0 0 4px 0;
+            height              : 27px;
+            position            : relative;
+            overflow            : hidden;
+            padding             : 0;
+            width               : 100%;
+            white-space         : nowrap;
+            display             : inline-block;
+            background-image    : url(images/macro_row_back_middle.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+        }
+        
+        .macro_tree DIV.new_recording BLOCKQUOTE {
+            background-position : 0 -27px;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_xbutton {
@@ -100,37 +107,34 @@
         .macro_tree BLOCKQUOTE SPAN.macro_cont_left {
             width               : 5px;
             height              : 27px;
-            overflow:hidden;
-            position:relative;
-            display:inline-block;
+            overflow            : hidden;
+            position            : relative;
+            display             : inline-block;
             background-image    : url(images/macro_row_back_left.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
-            height              : 21px;
-            padding             : 6px 0 0 3px;
-            display:inline-block;
-            background-image    : url(images/macro_row_back_middle.png);
-            background-position : 0 0;
-            background-repeat   : repeat-x;
+            height      : 21px;
+            padding     : 6px 0 0 3px;
+            display     : inline-block;
             white-space : nowrap;
-            width:auto;
-            overflow:hidden;
-            position:relative;
+            width       : auto;
+            overflow    : hidden;
+            position    : relative;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
             width               : 5px;
             height              : 27px;
-            display:inline-block;
             background-image    : url(images/macro_row_back_right.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
-            overflow:hidden;
-            position:relative;
-            white-space : nowrap;
+            overflow            : hidden;
+            position            : absolute;
+            top                 : 0;
+            right               : 0;
         }
         
         .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_left,
@@ -143,11 +147,11 @@
         }
 
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
-            display:inline-block;
-            overflow:hidden;
-            position:relative;
-            height : 15px;
-            cursor : default;
+            display  : inline-block;
+            overflow : hidden;
+            position : relative;
+            height      : 15px;
+            cursor      : default;
             white-space : nowrap;
         }
 
@@ -213,13 +217,23 @@
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
-        .macro_tree BLOCKQUOTE SPAN.last DIV.macro_arrow,
+        .macro_tree BLOCKQUOTE SPAN.last DIV.macro_arrow {
+            background-image:none;
+            margin:0;
+        }
+        
+        
         .macro_tree BLOCKQUOTE BLOCKQUOTE,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_left,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_xbutton {
             display : none;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko"><![CDATA[
+        .macro_tree BLOCKQUOTE DIV.macro_arrow {
+            margin              : 0 7px 0 7px;
         }
     ]]></a:style>
     
@@ -259,6 +273,7 @@
         </a:empty>
     </a:presentation>
 </a:tree>
+
 <a:tree name="checktree">
     <a:style><![CDATA[
         .checktree {
