@@ -84,12 +84,16 @@
             width               : 100%;
             white-space         : nowrap;
             display             : inline-block;
-            background-image    : url(images/macro_row_back_middle.png);
+            background-image    : url(images/macro_row_back_middle_active.png);
             background-position : 0 0;
             background-repeat   : repeat-x;
         }
         
         .macro_tree DIV.new_recording BLOCKQUOTE {
+            background-image    : url(images/macro_row_back_middle_nactive.png);
+        }
+        
+        .macro_tree .selected BLOCKQUOTE {
             background-position : 0 -27px;
         }
         
@@ -110,7 +114,7 @@
             overflow            : hidden;
             position            : relative;
             display             : inline-block;
-            background-image    : url(images/macro_row_back_left.png);
+            background-image    : url(images/macro_row_back_left_active.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
@@ -128,7 +132,7 @@
         .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
             width               : 5px;
             height              : 27px;
-            background-image    : url(images/macro_row_back_right.png);
+            background-image    : url(images/macro_row_back_right_active.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
             overflow            : hidden;
@@ -138,11 +142,16 @@
         }
         
         .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_left,
-        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_middle,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_left {
+            background-image : url(images/macro_row_back_left_nactive.png);
+        }
         .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_right,
-        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_left,
-        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_middle,
         .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_right {
+            background-image : url(images/macro_row_back_right_nactive.png);
+        }
+        
+        .macro_tree DIV.selected BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree DIV.selected BLOCKQUOTE SPAN.macro_cont_right {
             background-position : 0 -27px;
         }
 
