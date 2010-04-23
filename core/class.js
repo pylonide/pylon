@@ -673,7 +673,7 @@ apf.Class.prototype = new (function(){
         if (isChanged) {
             //#ifdef __WITH_UIRECORDER
             if (apf.uirecorder && apf.uirecorder.captureDetails) {
-                if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
+                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                     if (this.ownerDocument && this.$aml)
                         apf.uirecorder.capture.capturePropertyChange(this, prop, value); 
                 }

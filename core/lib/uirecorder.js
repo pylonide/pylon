@@ -67,27 +67,26 @@ apf.uirecorder.capture = {
         apf.uirecorder.$inited = true;
 
         // listeners for user mouse interaction
-        apf.uirecorder.$o3.DOM.ondblclick = function(e){
+        apf.uirecorder.$o3.DOM.ondblclick = apf.uirecorder.dblclick = function(e){
         //document.documentElement.ondblclick = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("dblClick", e || event);
         }
 
-        apf.uirecorder.$o3.DOM.onmousedown = function(e){
+        apf.uirecorder.$o3.DOM.onmousedown = apf.uirecorder.mousedown = function(e){
         //document.documentElement.onmousedown = function(e) {
-            apf.console.info(new Date().getTime().toString());
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         };
 
-        apf.uirecorder.$o3.DOM.onmouseup = function(e){
+        apf.uirecorder.$o3.DOM.onmouseup = apf.uirecorder.mouseup = function(e){
         //document.documentElement.onmouseup = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return; //apf.uirecorder.isPaused ||
             apf.uirecorder.capture.$captureAction("mouseup", e || event);
         }
         
         //apf.uirecorder.$o3.DOM.onmousemove = function(e){
-        document.documentElement.onmousemove = function(e) {
+        document.documentElement.onmousemove = apf.uirecorder.mousemove = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousemove", e || event);
         }
@@ -113,7 +112,7 @@ apf.uirecorder.capture = {
         }
         else {
             /* IE */
-            apf.uirecorder.$o3.DOM.onmousewheel = function(e){
+            apf.uirecorder.$o3.DOM.onmousewheel = apf.uirecorder.mousewheel = function(e){
             //document.onmousewheel = function(e) {
                 if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
                 e = e || event;
@@ -133,7 +132,7 @@ apf.uirecorder.capture = {
         
         // listeners for keyboard interaction
         // onkeyup does get called in SSB for some reason but does in the browser plugin
-        apf.uirecorder.$o3.DOM.onkeyup = function(e){
+        apf.uirecorder.$o3.DOM.onkeyup = apf.uirecorder.keyup = function(e){
         //document.documentElement.onkeyup = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
@@ -144,7 +143,7 @@ apf.uirecorder.capture = {
             apf.uirecorder.capture.$captureAction("keyup", e, keycode);
         }
         
-        apf.uirecorder.$o3.DOM.onkeydown = function(e){
+        apf.uirecorder.$o3.DOM.onkeydown = apf.uirecorder.keydown = function(e){
         //document.documentElement.onkeydown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
@@ -154,7 +153,7 @@ apf.uirecorder.capture = {
             apf.uirecorder.capture.$captureAction("keydown", e, keycode);
         }
         
-        apf.uirecorder.$o3.DOM.onkeypress = function(e){
+        apf.uirecorder.$o3.DOM.onkeypress = apf.uirecorder.keypress = function(e){
         //document.documentElement.onkeypress = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
@@ -199,24 +198,29 @@ apf.uirecorder.capture = {
         data.height     = amlNode.$ext.offsetHeight;
         
         // multiselect amlNode
-        if (amlNode.hasFeature(apf.__MULTISELECT__) && amlNode.selected) {
-            data.multiselect = "true";
-            
-            if (amlNode.selected) {
-                data.selected = {};
-                if (amlNode.getValue())
-                    data.selected.value = amlNode.getValue();
-                var xpath = apf.xmlToXpath(amlNode.selected);
-                data.selected.xpath     = xpath.substr(xpath.indexOf("/")+1);
+        if (amlNode.hasFeature(apf.__MULTISELECT__)) {
+            if (amlNode.localName == "dropdown" && apf.popup.isShowing(40)) {
+                data.popup = 40;
+            }
+            else if (amlNode.selected) {
+                data.multiselect = "true";
                 
-                pos = apf.getAbsolutePosition(amlNode.$selected, document.body);
-                data.selected.x         = pos[0];
-                data.selected.y         = pos[1];
-                data.selected.width     = amlNode.$selected.offsetWidth;
-                data.selected.height    = amlNode.$selected.offsetHeight;
-                
-                if (eventName == "mouseup") {
-                    this.$prevMouseDownAction.amlNode = data;
+                if (amlNode.selected) {
+                    data.selected = {};
+                    if (amlNode.getValue())
+                        data.selected.value = amlNode.getValue();
+                    var xpath = apf.xmlToXpath(amlNode.selected);
+                    data.selected.xpath     = xpath.substr(xpath.indexOf("/")+1);
+                    
+                    pos = apf.getAbsolutePosition(amlNode.$selected, document.body);
+                    data.selected.x         = pos[0];
+                    data.selected.y         = pos[1];
+                    data.selected.width     = amlNode.$selected.offsetWidth;
+                    data.selected.height    = amlNode.$selected.offsetHeight;
+                    
+                    if (eventName == "mouseup" && this.$prevMouseDownAction) {
+                        this.$prevMouseDownAction.amlNode = data;
+                    }
                 }
             }
         }
@@ -264,7 +268,7 @@ apf.uirecorder.capture = {
         //if (!apf.uirecorder.$inited) return;
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement) && apf.findHost(htmlElement).tagName) ? apf.findHost(htmlElement) : null;
-        
+
         if (this.$mousedownMode || eventName != "mousemove") {
             if (amlNode) {
                 var amlNodeData = this.$getAmlNodeData(amlNode, htmlElement, eventName);
@@ -419,9 +423,9 @@ apf.uirecorder.capture = {
     // save captured test data
     $saveTest : function() {
         var testXml = apf.getXml("<test />");
+        testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
         
         var actionList = [];
-        var specialAction = "";
         /* special cases */
         // only one click recorded
         if ((this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mouseup")
@@ -429,18 +433,21 @@ apf.uirecorder.capture = {
             actionList = this.$keyActions;
             actionList[0].time = 0;
             actionList[1].time = 100;
-            specialAction = "click on ";
+            testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
         }
         // default
         else {
             // caption for dragging element
-            if ( (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[this.$keyActions.length-1].events["afterdrag"]) 
-                || (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[0].events["dragstart"] && this.$keyActions[this.$keyActions.length-1].events["dragdrop"])
+            if ( (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[this.$keyActions.length-1].events && this.$keyActions[this.$keyActions.length-1].events["afterdrag"]) 
+                || (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[0].events && this.$keyActions[0].events["dragstart"] && this.$keyActions[this.$keyActions.length-1].events && this.$keyActions[this.$keyActions.length-1].events["dragdrop"])
                 )  {
-                specialAction = "drag ";
+                testXml.setAttribute("name", "drag " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
             }
-            
-            testXml.setAttribute("name", apf.uirecorder.capture.$curTestId);
+            // caption for selecting item in dropdown
+            else if (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[1].amlNode.popup == 40 && this.$keyActions[2] && this.$keyActions[2].name == "mousedown" && this.$keyActions[2].amlNode.type == "dropdown" && this.$keyActions[3] && this.$keyActions[3].name == "mouseup")  {
+                testXml.setAttribute("name", "selected " + this.$keyActions[2].amlNode.type + " item " + (this.$keyActions[2].amlNode.selected.value || this.$keyActions[2].amlNode.selected.xpath));
+            }
+
             actionList = this.$actionList;
 
             // trim actionList from trailing mousemove actions
@@ -538,9 +545,10 @@ apf.uirecorder.capture = {
                 
                 if (action.amlNode.caption)     amlNode.setAttribute("caption", action.amlNode.caption);
                 
-                if (specialAction)
-                    testXml.setAttribute("name", specialAction + (action.amlNode.id || (action.amlNode.caption ? action.amlNode.type + " " + action.amlNode.caption : null) || (action.amlNode.type + " " + action.amlNode.xpath)));
+//                if (!specialAction)
+//                    testXml.setAttribute("name", specialAction + (action.amlNode.id || (action.amlNode.caption ? action.amlNode.type + " " + action.amlNode.caption : null) || (action.amlNode.type + " " + action.amlNode.xpath)));
 
+                if (action.amlNode.popup) amlNode.setAttribute("popup", action.amlNode.popup);
                 if (action.amlNode.selected) {
                     amlNode.setAttribute("multiselect", "true");
                     
@@ -552,8 +560,8 @@ apf.uirecorder.capture = {
                     selectedNode.setAttribute("width"    , action.amlNode.selected.width);
                     selectedNode.setAttribute("height"   , action.amlNode.selected.height);
 
-                    if (specialAction)
-                        testXml.setAttribute("name", specialAction + action.amlNode.type + " item \"" + (action.amlNode.selected.value || action.amlNode.selected.xpath) + "\"" );
+//                    if (specialAction)
+//                        testXml.setAttribute("name", specialAction + action.amlNode.type + " item " + (action.amlNode.selected.value || action.amlNode.selected.xpath));
                     
                     amlNode.appendChild(selectedNode);
                 }
@@ -567,8 +575,8 @@ apf.uirecorder.capture = {
                     activeElNode.setAttribute("width"    , action.amlNode.activeElement.width);
                     activeElNode.setAttribute("height"   , action.amlNode.activeElement.height);
 
-                    if (specialAction)
-                        testXml.setAttribute("name", specialAction + action.amlNode.type + " element \"" + (action.amlNode.activeElement.name) + "\"" );
+//                    if (specialAction)
+//                        testXml.setAttribute("name", specialAction + action.amlNode.type + " element " + (action.amlNode.activeElement.name));
                     
                     amlNode.appendChild(activeElNode);
                 }
@@ -595,8 +603,8 @@ apf.uirecorder.capture = {
                     if (action.htmlElement.innerHTML) htmlElement.setAttribute("innerHTML", action.htmlElement.innerHTML);
                     aNode.appendChild(htmlElement);
                     
-                    if (specialAction)
-                        testXml.setAttribute("name", specialAction + (action.htmlElement.id || (action.htmlElement.type.toLowerCase() + " " + action.htmlElement.innerHTML)));
+//                    if (specialAction)
+//                        testXml.setAttribute("name", specialAction + (action.htmlElement.id || (action.htmlElement.type.toLowerCase() + " " + action.htmlElement.innerHTML)));
                 }
             }
             
@@ -614,8 +622,8 @@ apf.uirecorder.capture = {
                 dropNode.setAttribute("width"    , action.dropTarget.width);
                 dropNode.setAttribute("height"   , action.dropTarget.height);
                 
-                if (specialAction)
-                    testXml.setAttribute("name", testXml.getAttribute("name") + " on " + (action.dropTarget.id || (action.dropTarget.caption ? action.dropTarget.type + " " + action.dropTarget.caption : null) || (action.dropTarget.type + " " + action.dropTarget.xpath)));
+//                if (specialAction)
+//                    testXml.setAttribute("name", testXml.getAttribute("name") + " on " + (action.dropTarget.id || (action.dropTarget.caption ? action.dropTarget.type + " " + action.dropTarget.caption : null) || (action.dropTarget.type + " " + action.dropTarget.xpath)));
 
                 amlNode.appendChild(dropNode);
             }
@@ -762,7 +770,7 @@ apf.uirecorder.playback = {
         this.$curTestXml            = testXml;
         this.$curActionIdx          = 0;
         this.$windowOffset          = offset;
-        
+        this.$keyActions            = testXml.selectNodes("action[@keyActionIdx]");
         apf.uirecorder.isPlaying    = true;
         
         // if testing, this.$createCheckList();
@@ -901,32 +909,46 @@ apf.uirecorder.playback = {
                 // htmlNode of amlNode
                 // multiselect selection
                 
+                var targetCentre = false;
                 if (amlNodeXml.getAttribute("multiselect") == "true") {
                     var selectedXml;
                     if (selectedXml = amlNodeXml.selectSingleNode("selected")) {
-                        original = {
-                            x       : parseInt(selectedXml.getAttribute("x")),
-                            y       : parseInt(selectedXml.getAttribute("y")),
-                            width   : parseInt(selectedXml.getAttribute("width")),
-                            height  : parseInt(selectedXml.getAttribute("height"))
-                        };
-                        
                         var xmlNode;
-                        if (amlNodeXml.selectSingleNode("selected").getAttribute("value")) {
-                            xmlNode = amlNode.findXmlNodeByValue(amlNodeXml.selectSingleNode("selected").getAttribute("value"));
+                        if (amlNodeXml.getAttribute("type") == "dropdown" && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1] && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup") == "40") {
+                            original = null;
+                            targetCentre = true;
+                            var dropdownItems = apf.popup.cache[this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup")].content.childNodes
+                            for (var i = 0, l = dropdownItems.length; i < l; i++) {
+                                if (dropdownItems[i].innerHTML == selectedXml.getAttribute("value")) {
+                                    htmlNode = dropdownItems[i];
+                                    break;
+                                }
+                            }
                         }
-                        if (!xmlNode && amlNodeXml.selectSingleNode("selected").getAttribute("xpath")) {
-                            xmlNode = amlNode.queryNode(amlNodeXml.selectSingleNode("selected").getAttribute("xpath"));
+                        else {
+                            original = {
+                                x       : parseInt(selectedXml.getAttribute("x")),
+                                y       : parseInt(selectedXml.getAttribute("y")),
+                                width   : parseInt(selectedXml.getAttribute("width")),
+                                height  : parseInt(selectedXml.getAttribute("height"))
+                            };
+                            
+                            if (amlNodeXml.selectSingleNode("selected").getAttribute("value")) {
+                                xmlNode = amlNode.findXmlNodeByValue(amlNodeXml.selectSingleNode("selected").getAttribute("value"));
+                            }
+                            if (!xmlNode && amlNodeXml.selectSingleNode("selected").getAttribute("xpath")) {
+                                xmlNode = amlNode.queryNode(amlNodeXml.selectSingleNode("selected").getAttribute("xpath"));
+                            }
+
+                            // no xmlNode found
+                            if (!xmlNode) {
+                                this.$testFailed("Node with xpath \"" + amlNodeXml.selectSingleNode("selected").getAttribute("xpath") + "\" does not exist");
+                                return;
+                            }
+
+                            htmlNode = apf.xmldb.findHtmlNode(xmlNode, amlNode);
                         }
-
-                        // no xmlNode found
-                        if (!xmlNode) {
-                            this.$testFailed("Node with xpath \"" + amlNodeXml.selectSingleNode("selected").getAttribute("xpath") + "\" does not exist");
-                            return;
-                        }
-
-                        htmlNode = apf.xmldb.findHtmlNode(xmlNode, amlNode);
-
+                        
                         // no htmlNode found
                         if (!htmlNode) {
                             this.$testFailed("No htmlnode found for xpath: " + amlNodeXml.selectSingleNode("selected").getAttribute("xpath"));
@@ -1003,8 +1025,14 @@ apf.uirecorder.playback = {
         if (targetNode) {
             mousePos = apf.getAbsolutePosition(targetNode, document.body);
 
-            mousePos[0] = mousePos[0] - (original.x-parseInt(this.$curAction.getAttribute("x"))) * (targetNode.offsetWidth/original.width);
-            mousePos[1] = mousePos[1] - (original.y-parseInt(this.$curAction.getAttribute("y"))) * (targetNode.offsetHeight/original.height);
+            if (original) {
+                mousePos[0] = mousePos[0] - (original.x-parseInt(this.$curAction.getAttribute("x"))) * (targetNode.offsetWidth/original.width);
+                mousePos[1] = mousePos[1] - (original.y-parseInt(this.$curAction.getAttribute("y"))) * (targetNode.offsetHeight/original.height);
+            }
+            else if (targetCentre) {
+                mousePos[0] = mousePos[0] + targetNode.offsetWidth/2;
+                mousePos[1] = mousePos[1] + targetNode.offsetHeight/2;
+            }
             
             //mousePos[0] = mousePos[0] + targetNode.offsetWidth/2;
             //mousePos[1] = mousePos[1] + targetNode.offsetHeight/2;
