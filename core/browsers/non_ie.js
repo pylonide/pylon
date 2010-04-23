@@ -29,6 +29,18 @@ apf.runNonIe = function (){
     DocumentFragment.prototype.getElementById = function(id){
         return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
     };
+
+    //#ifdef __WITH_UIRECORDER
+    /**** Event.cancelBubble ****/
+    if (MouseEvent.prototype.__defineSetter__) {
+        //Event.cancelBubble
+        MouseEvent.prototype.__defineSetter__("cancelBubble", function(b){
+            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {
+                apf.uirecorder.capture[this.type](this);
+            }
+        });
+    }
+    //#endif
     
     /**** XML Serialization ****/
     if (XMLDocument.prototype.__defineGetter__) {

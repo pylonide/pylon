@@ -387,7 +387,7 @@ apf.cancelBubble = function(e, o){
     
     //#ifdef __WITH_UIRECORDER
     if (apf.uirecorder && apf.uirecorder.captureDetails && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
-        apf.uirecorder[e.type](e);
+        apf.uirecorder.capture[e.type](e);
     }
     //#endif
 };
