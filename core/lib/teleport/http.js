@@ -1034,9 +1034,9 @@ apf.teleportLog = function(extra){
     
     var response = "";
     this.response = function(extra){
-        var headers = extra.http.getAllResponseHeaders() ;
+        var headers = extra.http.getAllResponseHeaders();
         response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
-            + (headers ? headers : "\n")
+            + (headers ? headers + "\n" : "\n")
             + extra.http.responseText;
         
         if (xml)

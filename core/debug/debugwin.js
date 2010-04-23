@@ -416,7 +416,7 @@ apf.$debugwin = {
     },
     
     analyze : function(pNode, ref, displayName){
-        var item, prop;
+        var item, prop, o, obj;
 
         //if (!pNode) return pNode + "";
         
@@ -516,22 +516,22 @@ apf.$debugwin = {
                           .replace(/</g, "&lt;")
                           .replace(/\n/g, "\\n")
                           .replace(/\r/g, "\\r") + '"');
-                break;
+                    break;
                 case apf.NUMBER:
                     item.setAttribute("value", obj);
-                break;
+                    break;
                 case apf.BOOLEAN:
                     item.setAttribute("value", obj ? "true" : "false");
-                break;
+                    break;
                 case apf.DATE:
                     item.setAttribute("value", "[" + obj.toString() + "]");
-                break;
+                    break;
                 case apf.FUNCTION:
                     item.setAttribute("value", prop + o[prop].toString().match(/function\s*[\w-]*(\([\s\S]*?\))/)[1]);
-                break;
+                    break;
                 case apf.ARRAY:
                     item.setAttribute("value", "(" + obj.length + " items)");
-                break;
+                    break;
                 default:
                     item.setAttribute("value", "{" + (obj.nodeType == 2 
                         ? "@" + obj.nodeName 
@@ -569,7 +569,7 @@ apf.$debugwin = {
                         item.setAttribute("type", "Object");
                     } 
                         
-                break;
+                    break;
             }
         }
         

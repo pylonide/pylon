@@ -346,7 +346,7 @@
                                     body.replace(/ /g, "&nbsp;")
                                         .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
                                         .replace(/</g, "&lt;")
-                                        .replace(/(http:\/\/[^\s"]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                        .replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>")
                                         .replace(/\n/g, "<br />");
                                 }</div>
                             break;
@@ -355,7 +355,7 @@
                                     body.match(/\n\n([\s\S]*)/)[1].replace(/ /g, "&nbsp;")
                                         .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
                                         .replace(/</g, "&lt;")
-                                        .replace(/(http:\/\/[^\s"]*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                        .replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>")
                                         .replace(/\n/g, "<br />");
                                 }</div>
                             break;
@@ -365,7 +365,7 @@
                                 for (var t, i = 0; i < hs.length; i++) {
                                     p = hs[i].split("=");
                                     <div class="head"><strong>{p.shift()}: </strong><span>{
-                                        unescape(p.join("=")).replace(/(http:\/\/[^\s"]*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                        unescape(p.join("=")).replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>");
                                     }</span></div>
                                 }
                                 
