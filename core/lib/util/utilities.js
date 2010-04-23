@@ -384,6 +384,10 @@ apf.cancelBubble = function(e, o){
     if (o.$ext["on" + e.type])
         o.$ext["on" + e.type](e);
     apf.window.$mousedown(e);
+    
+    //#ifdef __WITH_UIRECORDER
+    //apf.uirecorder....
+    //#endif
 };
 
 // #endif
