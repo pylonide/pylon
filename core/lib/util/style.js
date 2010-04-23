@@ -407,14 +407,14 @@ apf.getHeightDiff = function(oHtml){
 };
 
 apf.getDiff = function(oHtml){
-    return [Math.max(0, parseInt(apf.getStyle(oHtml, "paddingLeft"))
-        + parseInt(apf.getStyle(oHtml, "paddingRight"))
-        + parseInt(apf.getStyle(oHtml, "borderLeftWidth"))
-        + parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0),
-        Math.max(0, parseInt(apf.getStyle(oHtml, "paddingTop"))
-        + parseInt(apf.getStyle(oHtml, "paddingBottom"))
-        + parseInt(apf.getStyle(oHtml, "borderTopWidth"))
-        + parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0)];
+    return [Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0)),
+        Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))];
 };
 
 apf.getMargin = function(oHtml) {
