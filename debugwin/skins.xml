@@ -17,7 +17,7 @@
         .macro_tree DIV.root,
         .macro_tree DIV.empty {
             position    : relative;
-            overflow    : hidden;
+            overflow    : visible;
             padding-top : 19px;
             display     : block;
         }
@@ -79,7 +79,7 @@
             margin              : 0 0 4px 0;
             height              : 27px;
             position            : relative;
-            overflow            : hidden;
+            overflow            : visible;
             padding             : 0;
             width               : 100%;
             white-space         : nowrap;
@@ -147,9 +147,9 @@
         }
 
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
-            display  : inline-block;
-            overflow : hidden;
-            position : relative;
+            display     : inline-block;
+            overflow    : hidden;
+            position    : relative;
             height      : 15px;
             cursor      : default;
             white-space : nowrap;
@@ -179,7 +179,7 @@
             color               : white;
             top                 : 0;
             right               : 0;
-            overflow:hidden;
+            overflow            : hidden;
         }
         
         .macro_tree BLOCKQUOTE DIV.macro_rright {
@@ -193,7 +193,7 @@
             overflow            : hidden;
             top                 : 0;
             right               : 0;
-            overflow:hidden;
+            overflow            : hidden;
         }
         
         .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rcaption,
@@ -213,13 +213,13 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
             margin              : 0 4px 0 7px;
-            overflow:hidden;
+            overflow            : hidden;
         }
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
         .macro_tree BLOCKQUOTE SPAN.last DIV.macro_arrow {
-            background-image:none;
-            margin:0;
+            background-image : none;
+            margin           : 0;
         }
         
         
@@ -233,7 +233,7 @@
     ]]></a:style>
     <a:style condition="apf.isGecko"><![CDATA[
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
-            margin              : 0 7px 0 7px;
+            margin : 0 7px 0 7px;
         }
     ]]></a:style>
     
