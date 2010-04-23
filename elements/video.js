@@ -96,7 +96,7 @@ apf.video = function(struct, tagName){
                     top      : this.parentNode.getTop(),
                     left     : this.parentNode.getLeft(),
                     position : apf.getStyle(oParent, 'position'),
-                    zIndex   : apf.getStyle(oParent, 'z-index'),
+                    zIndex   : apf.getStyle(oParent, 'zIndex'),
                     resizable: this.parentNode.resizable,
                     nodes    : []
                 }

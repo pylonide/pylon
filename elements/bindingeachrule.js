@@ -148,6 +148,8 @@ apf.BindingEachRule = function(struct, tagName){
         "case-order"   : 1
     }, this.$attrExcludePropBind);
 
+    this.$booleanProperties["animate"] = true;
+
     this.$propHandlers["sort"]        = 
     this.$propHandlers["data-type"]   = 
     this.$propHandlers["date-format"] = 
@@ -161,10 +163,11 @@ apf.BindingEachRule = function(struct, tagName){
     this.addEventListener("prop.match", function(e){
         var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
-            var nodes = pNode.$amlNodes;
-            for (var i = 0; i < nodes.length; i++) {
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i)
                 nodes[i].$handleBindingRule(this.match, "each");
-            }
         }
         else
             pNode.$handleBindingRule(this.match, "each");
@@ -180,8 +183,10 @@ apf.BindingEachRule = function(struct, tagName){
         if (pNode.localName == "bindings") {
             pNode.addEventListener("noderegister", this.$noderegister);
             
-            var nodes = pNode.$amlNodes;
-            for (var i = 0; i < nodes.length; i++) {
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i) {
                 nodes[i].$handleBindingRule(this.match, "each");
     
                 //#ifdef __WITH_SORTING
@@ -212,8 +217,10 @@ apf.BindingEachRule = function(struct, tagName){
         if (pNode.localName == "bindings") {
             pNode.removeEventListener("noderegister", this.$noderegister);
             
-            var nodes = pNode.$amlNodes;
-            for (var i = 0; i < nodes.length; i++) {
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i) {
                 //delete nodes[i].each; //@todo apf3.x is already set by new one
     
                 //#ifdef __WITH_SORTING

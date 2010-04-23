@@ -299,9 +299,8 @@ apf.runNonIe = function (){
      * @param {String}      prop  the property to read
      * @returns {String}
      */
-    apf.getStyle = function(el, prop) {
-        var s = window.getComputedStyle(el, '');
-        return s ? s[prop] : "";
+    var getStyle = apf.getStyle = function(el, prop) {
+        return (window.getComputedStyle(el, "") || {})[prop] || "";
     };
     
     //XMLDocument.setProperty
@@ -473,10 +472,6 @@ apf.runNonIe = function (){
             return FoundNode;
         };
         
-        function getStyle(el, prop) {
-            return document.defaultView.getComputedStyle(el,'').getPropertyValue(prop);
-        }
-        
         function efpi(from, x, y, CurIndex, CurValue, px, py){
             var StartValue = CurValue,
                 StartIndex = CurIndex,
@@ -485,7 +480,7 @@ apf.runNonIe = function (){
                 n, i, z, sx, sy, ex, ey, isAbs, isHidden, inSpace;
             for (n, i = 0; i < from.childNodes.length; i++) {
                 n = from.childNodes[i];
-                if (n.nodeType == 1 && getStyle(n, 'display') != 'none' && n.offsetParent) {
+                if (n.nodeType == 1 && getStyle(n, "display") != "none" && n.offsetParent) {
                     sx = px + n.offsetLeft - n.offsetParent.scrollLeft;//getElementPosX(n); 
                     sy = py + n.offsetTop - n.offsetParent.scrollTop;//getElementPosY(n);
                     ex = sx + n.offsetWidth;
@@ -503,7 +498,7 @@ apf.runNonIe = function (){
                     CurValue = StartValue.copy();
             
                     //if (Child is position absolute/relative and has zIndex) or overflow == "hidden"
-                    z = parseInt(getStyle(n, "z-index")) || 0;
+                    z = parseInt(getStyle(n, "zIndex")) || 0;
                     if (isAbs && (z || z == 0) || isHidden) {
                         //if(!is position absolute/relative) zIndex = 0
                         if (!isAbs) z = 0;
@@ -550,12 +545,12 @@ apf.runNonIe = function (){
         }
         
         function getElementPosY(myObj){
-            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "border-top-width"))
+            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "borderTopWidth"))
                 + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
         }
         
         function getElementPosX(myObj){
-            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "border-left-width"))
+            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "borderLeftWidth"))
                 + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
         }
         
@@ -563,7 +558,7 @@ apf.runNonIe = function (){
             //This is not quite sufficient and should be changed
             var z = 0, n, p = myObj;
             while (p && p.nodeType == 1) {
-                z = Math.max(z, parseInt(getStyle(p, "z-index")) || -1);
+                z = Math.max(z, parseInt(getStyle(p, "zIndex")) || -1);
                 p = p.parentNode;
             }
             return z;
@@ -572,61 +567,6 @@ apf.runNonIe = function (){
     
     //#endif
 
-    apf.getHorBorders = function(oHtml){
-        return Math.max(0, 
-              (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
-    };
-    
-    apf.getVerBorders = function(oHtml){
-        return Math.max(0, 
-              (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
-    };
-
-    apf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(apf.getStyle(oHtml, "padding-left")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "padding-right")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
-    };
-    
-    apf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(apf.getStyle(oHtml, "padding-top")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "padding-bottom")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
-    };
-    
-    apf.getDiff = function(oHtml){
-        return [Math.max(0, parseInt(apf.getStyle(oHtml, "padding-left"))
-            + parseInt(apf.getStyle(oHtml, "padding-right"))
-            + parseInt(apf.getStyle(oHtml, "border-left-width"))
-            + parseInt(apf.getStyle(oHtml, "border-right-width")) || 0),
-            Math.max(0, parseInt(apf.getStyle(oHtml, "padding-top"))
-            + parseInt(apf.getStyle(oHtml, "padding-bottom"))
-            + parseInt(apf.getStyle(oHtml, "border-top-width"))
-            + parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0)];
-    };
-    
-    apf.getMargin = function(oHtml) {
-        return [Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-left")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "margin-right")) || 0)),
-            Math.max(0, (parseInt(apf.getStyle(oHtml, "margin-top")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "margin-bottom")) || 0))]
-    };
-    
-    apf.getHtmlInnerWidth = function(oHtml){
-        return (oHtml.offsetWidth
-            - (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0)
-            - (parseInt(apf.getStyle(oHtml, "border-right-width")) || 0));
-    }
-    apf.getHtmlInnerHeight = function(oHtml){
-        return (oHtml.offsetHeight
-            - (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)
-            - (parseInt(apf.getStyle(oHtml, "border-bottom-width")) || 0));
-    }
-    
     apf.getOpacity = function(oHtml) {
         return apf.getStyle(oHtml, "opacity");
     };

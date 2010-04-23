@@ -1196,10 +1196,8 @@ apf.slideshow = function(struct, tagName){
                 }
     
                 widthSum += w + boxDiff[0]
-                         + (parseInt(apf.getStyle(htmlPicBox, "margin-left")
-                             || apf.getStyle(htmlPicBox, "marginLeft")))
-                         + (parseInt(apf.getStyle(htmlPicBox, "margin-right")
-                             || apf.getStyle(htmlPicBox, "marginRight")));
+                         + (parseInt(apf.getStyle(htmlPicBox, "marginLeft")))
+                         + (parseInt(apf.getStyle(htmlPicBox, "marginRight")));
     
                 htmlPicBox.style.width = w + "px";
                 counter++;

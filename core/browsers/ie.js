@@ -186,7 +186,7 @@ apf.runIE = function(){
                 }
             });
         }
-    }
+    };
     
     /* I have no idea what below code should do
     
@@ -231,97 +231,47 @@ apf.runIE = function(){
                 ? htmlNode.lastChild 
                 : htmlNode.lastChild.previousSibling;
             
-    }
-    
-    apf.getHorBorders = function(oHtml){
-        return Math.max(0,
-              (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0))
     };
 
-    apf.getVerBorders = function(oHtml){
-        return Math.max(0,
-              (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))
-    };
-
-    apf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(oHtml.currentStyle["paddingLeft"]) || 0)
-            + (parseInt(oHtml.currentStyle["paddingRight"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0))
-    };
-
-    apf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(oHtml.currentStyle["paddingTop"]) || 0)
-            + (parseInt(oHtml.currentStyle["paddingBottom"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))
-    };
-
-    apf.getDiff = function(oHtml){
-        return [Math.max(0, (parseInt(oHtml.currentStyle["paddingLeft"]) || 0)
-            + (parseInt(oHtml.currentStyle["paddingRight"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0)),
-            Math.max(0, (parseInt(oHtml.currentStyle["paddingTop"]) || 0)
-            + (parseInt(oHtml.currentStyle["paddingBottom"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
-            + (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0))]
-    };
-    
-    apf.getMargin = function(oHtml) {
-        return [Math.max(0, (parseInt(oHtml.currentStyle["marginLeft"]) || 0)
-            + (parseInt(oHtml.currentStyle["marginRight"]) || 0)),
-            Math.max(0, (parseInt(oHtml.currentStyle["marginTop"]) || 0)
-            + (parseInt(oHtml.currentStyle["marginBottom"]) || 0))]
-    };
-    
     apf.getHtmlLeft = function(oHtml){
         return (oHtml.offsetLeft
             - (apf.isIE > 7 && parseInt(oHtml.parentNode.currentStyle["borderLeftWidth"]) || 0));
-    }
+    };
+
     apf.getHtmlRight = function(oHtml){
         var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
+        return (((p = oHtml.offsetParent).tagName == "BODY"
           ? apf.getWindowWidth()
           : p.offsetWidth)
             - oHtml.offsetLeft - oHtml.offsetWidth
             - (apf.isIE < 8 && parseInt(p.currentStyle["borderLeftWidth"]) || 0)
             - (parseInt(p.currentStyle["borderRightWidth"]) || 0));
-    }
+    };
+
     apf.getHtmlTop = function(oHtml){
         return (oHtml.offsetTop
             - (apf.isIE > 7 && parseInt(oHtml.offsetParent.currentStyle["borderTopWidth"]) || 0));
-    }
+    };
+
     apf.getHtmlBottom = function(oHtml){
         var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
+        return (((p = oHtml.offsetParent).tagName == "BODY"
           ? apf.getWindowHeight()
           : p.offsetHeight)
             - oHtml.offsetTop - oHtml.offsetHeight
             - (apf.isIE < 8 && parseInt(p.currentStyle["borderTopWidth"]) || 0)
             - (parseInt(p.currentStyle["borderBottomidth"]) || 0));
-    }
+    };
+
     apf.getBorderOffset = function(oHtml){
         return apf.isIE < 8 && [0,0] || [parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0,
                 parseInt(oHtml.currentStyle["borderTopWidth"]) || 0]
-    }
-    
-    apf.getHtmlInnerWidth = function(oHtml){
-        return (oHtml.offsetWidth
-            - (parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0)
-            - (parseInt(oHtml.currentStyle["borderRightWidth"]) || 0));
-    }
-    apf.getHtmlInnerHeight = function(oHtml){
-        return (oHtml.offsetHeight
-            - (parseInt(oHtml.currentStyle["borderTopWidth"]) || 0)
-            - (parseInt(oHtml.currentStyle["borderBottomWidth"]) || 0));
-    }
+    };
     
     apf.getOpacity = function(oHtml) {
         return parseInt(((oHtml.currentStyle["filter"] || "").match(/alpha\(opacity=(\d*)\)/) || [0,0])[1]) / 100;
     };
+    
     apf.setOpacity = function(oHtml, value){
         oHtml.style.filter = "alpha(opacity=" + Math.round(value * 100) + ")";
     };

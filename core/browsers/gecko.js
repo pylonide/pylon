@@ -137,34 +137,38 @@ apf.runGecko = function(){
     
     apf.getHtmlLeft = function(oHtml){
         return (oHtml.offsetLeft
-            + (parseInt(apf.getStyle(oHtml.parentNode, "border-left-width")) || 0));
-    }
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
+    };
+
     apf.getHtmlRight = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
           ? apf.getWindowWidth()
           : p.offsetWidth)
             - oHtml.offsetLeft - oHtml.offsetWidth
-            - (2 * (parseInt(apf.getStyle(p, "border-left-width")) || 0))
-            - (parseInt(apf.getStyle(p, "border-right-width")) || 0));
-    }
+            - (2 * (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+    };
+
     apf.getHtmlTop = function(oHtml){
         return (oHtml.offsetTop
-            + (parseInt(apf.getStyle(oHtml.parentNode, "border-top-width")) || 0));
-    }
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderTopWidth")) || 0));
+    };
+    
     apf.getHtmlBottom = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
           ? apf.getWindowHeight()
           : p.offsetHeight)
             - oHtml.offsetTop - oHtml.offsetHeight
-            - (2 * (parseInt(apf.getStyle(p, "border-top-width")) || 0))
-            - (parseInt(apf.getStyle(p, "border-bottom-width")) || 0));
-    }
+            - (2 * (parseInt(apf.getStyle(p, "borderTopWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+    };
+
     apf.getBorderOffset = function(oHtml){
-        return [-1 * (parseInt(apf.getStyle(oHtml, "border-left-width")) || 0),
-            -1 * (parseInt(apf.getStyle(oHtml, "border-top-width")) || 0)];
-    }
+        return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
+            -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
+    };
 }
 
 //#endif

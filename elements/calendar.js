@@ -299,45 +299,30 @@ apf.calendar = function(struct, tagName){
     };
     
     this.$getMargin = function(oHtml) {
-        if (apf.isIE) {
-            return [
-                (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
-                + (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0),
-                (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
-                + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
-            ];
-        }
-        else {
-            return [
-                parseInt(apf.getStyle(oHtml, "margin-right") || 0)
-                + parseInt(apf.getStyle(oHtml, "margin-left") || 0),
-                parseInt(apf.getStyle(oHtml, "margin-top") || 0)
-                + parseInt(apf.getStyle(oHtml, "margin-bottom") || 0)
-            ];
-        }
+        return [
+            (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0),
+            (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
+            + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
+        ];
     };
     
     this.$getFontSize = function(oHtml) {
         return apf.isIE
             ? parseInt(apf.getStyle(oHtml, "fontSize"))
             : parseInt(apf.getStyle(oHtml, "font-size"));
-    }
+    };
     
     this.$getPadding = function(oHtml) {
-        return apf.isIE
-            ? [parseInt(apf.getStyle(oHtml, "paddingLeft"))
-               + parseInt(apf.getStyle(oHtml, "paddingRight")),
-              parseInt(apf.getStyle(oHtml, "paddingTop"))
-               + parseInt(apf.getStyle(oHtml, "paddingBottom"))]
-            : [parseInt(apf.getStyle(oHtml, "padding-left"))
-               + parseInt(apf.getStyle(oHtml, "padding-right")),
-              parseInt(apf.getStyle(oHtml, "padding-top")) 
-               + parseInt(apf.getStyle(oHtml, "padding-bottom"))];
-    }
+        return [parseInt(apf.getStyle(oHtml, "paddingLeft"))
+            + parseInt(apf.getStyle(oHtml, "paddingRight")),
+            parseInt(apf.getStyle(oHtml, "paddingTop"))
+            + parseInt(apf.getStyle(oHtml, "paddingBottom"))];
+    };
 
     this.$resize = function() {
         this.redraw(this.$calVars.currentMonth, this.$calVars.currentYear);
-    }
+    };
 
     this.redraw = function(month, year) {
         var w_firstYearDay = new Date(year, 0, 1),

@@ -274,13 +274,9 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     if ("getBoundingClientRect" in document.documentElement) { 
         if (apf.doesNotIncludeMarginInBodyOffset && o == document.body) {
             return [
-                o.offsetLeft + (parseFloat(apf.getStyle(o, apf.descPropJs
-                    ? "marginLeft"
-                    : "margin-top")) || 0),
+                o.offsetLeft + (parseFloat(apf.getStyle(o, "marginLeft")) || 0),
                   + (o.scrollLeft || 0),
-                o.offsetTop  + (parseFloat(apf.getStyle(o, apf.descPropJs
-                    ? "marginTop"
-                    : "margin-top")) || 0)
+                o.offsetTop  + (parseFloat(apf.getStyle(o, "marginTop")) || 0)
                   + (o.scrollTop || 0)
             ];
         }
@@ -302,10 +298,8 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         }
         
         if (inclSelf && !refParent) {
-            left += parseInt(apf.getStyle(o, apf.descPropJs 
-                ? "borderLeftWidth" : "border-left-width")) || 0
-            top  += parseInt(apf.getStyle(o, apf.descPropJs 
-                ? "borderTopWidth" : "border-top-width")) || 0;
+            left += parseInt(apf.getStyle(o, "borderLeftWidth")) || 0
+            top  += parseInt(apf.getStyle(o, "borderTopWidth")) || 0;
         }
 
         return [left - (corr ? 2 : 0), top - (corr ? 2 : 0)];
@@ -327,8 +321,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     var bw, bh, fl;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
-        bw = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, apf.descPropJs
-            ? "borderLeftWidth" : "border-left-width");
+        bw = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, "borderLeftWidth");
 
         wt += (apf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
             ? 2
@@ -353,8 +346,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         }
 
         //Border - Top
-        bh = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, apf.descPropJs
-            ? "borderTopWidth" : "border-top-width");
+        bh = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, "borderTopWidth");
         ht += (apf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
             ? 2
             : parseInt(bh) || 0) + o.offsetTop;
@@ -386,6 +378,62 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     }
 
     return [wt, ht];
+};
+
+apf.getHorBorders = function(oHtml){
+    return Math.max(0,
+          (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+};
+
+apf.getVerBorders = function(oHtml){
+    return Math.max(0,
+          (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
+};
+
+apf.getWidthDiff = function(oHtml){
+    return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+};
+
+apf.getHeightDiff = function(oHtml){
+    return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
+};
+
+apf.getDiff = function(oHtml){
+    return [Math.max(0, parseInt(apf.getStyle(oHtml, "paddingLeft"))
+        + parseInt(apf.getStyle(oHtml, "paddingRight"))
+        + parseInt(apf.getStyle(oHtml, "borderLeftWidth"))
+        + parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0),
+        Math.max(0, parseInt(apf.getStyle(oHtml, "paddingTop"))
+        + parseInt(apf.getStyle(oHtml, "paddingBottom"))
+        + parseInt(apf.getStyle(oHtml, "borderTopWidth"))
+        + parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0)];
+};
+
+apf.getMargin = function(oHtml) {
+    return [Math.max(0, (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0)),
+        Math.max(0, (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0))]
+};
+
+apf.getHtmlInnerWidth = function(oHtml){
+    return (oHtml.offsetWidth
+        - (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
+        - (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+};
+
+apf.getHtmlInnerHeight = function(oHtml){
+    return (oHtml.offsetHeight
+        - (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
+        - (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
 /**

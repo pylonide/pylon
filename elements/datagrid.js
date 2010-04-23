@@ -260,9 +260,7 @@ apf.datagrid = function(struct, tagName){
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0])
-                        - parseInt(apf.getStyle(oInt, apf.isIE 
-                            ? "paddingTop" 
-                            : "padding-top"));
+                        - parseInt(apf.getStyle(oInt, "paddingTop"));
                 }
                 return false;
             case 40:
@@ -326,9 +324,7 @@ apf.datagrid = function(struct, tagName){
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0]) 
-                        - parseInt(apf.getStyle(oInt, apf.isIE 
-                            ? "paddingTop" 
-                            : "padding-top"));
+                        - parseInt(apf.getStyle(oInt, "paddingTop"));
                 }
                 return false;
             case 34:
@@ -1006,8 +1002,7 @@ apf.datagrid = function(struct, tagName){
             
             apf.convertIframe(this.oIframe, true);
 
-            if (apf.getStyle(this.oDoc.documentElement, apf.isIE 
-              ? "overflowY" : "overflow-y") == "auto") {
+            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
                 //@todo ie only
                 this.oIframe.onresize = function(){
                     _self.$head.style.marginRight = 
@@ -1026,8 +1021,7 @@ apf.datagrid = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$container, apf.isIE 
-              ? "overflowY" : "overflow-y") == "auto") {
+            if (apf.getStyle(this.$container, "overflowY") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
                       _self.$container.scrollHeight > _self.$container.offsetHeight 

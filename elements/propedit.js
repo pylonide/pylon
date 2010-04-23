@@ -885,8 +885,7 @@ apf.propedit    = function(struct, tagName){
             
             apf.convertIframe(this.oIframe, true);
 
-            if (apf.getStyle(this.oDoc.documentElement, apf.isIE 
-              ? "overflowY" : "overflow-y") == "auto") {
+            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
                 //@todo ie only
                 this.oIframe.onresize = function(){
                     _self.$head.style.marginRight = 
@@ -911,8 +910,7 @@ apf.propedit    = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$body, apf.isIE 
-              ? "overflowY" : "overflow-y") == "auto") {
+            if (apf.getStyle(this.$body, "overflowY") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
                       _self.$body.scrollHeight > _self.$body.offsetHeight 
