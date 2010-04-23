@@ -56,6 +56,9 @@ apf.codeeditor = function(struct, tagName){
 
     //this.realtime          = false;
     this.syntax            = "text";
+    this.tabsize           = 4;
+    this.softtabs          = true;
+    this.syntax            = "text";
     this.value             = "";
     this.multiline         = true;
     this.caching           = true;
@@ -65,9 +68,16 @@ apf.codeeditor = function(struct, tagName){
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
-    this.$booleanProperties["realtime"]    = true;
+    this.$booleanProperties["realtime"] = true;
+    this.$booleanProperties["activeline"] = true;
+    this.$booleanProperties["caching"] = true;
+    this.$booleanProperties["readonly"] = true;
+    this.$booleanProperties["showinvisibles"] = true;
+    this.$booleanProperties["softtabs"] = true;
+
     this.$supportedProperties.push("value", "realtime", "syntax", 
-        "activeline", "selectstyle", "caching", "readonly");
+        "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
+        "tabsize", "softtabs");
 
     /**
      * @attribute {String} value the text of this element
@@ -107,6 +117,9 @@ apf.codeeditor = function(struct, tagName){
         }
         
         doc.setMode(this.$modes[this.syntax]);
+        doc.setTabSize(parseInt(this.tabsize));
+        doc.setUseSoftTabs(this.softtabs);
+        
         this.$editor.setDocument(doc);
     };
     
@@ -129,6 +142,18 @@ apf.codeeditor = function(struct, tagName){
     
     this.$propHandlers["selectstyle"] = function(value){
         this.$editor.setSelectionStyle(value);
+    };
+
+    this.$propHandlers["showinvisibles"] = function(value, prop, initial){
+        this.$editor.setShowInvisibles(value);
+    };
+
+    this.$propHandlers["tabsize"] = function(value, prop, initial){
+        this.$editor.getDocument().setTabSize(parseInt(value));
+    };
+    
+    this.$propHandlers["softtabs"] = function(value, prop, initial){
+        this.$editor.getDocument().setUseSoftTabs(value);
     };
     
     this.addEventListener("xmlupdate", function(e){
