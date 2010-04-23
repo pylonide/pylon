@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="net">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -520,12 +520,12 @@
                                     foreach([playlist]) {
                                         <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playPlaylist(mdlPlaylist.queryNode('{apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)}').getAttribute('id'))"/>
                                         <a:checkbox top="{cbx_top}" left="11" class="macro_cbx" id="cb{mdlPlaylist.queryNode(apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)).getAttribute('id')}"></a:checkbox>
-                                        btn_top += 52;
-                                        cbx_top += 52;
+                                        btn_top += 50;
+                                        cbx_top += 50;
                                     }
                                     
                                     <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playCheckedPlaylists();" />
-                                    <a:label top="{btn_top + 4}" left="67">Play checked playlists</a:label>
+                                    <a:label top="{btn_top + 4}" left="72">Play checked playlists</a:label>
                                     
                                     <div class="vertical_line" style="top:{line_top}px; height:{btn_top - line_top + 13}px;"></div>
                                     <div class="horizontal_line" style="top:{btn_top + 11}px;"></div>
