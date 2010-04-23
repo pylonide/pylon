@@ -20,6 +20,7 @@
                 <a:checkbox id="selectStyle" label="Full line selection" values="line|text" checked="true"/>
                 <a:checkbox id="highlightActive" label="Highlight active line" checked="true"/>
                 <a:checkbox id="showInvisibles" label="Show invisibles" checked="true"/>
+                <a:checkbox id="readOnly" label="Read only" checked="false" />
             </a:bar>
         </a:toolbar>
         
@@ -42,13 +43,14 @@
           activeline  = "{highlightActive.value}"
           tabsize     = "{[@tabsize] || 4}"
           softtabs    = "[@softtabs]"
+          readonly    = "{readOnly.value}"        
           showinvisibles = "{showInvisibles.value}" />        
 
         <a:toolbar align="right" height="26">
             <a:bar>
                 <a:dropdown value="[{tree.selected}::@syntax]">
                     <a:item value="js">Javascript</a:item>
-                    <a:item value="css">Css</a:item>
+                    <a:item value="css">CSS</a:item>
                     <a:item value="html">HTML</a:item>
                 </a:dropdown>            
                 <a:dropdown value="[{tree.selected}::@tabsize]">
