@@ -2146,179 +2146,13 @@
         </a:empty>
     </a:presentation>
 </a:dropdown>
-<a:list name="list">
-    <a:style><![CDATA[
-        .debugg2010list {
-            overflow            : auto;
-            position            : relative;
-            border              : 1px solid #c3c3c3;
-            background-color    : #d6dde5;
-            cursor              : default;
-            background-position : right 0;
-            background-repeat   : repeat-y;
-        }
-    
-        .white {
-            background : white;
-        }
-    
-        .debugg2010list, 
-        .dragdebugg2010list {
-            font-family : Tahoma;
-            font-size   : 8pt;
-        }
-    
-        .debugg2010list DIV, 
-        .dragdebugg2010list {
-            padding       : 0;
-            height        : 30px;
-            border-top    : 1px solid #d6dde5;
-            border-bottom : 1px solid #d6dde5;
-            overflow      : hidden;
-            position      : relative;
-        }
-        
-        .debugg2010list .even {
-            
-        }
-        
-        .debugg2010list .selected {
-            background-image    : url(images/debugger_list_selected.png);
-            background-position : 0 0;
-            background-repeat   : repeat-x;
-            border-top          : 1px solid #1167ab;
-            border-bottom       : 1px solid #1167ab;
-        }
-    
-        .debugg2010list SPAN.caption, 
-        .dragdebugg2010list SPAN.caption {
-            padding    : 1px 0 0 2px;
-            background : no-repeat 1px center;
-            height     : 32px;
-            margin     : 0;
-            position   : absolute;
-            top        : 0;
-            left       : 0;
-            right      : 0;
-        }
-    
-        .debugg2010list U, 
-        .dragdebugg2010list U {
-            text-decoration : none;
-            color           : black;
-            cursor          : default;
-            text-decoration : none;
-            white-space     : nowrap;
-            position        : absolute;
-            top             : 0;
-            left            : 0;
-            right           : 0;
-            height          : 30px;
-            padding         : 2px 0 0 46px;
-        }
-    
-        .debugg2010listFocus .indicate U {
-        }
-    
-        .debugg2010list .selected U {
-            color : #d6dde5;
-        }
-        
-        .debugg2010listFocus .selected U, 
-        .dragdebugg2010list U {
-            color : white;
-        }
-    
-        .debugg2010list #txt_rename {
-            border      : 1px solid #bbb;
-            padding     : 1px 15px 1px 1px;
-            font-family : Tahoma;
-            font-size   : 8pt;
-            color       : black;
-            word-break  : keep-all;
-            overflow    : visible;
-            margin-top  : 0px;
-            cursor      : text;
-            height      : 13px;
-            display     : block;
-            outline     : none;
-        }
-    
-        .debugg2010list .empty, 
-        .debugg2010list .offline, 
-        .debugg2010list .loading {
-            text-align  : center;
-            padding     : 8px 0 0 5px;
-            color       : #AAA;
-            font-weight : normal;
-        }
-    
-        .shortdebugg2010list {
-            border     : 0;
-            overflow-y : auto;
-            overflow-x : hidden;
-            max-height : 90px;
-            width      : auto;
-        }
-        
-        .debugg2010listDrop {
-            border : 1px solid #25a8e7;
-        }
-    
-        .dragdebugg2010list_multiple {
-            border     : 2px solid black;
-            width      : 10px;
-            height     : 5px;
-            padding    : 0;
-            background : none;
-        }
-    
-        .dragdebugg2010list_multiple SPAN.caption {
-            display : none;
-        }
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main 
-          container = "."
-          minwidth  = "100"
-          minheight = "50">
-            <div class="debugg2010list">
-            </div>
-        </a:main>
-        <a:item
-          class   = "."
-          caption = "span/u"
-          icon    = "span"
-          select  = ".">
-            <div>
-                <span class="caption">
-                    <u>-</u>
-                </span>
-            </div>
-        </a:item>
-        <a:dragindicator>
-            <div class="dragdebugg2010list">
-                <span>
-                    <u>-</u>
-                </span>
-            </div>
-        </a:dragindicator>
-        <a:loading>
-            <div class="loading">Loading...</div>
-        </a:loading>
-        <a:empty caption=".">
-            <div class="message">-</div>
-        </a:empty>
-    </a:presentation>
-</a:list>
 <a:list name="macro_list">
     <a:style><![CDATA[
         .macro_list {
             overflow            : auto;
             position            : relative;
             border              : 1px solid #c3c3c3;
-            border-top          :0;
+            border-top          : 0;
             border-bottom       : 0;
             background-color    : #c9d6e1;
             cursor              : default;
@@ -2346,7 +2180,7 @@
             position      : relative;
             display       : block;
             margin        : 0;
-            color         : #1167ab;
+            color         : #333;/* #1167ab; */
         }
         
         .macro_list DIV SPAN .ico {
@@ -2370,7 +2204,7 @@
         .macro_list .hover {
             border-top       : 1px solid #d6dde5;
             border-bottom    : 1px solid #d6dde5;
-            color            : #1167ab;
+            color            : #333; /* #1167ab; */
             background-image : none;
             background-color : #d6dde5;
         }
@@ -2385,7 +2219,7 @@
             border-bottom       : 1px solid #1167ab;
             color               : white;
             background-image    : url(images/macro_list_selected.png);
-            background-position : 0 0;
+            background-position : 0 50%;
             background-repeat   : repeat-x;
         }
     
@@ -2484,6 +2318,72 @@
             float:left;
             
         }
+        
+        /* BIGLIST */
+        .biglist DIV {
+            padding : 3px 3px 3px 3px;
+            font-size : 11px;
+            position : relative;
+            height:26px;
+        }
+        
+        .biglist SPAN.caption {
+            height:32px;
+        }
+        
+        .biglist SPAN.caption U {
+            font-weight:bold;
+            height:30px;
+            padding:2px 0 0 49px;
+        }
+        
+        .biglist SPAN.caption U .size {
+            position:absolute;
+            top:3px;
+            right:9px;
+            font-size : 9px;
+            font-weight:normal;
+        }
+        
+        .biglist SPAN.caption U .status {
+            width  : 40px;
+            height:9px;
+            text-align : right;
+            font-size : 9px;
+            font-weight:normal;
+            position:absolute;
+            top:3px;
+            left:0;
+        }
+        
+        .biglist SPAN.caption U .localname {
+            width  : 40px;
+            height:11px;
+            text-align : right;
+            font-size : 9px;
+            font-weight:normal;
+            position:absolute;
+            top:18px;
+            left:0;
+        }
+        
+        .biglist SPAN.caption U .url {
+            position:absolute;
+            top:16px;
+            left:49px;
+            font-size : 9px;
+            display : block;
+            width : 100%;
+            overflow : hidden;
+            margin : 3px 0 0 0;
+            white-space : nowrap;
+            font-weight:normal;
+        }
+        
+        .biglist .hover SPAN .ico {
+            display : none;
+        }
+        
         
     ]]></a:style>
 

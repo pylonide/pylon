@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="browse">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="net">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -285,8 +285,8 @@
                 <a:list id="tlist" 
                   align = "left-splitter" 
                   width = "200" 
-                  skin  = "debugger_list"
-                  class = "tplist"
+                  skin  = "macro_list"
+                  class = "biglist"
                   model = "$apf_ide_mdlTeleport"
                   each  = "http|markup|skin|rpc|webdav|xmpp"
                   border = "1 1 0 1">
@@ -428,7 +428,7 @@
             <a:page caption="Macros" id="macro" render="runtime">
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
-                        <a:window 
+                        <!--a:window 
                             id      = "winNoextension"
                             skin    = "alert"
                             modal   = "true"
@@ -439,7 +439,7 @@
                         >
                             <a:label id="lblIE">To use this feature you need to install the o3 browser extension. <br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
                             <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 browser extension.<br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
-                        </a:window>
+                        </a:window-->
                         
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
                             <a:toolbar
@@ -459,8 +459,7 @@
                                 model    = "mdlMacro"
                                 each     = "[test]"
                                 caption  = "[@name]"
-                                skin     = "macro_list"
-                            >
+                                skin     = "macro_list">
                                 <a:drag match="[test]" copy="true" />
                             </a:list>
                             <a:toolbar
@@ -478,22 +477,16 @@
                             </a:toolbar>
 
                         <!--/a:bar-->
+                        <a:toolbar align="right" height="25" border = "0 0 1 0">
+                            <a:bar>
+                                <a:label style="font-weight:bold;margin:3px 10px 0 4px;">Playlist Creator</a:label>
+                                
+                                <a:divider />
+                                <a:button onclick="atPlaylist.undo()">Undo</a:button>
+                                <a:button onclick="atPlaylist.redo()">Redo</a:button>
+                            </a:bar>
+                        </a:toolbar>
                         <a:bar skin="basic" border="1 0 0 1" align="right" class="netview">
-                            <a:toolbar
-                              height = "25"
-                              left   = "0"
-                              top    = "0"
-                              right  = "0"
-                              border = "0 0 1 0"
-                              >
-                                <a:bar>
-                                    <a:label style="font-weight:bold;margin:3px 10px 0 4px;">Playlist Creator</a:label>
-                                    
-                                    <a:divider />
-                                    <a:button onclick="atPlaylist.undo()">Undo</a:button>
-                                    <a:button onclick="atPlaylist.redo()">Redo</a:button>
-                                </a:bar>
-                            </a:toolbar>
                             <a:tree
                               style="margin-left:61px;"
                               actiontracker = "atPlaylist"
@@ -597,7 +590,7 @@
                             },
                             product : 'O3Demo'
                         });
-                        apf.$debugwin.apf.uirecorder.$o3 = $o3;
+                        //apf.$debugwin.apf.uirecorder.$o3 = $o3;
 
                         // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
                         if ($o3) {
