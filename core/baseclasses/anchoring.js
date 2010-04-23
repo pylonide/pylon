@@ -136,10 +136,10 @@ apf.Anchoring = function(){
         this.removeEventListener("DOMNodeInserted", reparent); 
 
         if (this.right)
-            this.$ext.style.left = apf.getHtmlLeft(this.$ext);
+            this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
 
         if (this.bottom)
-            this.$ext.style.top = apf.getHtmlTop(this.$ext);
+            this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";
 
         this.removeEventListener("prop.visible", visibleHandler);
 
@@ -236,7 +236,7 @@ apf.Anchoring = function(){
         if (rules)
             l.queue(oldParent);
 
-        if (!this.$rule_v && !this.$rule_h)
+        if (!this.$rule_v && !this.$rule_h && !this.$rule_header)
             return;
 
         this.$rule_header = getRuleHeader.call(this);
@@ -378,7 +378,12 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.right = right + "px";
             }
-            if (hasWidth) {
+
+            if (hasLeft && hasRight) { //right != null && left != null) {
+                rules.push("oHtml.style.width = (pWidth - (" + right
+                    + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
+            }
+            else if (hasWidth) {
                 if (parseInt(width) != width) {
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
@@ -393,11 +398,6 @@ apf.Anchoring = function(){
                             : this.maxwidth)
                         : this.minwidth) - this.$hordiff) + "px";
                 }
-            }
-
-            if (hasLeft && hasRight) { //right != null && left != null) {
-                rules.push("oHtml.style.width = (pWidth - (" + right
-                    + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
             }
 
             this.$rule_h = (rules.length
@@ -434,7 +434,11 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.bottom = bottom + "px";
             }
-            if (hasHeight) {
+            if (hasTop && hasBottom) { //bottom != null && top != null) {
+                rules.push("oHtml.style.height = (pHeight - (" + bottom +
+                    ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
+            }
+            else if (hasHeight) {
                 if (parseInt(height) != height) {
                     height = setPercentage(height, "pHeight");
                     rules.push("oHtml.style.height = Math.max(" 
@@ -449,11 +453,6 @@ apf.Anchoring = function(){
                             : this.maxheight)
                         : this.minheight) - this.$verdiff) + "px";
                 }
-            }
-
-            if (hasTop && hasBottom) { //bottom != null && top != null) {
-                rules.push("oHtml.style.height = (pHeight - (" + bottom +
-                    ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
             }
 
             this.$rule_v = (rules.length

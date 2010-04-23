@@ -29,7 +29,9 @@ apf.XhtmlBodyElement = function(struct, tagName){
     this.implement(apf.ContentEditable2);
     //#endif
     
+    //#ifdef __WITH_CONTENTEDITABLE
     this.$coreHtml = true;
+    //#endif
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (!this.ownerDocument.body)

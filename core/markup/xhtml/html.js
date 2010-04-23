@@ -31,9 +31,11 @@
 apf.XhtmlHtmlElement = function(struct, tagName){
     this.$init(tagName || "html", apf.NODE_VISIBLE, struct);
     
+    //#ifdef __WITH_CONTENTEDITABLE
     this.$coreHtml   = true;
-    
     this.$ext        = document.documentElement;
+    //#endif
+    
     this.$int        = document.body;
     this.$tabList    = []; //Prevents documentElement from being focussed
     this.$focussable = apf.KEYBOARD;

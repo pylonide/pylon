@@ -353,16 +353,6 @@ apf.AmlNode = function(){
         function triggerUpdate(){
             amlNode.$pHtmlNode = _self.canHaveChildren ? _self.$int : document.body;
 
-            //Signal node and all it's ancestors
-            amlNode.dispatchEvent("DOMNodeInserted", {
-                $beforeNode         : beforeNode,
-                relatedNode         : _self,
-                $isMoveWithinParent : isMoveWithinParent,
-                $oldParentHtmlNode  : oldParentHtmlNode,
-                $oldParent          : oldParent,
-                bubbles             : true
-            });
-
             //@todo this is a hack, a good solution should be found
             var iframelist;
             var containsIframe = (amlNode.$ext && amlNode.$ext.nodeType == 1 
@@ -380,6 +370,16 @@ apf.AmlNode = function(){
                         beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null)}
                 }
             }
+            
+            //Signal node and all it's ancestors
+            amlNode.dispatchEvent("DOMNodeInserted", {
+                $beforeNode         : beforeNode,
+                relatedNode         : _self,
+                $isMoveWithinParent : isMoveWithinParent,
+                $oldParentHtmlNode  : oldParentHtmlNode,
+                $oldParent          : oldParent,
+                bubbles             : true
+            });
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;

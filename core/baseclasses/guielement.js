@@ -134,6 +134,8 @@ apf.GuiElement = function(){
         if (this.parentNode) {
             // #ifdef __AMLTABLE
             if (this.parentNode.localName == "table") {
+                if (this.$disableCurrentLayout)
+                    this.$disableCurrentLayout();
                 this.parentNode.register(this);
                 this.$disableCurrentLayout = null;
                 return type == "table";
@@ -142,6 +144,8 @@ apf.GuiElement = function(){
 
             // #ifdef __AMLVBOX || __AMLHBOX
             if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+                if (this.$disableCurrentLayout)
+                    this.$disableCurrentLayout();
                 this.parentNode.register(this);
                 this.$disableCurrentLayout = null;
                 return type == this.parentNode.localName;

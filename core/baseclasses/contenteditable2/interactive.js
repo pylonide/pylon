@@ -68,8 +68,9 @@
         var pos1 = isBody ? [0,0] : apf.getAbsolutePosition(pHtmlNode, null, true);
         pos1[2] = isBody ? apf.getWindowWidth() : pHtmlNode.offsetWidth;
         pos1[3] = isBody ? apf.getWindowHeight() : pHtmlNode.offsetHeight;
-        //@todo what about body here?
-        var pos2 = apf.getAbsolutePosition(lastReparent ? lastReparent.$int : el.$ext.parentNode, null, true);
+        var lastPHtmlNode = lastReparent ? lastReparent.$int : el.$ext.parentNode;
+        var pos2 = lastPHtmlNode.tagName == "BODY"
+            ? [0,0] : apf.getAbsolutePosition(lastPHtmlNode, null, true);
 
         amlNode.$int.appendChild(htmlNode);
         //amlNode.$int.appendChild(el.$ext);
@@ -649,6 +650,9 @@
         apf.setStyleClass(dragIndicator1, "indicate_common", 
             ["indicate_vbox", "indicate_hbox", "indicate_table", "indicate_common"]);
 
+        if (pEl.localName == "html")
+            pEl = pEl.ownerDocument.body;
+
         var container = pEl.$int;
         var isBody    = pEl.$int.tagName == "BODY";
         var htmlEl = isDrag ? outline : el.$ext;
@@ -708,7 +712,7 @@
     function setStickyEdges(el){
         var s = el.$stick, d = dragInfo, t = el.$stuck || (el.$stuck = [false, false, false, false]);
         var setOpp = false;
-    
+
         if (!apf.config.snapcontainer)
             return;
     

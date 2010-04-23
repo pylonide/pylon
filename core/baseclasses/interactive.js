@@ -180,7 +180,12 @@ apf.Interactive = function(){
         #endif */
         
         apf.dragMode  = true;
-        overThreshold = false;
+        if (reparent) {
+            _self.dispatchEvent("beforedrag")
+            overThreshold = true;
+        }
+        else
+            overThreshold = false;
         
         //#ifdef __WITH_POPUP
         apf.popup.forceHide();

@@ -117,6 +117,11 @@ apf.vbox = function(struct, tagName){
         amlNode.$propHandlers["margin"]     = this.$updateObj.updateTrigger;
         
         amlNode.addEventListener("prop.visible", visibleHandler);
+        
+        amlNode.$ext.style.left   = 
+        amlNode.$ext.style.right  = 
+        amlNode.$ext.style.top    = 
+        amlNode.$ext.style.bottom = "";
 
         l.queue(this.$ext, this.$updateObj);
         this.$update = true;
@@ -136,6 +141,14 @@ apf.vbox = function(struct, tagName){
         amlNode.removeEventListener("prop.visible", visibleHandler);
         
         amlNode.$altExt = null;
+        
+        //Clear css properties and set layout
+        if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
+            //e.currentTarget.$setLayout();
+            amlNode.$ext.style.display = amlNode.visible ? "block" : "none";
+            amlNode.$ext.style.verticalAlign = "";
+            amlNode.$ext.style[CSSFLOAT] = "";
+        }
         
         l.queue(this.$ext, this.$updateObj);
         this.$update = true;
@@ -161,14 +174,6 @@ apf.vbox = function(struct, tagName){
         }
         else if (e.relatedNode == this){
             this.unregister(e.currentTarget);
-            
-            //Clear css properties and set layout
-            if (e.currentTarget.nodeFunc == apf.NODE_VISIBLE) {
-                //e.currentTarget.$setLayout();
-                e.currentTarget.$ext.style.display = e.currentTarget.visible ? "block" : "none";
-                e.currentTarget.$ext.style.verticalAlign = "";
-                e.currentTarget.$ext.style[CSSFLOAT] = "";
-            }
         }
     });
 
