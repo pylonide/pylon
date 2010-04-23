@@ -219,8 +219,10 @@ apf.model = function(struct, tagName){
         if (!amlNode || !amlNode.load) //hasFeature(apf.__DATABINDING__))
             return this;
 
+        var isReloading = amlNode.$model == this;
+
         //Remove previous model
-        if (amlNode.$model && amlNode.$model != this)
+        if (amlNode.$model && !isReloading)
             amlNode.$model.unregister(amlNode);
 
         //Register the aml node
@@ -249,8 +251,9 @@ apf.model = function(struct, tagName){
                 amlNode.clear("empty");
         }
 
-        var p, node, list = amlNode.$propsUsingMainModel;
+        var p, node, list = amlNode.$propsUsingMainModel, id = amlNode.$uniqueId;
         for (var prop in list) {
+            this.$unbindXmlProperty(amlNode, prop);
             p = this.$bindXmlProperty(amlNode, prop, 
                     list[prop].xpath, list[prop].optimize);
             
@@ -262,7 +265,7 @@ apf.model = function(struct, tagName){
                     this.$waitForXml(amlNode, prop);
             }
         }
-
+        
         return this;
     };
 

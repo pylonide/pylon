@@ -258,7 +258,8 @@
                     clearTimeout(lastAmlNode[4]);
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
-                  && !apf.isChildOf(htmlNode, amlNode.$int, true)) {
+                  && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
+                    debugger;
                     if (el.$adding) {
                         lastAmlNode = [];
                         doReparentDrag(el, amlNode, ev);
@@ -642,8 +643,9 @@
     function setDragInfo(el, pEl, isDrag) {
         apf.setStyleClass(dragIndicator1, "indicate_common", 
             ["indicate_vbox", "indicate_hbox", "indicate_table", "indicate_common"]);
-    
+
         var container = pEl.$int;
+        var isBody    = pEl.$int.tagName == "BODY";
         var htmlEl = isDrag ? outline : el.$ext;
         var d = dragInfo = {
             left   : apf.getHtmlLeft(htmlEl),
@@ -655,10 +657,11 @@
         d.cheight = Math.round(d.height/2);
         
         //Container
-        d.container = apf.getAbsolutePosition(container, null, true);
+        d.container = isBody ? [0,0] : apf.getAbsolutePosition(container, null, true); //@todo should check for position relative..
+        if (isBody) var m = apf.getMargin(container);
         d.container.push(
-            apf.getHtmlInnerWidth(container), 
-            apf.getHtmlInnerHeight(container));
+            (isBody ? apf.getWindowWidth() : apf.getHtmlInnerWidth(container)), 
+            (isBody ? apf.getWindowHeight() : apf.getHtmlInnerHeight(container)));
     
         //Elements
         var els = pEl.getElementsByTagName("*", true); //Fetch all siblings incl me

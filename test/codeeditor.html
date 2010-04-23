@@ -4,9 +4,9 @@
         <script src="../apf.js"></script>
         
         <style type="text/css" media="screen">
-        	html, body {
-        		overflow: hidden;
-        	}
+            html, body {
+                overflow: hidden;
+            }
         
         </style>
     </head>
@@ -23,43 +23,41 @@
             </a:bar>
         </a:toolbar>
         
-        <a:tree 
-        	id="tree"
-        	model="mdlDocs" 
-        	each="[doc|folder]" 
-			caption="[@caption]" 
-			icon="[@icon]" 
-			align="left-splitter" 
-			width="200" 
-			startcollapsed="false"
-		/>
+        <a:tree id="tree"
+          model   = "mdlDocs" 
+          each    = "[doc|folder]" 
+          caption = "[@caption]" 
+          icon    = "[@icon]" 
+          align   = "left-splitter" 
+          width   = "200" 
+          startcollapsed = "false"
+        />
         
-        <a:codeeditor 
-        	id="ce" 
-        	align="right"
-        	model="{tree.selected}" 
-        	value="[text()]" 
-        	syntax="[@syntax]" 
-        	selectstyle="{selectStyle.value}" 
-        	activeline="{highlightActive.value}"
-        	showinvisibles="{showInvisibles.value}"
-        	tabsize="{[@tabsize] || 4}"
-        	softtabs="[@softtabs]"
-       	/>        
+        <a:codeeditor id="ce" 
+          align       = "right"
+          model       = "{tree.selected}" 
+          value       = "[text()]" 
+          syntax      = "[@syntax]" 
+          selectstyle = "{selectStyle.value}" 
+          activeline  = "{highlightActive.value}"
+          tabsize     = "{[@tabsize] || 4}"
+          softtabs    = "[@softtabs]"
+          showinvisibles = "{showInvisibles.value}" />        
+
         <a:toolbar align="right" height="26">
-        	<a:bar>
+            <a:bar>
                 <a:dropdown value="[{tree.selected}::@syntax]">
                     <a:item value="js">Javascript</a:item>
                     <a:item value="css">Css</a:item>
                     <a:item value="html">HTML</a:item>
-                </a:dropdown>        	
-				<a:dropdown value="[{tree.selected}::@tabsize]">
-	                <a:item value="2">2</a:item>
-	                <a:item value="3">3</a:item>
-	                <a:item value="4">4</a:item>
-	                <a:item value="8">8</a:item>
-	            </a:dropdown>
-	            <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
+                </a:dropdown>            
+                <a:dropdown value="[{tree.selected}::@tabsize]">
+                    <a:item value="2">2</a:item>
+                    <a:item value="3">3</a:item>
+                    <a:item value="4">4</a:item>
+                    <a:item value="8">8</a:item>
+                </a:dropdown>
+                <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
             </a:bar>
         </a:toolbar>
         
@@ -67,36 +65,36 @@
             <docs>
                 <folder caption="Homepage" icon="icoXPFolder.gif">
                     <doc 
-                    	caption="juhu.js" 
-                    	icon="icoDocument.gif" 
-                    	syntax="js"
-                    	tabsize="2"
-                    	softtabs="true"
-                   	><![CDATA[function foo(items) {
+                        caption="juhu.js" 
+                        icon="icoDocument.gif" 
+                        syntax="js"
+                        tabsize="2"
+                        softtabs="true"
+                       ><![CDATA[function foo(items) {
     for (var i=0; i<items.length; i++) {
         alert(items[i] + "juhu";
     }
 }]]>
-					</doc>
+                    </doc>
                     <doc 
-                    	caption="styles.css" 
-                    	icon="icoDocument.gif"                    	
+                        caption="styles.css" 
+                        icon="icoDocument.gif"                        
                         syntax="css"
-                    	tabsize="4"
-                    	softtabs="true"                        
-                   	 ><![CDATA[.text-layer {
+                        tabsize="4"
+                        softtabs="true"                        
+                        ><![CDATA[.text-layer {
     font-family: Monaco, "Courier New", monospace;
     font-size: 12px;
     cursor: text;
 }]]>
-					</doc>
+                    </doc>
                     <doc 
-                    	caption="index.html" 
-                    	icon="icoDocument.gif" 
-                    	syntax="html"
-                    	tabsize="4"
-                    	softtabs="false"
-                   	><![CDATA[<html>
+                        caption="index.html" 
+                        icon="icoDocument.gif" 
+                        syntax="html"
+                        tabsize="4"
+                        softtabs="false"
+                       ><![CDATA[<html>
 <head>
 
 <style type="text/css">
@@ -112,7 +110,7 @@
     <h1 style="color:red">Juhu Kinners</h1>
 </body>
 </html>]]>
-					</doc>
+                    </doc>
                 </folder>
             </docs>
         </a:model>

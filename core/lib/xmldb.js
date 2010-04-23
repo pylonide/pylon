@@ -235,6 +235,7 @@ apf.xmldb = new (function(){
 
     /**
      * @private
+     * @todo this is cleanup hell! Listeners should be completely rearchitected
      */
     this.$listeners = [];
     this.addNodeListener = function(xmlNode, o, uId){
@@ -250,21 +251,22 @@ apf.xmldb = new (function(){
         
         if (!uId) uId = String(o.$uniqueId);
         if (uId.charAt(0) == "p") {
-            uId = uId.split("|");
+            var sUId = uId.split("|");
             id = this.$listeners.push(function(){
                 //@todo apf3.0 should this be exactly like in class.js?
                 //@todo optimize this to check the async flag: parsed[3] & 4
                 
-                var amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
+                var amlNode = apf.all[sUId[1]]; //It's possible the aml node dissapeared in this loop.
                 if (amlNode) {
                     //var model = apf.all[uId[3]];
                     //var xpath = model.$propBinds[uId[1]][uId[2]].listen; //root
                     
-                    amlNode.$execProperty(uId[2], xmlNode);/*xpath
+                    amlNode.$execProperty(sUId[2], xmlNode);/*xpath
                         ? model.data.selectSingleNode(xpath)
                         : model.data);*/
                 }
             }) - 1;
+            this.$listeners[uId] = id;
         }
         else {
             //@todo apf3 potential cleanup problem
@@ -292,7 +294,12 @@ apf.xmldb = new (function(){
     this.removeNodeListener = function(xmlNode, o, id){
         var listen = xmlNode.getAttribute(this.xmlListenTag);
         var nodes = (listen ? listen.split(";") : []);
-        if (!id) id = o.$uniqueId
+        if (id && id.charAt(0) == "p") {
+            id = this.$listeners[id];
+            delete this.$listeners[id];
+        }
+        else
+            id = "e" + o.$uniqueId;
 
         for (var newnodes = [], i = 0; i < nodes.length; i++) {
             if (nodes[i] != id)
