@@ -44,6 +44,7 @@ apf.visualSelect = function(selection){
             div.style.display = "none";
             div.onmousedown = mousedown;
             div.self = this;
+            div.host = false;
             
             nodes.push(div);
             nodes[(div.type = pos.pop())] = div;

@@ -870,7 +870,7 @@ var apf = {
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
             try {
-                if (o.host)
+                if (o.host != undefined)
                     break;
             }
             catch(e){}

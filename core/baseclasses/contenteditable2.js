@@ -96,9 +96,9 @@ apf.ContentEditable2 = function() {
 
     this.editable = false;
     this.$canEdit = true;
-    /*this.$init(function(tagName, nodeFunc, struct){
-         this.$inheritProperties["editable"] = 2;
-    });*/
+    this.$init(function(tagName, nodeFunc, struct){
+         //this.$inheritProperties["editable"] = 2;
+    });
     
     this.$booleanProperties["editable"] = true;
     this.$propHandlers["editable"] = function(value, prop){
@@ -120,7 +120,7 @@ apf.ContentEditable2 = function() {
             }
             //#endif
             
-            if (this.$canEdit && this.$ext && this.$ext.tagName != "BODY") {
+            if (this.$canEdit && this.$ext && !this.$coreHtml) {
                 this.dragOutline = true; //@todo via config setting??
                 
                 //Make this element draggable
@@ -164,7 +164,7 @@ apf.ContentEditable2 = function() {
             apf.setStyleClass(this.$ext, "editable");
         }
         else {
-            if (this.$canEdit && this.$ext && this.$ext.tagName != "BODY") {
+            if (this.$canEdit && this.$ext && !this.$coreHtml) {
                 var n;
                 
                 //Unset draggable
@@ -226,6 +226,10 @@ apf.ContentEditable2 = function() {
                 }
             }
         }*/
+        
+        if (this.$ext && !this.$ext.host)
+            this.$ext.host = this;
+        
         if (!this.editable) {
             this.editable = apf.getInheritedAttribute(this, "editable");
             if (this.editable)

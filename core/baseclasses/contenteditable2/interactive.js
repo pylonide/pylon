@@ -47,6 +47,7 @@
             div.className = classes[i];
             div.style.zIndex = 1000000;
             div.style.display = "none";
+            div.host = false;
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...
         }
         
@@ -61,8 +62,13 @@
             return;
         
         var htmlNode = outline;
+        var pHtmlNode = amlNode.$int;
+        var isBody = pHtmlNode.tagName == "BODY";
 
-        var pos1 = apf.getAbsolutePosition(amlNode.$int, null, true);
+        var pos1 = isBody ? [0,0] : apf.getAbsolutePosition(pHtmlNode, null, true);
+        pos1[2] = isBody ? apf.getWindowWidth() : pHtmlNode.offsetWidth;
+        pos1[3] = isBody ? apf.getWindowHeight() : pHtmlNode.offsetHeight;
+        //@todo what about body here?
         var pos2 = apf.getAbsolutePosition(lastReparent ? lastReparent.$int : el.$ext.parentNode, null, true);
 
         amlNode.$int.appendChild(htmlNode);
@@ -75,10 +81,10 @@
         dragIndicator5.style.left = pos1[0] + "px";
         dragIndicator5.style.top = pos1[1] + "px";
         var diff = apf.getDiff(dragIndicator5);
-        dragIndicator5.style.width = (amlNode.$int.offsetWidth - diff[0]) + "px";
-        dragIndicator5.style.height = (amlNode.$int.offsetHeight - diff[1]) + "px";
+        dragIndicator5.style.width = (pos1[2] - diff[0]) + "px";
+        dragIndicator5.style.height = (pos1[3] - diff[1]) + "px";
         dragIndicator5.style.display = "block";
-    
+
         apf.tween.single(dragIndicator5, {
             type  : "fade",
             from  : 0,
@@ -259,12 +265,11 @@
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
                   && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
-                    debugger;
                     if (el.$adding) {
                         lastAmlNode = [];
                         doReparentDrag(el, amlNode, ev);
                     }
-                    
+
                     var ev = {clientX: e.clientX, clientY: e.clientY}
                     lastAmlNode = [amlNode, new Date().getTime(), e.clientX, e.clientY,
                         setTimeout(function(){
@@ -278,8 +283,8 @@
         
         common : function(l, t, htmlNode, e, change, snapDiff){
             var oOutline = this.$ext;
-            
             var prevTop = htmlNode.style.top;
+            
             var el = this;
             dragIndicator1.style.top = 
             apf.plane.plane.style.top = 
