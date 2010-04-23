@@ -927,6 +927,7 @@ apf.$debugwin = {
 
         //Initialize css for showing debugwindow
         if (this.first) {
+            var p, m, o;
             if (apf.isIE) {
                 apf.setStyleRule("BODY", "overflow", "", 0);
     
@@ -937,17 +938,17 @@ apf.$debugwin = {
                          apf.getStyle(document.documentElement, "overflowY")];
             }
             else {
-                p = [parseInt(apf.getStyle(document.body, "padding-top")),
-                     parseInt(apf.getStyle(document.body, "padding-right")),
-                     parseInt(apf.getStyle(document.body, "padding-bottom")),
-                     parseInt(apf.getStyle(document.body, "padding-left"))];
-                m = [parseInt(apf.getStyle(document.body, "margin-top")),
-                     parseInt(apf.getStyle(document.body, "margin-right")),
-                     parseInt(apf.getStyle(document.body, "margin-bottom")),
-                     parseInt(apf.getStyle(document.body, "margin-left"))];
+                p = [parseInt(apf.getStyle(document.body, "paddingTop")),
+                     parseInt(apf.getStyle(document.body, "paddingRight")),
+                     parseInt(apf.getStyle(document.body, "paddingBottom")),
+                     parseInt(apf.getStyle(document.body, "paddingLeft"))];
+                m = [parseInt(apf.getStyle(document.body, "marginTop")),
+                     parseInt(apf.getStyle(document.body, "marginRight")),
+                     parseInt(apf.getStyle(document.body, "marginBottom")),
+                     parseInt(apf.getStyle(document.body, "marginLeft"))];
                 o = [apf.getStyleRule("html", "overflow") || "auto",
-                         apf.getStyleRule("html", "overflow-x") || "auto",
-                         apf.getStyleRule("html", "overflow-y") || "auto"];
+                         apf.getStyleRule("html", "overflowX") || "auto",
+                         apf.getStyleRule("html", "overflowY") || "auto"];
             }
     
             apf.importCssString("\
