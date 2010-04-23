@@ -32,8 +32,8 @@
 apf.UndoData = function(settings, at){
     this.localName = "UndoData";
     this.extra     = {};
-    //#ifdef __WITH_RSB
-    this.rsbQueue  = {};
+    //#ifdef __WITH_RDB
+    this.rdbQueue  = {};
     //#endif
     apf.extend(this, settings);
 
@@ -42,8 +42,8 @@ apf.UndoData = function(settings, at){
     //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
-        //#ifdef __WITH_RSB
-        this.rsbArgs = settings.rsbArgs.slice();
+        //#ifdef __WITH_RDB
+        this.rdbArgs = settings.rdbArgs.slice();
         //#endif
     }
     //Constructor
@@ -69,9 +69,9 @@ apf.UndoData = function(settings, at){
 
         serialState = {
             action    : this.action,
-            //#ifdef __WITH_RSB
-            rsbModel  : this.rsbModel ? this.rsbModel.name : null,
-            rsbQueue  : this.rsbQueue,
+            //#ifdef __WITH_RDB
+            rdbModel  : this.rdbModel ? this.rdbModel.name : null,
+            rdbQueue  : this.rdbQueue,
             //#endif
             at        : this.at.name,
             timestamp : this.timestamp,
@@ -80,10 +80,10 @@ apf.UndoData = function(settings, at){
             extra     : {}
         };
 
-        //#ifdef __WITH_RSB
+        //#ifdef __WITH_RDB
         //this can be optimized
-        var rsb = this.rsbModel
-            ? this.rsbModel.rsb
+        var rdb = this.rdbModel
+            ? this.rdbModel.rdb
             : apf.remote;
         //#endif
 
@@ -138,7 +138,7 @@ apf.UndoData = function(settings, at){
               || apf.isChildOf(model.data, xmlNode, true)) {
                 xmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
                 return {
-                    xpath  : rsb.xmlToXpath(xmlNode, model.data, true),
+                    xpath  : rdb.xmlToXpath(xmlNode, model.data, true),
                     lookup : xmlId
                 };
             }
@@ -155,7 +155,7 @@ apf.UndoData = function(settings, at){
                 }
 
                 var obj = {
-                    xpath  : rsb.xmlToXpath(xmlNode, contextNode, true),
+                    xpath  : rdb.xmlToXpath(xmlNode, contextNode, true),
                     lookup : xmlId
                 }
 
@@ -173,9 +173,9 @@ apf.UndoData = function(settings, at){
     };
 
     this.$import = function(){
-        //#ifdef __WITH_RSB
-        if (this.rsbModel)
-            this.rsbModel = apf.nameserver.get("model", this.rsbModel);
+        //#ifdef __WITH_RDB
+        if (this.rdbModel)
+            this.rdbModel = apf.nameserver.get("model", this.rdbModel);
         //#endif
 
         if (this.argsModel) {
@@ -189,9 +189,9 @@ apf.UndoData = function(settings, at){
             if (!sLookup.count) sLookup.count = 0;
 
             var args = this.args,
-                //#ifdef __WITH_RSB
-                rsb  = this.rsbModel
-                    ? this.rsbModel.rsb
+                //#ifdef __WITH_RDB
+                rdb  = this.rdbModel
+                    ? this.rdbModel.rdb
                     : apf.remote,
                 //#endif
                 xmlNode, i, l, item, name;
@@ -241,21 +241,21 @@ apf.UndoData = function(settings, at){
             else
                 xmlNode = null;
 
-            return rsb.xpathToXml(xmlSerial.xpath, xmlNode || model.data);
+            return rdb.xpathToXml(xmlSerial.xpath, xmlNode || model.data);
         }
     };
     //#endif
 
-    //#ifdef __WITH_RSB
-    //Send RSB Message..
+    //#ifdef __WITH_RDB
+    //Send RDB Message..
     this.processRsbQueue = function(){
-        if (this.rsbModel)
-            this.rsbModel.rsb.processQueue(this);
+        if (this.rdbModel)
+            this.rdbModel.rdb.processQueue(this);
     };
 
     this.clearRsbQueue = function(){
-        this.rsbQueue = 
-        this.rsbModel = null;
+        this.rdbQueue =
+        this.rdbModel = null;
     };
     //#endif
 
@@ -279,7 +279,7 @@ apf.UndoData = function(settings, at){
         }
 
         if (!dataInstruction) {
-            //#ifdef __WITH_RSB
+            //#ifdef __WITH_RDB
             this.processRsbQueue();
             //#endif
             return at.$queueNext(this);

@@ -211,16 +211,16 @@ apf.actiontracker.actions = {
             for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
                     q[i].extra = {};
-                //#ifdef __WITH_RSB
-                if (q[0].rsbModel)
-                    q[i].rsbQueue = q[0].rsbQueue;
+                //#ifdef __WITH_RDB
+                if (q[0].rdbModel)
+                    q[i].rdbQueue = q[0].rdbQueue;
                 //#endif
                 apf.actiontracker.actions[q[i].action](q[i], false, at);
             }
-            //#ifdef __WITH_RSB
-            if (q[0].rsbModel) {
-                UndoObj.rsbModel = q[0].rsbModel;
-                UndoObj.rsbQueue = q[0].rsbQueue;
+            //#ifdef __WITH_RDB
+            if (q[0].rdbModel) {
+                UndoObj.rdbModel = q[0].rdbModel;
+                UndoObj.rdbQueue = q[0].rdbQueue;
             }
             //#endif
         }
