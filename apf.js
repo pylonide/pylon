@@ -2197,9 +2197,13 @@ var apf = {
     },
     // #endif
     
-    /**
-     * @private
-     */
+    fireEvent : function(el, type, e, capture){
+        if (el.dispatchEvent)
+            el.dispatchEvent(type, e, capture);
+        else
+            el.fireEvent("on" + type, e);
+    },
+    
     addListener : function(el, type, fn){
         if (el.addEventListener)
             el.addEventListener(type, fn, false);
@@ -2208,9 +2212,6 @@ var apf = {
         return this;
     },
     
-    /**
-     * @private
-     */
     removeListener : function(el, type, fn){
         if (el.removeEventListener)
             el.removeEventListener(type, fn, false);

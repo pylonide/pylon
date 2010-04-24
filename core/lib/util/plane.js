@@ -93,6 +93,9 @@ apf.plane = {
     //#endif
 
     hide : function(){
+        if (!this.plane)
+            return;
+        
         var isChild =
             //#ifdef __WITH_XMLDATABASE
             apf.isChildOf(this.plane, document.activeElement);

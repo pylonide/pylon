@@ -52,7 +52,7 @@
 }
 
 .editable .table, .editable .label, .editable .vbox, .editable .hbox{
-    border : 1px dotted gray;
+    outline : 1px dotted gray;
 }
 
 .editable .tb, .editable .ta{
@@ -120,4 +120,21 @@
 .buttonbar{
     position : relative;
     top : -2px;
+}
+
+.multiselect_container{
+    position   : absolute;
+    display    : none;
+    z-index    : 3000000;
+    overflow   : hidden;
+    min-height : 3px;
+    min-width  : 3px;
+}
+
+.multiselect_container div{
+    border : 1px solid #042c4b;
+    background : #0c8bf0;
+    position : absolute;
+    opacity: 0.4;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
 }

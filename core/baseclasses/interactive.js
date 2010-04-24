@@ -179,6 +179,9 @@ apf.Interactive = function(){
         dragOutline = false;        
         #endif */
         
+        if (_self.dispatchEvent("beforedragstart") === false)
+            return;
+        
         apf.dragMode  = true;
         if (reparent) {
             _self.dispatchEvent("beforedrag")
@@ -208,7 +211,7 @@ apf.Interactive = function(){
         }
         //#endif
 
-        var ext = reparent && dragOutline ? oOutline : _self.$ext;
+        var ext = (reparent || oOutline.self) && dragOutline ? oOutline : _self.$ext;
         var pos = posAbs
             ? apf.getAbsolutePosition(ext, ext.offsetParent, true) 
             : [parseInt(apf.getStyle(ext, "left")) || 0, 
@@ -220,7 +223,7 @@ apf.Interactive = function(){
         //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
             //_self.$disableAnchoring();
 
-        if (!reparent) {
+        if (!(reparent || oOutline.self)) {
             //#ifdef __WITH_OUTLINE
             if (posAbs && dragOutline) {
                 oOutline.className     = "drag";
@@ -302,8 +305,8 @@ apf.Interactive = function(){
         
         if (reparent)
             document.onmousemove(e);
-        else if (apf.isIE)
-            apf.window.$mousedown(e);
+        //else if (apf.isIE)
+            //apf.window.$mousedown(e);
 
         return false;
     };
@@ -411,8 +414,8 @@ apf.Interactive = function(){
                 resizeType = type;
             }
           }) === false) {
-            if (apf.isIE)
-                apf.window.$mousedown(e); //@todo is this necessary?
+            //if (apf.isIE)
+                //apf.window.$mousedown(e); //@todo is this necessary?
             return;
         }
         
@@ -529,8 +532,8 @@ apf.Interactive = function(){
                 _self.dispatchEvent("afterresize");
         };
         
-        if (apf.isIE)
-            apf.window.$mousedown(e);
+        //if (apf.isIE)
+            //apf.window.$mousedown(e);
         
         return false;
     }
@@ -759,6 +762,10 @@ apf.Interactive = function(){
     else {
         this.$pHtmlDoc = document;
         initOutline.call(this);
+    }
+    
+    this.$setOutline = function(o){
+        oOutline = o;
     }
     //#endif
     

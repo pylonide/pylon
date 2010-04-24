@@ -34,8 +34,8 @@ apf.visualSelect = function(selection){
 (function(){
     var nodes = [],
         pos   = ["n", "ne", "e", "se", "s", "sw", "w", "nw"],
-        div,
-        inited = false;
+        div, oOutline,
+        inited = false
 
     function init(){
         while (nodes.length != 8) {
@@ -50,16 +50,29 @@ apf.visualSelect = function(selection){
             nodes[(div.type = pos.pop())] = div;
         }
         
-        var oOutline = document.body.appendChild(document.createElement("div"));
-        oOutline.style.position  = "absolute";
-        oOutline.style.display   = "none";
-        oOutline.style.border    = "2px solid gray";
-        oOutline.style.zIndex    = 1000000;
-        oOutline.style.overflow  = "hidden";
-        oOutline.style.minHeight = "3px";
-        oOutline.style.minWidth  = "3px";
+        oOutline = document.body.appendChild(document.createElement("div"));
+        oOutline.className = "multiselect_container";
+        oOutline.host      = false;
+        oOutline.self      = this;
+        
+        oOutline.onmouseup   = 
+        oOutline.onmousedown = function(e){
+            if (!e) e = event;
+
+            var prevTop = this.style.top;
+            this.style.top = "-10000px";
+            var el = document.elementFromPoint(e.clientX, e.clientY);
+            this.style.top = prevTop;
+            apf.fireEvent(el, (e.type || e.name), e);
+            
+            e.cancelBubble = true;
+        }
         
         inited = true;
+    }
+    
+    this.$getOutline = function(){
+        return oOutline;
     }
     
     var selected = [], anchors,
@@ -105,9 +118,9 @@ apf.visualSelect = function(selection){
                 apf.layout.queue(s.$ext);
             }
         }
-        lastSelection = nodes;
         //#endif
-
+        lastSelection = nodes;
+        
         if (!nodes.length)
             return this.hide();
 
@@ -184,6 +197,8 @@ apf.visualSelect = function(selection){
             
             var oHtml = sel.$ext;//this.$ext;
             
+            oOutline.style.display = "none";
+            
             if (!oHtml.offsetParent)
                 return; //@error
 
@@ -213,10 +228,37 @@ apf.visualSelect = function(selection){
                 
             //oHtml.offsetParent.appendChild(oOutline);
             if (apf.isIE) //@notice this solves an IE drawing bug
-                oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
+                oHtml.offsetParent.appendChild(oOutline);
+                //oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
             
             pos[2] -= pos[0];
             pos[3] -= pos[1];
+            
+            for (i = 0, l = nodes.length; i < l; i++)
+                apf.setStyleClass(nodes[i], "idegrabber_disabled", 
+                    ["idegrabber_selected", "idegrabber_disabled"]);
+            
+            var diff = apf.getDiff(oOutline), ppos = apf.getAbsolutePosition(oHtml.offsetParent);
+            oOutline.style.left   = (pos[0] - ppos[0]) + "px";
+            oOutline.style.top    = (pos[1] - ppos[1]) + "px";
+            oOutline.style.width  = Math.max(0, pos[2] - diff[0]) + "px";
+            oOutline.style.height = Math.max(0, pos[3] - diff[1]) + "px";
+            
+            oOutline.style.display = "block";
+
+            if (selection.length > 1) {
+                var ext, html = [], epos;
+                for (i = 0, l = selection.length; i < l; i++) {
+                    ext  = selection[i].$ext;
+                    epos = apf.getAbsolutePosition(ext);
+                    html.push("<div style='left   : " + (epos[0] - pos[0]) + "px;\
+                                           top    : " + (epos[1] - pos[1]) + "px;\
+                                           width  : " + (ext.offsetWidth - 2) + "px;\
+                                           height : " + (ext.offsetHeight - 2) + "px;'>\
+                               </div>");
+                }
+                oOutline.innerHTML = html.join("");
+            }
         }
 
         /*if (oOutline.parentNode.tagName == "BODY") {

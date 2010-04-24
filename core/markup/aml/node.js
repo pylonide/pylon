@@ -363,11 +363,8 @@ apf.AmlNode = function(){
             if (!noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {// && !containsIframe
                 //!isMoveWithinParent || 
                 if (!amlNode.$altExt || amlNode.$altExt.parentNode == amlNode.$pHtmlNode) {
-                    try{
                     amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
                         beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null);
-                    }catch(ex){debugger;console.log(amlNode.$pHtmlNode, isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
-                        beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null)}
                 }
             }
             

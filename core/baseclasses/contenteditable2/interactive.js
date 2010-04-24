@@ -34,7 +34,7 @@
     }
     
     var dragIndicator1, dragIndicator2, dragIndicator3, dragIndicator4, 
-        dragIndicator5, inited = false, indicators = [], outline;
+        dragIndicator5, inited = false, indicators = [], outline, dragOutline;
     function init(){
         var div, classes = [null,
             "dragindicate", "dragindicate indicate_common indicate_horizontal",
@@ -51,7 +51,7 @@
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...
         }
         
-        outline = document.getElementById("apf_outline");
+        outline = dragOutline = document.getElementById("apf_outline");
         
         inited = true;
     }
@@ -835,10 +835,24 @@
     }
 
     var lastPos;
+    function beforedragstart(e){
+        //Prevent dragging when this node isn't selected
+        var selection = apf.document.$getVisualSelect().getLastSelection();
+        if (selection.indexOf(this) == -1)
+            return false;
+        
+        outline = selection.length == 1
+            ? dragOutline
+            : apf.document.$getVisualSelect().$getOutline();
+        
+        this.$setOutline(outline);
+    }
+    
     function beforedrag(e, reparent, add){
         var name, pEl;
-
+        
         control.stop();
+        
         if (lastReparent && !add) {
             pEl = lastReparent;//apf.findHost(el.$pHtmlDoc.getElementById("apf_outline").parentNode);
             name = pEl.localName;
@@ -849,7 +863,7 @@
         }
 
         lastPos = apf.getAbsolutePosition(outline, outline.offsetParent);
-        
+
         if ("vbox|hbox|table".indexOf(name) > -1) {
             this.realtime  = true;
             
@@ -945,40 +959,40 @@
                 setStickyEdges(el);
                 el.$stick = null;
             }
+            
+            //@todo below requires rethink
+            if (selected.length > 1 && lastPos) {
+                this.ownerDocument.execCommand("rollback");
+                this.ownerDocument.execCommand("begin");
+                
+                var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
+                var deltaY = apf.getHtmlTop(htmlNode) - lastPos[1];
+
+                if (deltaX || deltaY) {
+                    for (var n, i = 0; i < selected.length; i++) {
+                        n = selected[i];
+                        var diff = apf.getDiff(this.$ext = n.$ext);
+                        this.left = n.left;
+                        this.top = n.top;
+                        this.right = n.right;
+                        this.bottom = n.bottom;
+                        this.$amlNode = n;
+                        this.$updateProperties(
+                            apf.getHtmlLeft(n.$ext) + deltaX, 
+                            apf.getHtmlTop(n.$ext) + deltaY, 
+                            n.$ext.offsetWidth - diff[0], 
+                            n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
+                    }
+                }
+                
+                lastPos = null;
+                                
+                //delete this.$amlNode;
+                //this.$ext = oOutline;
+            }
         }
 
         hideIndicators();
-        
-        //@todo below requires rethink
-        if (selected.length > 1 && lastPos) {
-            this.ownerDocument.execCommand("rollback");
-            this.ownerDocument.execCommand("begin");
-            
-            var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
-            var deltaY = apf.getHtmlTop(htmlNode) - lastPos[1];
-    
-            if (deltaX || deltaY) {
-                for (var n, i = 0; i < selected.length; i++) {
-                    n = selected[i];
-                    var diff = apf.getDiff(this.$ext = n.$ext);
-                    this.left = n.left;
-                    this.top = n.top;
-                    this.right = n.right;
-                    this.bottom = n.bottom;
-                    this.$amlNode = n;
-                    this.$updateProperties(
-                        apf.getHtmlLeft(n.$ext) + deltaX, 
-                        apf.getHtmlTop(n.$ext) + deltaY, 
-                        n.$ext.offsetWidth - diff[0], 
-                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
-                }
-            }
-            
-            lastPos = null;
-                            
-            //delete this.$amlNode;
-            //this.$ext = oOutline;
-        }
         
         this.ownerDocument.execCommand("commit");
         
@@ -993,6 +1007,8 @@
         else {
             this.ownerDocument.$getVisualSelect().updateGeo();
         }
+        
+        lastPos = null;
     };
 
     function beforeresize(e){
@@ -1185,10 +1201,11 @@
         if (!inited)
             init();
         
-        amlNode.addEventListener("beforedrag",   beforedrag);
-        amlNode.addEventListener("beforeresize", beforeresize);
-        amlNode.addEventListener("afterdrag",    afterdrag);
-        amlNode.addEventListener("afterresize",  afterresize);
+        amlNode.addEventListener("beforedragstart", beforedragstart);
+        amlNode.addEventListener("beforedrag",      beforedrag);
+        amlNode.addEventListener("beforeresize",    beforeresize);
+        amlNode.addEventListener("afterdrag",       afterdrag);
+        amlNode.addEventListener("afterresize",     afterresize);
         
         amlNode.$stuck = [amlNode.$adding || amlNode.top || amlNode.top === 0, amlNode.right 
             || amlNode.right === 0, amlNode.bottom || amlNode.bottom === 0, amlNode.left 
@@ -1199,10 +1216,11 @@
     }
     
     apf.ContentEditable2.removeInteraction = function(amlNode){
-        amlNode.removeEventListener("beforedrag",   beforedrag);
-        amlNode.removeEventListener("beforeresize", beforeresize);
-        amlNode.removeEventListener("afterdrag",    afterdrag);
-        amlNode.removeEventListener("afterresize",  afterresize);
+        amlNode.removeEventListener("beforedragstart", beforedragstart);
+        amlNode.removeEventListener("beforedrag",      beforedrag);
+        amlNode.removeEventListener("beforeresize",    beforeresize);
+        amlNode.removeEventListener("afterdrag",       afterdrag);
+        amlNode.removeEventListener("afterresize",     afterresize);
 
         delete amlNode.$stuck;
     }

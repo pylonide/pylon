@@ -372,10 +372,11 @@ apf.window = function(){
         if (!e)
             e = {};
 
+        e.toElement   = amlNode;
+        e.fromElement = aEl;
+
         if (aEl && aEl != amlNode && focusLoopDetect != aEl) {
             focusLoopDetect = aEl;
-            e.toElement     = amlNode;
-            e.fromElement   = aEl;
 
             aEl.blur(true, e);
 
@@ -905,6 +906,14 @@ apf.window = function(){
                 e.preventDefault();
             return false;
         }
+    });
+    
+    apf.addListener(document, "mouseup", function(e){
+        e = e || window.event;
+        
+        apf.dispatchEvent("mouseup", {
+            htmlEvent : e
+        });
     });
 
     var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1};

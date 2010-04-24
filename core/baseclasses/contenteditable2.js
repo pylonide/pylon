@@ -80,13 +80,83 @@ apf.addEventListener("load", function(){
         }
     });
     
-    apf.document.addEventListener("focus", function(e){
-        var node = e.currentTarget;
+    var recursion, $focus, lastFocussed;
+    apf.document.addEventListener("focus", $focus = function(e){
+        if (recursion)
+            return;
+
+        recursion = true;
+        var node = e.currentTarget, isSelected;
         if (node.editable) {
-            if (!e.ctrlKey && sel.rangeCount)
-                sel.removeAllRanges();
-                
+            if (sel.rangeCount) {
+                isSelected = sel.$getNodeList().indexOf(node) > -1; //@todo use visualSelect cache here?
+
+                if (!e.ctrlKey) {
+                    if (isSelected) {
+                        recursion = false;
+                        return;
+                    }
+
+                    sel.removeAllRanges();
+                }
+                else {
+                    //Only allow selection with nodes of the same parent
+                    if (sel.getRangeAt(0).startContainer != node.parentNode) {
+                        delete e.currentTarget;
+                        e.fromElement && e.fromElement.focus(null, e); //@todo we should look into sel
+                        recursion = false;
+                        return;
+                    }
+                    
+                    if (isSelected) {
+                        recursion = false;
+                        return;
+                    }
+                }
+            }
+            
+            //Add element to the selection
             sel.addRange(this.createRange()).selectNode(node);
+            lastFocussed = node;
+        }
+        recursion = false;
+    });
+    
+    //Focus isn't set when the node already has the focus
+    apf.addEventListener("mouseup", function(e){
+        apf.plane.hide();
+        var o = apf.document.$getVisualSelect().$getOutline();
+        var lastTop = o.style.top;
+        o.style.top = 
+        document.getElementById("apf_outline").style.top = "-10000px";
+        
+        var node = apf.findHost(
+            document.elementFromPoint(e.htmlEvent.clientX, e.htmlEvent.clientY));
+
+        o.style.top = lastTop;
+
+        if (lastFocussed == node) {
+            lastFocussed = null;
+            return;
+        }
+        
+        //apf.activeElement == node && 
+        if (sel.rangeCount > 1) {
+            //Deselect a node when its already selected
+            var idx, list = sel.$getNodeList(); //@todo use visualSelect cache here?
+            if (e.htmlEvent.ctrlKey && (idx = list.indexOf(node)) > -1) {
+                sel.removeRange(sel.getRangeAt(idx));
+                delete e.currentTarget;
+                var r = sel.getRangeAt(sel.rangeCount - 1);
+                recursion = true;
+                r.startContainer.childNodes[r.startOffset].focus();
+                recursion = false;
+                return;
+            }
+            else { //@todo this could be optimized by checking whether the object is already the only selected
+                sel.removeAllRanges();
+                sel.addRange(apf.document.createRange()).selectNode(node);
+            }
         }
     });
 });
@@ -96,9 +166,9 @@ apf.ContentEditable2 = function() {
 
     this.editable = false;
     this.$canEdit = true;
-    this.$init(function(tagName, nodeFunc, struct){
+    /*this.$init(function(tagName, nodeFunc, struct){
          //this.$inheritProperties["editable"] = 2;
-    });
+    });*/
     
     this.$booleanProperties["editable"] = true;
     this.$propHandlers["editable"] = function(value, prop){
@@ -209,24 +279,7 @@ apf.ContentEditable2 = function() {
     }
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        /*if (!this.editable)
-            return;
-        
-        var x     = this.$aml;
-        var nodes = this.childNodes;
-        
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if (typeof nodes[i].editable == "undefined") { //@todo inheritance?
-                if (nodes[i].nodeFunc == apf.NODE_VISIBLE && nodes[i].localName != "page") {
-                    nodes[i].setAttribute("editable", true);
-                }
-                else {
-                    nodes[i].isContentEditable = true;
-                    arguments.callee.apply(nodes[i], arguments);
-                }
-            }
-        }*/
-        
+        //@todo shouldn't this only be set when editable is enabled
         if (this.$ext && !this.$ext.host)
             this.$ext.host = this;
         
