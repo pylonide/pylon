@@ -906,12 +906,33 @@
             //this.$ext = oOutline;
         }
         
-        var selected = apf.document.$getVisualSelect().getLastSelection();//.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
+        var selected   = apf.document.$getVisualSelect().getLastSelection();//.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
+        var prevParent = selected[0].parentNode;
+        var pNode      = apf.findHost(htmlNode.parentNode);
+
+        //Set the coordinates if not dropped into a layout node
+        if (selected.length > 1 && lastPos
+          && "vbox|hbox|table".indexOf(pNode.localName) == -1) {
+            var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
+            var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
+
+            if (deltaX || deltaY
+              || "vbox|hbox|table".indexOf(prevParent.localName) > -1) {
+                for (var n, i = 0; i < selected.length; i++) {
+                    n = selected[i];
+                    var diff = apf.getDiff(n.$ext);
+                    n.$updateProperties(
+                        apf.getHtmlLeft(n.$ext) + deltaX, 
+                        apf.getHtmlTop(n.$ext) + deltaY, 
+                        n.$ext.offsetWidth - diff[0], 
+                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
+                }
+            }
+        }
 
         if (movePosition) {
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
                 //@todo review this... strange things
-                var pNode = apf.findHost(htmlNode.parentNode);
     
                 //@todo this shouldnt be here but done automatically by vbox/hbox/table
                 for (var i = 0; i < selected.length; i++) {
@@ -939,13 +960,9 @@
         else {
             //reparent happened
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
-                var amlNode = apf.findHost(htmlNode.parentNode);
-    
                 for (var i = 0; i < selected.length; i++) {
-                    amlNode.appendChild(selected[i]);
+                    pNode.appendChild(selected[i]);
                 }
-                
-                apf.document.getSelection().$selectList(selected);
             }
             
             //@todo for multiselect this becomes complex (just like multiresize)
@@ -955,31 +972,14 @@
             }
         }
         
-        if (selected.length > 1 && lastPos) {
-            var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
-            var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
-
-            if (deltaX || deltaY) {
-                for (var n, i = 0; i < selected.length; i++) {
-                    n = selected[i];
-                    var diff = apf.getDiff(n.$ext);
-                    n.$updateProperties(
-                        apf.getHtmlLeft(n.$ext) + deltaX, 
-                        apf.getHtmlTop(n.$ext) + deltaY, 
-                        n.$ext.offsetWidth - diff[0], 
-                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
-                }
-            }
-            
-            lastPos = null;
-        }
+        apf.document.getSelection().$selectList(selected);
 
         hideIndicators();
 
         this.ownerDocument.execCommand("commit");
 
         apf.layout.processQueue();
-        
+
         //oOutline.style.display = "none";
         
         if (el.$adding) {
@@ -989,7 +989,7 @@
         else {
             this.ownerDocument.$getVisualSelect().updateGeo();
         }
-        
+
         lastPos = null;
     };
 

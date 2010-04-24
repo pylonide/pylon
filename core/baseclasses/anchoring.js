@@ -331,7 +331,7 @@ apf.Anchoring = function(){
         }
 
         if (!this.$updateQueue) {
-            if (this.visible)
+            if (this.visible && this.$ext.style.display == "none")
                 this.$ext.style.display = "";
             return;
         }
