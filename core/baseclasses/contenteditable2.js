@@ -122,8 +122,17 @@ apf.addEventListener("load", function(){
         recursion = false;
     });
     
+    var lastPos;
+    apf.addEventListener("mousedown", function(e){
+        lastPos = [e.htmlEvent.clientX, e.htmlEvent.clientY];
+    });
+    
     //Focus isn't set when the node already has the focus
     apf.addEventListener("mouseup", function(e){
+        if (Math.abs(lastPos[0] - e.htmlEvent.clientX) > 2 
+          || Math.abs(lastPos[1] - e.htmlEvent.clientY) > 2)
+            return;
+        
         apf.plane.hide();
         var o = apf.document.$getVisualSelect().$getOutline();
         var lastTop = o.style.top;

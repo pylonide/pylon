@@ -211,7 +211,6 @@ apf.visualSelect = function(selection){
         }
         else {
             //@todo fix classes??
-            
             var oHtml, opos, pos = [100000,100000,0,0];
             for (var i = 0; i < selection.length; i++) {
                 oHtml  = selection[i].$ext;
@@ -238,7 +237,7 @@ apf.visualSelect = function(selection){
                 apf.setStyleClass(nodes[i], "idegrabber_disabled", 
                     ["idegrabber_selected", "idegrabber_disabled"]);
             
-            var diff = apf.getDiff(oOutline), ppos = apf.getAbsolutePosition(oHtml.offsetParent);
+            var diff = apf.getDiff(oOutline), ppos = apf.getAbsolutePosition(oHtml.offsetParent, null, true);
             oOutline.style.left   = (pos[0] - ppos[0]) + "px";
             oOutline.style.top    = (pos[1] - ppos[1]) + "px";
             oOutline.style.width  = Math.max(0, pos[2] - diff[0]) + "px";

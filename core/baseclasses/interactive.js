@@ -211,7 +211,9 @@ apf.Interactive = function(){
         }
         //#endif
 
-        var ext = (reparent || oOutline.self) && dragOutline ? oOutline : _self.$ext;
+        var ext = (reparent || oOutline.self) && dragOutline //little dirty hack to detect outline set by visualselect
+            ? oOutline 
+            : _self.$ext;
         var pos = posAbs
             ? apf.getAbsolutePosition(ext, ext.offsetParent, true) 
             : [parseInt(apf.getStyle(ext, "left")) || 0, 
@@ -292,7 +294,7 @@ apf.Interactive = function(){
             if (_self.showdragging)
                 apf.setStyleClass(_self.$ext, "", ["dragging"]);
             
-            if (posAbs && dragOutline)
+            if (posAbs && dragOutline && !oOutline.self) //little dirty hack to detect outline set by visualselect
                 oOutline.style.display = "none";
             
             apf.dragMode = false;
@@ -543,6 +545,7 @@ apf.Interactive = function(){
             left = l, top = t, width = w, height = h, 
                 vdiff = verdiff, hdiff  = hordiff;
         }
+        else posAbs = true;
 
         var hasLeft   = _self.left || _self.left === 0;
         var hasRight  = _self.right || _self.right === 0;

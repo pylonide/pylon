@@ -65,7 +65,7 @@
         var pHtmlNode = amlNode.$int;
         var isBody = pHtmlNode.tagName == "BODY";
 
-        var pos1 = isBody ? [0,0] : apf.getAbsolutePosition(pHtmlNode, null, true);
+        var pos1 = isBody ? [0,0] : apf.getAbsolutePosition(pHtmlNode);
         pos1[2] = isBody ? apf.getWindowWidth() : pHtmlNode.offsetWidth;
         pos1[3] = isBody ? apf.getWindowHeight() : pHtmlNode.offsetHeight;
         var lastPHtmlNode = lastReparent ? lastReparent.$int : el.$ext.parentNode;
@@ -838,12 +838,12 @@
     function beforedragstart(e){
         //Prevent dragging when this node isn't selected
         var selection = apf.document.$getVisualSelect().getLastSelection();
-        if (selection.indexOf(this) == -1)
+        if (selection.length > 1 && selection.indexOf(this) == -1)
             return false;
-        
-        outline = selection.length == 1
-            ? dragOutline
-            : apf.document.$getVisualSelect().$getOutline();
+
+        outline = selection.length > 1
+            ? apf.document.$getVisualSelect().$getOutline()
+            : dragOutline;
         
         this.$setOutline(outline);
     }
@@ -862,7 +862,8 @@
             name = (pEl = this.parentNode).localName;
         }
 
-        lastPos = apf.getAbsolutePosition(outline, outline.offsetParent);
+        if (!lastPos)
+            lastPos = apf.getAbsolutePosition(outline, outline.offsetParent);
 
         if ("vbox|hbox|table".indexOf(name) > -1) {
             this.realtime  = true;
@@ -936,66 +937,51 @@
     
                 for (var i = 0; i < selected.length; i++) {
                     amlNode.appendChild(selected[i]);
-                    
-                    //@todo this shouldnt be here but done automatically by anchoring
-                    /*n = selected[i];
-                    var diff = apf.getDiff(this.$ext = n.$ext);
-                    this.left = n.left;
-                    this.top = n.top;
-                    this.right = n.right;
-                    this.bottom = n.bottom;
-                    this.$amlNode = n;
-                    this.$updateProperties(
-                        apf.getHtmlLeft(htmlNode), 
-                        apf.getHtmlTop(htmlNode), 
-                        htmlNode.offsetWidth - diff[0], 
-                        htmlNode.offsetHeight - diff[1], diff[0], diff[1]);*/
                 }
                 
                 apf.document.getSelection().$selectList(selected);
             }
             
-            if (el.$stick) {
+            //@todo probably have to do this for each
+            /*if (el.$stick) {
                 setStickyEdges(el);
                 el.$stick = null;
+            }*/
+        }
+        
+        //@todo below requires rethink
+        if (selected.length > 1 && lastPos) {
+            //this.ownerDocument.execCommand("rollback"); //this does nothing
+            //this.ownerDocument.execCommand("begin");
+            
+            var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
+            var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
+
+            if (deltaX || deltaY) {
+                for (var n, i = 0; i < selected.length; i++) {
+                    n = selected[i];
+                    if (n == this)
+                        continue;
+
+                    var diff = apf.getDiff(n.$ext);
+                    n.$updateProperties(
+                        apf.getHtmlLeft(n.$ext) + deltaX, 
+                        apf.getHtmlTop(n.$ext) + deltaY, 
+                        n.$ext.offsetWidth - diff[0], 
+                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
+                }
             }
             
-            //@todo below requires rethink
-            if (selected.length > 1 && lastPos) {
-                this.ownerDocument.execCommand("rollback");
-                this.ownerDocument.execCommand("begin");
-                
-                var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
-                var deltaY = apf.getHtmlTop(htmlNode) - lastPos[1];
-
-                if (deltaX || deltaY) {
-                    for (var n, i = 0; i < selected.length; i++) {
-                        n = selected[i];
-                        var diff = apf.getDiff(this.$ext = n.$ext);
-                        this.left = n.left;
-                        this.top = n.top;
-                        this.right = n.right;
-                        this.bottom = n.bottom;
-                        this.$amlNode = n;
-                        this.$updateProperties(
-                            apf.getHtmlLeft(n.$ext) + deltaX, 
-                            apf.getHtmlTop(n.$ext) + deltaY, 
-                            n.$ext.offsetWidth - diff[0], 
-                            n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
-                    }
-                }
-                
-                lastPos = null;
-                                
-                //delete this.$amlNode;
-                //this.$ext = oOutline;
-            }
+            lastPos = null;
+                            
+            //delete this.$amlNode;
+            //this.$ext = oOutline;
         }
 
         hideIndicators();
-        
+
         this.ownerDocument.execCommand("commit");
-        
+
         apf.layout.processQueue();
         
         //oOutline.style.display = "none";
