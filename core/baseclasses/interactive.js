@@ -105,7 +105,26 @@ apf.Interactive = function(){
             if (!reparent && (e || event).button == 2)
                 return;
             
-            dragStart.apply(this, arguments);
+            //#ifdef __WITH_CONTENTEDITABLE
+            if (!reparent) {
+                var f;
+                if (!e) e = {
+                    clientX: event.clientX, 
+                    clientY: event.clientY, 
+                    ctrlKey: event.ctrlKey
+                };
+                apf.addEventListener("mousedown", f = function(){
+                    dragStart.call(o, e, reparent);
+                    apf.removeEventListener("mousedown", f);
+                });
+                apf.cancelBubble(e || event, this);
+            }
+            else
+            // #else
+            {
+                dragStart.apply(this, arguments);
+            }
+            // #endif
         }
         o.interactive = (o.interactive||0)+1;
         
@@ -179,7 +198,7 @@ apf.Interactive = function(){
         dragOutline = false;        
         #endif */
         
-        if (_self.dispatchEvent("beforedragstart") === false)
+        if (_self.dispatchEvent("beforedragstart", {htmlEvent: e}) === false)
             return;
         
         apf.dragMode  = true;
@@ -267,7 +286,7 @@ apf.Interactive = function(){
                 ? oOutline
                 : _self.$ext;
 
-            if (overThreshold) {
+            if (overThreshold && !_self.$multidrag) {
                 if (cancel) {
                     l = _self.left;
                     t = _self.top;

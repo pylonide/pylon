@@ -210,7 +210,6 @@ apf.visualSelect = function(selection){
             pos.push(oHtml.offsetWidth, oHtml.offsetHeight);
         }
         else {
-            //@todo fix classes??
             var oHtml, opos, pos = [100000,100000,0,0];
             for (var i = 0; i < selection.length; i++) {
                 oHtml  = selection[i].$ext;
@@ -225,7 +224,6 @@ apf.visualSelect = function(selection){
             if (!oHtml.offsetParent)
                 return; //@error
                 
-            //oHtml.offsetParent.appendChild(oOutline);
             if (apf.isIE) //@notice this solves an IE drawing bug
                 oHtml.offsetParent.appendChild(oOutline);
                 //oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
@@ -237,7 +235,9 @@ apf.visualSelect = function(selection){
                 apf.setStyleClass(nodes[i], "idegrabber_disabled", 
                     ["idegrabber_selected", "idegrabber_disabled"]);
             
-            var diff = apf.getDiff(oOutline), ppos = apf.getAbsolutePosition(oHtml.offsetParent, null, true);
+            var diff = apf.getDiff(oOutline), ppos = oHtml.offsetParent.tagName == "BODY" //@todo can we generalize this for ce2 use?
+                ? [0,0]
+                : apf.getAbsolutePosition(oHtml.offsetParent, null, true);
             oOutline.style.left   = (pos[0] - ppos[0]) + "px";
             oOutline.style.top    = (pos[1] - ppos[1]) + "px";
             oOutline.style.width  = Math.max(0, pos[2] - diff[0]) + "px";

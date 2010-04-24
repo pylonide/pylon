@@ -73,9 +73,6 @@
             ? [0,0] : apf.getAbsolutePosition(lastPHtmlNode, null, true);
 
         amlNode.$int.appendChild(htmlNode);
-        //amlNode.$int.appendChild(el.$ext);
-        //el.parentNode = amlNode;
-        //this.$cancelInteractive();
     
         hideIndicators();
     
@@ -824,7 +821,7 @@
             });
         }
         else {
-            dragIndicator1.style.display  = "none";
+            dragIndicator1.style.display = "none";
             dragIndicator2.style.display = "none";
             dragIndicator3.style.display = "none";
             dragIndicator4.style.display = "none";
@@ -838,10 +835,8 @@
     function beforedragstart(e){
         //Prevent dragging when this node isn't selected
         var selection = apf.document.$getVisualSelect().getLastSelection();
-        if (selection.length > 1 && selection.indexOf(this) == -1)
-            return false;
 
-        outline = selection.length > 1
+        outline = selection.length > 1 && !e.htmlEvent.ctrlKey
             ? apf.document.$getVisualSelect().$getOutline()
             : dragOutline;
         
@@ -850,6 +845,16 @@
     
     function beforedrag(e, reparent, add){
         var name, pEl;
+
+        var selection = apf.document.$getVisualSelect().getLastSelection();
+        if ((this.$multidrag = selection.length > 1) 
+          && selection.indexOf(this) == -1)
+            return false;
+        
+        if (outline != (selection.length > 1
+          ? apf.document.$getVisualSelect().$getOutline()
+          : dragOutline))
+            return false; //@todo this is a small hack to prevent dragging with the wrong outline. We should rethink the outline situation.
         
         control.stop();
         
@@ -895,6 +900,8 @@
         var el = this;
         var htmlNode = outline || this.$ext;
         
+        delete this.$multidrag;
+        
         if (el.$adding) {
             //this.$ext = oOutline;
         }
@@ -931,7 +938,6 @@
         }
         else {
             //reparent happened
-            //@todo make this for multiselect
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
                 var amlNode = apf.findHost(htmlNode.parentNode);
     
@@ -942,27 +948,20 @@
                 apf.document.getSelection().$selectList(selected);
             }
             
-            //@todo probably have to do this for each
-            /*if (el.$stick) {
+            //@todo for multiselect this becomes complex (just like multiresize)
+            if (selected.length == 1 && el.$stick) {
                 setStickyEdges(el);
                 el.$stick = null;
-            }*/
+            }
         }
         
-        //@todo below requires rethink
         if (selected.length > 1 && lastPos) {
-            //this.ownerDocument.execCommand("rollback"); //this does nothing
-            //this.ownerDocument.execCommand("begin");
-            
             var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
             var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
 
             if (deltaX || deltaY) {
                 for (var n, i = 0; i < selected.length; i++) {
                     n = selected[i];
-                    if (n == this)
-                        continue;
-
                     var diff = apf.getDiff(n.$ext);
                     n.$updateProperties(
                         apf.getHtmlLeft(n.$ext) + deltaX, 
@@ -973,9 +972,6 @@
             }
             
             lastPos = null;
-                            
-            //delete this.$amlNode;
-            //this.$ext = oOutline;
         }
 
         hideIndicators();
@@ -1163,16 +1159,31 @@
         
         control.stop();
         
-        var l, t, w, h, n = selected[0];
-        var ext = n.$ext;
-        var d = apf.getDiff(ext);
-        n.ownerDocument.execCommand("begin");
-        n.$updateProperties(
-            l = apf.getHtmlLeft(ext) + (dirX * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
-            t = apf.getHtmlTop(ext) + (dirY * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
-            (w = ext.offsetWidth) - d[0], 
-            (h = ext.offsetHeight) - d[1], d[0], d[1]);
-        n.ownerDocument.execCommand("commit");
+        var l, t, w, h, n = selected[0], ext, d;
+        n.ownerDocument.execCommand("begin"); //@todo Use a system here to combine these commits as well as possible
+        for (var i = 0, il = selected.length; i < il; i++) {
+            n = selected[i];
+            ext = n.$ext;
+            d = apf.getDiff(ext);
+        
+            n.$updateProperties(
+                l = apf.getHtmlLeft(ext) + (dirX * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
+                t = apf.getHtmlTop(ext) + (dirY * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
+                (w = ext.offsetWidth) - d[0], 
+                (h = ext.offsetHeight) - d[1], d[0], d[1]);
+        }
+        n.ownerDocument.execCommand("commit"); //@todo Use a system here to combine these commits as well as possible
+        
+        apf.layout.processQueue();
+        n.ownerDocument.$getVisualSelect().updateGeo();
+        
+        if (selected.length > 1) {
+            var vOutline = n.ownerDocument.$getVisualSelect().$getOutline();
+            l = apf.getHtmlLeft(vOutline);
+            t = apf.getHtmlTop(vOutline);
+            w = vOutline.offsetWidth;
+            h = vOutline.offsetheight;
+        }
         
         setDragInfo(n, n.parentNode, true);
         showDrag.common_resize.call(n, l, t, w, h, {}, 
