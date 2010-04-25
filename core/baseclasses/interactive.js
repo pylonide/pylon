@@ -561,7 +561,7 @@ apf.Interactive = function(){
         return false;
     }
     
-    function updateProperties(left, top, width, height, hdiff, vdiff){
+    function updateProperties(left, top, width, height, hdiff, vdiff, right, bottom){
         if (typeof left == "undefined") {
             left = l, top = t, width = w, height = h, 
                 vdiff = verdiff, hdiff  = hordiff;
@@ -579,13 +579,13 @@ apf.Interactive = function(){
                 : _self.$ext;
 
             if (hasRight) {
-                _self.setProperty("right", apf.getHtmlRight(htmlNode), 0, _self.editable);
+                _self.setProperty("right", right || right === 0 ? right : apf.getHtmlRight(htmlNode), 0, _self.editable);
                 if (!_self.left)
                     htmlNode.style.left = "";
             }
             
             if (hasBottom) {
-                _self.setProperty("bottom", apf.getHtmlBottom(htmlNode), 0, _self.editable);
+                _self.setProperty("bottom", bottom || bottom === 0 ? bottom : apf.getHtmlBottom(htmlNode), 0, _self.editable);
                 if (!_self.top)
                     htmlNode.style.top = "";
             }

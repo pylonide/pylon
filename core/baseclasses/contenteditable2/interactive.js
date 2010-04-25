@@ -979,7 +979,7 @@
             //this.$ext = oOutline;
         }
         
-        var selected   = apf.document.$getVisualSelect().getLastSelection();//.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
+        var selected   = apf.document.$getVisualSelect().getLastSelection();
         var prevParent = selected[0].parentNode;
         var pNode      = apf.findHost(htmlNode.parentNode);
 
@@ -988,17 +988,25 @@
           && "vbox|hbox|table".indexOf(pNode.localName) == -1) {
             var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
             var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
+            var pWidth = outline.parentNode.tagName == "BODY" 
+                ? apf.getWindowWidth() 
+                : apf.getHtmlInnerWidth(outline.parentNode);
+            var pHeight = outline.parentNode.tagName == "BODY" 
+                ? apf.getWindowHeight() 
+                : apf.getHtmlInnerHeight(outline.parentNode);
 
             if (deltaX || deltaY
               || "vbox|hbox|table".indexOf(prevParent.localName) > -1) {
-                for (var n, i = 0; i < selected.length; i++) {
+                for (var l, t, w, h, n, i = 0; i < selected.length; i++) {
                     n = selected[i];
                     var diff = apf.getDiff(n.$ext);
                     n.$updateProperties(
-                        apf.getHtmlLeft(n.$ext) + deltaX, 
-                        apf.getHtmlTop(n.$ext) + deltaY, 
-                        n.$ext.offsetWidth - diff[0], 
-                        n.$ext.offsetHeight - diff[1], diff[0], diff[1]);
+                        l = apf.getHtmlLeft(n.$ext) + deltaX, 
+                        t = apf.getHtmlTop(n.$ext) + deltaY, 
+                        w = n.$ext.offsetWidth - diff[0], 
+                        h = n.$ext.offsetHeight - diff[1], diff[0], diff[1],
+                        pWidth - l - w,
+                        pHeight - t - h);
                 }
             }
         }
