@@ -1003,8 +1003,8 @@
                     n.$updateProperties(
                         l = apf.getHtmlLeft(n.$ext) + deltaX, 
                         t = apf.getHtmlTop(n.$ext) + deltaY, 
-                        w = n.$ext.offsetWidth - diff[0], 
-                        h = n.$ext.offsetHeight - diff[1], diff[0], diff[1],
+                        (w = n.$ext.offsetWidth) - diff[0], 
+                        (h = n.$ext.offsetHeight) - diff[1], diff[0], diff[1],
                         pWidth - l - w,
                         pHeight - t - h);
                 }
