@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -428,7 +428,7 @@
             <a:page caption="Macros" id="macro" render="runtime">
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
-                        <!--a:window 
+                        <a:window 
                             id      = "winNoextension"
                             skin    = "alert"
                             modal   = "true"
@@ -439,7 +439,7 @@
                         >
                             <a:label id="lblIE">To use this feature you need to install the o3 browser extension. <br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
                             <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 browser extension.<br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
-                        </a:window-->
+                        </a:window>
                         
                         <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
                             <a:toolbar

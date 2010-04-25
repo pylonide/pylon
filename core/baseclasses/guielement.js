@@ -111,6 +111,11 @@ apf.GuiElement = function(){
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = true; //default value;
     
+    this.minwidth   = 5;
+    this.minheight  = 5;
+    this.maxwidth   = 10000;
+    this.maxheight  = 10000;
+    
     //#ifdef __WITH_KEYBOARD
     this.$booleanProperties["disable-keyboard"] = true;
     //#endif

@@ -303,6 +303,7 @@
             apf.config.setProperty("h", d.height);
         },
         
+        //@todo temporarily disabled middle guides for resize
         common_resize : function(l, t, w, h, e, change, we, no, ea, so, isDrag, sd){
             var snapDiff = sd || 8;
             var lpos = false, tpos = false, loffset = 0, toffset = 0;
@@ -408,7 +409,7 @@
                 }
                 
                 //Middle
-                if (lpos === false) {
+                if (lpos === false && isDrag) {
                     for (var i = 0, il = d.xm.length; i < il; i++) {
                         if (Math.abs(d.xm[i] - l - d.cwidth) < snapDiff) {
                             change.l = (lpos = d.xm[i]) - d.cwidth;
@@ -420,7 +421,7 @@
     
             if (d.xr.length && (typeof change.w == "undefined") && change.rsticky != 5) {
                 for (var i = 0, il = d.xr.length; i < il; i++) {
-                    if (Math.abs(d.xr[i] - w - (change.l || l)) < 
+                    if (Math.abs(d.xr[i] - w - (!isDrag && ea || isDrag ? change.l || l : l)) < 
                       (!ea || isDrag && typeof change.l != "undefined" ? 1 : snapDiff)) {
                         if (!isDrag)
                             change.w = (wpos = d.xr[i]) - l;
@@ -454,7 +455,7 @@
                     }
                 }
                 
-                if (tpos === false) {
+                if (tpos === false && isDrag) {
                     for (var i = 0, il = d.ym.length; i < il; i++) {
                         if (Math.abs(d.ym[i] - t - d.cheight) < snapDiff) {
                             change.t = (tpos = d.ym[i]) - d.cheight;
@@ -467,7 +468,7 @@
             
             if (d.yr.length && (typeof change.h == "undefined") && change.bsticky != 5) {
                 for (var i = 0, il = d.yr.length; i < il; i++) {
-                    if (Math.abs(d.yr[i] - h - (change.t || t)) < 
+                    if (Math.abs(d.yr[i] - h - (!isDrag && so || isDrag ? change.t || t : t)) < 
                       (!so || isDrag && typeof change.t != "undefined" ? 1 : snapDiff)) {
                         if (!isDrag)
                             change.h = (hpos = d.yr[i]) - t;
@@ -487,6 +488,8 @@
                     for (var i = 0, il = d.xr.length; i < il; i++) {
                         if ((Math.max(0, l - d.xr[i]) || 10000) - oppDiff < (we ? snapDiff : 1)) {
                             change.ol = (olpos = d.xr[i]) + oppDiff;
+                            change.olpos = olpos + oppDiff;
+                            change.olEl = d.els[i];
                             change.oloffset = oloffset = 0;
                             break;
                         }
@@ -498,6 +501,8 @@
                     for (var i = 0, il = d.xl.length; i < il; i++) {
                         if ((Math.max(0, d.xl[i] - l - w) || 10000) - oppDiff < (ea ? snapDiff : 1)) {
                             change.or = (olpos = d.xl[i] - oppDiff) - w;
+                            change.orpos = d.container[2] - olpos;
+                            change.orEl = d.els[i];
                             change.oloffset = oloffset = 0;
                             break;
                         }
@@ -512,6 +517,8 @@
                     for (var i = 0, il = d.yr.length; i < il; i++) {
                         if ((Math.max(0, t - d.yr[i]) || 10000) - oppDiff  < (no ? snapDiff : 1)) {
                             change.ot = (otpos = d.yr[i]) + oppDiff;
+                            change.otpos = otpos + oppDiff;
+                            change.otEl = d.els[i];
                             change.otoffset = otoffset = 0;
                             break;
                         }
@@ -522,6 +529,8 @@
                     for (var i = 0, il = d.yl.length; i < il; i++) {
                         if ((Math.max(0, d.yl[i] - t - h) || 10000) - oppDiff < (so ? snapDiff : 1)) {
                             change.ob = (otpos = d.yl[i] - oppDiff) - h;
+                            change.obpos = d.container[3] - otpos;
+                            change.obEl = d.els[i];
                             change.otoffset = otoffset = 0;
                             break;
                         }
@@ -542,7 +551,7 @@
                     change.h = h - (r = h % gs) + (r/gs > 0.5 ? gs : 0);
             }
             
-            if (lpos !== false) {
+            if (lpos !== false && (olpos === false || change.or)) {
                 dragIndicator1.style.left = (lpos + loffset + d.container[0]) + "px";
                 dragIndicator1.style.top = d.container[1] + "px";
                 dragIndicator1.style.height = (d.container[3]) + "px"
@@ -552,7 +561,7 @@
             else
                 dragIndicator1.style.display = "none";
             
-            if (tpos !== false) {
+            if (tpos !== false && (otpos === false || change.ob)) {
                 dragIndicator2.style.left = (d.container[0]) + "px";
                 dragIndicator2.style.top = (tpos + toffset + d.container[1]) + "px";
                 dragIndicator2.style.width = (d.container[2]) + "px"
@@ -608,22 +617,22 @@
                 if (!we) change.l = l;
                 if (!no) change.t = t;
                 if (we) {
-                    if (change.l != undefined)
-                        change.w = d.width + (d.left - change.l);
-                    else if (change.ol != undefined) {
+                    if (change.ol != undefined) {
                         change.w = d.width + (d.left - change.ol);
                         change.l = change.ol;
                     }
+                    else if (change.l != undefined)
+                        change.w = d.width + (d.left - change.l);
                 }
                 else if (ea && change.or != undefined)
                     change.w = olpos - d.left;
                 if (no) {
-                    if (change.t != undefined)
-                        change.h = d.height + (d.top - change.t);
-                    else if (change.ot != undefined) {
+                    if (change.ot != undefined) {
                         change.h = d.height + (d.top - change.ot);
                         change.t = change.ot;
                     }
+                    else if (change.t != undefined)
+                        change.h = d.height + (d.top - change.t);
                 }
                 else if (so && change.ob != undefined)
                     change.h = otpos - d.top;
@@ -673,7 +682,7 @@
         var els = pEl.getElementsByTagName("*", true); //Fetch all siblings incl me
         var xl  = d.xl = [], yl = d.yl = [], curel;
         var xm  = d.xm = [], ym = d.ym = [];
-        var xr  = d.xr = [], yr = d.yr = []; 
+        var xr  = d.xr = [], yr = d.yr = [], dels = d.els = []; 
         
         //Container element
         if (apf.config.snapcontainer) {
@@ -681,6 +690,8 @@
             xr.push(d.container[2] - 10);
             yl.push(10);
             yr.push(d.container[3] - 10);
+            
+            dels.push(d.container);
         }
         
         if (apf.config.snapelement) {
@@ -702,18 +713,29 @@
                 yl.push(t);
                 ym.push(t + Math.round((h = curel.$ext.offsetHeight)/2));
                 yr.push(t + h);
+                
+                dels.push(curel);
             }
         }
     }
 
-    function setStickyEdges(el){
+    //the ob values could also be computed dynamically based on bottom + height 
+    //of element, that will give cleanup issues though
+    //@todo when sticking to a non container guide, and the guide is created
+    //from a node that is anchored, then the anchor of that side should be copied
+    function setStickyEdges(el, extra){
         var s = el.$stick, d = dragInfo, t = el.$stuck || (el.$stuck = [false, false, false, false]);
         var setOpp = false;
 
         if (!apf.config.snapcontainer)
             return;
-    
-        if (isCoord(s.w) && s.rsticky) {
+
+        if (isCoord(s.orpos) && !s.orEl.left) {
+            el.setAttribute("right", s.orpos);
+            t[1]   = true;
+            setOpp = true;
+        }
+        else if (isCoord(s.w) && s.rsticky) {
             if (!isCoord(el.right)) {
                 el.setAttribute("right", d.container[2] - coord(s.l, d.left) - s.w);
                 t[1] = true;
@@ -721,7 +743,11 @@
             setOpp = true;
         }
         if (isCoord(s.l)) {
-            if (s.lsticky && !isCoord(el.left)) { //Left
+            if (isCoord(s.olpos) && !s.olEl.right) {
+                el.setAttribute("left", s.olpos);
+                t[3] = true;
+            }
+            else if (s.lsticky && !isCoord(el.left)) { //Left
                 el.setAttribute("left", s.l);
                 t[3] = true;
             }
@@ -734,22 +760,46 @@
                     }
                     setOpp = true;
                 }
-                else if (t[1] && isCoord(el.right) && s.lsticky) {
-                    el.setAttribute("right", "");
-                    el.setAttribute("width", el.$ext.offsetWidth);
+                else if (t[1] && isCoord(el.right) && (isCoord(s.l) || s.lsticky)) {
+                    if (!el.left) {
+                        el.setAttribute("left", s.l);
+                        t[3] = true;
+                    }
+                    el.removeAttribute("right");
+                    el.setAttribute("width", extra && extra.w || el.$ext.offsetWidth);
                     t[1] = false;
                 }
             }
         }
-        if (t[3] && isCoord(el.left) && (setOpp || isCoord(el.right)) && (!isCoord(s.l) || !s.lsticky)) {
-            el.setAttribute("left", "");
-            el.setAttribute("width", el.$ext.offsetWidth);
+        if (t[1] && isCoord(el.left) && (setOpp || isCoord(el.right))
+          && !(s.rsticky || (isCoord(s.orpos) && !s.orEl.left))) {
+            el.removeAttribute("right");
+            el.setAttribute("width", extra && extra.w || el.$ext.offsetWidth);
+            t[1] = false;
+        }
+        else if (t[3] && isCoord(el.left) && (setOpp || isCoord(el.right))
+          && !(s.lsticky || (isCoord(s.olpos) && !s.olEl.right))) {
+            el.removeAttribute("left");
+            el.setAttribute("width", extra && extra.w || el.$ext.offsetWidth);
             t[3] = false;
         }
-        
+        else if (t[1] && (setOpp || isCoord(el.right)) 
+          && !(s.rsticky || (isCoord(s.orpos) && !s.orEl.left))) {
+            el.setAttribute("left", extra && extra.l || el.$ext.offsetLeft);
+            t[3] = true;
+            el.removeAttribute("right");
+            el.setAttribute("width", extra && extra.w || el.$ext.offsetWidth);
+            t[1] = false;
+        }
+
         var setOpp = false;
-    
-        if (isCoord(s.h) && s.rsticky) {
+        if (isCoord(s.obpos) && !s.obEl.top) {
+            if (t[2] || !isCoord(el.bottom))
+                t[2]   = true;
+            el.setAttribute("bottom", s.obpos);
+            setOpp = true;
+        }
+        else if (isCoord(s.h) && s.bsticky) {
             if (!isCoord(el.bottom)) {
                 el.setAttribute("bottom", d.container[3] - coord(s.t, d.top) - s.h);
                 t[2] = true;
@@ -757,7 +807,11 @@
             setOpp = true;
         }
         if (isCoord(s.t)) {
-            if (s.tsticky && !isCoord(el.top)) { //Top
+            if (isCoord(s.otpos) && !s.otEl.bottom) {
+                el.setAttribute("top", s.otpos);
+                t[0] = true;
+            }
+            else if (s.tsticky && !isCoord(el.top)) { //Top
                 el.setAttribute("top", s.t);
                 t[0] = true;
             }
@@ -770,17 +824,36 @@
                     }
                     setOpp = true;
                 }
-                else if (t[2] && isCoord(el.bottom) && s.tsticky) {
-                    el.setAttribute("bottom", "");
-                    el.setAttribute("height", el.$ext.offsetHeight);
+                else if (t[2] && isCoord(el.bottom) && (isCoord(s.t) || s.tsticky)) {
+                    if (!el.top) {
+                        el.setAttribute("top", s.t);
+                        t[0] = true;
+                    }
+                    el.removeAttribute("bottom");
+                    el.setAttribute("height", extra && extra.h || el.$ext.offsetHeight);
                     t[2] = false;
                 }
             }
         }
-        if (t[0] && isCoord(el.top) && (setOpp || isCoord(el.bottom)) && (!isCoord(s.t) || !s.tsticky)) {
-            el.setAttribute("top", "");
-            el.setAttribute("height", el.$ext.offsetHeight);
+        if (t[2] && isCoord(el.top) && (setOpp || isCoord(el.bottom)) 
+          && !(s.bsticky || (isCoord(s.obpos) && !s.obEl.top))) {
+            el.removeAttribute("bottom");
+            el.setAttribute("height", extra && extra.h || el.$ext.offsetHeight);
+            t[2] = false;
+        }
+        else if (t[0] && isCoord(el.top) && (setOpp || isCoord(el.bottom)) 
+          && !(s.tsticky || (isCoord(s.otpos) && !s.otEl.bottom))) {
+            el.removeAttribute("top");
+            el.setAttribute("height", extra && extra.h || el.$ext.offsetHeight);
             t[0] = false;
+        }
+        else if (t[2] && (setOpp || isCoord(el.bottom)) 
+          && !(s.bsticky || (isCoord(s.obpos) && !s.obEl.top))) {
+            el.setAttribute("top", extra && extra.t || el.$ext.offsetTop);
+            t[0] = true;
+            el.removeAttribute("bottom");
+            el.setAttribute("height", extra && extra.h || el.$ext.offsetHeight);
+            t[2] = false;
         }
     }
 
@@ -945,8 +1018,8 @@
                     selected[i].$ext.style.position = "static";
                 }
             }
-            else
-                var pNode = el.parentNode;
+            //else
+                //var pNode = el.parentNode;
             
             if ("vbox|hbox|table".indexOf(pNode.localName) > -1) {
                 for (var i = 0; i < selected.length; i++) {
@@ -962,6 +1035,9 @@
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
                 for (var i = 0; i < selected.length; i++) {
                     pNode.appendChild(selected[i]);
+                    if (!el.$adding)
+                        setDefaultStuck(selected[i]);
+                        //selected[i].$stuck = [false, false, false, false]; //reset stickyness in new context
                 }
             }
             
@@ -1097,7 +1173,7 @@
         e.setType(name == "table" ? "s" : type);
     };
     
-    function afterresize(){
+    function afterresize(e){
         //this.$ext = oOutline;
 
         hideIndicators();
@@ -1116,7 +1192,7 @@
         }
         //Sizing the edge will stick it to the side
         else if (this.$stick) {
-            setStickyEdges(this); //@todo bugs with placing toolbar in ipad skin
+            setStickyEdges(this, e); //@todo bugs with placing toolbar in ipad skin
         }
         this.$stick = null;
 
@@ -1191,8 +1267,18 @@
         
         hideIndicators(true);
     }
-    
     apf.addEventListener("keydown", keydown);
+    
+    function setDefaultStuck(amlNode){
+        amlNode.$stuck = [
+            amlNode.$adding || amlNode.top && !amlNode.bottom || amlNode.top == 10 || amlNode.top === 0, 
+            amlNode.right && !amlNode.left || amlNode.right == 10 || amlNode.right === 0, 
+            amlNode.bottom && !amlNode.top || amlNode.bottom == 10 || amlNode.bottom === 0, 
+            amlNode.$adding || amlNode.left && !amlNode.right || amlNode.left == 10 || amlNode.left === 0];
+        var s = amlNode.$stuck;
+        if (s[0] && s[1] && s[2] && s[3])
+            amlNode.$stuck = [false, false, false, false];
+    }
 
     apf.ContentEditable2.addInteraction    = function(amlNode){
         if (!inited)
@@ -1204,12 +1290,7 @@
         amlNode.addEventListener("afterdrag",       afterdrag);
         amlNode.addEventListener("afterresize",     afterresize);
         
-        amlNode.$stuck = [amlNode.$adding || amlNode.top || amlNode.top === 0, amlNode.right 
-            || amlNode.right === 0, amlNode.bottom || amlNode.bottom === 0, amlNode.left 
-            || amlNode.$adding || amlNode.left === 0];
-        var s = amlNode.$stuck;
-        if (s[0] && s[1] && s[2] && s[3])
-            amlNode.$stuck = [false, false, false, false];
+        setDefaultStuck(amlNode);
     }
     
     apf.ContentEditable2.removeInteraction = function(amlNode){

@@ -345,14 +345,17 @@ apf.visualSelect = function(selection){
             if (pHtmlNode.tagName == "BODY")
                 pHtmlNode = document.documentElement;
 
+            var curWidth  = sel.$ext.offsetWidth;
+            var curHeight = sel.$ext.offsetHeight;
+
             var prop = map[type];
             if (sel[prop] || sel[prop] === 0) {
-                if (prop == "right" && !this.left && this.left !== 0)
+                if (prop == "right" && !sel.left && sel.left !== 0)
                     sel.setAttribute("left", apf.getHtmlLeft(sel.$ext));
-                else if (prop == "bottom" && !this.top && this.top !== 0)
+                else if (prop == "bottom" && !sel.top && sel.top !== 0)
                     sel.setAttribute("top", apf.getHtmlTop(sel.$ext));
 
-                sel.setAttribute(prop, "");
+                sel.removeAttribute(prop);
             }
             else {
                 switch(type) {
@@ -371,14 +374,19 @@ apf.visualSelect = function(selection){
                 }
             }
 
-            sel.setAttribute("width", !this.left && this.left !== 0 || !this.right && this.right !== 0
-                ? sel.$ext.offsetWidth
-                : null);
-            sel.setAttribute("height", !this.top && this.right !== 0 || !this.bottom && this.bottom !== 0
-                ? sel.$ext.offsetHeight
-                : null);
+            if (!sel.left && sel.left !== 0 || !sel.right && sel.right !== 0)
+                sel.setAttribute("width", curWidth);
+            else
+                sel.removeAttribute("width");
+                
+            if (!sel.top && sel.right !== 0 || !sel.bottom && sel.bottom !== 0)
+                sel.setAttribute("height", curHeight);
+            else
+                sel.removeAttribute("height");
             
             doc.$commands.commit.call(doc);
+            
+            this.self.updateGeo();
         }
         else {
             sel.$resizeStart(e || event, {

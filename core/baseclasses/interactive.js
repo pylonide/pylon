@@ -539,8 +539,6 @@ apf.Interactive = function(){
             if (_self.setProperty)
                 updateProperties();
             
-            l = t = w = h = null;
-
             document.body.style.cursor = lastCursor;
             lastCursor = null;
             
@@ -550,7 +548,11 @@ apf.Interactive = function(){
             apf.dragMode = false;
 
             if (_self.dispatchEvent)
-                _self.dispatchEvent("afterresize");
+                _self.dispatchEvent("afterresize", {
+                    l: l, t: t, w: w+hordiff, h: h+verdiff
+                });
+            
+            l = t = w = h = null;
         };
         
         //if (apf.isIE)
