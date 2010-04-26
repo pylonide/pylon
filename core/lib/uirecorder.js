@@ -67,20 +67,20 @@ apf.uirecorder.capture = {
         apf.uirecorder.$inited = true;
 
         // listeners for user mouse interaction
-        apf.uirecorder.$o3.DOM.ondblclick = apf.uirecorder.capture.dblclick = function(e){
-        //document.documentElement.ondblclick = function(e) {
+        //apf.uirecorder.$o3.DOM.ondblclick = apf.uirecorder.capture.dblclick = function(e){
+        document.documentElement.ondblclick = apf.uirecorder.capture.dblclick = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("dblClick", e || event);
         }
 
-        apf.uirecorder.$o3.DOM.onmousedown = apf.uirecorder.capture.mousedown = function(e){
-        //document.documentElement.onmousedown = function(e) {
+        //apf.uirecorder.$o3.DOM.onmousedown = apf.uirecorder.capture.mousedown = function(e){
+        document.documentElement.onmousedown = apf.uirecorder.capture.mousedown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             apf.uirecorder.capture.$captureAction("mousedown", e || event);
         };
 
-        apf.uirecorder.$o3.DOM.onmouseup = apf.uirecorder.capture.mouseup = function(e){
-        //document.documentElement.onmouseup = function(e) {
+        //apf.uirecorder.$o3.DOM.onmouseup = apf.uirecorder.capture.mouseup = function(e){
+        document.documentElement.onmouseup = apf.uirecorder.capture.mouseup = function(e) {
             if (apf.uirecorder.isPlaying || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return; //apf.uirecorder.isPaused ||
             apf.uirecorder.capture.$captureAction("mouseup", e || event);
         }
@@ -112,8 +112,8 @@ apf.uirecorder.capture = {
         }
         else {
             /* IE */
-            apf.uirecorder.$o3.DOM.onmousewheel = apf.uirecorder.capture.mousewheel = function(e){
-            //document.onmousewheel = function(e) {
+            //apf.uirecorder.$o3.DOM.onmousewheel = apf.uirecorder.capture.mousewheel = function(e){
+            document.onmousewheel = apf.uirecorder.capture.mousewheel = function(e) {
                 if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
                 e = e || event;
 
@@ -131,9 +131,8 @@ apf.uirecorder.capture = {
         }
         
         // listeners for keyboard interaction
-        // onkeyup does get called in SSB for some reason but does in the browser plugin
-        apf.uirecorder.$o3.DOM.onkeyup = apf.uirecorder.capture.keyup = function(e){
-        //document.documentElement.onkeyup = function(e) {
+        //apf.uirecorder.$o3.DOM.onkeyup = apf.uirecorder.capture.keyup = function(e){
+        document.documentElement.onkeyup = apf.uirecorder.capture.keyup = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
 
@@ -143,23 +142,24 @@ apf.uirecorder.capture = {
             apf.uirecorder.capture.$captureAction("keyup", e, keycode);
         }
         
-        apf.uirecorder.$o3.DOM.onkeydown = apf.uirecorder.capture.keydown = function(e){
-        //document.documentElement.onkeydown = function(e) {
+        //apf.uirecorder.$o3.DOM.onkeydown = apf.uirecorder.capture.keydown = function(e){
+        document.documentElement.onkeydown = apf.uirecorder.capture.keydown = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
             e = e || event;
+
             var keycode = (e.keyCode) ? e.keyCode : e.which;
             if (apf.uirecorder.capture.$validKeys.indexOf(keycode) == -1) return;
             
             apf.uirecorder.capture.$captureAction("keydown", e, keycode);
         }
         
-        apf.uirecorder.$o3.DOM.onkeypress = apf.uirecorder.capture.keypress = function(e){
-        //document.documentElement.onkeypress = function(e) {
+        //apf.uirecorder.$o3.DOM.onkeypress = apf.uirecorder.capture.keypress = function(e){
+        document.documentElement.onkeypress = apf.uirecorder.capture.keypress = function(e) {
             if (apf.uirecorder.isPlaying || apf.uirecorder.isPaused || !(apf.uirecorder.isRecording || apf.uirecorder.isTesting))
                 return;
             e = e || event;
 
-            if (apf.uirecorder.capture.$validKeys.indexOf(e.keyCode) > -1) return;
+            //if (apf.uirecorder.capture.$validKeys.indexOf(e.keyCode) > -1) return;
             var character = "";
             if (e.keyCode) { // Internet Explorer
                 character = String.fromCharCode(e.keyCode);
@@ -181,16 +181,23 @@ apf.uirecorder.capture = {
     },
 
     // get all neccessary information about amlNode
-    $getAmlNodeData : function(amlNode, htmlElement, eventName) {
+    $getAmlNodeData : function(amlNode, htmlElement, eventName, value) {
         var data = {};
-        
+
+        // action on item of multiselect
+        if (amlNode.localName == "item" && amlNode.parentNode.hasFeature(apf.__MULTISELECT__)) {
+            amlNode = amlNode.parentNode;
+        }
+
         if (amlNode.id)         data.id = amlNode.id;
         if (amlNode.caption)    data.caption = amlNode.caption;
         
         data.tagName    = amlNode.tagName;
         data.type       = amlNode.localName;
         data.xpath      = apf.xmlToXpath(amlNode);
-
+        if (eventName == "keypress" && amlNode.getValue())
+            data.value = amlNode.getValue() + value;
+        
         var pos = apf.getAbsolutePosition(amlNode.$ext, document.body);
         data.x          = pos[0];
         data.y          = pos[1];
@@ -242,6 +249,7 @@ apf.uirecorder.capture = {
                 }
             }
         }
+
         // @todo parent info needed?
         return data;
     },
@@ -271,7 +279,7 @@ apf.uirecorder.capture = {
 
         if (this.$mousedownMode || eventName != "mousemove") {
             if (amlNode) {
-                var amlNodeData = this.$getAmlNodeData(amlNode, htmlElement, eventName);
+                var amlNodeData = this.$getAmlNodeData(amlNode, htmlElement, eventName, value);
             }
             else if (htmlElement) {
                 var htmlElementData = this.$getHtmlElementData(htmlElement);
@@ -433,21 +441,50 @@ apf.uirecorder.capture = {
             actionList = this.$keyActions;
             actionList[0].time = 0;
             actionList[1].time = 100;
-            testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+
+            if (this.$keyActions[1].amlNode.type != "list") {
+                testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+            }
+            else {
+                testXml.setAttribute("name", "select " + this.$keyActions[1].amlNode.type + " item " + (this.$keyActions[1].amlNode.selected.value || this.$keyActions[1].amlNode.selected.xpath));
+            }
         }
-        // default
+
+        // other
         else {
             // caption for dragging element
             if ( (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[this.$keyActions.length-1].events && this.$keyActions[this.$keyActions.length-1].events["afterdrag"]) 
                 || (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "mouseup" && this.$keyActions[0].events && this.$keyActions[0].events["dragstart"] && this.$keyActions[this.$keyActions.length-1].events && this.$keyActions[this.$keyActions.length-1].events["dragdrop"])
                 )  {
-                testXml.setAttribute("name", "drag " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                if (this.$keyActions[this.$keyActions.length-1].amlNode.selected && this.$keyActions[this.$keyActions.length-1].dropTarget) {
+                    testXml.setAttribute("name", "drag '" + (this.$keyActions[this.$keyActions.length-1].amlNode.selected.value || this.$keyActions[this.$keyActions.length-1].amlNode.selected.xpath) + "' to " + (this.$keyActions[this.$keyActions.length-1].dropTarget.id || (this.$keyActions[this.$keyActions.length-1].dropTarget.caption ? this.$keyActions[this.$keyActions.length-1].dropTarget.type + " " + this.$keyActions[this.$keyActions.length-1].dropTarget.caption : null) || (this.$keyActions[this.$keyActions.length-1].dropTarget.type + " " + this.$keyActions[this.$keyActions.length-1].dropTarget.xpath)));
+                }
+                else {
+                    testXml.setAttribute("name", "drag '" + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)) +"'");
+                }
             }
             // caption for selecting item in dropdown
             else if (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[1].amlNode.popup == 40 && this.$keyActions[2] && this.$keyActions[2].name == "mousedown" && this.$keyActions[2].amlNode.type == "dropdown" && this.$keyActions[3] && this.$keyActions[3].name == "mouseup")  {
-                testXml.setAttribute("name", "select " + this.$keyActions[2].amlNode.type + " item " + (this.$keyActions[2].amlNode.selected.value || this.$keyActions[2].amlNode.selected.xpath));
+                testXml.setAttribute("name", "select " + this.$keyActions[2].amlNode.type + " item '" + (this.$keyActions[2].amlNode.selected.value || this.$keyActions[2].amlNode.selected.xpath) + "'");
             }
-
+            // caption for typing text in textbox
+            // mousedown/mouseup/(keypress/keydown/keyup)
+            // keypress/keydown
+            else if ((this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[2] && this.$keyActions[2].name == "keypress" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "keypress")
+                || (this.$keyActions[0] && this.$keyActions[0].name == "keypress" && this.$keyActions[1] && this.$keyActions[this.$keyActions.length-1].name == "keypress")
+            ) {
+                var i = (this.$keyActions[0].name == "mousedown") ? 2 : 0;
+                
+                for (var l = this.$keyActions.length; i < l; i++) {
+                    if (this.$keyActions[i].name != "keypress")
+                        break;
+                    
+                    if (i == this.$keyActions.length-1)
+                        testXml.setAttribute("name", "type " + this.$keyActions[i].amlNode.value + " in '" + this.$keyActions[i].amlNode.type + "' " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                }
+            }
+            
+            
             actionList = this.$actionList;
 
             // trim actionList from trailing mousemove actions
@@ -679,7 +716,7 @@ apf.uirecorder.capture = {
                                 }
 
                                 // time
-                                iNode.setAttribute("time", item.time);
+                                //iNode.setAttribute("time", item.time);
                                 
                                 if (item.value || typeof item.value == "boolean") {
                                     if (typeof item.value === "string")
@@ -932,7 +969,7 @@ apf.uirecorder.playback = {
                                 width   : parseInt(selectedXml.getAttribute("width")),
                                 height  : parseInt(selectedXml.getAttribute("height"))
                             };
-                            
+
                             if (amlNodeXml.selectSingleNode("selected").getAttribute("value")) {
                                 xmlNode = amlNode.findXmlNodeByValue(amlNodeXml.selectSingleNode("selected").getAttribute("value"));
                             }

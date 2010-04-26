@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="macro">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -735,7 +735,15 @@
                             btnRec.setProperty("visible", false);
                             btnStopRecord.setProperty("visible", true);
                             btnPlay.setProperty("disabled", true);
-                            apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
+                            
+                            // IE
+                            if (document.parentWindow)
+                                apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
+                            
+                            // FF
+                            else if (window.parent) {
+                                apf.$debugwin.apf.uirecorder.capture.record(window.parent.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
+                            }
                         }
 
                         function stopRecord() {
@@ -879,7 +887,7 @@
                             if (e.keyCode == 27) {
                                 $o3.DOM.onkeydown = null;
                                 apf.$debugwin.apf.uirecorder.playback.stop();
-                                // mouseup to prevent dragging if last action was mousedown
+                                // mouseup and keyup to prevent dragging if last action was mousedown
                                 $o3.mouseLeftUp();
                                 onPlaybackComplete();
                                 apf.$debugwin.apf.console.error("playback aborted");

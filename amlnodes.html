@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="apf.js"></script>
+        <style>
+            html{overflow:hidden}
+        </style>
+        <title>APF 3.0 ActionTracker</title>
+    </head>
+    <body>
+        <a:skin src="../../../jav_uirecorder/trunk/htmlfiles/skins.xml" />
+        
+        <a:appsettings debug="true" />
+<a:label for="txtAddress">Address</a:label>
+<a:textbox id="txtAddress" />
+
+    <a:datagrid>
+        <a:each match="[watch]">
+            <a:column 
+              caption = "Company" 
+              value   = "[@company]" 
+              width   = "50%">
+            </a:column>
+            <a:column 
+              caption = "Type" 
+              value   = "[@type]" 
+              width   = "50%">
+            </a:column>
+
+            <a:drag match="[watch]" />
+            <a:drop 
+              match  = "[watch]" 
+              target = "[watch]" 
+              action = "insert-before" />
+
+        </a:each>
+        <a:model>
+            <data>
+                <watch company="Alfex" type="man's" />
+                <watch company="Anonimo" type="woman's" />
+                <watch company="Atlantic" type="man's" />
+                <watch company="Axcent" type="woman's" />
+                <watch company="Aviator" type="man's" />
+                <watch company="Bulova" type="man's" />
+                <watch company="Candino" type="man's" />
+                <watch company="Citizen" type="man's" />
+                <watch company="Diesel" type="man's" />
+                <watch company="Jaguar" type="man's" />
+                <watch company="Lotus" type="man's" />
+                <watch company="Seiko" type="man's" />
+            </data>
+        </a:model>
+    </a:datagrid>
+    <a:list drag="true" drop="true">
+        <a:each match="[watch]">
+            <a:caption match="[@company]"></a:caption>
+            <a:icon value="clock.png"></a:icon>
+        </a:each>
+        <a:model>
+            <data>
+                <watch company="Casio" type="GShock" />
+                <watch company="Casio2" type="Edifice" />
+            </data>
+        </a:model>
+    </a:list>
+
+
+
+<a:list model="friends.xml" width="300">
+    <a:each match="[friend]">
+        <a:caption match="[@name]" />
+        <a:icon 
+          match = "[node()[@name='Ruben' or @name='Rik']]" 
+          value = "medal_gold_1.png" />
+        <a:icon value="medal_silver_1.png" />
+    </a:each>
+</a:list>
+
+<a:dropdown initial-message="initial message">
+    <a:item>The Netherlands</a:item>
+    <a:item>United States of America</a:item>
+    <a:item>United Kingdom</a:item>
+</a:dropdown>
+
+  <a:window  
+  buttons     = "min|max|close"
+  title       = "Mail message"
+  icon        = "email.png"
+  visible     = "true"
+  resizable   = "true" 
+  width       = "200"
+  height      = "190"
+  minwidth    = "170"
+  minheight   = "150"> 
+</a:window>  
+
+<a:script>//<!--
+    document.onclick = function(e) {
+        e.cancelBubble = true;
+        e.cancelBubble = false;
+    }
+//--></a:script>     
+    </body>
+</html>

@@ -36,7 +36,9 @@ apf.runNonIe = function (){
         //Event.cancelBubble
         MouseEvent.prototype.__defineSetter__("cancelBubble", function(b){
             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {
-                apf.uirecorder.capture[this.type](this);
+                // ignore click event
+//                if (this.type != "click")
+//                    apf.uirecorder.capture[this.type](this);
             }
         });
     }
