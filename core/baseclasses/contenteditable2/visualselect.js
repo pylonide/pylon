@@ -104,7 +104,9 @@ apf.visualSelect = function(selection){
     this.$finishResize = function(noGeo){
         apf.setStyleClass(resizing, "", ["idegrabber_resizing"]);
         resizing = false;
-        //this.updateGeo();
+        
+        if (lastSelection.length == 1)
+            this.updateGeo(false, true);
     }
 
     var lastSelection = [];
@@ -158,7 +160,7 @@ apf.visualSelect = function(selection){
     }
     
     var lastPos, txt;
-    this.updateGeo = function(force){
+    this.updateGeo = function(force, onlyUpdateAnchors){
         var selection = lastSelection;
 
         //Position
@@ -228,7 +230,7 @@ apf.visualSelect = function(selection){
             
             oOutline.style.display = "none";
             
-            if (!oHtml.offsetParent)
+            if (!oHtml.offsetParent || onlyUpdateAnchors)
                 return; //@error
 
             //oHtml.offsetParent.appendChild(oOutline); 
