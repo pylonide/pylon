@@ -509,7 +509,9 @@
                                     <a:css match="[playlist[not(node())]]" value="new_recording" />
                                     <a:empty match="[playlist[not(node())]]" value="Activate this Playlist by dropping a Recording here" />
                                 </a:each>
-                                <!--a:rename match="[playlist]" /-->
+                                <a:rename match="[playlist]" />
+                                <a:move match="[test]" />
+                                <a:copy match="[test]" />
                             </a:tree>
                             <div model="mdlPlaylist" class="playlist_buttons">
                                 <?lm
