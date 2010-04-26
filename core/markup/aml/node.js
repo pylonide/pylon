@@ -278,6 +278,12 @@ apf.AmlNode = function(){
             }
             else this.documentElement = amlNode; //@todo apf3.0 removal
         }
+        
+        if (this == amlNode) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Insertbefore DOM operation",
+                "Cannot append node as a child of itself."));
+        }
 
         if (amlNode.nodeType == this.NODE_DOCUMENT_FRAGMENT) {
             var nodes = amlNode.childNodes.slice(0);

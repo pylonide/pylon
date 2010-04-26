@@ -238,7 +238,7 @@ apf.ContentEditable2.commands = (function(){
             setTimeout(function(){
                 try {
                     txt.focus();
-                    //txt.select();
+                    txt.select();
                 }
                 catch(e) {}
             });
@@ -353,18 +353,18 @@ apf.ContentEditable2.commands = (function(){
     	}
     };
     
-    commands["select"] = function(sel, showUI, value, query){
+    commands["select"] = function(sel, showUI, options, query){
         switch(query){
             case STATE: return false;
             case VALUE: return "false";
             case ENABL: return true;
             case INDET: return false;
         }
-        
+
         var htmlNode   = options.htmlNode,
             parentNode = options.parentNode;
         if (!parentNode) {
-            parentNode = (this.resize.getSelection(0) || apf.document.documentElement);
+            parentNode = (apf.document.$getVisualSelect().getLastSelection()[0] || apf.document.documentElement);
             if (parentNode.getPage) {
                 parentNode = parentNode.getPage();
             }
@@ -375,21 +375,30 @@ apf.ContentEditable2.commands = (function(){
             options.parentNode = parentNode;
         }
         
-        var nodes = parentNode.getElementsByTagName("*");
+        var nodes = apf.document.getElementsByTagName("*");
         var htmlParent = htmlNode.parentNode;
         var left = apf.getHtmlLeft(htmlNode);
         var top  = apf.getHtmlTop(htmlNode);
         var right = left + htmlNode.offsetWidth;
         var bottom = top + htmlNode.offsetHeight;
-        var first = true;
+        var first = true, ext, selList = [];
+        var refParent;
         for (var i = 0; i < nodes.length; i++) {
-            var pos = apf.getAbsolutePosition(nodes[i].$ext, htmlParent);
-            if (pos[0] > left && pos[0] + nodes[i].$ext.offsetWidth < right
-              && pos[1] > top && pos[1] + nodes[i].$ext.offsetHeight < bottom) {
-                this.resize.grab(nodes[i], !first);
+            if (!(ext = nodes[i].$ext))
+                continue;
+            
+            var pos = apf.getAbsolutePosition(ext, htmlParent);
+            if (pos[0] > left && pos[0] + ext.offsetWidth < right
+              && pos[1] > top && pos[1] + ext.offsetHeight < bottom) {
+                if (!refParent) refParent = nodes[i].parentNode;
+                else if (refParent != nodes[i].parentNode) continue;
+                selList.push(nodes[i]);
                 first = false;
             }
         }
+        
+        if (selList.length)
+            apf.document.getSelection().$selectList(selList);
         
         //trTools.select(trTools.queryNode("//node()[@name='Arrow']"));
     };

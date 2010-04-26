@@ -481,12 +481,13 @@
             }
             
             //Elements - Opposite sides - X
-            var oppDiff = 5, oloffset, olpos = false;
-            if (d.xl.length && !change.l) {
+            var oppDiff = 5, oloffset, olpos = false, tdiff;
+            if (d.xl.length && change.l !== 0) {
                 //Left
                 if (!change.lsticky) {
                     for (var i = 0, il = d.xr.length; i < il; i++) {
-                        if ((Math.max(0, l - d.xr[i]) || 10000) - oppDiff < (we ? snapDiff : 1)) {
+                        tdiff = (Math.max(0, (change.l || l) - d.xr[i]) || 10000) - oppDiff;
+                        if ((sd ? Math.abs(tdiff) : tdiff) < (we ? snapDiff : 1)) {
                             change.ol = (olpos = d.xr[i]) + oppDiff;
                             change.olpos = olpos + oppDiff;
                             change.olEl = d.els[i];
@@ -499,7 +500,8 @@
                 //Right
                 if (!change.rsticky) {
                     for (var i = 0, il = d.xl.length; i < il; i++) {
-                        if ((Math.max(0, d.xl[i] - l - w) || 10000) - oppDiff < (ea ? snapDiff : 1)) {
+                        tdiff = (Math.max(0, d.xl[i] - (change.l || l) - w) || 10000) - oppDiff;
+                        if ((sd ? Math.abs(tdiff) : tdiff) < (ea ? snapDiff : 1)) {
                             change.or = (olpos = d.xl[i] - oppDiff) - w;
                             change.orpos = d.container[2] - olpos;
                             change.orEl = d.els[i];
@@ -512,10 +514,11 @@
     
             //Elements - Opposite sides - Y
             var otoffset, otpos = false;
-            if (d.yl.length && !change.t) {
+            if (d.yl.length && change.t !== 0) {
                 if (!change.tsticky) {
                     for (var i = 0, il = d.yr.length; i < il; i++) {
-                        if ((Math.max(0, t - d.yr[i]) || 10000) - oppDiff  < (no ? snapDiff : 1)) {
+                        tdiff = Math.abs((Math.max(0, (change.t || t) - d.yr[i]) || 10000) - oppDiff);
+                        if ((sd ? Math.abs(tdiff) : tdiff)  < (no ? snapDiff : 1)) {
                             change.ot = (otpos = d.yr[i]) + oppDiff;
                             change.otpos = otpos + oppDiff;
                             change.otEl = d.els[i];
@@ -527,7 +530,8 @@
                 
                 if (!change.bsticky) {
                     for (var i = 0, il = d.yl.length; i < il; i++) {
-                        if ((Math.max(0, d.yl[i] - t - h) || 10000) - oppDiff < (so ? snapDiff : 1)) {
+                        tdiff = Math.abs((Math.max(0, d.yl[i] - (change.t || t) - h) || 10000) - oppDiff);
+                        if ((sd ? Math.abs(tdiff) : tdiff) < (so ? snapDiff : 1)) {
                             change.ob = (otpos = d.yl[i] - oppDiff) - h;
                             change.obpos = d.container[3] - otpos;
                             change.obEl = d.els[i];
@@ -560,7 +564,7 @@
             }
             else
                 dragIndicator1.style.display = "none";
-            
+
             if (tpos !== false && (otpos === false || change.ob)) {
                 dragIndicator2.style.left = (d.container[0]) + "px";
                 dragIndicator2.style.top = (tpos + toffset + d.container[1]) + "px";
@@ -865,7 +869,7 @@
             control = {};
             
             var tweens = [];
-            for (var i = 0; i < 5; i ++) {
+            for (var i = 0; i < indicators.length; i ++) {
                 if (indicators[i].style.display == "block") {
                     tweens.push({
                         oHtml : indicators[i],
@@ -1089,9 +1093,9 @@
     function beforeresize(e){
         var type = e.type;
         var name = this.parentNode.localName;
-        
+
         control.stop();
-        
+
         if (name == "vbox") {
             var pack = this.align || this.parentNode.pack;
             if (pack != "middle") {
@@ -1141,9 +1145,9 @@
           && apf.getStyle(this.$ext, "position") != "absolute") { //ignoring fixed for now...
             this.$ext.style.width = (this.$ext.offsetWidth - apf.getWidthDiff(this.$ext)) + "px";
             this.$ext.style.height = (this.$ext.offsetHeight - apf.getHeightDiff(this.$ext)) + "px";
-            this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
+            /*this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
             this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";
-            this.$ext.style.position = "absolute";
+            this.$ext.style.position = "absolute";*/
         }
 
         //@todo move everything below into vbox/table/anchoring

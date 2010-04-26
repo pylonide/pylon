@@ -38,12 +38,22 @@ apf.XhtmlElement = function(struct, tagName){
     this.$xae = function(type, fn){
         this.$xoe.apply(this, arguments);
         
+        //#ifdef __WITH_CONTENTEDITABLE
+        if (this.editable && "contextmenu|keydown|keypress|keyup".indexOf(type) > -1)
+            return;
+        //#endif
+        
         if (this.$ext)
             apf.addListener(this.$ext, type, this.$de);
     };
     
     this.$xre = function(type, fn) {
         apf.AmlElement.prototype.removeEventListener.apply(this, arguments);
+        
+        //#ifdef __WITH_CONTENTEDITABLE
+        if (this.editable && "contextmenu|keydown|keypress|keyup".indexOf(type) > -1)
+            return;
+        //#endif
         
         if (this.$ext)
             apf.removeListener(this.$ext, type, this.$de);

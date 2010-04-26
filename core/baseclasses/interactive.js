@@ -93,7 +93,7 @@ apf.Interactive = function(){
         else if (apf.isTrue(value))
             this.draggable = value = true;
         
-        var o = this.oDrag || this.$ext;
+        var o = this.editable ? this.$ext : this.oDrag || this.$ext;
         if (o.interactive & 1) 
             return;
 
@@ -318,7 +318,7 @@ apf.Interactive = function(){
             
             apf.dragMode = false;
 
-            if (_self.dispatchEvent)
+            if (_self.dispatchEvent && overThreshold)
                 _self.dispatchEvent("afterdrag", {
                     htmlNode : htmlNode
                 });

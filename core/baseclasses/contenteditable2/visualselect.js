@@ -68,6 +68,16 @@ apf.visualSelect = function(selection){
             e.cancelBubble = true;
         }
         
+        //@todo this should be cleaned up
+        /*var _self = this;
+        apf.window.addEventListener("focus", function(e){
+            if (lastSelection && lastSelection.length)
+                _self.show();
+        });
+        apf.window.addEventListener("blur", function(e){
+            _self.hide();
+        });*/
+        
         inited = true;
     }
     
@@ -91,10 +101,10 @@ apf.visualSelect = function(selection){
             nodes[i].style.display = "none";
     };
     
-    this.$finishResize = function(){
+    this.$finishResize = function(noGeo){
         apf.setStyleClass(resizing, "", ["idegrabber_resizing"]);
         resizing = false;
-        this.updateGeo();
+        //this.updateGeo();
     }
 
     var lastSelection = [];
@@ -120,8 +130,8 @@ apf.visualSelect = function(selection){
         }
         
         if (s.$ext.parentNode.tagName == "BODY") {
-            apf.layout.setRules(document.documentElement, "visualselect", "apf.all[" 
-                + this.$uniqueId + "].updateGeo()", true);
+            apf.layout.setRules(document.documentElement, "visualselect", 
+              "apf.all[" + this.$uniqueId + "].updateGeo()", true);
             apf.layout.queue(document.documentElement);
         }
         else {
@@ -174,32 +184,39 @@ apf.visualSelect = function(selection){
 
                 var pack = sel.align || pel.pack;
 
-                apf.setStyleClass(nodes.n, fullDisabled || name == "table" || name == "vbox" && pack == "start" || name == "hbox" 
+                apf.setStyleClass(nodes.n, fullDisabled || name == "table" 
+                  || name == "vbox" && pack == "start" || name == "hbox" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[0] || anchors[0] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.e, fullDisabled || name == "table" || name == "hbox" && pack == "end"
+                apf.setStyleClass(nodes.e, fullDisabled || name == "table" 
+                  || name == "hbox" && pack == "end"
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[1] || anchors[1] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.s, fullDisabled || name == "vbox" && pack == "end" 
+                apf.setStyleClass(nodes.s, fullDisabled 
+                  || name == "vbox" && pack == "end" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[2] || anchors[2] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.w, fullDisabled || name == "table" || name == "vbox" || name == "hbox" && pack == "start" 
+                apf.setStyleClass(nodes.w, fullDisabled || name == "table" 
+                  || name == "vbox" || name == "hbox" && pack == "start" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && ( anchors[3] || anchors[3] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
 
-                apf.setStyleClass(nodes.nw, fullDisabled || name == "table" || name == "vbox" && pack == "start" || name == "hbox"
+                apf.setStyleClass(nodes.nw, fullDisabled || name == "table" 
+                  || name == "vbox" && pack == "start" || name == "hbox"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
-                apf.setStyleClass(nodes.ne, fullDisabled || name == "table" || name == "hbox" && pack == "end"
+                apf.setStyleClass(nodes.ne, fullDisabled || name == "table" 
+                  || name == "hbox" && pack == "end"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
-                apf.setStyleClass(nodes.sw, fullDisabled || name == "vbox" && pack == "end"
+                apf.setStyleClass(nodes.sw, fullDisabled 
+                  || name == "vbox" && pack == "end"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
                 apf.setStyleClass(nodes.se, fullDisabled
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);

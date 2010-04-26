@@ -431,12 +431,7 @@ apf.GuiElement = function(){
     //#ifdef __AMLCONTEXTMENU
     this.addEventListener("contextmenu", function(e){
         // #ifdef __WITH_CONTENTEDITABLE2
-        if (this.editable) {
-            this.ownerDocument.execCommand("contextmenu", true, {
-                amlNode: this,
-                htmlEvent: e
-            });
-            
+        if (this.editable) { //@todo when the event system is done proper this should be handled in ce2.js
             e.returnValue  = false;
             e.cancelBubble = true;
             return false;

@@ -49,8 +49,8 @@ apf.selectrect = function (){
                 var wt = e.clientX - startX - 1,
                     ht = e.clientY - startY - 1,
                     min = Math.min(wt, ht);
-                if (e.shiftKey)
-                    wt = ht = min;
+                //if (e.shiftKey)
+                    //wt = ht = min;
 
                 q.style.width  = (wt < 0 ? -1 * (wt - 1) : (wt || 1)) + "px";
                 q.style.height = (ht < 0 ? -1 * (ht - 1) : (ht || 1)) + "px";
@@ -107,6 +107,8 @@ apf.selectrect = function (){
             q.style.left    = (startX = event.clientX) + "px";
             q.style.top     = (startY = event.clientY) + "px";
             q.style.width   = (q.style.height = 1) + "px";
+            
+            apf.dragMode = true;
         };
 
         document.onmouseup = function(){
@@ -123,6 +125,8 @@ apf.selectrect = function (){
             q.style.display = "none";
             startX = false;
             startY = false;
+            
+            apf.dragMode = false;
         };
 
         p1.style.display =
@@ -137,7 +141,8 @@ apf.selectrect = function (){
         document.onmouseup = null;
 
         p1.style.display =
-        p2.style.display = "none";
+        p2.style.display = 
+        q.style.display  = "none";
         document.body.style.cursor =
         document.documentElement.style.cursor = "";
     };

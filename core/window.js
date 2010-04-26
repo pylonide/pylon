@@ -606,7 +606,8 @@ apf.window = function(){
         var dir, start, next,
             amlNode = relObject || apf.document.activeElement,
             fParent = amlNode
-                ? (switchWindows && amlNode.$isWindowContainer > 0
+                ? (switchWindows && amlNode.$isWindowContainer 
+                  && amlNode.$isWindowContainer != -1
                     ? apf.window
                     : amlNode.$focusParent)
                 : apf.document.documentElement,
@@ -659,7 +660,7 @@ apf.window = function(){
             || amlNode.focussable === false
             || switchWindows && !amlNode.$tabList.length);
 
-        if (fParent == apf.window) {
+        if (fParent == apf.window && amlNode.$isWindowContainer != -2) {
             this.$focusLast(amlNode, {mouse:true}, switchWindows);
         }
         else {
@@ -873,6 +874,7 @@ apf.window = function(){
             ev = {
                 x         : pos[0] + 10 + document.documentElement.scrollLeft,
                 y         : pos[1] + 10 + document.documentElement.scrollTop,
+                amlNode   : amlNode,
                 htmlEvent : e
             }
         }
@@ -1154,6 +1156,30 @@ apf.window = function(){
     //#endif
 
     //var browserNavKeys = {32:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1}
+    
+    apf.addListener(document, "keyup", function(e){
+        e = e || event;
+
+        if (e.ctrlKey && e.keyCode == 9 && apf.document.activeElement) {
+            var w = apf.document.activeElement.$focusParent;
+            if (w.modal) {
+                if (e.preventDefault)
+                    e.preventDefault();
+                return false;
+            }
+
+            apf.window.moveNext(e.shiftKey,
+                apf.document.activeElement.$focusParent, true);
+
+            w = apf.document.activeElement.$focusParent;
+            if (w && w.bringToFront)
+                w.bringToFront();
+            
+            if (e.preventDefault)
+                e.preventDefault();
+            return false;    
+        }
+    });
     
     //@todo optimize this function
     apf.addListener(document, "keydown", this.$keydown = function(e){
@@ -1445,16 +1471,19 @@ apf.window = function(){
         }); //async
 
         //#ifdef __WITH_WINDOW_FOCUS
+        var lastFocusElement;
         this.addEventListener("focus", function(e){
             if (!apf.document.activeElement && lastFocusParent && !apf.isIphone) {
-                if (lastFocusParent.$isWindowContainer == -1) {
+                lastFocusElement.focus();
+                /*
+                if (lastFocusParent.$isWindowContainer < 0) {
                     if (lastFocusParent.$tabList.length)
                         apf.window.moveNext(null, lastFocusParent.$tabList[0]);
                     else
                         apf.window.$focus(lastFocusParent);
                 }
                 else 
-                    apf.window.$focusLast(lastFocusParent);
+                    apf.window.$focusLast(lastFocusParent);*/
             }
         });
         this.addEventListener("blur", function(e){
@@ -1462,7 +1491,8 @@ apf.window = function(){
                 return;
     
             apf.document.activeElement.blur(true, {srcElement: this});//, {cancelBubble: true}
-            lastFocusParent = apf.document.activeElement.$focusParent;
+            lastFocusParent   = apf.document.activeElement.$focusParent;
+            lastFocusElement  = apf.document.activeElement;
             apf.activeElement = apf.document.activeElement = null;
         });
       //#endif

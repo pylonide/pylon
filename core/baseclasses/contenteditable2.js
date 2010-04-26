@@ -57,6 +57,10 @@ apf.addEventListener("load", function(){
                 //_self.startRename(selected[0]);
                 apf.document.execCommand("rename", true);
                 return false;
+            case 16:
+                if (!this.dragMode)
+                    apf.document.execCommand("mode", null, "select");
+                break;
             /*case 36: //HOME
                 return false;
             case 35: //END
@@ -78,6 +82,11 @@ apf.addEventListener("load", function(){
             case 34: //PGDN
                 break;*/
         }
+    });
+    
+    apf.addEventListener("keyup", function(e){
+        if (e.keyCode == 16 && !this.dragMode)
+            apf.document.execCommand("mode", null, "arrow");
     });
     
     var recursion, $focus, lastFocussed;
@@ -150,6 +159,8 @@ apf.addEventListener("load", function(){
             return;
         }
         
+        if (!node.editable) return;
+        
         //apf.activeElement == node && 
         if (sel.rangeCount > 1) {
             //Deselect a node when its already selected
@@ -169,6 +180,17 @@ apf.addEventListener("load", function(){
             }
         }
     });
+    
+    /*apf.addEventListener("contextmenu", function(e){
+        if (e.currentTarget.namespaceURI == apf.ns.xhtml) {
+            e.currentTarget.ownerDocument.execCommand("contextmenu", true, {
+                amlNode   : e.currentTarget,
+                htmlEvent : e
+            });
+            
+            return false;
+        }
+    });*/
 });
 
 apf.ContentEditable2 = function() {
@@ -182,6 +204,11 @@ apf.ContentEditable2 = function() {
     
     this.$booleanProperties["editable"] = true;
     this.$propHandlers["editable"] = function(value, prop){
+        if (this.nomk) { //A way to have UI elements excluded from editing
+            this.editable = false;
+            return false;
+        }
+        
         if (value) {
             //#ifdef __WITH_DEBUG_WIN
             if (!apf.ContentEditable2.inited) {
@@ -234,6 +261,17 @@ apf.ContentEditable2 = function() {
                         e.cancelBubble = true;
                     }
                 }
+                
+                this.addEventListener("contextmenu", function(e){
+                    this.ownerDocument.execCommand("contextmenu", true, {
+                        amlNode: this,
+                        htmlEvent: e
+                    });
+        
+                    e.returnValue  = false;
+                    e.cancelBubble = true;
+                    return false;
+                });
                 
                 apf.ContentEditable2.addInteraction(this);
             }
