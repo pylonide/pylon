@@ -370,12 +370,15 @@ apf.removePathContext = function(base, url){
  * @todo why is this done like this?
  */
 apf.cancelBubble = function(e, o){
-    e.cancelBubble = true;
+    if (e.stopPropagation)
+        e.stopPropagation()
+    else 
+        e.cancelBubble = true;
     // #ifdef __WITH_FOCUS
     //if (o.$focussable && !o.disabled)
         //apf.window.$focus(o);
     // #endif
-
+    
     /*if (apf.isIE)
         o.$ext.fireEvent("on" + e.type, e);
     else 
