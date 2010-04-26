@@ -22,6 +22,16 @@
             display     : block;
         }
         
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
+            height      : 21px;
+            padding     : 6px 0 0 3px;
+            display     : inline-block;
+            white-space : nowrap;
+            width       : auto;
+            overflow    : hidden;
+            position    : relative;
+        }
+        
         /* Root nodes */
         .macro_tree DIV.macro_rcaption {
             height              : 16px;
@@ -163,6 +173,11 @@
             cursor      : default;
             white-space : nowrap;
         }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.dragInsert {
+            border-left : 1px dotted black;
+            margin-left : -1px;
+        }
 
         
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rcaption,
@@ -214,8 +229,8 @@
             background-image : url(images/macro_child_right_new_recording.png);
         }
         
-        .macro_tree DIV BLOCKQUOTE DIV.selected DIV.macro_rcaption,
-        .macro_tree DIV BLOCKQUOTE DIV.selected DIV.macro_rright {
+        .macro_treeFocus DIV BLOCKQUOTE DIV.selected DIV.macro_rcaption,
+        .macro_treeFocus DIV BLOCKQUOTE DIV.selected DIV.macro_rright {
             background-position : 0 -15px;
         }
         
@@ -237,13 +252,41 @@
             margin           : 0;
         }
         
-        
         .macro_tree BLOCKQUOTE BLOCKQUOTE,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_left,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_xbutton {
             display : none;
+        }
+        
+        /* DRAG & DROP */
+        
+        .dragmacro_tree DIV.macro_rcaption {
+            display             : block;
+            position            : relative;
+            float               : left;
+            width               : auto;
+            height              : 15px;
+            background-image    : url(images/macro_child_left_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            padding             : 0 5px 0 12px;
+            color               : white;
+            overflow            : hidden;
+            font-family         : Tahoma;
+            font-size           : 11px;
+        }
+        
+        .dragmacro_tree DIV.macro_rright {
+            display             : block;
+            position            : relative;
+            width               : 7px;
+            height              : 15px;
+            background-image    : url(images/macro_child_right_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            overflow            : hidden;
         }
     ]]></a:style>
     <a:style condition="apf.isGecko"><![CDATA[
@@ -272,7 +315,7 @@
         </a:item>
         <a:dragindicator>
             <div class="dragmacro_tree">
-                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote>
+                <div class="macro_rcaption">-</div><div class="macro_rright"></div>
             </div>
         </a:dragindicator>
         <a:loading>
