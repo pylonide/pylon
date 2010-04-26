@@ -181,8 +181,8 @@
             position            : relative;
             width               : auto;
             height              : 15px;
-            background-image    : url(images/macro_child_backg_left.png);
-            background-position : 0 -15px;
+            background-image    : url(images/macro_child_left_default.png);
+            background-position : 0 0;
             background-repeat   : no-repeat;
             padding             : 0 5px 0 12px;
             color               : white;
@@ -196,21 +196,27 @@
             position            : relative;
             width               : 7px;
             height              : 15px;
-            background-image    : url(images/macro_child_backg_right.png);
-            background-position : 0 -15px;
+            background-image    : url(images/macro_child_right_default.png);
+            background-position : 0 0;
             background-repeat   : no-repeat;
             overflow            : hidden;
             top                 : 0;
             right               : 0;
-            overflow            : hidden;
         }
         
         .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rcaption {
+            background-image : url(images/macro_child_left_new_recording.png);
+            color            : #aabccb;
+        }
         .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rright,
-        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rcaption,
         .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rright {
-            background-position : 0 -30px;
-            color               : #aabccb;
+            background-image : url(images/macro_child_right_new_recording.png);
+        }
+        
+        .macro_tree DIV BLOCKQUOTE DIV.selected DIV.macro_rcaption,
+        .macro_tree DIV BLOCKQUOTE DIV.selected DIV.macro_rright {
+            background-position : 0 -15px;
         }
         
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
@@ -257,7 +263,7 @@
           caption   = "div[1]/text()"
           icon      = "."
           check     = "."
-          openclose = "."
+          openclose = "div[2]"
           select    = "."
           container = "blockquote/span[2]">
             <div>
