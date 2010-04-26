@@ -247,7 +247,8 @@ apf.BaseTree = function(){
             lastOpened[p] = [htmlNode, xmlNode];
         }
         
-        container.style.display = "block";
+        if (!this.nocollapse)
+            container.style.display = "block";
 
         if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential") 
           && !container.innerHTML) {
@@ -256,9 +257,12 @@ apf.BaseTree = function(){
         }
         
         if (immediate || container.scrollHeight > 1000) {
-            if (!this.nocollapse)
+            if (!this.nocollapse) {
                 container.style.height = "auto";
-            container.style.overflow = "visible";
+                container.style.overflow = "visible";
+            }
+                
+            
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return;
         }
