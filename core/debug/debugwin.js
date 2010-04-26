@@ -1006,7 +1006,6 @@ apf.$debugwin = {
         };
 
         this.$ext.style.display = "block";
-        console.log("window height: ", this.$ext.offsetHeight);
         document.body.style.bottom = this.$ext.offsetHeight + "px";
     },
     
