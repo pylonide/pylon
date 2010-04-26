@@ -578,14 +578,20 @@ apf.Interactive = function(){
                 ? oOutline
                 : _self.$ext;
 
+            if (hasRight && !(right || right === 0))
+                right = apf.getHtmlRight(htmlNode);
+
+            if (hasBottom && !(bottom || bottom === 0))
+                bottom = apf.getHtmlBottom(htmlNode);
+
             if (hasRight) {
-                _self.setProperty("right", right || right === 0 ? right : apf.getHtmlRight(htmlNode), 0, _self.editable);
+                _self.setProperty("right", right, 0, _self.editable);
                 if (!_self.left)
                     htmlNode.style.left = "";
             }
             
             if (hasBottom) {
-                _self.setProperty("bottom", bottom || bottom === 0 ? bottom : apf.getHtmlBottom(htmlNode), 0, _self.editable);
+                _self.setProperty("bottom", bottom, 0, _self.editable);
                 if (!_self.top)
                     htmlNode.style.top = "";
             }

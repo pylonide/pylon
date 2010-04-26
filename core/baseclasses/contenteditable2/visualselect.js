@@ -118,11 +118,23 @@ apf.visualSelect = function(selection){
                 apf.layout.queue(s.$ext);
             }
         }
+        
+        if (s.$ext.parentNode.tagName == "BODY") {
+            apf.layout.setRules(document.documentElement, "visualselect", "apf.all[" 
+                + this.$uniqueId + "].updateGeo()", true);
+            apf.layout.queue(document.documentElement);
+        }
+        else {
+            apf.layout.removeRule(document.documentElement, "visualselect");
+            apf.layout.activateRules(document.documentElement);
+        }
         //#endif
         lastSelection = nodes;
         
         if (!nodes.length)
             return this.hide();
+        else if (nodes.length > 1)
+            oOutline.innerHTML = Array(nodes.length + 1).join("<div></div>");
 
         this.updateGeo();
         
@@ -246,17 +258,16 @@ apf.visualSelect = function(selection){
             oOutline.style.display = "block";
 
             if (selection.length > 1) {
-                var ext, html = [], epos;
+                var ext, html, epos;
                 for (i = 0, l = selection.length; i < l; i++) {
                     ext  = selection[i].$ext;
                     epos = apf.getAbsolutePosition(ext);
-                    html.push("<div style='left   : " + (epos[0] - pos[0]) + "px;\
-                                           top    : " + (epos[1] - pos[1]) + "px;\
-                                           width  : " + (ext.offsetWidth - 2) + "px;\
-                                           height : " + (ext.offsetHeight - 2) + "px;'>\
-                               </div>");
+                    html = oOutline.childNodes[i];
+                    html.style.left   = (epos[0] - pos[0]) + "px";
+                    html.style.top    = (epos[1] - pos[1]) + "px";
+                    html.style.width  = (ext.offsetWidth - 2) + "px";
+                    html.style.height = (ext.offsetHeight - 2) + "px";
                 }
-                oOutline.innerHTML = html.join("");
             }
         }
 
@@ -354,6 +365,10 @@ apf.visualSelect = function(selection){
                     sel.setAttribute("left", apf.getHtmlLeft(sel.$ext));
                 else if (prop == "bottom" && !sel.top && sel.top !== 0)
                     sel.setAttribute("top", apf.getHtmlTop(sel.$ext));
+                else if (prop == "left" && !sel.right && sel.right !== 0)
+                    sel.setAttribute("right", apf.getHtmlRight(sel.$ext));
+                else if (prop == "top" && !sel.bottom && sel.bottom !== 0)
+                    sel.setAttribute("bottom", apf.getHtmlBottom(sel.$ext));
 
                 sel.removeAttribute(prop);
             }

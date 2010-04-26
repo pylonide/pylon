@@ -135,6 +135,7 @@ apf.addEventListener("load", function(){
         
         apf.plane.hide();
         var o = apf.document.$getVisualSelect().$getOutline();
+        if (!o) return;
         var lastTop = o.style.top;
         o.style.top = 
         document.getElementById("apf_outline").style.top = "-10000px";
@@ -251,7 +252,12 @@ apf.ContentEditable2 = function() {
                     n.$triggerUpdate();
                 else
                     (this.$propHandlers["draggable"]
-                      || apf.GuiElement.propHandlers["draggable"]).call(this, false);
+                      || apf.GuiElement.propHandlers["draggable"]).call(this, this.localName == "window" || false); //@todo hack!
+                
+                delete this.dragOutline; //@todo hack!
+                delete this.$showDrag;
+                delete this.$showResize;
+                delete this.realtime; //@todo this should be renamed to something else
                 
                 //Unset resizable
                 if (n = this.getAttributeNode("resizable"))
@@ -269,7 +275,7 @@ apf.ContentEditable2 = function() {
                 delete this.$isWindowContainer; //Should fall back to value from prototype
                 
                 if (this.ownerDocument.queryCommandEnabled("rename", false, this)) {
-                    delete this.$ext.ondblclick;
+                    this.$ext.ondblclick = null;
                 }
                 
                 apf.ContentEditable2.removeInteraction(this);

@@ -482,7 +482,7 @@
             
             //Elements - Opposite sides - X
             var oppDiff = 5, oloffset, olpos = false;
-            if (d.xl.length) {
+            if (d.xl.length && !change.l) {
                 //Left
                 if (!change.lsticky) {
                     for (var i = 0, il = d.xr.length; i < il; i++) {
@@ -512,7 +512,7 @@
     
             //Elements - Opposite sides - Y
             var otoffset, otpos = false;
-            if (d.yl.length) {
+            if (d.yl.length && !change.t) {
                 if (!change.tsticky) {
                     for (var i = 0, il = d.yr.length; i < il; i++) {
                         if ((Math.max(0, t - d.yr[i]) || 10000) - oppDiff  < (no ? snapDiff : 1)) {
@@ -731,8 +731,9 @@
             return;
 
         if (isCoord(s.orpos) && !s.orEl.left) {
+            if (!t[1] && !isCoord(el.right))
+                t[1] = true;
             el.setAttribute("right", s.orpos);
-            t[1]   = true;
             setOpp = true;
         }
         else if (isCoord(s.w) && s.rsticky) {
@@ -754,14 +755,13 @@
             
             if (!setOpp) {
                 if (s.rsticky) {
-                    if (!isCoord(el.right)) {
-                        el.setAttribute("right", d.container[2] - s.l - coord(s.w, d.width));
+                    if (!t[1] && !isCoord(el.right))
                         t[1] = true;
-                    }
+                    el.setAttribute("right", d.container[2] - s.l - coord(s.w, d.width));
                     setOpp = true;
                 }
                 else if (t[1] && isCoord(el.right) && (isCoord(s.l) || s.lsticky)) {
-                    if (!el.left) {
+                    if (!isCoord(el.left)) {
                         el.setAttribute("left", s.l);
                         t[3] = true;
                     }
@@ -794,8 +794,8 @@
 
         var setOpp = false;
         if (isCoord(s.obpos) && !s.obEl.top) {
-            if (t[2] || !isCoord(el.bottom))
-                t[2]   = true;
+            if (!t[2] && !isCoord(el.bottom))
+                t[2] = true;
             el.setAttribute("bottom", s.obpos);
             setOpp = true;
         }
@@ -818,14 +818,13 @@
             
             if (!setOpp) {
                 if (s.bsticky) {
-                    if (!isCoord(el.bottom)) {
-                        el.setAttribute("bottom", d.container[3] - s.t - coord(s.h, d.height));
+                    if (!t[2] && !isCoord(el.bottom))
                         t[2] = true;
-                    }
+                    el.setAttribute("bottom", d.container[3] - s.t - coord(s.h, d.height));
                     setOpp = true;
                 }
                 else if (t[2] && isCoord(el.bottom) && (isCoord(s.t) || s.tsticky)) {
-                    if (!el.top) {
+                    if (!isCoord(el.top)) {
                         el.setAttribute("top", s.t);
                         t[0] = true;
                     }
@@ -979,6 +978,7 @@
             //this.$ext = oOutline;
         }
         
+        var l, t, w, h;
         var selected   = apf.document.$getVisualSelect().getLastSelection();
         var prevParent = selected[0].parentNode;
         var pNode      = apf.findHost(htmlNode.parentNode);
@@ -997,7 +997,7 @@
 
             if (deltaX || deltaY
               || "vbox|hbox|table".indexOf(prevParent.localName) > -1) {
-                for (var l, t, w, h, n, i = 0; i < selected.length; i++) {
+                for (var n, i = 0; i < selected.length; i++) {
                     n = selected[i];
                     var diff = apf.getDiff(n.$ext);
                     n.$updateProperties(
@@ -1005,8 +1005,16 @@
                         t = apf.getHtmlTop(n.$ext) + deltaY, 
                         (w = n.$ext.offsetWidth) - diff[0], 
                         (h = n.$ext.offsetHeight) - diff[1], diff[0], diff[1],
-                        pWidth - l - w,
-                        pHeight - t - h);
+                        Math.max(0, pWidth - l - w),
+                        Math.max(0, pHeight - t - h));
+                    showDrag.common_resize.call(n, l, t, w, h, {}, 
+                        n.$stick = {}, true, true, true, true, true, 1);
+                    dragInfo.left = l;
+                    dragInfo.top = t;
+                    dragInfo.width = w;
+                    dragInfo.height = h;
+                    setStickyEdges(n, {t:t,l:l,h:h,w:w});
+                    delete n.$stick;
                 }
             }
         }
@@ -1049,10 +1057,11 @@
                 }
             }
             
-            //@todo for multiselect this becomes complex (just like multiresize)
-            if (selected.length == 1 && el.$stick) {
-                setStickyEdges(el);
-                el.$stick = null;
+            if (el.$stick) {
+                if (selected.length == 1) {
+                    setStickyEdges(el);
+                    delete el.$stick;
+                }
             }
         }
         
