@@ -1033,7 +1033,7 @@ apf.$debugwin = {
         document.onmousemove = f = function(e){
             if (!e) e = event;
             
-            var offsetY = e.offsetY;
+            var offsetY = e.offsetY || e.pageY;
             clearTimeout(timer);
             if (lastTime && new Date().getTime() 
               - lastTime < apf.mouseEventBuffer) {
