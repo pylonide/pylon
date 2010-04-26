@@ -1006,7 +1006,8 @@ apf.$debugwin = {
         };
 
         this.$ext.style.display = "block";
-        document.body.style.bottom = "300px";
+        console.log("window height: ", this.$ext.offsetHeight);
+        document.body.style.bottom = this.$ext.offsetHeight + "px";
     },
     
     hide : function(){
@@ -1027,9 +1028,10 @@ apf.$debugwin = {
 
         document.body.style.cursor = "s-resize";
         
-        var lastTime, timer, f;
-        var start = $ext.offsetHeight;
-        var sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? 0 : 1) * offset);
+        var lastTime, timer,
+            body  = document.body,
+            start = $ext.offsetHeight,
+            sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? 0 : 1) * offset);
         document.onmousemove = f = function(e){
             if (!e) e = event;
             
@@ -1043,12 +1045,14 @@ apf.$debugwin = {
                 }
                 timer = setTimeout(function(){
                     $ext.style.height = (start + (sY - offsetY)) + "px";
+                    body.style.bottom = $ext.offsetHeight + "px";
                 }, 10);
                 return;
             }
             lastTime = new Date().getTime();
             
             $ext.style.height = (start + (sY - offsetY)) + "px";
+            body.style.bottom = $ext.offsetHeight + "px";
         }
         document.onmouseup = function(e){
             if (!e) e = event;
