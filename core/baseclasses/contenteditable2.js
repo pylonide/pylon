@@ -122,7 +122,7 @@ apf.addEventListener("load", function(){
         recursion = false;
     });
     
-    var lastPos;
+    var lastPos = [-1000, -1000];
     apf.addEventListener("mousedown", function(e){
         lastPos = [e.htmlEvent.clientX, e.htmlEvent.clientY];
     });
