@@ -117,7 +117,7 @@ apf.Interactive = function(){
                     dragStart.call(o, e, reparent);
                     apf.removeEventListener("mousedown", f);
                 });
-                apf.cancelBubble(e || event, this);
+                apf.cancelBubble(event, this);
             }
             else
             // #else

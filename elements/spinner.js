@@ -459,7 +459,8 @@ apf.spinner = function(struct, tagName){
                 return;
             
             e = e || event;
-            e.cancelBubble = true;
+            //e.cancelBubble = true;
+            apf.cancelBubble(e, this);
 
             apf.setStyleClass(this, "plusHover", ["plusDown"]);
 
@@ -485,7 +486,8 @@ apf.spinner = function(struct, tagName){
                 return;
             
             e = e || event;
-            e.cancelBubble = true;
+            //e.cancelBubble = true;
+            apf.cancelBubble(e, this);
 
             apf.setStyleClass(this, "minusHover", ["minusDown"]);
 
@@ -530,6 +532,21 @@ apf.spinner = function(struct, tagName){
         this.$buttonMinus.onmousedown =
         this.$buttonMinus.onmouseup = null;
     };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $input          : this.oInput,
+                $buttonPlus     : this.$buttonPlus,
+                $buttonMinus    : this.$buttonMinus
+            }
+        }
+
+        return this.$activeElements;
+    }
+
 // #ifdef __WITH_DATABINDING
 }).call(apf.spinner.prototype = new apf.StandardBinding());
 /* #else

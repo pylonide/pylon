@@ -194,7 +194,8 @@ apf.uirecorder.capture = {
         
         data.tagName    = amlNode.tagName;
         data.type       = amlNode.localName;
-        data.xpath      = apf.xmlToXpath(amlNode);
+        var xpath       = apf.xmlToXpath(amlNode)
+        data.xpath      = xpath.substr(xpath.indexOf("/")+1);
         if (eventName == "keypress" && amlNode.getValue())
             data.value = amlNode.getValue() + value;
         
@@ -218,7 +219,7 @@ apf.uirecorder.capture = {
                         data.selected.value = amlNode.getValue();
                     var xpath = apf.xmlToXpath(amlNode.selected);
                     data.selected.xpath     = xpath.substr(xpath.indexOf("/")+1);
-                    
+
                     pos = apf.getAbsolutePosition(amlNode.$selected, document.body);
                     data.selected.x         = pos[0];
                     data.selected.y         = pos[1];
@@ -230,6 +231,11 @@ apf.uirecorder.capture = {
                     }
                 }
             }
+        }
+        // mouseup after selecting dropdown item, set dropdown as amlNode, dropdown popup not visible after mousedown and mouseup
+        else if (eventName == "mouseup" && this.$prevMouseDownAction && this.$prevMouseDownAction.amlNode.type == "dropdown") {
+            // copy amlNode from mousedown
+            data = this.$prevMouseDownAction.amlNode;
         }
         // amlNode with activeElements htmlNodes
         else if (amlNode.$getActiveElements) {
@@ -249,6 +255,7 @@ apf.uirecorder.capture = {
                 }
             }
         }
+
 
         // @todo parent info needed?
         return data;
@@ -330,7 +337,17 @@ apf.uirecorder.capture = {
         }
         */
         if (this.$prevAction) {
-            if (this.$prevAction.name == "mousedown")
+            if (eventName == "mouseup" && this.$prevAction.name == "mousemove" && this.$actionList[this.$actionList.length-2] && this.$actionList[this.$actionList.length-2].name == "mousedown") {
+                if (this.$keyActions[this.$keyActions.length-1] == this.$prevAction) {
+                    if (this.$prevAction.keyActionIdx)
+                        this.$keyActionIdx--;
+                    this.$keyActions.pop();
+                }
+                else {
+                    debugger;
+                }
+            }
+            else if (this.$prevAction.name == "mousedown")
                 this.$mousedownMode = true;
             else if (this.$mousedownMode && this.$prevAction.name == "mouseup")
                 this.$mousedownMode = false;
@@ -341,6 +358,9 @@ apf.uirecorder.capture = {
                 this.$keyActionIdx++;
             }
         }
+        
+        // ignore single mousemove action between mousedown/mouseup combo
+        
         
         // save action object
         this.$actionList.push(actionObj);
@@ -437,13 +457,17 @@ apf.uirecorder.capture = {
         /* special cases */
         // only one click recorded
         if ((this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mouseup")
-        || (this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mousemove" && this.$keyActions[2].name == "mouseup")) {
+        //|| (this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mousemove" && this.$keyActions[2].name == "mouseup")
+        ) {
             actionList = this.$keyActions;
             actionList[0].time = 0;
             actionList[1].time = 100;
 
             if (this.$keyActions[1].amlNode.type != "list") {
-                testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                if (!this.$keyActions[1].amlNode.activeElement)
+                    testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                else
+                    testXml.setAttribute("name", "click on " + this.$keyActions[1].amlNode.activeElement.name + " of " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
             }
             else {
                 testXml.setAttribute("name", "select " + this.$keyActions[1].amlNode.type + " item " + (this.$keyActions[1].amlNode.selected.value || this.$keyActions[1].amlNode.selected.xpath));
@@ -468,8 +492,6 @@ apf.uirecorder.capture = {
                 testXml.setAttribute("name", "select " + this.$keyActions[2].amlNode.type + " item '" + (this.$keyActions[2].amlNode.selected.value || this.$keyActions[2].amlNode.selected.xpath) + "'");
             }
             // caption for typing text in textbox
-            // mousedown/mouseup/(keypress/keydown/keyup)
-            // keypress/keydown
             else if ((this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[2] && this.$keyActions[2].name == "keypress" && this.$keyActions[this.$keyActions.length-1] && this.$keyActions[this.$keyActions.length-1].name == "keypress")
                 || (this.$keyActions[0] && this.$keyActions[0].name == "keypress" && this.$keyActions[1] && this.$keyActions[this.$keyActions.length-1].name == "keypress")
             ) {
@@ -521,6 +543,7 @@ apf.uirecorder.capture = {
             
             // skip small mousemove between certain actions, like between mousedown/mouseup
             if (action.name == "mousemove" && actionList[i-1] && actionList[i-1].name == "mousedown" && actionList[i+1] && actionList[i+1].name == "mouseup") {
+            debugger;
                 continue;
             }
             
@@ -796,6 +819,8 @@ apf.uirecorder.playback = {
     $speedUpTime    : 0,
     $keyString      : "",
     
+    $lastMousePosition : [0, 0],
+    
     test : function(testXml, playSpeed, o3, offset) {
         this.play(testXml, playSpeed, o3, offset);
     },
@@ -909,7 +934,7 @@ apf.uirecorder.playback = {
         
         // search for amlNode based on xpath
         if (!amlNode && amlNodeXml.getAttribute("xpath")) {
-            amlNode = apf.document.selectSingleNode(amlNodeXml.getAttribute("xpath").substr(8));
+            amlNode = apf.document.selectSingleNode(amlNodeXml.getAttribute("xpath"));
         }
         
         return amlNode;
@@ -934,10 +959,14 @@ apf.uirecorder.playback = {
                 };
 
                 var amlNode = this.$getAmlNode(amlNodeXml);
-                
                 if (!amlNode) {
                     // no amlNode found!
                     this.$testFailed("amlNode " + (amlNodeXml.getAttribute("id") || ((amlNodeXml.getAttribute("caption") ? amlNodeXml.getAttribute("tagName") + " " + amlNodeXml.getAttribute("caption") : amlNodeXml.getAttribute("xpath")))) + " not found");
+                    return;
+                }
+                // amlNode not visible
+                else if (!amlNode.visible || (amlNode.$ext.offsetTop == 0 && amlNode.$ext.offsetLeft == 0 && amlNode.$ext.offsetWidth == 0 && amlNode.$ext.offsetHeight == 0)) {
+                    this.$testFailed("amlNode " + (amlNodeXml.getAttribute("id") || ((amlNodeXml.getAttribute("caption") ? amlNodeXml.getAttribute("tagName") + " " + amlNodeXml.getAttribute("caption") : amlNodeXml.getAttribute("xpath")))) + " not visible");
                     return;
                 }
                 
@@ -951,18 +980,25 @@ apf.uirecorder.playback = {
                     var selectedXml;
                     if (selectedXml = amlNodeXml.selectSingleNode("selected")) {
                         var xmlNode;
-                        if (amlNodeXml.getAttribute("type") == "dropdown" && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1] && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup") == "40") {
+                        if (amlNodeXml.getAttribute("type") == "dropdown" && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1]) {
                             original = null;
-                            targetCentre = true;
-                            var dropdownItems = apf.popup.cache[this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup")].content.childNodes
-                            for (var i = 0, l = dropdownItems.length; i < l; i++) {
-                                if (dropdownItems[i].innerHTML == selectedXml.getAttribute("value")) {
-                                    htmlNode = dropdownItems[i];
-                                    break;
+                            
+                            if (this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup") == "40") {
+                                targetCentre = true;
+                                var dropdownItems = apf.popup.cache[this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup")].content.childNodes
+                                for (var i = 0, l = dropdownItems.length; i < l; i++) {
+                                    if (dropdownItems[i].innerHTML == selectedXml.getAttribute("value")) {
+                                        htmlNode = dropdownItems[i];
+                                        break;
+                                    }
                                 }
+                            }
+                            else {
+                                htmlNode = "lastMousePosition";
                             }
                         }
                         else {
+//                            if (this.$curAction.getAttribute("name") == "mouseup");
                             original = {
                                 x       : parseInt(selectedXml.getAttribute("x")),
                                 y       : parseInt(selectedXml.getAttribute("y")),
@@ -1058,21 +1094,24 @@ apf.uirecorder.playback = {
         
         // calculate mouse position
         var mousePos;
-
         if (targetNode) {
-            mousePos = apf.getAbsolutePosition(targetNode, document.body);
+            if (targetNode != "lastMousePosition") {
+                mousePos = apf.getAbsolutePosition(targetNode, document.body);
 
-            if (original) {
-                mousePos[0] = mousePos[0] - (original.x-parseInt(this.$curAction.getAttribute("x"))) * (targetNode.offsetWidth/original.width);
-                mousePos[1] = mousePos[1] - (original.y-parseInt(this.$curAction.getAttribute("y"))) * (targetNode.offsetHeight/original.height);
+                if (original) {
+                    mousePos[0] = mousePos[0] - (original.x-parseInt(this.$curAction.getAttribute("x"))) * (targetNode.offsetWidth/original.width);
+                    mousePos[1] = mousePos[1] - (original.y-parseInt(this.$curAction.getAttribute("y"))) * (targetNode.offsetHeight/original.height);
+                }
+                else if (targetCentre) {
+                    mousePos[0] = mousePos[0] + targetNode.offsetWidth/2;
+                    mousePos[1] = mousePos[1] + targetNode.offsetHeight/2;
+                }
+                
+                this.$lastMousePosition = mousePos;
             }
-            else if (targetCentre) {
-                mousePos[0] = mousePos[0] + targetNode.offsetWidth/2;
-                mousePos[1] = mousePos[1] + targetNode.offsetHeight/2;
+            else {
+                mousePos = this.$lastMousePosition;
             }
-            
-            //mousePos[0] = mousePos[0] + targetNode.offsetWidth/2;
-            //mousePos[1] = mousePos[1] + targetNode.offsetHeight/2;
         }
         
         if (mousePos == undefined) {

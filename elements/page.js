@@ -397,7 +397,7 @@ apf.page = function(struct, tagName){
                      
                 btncontainer.appendChild(elBtnClose);
             }
-            
+
             this.$button = apf.insertHtmlNode(elBtn, this.parentNode.$buttons);
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.$button)
@@ -432,6 +432,19 @@ apf.page = function(struct, tagName){
             this.$button = null;
         }
     };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $tab       : this.$button
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 }).call(apf.page.prototype = new apf.Presentation());
 
 apf.aml.setElement("page", apf.page);

@@ -552,10 +552,10 @@ apf.BaseStateButtons = function(){
         btn.setAttribute("onmousedown",
             "var o = apf.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, 'down', null, true);\
-             event.cancelBubble = true; \
+             apf.cancelBubble(event, o); \
              var o = apf.findHost(this).$ext;\
              if (o.onmousedown) o.onmousedown(event);\
-             event.cancelBubble = true;\
+             apf.cancelBubble(event, o);\
              apf.window.$mousedown(event);");
         btn.setAttribute("onmouseup",
             "var o = apf.all[" + this.$uniqueId + "];\

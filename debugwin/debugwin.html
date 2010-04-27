@@ -771,7 +771,10 @@
                             btnRec.setProperty("disabled", false);
                         }
                         
+                        var lastClickPos = [];
                         function playSingleMacro() {
+                            lastClickPos = [event.clientX, event.clientY];
+                            
                             // set buttons state
                             btnPlay.setProperty("visible", false);
                             btnStopPlay.setProperty("visible", true);
@@ -795,6 +798,12 @@
                         }
 
                         function onPlaybackComplete(e) {
+                            if (lastClickPos) {
+                                // move mouse to last click position
+                                //debugger;
+                                //$o3.mouseTo()
+                                lastClickPos = [];
+                            }
                             apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlaybackComplete);
                             apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlayNextMacro);
                             apf.$debugwin.apf.removeEventListener("apftest_testfailed", onTestFailed);
@@ -832,7 +841,8 @@
                                     playPlaylist(playQueue[curPlaylistIdx]);
                                 }
                                 else {
-                                    $o3.DOM.onkeydown = null;
+                                    //$o3.DOM.onkeydown = null;
+                                    document.documentElement.onkeydown = null;
                                     onPlaybackComplete(e);
                                     trPlaylist.select(trPlaylist.selected);
                                 }
@@ -863,7 +873,8 @@
                             }
                             curMacroIdx = 0;
                         //speed = (cbMax.checked) ? "max" : "realtime";
-                            $o3.DOM.onkeydown = onKeyDown;
+                            //$o3.DOM.onkeydown = onKeyDown;
+                            document.documentElement.onkeydown = onKeyDown;
                             playMacro();
                         }
 
@@ -885,7 +896,8 @@
                         function onKeyDown(e) {
                             // Esc key
                             if (e.keyCode == 27) {
-                                $o3.DOM.onkeydown = null;
+                                //$o3.DOM.onkeydown = null;
+                                document.documentElement.onkeydown = onKeyDown;
                                 apf.$debugwin.apf.uirecorder.playback.stop();
                                 // mouseup and keyup to prevent dragging if last action was mousedown
                                 $o3.mouseLeftUp();
