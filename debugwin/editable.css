@@ -12,9 +12,13 @@
     background : midnightblue;
     border-color : white;
 }
-.idegrabber_selected, .idegrabber_selected:hover{
+.idegrabber_selected{
     background : #ddd;
     border-color : gray white white gray;
+}
+.idegrabber_selected:hover{
+    background : #adc0de;
+    border-color : #425573 white white #425573;
 }
 .idegrabber_disabled, .idegrabber_disabled:hover{
     background : gray;
