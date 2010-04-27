@@ -700,10 +700,10 @@ apf.Interactive = function(){
                 w && w + hordiff || oHtml.offsetWidth, 
                 h && h + verdiff || oHtml.offsetHeight, e, change, we, no, ea, so);
 
-            if (we && typeof change.l != "undefined")
+            if (posAbs && we && typeof change.l != "undefined")
                 oHtml.style.left = (l = max((lMin - _self.maxwidth), min((lMax - _self.minwidth), change.l))) + "px";
             
-            if (no && typeof change.t != "undefined")
+            if (posAbs && no && typeof change.t != "undefined")
                 oHtml.style.top = (t = max((tMin - _self.maxheight), min((tMax - _self.minheight), change.t))) + "px";
             
             if (typeof change.w != "undefined") 
