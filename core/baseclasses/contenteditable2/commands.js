@@ -49,7 +49,7 @@ apf.ContentEditable2.commands = (function(){
         var htmlNode   = options.htmlNode,
             parentNode = options.parentNode;
         if (!parentNode) {
-            parentNode = (this.resize.getSelection(0) || apf.document.documentElement);
+            parentNode = (apf.document.activeElement || apf.document.documentElement);
             if (parentNode.getPage) {
                 parentNode = parentNode.getPage();
             }
@@ -120,8 +120,9 @@ apf.ContentEditable2.commands = (function(){
         //#ifdef __WITH_LAYOUT
         apf.layout.processQueue();
         //#endif
-        //if (!options.userInteraction)
-            //this.resize.grab(amlNode); //@todo
+        
+        if (!options.userInteraction)
+            apf.document.getSelection().$selectList([amlNode]);
 
         options.addedNode = amlNode;
         
@@ -416,9 +417,10 @@ apf.ContentEditable2.commands = (function(){
             sel.removeNode();
         });
         
-        this.resize.grab(apf.document.activeElement && apf.document.activeElement.editable 
+        var s = pNode.ownerDocument.getSelection();
+        s.$selectList([apf.document.activeElement && apf.document.activeElement.editable 
             ? apf.document.activeElement
-            : (pNode.editable ? pNode : pNode.firstChild));
+            : (pNode.editable ? pNode : pNode.firstChild)]);
     };
     
     commands["each"] = function(sel, showUI, func, query){
@@ -585,8 +587,7 @@ apf.ContentEditable2.commands = (function(){
             sel.$ext.style.position = "";
         });
         
-        //@todo regrab general...
-        //apf.ContentEditable2.resize.grab(sel[0], -1);
+        sel[0].ownerDocument.$getVisualSelect().updateGeo();
     };
     
     //@todo should keep an ordered list of zIndexes and reset all...
@@ -670,7 +671,7 @@ apf.ContentEditable2.commands = (function(){
                 name: "width", value: ""
             });
 
-        apf.ContentEditable2.resize.grab(sel[0], -1);
+        sel[0].ownerDocument.$getVisualSelect().updateGeo();
     };
     
     commands["surround"] = function(sel, showUI, options, query){
