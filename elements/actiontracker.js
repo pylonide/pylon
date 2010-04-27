@@ -380,7 +380,7 @@ apf.actiontracker = function(struct, tagName){
             //during the length of the function. Point is that we need to change
             //the xmldb to somehow find the right actiontracker, because we don't
             //have mutation events yet. One way is to add an a_at="" attribute
-            //that can be lookup up to find actiontracker listeners. 
+            //that can be looked up to find actiontracker listeners. 
             
             //Set listener
             //if (dataNode) 

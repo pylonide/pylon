@@ -964,6 +964,8 @@
         }
         else
             this.realtime = false;
+        
+        this.ownerDocument.execCommand("begin");
     }
 
     function afterdrag(e){
