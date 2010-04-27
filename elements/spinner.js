@@ -546,6 +546,7 @@ apf.spinner = function(struct, tagName){
 
         return this.$activeElements;
     }
+    //#endif
 
 // #ifdef __WITH_DATABINDING
 }).call(apf.spinner.prototype = new apf.StandardBinding());
