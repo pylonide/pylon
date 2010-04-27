@@ -411,18 +411,18 @@ apf.gallery = function(struct, tagName){
                 break;
             case "number+text":
             case "text+number":
-                var part1 = apf.language.getWord("sub.slideshow.image") || "Image"
+                var part1 = (apf.language.getWord("sub/slideshow/image") || "Image")
                           + " " + (this.getPos() + 1) + " "
-                          + (apf.language.getWord("sub.slideshow.of") || "of") + " "
+                          + (apf.language.getWord("sub/slideshow/of") || "of") + " "
                           + this.getTraverseNodes().length;
-                var part2 = title || this.defaulttitle || apf.language.getWord("sub.slideshow.defaulttitle") || "No description";
+                var part2 = title || this.defaulttitle || apf.language.getWord("sub/slideshow/defaulttitle") || "No description";
 
                 var descr = "<b>" + part1 + "</b><br />" + part2;
                 break;
             default:
-                var descr = apf.language.getWord("sub.slideshow.image") || "Image"
+                var descr = apf.language.getWord("sub/slideshow/image") || "Image"
                           + " " + (this.getPos() + 1) + " "
-                          + (apf.language.getWord("sub.slideshow.of") || "of") + " "
+                          + (apf.language.getWord("sub/slideshow/of") || "of") + " "
                           + this.getTraverseNodes().length;
                 break;
         }

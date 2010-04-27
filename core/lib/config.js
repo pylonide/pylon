@@ -140,7 +140,7 @@ apf.extend(apf.config, {
         },
         "language" : function(value){
             //#ifdef __WITH_LANG_SUPPORT
-            apf.queue.add("language", function(){
+            apf.addEventListener("load", function(){
                 apf.setModel(apf.config.language, apf.language);
             });
             //#endif
