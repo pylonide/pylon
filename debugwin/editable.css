@@ -142,3 +142,10 @@
     opacity: 0.4;
     filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
 }
+
+html.has_apf .drag#apf_outline{
+    border : 2px solid gray;
+    background : transparent;
+    filter:;
+    opacity:1;
+}

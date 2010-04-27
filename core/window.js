@@ -930,7 +930,8 @@ apf.window = function(){
             ;
 
         // #ifdef __WITH_POPUP
-        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId))
+        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
+          && !apf.isChildOf(apf.popup.cache[apf.popup.last].content, e.srcElement || e.target, true))
             apf.popup.forceHide();
         // #endif
 

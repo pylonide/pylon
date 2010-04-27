@@ -510,19 +510,19 @@ apf.vbox = function(struct, tagName){
                 html = paddAdj.html[i];
                 if (this.$hasPerc) {
                     //@todo if hasDefinedHeight set height
-                    l.setRules(html, "boxp", me + ".$ext.style.padding" 
+                    l.setRules(html, "boxp", "try{" + me + ".$ext.style.padding" 
                         + (vbox ? "Bottom" : "Right") + " = (" 
                         + (this.$totalFixed - paddAdj.total) 
-                        + " + " + paddAdj.count + ") + 'px';", true);
+                        + " + " + paddAdj.count + ") + 'px';}catch(e){}", true);
                 }
                 else {
                     //@todo buggy...
-                    l.setRules(html, "boxp", me + ".$ext.style.min" 
+                    l.setRules(html, "boxp", "try{" + me + ".$ext.style.min" 
                         + (vbox ? "Height" : "Width") + " = -" 
                         + (vbox ? edge[2] : edge[1]) + " + (" + me 
                         + "['min" + size + "'] = " 
                         + (this.$totalFixed - paddAdj.total) 
-                        + " + " + paddAdj.count + ") + 'px';", true);
+                        + " + " + paddAdj.count + ") + 'px';}catch(e){}", true);
                 }
                 l.queue(html);
                 this.$lastRules.push([html, "boxp"]);

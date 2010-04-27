@@ -254,7 +254,7 @@ apf.Class.prototype = new (function(){
         }
 
         this.addEventListener = realAddEventListener;
-        this.$removalQueue = [];
+        //this.$removalQueue = [];
 
         if (this.nodeType != 2) //small little hack
             this.$uniqueId = apf.all.push(this) - 1;
@@ -801,8 +801,8 @@ apf.Class.prototype = new (function(){
 
     /**** Event Handling ****/
 
-    apf.eventDepth = 0;
-    this.eventDepth = 0;
+    apf.$eventDepth = 0;
+    this.$eventDepth = 0;
 
     /**
      * Calls all functions that are registered as listeners for an event.
@@ -818,8 +818,8 @@ apf.Class.prototype = new (function(){
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue, i, l;
 
-        apf.eventDepth++;
-        this.eventDepth++;
+        apf.$eventDepth++;
+        this.$eventDepth++;
 
         e = options && options.name ? options : e;
 
@@ -870,11 +870,11 @@ apf.Class.prototype = new (function(){
             }
         //}
         
-        var p;
+        /*var p;
         while (this.$removalQueue.length) {
             p = this.$removalQueue.shift();
             p[0].remove(p[1]); 
-        }
+        }*/
         
         //#ifdef __WITH_EVENT_BUBBLING
         if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != apf) {
@@ -886,7 +886,7 @@ apf.Class.prototype = new (function(){
         }
         //#endif
         
-        if (--apf.eventDepth == 0 && this.ownerDocument 
+        if (--apf.$eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
           && !apf.isDestroying
           //#ifdef __DEBUG
@@ -897,7 +897,7 @@ apf.Class.prototype = new (function(){
             apf.queue.empty();
         }
         
-        this.eventDepth--;
+        this.$eventDepth--;
 
         //#ifdef __WITH_UIRECORDER
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
@@ -949,10 +949,10 @@ apf.Class.prototype = new (function(){
             s.unshift(callback);
         
         //@todo is this the best way?
-        for (var i = this.$removalQueue.length - 1; i >= 0; i--) {
+        /*for (var i = this.$removalQueue.length - 1; i >= 0; i--) {
             if (this.$removalQueue[i][0] == s && this.$removalQueue[i][1] == callback)
                 this.$removalQueue.removeIndex(i);
-        }
+        }*/
         
         var f;
         if (f = this.$eventsStack["$event." + eventName])
@@ -971,8 +971,10 @@ apf.Class.prototype = new (function(){
         
         //@todo is this the best way?
         if (stack)
-            if (this.eventDepth)
-                this.$removalQueue.push([stack, callback]);
+            if (this.$eventDepth) {
+                ((useCapture ? this.$captureStack : this.$eventsStack)[eventName] = stack.slice()).remove(callback);
+                //this.$removalQueue.push([stack, callback]);
+            }
             else
                 stack.remove(callback);
     };

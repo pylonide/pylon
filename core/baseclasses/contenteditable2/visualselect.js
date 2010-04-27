@@ -90,15 +90,20 @@ apf.visualSelect = function(selection){
         margin = 1;
 
     this.show = function(){
+        if (!inited) 
+            init.call(this);
+        
         this.visible = true;
         for (var i = 0; i < 8; i++)
             nodes[i].style.display = "block";
+        oOutline.style.display = "block";
     };
     
     this.hide = function(){
         this.visible = false;
         for (var i = 0; i < 8; i++)
             nodes[i].style.display = "none";
+        oOutline.style.display = "none";
     };
     
     this.$finishResize = function(noGeo){

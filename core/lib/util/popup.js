@@ -52,7 +52,7 @@ apf.popup = {
             //#endif
             
             //@todo can this cancelBubble just go?
-            apf.cancelBubble(e);
+            apf.cancelBubble(e, null, true);
             //(e || event).cancelBubble = true;
         };
         
@@ -139,7 +139,7 @@ apf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : apf.tween.NORMAL,
-                    steps : apf.isIE ? 5 : 10,
+                    steps : apf.isIE ? 5 : 5,
                     onfinish : function(){
                         if (apf.isIE)
                             popup.style.filter = "";

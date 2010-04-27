@@ -143,6 +143,12 @@ apf.appsettings = function(struct, tagName){
         "iphone-fixed-viewport":1
     };
     
+    var $setProperty = this.setProperty;
+    this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
+        if (inherited != 2)
+            $setProperty.apply(this, arguments);
+    }
+    
     this.$handlePropSet = function(prop, value, force){
         if (this.$booleanProperties[prop])
             value = apf.isTrue(value);

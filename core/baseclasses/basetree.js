@@ -166,14 +166,14 @@ apf.BaseTree = function(){
             return;
         
         var _self = this;
-        (function _recur(loopNode){
+        if ((function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);
-            if (pNode != _self.xmlRoot)
-                _recur(pNode);
+            if (!pNode || pNode != _self.xmlRoot && _recur(pNode) === false)
+                return false;
+                
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
-        })(xmlNode);
-        
-        this.select(xmlNode);
+        })(xmlNode) !== false)
+            this.select(xmlNode);
     }
     
     /**

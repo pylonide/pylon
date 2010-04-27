@@ -346,6 +346,13 @@ apf.Anchoring = function(){
             if ("absolute|fixed".indexOf(apf.getStyle(this.$ext, "position")) == -1)
                 this.$ext.style.position = "absolute";
         }
+        else {
+            this.$ext.style.position = "relative";
+            if (!this.width)
+                this.$ext.style.width    = "";
+            if (!this.height)
+                this.$ext.style.height   = "";
+        }
 
         var rules;
         if (this.$updateQueue & HORIZONTAL) {

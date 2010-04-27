@@ -910,7 +910,7 @@ apf.MultiselectBinding = function(){
 
                 var htmlNode;
                 while (cItem.childNodes.length)
-                    parent.appendChild(htmlNode = cItem.childNodes[0]);
+                    (parent || this.$container).appendChild(htmlNode = cItem.childNodes[0]);
                 
                 return nodes;
             }

@@ -870,7 +870,7 @@ var apf = {
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
             try {
-                if (o.host != undefined)
+                if (o.host || o.host === false)
                     break;
             }
             catch(e){}
@@ -2310,11 +2310,11 @@ var $setTimeout  = setTimeout;
 var $setInterval = setInterval;
 
 apf.setTimeout = function(f, t){
-    apf.eventDepth++;
+    apf.$eventDepth++;
     return $setTimeout(function(){
         f();
         
-        if (--apf.eventDepth == 0)
+        if (--apf.$eventDepth == 0)
             apf.queue.empty();
     }, t);
 }

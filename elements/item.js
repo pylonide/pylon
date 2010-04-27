@@ -66,7 +66,8 @@ apf.item  = function(struct, tagName){
     }, this.$attrExcludePropBind);
 
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
-                                   "checked", "selected", "disabled", "caption", "type");
+                                   "checked", "selected", "disabled", "caption", 
+                                   "type");
 
     /**
      * @attribute {String} [submenu] the id of the menu that is shown

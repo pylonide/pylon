@@ -108,13 +108,13 @@ apf.Interactive = function(){
             //#ifdef __WITH_CONTENTEDITABLE
             if (!reparent) {
                 var f;
-                if (!e) e = {
+                var ev = e || {
                     clientX: event.clientX, 
                     clientY: event.clientY, 
                     ctrlKey: event.ctrlKey
                 };
                 apf.addEventListener("mousedown", f = function(){
-                    dragStart.call(o, e, reparent);
+                    dragStart.call(o, ev, reparent);
                     apf.removeEventListener("mousedown", f);
                 });
                 apf.cancelBubble(event, this);
@@ -136,6 +136,8 @@ apf.Interactive = function(){
             this.resizable = value = false;
         else if (apf.isTrue(value))
             this.resizable = value = true;
+        
+        this.$ext.style.cursor = "";
         
         var o = this.oResize || this.$ext;
         if (o.interactive & 2) 
@@ -538,8 +540,8 @@ apf.Interactive = function(){
 
             if (_self.setProperty)
                 updateProperties();
-            
-            document.body.style.cursor = lastCursor;
+
+            document.body.style.cursor = lastCursor || "";
             lastCursor = null;
             
             if (resizeOutline)

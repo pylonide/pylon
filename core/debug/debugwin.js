@@ -800,7 +800,9 @@ apf.$debugwin = {
             if (x.nodeType && !x.style && (!x.$regbase || x.nodeType == 1 || x.nodeType == 7)) {
                 if (x.nodeType == 1 || x.nodeType == 7) {
                     if (x.serialize) //aml
-                        str = "<a class='xmlhl' href='javascript:void(0)' onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' onmouseover='if(!mnuData.visible) apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
+                        str = "<a class='xmlhl' href='javascript:void(0)' \
+                          onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' \
+                          onmouseover='if(!mnuData.visible &amp;&amp; cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
                             + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
                             + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
                     //else if (x.style) //html
@@ -902,6 +904,7 @@ apf.$debugwin = {
     
     setEditable : function(value){
         this.apf.$debugwin.$setEditable(value);
+        if (!self.pgBrowse) return;
 
         if (value){
             pgBrowse.setAttribute("anchors", "61 0 0 0");

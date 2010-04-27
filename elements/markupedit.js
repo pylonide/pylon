@@ -91,15 +91,18 @@ apf.markupedit = function(struct, tagName){
     *********************************************************************/
     
     this.expandAndSelect = function(xmlNode) {
-        var _self = this;
-        (function _recur(loopNode){
-            var pNode = _self.getTraverseParent(loopNode);
-            if (pNode != _self.xmlRoot)
-                _recur(pNode);
-            _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
-        })(xmlNode);
+        if (!this.xmlRoot)
+            return;
         
-        this.select(xmlNode);
+        var _self = this;
+        if ((function _recur(loopNode){
+            var pNode = _self.getTraverseParent(loopNode);
+            if (!pNode || pNode != _self.xmlRoot && _recur(pNode) === false)
+                return false;
+                
+            _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
+        })(xmlNode) !== false)
+            this.select(xmlNode);
     }
     
     /**

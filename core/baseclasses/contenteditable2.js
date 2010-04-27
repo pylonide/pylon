@@ -83,12 +83,12 @@ apf.addEventListener("load", function(){
                 break;*/
         }
     });
-    
+
     apf.addEventListener("keyup", function(e){
         if (e.keyCode == 16 && !this.dragMode)
             apf.document.execCommand("mode", null, "arrow");
     });
-    
+
     var recursion, $focus, lastFocussed;
     apf.document.addEventListener("focus", $focus = function(e){
         if (recursion)
@@ -218,10 +218,14 @@ apf.ContentEditable2 = function() {
                     }
                 });
                 
-                apf.addEventListener("load", function(){
+                if (!apf.loaded)
+                    apf.addEventListener("load", function(){
+                        apf.document.documentElement.insertMarkup(apf.basePath 
+                            + "/debugwin/editable.inc");
+                    });
+                else
                     apf.document.documentElement.insertMarkup(apf.basePath 
                         + "/debugwin/editable.inc");
-                });
                 
                 apf.ContentEditable2.inited = true;
             }
@@ -229,7 +233,7 @@ apf.ContentEditable2 = function() {
             
             if (this.$canEdit && this.$ext && !this.$coreHtml) {
                 this.dragOutline = true; //@todo via config setting??
-                
+
                 //Make this element draggable
                 (this.$propHandlers["draggable"]
                   || apf.GuiElement.propHandlers["draggable"]).call(this, true);
@@ -278,6 +282,8 @@ apf.ContentEditable2 = function() {
             this.isContentEditable = true;
             
             //@todo select the first element??
+            if (!this.parentNode.editable)
+                this.ownerDocument.$getVisualSelect().show();
             
             apf.setStyleClass(this.$ext, "editable");
         }
@@ -337,9 +343,11 @@ apf.ContentEditable2 = function() {
             this.$ext.host = this;
         
         if (!this.editable) {
-            this.editable = apf.getInheritedAttribute(this, "editable");
-            if (this.editable)
+            this.editable = apf.isTrue(apf.getInheritedAttribute(this, "editable"));
+            if (this.editable) {
                 this.$propHandlers["editable"].call(this, true);
+                this.$inheritProperties["editable"] = 2;
+            }
         }
     });
     

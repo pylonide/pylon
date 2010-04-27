@@ -96,7 +96,7 @@
             <a:item type="radio" group="grSelect" value="prop">Select shows element properties</a:item>
         </a:menu>
         
-        <a:menu id="mnuData">
+        <a:menu id="mnuData" anim="false">
             <a:item value="doc">Find in documentation</a:item>
             <a:divider />
             <a:item id="itInspAml" value="aml">Inspect as AML</a:item>
@@ -120,7 +120,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="macro">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="macro">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -235,7 +235,7 @@
                                     }catch(e){
                                         obj = e.message;
                                     }
-                                    apf.$debugwin.showObject(null, this.value, obj);
+                                    apf.$debugwin.showObject(obj, null, this.value);
                                     trObject.focus();
                                 }
                             "/>
@@ -259,7 +259,8 @@
                           onafterchange = "
                             apf.$debugwin.applyChange(event.xmlNode);
                           ">
-                            <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" get="{apf.$debugwin.analyze(%[.])}" />
+                            <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" 
+                                get="{apf.$debugwin.analyze(%[.])}" />
                             <a:expanded match="[node()[@expand]]" />
                             <a:column caption="Property" value="[@name]" width="200" icon="{localName() == 'item' ? 'property.gif' : 'method.gif'}" tree="true" />
                             <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
@@ -477,7 +478,7 @@
                             </a:toolbar>
 
                         <!--/a:bar-->
-                        <a:toolbar align="right" height="25" border = "0 0 1 0">
+                        <a:toolbar align="right" height="25" border = "0 0 1 1">
                             <a:bar>
                                 <a:label style="font-weight:bold;margin:3px 10px 0 4px;">Playlist Creator</a:label>
                                 

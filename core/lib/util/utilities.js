@@ -369,7 +369,7 @@ apf.removePathContext = function(base, url){
  * @private
  * @todo why is this done like this?
  */
-apf.cancelBubble = function(e, o){
+apf.cancelBubble = function(e, o, noPropagate){
     if (e.stopPropagation)
         e.stopPropagation()
     else 
@@ -384,12 +384,15 @@ apf.cancelBubble = function(e, o){
     else 
         o.$ext.dispatchEvent(e.name, e);*/
     
-    if (o && o.$ext && o.$ext["on" + e.type])
-        o.$ext["on" + e.type](e);
-    apf.window.$mousedown(e);
+    if (!noPropagate) {
+        if (o && o.$ext && o.$ext["on" + (e.type || e.name)])
+            o.$ext["on" + (e.type || e.name)](e);
+        apf.window.$mousedown(e);
+    }
     
     //#ifdef __WITH_UIRECORDER
-    if (apf.uirecorder && apf.uirecorder.captureDetails && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
+    if (apf.uirecorder && apf.uirecorder.captureDetails 
+      && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
         apf.uirecorder.capture[e.type](e);
     }
     //#endif

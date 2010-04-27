@@ -624,6 +624,9 @@ apf.propedit    = function(struct, tagName){
         }
         else {
             var p = this.$getProperties();
+            if (!p) 
+                return;
+            
             var node, htmlNode, nodes = p.selectNodes(".//prop");
             for (var i = 0, l = nodes.length; i < l; i++) {
                 node     = nodes[i];

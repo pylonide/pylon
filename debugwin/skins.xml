@@ -426,7 +426,7 @@
         }
         
         .checktreeFocus .indicate U {
-            border  : 1px dotted #BBB;/*#25a8e7;*/
+            border  : 1px dotted #BBB;/*#2582d1;*/
             padding : 1px 3px 1px 1px;
             color   : black;
         }
@@ -492,7 +492,7 @@
         }
         
         .checktreeFocus .indicate U {
-            border  : 1px dotted #BBB;/*#25a8e7;*/
+            border  : 1px dotted #BBB;/*#2582d1;*/
             padding : 1px 3px 1px 1px;
             color   : black;
         }
@@ -507,7 +507,7 @@
         .checktreeFocus .dragAppend U, 
         .dragtree U {
             color            : white;
-            background-color : #25a8e7;
+            background-color : #2582d1;
         }
         
         .checktree .checked b {
@@ -675,7 +675,7 @@
         }
     
         .treeFocus .indicate U {
-            border  : 1px dotted #BBB;/*#25a8e7;*/
+            border  : 1px dotted #BBB;/*#2582d1;*/
             padding : 1px 3px 1px 1px;
             color   : black;
         }
@@ -689,7 +689,7 @@
         .tree .dragAppend U, 
         .dragtree U {
             color            : white;
-            background-color : #25a8e7;
+            background-color : #2582d1;
         }
     
         .tree BLOCKQUOTE {
@@ -764,7 +764,7 @@
         }
         
         .treeDrop {
-            border : 1px solid #25a8e7;
+            border : 1px solid #2582d1;
         }
         
         blockquote.dragInsert {
@@ -2613,516 +2613,510 @@
         </a:divider>
     </a:presentation>
 </a:toolbar>
-
 <a:propedit name="propedit">
     <a:style><![CDATA[
-        .propedit {
-            border           : 1px solid #c3c3c3;
-            background-color : white;
-            cursor           : default;
-            font-family      : Tahoma;
-            font-size        : 11px;
-            padding          : 0 1px 0 0;
-            overflow-y       : auto;
-            overflow-x       : hidden;
-        }
+        .propedit{
+            border: 1px solid #c3c3c3;
+            /*border-left : 14px solid #c6cdd3;*/
+            background-color: white;
+            cursor: default;
 
-        div.propedit {
+            font-family: Tahoma;
+            font-size: 11px;
+
+            padding: 0 1px 0 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+        }
+        div.propedit{
             position : relative;
         }
 
-        .propedit .headings {
-            position         : relative;
-            top              : 0;
-            left             : 0;
-            height           : 17px;
-            z-index          : 10;
+        .propedit .headings{
+            position : relative;
+            top : 0;
+            left : 0;
+            height : 17px;
+            z-index : 10;
             background-color : #e6e6e6;
             background-image : url(images/debugger_propedit_title_backg.png);
             background-repeat :repeat-x;
             background-position:0 0;
-            margin           : 0; /*margin : 0 16px 0 0; Temp disabled for non scrolling */
-            white-space      : nowrap;
-        }
-
-        .fixed .headings {
-            overflow : hidden;
-            z-index  : 100;
-        }
-
-        .propedit .headings SPAN {
-            display : inline-block;
-            height  : 15px;
-        }
-
-        .propedit .headings SPAN B {
-            font-weight   : normal;
-            overflow      : hidden;
-            text-overflow : ellipsis;
-            padding       : 2px 1px 0px 3px;
-            margin        : 0 -1px 0 -1px;
-            /*border-right  : 1px solid #cfcbc2;*/
-            border-left   : 1px solid #cfcbc2;
-            display       : block;
-            height        : 15px;
-            font-weight   : bold;
-            color:#0a4b80;
-        }
-
-        .propedit .headings span.hover {
-        }
-
-        .propedit .headings SPAN.down B, 
-        .propedit .headings SPAN.drag B{
-            color            : white;
-            background-color : #2582d1;
-        }
-
-        .propedit .headings SPAN.ascending B {
-            background-image    : url(images/sort_asc_n.gif);
-            background-repeat   : no-repeat;
-            background-position : right 6px;
-        }
-
-        .propedit .headings SPAN.descending B {
-            background-image    : url(images/sort_desc_n.gif);
-            background-repeat   : no-repeat;
-            background-position : right 6px;
-        }
-
-        .propedit .headings SPAN.drag {
-            border : 1px solid white;
-        }
-
-        .virtual .records {
-            overflow : hidden;
-        }
-
-        .fixed .records {
-            overflow-x : auto;
-        }
-
-        .propedit body.records {
-            overflow    : visible;
-            margin      : 0;
-            border      : 0;
-            padding     : 17px 0 0 0;
+            margin : 0; /*margin : 0 16px 0 0; Temp disabled for non scrolling */
             white-space : nowrap;
         }
 
-        .propedit IFRAME {
-            position : absolute;
-            left     : 0;
-            top      : 0;
-            width    : 100%;
-            height   : 100%;
+        .fixed .headings{
+            overflow : hidden;
+            z-index : 100;
         }
 
-        html.propedit {
-            overflow-x : hidden;
-            overflow-y : auto; /* Should be auto. This was scroll */
-            border     : 0;
-            margin     : 0;
+        .propedit .headings span{
+            display : inline-block;
+            height : 15px;
         }
 
-        html.fixed {
-            overflow-x : auto;
-        }
-
-        .propedit .records DIV DL {
+        .propedit .headings span b{
             font-weight : normal;
-            padding     : 2px 1px 2px 3px;
-            display     : block;
-            border      : 1px solid #bdcedd;/* STEPX */
-            overflow    : hidden;
-            min-height  : 13px;
-            margin      : 0 -1px 0 -1px;
-            cursor           : default;
-            background-color : #0a4b80;
-            color:white;
-        }
-        
-        .propedit .records .row BLOCKQUOTE .row SPAN DL {
-            background-color:white;
-            color:black;
-        }
-        
-        .propedit .records .row BLOCKQUOTE .row SPAN:first-child DL {
-            background-color:#146cb0;
-            color:white;
-            border:1px solid #0a4b80;
-        }
-        
-        .propedit .records .row BLOCKQUOTE .selected SPAN:first-child DL {
-            color            : #0a4b80;
-            background-image:url(images/debugger_propedit_selected.png);
-            background-position:0 0;
-            background-repeat:repeat-x;
+
+            /*background : #e6e6e6 no-repeat 0 50%;*/
+            overflow : hidden;
+            text-overflow : ellipsis;
+
+            padding : 2px 1px 0px 3px;
+            margin : 0 -1px 0 -1px;
+            /*border-right : 1px solid #c6cdd3;*/
+            border-left : 1px solid #c6cdd3;
+            display : block;
+            height : 15px;
+            font-weight : bold;
         }
 
-        .propedit .records DIV SPAN {
-            display        : inline-block;
-            vertical-align : top;
-            background     : white no-repeat 0 50%;
-            text-overflow  : ellipsis;
-            white-space    : nowrap;
+        .propedit .headings span.hover{
         }
 
-        .propedit .records DIV {
-            margin-bottom : -1px;
+        .propedit .headings span.down b, .propedit .headings span.drag b{
+            color: white;
+            background-color: #2582d1;
         }
 
-        .propedit .records .tall DL {height : 36px;}
-        .propedit .records .tall SPAN {height : 40px;}
-        .propedit .records .tall {height : 41px;}
-
-        .propedit .records .selected .celllabel DL {
-            background-color : #f0f0f0;
-            color            : black;/*#333;*/
+        .propedit .headings span.ascending b{
+            background-image : url(images/sort_asc_n.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
         }
 
-        .propeditFocus .records .selected .celllabel DL {
-            color            : white;
-            background-color : #2582d1;
+        .propedit .headings span.descending b{
+            background-image : url(images/sort_desc_n.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
         }
 
-        .propedit .records .cellselected DL {
-            background : white;
-            color      : black;
-            cursor     : text;
+        .propedit .headings span.drag{
+            border : 1px solid white;
         }
 
-        .propeditFocus .records .cellselected DL {
-        }
-
-        .propedit .move_pointer {
-            height     : 100px;
-            width      : 2px;
-            position   : absolute;
-            top        : 0;
-            margin     : -10px 0 0 -4px;
-            width      : 9px;
-            height     : 38px;
-            background : url(images/column_picker.gif) no-repeat 0 0;
-            overflow   : hidden;
-            z-index    : 1000;
-        }
-
-        .propedit .size_pointer {
-            border       : 1px dotted gray;
-            border-width : 0 1px 0 1px;
-            height       : 100%;
-            position     : absolute;
-            top          : 0px;
-            z-index      : 1000;
-            cursor       : w-resize;
-        }
-
-        .pointer {
-            display : none;
-        }
-
-        .propedit #txt_rename {
-            font-family      : Tahoma;
-            font-size        : 8pt;
-            word-break       : keep-all;
-            overflow         : hidden;
-            cursor           : text;
-            background-color : white;
-            height           : 14px;
-            border           : 1px solid #cfcbc2;
-            border-width     : 1px 1px 1px 0;
-            padding          : 2px 1px 1px 3px;
-            position         : relative;
-            z-index          : 10;
-        }
-
-        .propedit INPUT#txt_rename {
-            outline      : none;
-            padding      : 2px 0 1px 2px;
-            margin       : 0 -2px 0 -1px;
-            border-width : 1px 1px 1px 1px;
-        }
-
-        .propedit .ddbtn {
-            width           : 11px;
-            height          : 10px;
-            padding         : 2px 0 2px 2.5px;
-            border          : 2px outset;
-            display         : none;
-            position        : absolute;
-            right           : 0;
-            overflow        : hidden;
-            background      : #cfcbc2 url(images/sort_asc.gif) no-repeat 3px 5px;
-            text-decoration : none;
-        }
-
-        .propeditcontainerdropdown, 
-        .propeditcontainerset, 
-        .ddjmlcontainer {
-            display         : none;
-            text-decoration : none;
-            border          : 1px solid black;
-            background      : white;
-            position        : absolute;
-            overflow        : hidden;
-            margin          : 0;
-            padding         : 0;
-        }
-
-        .ddjmlcontainer {
+        .virtual .records{
             overflow : hidden;
         }
 
-        .propeditcontainerdropdown DIV, 
-        .propeditcontainerset DIV {
-            display          : block;
-            height           : 15px;
-            padding          : 1px 3px 1px 3px;
-            white-space      : nowrap;
-            overflow         : hidden;
-            text-overflow    : ellipsis;
-            background-color : white;
-            color            : black;
-            cursor           : default;
+        .fixed .records{
+            overflow-x: auto;
         }
 
-        .propeditcontainerdropdown DIV.hover {
-            background-color : #2582d1;
-            color            : #ffffff;
+        .propedit body.records{
+            overflow : visible;
+            margin : 0;
+            border : 0;
+            padding : 17px 0 0 0;
+            white-space : nowrap;
         }
 
-        .propeditcontainerset DIV.hover{
+        .propedit iframe{
+            position : absolute;
+            left : 0;
+            top : 0;
+            width : 100%;
+            height : 100%;
+        }
+
+        html.propedit{
+            overflow-x: hidden;
+            overflow-y: auto; /* Should be auto. This was scroll */
+            border : 0;
+            margin : 0;
+        }
+
+        html.fixed{
+            overflow-x : auto;
+        }
+
+        .propedit .records div dl{
+            font-weight : normal;
+            padding : 2px 1px 2px 3px;
+            display : block;
+            border : 1px solid #c6cdd3;
+            overflow : hidden;
+            min-height : 13px;
+            margin : 0 -1px 0 -1px;
+            cursor : default;
+        }
+
+        .propedit .records div span{
+            display : inline-block;
+            vertical-align : top;
+
+            background : white no-repeat 0 50%;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .propedit .records div{
+            margin-bottom : -1px;
+        }
+
+        .propedit .records .tall dl{height : 36px;}
+        .propedit .records .tall span{height : 40px;}
+        .propedit .records .tall{height : 41px;}
+
+        .propedit .records .selected .celllabel dl{
+            background-color: #eaeff2;
+            color: black;/*#333;*/
+        }
+
+        .propeditFocus .records .selected .celllabel dl{
+            color: white;
+            background-color: #2582d1;
+        }
+
+        .propedit .records .cellselected dl{
+            background : white;
+            color : black;
+            cursor : text;
+        }
+
+        .propeditFocus .records .cellselected dl{
+        }
+
+        /*.propedit .records .cellselected{
+            background-color: #eaeff2;
+            color: #333;
+        }
+        .propeditFocus .records .cellselected{
+            color: white;
+            background-color: #2582d1;
+        }*/
+
+        .propedit .move_pointer{
+            height : 100px;
+            width : 2px;
+            position : absolute;
+            top : 0;
+            margin : -10px 0 0 -4px;
+            width : 9px;
+            height : 38px;
+            background : url(images/column_picker.gif) no-repeat 0 0;
+            overflow : hidden;
+            z-index : 1000;
+        }
+
+        .propedit .size_pointer{
+            border : 1px dotted gray;
+            border-width : 0 1px 0 1px;
+            height : 100%;
+            position : absolute;
+            top : 0px;
+            z-index : 1000;
+            cursor : w-resize;
+        }
+
+        .pointer{
+            display : none;
+        }
+
+        .propedit #txt_rename{
+            font-family: Tahoma;
+            font-size: 8pt;
+            word-break: keep-all;
+            overflow: hidden;
+            cursor: text;
+            background-color: white;
+
+            height : 14px;
+            border : 1px solid #c6cdd3;
+            border-width : 1px 1px 1px 0;
+            padding : 2px 1px 1px 3px;
+            position : relative;
+            z-index : 10;
+        }
+
+        .propedit input#txt_rename{
+            outline : none;
+            padding : 2px 0 1px 2px;
+            margin : 0 -2px 0 -1px;
+            border-width : 1px 1px 1px 1px;
+        }
+
+        .propedit .ddbtn{
+            width : 11px;
+            height : 10px;
+            padding : 2px 0 2px 2.5px;
+            border : 2px outset;
+            display : none;
+            position : absolute;
+            right : 0;
+            overflow : hidden;
+            background : #c6cdd3 url(images/sort_asc.gif) no-repeat 3px 5px;
+            text-decoration : none;
+        }
+
+        .propeditcontainerdropdown, .propeditcontainerset, .ddjmlcontainer{
+            display : none;
+            text-decoration : none;
+            border : 1px solid black;
+            background : white;
+            position : absolute;
+            overflow : hidden;
+            margin : 0;
+            padding : 0;
+        }
+
+        .ddjmlcontainer{
+            /*padding : 5px;*/
+            overflow : hidden;
+        }
+
+        .propeditcontainerdropdown div, .propeditcontainerset div{
+            display: block;
+            height: 15px;
+            padding: 1px 3px 1px 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: white;
+            color: black;
+            cursor: default;
+        }
+
+        .propeditcontainerdropdown div.hover{
+            background-color: #2582d1;
+            color: #ffffff;
+        }
+
+        .propeditcontainerset div.hover{
             background-color : #eee;
         }
 
-        .propeditcontainerset DIV {
+        .propeditcontainerset div{
             padding : 2px 3px 0 1px;
         }
 
-        .propeditcontainerset DIV SPAN {
-            width      : 12px;
-            height     : 12px;
-            overflow   : hidden;
-            margin     : 1px 3px 0 1px;
-            float      : left;
-            background : url("images/checkbox.png") no-repeat 0 -12px;
+        .propeditcontainerset div span{
+            width: 12px;
+            height: 12px;
+            overflow: hidden;
+            margin : 1px 3px 0 1px;
+            float : left;
+            background: url("images/checkbox.png") no-repeat 0 -12px;
         }
 
-        .propeditcontainerset DIV.checked SPAN {
-            background-position : 0 -24px;
+        .propeditcontainerset div.checked span{
+            background-position: 0 -24px;
         }
 
-        .propedit .empty, 
-        .propedit .offline, 
-        .propedit .loading {
-            text-align  : center;
-            padding     : 8px 0 0 5px;
-            color       : #AAA;
+        .propedit .empty, .propedit .offline, .propedit .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #AAA;
             font-weight : normal;
         }
     ]]></a:style>
     <a:style condition="apf.isIE6"><![CDATA[
-        .propedit {
-            overflow-x    : hidden;
+        .propedit{
+            overflow-x : hidden;
             padding-right : 16px;
         }
 
-        .fixed .headings {
+        .fixed .headings{
             width : 100%;
         }
 
-        .fixed .records {
-            width        : 100%;
+        .fixed .records{
+            width : 100%;
             padding-left : -16px;
-            text-index   : expression(this.style.paddingLeft='16px');
+            text-index : expression(this.style.paddingLeft='16px');
         }
 
-        .fixed .records DIV {
+        .fixed .records div{
             margin-left : -16px;
         }
 
-        .fixed .records DIV SPAN {
-            overflow   : hidden;
-            height     : 19px;
+        .fixed .records div span{
+            overflow : hidden;
+            height : 19px;
             margin-top : -1px;
         }
 
-        .propedit body.records {
+        .propedit body.records{
             padding : 18px 0 0 0;
         }
 
-        .fixed .records DIV SPAN DL {
+        .fixed .records div span dl{
             width : expression(this.parentNode.offsetWidth - 5);
         }
 
-        .propedit IFRAME {
+        .propedit iframe{
             height : expression(this.parentNode.parentNode.offsetHeight - 2);
-            width  : expression(this.parentNode.parentNode.offsetWidth - 2);
+            width : expression(this.parentNode.parentNode.offsetWidth - 2);
         }
 
         html.propedit body.records {
             margin-right : -20px;
         }
 
-        .propedit .size_pointer {
+        .propedit .size_pointer{
             height : expression(this.parentNode.offsetHeight - 2);
         }
     ]]></a:style>
     <a:style condition="!apf.isIE"><![CDATA[
-        .propedit .records {
-            overflow-x  : hidden;
-            overflow-y  : auto;
-            height      : 100%;
-            position    : absolute;
-            top         : 0;
-            left        : 0;
-            width       : 100%;
-            padding     : 0;
+        .propedit .records{
+            overflow-x: hidden;
+            overflow-y: auto;
+            height : 100%;
+            position : absolute;
+            top : 0;
+            left : 0;
+            width : 100%;
+            padding : 0;
             white-space : nowrap;
         }
 
-        .propedit .records>DIV:first-child {
+        .propedit .records>div:first-child{
             margin-top : 17px;
         }
     ]]></a:style>
     <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
-        .propedit .headings {
+        .propedit .headings{
             height : 18px;
         }
 
-        .propedit .headings SPAN {
+        .propedit .headings span{
             height : 18px;
         }
 
-        .propedit .records DIV SPAN {
+        .propedit .records div span{
             height : 18px;
         }
 
-        .propedit .records DIV SPAN DL {
+        /*.propedit .records div{
+            height : 18px;
+        }*/
+
+        .propedit .records div span dl{
             border-width : 0 1px 1px 0;
         }
 
-        .propedit .headings SPAN {
-            display  : -moz-inline-grid;
+        .propedit .headings span{
+            display : -moz-inline-grid;
             overflow : visible;
             position : relative;
         }
 
-        .propedit .records {
+        .propedit .records{
         }
 
-        .propedit .records DIV SPAN {
-            display  : -moz-inline-grid;
+        .propedit .records div span{
+            display : -moz-inline-grid;
             overflow : visible;
             position : relative;
         }
 
-        .propedit INPUT#txt_rename {
+        .propedit input#txt_rename{
             position : absolute;
-            padding  : 1px 1px 0 2px;
+            padding : 1px 1px 0 2px;
         }
     ]]></a:style>
-    <a:style><![CDATA[
-        .propedit BLOCKQUOTE {
+    <a:style>
+        .propedit blockquote{
             margin : 0 0 0 15px;
         }
-        .propedit BLOCKQUOTE BLOCKQUOTE {
+        .propedit blockquote blockquote{
             margin : -1px 0 -1px 0;
         }
         
-        .propedit .heading>.row {
+        .propedit .heading>.row{
             margin-left : 15px;
         }
         
-        .propedit .row .row>SPAN {
+        .propedit .row .row>span{
             background : url(images/cell.gif) white;
             min-height : 19px;
         }
         
-        .propedit .row .row>SPAN DL {
+        .propedit .row .row>span dl{
             background : white;
         }
         
-        .propedit .row .selected>SPAN DL{
-            color            : #0a4b80;
-            border           : 1px solid #0a4b80;
-            background-image:url(images/debugger_propedit_selected.png);
-            background-position:0 0;
-            background-repeat:repeat-x;
+        /*.propedit .row .row .row{
+            margin-top : -1px;
+        }*/
+        
+        .propedit .row .selected>span dl{
+            background-color: #eaeff2;
+            color: black;
         }
-        .propeditFocus .row .selected>SPAN DL {
-            color            : #0a4b80;
-            border           : 1px solid #0a4b80;
-            position         : relative;
-            z-index          : 10000;
+        .propeditFocus .row .selected>span dl{
+            color: white;
+            background-color: #2582d1;
+            border: 1px solid #327fbd;
+            position : relative;
+            z-index : 10000;
         }
         
-        .propedit .row>U {
-            display     : block;
-            float       : left;
-            width       : 15px;
-            height      : 18px;
-            background  : no-repeat 3px 5px;
+        .propedit .row>u{
+            display : block;
+            float : left;
+            width: 15px;
+            height: 18px;
+            background: no-repeat 3px 5px;
             margin-left : -15px;
         }
-        
-        .propedit .row>U.min {
-            background-image : url(images/min.png);
+        .propedit .row>u.min{
+            background-image:url(images/min.png);
+        }
+        .propedit .row>u.plus{
+            background-image:url(images/plus.png);
         }
         
-        .propedit .row>U.plus {
-            background-image : url(images/plus.png);
+        .propedit .headings{
+            padding-left:15px;
         }
         
-        .propedit .headings {
-            padding-left : 15px;
-        }
-        
-        .propedit .headings .first B {
+        .propedit .headings .first b{
             border-left : 0;
         }
         
-        .propedit .heading>U {
-            position    : absolute;
+        .propedit .heading>u{
+            position : absolute;
             margin-left : 0;
         }
         
-        .propedit .heading {
-            width      : 100%;
-            background : #0a4b80;
+        .propedit .heading{
+            width : 100%;
+            background : #c6cdd3;
         }
         
-        .propedit .heading>SPAN {
-            width  : 100%;
+        .propedit .heading>span{
+            width : 100%;
             border : 0;
         }
         
-        .propedit .heading>SPAN DL{
-            border      : 0;
+        .propedit .heading>span dl{
+            border : 0;
+            background : #c6cdd3;
             font-weight : bold;
-            padding     : 2px 0 2px 17px;
+            padding : 2px 0 2px 17px;
         }
         
         .propedit .tb{
             padding-left : 3px;
-            color        : black;
+            color : black;
         }
         
-        .propedit .cbcontainer {
-            border         : 1px solid #c3c3c3;
+        .propedit .cbcontainer{
+            border : 1px solid #c3c3c3;
             padding-bottom : 2px;
-            background     : white;
+            background : white;
         }
         
-        .propeditFocus .cbcontainer {
+        .propeditFocus .cbcontainer{
             border : 1px solid #327fbd;
         }
         
-        .propedit .slider {
+        .propedit .slider{
             margin : 5px 5px 0 3px;
         }
-    ]]></a:style>
+    </a:style>
 
     <a:presentation>
         <a:main
@@ -3133,13 +3127,14 @@
             widthdiff    = "2"
             defaultwidth = "70"
             scalerename  = "true"
-            iframe       = "false">
+            iframe       = "false"
+        >
             <div class="propedit">
-                <div class="headings">
+                <div class='headings'>
 
                 </div>
-                <div class="pointer"> </div>
-                <div class="records"> </div>
+                <div class='pointer'> </div>
+                <div class='records'> </div>
             </div>
         </a:main>
 
@@ -4984,7 +4979,7 @@
         }
     
         .listFocus .indicate U {
-            border  : 1px dotted #BBB;/*#25a8e7;*/
+            border  : 1px dotted #BBB;/*#2582d1;*/
             color   : black;
             /*
             background-color : #e4f4fc;
@@ -5000,7 +4995,7 @@
         .listFocus .selected U, 
         .draglist U {
             color            : white;
-            background-color : #25a8e7;
+            background-color : #2582d1;
         }
     
         .list #txt_rename {
@@ -5036,7 +5031,7 @@
         }
         
         .listDrop {
-            border : 1px solid #25a8e7;
+            border : 1px solid #2582d1;
         }
     
         .draglist_multiple {
@@ -5163,7 +5158,7 @@
     
     .docutree blockquote div.indicate, .dragdoctree{
         color: white;
-        background-color: #25a8e7;
+        background-color: #2582d1;
     }
     
     .docutreeFocus blockquote div.indicate{
@@ -5172,7 +5167,7 @@
         padding : 4px 3px 1px 31px;
         border : 0;
         color: white;
-        background-color: #25a8e7;
+        background-color: #2582d1;
     }
     
     .docutree blockquote div span{
@@ -5308,7 +5303,7 @@
 
 
         .treeFocus .indicate U{
-            border: 1px dotted #BBB;/*#25a8e7;*/
+            border: 1px dotted #BBB;/*#2582d1;*/
             padding: 1px 3px 1px 1px;
             color : black;
         }
@@ -5320,7 +5315,7 @@
 
         .treeFocus .selected U, .treeFocus .dragAppend U, .dragtree U{
             color: white;
-            background-color: #25a8e7;
+            background-color: #2582d1;
         }
 
         .tree BLOCKQUOTE{
