@@ -34,19 +34,17 @@
  */
 apf.xmpp_rdb = function(){
     var _self   = this,
-        rdbVars = {
-            created: {} // list of room ID's that the user created him/herself
-        },
+        rdbVars = {},
         // keep reference to access class constants in function scope chain
         oXmpp   = apf.xmpp,
         // munge often-used strings
         SID     = "SID",
         JID     = "JID",
         CONN    = "connected";
-    this.$rdbRoster = new apf.xmpp_roster(this.$mucModel, {muc: true}, this.resource);
+    this.$rdbRoster = new apf.xmpp_roster(this.$rdbModel, {rdb: true}, this.resource);
 
     /*
-     * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are
+     * Wrapper function for apf.xmpp.$doXmlRequest. Since all RDB request are
      * asynchronous - responses to each call return via the message poll/ push -
      * the only variable left for each request is the text body.
      *
@@ -57,7 +55,7 @@ apf.xmpp_rdb = function(){
     function doRequest(sBody, fCallback) {
         if (!sBody) return;
         if (fCallback)
-            _self.$serverVars["muc_callback"] = fCallback;
+            _self.$serverVars["rdb_callback"] = fCallback;
         _self.$doXmlRequest(_self.$restartListener, _self.$isPoll
             ? _self.$createStreamElement(null, null, sBody)
             : _self.$createBodyElement({
@@ -92,11 +90,11 @@ apf.xmpp_rdb = function(){
      *
      * @type {void}
      */
-    this.queryRooms = function() {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
+    this.queryDocs = function() {
+        if (!this.$canRDB || !this.$serverVars[CONN]) return;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
-                to    : this.$mucDomain,
+                to    : this.$rdbDomain,
                 type  : "get",
                 id    : this.$makeUnique("disco")
             }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
@@ -109,8 +107,8 @@ apf.xmpp_rdb = function(){
      * @param {String} sJID    Jabber ID of the room we're adding
      * @param {String} [sName] Optional name of the room
      */
-    this.$addRoom = function(sJID, sName) {
-        return this.$mucRoster.getEntityByJID(sJID.replace(/\/.*$/, ""), sName);
+    this.$addDoc = function(sJID, sName) {
+        return this.$rdbRoster.getEntityByJID(sJID.replace(/\/.*$/, ""), sName);
     };
 
     /**
@@ -119,9 +117,9 @@ apf.xmpp_rdb = function(){
      * @param {String} sJID Jabber ID to check
      * @type  {void}
      */
-    this.$isRoom = function(sJID) {
+    this.$isDoc = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");
-        return this.$mucRoster.getEntity(parts[0], parts[1], null, true)
+        return this.$rdbRoster.getEntity(parts[0], parts[1], null, true)
             ? true
             : false;
     };
@@ -133,57 +131,95 @@ apf.xmpp_rdb = function(){
      * @param {String} sJID Jabber ID that just joined a chatroom
      * @type  {Object}
      */
-    this.$addRoomOccupant = function(sJID) {
-        return this.$mucRoster.getEntityByJID(sJID);
+    this.$addDocOccupant = function(sJID) {
+        return this.$rdbRoster.getEntityByJID(sJID);
     };
 
     /**
      * Provided a room, get all its info and capabilities.
      * Not implemented yet.
      *
-     * @param {String} sRoom
+     * @param {String} sDoc
      */
-    this.queryRoomInfo = function(sRoom) {
+    this.queryDocInfo = function(sDoc) {
         // @todo Room info querying
     };
 
-    this.getRoom = function(sRoom, callback) {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
-        mucVars["room_cb_" + sRoom] = callback;
+    this.getDoc = function(sDoc, callback) {
+        if (!this.$canRDB || !this.$serverVars[CONN]) return;
+        rdbVars["doc_cb_" + sDoc] = callback;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
-                to    : sRoom,
+                to    : sDoc,
                 type  : "get",
                 id    : this.$makeUnique("disco")
             }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
         );
     };
 
-    this.$mucSignal = function(iType, sRoom, oData) {
-        sRoom  = sRoom.replace(/\/.*$/, "");
-        var f  = "room_cb_" + sRoom,
-            cb = mucVars[f];
-        delete mucVars[f];
+    this.$rdbSignal = function(oNode) {
+        if (this["rdb-bot"]) {
+            var idx,
+                sDoc  = null,
+                sJoin = oNode.getAttribute("join"),
+                sJID  = oNode.getAttribute("from");
+            if ((idx = sJID.indexOf("@")) > -1)
+                sDoc = sJID.substring(0, idx);
+            var f     = "doc_cb_" + (sDoc || "generic"),
+                cb    = rdbVars[f];
+            delete rdbVars[f];
+            if (sJoin) {
+                // join request from a client, acknowledge it and send the document
+                this.dispatchEvent("datastatuschange", {
+                    from     : sJoin,
+                    session  : sDoc,
+                    type     : "submit",
+                    baseline : 1,
+                    modeldata: 1,
+                    fields   : {}
+                });
+            }
+            else if (cb) {
+                // callback, probably the result of the bot registering itself
+                cb(oNode);
+            }
+            else if (sDoc) {
+                // a new document session is started
+                /*var oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
+                    room       : sDoc,
+                    roomJID    : sJID,
+                    affiliation: "owner",
+                    role       : "owner",
+                    status     : ""
+                });*/
+            }
+        }
+
+        /*sDoc  = sDoc.replace(/\/.*$/, "");
+        var f  = "doc_cb_" + sDoc,
+            cb = rdbVars[f];
+        delete rdbVars[f];
         switch (iType) {
-            case apf.xmpp_muc.ROOM_CREATE:
-            case apf.xmpp_muc.ROOM_EXISTS:
+            case apf.xmpp_rdb.DOC_CREATE:
+            case apf.xmpp_rdb.DOC_EXISTS:
                 if (typeof cb == "function")
                     cb(true);
                 break;
-            case apf.xmpp_muc.ROOM_NOTFOUND:
+            case apf.xmpp_rdb.DOC_NOTFOUND:
                 if (typeof cb == "function")
                     cb(false);
                 break;
-            case apf.xmpp_muc.ROOM_JOINED:
-            case apf.xmpp_muc.ROOM_LEFT:
-                var oEnt = this.$mucRoster.getEntityByJID(oData.fullJID, {
-                    room       : sRoom,
+            case apf.xmpp_rdb.DOC_JOINED:
+            case apf.xmpp_rdb.DOC_LEFT:
+                debugger;
+                var oEnt = this.$rdbRoster.getEntityByJID(oData.fullJID, {
+                    room       : sDoc,
                     roomJID    : oData.roomJID,
                     affiliation: oData.affiliation,
                     role       : oData.role,
                     status     : oData.status
                 });
-                var oOwner    = this.$mucRoster.getRoomOwner(sRoom),
+                var oOwner    = this.$rdbRoster.getRoomOwner(sDoc),
                     oRoster   = this.$serverVars["roster"];
                 // #ifdef __WITH_RDB
                 // if the user created this room, the initial data needs to be sent to
@@ -195,7 +231,7 @@ apf.xmpp_rdb = function(){
 
                 this.dispatchEvent("datastatuschange", {
                     from     : oEnt.roomJID,
-                    session  : sRoom.substring(0, sRoom.indexOf("@")),
+                    session  : sDoc.substring(0, sDoc.indexOf("@")),
                     type     : "submit",
                     baseline : 1,
                     modeldata: 1,
@@ -213,75 +249,55 @@ apf.xmpp_rdb = function(){
 
                 // 'old' style data message passing
                 this.dispatchEvent("datachange", {
-                    session : sRoom.split("@")[0],
+                    session : sDoc.split("@")[0],
                     body    : oData
                 });
                 break;
-        }
+        }*/
     };
 
-    this.joinRoom = function(sRoom, sPassword, sNick, fCallback) {
-        // @todo check for reserved nickname as described in
-        //       http://xmpp.org/extensions/xep-0045.html#reservednick
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        if (!sNick)
-            sNick = this.$serverVars["username"];
-        var parts = sRoom.split("@");
-        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
+    this.joinDoc = function(sDoc, sPassword, fCallback) {
+        if (!sDoc || !this.$canRDB || !this.$serverVars[CONN]) return;
+        var parts = sDoc.split("@");
+        this.$rdbRoster.registerAccount(parts[0], parts[1], this.$serverVars["username"]);
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
-                to    : sRoom + "/" + sNick
-            },
-            "<x xmlns='" + oXmpp.NS.muc + (sPassword
-                ? "'><password>" + sPassword + "</x>"
-                : "'/>")),
-            fCallback
+                to    : sDoc
+            }, sPassword
+                ? "<x xmlns='" + oXmpp.NS.rdb + "'><password>" + sPassword + "</password></x>"
+                : ""
+            ), fCallback
         );
     };
 
-    this.leaveRoom = function(sRoom, sMsg, sNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        if (!sNick)
-            sNick = this.$serverVars["username"];
+    this.leaveDoc = function(sDoc, sMsg, fCallback) {
+        if (!sDoc || !this.$canRDB || !this.$serverVars[CONN]) return;
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
-                to    : sRoom + "/" + sNick,
+                to    : sDoc,
                 type  : oXmpp.TYPE_UNAVAILABLE
             }, sMsg ? "<status>" + sMsg + "</status>" : ""), fCallback
         );
     };
 
-    this.leaveAllRooms = function(sMsg, sNick) {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
+    this.leaveAllDocs = function(sMsg, sNick) {
+        if (!this.$canRDB || !this.$serverVars[CONN]) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
-        var i, l, aRooms = this.$mucRoster.getRooms();
-        for (i = 0, l = aRooms.length; i < l; i++)
-            this.leaveRoom(aRooms[i].bareJID, sMsg, sNick);
+        var i, l, aDocs = this.$rdbRoster.getRooms();
+        for (i = 0, l = aDocs.length; i < l; i++)
+            this.leaveDoc(aDocs[i].bareJID, sMsg);
     };
 
-    this.changeNick = function(sRoom, sNewNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        if (!sNewNick)
-            sNewNick = this.username;
-        var parts = sRoom.split("@");
-        this.$mucRoster.registerAccount(parts[0], parts[1], sNewNick);
-        doRequest(this.$createPresenceBlock({
-                from  : this.$serverVars[JID],
-                to    : sRoom + "/" + sNewNick
-            }), fCallback
-        );
-    };
-
-    this.invite = function(sRoom, sJID, sReason, fCallback) {
+    this.invite = function(sDoc, sJID, sReason, fCallback) {
         var oUser = this.$serverVars["roster"].getEntityByJID(sJID);
         if (!oUser) return;
 
         doRequest(createMessageBlock({
                 from : _self.$serverVars[JID],
-                to   : sRoom
+                to   : sDoc
             },
-            "<x xmlns='" + oXmpp.NS.muc_user + "'><invite to='"
+            "<x xmlns='" + oXmpp.NS.rdb_user + "'><invite to='"
             + oUser.bareJID + (sReason
                 ? "'><reason>" + sReason + "</reason></invite>"
                 : "'/>") + "</x>"),
@@ -289,15 +305,15 @@ apf.xmpp_rdb = function(){
         );
     };
 
-    this.declineInvite = function(sRoom, sJID, sReason, fCallback) {
+    this.declineInvite = function(sDoc, sJID, sReason, fCallback) {
         var oUser = this.$serverVars["roster"].getEntityByJID(sJID);
         if (!oUser) return;
 
         doRequest(createMessageBlock({
                 from : _self.$serverVars[JID],
-                to   : sRoom
+                to   : sDoc
             },
-            "<x xmlns='" + oXmpp.NS.muc_user + "'><decline to='"
+            "<x xmlns='" + oXmpp.NS.rdb_user + "'><decline to='"
             + oUser.bareJID + (sReason
                 ? "'><reason>" + sReason + "</reason></invite>"
                 : "'/>") + "</x>"),
@@ -305,85 +321,16 @@ apf.xmpp_rdb = function(){
         );
     };
 
-    this.moderate = function(action, options) {
-        // @todo
-    };
-
-    this.createRoom = function(sRoom, sNick, fCallback) {
-        // @todo implement/ support Reserved Rooms
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        if (!sNick)
-            sNick = this.$serverVars["username"];
-        sRoom = this.$mucRoster.sanitizeJID(sRoom);
-        var parts = sRoom.split("@"),
-            f     = "room_cb_" + sRoom;
-        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
-        mucVars.created[sRoom] = false;
-
-        mucVars[f] = function(bSuccess) {
-            // @todo notify user
-            delete mucVars[f];
-            if (!bSuccess)
-                return (typeof callback == "function" ? callback(bSuccess) : false);
-            mucVars[f] = function(bSuccess) {
-                delete mucVars[f];
-                _self.$addRoom(sRoom, sRoom.substr(0, sRoom.indexOf("@")));
-                mucVars.created[sRoom] = true;
-                if (fCallback)
-                    fCallback(bSuccess);
-            };
-            doRequest(_self.$createIqBlock({
-                    from  : _self.$serverVars[JID],
-                    to    : sRoom,
-                    type  : "set",
-                    id    : _self.$makeUnique("create")
-                },
-                "<query xmlns='" + oXmpp.NS.muc_owner + "'><x xmlns='"
-                + oXmpp.NS.data + "' type='submit'/></query>")
-            );
-        };
-
-        doRequest(this.$createPresenceBlock({
-                from  : this.$serverVars[JID],
-                to    : sRoom + "/" + sNick
-            },
-            "<x xmlns='" + oXmpp.NS.muc + "'/>")
-        );
-    };
-
-    this.joinOrCreateRoom = function(sRoom, sNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        if (!sNick)
-            sNick = this.$serverVars["username"];
-        var parts = sRoom.split("@");
-        this.$mucRoster.registerAccount(parts[0], parts[1], sNick);
-        sRoom = this.$mucRoster.sanitizeJID(sRoom);
-        mucVars.created[sRoom] = false;
-        this.getRoom(sRoom, function(bSuccess) {
-            // a password may be returned from the 'muc-password' event handler
-            if (bSuccess) {
-                _self.joinRoom(sRoom, _self.dispatchEvent("muc-password") || null,
-                    sNick, fCallback);
-            }
-            else {
-                _self.createRoom(sRoom, sNick, function(bSuccess2) {
-                    if (bSuccess2)
-                        _self.joinRoom(sRoom, null, sNick, fCallback);
-                });
-            }
-        });
-    };
-
-    this.setPrivileges = function(sRoom, sTo, sAffiliation, fCallback) {
-        var oOwner    = this.$mucRoster.getRoomOwner(sRoom),
+    this.setPrivileges = function(sDoc, sTo, sAffiliation, fCallback) {
+        var oOwner    = this.$rdbRoster.getRoomOwner(sDoc),
             oRoster   = this.$serverVars["roster"],
             sType     = oOwner.nick == oRoster.username ? "owner" : "admin",
             sNS       = oOwner.nick == oRoster.username
-                ? oXmpp.NS.muc_owner
-                : oXmpp.NS.muc_admin;
+                ? oXmpp.NS.rdb_owner
+                : oXmpp.NS.rdb_admin;
         doRequest(_self.$createIqBlock({
                 from  : _self.$serverVars[JID],
-                to    : sRoom,
+                to    : sDoc,
                 type  : "set",
                 id    : _self.$makeUnique(sType)
             },
@@ -393,107 +340,108 @@ apf.xmpp_rdb = function(){
         );
     };
 
-    this.destroyRoom = function(sRoom, sReason) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
-        doRequest(this.$createIqBlock({
-                from  : this.$serverVars[JID],
-                to    : sRoom,
-                type  : "set",
-                id    : this.$makeUnique("destroy")
-            },
-            "<query xmlns='" + oXmpp.NS.muc_owner + "'><destroy jid='"
-            + sRoom + (sReason
-                ? "'><reason>" + sReason + "</reason></destroy>"
-                : "'/>")
-            + "</query>")
-        );
+    this.sendSyncRDB = function(sTo, sSession, iBaseline, sData) {
+        var _self = this;
+        $setTimeout(function() {
+            doRequest(_self.$createPresenceBlock({
+                    from  : _self.$serverVars[JID],
+                    to    : sSession + "@" + _self.$rdbDomain,
+                    join  : sTo
+                }, sData
+                    ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
+                      + "</baseline><data><![CDATA[" + sData + "]]></data></x>"
+                    : ""
+                )
+            );
+        });
     };
 
-    //#ifdef __WITH_RDB
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this.$mucDomain);
-        this.joinOrCreateRoom(sRoom, this.$serverVars["roster"].username, function() {
-            if (mucVars.created[sRoom]) {
+        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this.$rdbDomain);
+        if (this["rdb-bot"]) {
+            this.botRegister(this.$rdbDomain);
+        }
+        else {
+            // a password may be returned from the 'rdb-password' event handler
+            this.joinDoc(sDoc, this.dispatchEvent("rdb-password") || null, function() {
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
-                fCallback(sRoom.substring(0, sRoom.indexOf("@")));
-            }
-            // room joined, now wait till we get the latest model version
-            // and metadata from the owner of the room
-        });
+                if (fCallback)
+                    fCallback(sDoc.substring(0, sDoc.indexOf("@")));
+                // room joined, now wait till we get the latest model version
+                // and metadata from the owner of the room
+            });
+        }
     };
 
     this.endRDB = function(sSession) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
-        var oOwner = this.$mucRoster.getRoomOwner(sRoom);
-        if (!oOwner || oOwner.nick != this.$serverVars["roster"].username)
-            return; //only destroy rooms we created ourselves...
-        this.destroyRoom(sSession);
-    };
-
-    this.syncRDB = function(oData) {
-        var _self   = this,
-            oRoster = this.$serverVars["roster"],
-            oOwner  = this.$mucRoster.getRoomOwner(oData.room);
-        // do not request data from rooms of which the user is an owner
-        if (!oOwner || oOwner.nick == oRoster.username)
-            return;
-        $setTimeout(function() {
-            _self.sendMessage({
-                to   : oRoster.getEntity(oData.owner).fullJID,
-                x    : "<field type='text-single' var='session'><value>"
-                     + oData.room.substring(0, oData.room.indexOf("@"))
-                     + "</value></field>"
-                     + "<field type='text-single' var='baseline'><value>get</value></field>"
-                     + "<field type='text-multi' var='modeldata'><value>" + oData.model + "</value></field>",
-                xtype: "submit",
-                type : oXmpp.MSG_NORMAL
-            });
-        });
-    };
-
-    this.sendSyncRDB = function(sTo, sSession, iBaseline, sData) {
-        var _self = this;
-        $setTimeout(function() {
-            _self.sendMessage({
-                to   : sTo,
-                x    : "<field type='text-single' var='session'><value>" + sSession + "</value></field>"
-                     + "<field type='text-single' var='baseline'><value>" + iBaseline + "</value></field>"
-                     + (sData
-                        ? "<field type='text-multi' var='modeldata'><value><![CDATA[" + sData + "]]></value></field>"
-                        : ""),
-                xtype: "result",
-                type : oXmpp.MSG_NORMAL
-            });
-        });
+        if (this["rdb-bot"])
+            this.botUnregister(this.$rdbDomain);
+        else
+            this.leaveDoc(sSession);
     };
 
     this.sendRDB = function(sModel, sMsg) {
-        var sRoom = this.$mucRoster.sanitizeJID(sModel + "@" + this.$mucDomain);
+        var sDoc = this.$rdbRoster.sanitizeJID(sModel + "@" + this.$rdbDomain);
         this.sendMessage({
-            to     : sRoom,
+            to     : sDoc,
             message: sMsg,
-            thread : "rdb",
-            type   : oXmpp.MSG_GROUPCHAT
+            thread : "rdb"
         });
     };
-    //#endif
+
+    this.botRegister = function(sDomain, fCallback) {
+        if (!sDomain || !this.$canRDB || !this.$serverVars[CONN]) return;
+        this.$rdbRoster.registerAccount(this.$serverVars["username"], sDomain);
+        var _self = this;
+        rdbVars["doc_cb_generic"] = function(oNode) {
+            // success if the server returned us a presence message
+            _self.$canRDB = (oNode && oNode.tagName == "presence"
+                && !oNode.getElementsByTagName("error").length);
+            if (fCallback)
+                fCallback(_self.$canRDB, oNode);
+        };
+        doRequest(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : sDomain,
+                prio  : this.dispatchEvent("priority") || null
+            })
+        );
+    };
+
+    this.botUnregister = function(sDomain, fCallback) {
+        if (!sDomain || !this.$canRDB || !this.$serverVars[CONN]) return;
+        this.$rdbRoster.reset();
+        rdbVars["doc_cb_generic"] = function(oXml) {
+            // success if the server returned us a presence message
+            if (!fCallback) return;
+            fCallback(oXml && oXml.getElementsByTagName("presence").length
+                && !oXml.getElementsByTagName("error").length)
+        };
+        doRequest(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : sDomain,
+                type  : apf.xmpp.TYPE_UNAVAILABLE
+            })
+        );
+    };
 };
 
-apf.xmpp_muc.ROOM_CREATE    = 1;
-apf.xmpp_muc.ROOM_EXISTS    = 2;
-apf.xmpp_muc.ROOM_NOTFOUND  = 3;
-apf.xmpp_muc.ROOM_JOINED    = 4;
-apf.xmpp_muc.ROOM_LEFT      = 5;
-apf.xmpp_muc.ROOM_RDB       = 6;
+apf.xmpp_rdb.DOC_CREATE    = 1;
+apf.xmpp_rdb.DOC_EXISTS    = 2;
+apf.xmpp_rdb.DOC_NOTFOUND  = 3;
+apf.xmpp_rdb.DOC_JOINED    = 4;
+apf.xmpp_rdb.DOC_LEFT      = 5;
+apf.xmpp_rdb.DOC_RDB       = 6;
 
-apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
-apf.xmpp_muc.ACTION_KICK    = 0x0002;
-apf.xmpp_muc.ACTION_BAN     = 0x0004;
-apf.xmpp_muc.ACTION_GRANT   = 0x0008;
-apf.xmpp_muc.ACTION_REVOKE  = 0x0010;
+apf.xmpp_rdb.ACTION_SUBJECT = 0x0001;
+apf.xmpp_rdb.ACTION_KICK    = 0x0002;
+apf.xmpp_rdb.ACTION_BAN     = 0x0004;
+apf.xmpp_rdb.ACTION_GRANT   = 0x0008;
+apf.xmpp_rdb.ACTION_REVOKE  = 0x0010;
 
 // #endif

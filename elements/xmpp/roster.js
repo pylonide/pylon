@@ -40,7 +40,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
     this.resource = res;
     this.username = this.domain = this.fullJID = "";
 
-    var aEntities = [],
+    var bMuc      = (modelContent.muc || modelContent.rdb),
+        aEntities = [],
         aRooms    = [],
         userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
                      "fullJID": 1, "status": 1, "affiliation": 1, "role": 1,
@@ -158,7 +159,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oEnt) {// && node && domain) {
-            var bIsRoom = (modelContent.muc && !resource);
+            var bIsRoom = (bMuc && !resource);
             oEnt = this.update({
                 node        : node,
                 domain      : domain,
@@ -166,14 +167,14 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
                 isRoom      : bIsRoom,
-                room        : (modelContent.muc && resource) ? bareJID : null,
-                nick        : (modelContent.muc && resource) ? resource : null,
+                room        : (bMuc && resource) ? bareJID : null,
+                nick        : (bMuc && resource) ? resource : null,
                 roomJID     : options.roomJID,
                 subscription: options.subscription || "",
                 affiliation : options.affiliation || null,
                 role        : options.role || null,
                 group       : options.group || "",
-                status      : (bIsRoom || (modelContent.muc && resource))
+                status      : (bIsRoom || (bMuc && resource))
                     ? apf.xmpp.TYPE_AVAILABLE
                     : apf.xmpp.TYPE_UNAVAILABLE
             });
@@ -196,7 +197,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {Object}
      */
     this.update = function(oEnt, status) {
-        if (modelContent.muc && oEnt.room && oEnt.role == "none") {
+        if (bMuc && oEnt.room && oEnt.role == "none") {
             // a contact is leaving the chatroom
             if (oEnt.xml) {
                 apf.xmldb.removeNode(oEnt.xml);
@@ -208,12 +209,12 @@ apf.xmpp_roster = function(model, modelContent, res) {
         if (!oEnt.xml) {
             var bIsAccount = (oEnt.node == this.username
                               && oEnt.domain == this.domain
-                              && (!modelContent.muc || oEnt.resource == this.resource));
+                              && (!bMuc || oEnt.resource == this.resource));
             aEntities.push(oEnt);
             if (oEnt.isRoom)
                 aRooms.push(oEnt);
             // Update the model with the new User
-            if (model && (modelContent.roster || modelContent.muc)) {
+            if (model && (modelContent.roster || bMuc)) {
                 oEnt.xml = model.data.ownerDocument.createElement(bIsAccount
                     ? "account"
                     : oEnt.isRoom ? "room" : "user");
@@ -261,10 +262,10 @@ apf.xmpp_roster = function(model, modelContent, res) {
         // #ifdef __WITH_RDB
         if (sThread == "rdb") return true;
         // #endif
-        if (!model || !(modelContent.chat || modelContent.muc)) return false;
+        if (!model || !(modelContent.chat || bMuc)) return false;
 
         var oEnt, oRoom;
-        if (modelContent.muc)
+        if (bMuc)
             oRoom = this.getEntityByJID(sJID.replace(/\/.*$/, ""));
         oEnt = this.getEntityByJID(sJID);
         if (!oEnt || !oEnt.xml) return false;

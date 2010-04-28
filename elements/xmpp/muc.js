@@ -431,10 +431,11 @@ apf.xmpp_muc = function(){
     this.endRDB = function(sSession) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
-        var oOwner = this.$mucRoster.getRoomOwner(sRoom);
+        var oOwner = this.$mucRoster.getRoomOwner(sSession);
         if (!oOwner || oOwner.nick != this.$serverVars["roster"].username)
-            return; //only destroy rooms we created ourselves...
-        this.destroyRoom(sSession);
+            this.leaveRoom(sSession);
+        else
+            this.destroyRoom(sSession);
     };
 
     this.syncRDB = function(oData) {
