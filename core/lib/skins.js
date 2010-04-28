@@ -149,7 +149,7 @@ apf.skins = {
             node = nodes[i];
 
             if (node.getAttribute("src"))
-                this.loadStylesheet(node.getAttribute("src").replace(/src/, basepath + "/src"));
+                this.loadStylesheet(apf.getAbsolutePath(basepath, node.getAttribute("src")));
             else {
                 var test = true;
                 if (node.getAttribute("condition")) {
