@@ -566,6 +566,7 @@ apf.BaseStateButtons = function(){
         btn.setAttribute("onmouseout",
             "var o = apf.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, '', ['hover', 'down'], true);");
+        btn.setAttribute("ondblclick", "apf.stopPropagation(event);");
     }
     
     this.$initButtons = function(oExt){
