@@ -380,7 +380,7 @@ apf.model = function(struct, tagName){
 
         //@todo apf3.0
         //Optimize root point, doesnt work right now because it doesnt change the original rule
-        if (optimize) {
+        if (optimize && false) {
             //Find xpath for bind on this model of the amlNode
             if ((q = this.$amlNodes[id]) && q.xpath)
                 xpath = (p.root = q.xpath) + "/" + xpath;

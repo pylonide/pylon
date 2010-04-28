@@ -549,10 +549,11 @@ apf.Presentation = function(){
         //@todo what about setting this dynamic in an attribute???
         //@todo is another place for this more efficient?
         //@todo apf3.0 set this also for skin change
-        this.minwidth   = apf.getCoord(parseInt(this.$getOption("main", "minwidth")), 5);
-        this.minheight  = apf.getCoord(parseInt(this.$getOption("main", "minheight")), 5);
-        this.maxwidth   = apf.getCoord(parseInt(this.$getOption("main", "maxwidth")), 10000);
-        this.maxheight  = apf.getCoord(parseInt(this.$getOption("main", "maxheight")), 10000);
+        var type        = this.$isLeechingSkin ? this.localName : "main";
+        this.minwidth   = apf.getCoord(parseInt(this.$getOption(type, "minwidth")), 5);
+        this.minheight  = apf.getCoord(parseInt(this.$getOption(type, "minheight")), 5);
+        this.maxwidth   = apf.getCoord(parseInt(this.$getOption(type, "maxwidth")), 10000);
+        this.maxheight  = apf.getCoord(parseInt(this.$getOption(type, "maxheight")), 10000);
 
         //#ifdef __WITH_CONTENTEDITABLE
         //@todo slow??

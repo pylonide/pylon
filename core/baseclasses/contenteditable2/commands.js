@@ -341,10 +341,12 @@ apf.ContentEditable2.commands = (function(){
     	    amlNode.$ext.style.top  = (amlNode.top  = pos[1]) + "px";
     	    amlNode.$ext.style.position = "absolute";
     	    
+    	    amlNode.dragOutline = false;
     	    amlNode.$ext.onmousedown({
     	        clientX: e.htmlEvent.clientX, 
     	        clientY: e.htmlEvent.clientY
     	    }, true, true);
+    	    //amlNode.dragOutline = true;
     	    
     	    addType = null;
     	}
@@ -504,7 +506,7 @@ apf.ContentEditable2.commands = (function(){
         }
         else if (content.dataType == apf.ARRAY) {
             if (pNode.localName == "table") //@todo not generic enough
-                command["removeGeometry"].call(this, sel, showUI);
+                command["resetgeo"].call(this, sel, showUI);
             
             //Init selection
             var docsel = this.getSelection();
@@ -543,11 +545,11 @@ apf.ContentEditable2.commands = (function(){
         
         //Copy nodes and add to selection
         sel.each(function(item){
-            docsel.addRange(new apf.AmlRange(this)).selectNode(
+            docsel.addRange(new apf.AmlRange(item)).selectNode(
                 item.parentNode.appendChild(item.cloneNode(true)));
         });
         
-        /*apf.ContentEditable2.execCommand("removeGeometry", {
+        /*apf.ContentEditable2.execCommand("resetgeo", {
             sel: nodes
         });*/
         
@@ -557,7 +559,7 @@ apf.ContentEditable2.commands = (function(){
         //#endif
     };
     
-    commands["removeGeometry"] = function(sel, showUI, options, query){
+    commands["resetgeo"] = function(sel, showUI, options, query){
         switch(query){
             case STATE: return false;
             case VALUE: return "false";
@@ -699,7 +701,7 @@ apf.ContentEditable2.commands = (function(){
         
         //Reset position
         var isInLayout = "vbox|hbox|table".indexOf(pNode.localName) > -1;
-        commands["removeGeometry"].call(this, sel, false, {
+        commands["resetgeo"].call(this, sel, false, {
             keepwidth  : !isInLayout && options.to == "hbox",
             keepheight : !isInLayout && options.to == "vbox"
         });

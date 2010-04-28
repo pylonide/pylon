@@ -211,7 +211,7 @@ apf.ContentEditable2 = function() {
         
         if (value) {
             //#ifdef __WITH_DEBUG_WIN
-            if (!apf.ContentEditable2.inited) {
+            if (!apf.ContentEditable2.inited && this.parentNode.nodeType == 9) {
                 apf.getData(apf.basePath + "/debugwin/editable.css", {
                     callback: function(data){
                         apf.importCssString(data);

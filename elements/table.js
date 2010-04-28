@@ -396,8 +396,8 @@ apf.table = function(struct, tagName){
     });
     
     this.$draw = function(){
-        this.$pHtmlNode.insertAdjacentHTML("beforeend", "<div><table cellSpacing='0' cellPadding='0'><tbody><tr class='first'></tr></tbody></table></div>");
-        this.$ext = this.$pHtmlNode.lastChild;
+        this.$ext = apf.insertHtmlNode(null, this.$pHtmlNode, null, 
+            "<div><table cellSpacing='0' cellPadding='0'><tbody><tr class='first'></tr></tbody></table></div>");
         this.$table = this.$ext.firstChild;
         this.$tbody = this.$table.firstChild;
         this.$ext.className = "table " + (this.getAttribute("class") || "");

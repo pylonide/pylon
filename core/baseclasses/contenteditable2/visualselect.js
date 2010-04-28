@@ -285,6 +285,9 @@ apf.visualSelect = function(selection){
                 var ext, html, epos;
                 for (i = 0, l = selection.length; i < l; i++) {
                     ext  = selection[i].$ext;
+                    if (!ext.offsetWidth && !ext.offsetHeight)
+                        continue;
+
                     epos = apf.getAbsolutePosition(ext);
                     html = oOutline.childNodes[i];
                     html.style.left   = (epos[0] - pos[0]) + "px";

@@ -61,7 +61,7 @@
         if (lastReparent == amlNode)
             return;
         
-        var htmlNode = outline;
+        var htmlNode = el.dragOutline ? outline : el.$ext;
         var pHtmlNode = amlNode.$int;
         var isBody = pHtmlNode.tagName == "BODY";
 
@@ -243,7 +243,7 @@
         },
         
         reparent : function(amlNode, el, e){
-            var htmlNode = outline || el.$ext;
+            var htmlNode = el.dragOutline ? outline : el.$ext;
 
             while (amlNode && !amlNode.$int)
                 amlNode = amlNode.parentNode;
@@ -260,6 +260,7 @@
             else {
                 if (lastAmlNode)
                     clearTimeout(lastAmlNode[4]);
+
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
                   && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
@@ -976,18 +977,22 @@
         lastReparent = null;
     
         var el = this;
-        var htmlNode = outline || this.$ext;
+        var htmlNode = el.dragOutline ? outline : el.$ext;
         
         delete this.$multidrag;
         
+        var l, t, w, h, selected, prevParent, pNode;
         if (el.$adding) {
             //this.$ext = oOutline;
+            selected   = [el];
+            prevParent = 
+            pNode      = apf.findHost(htmlNode.parentNode);
         }
-        
-        var l, t, w, h;
-        var selected   = apf.document.$getVisualSelect().getLastSelection();
-        var prevParent = selected[0].parentNode;
-        var pNode      = apf.findHost(htmlNode.parentNode);
+        else {
+            selected   = apf.document.$getVisualSelect().getLastSelection();
+            prevParent = selected[0].parentNode;
+            pNode      = apf.findHost(htmlNode.parentNode);
+        }
 
         //Set the coordinates if not dropped into a layout node
         if (selected.length > 1 && lastPos
@@ -1083,6 +1088,7 @@
         
         if (el.$adding) {
             delete el.$adding;
+            el.dragOutline = true;
             el.focus();
         }
         else {

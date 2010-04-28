@@ -43,7 +43,7 @@ apf.plane = {
 
         var plane    = this.plane;
         
-        if (o) {
+        if (o && false) { //@experimental
             this.current = o;
             if (!dontAppend) {
                 this.lastZ = this.current.style.zIndex;
