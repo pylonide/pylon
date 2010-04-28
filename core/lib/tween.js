@@ -174,15 +174,17 @@ var ID        = "id",
     current= null,
 
     setQueue = function(oHtml, stepFunction){
-        if (!oHtml.getAttribute(ID))
+        var id = oHtml.getAttribute(ID);
+        if (!id) {
             apf.setUniqueHtmlId(oHtml);
+            id = oHtml.getAttribute(ID);
+        }
 
-        if (!queue[oHtml.getAttribute(ID)])
-            queue[oHtml.getAttribute(ID)] = [];
+        if (!queue[id])
+            queue[id] = [];
 
-        queue[oHtml.getAttribute(ID)].push(stepFunction);
-
-        if (queue[oHtml.getAttribute(ID)].length == 1)
+        queue[id].push(stepFunction);
+        if (queue[id].length == 1)
             stepFunction(0);
     },
 
@@ -203,6 +205,19 @@ var ID        = "id",
         if (bStop && current && current.control)
             current.control.stop = true;
         q.length = 0;
+    },
+
+    purgeQueue = function(oHtml) {
+        var id = oHtml.getAttribute(ID);
+        if (!id) {
+            apf.setUniqueHtmlId(oHtml);
+            id = oHtml.getAttribute(ID);
+        }
+
+        for (var i in queue) {
+            if (i == id)
+                queue[i] = [];
+        }
     },
 
     /**
@@ -423,6 +438,8 @@ var ID        = "id",
                 nextQueue(oHtml);
             };
 
+        if (info.type.indexOf("scroll") > -1)
+            purgeQueue(oHtml);
         setQueue(oHtml, stepFunction);
 
         return apf.tween;

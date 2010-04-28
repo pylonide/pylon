@@ -79,22 +79,31 @@ apf.history = {
         if (delay)
             this.delay = delay;
 
-        var name = apf.dispatchEvent("hashinit")
-          || location.href.match(/#(.*)$/) && decodeURI(RegExp.$1)
-          || apf._GET[getVar || -1] || defName;
-
         this.inited = true;
-        
-        location.hash = name;
-        this.hasChanged(name || null);
+
+        var name, _self = this;
+        function preInit() {
+            name = apf.dispatchEvent("hashinit")
+              || location.href.match(/#(.*)$/) && decodeURI(RegExp.$1)
+              || apf._GET[getVar || -1] || defName;
+
+
+            location.hash = name;
+            _self.hasChanged(name || null);
+        }
 
         if (apf.supportHashChange) {
-            window.onhashchange = function(){
-                var page = location.hash.replace("#", "");
-                apf.history.hasChanged(decodeURI(page));
-            };
+            $setTimeout(function() {
+                preInit();
+
+                window.onhashchange = function(){
+                    var page = location.hash.replace("#", "");
+                    apf.history.hasChanged(decodeURI(page));
+                };
+            });
         }
         else if (apf.isIE) {
+            preInit();
             var str =
                 "<style>\
                     BODY, HTML{margin:0}\
@@ -141,6 +150,7 @@ apf.history = {
             }, apf.history.delay || 1);
         }
         else {
+            preInit();
             apf.history.lastUrl = location.href.toString();
             this.timer2 = setInterval(function(){
                 if (apf.history.lastUrl == location.href.toString())
