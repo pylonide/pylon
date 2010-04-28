@@ -30,8 +30,10 @@
             url               = "http://localhost:5280/http-bind"
             model             = "myRoster"
             model-contents    = "roster|typing|chat"
+            rdb-bot           = "true"
             type              = "binding"
             resource          = "{'apf_'.appendRandomNumber(5)}"
+            onpriority        = "getPrio()"
             onconnected       = "apf.console.log('yay')"
             onconnectionerror = "apf.console.log('boohoo:' + event.message)"
             onauthfailure     = "apf.console.log('AUTHFAILURE:' + event.message)"
@@ -65,9 +67,9 @@
         <a:slider value="[folder[1]/@test]" realtime="false" model="mdlFs" /-->
 
         <br />
-        <a:textbox id="username" value="mike" />
+        <a:textbox id="username" value="bot1" />
         <br/><br />
-        <a:textbox type="password" id="password" value="mike1324" />
+        <a:textbox type="password" id="password" value="botz1" />
         <br/><br/>
         <button onclick="myXMPP.connect(username.value, password.value)">Login</button>
         <button onclick="myXMPP.disconnect()">Disconnect</button>
@@ -77,5 +79,10 @@
             <message to='test@rdb.localhost' />
         ]]></a:textarea>
         <a:button caption="Send" id="btnSend" onclick="myXMPP.sendXml({message: txtAnyXml.value, callback: function(data) {alert(data);}})" />
+        <a:script><![CDATA[
+            function getPrio() {
+                return 42;
+            }
+        ]]></a:script>
     </body>
 </html>

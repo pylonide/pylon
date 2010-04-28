@@ -40,6 +40,17 @@
             <a:caption><?lm [@name] ?></a:caption>
         </a:tree>
 
+        <a:tree
+          each          = "[category]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false">
+            <a:caption><?lm [@name] ?></a:caption>
+            <a:insert match="[category[not(@leaf)]]" get="{categories.xml}" />
+        </a:tree>
+
         <a:model id="mdlCategories">
             <categories>
                 <category id="556" name="Constructies en materiaal" />
