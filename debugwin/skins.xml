@@ -11,7 +11,7 @@
             position         : relative;
             float            : left;
             display          : block;
-            width            : auto;
+            min-width        : 1014px;
         }
         
         .macro_tree DIV.root,
