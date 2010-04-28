@@ -7,6 +7,14 @@
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
         <link rel="stylesheet" href="docs.css" type="text/css" />
+        
+        <!-- docparser files -->
+        <script src="docparser/JsParser.js"></script>
+        <script src="docparser/docparser.js"></script>
+        <script src="docparser/docparser_objects.js"></script>
+		<script src="docparser/docparser_refguide_xml.js"></script>
+        <script src="docparser/docparser_xmlschema.js"></script>
+        <script src="docparser/onedit.js"></script>
     </head>
     <body>
         <a:skin src="skins.xml" media-path="resources/" icon-path="resources/" />
@@ -120,7 +128,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="macro">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="packager">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -573,7 +581,112 @@
 
                 </a:pages>
             </a:page>
-            <a:page caption="Packager">
+            <a:page caption="Packager" id="packager">
+                <a:bar skin="basic" align="left-splitter" width="70%">
+                    <a:label>Doc generator</a:label>
+                    <a:hbox>
+                        <a:label for="tbDocgenSrc">Load file</a:label>
+                        <a:textbox id="tbDocgenSrc"></a:textbox>
+                        <a:button onclick="docgenBrowseSrc()">Browse</a:button>
+                    </a:hbox>
+                    <a:vbox>
+                        <a:checkbox id="cbDocgenXml" values="XML files">XML</a:checkbox>
+                        <a:checkbox id="cbDocgenHtml" onclick="selectionChange(this)" values="HTML files">HTML</a:checkbox>
+                        <a:checkbox id="cbDocgenSchema" values="XML schema">XML schema</a:checkbox>
+                        <a:checkbox id="cbDocgenProp" values="Propedit files">Properties</a:checkbox>
+                        <a:checkbox id="cbDocgenNav" values="Navigation file">Nav</a:checkbox>
+                    </a:vbox>
+                    <a:hbox>
+                        <a:label for="tbDocgenOutput">Output location</a:label>
+                        <a:textbox id="tbDocgenOutput"></a:textbox>
+                        <a:button onclick="docgenBrowseOutput()">Browse</a:button>
+                    </a:hbox>
+                    
+                    <a:button onclick="docgenBuild()" bottom="0">Generate</a:button>
+                </a:bar>
+                <a:bar skin="basic" align="right-splitter" width="30%">
+                    <a:textarea id="taDocgenLog" anchors="0 0 0 0"/>
+                </a:bar>
+                <a:script>//<!--
+                    var fileObj = null; 
+                    var outputFolder = null;
+                    
+                    var $o3 = $o3 || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                        // o3 browser extension not found
+                        oninstallprompt : function(){
+                            alert("o3 not installed");
+                        },
+                        product : 'O3Demo'
+                    });
+
+                    
+                    function docgenBrowseSrc() {
+                        fileObj = $o3.openFileDialog("Javascript files (*.js) [*.js]");
+                        tbDocgenSrc.setValue(fileObj.fullPath);
+                    }
+                    
+                    function docgenBrowseOutput() {
+                        outputFolder = $o3.selectFolder();
+                        if (outputFolder.exists)
+                            tbDocgenOutput.setValue(outputFolder.fullPath);
+                        else
+                            alert("It is not possible to save files to: " + outputFolder.fullPath);
+                    }
+                    
+                    function docgenBuild() {
+                        // no script file selected
+                        if (!tbDocgenSrc.value) {
+                            alert("no script file selected");
+                            return;
+                        }
+                        
+                        // no checkbox checked
+                        if (!cbDocgenXml.checked && !cbDocgenHtml.checked && !cbDocgenSchema.checked && !cbDocgenProp.checked && !cbDocgenNav.checked) {
+                            alert("no output selections made");
+                            return;
+                        }
+                        
+                        // no output path specified
+                        if (!tbDocgenOutput.value) {
+                            alert("no output path specified");
+                            return;
+                        }
+                        
+                        docgenLog("Start generating documentation for " + tbDocgenSrc.value);
+
+                        //var outputPath = (tbDocgenOutput.value.charAt(tbDocgenOutput.value.length-1) == "/") ? tbDocgenOutput.value : tbDocgenOutput.value + "/";
+                        var outputPath = tbDocgenOutput.value;
+                        if (cbDocgenXml.checked)       docgenLog("Generating " + cbDocgenXml.value + " to " + outputPath);
+                        if (cbDocgenHtml.checked)      docgenLog("Generating " + cbDocgenHtml.value + " to " + outputPath);
+                        if (cbDocgenSchema.checked)    docgenLog("Generating " + cbDocgenSchema.value + " to " + outputPath);
+                        if (cbDocgenProp.checked)      docgenLog("Generating " + cbDocgenProp.value + " to " + outputPath);
+                        if (cbDocgenNav.checked)       docgenLog("Generating " + cbDocgenNav.value + " to " + outputPath);
+                        
+                        alert("@todo build documentation")
+                        docparser.generate(srcString, outputPath);
+                    }
+                    
+                    function selectionChange(o) {
+                        if (o.id == "cbDocgenHtml") {
+                            if (o.checked) {
+                                cbDocgenXml.setProperty("checked", "true");
+                                cbDocgenXml.setProperty("disabled", "true");
+                            }
+                            else {
+                                cbDocgenXml.setProperty("checked", "false");
+                                cbDocgenXml.setProperty("disabled", "false");
+                            }
+                        }
+                    }
+                    
+                    function docgenLog(msg) {
+                        if (taDocgenLog.value)
+                            taDocgenLog.setValue(taDocgenLog.value + "\n" + msg + "...");
+                        else
+                            taDocgenLog.setValue(msg + "...");
+                    }
+                //--></a:script>
+                
             </a:page>
             <a:page caption="Scripts">
             </a:page>
