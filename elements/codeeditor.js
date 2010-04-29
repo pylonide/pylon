@@ -60,6 +60,7 @@ apf.codeeditor = function(struct, tagName){
     this.softtabs          = true;
     this.syntax            = "text";
     this.value             = "";
+    this.overwrite         = true;
     this.multiline         = true;
     this.caching           = true;
     
@@ -73,12 +74,13 @@ apf.codeeditor = function(struct, tagName){
     this.$booleanProperties["caching"] = true;
     this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["showinvisibles"] = true;
+    this.$booleanProperties["overwrite"] = true;
     this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["softtabs"] = true;
 
     this.$supportedProperties.push("value", "realtime", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
-        "readonly", "tabsize", "softtabs");
+        "overwrite", "readonly", "tabsize", "softtabs");
 
     /**
      * @attribute {String} value the text of this element
@@ -149,6 +151,10 @@ apf.codeeditor = function(struct, tagName){
         this.$editor.setShowInvisibles(value);
     };
 
+    this.$propHandlers["overwrite"] = function(value, prop, initial){
+        this.$editor.setOverwrite(value);
+    };
+
     this.$propHandlers["readonly"] = function(value, prop, initial){
         this.$editor.setReadOnly(value);
     };
@@ -209,7 +215,7 @@ apf.codeeditor = function(struct, tagName){
      * Deselects the text in this element.
      */
     this.deselect = function(){ 
-        
+        this.$editor.clearSelection();
     };
     
     this.scrollTo = function(){
@@ -255,6 +261,11 @@ apf.codeeditor = function(struct, tagName){
         });
 
         this.$editor = new ace.Editor(new ace.VirtualRenderer(this.$input));
+        var self = this;
+//        this.$editor.addEventListener("changeOverwrite", function(e) {
+//            self.setProperty("overwrite", e.data);
+//        });
+//        this.setProperty("overwrite", this.$editor.getOverwrite());
     };
 
     this.$loadAml = function() {
