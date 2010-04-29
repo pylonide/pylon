@@ -23,7 +23,7 @@
                 <a:checkbox id="selectStyle" label="Full line selection" values="line|text" checked="true"/>
                 <a:checkbox id="highlightActive" label="Highlight active line" checked="true"/>
                 <a:checkbox id="showInvisibles" label="Show invisibles" checked="true"/>
-                <a:checkbox id="overwrite" label="Overwrite mode" checked="[{ce}::@overwrite]" />
+                <a:checkbox id="overwrite" label="Overwrite mode" checked="false" />
                 <a:checkbox id="readOnly" label="Read only" checked="false" />
             </a:bar>
         </a:toolbar>
@@ -47,6 +47,7 @@
           activeline  = "{highlightActive.value}"
           tabsize     = "{[@tabsize] || 4}"
           softtabs    = "[@softtabs]"
+          overwrite   = "{overwrite.value}"        
           readonly    = "{readOnly.value}"        
           showinvisibles = "{showInvisibles.value}" />        
 
