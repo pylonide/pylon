@@ -119,8 +119,8 @@ apf.Interactive = function(){
                 });
                 apf.cancelBubble(e || event, this);
             }
-            else
             // #else
+            else
             {
                 dragStart.apply(this, arguments);
             }
@@ -168,7 +168,7 @@ apf.Interactive = function(){
         
         rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
         rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
-        marginBox = apf.getBox(apf.getStyle(this.$ext, apf.isIE ? "borderWidth" : "border-width"));
+        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
     };
     
     /*
