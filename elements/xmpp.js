@@ -350,7 +350,7 @@ apf.xmpp = function(struct, tagName){
 
     this.$initMuc = function() {
         if (this.$canMuc) return;
-        this.setProperty("muc-model", "rdb");
+        this.setProperty("muc-model", "$apf_muc");
     };
     // #endif
 
@@ -374,7 +374,7 @@ apf.xmpp = function(struct, tagName){
 
     this.$initRDB = function() {
         if (this.$canRDB) return;
-        this.setProperty("rdb-model", "rdb");
+        this.setProperty("rdb-model", "$apf_rdb");
     };
     // #endif
 

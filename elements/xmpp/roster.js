@@ -167,6 +167,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
                 isRoom      : bIsRoom,
+                isBot       : options.isBot ? true : false,
                 room        : (bMuc && resource) ? bareJID : null,
                 nick        : (bMuc && resource) ? resource : null,
                 roomJID     : options.roomJID,
@@ -219,8 +220,11 @@ apf.xmpp_roster = function(model, modelContent, res) {
                     ? "account"
                     : oEnt.isRoom ? "room" : "user");
                 this.updateEntityXml(oEnt);
+                var room   = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
+                    node   = (oEnt.room && !oEnt.isRoom && oEnt.isBot) ? room[0] : oEnt.node,
+                    domain = (oEnt.room && !oEnt.isRoom && oEnt.isBot) ? room[1] : oEnt.domain;
                 apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
-                    ? this.getEntity(oEnt.node, oEnt.domain, null, true).xml
+                    ? this.getEntity(node, domain, null, true).xml
                     : model.data, oEnt.xml);
             }
         }

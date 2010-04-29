@@ -158,17 +158,28 @@ apf.xmpp_rdb = function(){
     };
 
     this.$rdbSignal = function(oNode) {
+        var idx, oEnt,
+            sDoc  = null,
+            sJoin = oNode.getAttribute("join"),
+            sJID  = oNode.getAttribute("from");
+        if ((idx = sJID.indexOf("@")) > -1)
+            sDoc = sJID.substring(0, idx);
+        var f     = "doc_cb_" + (sDoc || "generic"),
+            cb    = rdbVars[f];
+        delete rdbVars[f];
+
+        // bot logic...
         if (this["rdb-bot"]) {
-            var idx,
-                sDoc  = null,
-                sJoin = oNode.getAttribute("join"),
-                sJID  = oNode.getAttribute("from");
-            if ((idx = sJID.indexOf("@")) > -1)
-                sDoc = sJID.substring(0, idx);
-            var f     = "doc_cb_" + (sDoc || "generic"),
-                cb    = rdbVars[f];
-            delete rdbVars[f];
             if (sJoin) {
+                this.$addDoc(sJID);
+                oEnt = this.$rdbRoster.getEntityByJID(sJoin, {
+                    room       : sDoc,
+                    roomJID    : sJID,
+                    affiliation: "participant",
+                    role       : "member",
+                    status     : "",
+                    isBot      : this["rdb-bot"]
+                });
                 // join request from a client, acknowledge it and send the document
                 this.dispatchEvent("datastatuschange", {
                     from     : sJoin,
@@ -184,14 +195,30 @@ apf.xmpp_rdb = function(){
                 cb(oNode);
             }
             else if (sDoc) {
+                this.$addDoc(sJID);
                 // a new document session is started
-                /*var oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
+                oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
+                    room       : sDoc,
+                    roomJID    : sJID,
+                    affiliation: "owner",
+                    role       : "owner",
+                    status     : "",
+                    isBot      : this["rdb-bot"]
+                });
+            }
+        }
+        // client logic...
+        else {
+            console.log('got function? ', cb);
+            if (sJoin) {
+                // a new document session is started
+                oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
                     room       : sDoc,
                     roomJID    : sJID,
                     affiliation: "owner",
                     role       : "owner",
                     status     : ""
-                });*/
+                });
             }
         }
 
@@ -359,20 +386,21 @@ apf.xmpp_rdb = function(){
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this.$rdbDomain);
-        if (this["rdb-bot"]) {
-            this.botRegister(this.$rdbDomain);
-        }
-        else {
-            // a password may be returned from the 'rdb-password' event handler
-            this.joinDoc(sDoc, this.dispatchEvent("rdb-password") || null, function() {
+        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this.$rdbDomain),
+            f    = function() {
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
                 if (fCallback)
                     fCallback(sDoc.substring(0, sDoc.indexOf("@")));
                 // room joined, now wait till we get the latest model version
                 // and metadata from the owner of the room
-            });
+            };
+        if (this["rdb-bot"]) {
+            this.botRegister(this.$rdbDomain, f);
+        }
+        else {
+            // a password may be returned from the 'rdb-password' event handler
+            this.joinDoc(sDoc, this.dispatchEvent("rdb-password") || null, f);
         }
     };
 
