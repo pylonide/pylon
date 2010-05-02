@@ -17,11 +17,12 @@
         
         <a:label>Hello</a:label>
         <a:button width="100">World</a:button>
+        <a:textbox initial-message="Goodbye everyone!" />
         
         <a:model id="mdlFs" src="filesystem.xml" />
         <a:label id="lbl" model="mdlFs" caption="[drive/folder/@caption]" />
             
-        <a:window id="app" title="Application" icon="application.png"
+        <a:window id="app" title="Application" icon="application.png" visible="true" 
           width="400" height="200" left="160" top="68" resizable="true">
             <a:button left="30" top="30">test</a:button>
             <a:button left="30" top="60">test</a:button>

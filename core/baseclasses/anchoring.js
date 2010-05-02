@@ -135,11 +135,19 @@ apf.Anchoring = function(){
         this.removeEventListener("DOMNodeRemoved", remove); 
         this.removeEventListener("DOMNodeInserted", reparent); 
 
-        if (this.right)
+        this.$ext.style.left   = 
+        this.$ext.style.right  = 
+        this.$ext.style.top    = 
+        this.$ext.style.bottom = 
+        this.$ext.style.width  = 
+        this.$ext.style.height = 
+        this.$ext.style.position = "";
+
+        /*if (this.right)
             this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
 
         if (this.bottom)
-            this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";
+            this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";*/
 
         this.removeEventListener("prop.visible", visibleHandler);
 
@@ -290,6 +298,9 @@ apf.Anchoring = function(){
     //#endif
 
     this.$updateLayout = function(){
+        if (!this.$anchoringEnabled)
+            return;
+        
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
         if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {

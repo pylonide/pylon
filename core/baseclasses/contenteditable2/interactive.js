@@ -269,7 +269,7 @@
                         doReparentDrag(el, amlNode, ev);
                     }
 
-                    var ev = {clientX: e.clientX, clientY: e.clientY}
+                    var ev = {clientX: e.clientX, clientY: e.clientY, ctrlKey: e.ctrlKey}
                     lastAmlNode = [amlNode, new Date().getTime(), e.clientX, e.clientY,
                         setTimeout(function(){
                             doReparentDrag(el, amlNode, ev);
@@ -312,7 +312,7 @@
             var force, d = dragInfo;
     
             if (e.ctrlKey) {
-                hideIndicators();
+                hideIndicators(null, true);
                 return;
             }
             
@@ -862,7 +862,7 @@
     }
 
     var control = {stop:apf.K};
-    function hideIndicators(animate){
+    function hideIndicators(animate, exclude5){
         if (!dragIndicator1)
             return;
         
@@ -902,7 +902,8 @@
             dragIndicator2.style.display = "none";
             dragIndicator3.style.display = "none";
             dragIndicator4.style.display = "none";
-            dragIndicator5.style.display = "none";
+            if (!exclude5) 
+                dragIndicator5.style.display = "none";
             dragIndicator6.style.display = "none";
             dragIndicator7.style.display = "none";
         }

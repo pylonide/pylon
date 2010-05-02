@@ -249,7 +249,7 @@ apf.ContentEditable2.commands = (function(){
         stop : function(x, success){
             if (!this.renaming)
                 return;
-    
+
             var htmlNode = this.$renameHtml;
             if (htmlNode.nodeType == 1)
                 htmlNode.removeChild(this.$txt);

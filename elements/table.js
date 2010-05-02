@@ -353,7 +353,6 @@ apf.table = function(struct, tagName){
         }
         
         amlNode.removeEventListener("prop.visible", visibleHandler);
-        
         visibleHandler.call(amlNode, {value: false}); //maybe parent is already reset here?
         
         if (amlNode.margin)
@@ -376,7 +375,7 @@ apf.table = function(struct, tagName){
 
         if (e.relatedNode == this){
             this.unregister(e.currentTarget);
-            e.currentTarget.$setLayout();
+            //e.currentTarget.$setLayout();
         }
     });
 

@@ -58,7 +58,7 @@ apf.ChildValue = function(){
     
     this.$init(function(){
         this.addEventListener("prop." + this.$childProperty, function(e){
-            if (!e.value)
+            if (!e.value && !this.getAttributeNode(this.$childProperty))
                 f.call(this);
         });
     });

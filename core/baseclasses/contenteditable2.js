@@ -389,6 +389,7 @@ apf.ContentEditable2 = function() {
             this.editable = apf.isTrue(apf.getInheritedAttribute(this, "editable"));
             if (this.editable) {
                 this.$propHandlers["editable"].call(this, true);
+                this.dispatchEvent("prop.editable", {value: true});
                 this.$inheritProperties["editable"] = 2;
             }
         }

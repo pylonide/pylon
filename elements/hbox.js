@@ -119,11 +119,6 @@ apf.vbox = function(struct, tagName){
         
         amlNode.addEventListener("prop.visible", visibleHandler);
         
-        amlNode.$ext.style.left   = 
-        amlNode.$ext.style.right  = 
-        amlNode.$ext.style.top    = 
-        amlNode.$ext.style.bottom = "";
-
         l.queue(this.$ext, this.$updateObj);
         this.$update = true;
     }

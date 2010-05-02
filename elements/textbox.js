@@ -154,10 +154,20 @@ apf.textbox  = function(struct, tagName){
     //See validation
     //var oldPropHandler = this.$propHandlers["maxlength"];
     this.addEventListener("prop.maxlength", function(e){
-
         //Special validation support using nativate max-length browser support
         if (this.$input.tagName.toLowerCase().match(/input|textarea/))
             this.$input.maxLength = parseInt(e.value) || null;
+    });
+    
+    this.addEventListener("prop.editable", function(e){
+        if (apf.isIE)
+            this.$input.unselectable = e.value ? "On" : "Off";
+        else {
+            if (e.value) 
+                apf.addListener(this.$input, "mousedown", apf.preventDefault);
+            else
+                apf.removeListener(this.$input, "mousedown", apf.preventDefault);
+        }
     });
 
     /**
@@ -650,7 +660,7 @@ apf.textbox  = function(struct, tagName){
         if (apf.hasAutocompleteXulBug)
             this.$input.setAttribute("autocomplete", "off");
 
-        if (!this.$input.tagName.toLowerCase().match(/input|textarea/)) {
+        if ("INPUT|TEXTAREA".indexOf(this.$input.tagName) == -1) {
             this.isHTMLBox = true;
 
             this.$input.unselectable    = "Off";
