@@ -64,8 +64,9 @@ apf.vbox = function(struct, tagName){
     
     /**** Properties and Attributes ****/
     
-    this.$focussable     = false;
-    this.$update         = false;
+    this.$focussable = false;
+    this.$update     = false;
+    this.$useLateDom = true; 
     
     this.padding    = 2;
     this.edge       = "5 5 5 5";

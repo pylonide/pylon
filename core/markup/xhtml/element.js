@@ -78,7 +78,7 @@ apf.XhtmlElement = function(struct, tagName){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var pHtmlNode;
-        if (!(pHtmlNode = this.parentNode.$int)) 
+        if (!(pHtmlNode = this.$pHtmlNode = this.parentNode.$int)) 
             return;
 
         if (this.$aml) {
@@ -91,8 +91,40 @@ apf.XhtmlElement = function(struct, tagName){
             this.$ext = this.$int = 
               pHtmlNode.appendChild(document.createElement(this.localName));
         }
+        
+        //#ifdef __WITH_GUIELEMENT
+        this.$setLayout();
+        //#endif
     }, true);
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
+
+apf.Init.addConditional(function(){
+    var prot = apf.XhtmlElement.prototype;
+    
+    //prot.implement(apf.Interactive);
+    prot.implement(
+        //#ifdef __WITH_ANCHORING
+        apf.Anchoring
+        //#endif
+        //#ifdef __WITH_ALIGNMENT
+        ,apf.Alignment
+        //#endif
+    );
+
+    //#ifdef __WITH_GUIELEMENT
+    prot.$drawn = true;
+    prot.$setLayout = apf.GuiElement.prototype.$setLayout;
+    
+    prot.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget == this 
+          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
+            this.$setLayout();
+        }
+    }); 
+    /* #else
+    prot.$enableAnchoring();
+    #endif */
+}, null, ["interactive"]);
 
 apf.xhtml.setElement("@default", apf.XhtmlElement);
 //#endif

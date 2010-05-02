@@ -870,14 +870,15 @@ var apf = {
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
             try {
-                if (o.host || o.host === false)
-                    break;
+                if ((o.host || o.host === false) && typeof o.host != "string")
+                    return o.host;
             }
             catch(e){}
             
             o = o.parentNode;
         }
-        return (o && o.host && typeof o.host != "string") ? o.host : false;
+        
+        return null;
     },
 
     /**

@@ -273,7 +273,9 @@ apf.runIE = function(){
     };
     
     apf.setOpacity = function(oHtml, value){
-        oHtml.style.filter = "alpha(opacity=" + Math.round(value * 100) + ")";
+        oHtml.style.filter = value == 1
+            ? ""
+            : "alpha(opacity=" + Math.round(value * 100) + ")";
     };
     
     // #ifdef __WITH_POPUP_IE

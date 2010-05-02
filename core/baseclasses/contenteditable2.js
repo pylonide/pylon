@@ -33,7 +33,7 @@ apf.addEventListener("load", function(){
     });
     
     //Init visual selection 
-    apf.document.$getVisualSelect();
+    //apf.document.$getVisualSelect();
     
     //@todo only for editable elements
     apf.addEventListener("keydown", function(e){
@@ -53,6 +53,12 @@ apf.addEventListener("load", function(){
 
         //F2
         switch(key) {
+            case 27: //ESC
+                if (apf.dragMode) {
+                    var sel = apf.document.$getVisualSelect().getLastSelection();
+                    (apf.document.activeElement || sel[0]).$cancelInteractive();
+                }
+                break;
             case 113: //F2
                 //_self.startRename(selected[0]);
                 apf.document.execCommand("rename", true);
@@ -130,6 +136,8 @@ apf.addEventListener("load", function(){
         }
         recursion = false;
     });
+    if (apf.document.activeElement && apf.document.activeElement.editable)
+        sel.addRange(apf.document.createRange()).selectNode(apf.document.activeElement);
     
     var lastPos = [-1000, -1000];
     apf.addEventListener("mousedown", function(e){
@@ -217,7 +225,7 @@ apf.ContentEditable2 = function() {
                         apf.importCssString(data);
                     }
                 });
-                
+
                 if (!apf.loaded)
                     apf.addEventListener("load", function(){
                         apf.document.documentElement.insertMarkup(apf.basePath 
@@ -246,6 +254,27 @@ apf.ContentEditable2 = function() {
                 if (!this.$focussable || !this.focussable)
                     apf.GuiElement.propHandlers.focussable.call(this, true);
                 
+                //Handle invisible elements
+                if (this.$propHandlers.visible)
+                    this.$propHandlers.visible_original = this.$propHandlers.visible;
+                this.$propHandlers.visible = function(value){
+                    apf.setOpacity(this.$ext, value ? 1 : 0.5);
+                    this.$ext.onmouseover = function(){
+                        apf.setOpacity(this, 1);
+                    }
+                    this.$ext.onmouseout = function(e){
+                        if (!e) e = event;
+                        if (!e.toElement || e.toElement.host !== false)
+                            apf.setOpacity(this, 0.5);
+                    }
+                }
+                if (this.visible === false) {
+                    if (this.$propHandlers.visible_original)
+                        this.$propHandlers.visible_original.call(this, true);
+                    this.$propHandlers.visible.call(this, false);
+                }
+                
+                //Focus
                 this.$lastFocussable = [this.$focussable, this.focussable];
                 this.$focussable = 
                 this.focussable  = true;
@@ -266,6 +295,7 @@ apf.ContentEditable2 = function() {
                     }
                 }
                 
+                //Contextmenu
                 this.addEventListener("contextmenu", function(e){
                     this.ownerDocument.execCommand("contextmenu", true, {
                         amlNode: this,
@@ -277,13 +307,15 @@ apf.ContentEditable2 = function() {
                     return false;
                 });
                 
+                //Drag & Resize
                 apf.ContentEditable2.addInteraction(this);
             }
             this.isContentEditable = true;
             
             //@todo select the first element??
-            if (!this.parentNode.editable)
-                this.ownerDocument.$getVisualSelect().show();
+            var vsel, lsel = (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
+            if (!this.parentNode.editable && lsel && lsel.length)
+                vsel.show();
             
             apf.setStyleClass(this.$ext, "editable");
         }
@@ -315,6 +347,17 @@ apf.ContentEditable2 = function() {
                 this.focussable  = this.$lastFocussable[1];
                 if (!this.focussable)
                     apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
+                
+                //Hide invisible elements
+                if (this.visible === false) {
+                    if (this.$propHandlers.visible_original)
+                        this.$propHandlers.visible_original.call(this, false);
+                    this.$propHandlers.visible.call(this, true);
+                }
+                if (this.$propHandlers.visible_original) {
+                    this.$propHandlers.visible = this.$propHandlers.visible_original;
+                    delete this.$propHandlers.visible_original;
+                }
                 
                 delete this.$isWindowContainer; //Should fall back to value from prototype
                 

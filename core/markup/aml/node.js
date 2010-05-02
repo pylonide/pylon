@@ -360,18 +360,15 @@ apf.AmlNode = function(){
             amlNode.$pHtmlNode = _self.canHaveChildren ? _self.$int : document.body;
 
             //@todo this is a hack, a good solution should be found
-            var iframelist;
+            /*var iframelist;
             var containsIframe = (amlNode.$ext && amlNode.$ext.nodeType == 1 
               && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
-              && apf.findHost(iframelist[0].parentNode) == amlNode);
+              && apf.findHost(iframelist[0].parentNode) == amlNode);*/
 
-            //!apf.isGecko && 
-            if (!noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {// && !containsIframe
-                //!isMoveWithinParent || 
-                if (!amlNode.$altExt || amlNode.$altExt.parentNode == amlNode.$pHtmlNode) {
-                    amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
-                        beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null);
-                }
+            if (!_self.$useLateDom && !noHtmlDomEdit 
+              && amlNode.$ext && !amlNode.$coreHtml) {
+                amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
+                    beforeNode && beforeNode.$ext || null);
             }
             
             //Signal node and all it's ancestors
@@ -383,6 +380,12 @@ apf.AmlNode = function(){
                 $oldParent          : oldParent,
                 bubbles             : true
             });
+            
+            if (_self.$useLateDom && !noHtmlDomEdit) {
+                if (!amlNode.$altExt || amlNode.$altExt.parentNode == amlNode.$pHtmlNode)
+                    amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
+                        beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null);
+            }
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
@@ -430,6 +433,8 @@ apf.AmlNode = function(){
         }
         //#endif
 
+        this.parentNode.childNodes.remove(this);
+
         //If we're not loaded yet, just remove us from the aml to be parsed
         if (this.$amlLoaded && !apf.isDestroying) {
             //this.parentNode.$aml.removeChild(this.$aml);
@@ -443,8 +448,6 @@ apf.AmlNode = function(){
             if (!noHtmlDomEdit && !doOnlyAdmin && this.$ext && this.$ext.parentNode)
                 this.$ext.parentNode.removeChild(this.$ext);
         }
-        
-        this.parentNode.childNodes.remove(this);
 
         if (this.parentNode.firstChild == this)
             this.parentNode.firstChild = this.nextSibling;

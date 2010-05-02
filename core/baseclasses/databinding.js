@@ -1209,9 +1209,12 @@ apf.DataBinding = function(){
         delete this.$propsUsingMainModel[prop]
         
         var models = rule.models;
-        for (var i = 0; i < models.length; i++) {
-            models[i].$unbindXmlProperty(this, prop);
-        }
+        if (models.length)
+            for (var i = 0; i < models.length; i++) {
+                models[i].$unbindXmlProperty(this, prop);
+            }
+        else if (this.$model)
+            this.$model.$unbindXmlProperty(this, prop);
     };
     
     this.$initingModel;

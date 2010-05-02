@@ -87,6 +87,7 @@ apf.table = function(struct, tagName){
     
     this.$focussable = false;
     this.$update     = false;
+    this.$useLateDom = true; 
     
     this.columns    = "150,200";
     this.padding    = 2;

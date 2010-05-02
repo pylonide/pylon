@@ -471,6 +471,24 @@ apf.model = function(struct, tagName){
         //apf.xmldb.setTextNode(node, value);
         return node;
     };
+    
+    /**
+     * Sets a value of a set of xml nodes based on an xpath statement executed on the data of this model.
+     *
+     * @param  {String}  xpath  the xpath used to select a the nodeset.
+     * @param  {String}  value  the value to set.
+     * @return  {XMLNodeSet}  the changed XMLNodeSet
+     */
+    this.setQueryValues = function(xpath, value){
+        if (!this.data)
+            return false;
+        
+        var nodes = this.data.selectNodes(xpath);
+        for (var i = 0, l = nodes.length; i < l; i++)
+            apf.setNodeValue(node, value, true);
+
+        return nodes;
+    };
 
     /**
      * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.

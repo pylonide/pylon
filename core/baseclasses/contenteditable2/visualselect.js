@@ -164,16 +164,24 @@ apf.visualSelect = function(selection){
         return lastSelection;
     }
     
-    var lastPos, txt;
+    var lastPos, txt, recursion;
     this.updateGeo = function(force, onlyUpdateAnchors){
+        if (recursion)
+            return;
+        
+        recursion = true;
         var selection = lastSelection;
 
         //Position
         if (selection.length == 1) {
             var sel = selection[0];
+            if (!sel.parentNode) {
+                sel.$focusParent.focus();
+                return (recursion = false);
+            }
             
             if (sel.$adding)
-                return;
+                return (recursion = false);
             
             var anchors = selection.length == 1
               ? (sel.$anchors && sel.$anchors.length 
@@ -236,7 +244,7 @@ apf.visualSelect = function(selection){
             oOutline.style.display = "none";
             
             if (!oHtml.offsetParent || onlyUpdateAnchors)
-                return; //@error
+                return (recursion = false); //@error
 
             //oHtml.offsetParent.appendChild(oOutline); 
             if (apf.isIE) //@notice this solves an IE drawing bug
@@ -248,8 +256,13 @@ apf.visualSelect = function(selection){
         else {
             var oHtml, opos, pos = [100000,100000,0,0];
             for (var i = 0; i < selection.length; i++) {
+                if (!selection[i].parentNode) {
+                    this.$selection.removeRange(this.$selection.getRangeAt(i));
+                    return (recursion = false);
+                }
+                
                 oHtml  = selection[i].$ext;
-                opos   = apf.getAbsolutePosition(oHtml);
+                opos   = apf.getAbsolutePosition(oHtml); //@notice in IE this calls onresize, make this function reentrant, fixed by using the recursion variable
                 
                 if (opos[0] < pos[0]) pos[0] = opos[0];
                 if (opos[1] < pos[1]) pos[1] = opos[1];
@@ -258,7 +271,7 @@ apf.visualSelect = function(selection){
             }
             
             if (!oHtml.offsetParent)
-                return; //@error
+                return (recursion = false); //@error
                 
             if (apf.isIE) //@notice this solves an IE drawing bug
                 oHtml.offsetParent.appendChild(oOutline);
@@ -287,7 +300,6 @@ apf.visualSelect = function(selection){
                     ext  = selection[i].$ext;
                     if (!ext.offsetWidth && !ext.offsetHeight)
                         continue;
-
                     epos = apf.getAbsolutePosition(ext);
                     html = oOutline.childNodes[i];
                     html.style.left   = (epos[0] - pos[0]) + "px";
@@ -348,6 +360,8 @@ apf.visualSelect = function(selection){
         nodes.se.style.top = 
         nodes.sw.style.top = 
         nodes.s.style.top  = (pos[1] + pos[3] + margin) + "px";
+        
+        recursion = false;
     };
     
     var resizing, map = {"e":"right", "w":"left", "n":"top", "s":"bottom"};

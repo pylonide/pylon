@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <!--script src="../apf.js"></script-->
-        <script src="apf_debugwin.js"></script>
+        <script src="../apf.js"></script>
+        <!--script src="apf_debugwin.js"></script-->
         <script src="o3.js"></script>
         <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
         <link rel="stylesheet" href="debugwin.css" type="text/css" />
@@ -128,7 +128,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="packager">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage1="packager">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -581,7 +581,7 @@
 
                 </a:pages>
             </a:page>
-            <a:page caption="Packager" id="packager">
+            <a:page caption="Packager" id="packager"><a:comment>
                 <a:bar skin="basic" align="left-splitter" width="70%">
                     <a:label>Doc generator</a:label>
                     <a:hbox>
@@ -687,7 +687,7 @@
                     }
                 //--></a:script>
                 
-            </a:page>
+            </a:comment></a:page>
             <a:page caption="Scripts">
             </a:page>
         </a:tab>

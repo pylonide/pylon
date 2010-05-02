@@ -418,7 +418,7 @@ apf.ContentEditable2.commands = (function(){
         sel.each(function(sel) {
             sel.removeNode();
         });
-        
+
         var s = pNode.ownerDocument.getSelection();
         s.$selectList([apf.document.activeElement && apf.document.activeElement.editable 
             ? apf.document.activeElement
@@ -446,6 +446,9 @@ apf.ContentEditable2.commands = (function(){
         }
         
         um.undo(parseInt(value) || null);
+        
+        apf.layout.processQueue();
+        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     };
     
     commands["redo"] = function(sel, showUI, value, query){
@@ -458,6 +461,9 @@ apf.ContentEditable2.commands = (function(){
         }
         
         um.redo(parseInt(value) || null);
+        
+        apf.layout.processQueue();
+        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     };
     
     commands["cut"] = function(sel, showUI, value, query){
@@ -590,6 +596,21 @@ apf.ContentEditable2.commands = (function(){
         });
         
         sel[0].ownerDocument.$getVisualSelect().updateGeo();
+    };
+    
+    commands["property"] = function(sel, showUI, options, query){
+        switch(query){
+            case STATE: return false;
+            case VALUE: return "false";
+            case ENABL: return true;
+            case INDET: return false;
+        }
+        
+        sel.each(function(sel) {
+            sel.setAttribute(options.name, options.value);
+        });
+        
+        sel[0].ownerDocument.$getVisualSelect().updateGeo(); //Possibly not best place for this
     };
     
     //@todo should keep an ordered list of zIndexes and reset all...

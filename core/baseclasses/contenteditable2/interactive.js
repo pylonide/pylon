@@ -1077,6 +1077,8 @@
         }
         
         apf.document.getSelection().$selectList(selected);
+        if (selected.indexOf(apf.document.activeElement) == -1)
+            selected[0].focus();
 
         hideIndicators();
 
@@ -1231,6 +1233,13 @@
         this.ownerDocument.$getVisualSelect().$finishResize();
     };
     
+    function cancel(){
+        hideIndicators();
+        
+        this.ownerDocument.execCommand("rollback");
+        this.ownerDocument.$getVisualSelect().$finishResize();
+    }
+    
     function keydown(e){
         var selected = apf.document.$getVisualSelect().getLastSelection();//apf.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
         if (!selected.length)
@@ -1318,6 +1327,8 @@
         amlNode.addEventListener("beforeresize",    beforeresize);
         amlNode.addEventListener("afterdrag",       afterdrag);
         amlNode.addEventListener("afterresize",     afterresize);
+        amlNode.addEventListener("resizecancel",    cancel);
+        amlNode.addEventListener("dragcancel",      cancel);
         
         setDefaultStuck(amlNode);
     }
@@ -1328,6 +1339,8 @@
         amlNode.removeEventListener("beforeresize",    beforeresize);
         amlNode.removeEventListener("afterdrag",       afterdrag);
         amlNode.removeEventListener("afterresize",     afterresize);
+        amlNode.removeEventListener("resizecancel",    cancel);
+        amlNode.removeEventListener("dragcancel",      cancel);
 
         delete amlNode.$stuck;
     }

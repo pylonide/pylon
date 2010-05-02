@@ -566,19 +566,26 @@ apf.window = function(){
     function removeFocus(e){
         if (e && (e.currentTarget != this || e.$doOnlyAdmin))
             return;
-        
+
+        //@todo apf3.0 this should be fixed by adding domremovenode events to all children
+        var list  = this.$focusParent.$tabList;
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            list.remove(nodes[i]); //@todo assuming no windows here
+        }
+
         if (apf.document.activeElement == this)
             apf.window.moveNext();
         
         if (this.$isWindowContainer) {
-            apf.window.$tabList.remove(this);
+            apf.window.$tabList.remove(this); //@todo this can't be right
             return;
         }
 
         if (!this.$focusParent)
             return;
 
-        this.$focusParent.$tabList.remove(this);
+        list.remove(this);
         //this.$focusParent = null; //@experimental to not execute this
     }
 
@@ -935,11 +942,14 @@ apf.window = function(){
             apf.popup.forceHide();
         // #endif
 
+        if (amlNode === false) 
+            amlNode = apf.document.activeElement;
+
         //#ifdef __WITH_FOCUS
         //Make sure the user cannot leave a modal window
-        if ((!amlNode || !amlNode.$focussable || amlNode.focussable === false)
-          && apf.config.allowBlur && amlNode.canHaveChildren != 2 
-          && !amlNode.$focusParent) {
+        if ((!amlNode || ((!amlNode.$focussable || amlNode.focussable === false)
+          && amlNode.canHaveChildren != 2 && !amlNode.$focusParent))
+          && apf.config.allowBlur) {
             lastFocusParent = null;
             if (apf.document.activeElement)
                 apf.document.activeElement.blur();
@@ -1447,7 +1457,9 @@ apf.window = function(){
         
                     //#ifdef __WITH_FOCUS
                     //Set the default selected element
-                    if (!apf.document.activeElement && !apf.config.allowBlur)
+                    if (!apf.document.activeElement && (!apf.config.allowBlur 
+                      || apf.document.documentElement 
+                      && apf.document.documentElement.editable))
                         apf.window.focusDefault();
                     //#endif
 

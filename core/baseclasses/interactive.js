@@ -83,7 +83,7 @@ apf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, r, b, lMax, tMax, lMin,
         tMin, w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
-        dragOutline, resizeOutline, myPos;
+        dragOutline, resizeOutline, myPos, startGeo;
 
     this.$regbase = this.$regbase | apf.__INTERACTIVE__;
 
@@ -240,6 +240,11 @@ apf.Interactive = function(){
             : [parseInt(apf.getStyle(ext, "left")) || 0, 
                parseInt(apf.getStyle(ext, "top")) || 0];
 
+        //#ifdef __ENABLE_INTERACTIVE_CANCEL
+        startGeo = [ext.style.left, ext.style.top, ext.style.right, 
+                    ext.style.bottom, ext.style.width, ext.style.height];
+        //#endif
+
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
         
@@ -289,14 +294,21 @@ apf.Interactive = function(){
                 : _self.$ext;
 
             if (overThreshold && !_self.$multidrag) {
+                //#ifdef __ENABLE_INTERACTIVE_CANCEL
                 if (cancel) {
-                    l = _self.left;
-                    t = _self.top;
-                    r = _self.right;
-                    b = _self.bottom;
-                    w = _self.width;
-                    h = _self.height;
+                    var ext = _self.$ext;
+                    ext.style.left   = startGeo[0];
+                    ext.style.top    = startGeo[1];
+                    ext.style.right  = startGeo[2];
+                    ext.style.bottom = startGeo[3];
+                    ext.style.width  = startGeo[4];
+                    ext.style.height = startGeo[5];
+                    
+                    if (_self.dispatchEvent)
+                        _self.dispatchEvent("dragcancel");
                 }
+                else
+                //#endif
                 
                 if (_self.setProperty) {
                     updateProperties();
@@ -320,7 +332,7 @@ apf.Interactive = function(){
             
             apf.dragMode = false;
 
-            if (_self.dispatchEvent && overThreshold)
+            if (!cancel && _self.dispatchEvent && overThreshold)
                 _self.dispatchEvent("afterdrag", {
                     htmlNode : htmlNode
                 });
@@ -400,17 +412,23 @@ apf.Interactive = function(){
         resizeOutline = false;        
         #endif */
         
+        var ext = _self.$ext;
         if (!resizeOutline) {
-            var diff = apf.getDiff(_self.$ext);
+            var diff = apf.getDiff(ext);
             hordiff  = diff[0];
             verdiff  = diff[1];
         }
         
         //@todo This is probably not gen purpose
-        startPos = apf.getAbsolutePosition(_self.$ext);//, _self.$ext.offsetParent);
-        startPos.push(_self.$ext.offsetWidth);
-        startPos.push(_self.$ext.offsetHeight);
-        myPos    = apf.getAbsolutePosition(_self.$ext, _self.$ext.offsetParent, true);
+        startPos = apf.getAbsolutePosition(ext);//, ext.offsetParent);
+        startPos.push(ext.offsetWidth);
+        startPos.push(ext.offsetHeight);
+        myPos    = apf.getAbsolutePosition(ext, ext.offsetParent, true);
+
+        //#ifdef __ENABLE_INTERACTIVE_CANCEL
+        startGeo = [ext.style.left, ext.style.top, ext.style.right, 
+                    ext.style.bottom, ext.style.width, ext.style.height];
+        //#endif
 
         var sLeft = 0,
             sTop  = 0,
@@ -419,11 +437,11 @@ apf.Interactive = function(){
             resizeType;
 
         if (options && options.resizeType) {
-            posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
+            posAbs = "absolute|fixed".indexOf(apf.getStyle(ext, "position")) > -1;
             resizeType = options.resizeType;
         }
         else {
-            resizeType = getResizeType.call(_self.$ext, x, y);
+            resizeType = getResizeType.call(ext, x, y);
         }
         rX = x;
         rY = y;
@@ -473,7 +491,7 @@ apf.Interactive = function(){
         if (posAbs) {
             apf.plane.show(resizeOutline
                 ? oOutline
-                : _self.$ext);//, true
+                : ext);//, true
         }
         //#endif
         
@@ -484,23 +502,23 @@ apf.Interactive = function(){
             hordiff = diffOutline[0];
             verdiff = diffOutline[1];
             
-            //_self.$ext.parentNode.appendChild(oOutline);
+            //ext.parentNode.appendChild(oOutline);
             oOutline.style.left    = startPos[0] + "px";
             oOutline.style.top     = startPos[1] + "px";
-            oOutline.style.width   = (_self.$ext.offsetWidth - hordiff) + "px";
-            oOutline.style.height  = (_self.$ext.offsetHeight - verdiff) + "px";
+            oOutline.style.width   = (ext.offsetWidth - hordiff) + "px";
+            oOutline.style.height  = (ext.offsetHeight - verdiff) + "px";
             oOutline.style.display = "block";
         }
         else
         //#endif
         {
-            if (_self.$ext.style.right) {
-                _self.$ext.style.left = myPos[0] + "px";
-                //_self.$ext.style.right = "";
+            if (ext.style.right) {
+                ext.style.left = myPos[0] + "px";
+                //ext.style.right = "";
             }
-            if (_self.$ext.style.bottom) {
-                _self.$ext.style.top = myPos[1] + "px";
-                //_self.$ext.style.bottom = "";
+            if (ext.style.bottom) {
+                ext.style.top = myPos[1] + "px";
+                //ext.style.bottom = "";
             }
         }
         
@@ -527,15 +545,21 @@ apf.Interactive = function(){
                 verdiff  = diff[1];
             }
 
+            //#ifdef __ENABLE_INTERACTIVE_CANCEL
             if (cancel) {
-                l = _self.left;
-                t = _self.top;
-                r = _self.right;
-                b = _self.bottom;
-                w = _self.width;
-                h = _self.height;
+                var ext = _self.$ext;
+                ext.style.left   = startGeo[0];
+                ext.style.top    = startGeo[1];
+                ext.style.right  = startGeo[2];
+                ext.style.bottom = startGeo[3];
+                ext.style.width  = startGeo[4];
+                ext.style.height = startGeo[5];
+                
+                if (_self.dispatchEvent)
+                    _self.dispatchEvent("resizecancel");
             }
             else
+            //#endif
                 doResize(e || event, true);
 
             if (_self.setProperty)
@@ -549,7 +573,7 @@ apf.Interactive = function(){
             
             apf.dragMode = false;
 
-            if (_self.dispatchEvent)
+            if (!cancel && _self.dispatchEvent)
                 _self.dispatchEvent("afterresize", {
                     l: l, t: t, w: w+hordiff, h: h+verdiff
                 });
@@ -604,9 +628,9 @@ apf.Interactive = function(){
                 _self.setProperty("top", top, 0, _self.editable);
         }
 
-        if (width && (!hasLeft || !hasRight)) 
+        if (hdiff != undefined && width && (!hasLeft || !hasRight)) 
             _self.setProperty("width", width + hdiff, 0, _self.editable) 
-        if (height && (!_self.top || !hasBottom)) 
+        if (vdiff != undefined && height && (!hasTop || !hasBottom)) 
             _self.setProperty("height", height + vdiff, 0, _self.editable); 
     }
     this.$updateProperties = updateProperties;
@@ -774,9 +798,10 @@ apf.Interactive = function(){
     //#ifdef __WITH_OUTLINE
     var oOutline;
     function initOutline(e){
-        oOutline = this.$pHtmlDoc.getElementById("apf_outline");
+        var doc = this.$pHtmlDoc || document;
+        oOutline = doc.getElementById("apf_outline");
         if (!oOutline) {
-            oOutline = this.$pHtmlDoc.body.appendChild(this.$pHtmlDoc.createElement("div"));
+            oOutline = doc.body.appendChild(doc.createElement("div"));
             
             oOutline.refCount = 0;
             oOutline.setAttribute("id", "apf_outline");
@@ -784,6 +809,7 @@ apf.Interactive = function(){
             oOutline.style.position = "absolute";
             oOutline.style.display  = "none";
             oOutline.style.zIndex   = 2000000;
+            oOutline.host = false;
         }
         oOutline.refCount++
     }
@@ -819,5 +845,7 @@ apf.GuiElement.propHandlers["draggable"] = function(value){
     this.implement(apf.Interactive);
     this.$propHandlers["draggable"].apply(this, arguments);
 };
+
+apf.Init.run("interactive");
 
 // #endif

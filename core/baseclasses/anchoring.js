@@ -454,7 +454,7 @@ apf.Anchoring = function(){
                         + height + " - " + this.$verdiff + ")) + 'px'");
                 }
                 else {
-                    this.$ext.style.height = ((height > this.minheight
+                    this.$ext.style.height = Math.max(0, (height > this.minheight
                         ? (height < this.maxheight
                             ? height
                             : this.maxheight)

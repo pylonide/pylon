@@ -33,6 +33,7 @@ apf.plane = {
             this.plane.style.zIndex     = 100000000;
             this.plane.style.left       = 0;
             this.plane.style.top        = 0;
+            this.plane.host             = false;
             //this.plane.style.backgroundColor = "red";
         }
     },
@@ -43,7 +44,7 @@ apf.plane = {
 
         var plane    = this.plane;
         
-        if (o && false) { //@experimental
+        if (o) { //@experimental
             this.current = o;
             if (!dontAppend) {
                 this.lastZ = this.current.style.zIndex;
