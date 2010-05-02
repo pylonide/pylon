@@ -370,7 +370,7 @@ apf.AmlNode = function(){
                 amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
                     beforeNode && beforeNode.$ext || null);
             }
-            
+
             //Signal node and all it's ancestors
             amlNode.dispatchEvent("DOMNodeInserted", {
                 $beforeNode         : beforeNode,

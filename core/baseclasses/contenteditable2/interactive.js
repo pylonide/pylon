@@ -946,7 +946,7 @@
         }
 
         if (!lastPos)
-            lastPos = apf.getAbsolutePosition(outline, outline.offsetParent);
+            lastPos = apf.getAbsolutePosition(outline, pEl.localName == "table" ? pEl.$ext : outline.offsetParent);
 
         if ("vbox|hbox|table".indexOf(name) > -1) {
             this.realtime  = true;
@@ -1009,12 +1009,16 @@
 
             if (deltaX || deltaY
               || "vbox|hbox|table".indexOf(prevParent.localName) > -1) {
+                var isTable = prevParent.localName == "table";
                 for (var n, i = 0; i < selected.length; i++) {
                     n = selected[i];
                     var diff = apf.getDiff(n.$ext);
+                    
+                    if (isTable)
+                        var itemPos = apf.getAbsolutePosition(n.$ext, prevParent.$ext);
                     n.$updateProperties(
-                        l = apf.getHtmlLeft(n.$ext) + deltaX, 
-                        t = apf.getHtmlTop(n.$ext) + deltaY, 
+                        l = (isTable ? itemPos[0] : apf.getHtmlLeft(n.$ext)) + deltaX, 
+                        t = (isTable ? itemPos[1] : apf.getHtmlTop(n.$ext)) + deltaY, 
                         (w = n.$ext.offsetWidth) - diff[0], 
                         (h = n.$ext.offsetHeight) - diff[1], diff[0], diff[1],
                         Math.max(0, pWidth - l - w),

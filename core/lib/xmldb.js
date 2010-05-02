@@ -491,7 +491,7 @@ apf.xmldb = new (function(){
         if (undoObj)
             this.cleanNode(xmlNode);
 
-        // @todo: only do this once!
+        // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 

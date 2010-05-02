@@ -158,9 +158,10 @@ apf.vbox = function(struct, tagName){
     /**** DOM Hooks ****/
     
     this.addEventListener("DOMNodeRemoved", function(e){
-        if (this.$isWaitingOnDisplay || !this.$updateObj || e.$doOnlyAdmin)
+        if (!this.$updateObj || e.$doOnlyAdmin)
             return;
 
+        //this.$isWaitingOnDisplay || 
         if (e.currentTarget == this) {
             var p = this;
             while (p) {
@@ -174,9 +175,10 @@ apf.vbox = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInserted", function(e){
-        if (this.$isWaitingOnDisplay || e.currentTarget.nodeType != 1) // || e.currentTarget != this
+        if (e.currentTarget.nodeType != 1) // || e.currentTarget != this
             return;
 
+        //this.$isWaitingOnDisplay || 
         if (e.currentTarget == this) {
             var p = this;
             while (p) {

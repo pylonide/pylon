@@ -63,8 +63,7 @@ apf.ContentEditable2.commands = (function(){
         //if (!parentNode) debugger;
         
         var domParser = apf.document.$domParser;
-        amlNode = domParser.parseFromXml(amlNode).firstChild.firstChild;
-        parentNode.insertBefore(amlNode, options.beforeNode);
+        amlNode = domParser.parseFromXml(amlNode, {doc: this}).firstChild.firstChild;
         
         if (!options.ignorePos) {
             var pos = apf.getAbsolutePosition(parentNode.$int, null, true);
@@ -116,6 +115,8 @@ apf.ContentEditable2.commands = (function(){
         if (options.userInteraction)
             amlNode.$adding = true;
         amlNode.setAttribute("editable", true);
+    
+        parentNode.insertBefore(amlNode, options.beforeNode);
     
         //#ifdef __WITH_LAYOUT
         apf.layout.processQueue();
@@ -705,8 +706,6 @@ apf.ContentEditable2.commands = (function(){
             case INDET: return false;
         }
         
-        this.execCommand("begin");
-    
         var pNode = sel[0].parentNode;
         var pos = [100000,100000,0,0];
         for (var i = 0; i < sel.length; i++) {
@@ -756,12 +755,12 @@ apf.ContentEditable2.commands = (function(){
             });
         }
         
-        this.execCommand("commit");
-
         //Add selection
         sel.each(function(sel) {
             opt.addedNode.appendChild(sel);
         });
+        
+        this.getSelection().$selectList([opt.addedNode]);
         
         //#ifdef __WITH_LAYOUT
         //@todo more general

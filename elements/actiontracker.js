@@ -454,7 +454,7 @@ apf.actiontracker = function(struct, tagName){
                 //#endif
                 return;
             }
-            
+
             if (stack.length)
                 this.execute({
                     xmlNode     : dataNode,
