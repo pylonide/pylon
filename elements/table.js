@@ -160,6 +160,8 @@ apf.table = function(struct, tagName){
         
         if (start && this.$amlLoaded)
             visibleHandler({sync: true, parentNode: this});
+        
+        this.$resize();
     }
 
     this.$propHandlers["padding"] = function(value){
@@ -170,10 +172,12 @@ apf.table = function(struct, tagName){
             lastRow = cell.parentNode == lRow;
             cell.style.padding = "0px " + (lastCol ? 0 : value) + "px " + (lastRow ? 0 : value) + "px 0px";
         }
+        this.$resize();
     }
     
     this.$propHandlers["edge"] = function(value){
         this.$table.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
+        this.$resize();
     }
     
     function visibleHandler(e){
@@ -184,7 +188,7 @@ apf.table = function(struct, tagName){
             var cells = apf.getArrayFromNodelist(table.$tbody.getElementsByTagName("td"));
             var rows  = table.$tbody.getElementsByTagName("tr");
             var empty = [], row = 1, cs, rs, collen = table.$columns.length;
-            var z = table.$columns.length, lastCol, lastRow;
+            var z = table.$columns.length, lastCol;
             for (var node, td, last, l = nodes.length, i = 0; i < l; i++) {
                 if ((node = nodes[i]).visible === false)
                     continue;
@@ -197,9 +201,9 @@ apf.table = function(struct, tagName){
                 rows[row].appendChild(td);
                 td.appendChild(node.$ext);
                 td.setAttribute("colspan", cs = Math.min(collen - (empty[0] || 0), parseInt(node.colspan || node.span || 1)));
-                
                 td.setAttribute("rowspan", rs = parseInt(node.rowspan || 1));
                 
+                //@todo this is wrong it should be cs * rs
                 if (!empty[0])
                     empty[0] = 0;
                 empty[0] += cs;
@@ -223,6 +227,13 @@ apf.table = function(struct, tagName){
                     + "px " + (i == l - 1 ? 0 : table.padding) + "px 0px";
             }
             
+            //Fix padding of last row
+            var lastCells = rows[rows.length - 1].getElementsByTagName("td");
+            for (i = 0, l = lastCells.length; i < l; i++) {
+                lastCells[i].style.padding = "0 " 
+                    + (i == l - 1 ? 0 : table.padding) + "px 0 0"
+            } 
+            
             for (;z < cells.length; z++)
                 cells[z].parentNode.removeChild(cells[z]);
             
@@ -239,13 +250,14 @@ apf.table = function(struct, tagName){
     
     this.$addTd = function(amlNode){
         var cells = this.$table.getElementsByTagName("td");
-        var total = 0;
+        var total = 0, collen = this.$columns.length;
         for (var cell, i = 0; i < cells.length; i++) {
-            total += 1 + (parseInt((cell = cells[i]).getAttribute("colspan") || 1) - 1) 
-                + (parseInt((cell = cells[i]).getAttribute("rowspan") || 1) - 1);
+            total +=  Math.min(collen, 
+                (parseInt((cell = cells[i]).getAttribute("colspan") || 1) 
+                * parseInt(cell.getAttribute("rowspan") || 1)));
         }
         
-        if (total % this.$columns.length == 0) { //New Row
+        if (total % collen == 0) { //New Row
             var row = this.$tbody.appendChild(document.createElement("tr"));
         }
         else
@@ -276,10 +288,12 @@ apf.table = function(struct, tagName){
             this.$ext.style.height = value 
                 ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
                 : "";
+            this.parentNode.$resize();
         },
         
         "margin" : function(value){
             this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
+            this.parentNode.$resize();
         },
         
         "colspan" : function(value){
@@ -287,8 +301,9 @@ apf.table = function(struct, tagName){
                 this.$altExt.removeAttribute("colspan");
             else
                 this.$altExt.setAttribute("colspan", value);
-            
+
             visibleHandler.call(this, {sync: true});
+            this.parentNode.$resize();
         },
         
         "rowspan" : function(value){
@@ -298,6 +313,7 @@ apf.table = function(struct, tagName){
                 this.$altExt.setAttribute("rowspan", value);
         
             visibleHandler.call(this, {sync: true});
+            this.parentNode.$resize();
         },
         
         "valign" : function(value){
@@ -328,6 +344,8 @@ apf.table = function(struct, tagName){
 
         this.$addTd(amlNode);
         
+        this.$noResize = true;
+        
         if (amlNode.margin)
             propHandlers.margin.call(amlNode, amlNode.margin);
         
@@ -340,6 +358,8 @@ apf.table = function(struct, tagName){
         
         if (this.lastChild == amlNode)
             this.$propHandlers["padding"].call(this, this.padding);
+        
+        delete this.$noResize;
     }
     
     this.unregister = function(amlNode){
@@ -419,6 +439,9 @@ apf.table = function(struct, tagName){
     
     //@todo implement percentage by using fixed and add functionality here
     this.$resize = function(){
+        if (!this.$amlLoaded || this.$noResize)
+            return;
+        
         if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
                 - apf.getWidthDiff(this.$ext))) + "px";
