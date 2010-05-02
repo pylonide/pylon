@@ -698,6 +698,20 @@ apf.ContentEditable2.commands = (function(){
         sel[0].ownerDocument.$getVisualSelect().updateGeo();
     };
     
+    var sortFn = {
+        "hbox": function(a, b){
+            return (a.$ext.offsetLeft - b.$ext.offsetLeft);
+        },
+        "vbox": function(a, b){
+            return (a.$ext.offsetTop - b.$ext.offsetTop);
+        },
+        "table": function(a, b){
+            var dH = a.$ext.offsetTop - b.$ext.offsetTop;
+            if (Math.abs(dH)/b.$ext.offsetHeight < 0.9)
+                return (a.$ext.offsetLeft - b.$ext.offsetLeft);
+            return dH;
+        }
+    }
     commands["surround"] = function(sel, showUI, options, query){
         switch(query){
             case STATE: return false;
@@ -718,6 +732,11 @@ apf.ContentEditable2.commands = (function(){
         }
         pos[2] -= pos[0];
         pos[3] -= pos[1];
+        
+        addType = options.to;
+        
+        //Spatial sort selection
+        sel.sort(sortFn[addType]);
         
         //Reset position
         var isInLayout = "vbox|hbox|table".indexOf(pNode.localName) > -1;
@@ -741,7 +760,6 @@ apf.ContentEditable2.commands = (function(){
                 opt.height = pos[3];
         }
         
-        addType = options.to;
         commands["add"].call(this, null, false, opt);
 
         if (isInLayout && options.to != "table") {
