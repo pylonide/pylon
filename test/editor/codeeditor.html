@@ -123,56 +123,51 @@
         </a:model>
         
         <a:window 
-		    id        = "wFind" 
-		    buttons   = "close" 
-		    title     = "Find/Replace"
-		    icon      = "find.png"
-		    visible   = "false" 
-		    width     = "260"
-		    height    = "350"
-		    center    = "true">
-		  
-		    <a:vbox height="100%" width="100%">
-				<a:hbox width="100%">
+		  id        = "wFind" 
+		  buttons   = "close" 
+		  title     = "Find/Replace"
+		  icon      = "find.png"
+		  width     = "260"
+		  height    = "340"
+		  center    = "true"
+		  visible   = "false">
+		    <a:vbox anchors="0 0 0 0">
+				<a:table columns="100,130" edge="5" padding="4">
 		    		<a:label width="100">Find:</a:label>
 		    		<a:textbox id="txtFind"></a:textbox>
-				</a:hbox>
-				<a:hbox>		
 		    		<a:label width="100">Replace with:</a:label>
 		    		<a:textbox id="txtReplace"></a:textbox>
-	    		</a:hbox>
 	    		
-	    		<a:hbox width="100%">
-		    		<a:frame caption="Direction" width="116">
-		    			<a:vbox>
-			    		    <a:radiobutton group="searchDirection">Forward</a:radiobutton> 
-						    <a:radiobutton group="searchDirection">Backward</a:radiobutton>
-					    </a:vbox> 
-		    		</a:frame>
-		    		<a:frame caption="Scope" width="116">
-		    			<a:vbox>
-						    <a:radiobutton group="searchScope">All</a:radiobutton>
-						    <a:radiobutton group="searchScope">Selected lines</a:radiobutton>
-					    </a:vbox>
-		    		</a:frame>	    		
-	    		</a:hbox>
+    	    		<a:hbox width="100%" colspan="2" edge="0" margin="5 0 0 0">
+    		    		<a:frame caption="Direction" width="116">
+    		    		    <a:radiobutton group="searchDirection">Forward</a:radiobutton> 
+    					    <a:radiobutton group="searchDirection">Backward</a:radiobutton>
+    		    		</a:frame>
+    		    		<a:frame caption="Scope" width="116">
+    					    <a:radiobutton group="searchScope">All</a:radiobutton>
+    					    <a:radiobutton group="searchScope">Selected lines</a:radiobutton>
+    		    		</a:frame>	    		
+    	    		</a:hbox>
 	    		
-	    		<a:frame caption="Options" width="100%">
-	    			<a:table columns="50%, 50%">
-						<a:checkbox id="cbCaseSensitive" label="Case sensitive" />
-						<a:checkbox id="cbWrapSearch" checked="true" label="Wrap search" />
-						<a:checkbox id="cbWholeWord" label="Whole word" />
-						<a:checkbox id="cbRegExpSearch" checked="true" label="Regular Expression" />
-				    </a:table>
-	    		</a:frame>
+    	    		<a:frame caption="Options" colspan="2" margin="5 0 0 0">
+    	    			<a:table columns="50%, 50%">
+    						<a:checkbox id="cbCaseSensitive" label="Case sensitive" />
+    						<a:checkbox id="cbWrapSearch" checked="true" label="Wrap search" />
+    						<a:checkbox id="cbWholeWord" label="Whole word" />
+    						<a:checkbox id="cbRegExpSearch" checked="true" label="Regular Expression" />
+    				    </a:table>
+    	    		</a:frame>
+    	    	</a:table>
 	    		
 	    		<a:table columns="115, 115">
 	    			<a:button default="sDefault" onclick="find();">Find</a:button>
 	    			<a:button onclick="replace(); find();">Replace/Find</a:button>
 	    			<a:button onclick="replace();">Replace</a:button>
 	    			<a:button onclick="replaceAll();">Replace All</a:button>
-	    		</a:table>	    		
-    			<a:button onclick="wFind.close()">Close</a:button>
+	    		</a:table>
+	    		<a:hbox pack="right" edge="2">
+    			    <a:button onclick="wFind.close()" width="100">Close</a:button>
+    			</a:hbox>    
 		    </a:vbox>
 		</a:window>
 		

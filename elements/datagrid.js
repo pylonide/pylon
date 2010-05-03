@@ -856,7 +856,7 @@ apf.datagrid = function(struct, tagName){
                 hideEditor.call(this);
     });
     
-    this.addEventListener("beforeselect", function hideEditor(e){
+    var hideEditor = function(e){
         if (this.$lastEditor) {
             var ed = this.$lastEditor;
             this.$lastEditor = null;
@@ -879,7 +879,8 @@ apf.datagrid = function(struct, tagName){
             
             this.focus();
         }
-    });
+    };
+    this.addEventListener("beforeselect", hideEditor);
     
     /**** Column management ****/
 

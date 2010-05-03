@@ -252,7 +252,7 @@ apf.xmldb = new (function(){
         if (!uId) uId = String(o.$uniqueId);
         if (uId.charAt(0) == "p") {
             var sUId = uId.split("|");
-            id = this.$listeners.push(function(){
+            id = this.$listeners.push(function(args){
                 //@todo apf3.0 should this be exactly like in class.js?
                 //@todo optimize this to check the async flag: parsed[3] & 4
                 
@@ -261,7 +261,7 @@ apf.xmldb = new (function(){
                     //var model = apf.all[uId[3]];
                     //var xpath = model.$propBinds[uId[1]][uId[2]].listen; //root
                     
-                    amlNode.$execProperty(sUId[2], xmlNode);/*xpath
+                    amlNode.$execProperty(sUId[2], xmlNode, args[3]);/*xpath
                         ? model.data.selectSingleNode(xpath)
                         : model.data);*/
                 }
@@ -322,7 +322,7 @@ apf.xmldb = new (function(){
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
     this.setTextNode = 
-    apf.setTextNode  = function(pNode, value, xpath, undoObj){
+    apf.setTextNode  = function(pNode, value, xpath, undoObj, range){
         var tNode;
 
         if (xpath) {
@@ -345,15 +345,21 @@ apf.xmldb = new (function(){
             undoObj.extra.oldValue = tNode.nodeValue;
 
         //Apply Changes
-        tNode.nodeValue = value;
+        if (range) { //@todo apf3.0 range
+            undoObj.extra.range = range;
+            
+        }
+        else {
+            tNode.nodeValue = value;
         
-        if (tNode.$regbase)
-            tNode.$setValue(value);
+            if (tNode.$regbase)
+                tNode.$setValue(value);
+        }
 
         this.applyChanges("text", tNode.parentNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj);
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj); //@todo apf3.0 for range support
         // #endif
     };
 
@@ -368,13 +374,18 @@ apf.xmldb = new (function(){
      * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
     this.setAttribute = 
-    apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj){
+    apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
         //Apply Changes
-        (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
+        if (range) { //@todo apf3.0 range
+            undoObj.extra.range = range;
+            
+        }
+        else
+            (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
         
         this.applyChanges("attribute", xmlNode, undoObj);
         // #ifdef __WITH_RDB
-        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj);
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj);  //@todo apf3.0 for range support
         // #endif
     };
 

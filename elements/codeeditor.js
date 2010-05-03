@@ -53,6 +53,7 @@ apf.codeeditor = function(struct, tagName){
 
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
+    this.isContentEditable = true;
 
     //this.realtime          = false;
     this.syntax            = "text";
@@ -86,7 +87,7 @@ apf.codeeditor = function(struct, tagName){
      * @attribute {String} value the text of this element
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
-    this.$propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
         var doc, key;
         if (this.caching) {
             if (typeof value == "string")
@@ -115,6 +116,14 @@ apf.codeeditor = function(struct, tagName){
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
                     ? value.nodeValue
                     : value.firstChild && value.firstChild.nodeValue || ""));
+            
+            var _self = this;
+            doc.addEventListener("change", function(e){
+                var cmd = _self.$executeSingleValue("change", _self.$mainBind, _self.xmlRoot, null, true);
+                cmd.args.push(null, null, e.range);
+                _self.$executeAction(cmd.func, cmd.args, "change", _self.xmlRoot);
+            });
+            
             if (key)
                 this.$cache[key] = doc;
         }
@@ -137,6 +146,10 @@ apf.codeeditor = function(struct, tagName){
     
     this.$propHandlers["syntax"] = function(value){
         this.$editor.getDocument().setMode(this.$modes[value]);
+    };
+    
+    this.$propHandlers["realtime"] = function(value){
+        
     };
     
     this.$propHandlers["activeline"] = function(value){
@@ -251,6 +264,10 @@ apf.codeeditor = function(struct, tagName){
 
     /**** Init ****/
     
+    this.$isContentEditable = function(e){
+        return true;
+    }
+    
     this.$draw = function(){
         //Build Main Skin
         this.$ext   = this.$getExternal();
@@ -262,6 +279,9 @@ apf.codeeditor = function(struct, tagName){
 
         this.$editor = new ace.Editor(new ace.VirtualRenderer(this.$input));
         var self = this;
+
+        apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);
+        
 //        this.$editor.addEventListener("changeOverwrite", function(e) {
 //            self.setProperty("overwrite", e.data);
 //        });

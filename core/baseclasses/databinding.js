@@ -196,7 +196,7 @@ apf.DataBinding = function(){
     };
     
     //setProp
-    this.$execProperty = function(prop, xmlNode){
+    this.$execProperty = function(prop, xmlNode, undoObj){
         var attr = this.$attrBindings[prop];
         
         //#ifdef __WITH_LANG_SUPPORT
@@ -231,7 +231,7 @@ apf.DataBinding = function(){
         }
         #endif */
         
-        this.setProperty(prop, value, true);
+        this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
         
         //#ifdef __WITH_LANG_SUPPORT
         //@todo apf3.0

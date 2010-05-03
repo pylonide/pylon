@@ -48,7 +48,7 @@
           openonadd     = "true"
           canrename     = "false">
             <a:caption><?lm [@name] ?></a:caption>
-            <a:insert match="[category[not(@leaf)]]" get="{categories.xml}" />
+            <a:insert match="[category[not(@leaf)]]" get="categories.xml" />
         </a:tree>
 
         <a:model id="mdlCategories">
