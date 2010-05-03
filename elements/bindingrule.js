@@ -46,8 +46,7 @@
  * </code>
  * @see element.smartbinding
  *
- * @constructor
- * @apfclass
+ * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
