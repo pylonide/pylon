@@ -732,7 +732,8 @@ apf.Class.prototype = new (function(){
             if (this.dispatchEvent(eventName, {
                 prop     : prop, 
                 value    : value, 
-                oldvalue : oldvalue
+                oldvalue : oldvalue,
+                changed  : isChanged
             }) === false) {
                 e.returnValue = false;
             }

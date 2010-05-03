@@ -188,7 +188,8 @@ apf.DataBinding = function(){
     this.$checkLoadQueue = function(){
         // Load from queued load request
         if (this.$loadqueue) {
-            this.xmlRoot = null;
+            if (!this.caching)
+                this.xmlRoot = null;
             var q = this.load(this.$loadqueue[0], {cacheId: this.$loadqueue[1]});
             if (!q || q.dataType != apf.ARRAY || q != this.$loadqueue)
                 this.$loadqueue = null;
@@ -425,7 +426,7 @@ apf.DataBinding = function(){
                 forceNoCache = options.force,
                 noClearMsg   = options.noClearMsg;
         }
-
+        
         if (cacheId && cacheId == this.cacheId && !forceNoCache)
             return;
 
@@ -459,9 +460,11 @@ apf.DataBinding = function(){
         // If control hasn't loaded databinding yet, queue the call
         if (this.$preventDataLoad || !this.$canLoadData 
           && ((!this.$bindings && !this.$canLoadDataAttr) || !this.$amlLoaded) 
-          && (!this.hasFeature(apf.__MULTISELECT__) || !(this.each || this.$template)) 
+          && (!this.hasFeature(apf.__MULTISELECT__) || !this.each) 
           || this.$canLoadData && !this.$canLoadData()) {
-            this.xmlRoot = xmlNode;
+            
+            if (!this.caching)
+                this.xmlRoot = xmlNode;
             
             //#ifdef __DEBUG
             if (this.$amlLoaded && !this.$attrBindings) {
@@ -513,7 +516,8 @@ apf.DataBinding = function(){
         //#endif
 
         // If reloading current document, and caching is disabled, exit
-        if (this.caching && !forceNoCache && xmlNode && xmlNode == this.xmlRoot)
+        if (this.caching && !forceNoCache && xmlNode 
+          && !this.$loadqueue && xmlNode == this.xmlRoot)
             return;
 
         this.clear(true, true);
@@ -524,7 +528,7 @@ apf.DataBinding = function(){
           forceNoCache : forceNoCache, 
           xmlNode  : xmlNode
         }) === false) {
-            delete this.cacheId;
+            //delete this.cacheId;
             return;
         }
         

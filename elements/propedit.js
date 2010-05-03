@@ -57,10 +57,11 @@ apf.propedit    = function(struct, tagName){
         this.addEventListener("keydown", keyHandler, true);
     });
     
+    //#ifdef __WITH_CACHE
+    this.implement(apf.Cache);
+    //#endif
     //#ifdef __WITH_DATAACTION
-    this.implement(
-        apf.DataAction
-    );
+    this.implement(apf.DataAction);
     //#endif
     
     this.$focussable     = true; // This object can get the focus
@@ -151,8 +152,13 @@ apf.propedit    = function(struct, tagName){
                     data = apf.getXml(data);
 
                 _self.$properties = data;
-                if (_self.xmlRoot)
+
+                _self.$allowLoad = true;
+                if (_self.$loadqueue)
+                    _self.$checkLoadQueue();
+                else if (_self.xmlRoot)
                     _self.load(_self.xmlRoot);
+                delete _self.$allowLoad;
             },
             
             clear : function(){
@@ -175,7 +181,7 @@ apf.propedit    = function(struct, tagName){
             value.register(propLoadObj);
         }
         else {
-            if (this.$properties == value)
+            if (this.$properties == value && !this.caching)
                 return;
 
             //Assuming value is xml node
@@ -188,12 +194,14 @@ apf.propedit    = function(struct, tagName){
             #endif */
         }
         
+        if (this.$properties)
+            this.$prevProperties = this.$properties;
         delete this.$properties;
     };
-    
-    this.$canLoadData = function(){
-        return this.$headings ? true : false;
-    }
+    this.addEventListener("prop.properties", function(e){
+        if (!e.changed)
+            this.$propHandlers["properties"].call(this, e.value);
+    });
     
     this.$columns = ["50%", "50%"];
     this.$propHandlers["columns"] = function(value){
@@ -528,10 +536,68 @@ apf.propedit    = function(struct, tagName){
         return false;
     }
     
+    /**
+     * Forces propedit to wait for the load of a new property definition
+     */
+    this.$canLoadData = function(){
+        if (this.$allowLoad || !this.$attrBindings["properties"])
+            return this.$getProperties() ? true : false;
+            
+        /*
+         @todo this is turned off because it competes with the signal from
+         prop.properties. When the properties property contains an async 
+         statement, the prop isnt set until the call returns. This means this
+         component doesnt know it has the wrong property set until later. 
+         Thats causing problems. Uncommenting this causes a problem when a 
+         dynamic property is not refreshed whenever the model is set.
+        */
+        else if (false) {
+            var _self = this;
+            apf.queue.add("load" + this.$uniqueId, function(){
+                _self.$allowLoad = true;
+                _self.$checkLoadQueue();
+                delete _self.$allowLoad;
+            });
+            return false;
+        }
+    }
+    
+    this.$generateCacheId = function(xmlNode){
+        var node = this.$getProperties();
+        return node ? node.getAttribute(apf.xmldb.xmlIdTag) 
+                || apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(node), node)
+              : 0;
+    }
+    
+    this.$getCurrentFragment = function(){
+        var fragment = this.$container.ownerDocument.createDocumentFragment();
+        fragment.properties = this.$prevProperties || this.$properties;
+        
+        while (this.$container.childNodes.length) {
+            fragment.appendChild(this.$container.childNodes[0]);
+        }
+
+        this.clearSelection();
+
+        return fragment;
+    };
+
+    this.$setCurrentFragment = function(fragment){
+        this.$container.appendChild(fragment);
+
+        if (!apf.window.hasFocus(this))
+            this.blur();
+
+        this.$xmlUpdate(null, this.xmlRoot);
+
+        this.$properties = fragment.properties;
+        this.select(apf.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
+    };
+    
     this.$load = function(xmlNode){
         var p = this.$getProperties();
         if (!p) return false;
-        
+
         var output = [];
         var docId = this.documentId = apf.xmldb.getXmlDocId(p);
 
@@ -662,6 +728,12 @@ apf.propedit    = function(struct, tagName){
             
             delete this.$lastEditor;
         }
+    }
+    
+    this.clearSelection = function(){
+        this.$setStyleClass(this.$selected, "", ["selected"]);
+        delete this.$selected;
+        this.$hideEditor();
     }
     
     this.select = function(htmlNode){

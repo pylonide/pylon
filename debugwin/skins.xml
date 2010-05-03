@@ -1013,8 +1013,6 @@
         </a:main>
     </a:presentation>
 </a:button>
-
-
 <a:markupedit name="markupedit">
     <a:style><![CDATA[
         .debugmarkup{
@@ -1033,9 +1031,6 @@
             height : 100%;
             position : relative;
             line-height : 1.4em;
-        }
-        .debugmarkup .generated{
-            margin : 0;
         }
         .debugmarkup dl,
         .debugmarkup dt,
@@ -1245,6 +1240,9 @@
     <a:style condition="apf.isIE">
         .debugmarkup .attribute{
             margin : 0 -7px 0 0;
+        }
+        .debugmarkup .generated{
+            margin : 0;
         }
     </a:style>
     <a:presentation>

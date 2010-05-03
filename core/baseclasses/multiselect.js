@@ -698,7 +698,7 @@ apf.MultiSelect = function(){
             }
         }
         
-        if (!xmlNode.style) {
+        if (!(typeof xmlNode.style == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }
@@ -851,7 +851,7 @@ apf.MultiSelect = function(){
         if (this.dispatchEvent("beforechoose", {xmlNode : xmlNode}) === false)
             return false;
 
-        if (xmlNode && !xmlNode.style)
+        if (xmlNode && !(typeof xmlNode.style == "object"))
             this.select(xmlNode);
 
         //#ifdef __WITH_PROPERTY_BINDING
@@ -939,7 +939,7 @@ apf.MultiSelect = function(){
             //Type Detection
             if (typeof xmlNode != "object")
                 xmlNode = apf.xmldb.getNodeById(xmlNode);
-            if (!xmlNode.style)
+            if (!(typeof xmlNode.style == "object"))
                 htmlNode = this.$pHtmlDoc.getElementById(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             else {
@@ -1008,7 +1008,7 @@ apf.MultiSelect = function(){
         var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = apf.xmldb.getNodeById(xmlNode);
-        if (!xmlNode.style) {
+        if (!(typeof xmlNode.style == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }

@@ -78,6 +78,7 @@ apf.markupedit = function(struct, tagName){
     this.$animSteps     = 3;
     this.$animSpeed     = 20;
     this.reselectable   = true; //@todo hack!
+    this.autoselect     = false;
     
     this.prerender     = false;
     this.each          = "node()[local-name(.) and not(@nomk = 'true')]";
@@ -1407,7 +1408,7 @@ apf.markupedit = function(struct, tagName){
             _self.dispatchEvent("mouseover", {htmlEvent: e || event});
         }
         this.$ext.onmouseout = function(e){
-            _self.dispatchEvent("mouseover", {htmlEvent: e || event});
+            _self.dispatchEvent("mouseout", {htmlEvent: e || event});
         }
     };
     

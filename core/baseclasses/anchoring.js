@@ -157,7 +157,8 @@ apf.Anchoring = function(){
 
     /**
      * Enables anchoring based on attributes set in the AML of this element
-     *
+     */
+    /*
      * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
      * Example:
      * <a:bar left="(20% + 10) * SOME_JS_VAR" />

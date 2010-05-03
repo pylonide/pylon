@@ -55,15 +55,16 @@ apf.Cache = function(){
 
         // retrieve the cacheId
         if (!this.cacheId) {
-            this.cacheId = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag) || 
-                apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(e.xmlNode), e.xmlNode);//e.xmlNode
+            this.cacheId = this.$generateCacheId && this.$generateCacheId(e.xmlNode) 
+                || e.xmlNode.getAttribute(apf.xmldb.xmlIdTag) 
+                || apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(e.xmlNode), e.xmlNode);//e.xmlNode
         }
 
         // Retrieve cached version of document if available
         var fromCache = getCache.call(this, this.cacheId, e.xmlNode);
         if (fromCache) {
-            if (fromCache == -1)
-                return false;
+            if (fromCache == -1 || !this.getTraverseNodes)
+                return (e.returnValue = false);
 
             var nodes = this.getTraverseNodes();
 
@@ -216,7 +217,11 @@ apf.Cache = function(){
 
         this.documentId = fragment.documentId;
         this.cacheId    = id;
-        this.xmlRoot    = fragment.xmlRoot;
+        this.xmlRoot    = xmlNode;//fragment.xmlRoot;
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("root", this.xmlRoot);
+        //#endif
 
         this.clearCacheItem(id);
 

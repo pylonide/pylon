@@ -77,9 +77,7 @@ apf.__VALIDATION__ = 1 << 6;
  * When used as a child of a grid element the height can also be set as '*'. 
  * This will fill the rest space.
  *
- * @event resize Fires when the element changes width or height. This event
- * currently only fires when anchoring (left, top, width, height, right, bottom), 
- * alignment (align, vbox, hbox) or the table layout is used.
+ * @event resize Fires when the element changes width or height. 
  * 
  * @event contextmenu Fires when the user requests a context menu. Either
  * using the keyboard or mouse.

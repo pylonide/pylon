@@ -83,7 +83,7 @@ apf.$debugwin = {
         cbHighlightHover.setAttribute("checked", this.highlighthover);
         
         $apf_ide_mdl.load(this.apf.document.documentElement);//"debugwin.html");//
-        
+
         var _self = this, excl = {"DIV":1,"BLOCKQUOTE":1,"SPAN":1,"I":1};
         this.$mmouseover = function(e){
             if (!cbHighlightHover.checked || mnuData.visible)
@@ -95,12 +95,12 @@ apf.$debugwin = {
                 : apf.xmldb.findXmlNode(oHtml);
             
             _self.apf.$debugwin.highlightAmlNode(xmlNode, !xmlNode);
-            e.cancelBubble = true;
+            //e.cancelBubble = true;
         }
         
         this.$mmouseout = function(e){
-            self.apf.$debugwin.highlightAmlNode(null, true);
-            (e || event).cancelBubble = true;
+            _self.apf.$debugwin.highlightAmlNode(null, true);
+            //(e || event).cancelBubble = true;
         }
         
         $apf_ide_mdlProps.exec = function(method, args, callback, options){
