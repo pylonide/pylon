@@ -14,7 +14,6 @@
         <script src="docparser/docparser_objects.js"></script>
 		<script src="docparser/docparser_refguide_xml.js"></script>
         <script src="docparser/docparser_xmlschema.js"></script>
-        <script src="docparser/onedit.js"></script>
     </head>
     <body>
         <a:skin src="skins.xml" media-path="resources/" icon-path="resources/" />
@@ -128,7 +127,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage1="packager">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="packager">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -581,7 +580,7 @@
 
                 </a:pages>
             </a:page>
-            <a:page caption="Packager" id="packager"><a:comment>
+            <a:page caption="Packager" id="packager"><!--a:comment-->
                 <a:bar skin="basic" align="left-splitter" width="70%">
                     <a:label>Doc generator</a:label>
                     <a:hbox>
@@ -609,7 +608,7 @@
                 </a:bar>
                 <a:script>//<!--
                     var fileObj = null; 
-                    var outputFolder = null;
+                    var outputFolderObj = null;
                     
                     var $o3 = $o3 || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
                         // o3 browser extension not found
@@ -626,11 +625,11 @@
                     }
                     
                     function docgenBrowseOutput() {
-                        outputFolder = $o3.selectFolder();
-                        if (outputFolder.exists)
-                            tbDocgenOutput.setValue(outputFolder.fullPath);
+                        outputFolderObj = $o3.selectFolder();
+                        if (outputFolderObj.exists)
+                            tbDocgenOutput.setValue(outputFolderObj.fullPath);
                         else
-                            alert("It is not possible to save files to: " + outputFolder.fullPath);
+                            alert("It is not possible to save files to: " + outputFolderObj.fullPath);
                     }
                     
                     function docgenBuild() {
@@ -656,14 +655,19 @@
 
                         //var outputPath = (tbDocgenOutput.value.charAt(tbDocgenOutput.value.length-1) == "/") ? tbDocgenOutput.value : tbDocgenOutput.value + "/";
                         var outputPath = tbDocgenOutput.value;
-                        if (cbDocgenXml.checked)       docgenLog("Generating " + cbDocgenXml.value + " to " + outputPath);
-                        if (cbDocgenHtml.checked)      docgenLog("Generating " + cbDocgenHtml.value + " to " + outputPath);
-                        if (cbDocgenSchema.checked)    docgenLog("Generating " + cbDocgenSchema.value + " to " + outputPath);
-                        if (cbDocgenProp.checked)      docgenLog("Generating " + cbDocgenProp.value + " to " + outputPath);
-                        if (cbDocgenNav.checked)       docgenLog("Generating " + cbDocgenNav.value + " to " + outputPath);
+                        //if (cbDocgenXml.checked)       docgenLog("Generating " + cbDocgenXml.value + " to " + outputPath);
+                        //if (cbDocgenHtml.checked)      docgenLog("Generating " + cbDocgenHtml.value + " to " + outputPath);
+                        //if (cbDocgenSchema.checked)    docgenLog("Generating " + cbDocgenSchema.value + " to " + outputPath);
+                        //if (cbDocgenProp.checked)      docgenLog("Generating " + cbDocgenProp.value + " to " + outputPath);
+                        //if (cbDocgenNav.checked)       docgenLog("Generating " + cbDocgenNav.value + " to " + outputPath);
                         
-                        alert("@todo build documentation")
-                        docparser.generate(srcString, outputPath);
+                        if (cbDocgenXml.checked)       docparser.outputXml = true;
+                        if (cbDocgenHtml.checked)      docparser.outputHtml = true;
+                        if (cbDocgenSchema.checked)    docparser.outputXmlSchema = true;
+                        if (cbDocgenProp.checked)      docparser.outputPropedit = true;
+                        if (cbDocgenNav.checked)       docparser.outputNav = true;
+                        
+                        docparser.generate("file:///" + fileObj.fullPath, outputFolderObj);
                     }
                     
                     function selectionChange(o) {
@@ -687,7 +691,7 @@
                     }
                 //--></a:script>
                 
-            </a:comment></a:page>
+            <!--/a:comment--></a:page>
             <a:page caption="Scripts">
             </a:page>
         </a:tab>

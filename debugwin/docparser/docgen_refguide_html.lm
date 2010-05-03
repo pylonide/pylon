@@ -462,7 +462,7 @@
                         <strong class="required">{found?"<strong>, </strong>":""}[@name]</strong>
                     }
                     else{
-                        <strong>\[{found?", ":""}</strong>[@name]<strong>\]</strong>
+                        <strong>\[{found?", ":""}</strong>{[@name]}<strong>\]</strong>
                     }
                     found = found+1;
                 }
@@ -535,9 +535,11 @@
         }
 
         var types = [['attribute', 'Attributes'], ['event', 'Events'], ['binding', 'Bindings'], ['action', 'Actions'], ['method', 'Methods'], ['property', 'Properties'], ['object', 'Objects'], ['skinitem', 'Skin Items']];
-
-        members(types);
-
+        
+        if (tagName(_n) == 'baseclass') {
+            members(types);
+        }
+        
         each(*[section]){
             <h2>[@name]</h2>
             {detectCode([text()])}

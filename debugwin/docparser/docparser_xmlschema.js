@@ -4,7 +4,13 @@
 /*
  * generate xmlschema file and Aptana metadata xml reference file 
  */
-function parse_xsd(docTree) {
+var outputPathObj = "";
+var outputFolder = "";
+
+function parse_xsd(docTree, outputFolderObj) {
+    outputPathObj = outputFolderObj;
+    outputFolder = (outputPathObj) ? outputPathObj.fullPath + "/" : $o3.fs.fullPath + "/";
+    
     var output = '<?xml version="1.0" encoding="UTF-8"?>';
     
     // create file for xml schema
@@ -47,83 +53,110 @@ function parse_xsd(docTree) {
         xmlSchemaFile.appendChild(groups[name]);
     }
     
+    if (docparser.outputXmlSchema) {
+        // save xmlschema file
+        if (outputPathObj) {
+            outputPathObj.get("xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
+            apf.dispatchEvent("docparser_output", {message: outputFolder + "xmlschema\\apf_xmlschema.xsd generated"});
+        }
+        else {
+            $o3.fs.get("refguide/xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
+            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\xmlschema\\apf_xmlschema.xsd generated"});
+        }
+    }
+
     
-    var fs = onedit.getFs();
-
-    // save xmlschema file
-    fs.get("refguide/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
-
     // save aptana file
-    //fs.get("refguide/apf_aptana.xml").data = output + aptanaFile.xml;
-   
-    for (var fileoutput, fileXml, element, obj, inherits, ei = 0, el = propeditFile.childNodes.length; ei < el; ei++) {
-        element = propeditFile.childNodes[ei].nodeName;
+    /*
+    if (outputPathObj)
+        outputPathObj.get("aptana/apf_aptana.xml").data = output + aptanaFile.xml;
+    else
+        $o3.fs.get((outputPath || "documentation/") + "aptana/apf_aptana.xml").data = output + aptanaFile.xml;
+    */
+    
+    if (docparser.outputPropedit) {
+        for (var fileoutput, fileXml, element, obj, inherits, ei = 0, el = propeditFile.childNodes.length; ei < el; ei++) {
+            element = propeditFile.childNodes[ei].nodeName;
 
-        obj = docTree.element[element];
-        if (!obj) continue;
+            obj = docTree.element[element];
+            if (!obj) continue;
 
-        inherits = getTreeList(docTree.element[element]);
+            inherits = getTreeList(docTree.element[element]);
 
-        // start at one to prevent starting element to be added again
-        for (var inherit, cloneNodes = [], cloneNode, ii = 1, il = inherits.length; ii < il; ii++) {
-            inherit = (inherits[ii].indexOf("apf.") == 0) ? inherits[ii].substr(4) : inherits[ii];
-            
-            if (propeditFile.selectSingleNode(inherit)) {
-                var nodeToClone = propeditFile.selectSingleNode(inherit + "/group[@caption='General']");
-                if (nodeToClone) {
-                    cloneNode = nodeToClone.cloneNode(true);
-                    if (nodeToClone.parentNode.getAttribute("caption")) {
-                        // if exist append attributes to existing node
-                        cloneNode.setAttribute("caption", nodeToClone.parentNode.getAttribute("caption"));
-                        //cloneNode.setAttribute("id", nodeToClone.parentNode.getAttribute("id"));
+            // start at one to prevent starting element to be added again
+            for (var inherit, cloneNodes = [], cloneNode, ii = 1, il = inherits.length; ii < il; ii++) {
+                inherit = (inherits[ii].indexOf("apf.") == 0) ? inherits[ii].substr(4) : inherits[ii];
+                
+                if (propeditFile.selectSingleNode(inherit)) {
+                    var nodeToClone = propeditFile.selectSingleNode(inherit + "/group[@caption='General']");
+                    if (nodeToClone) {
+                        cloneNode = nodeToClone.cloneNode(true);
+                        if (nodeToClone.parentNode.getAttribute("caption")) {
+                            // if exist append attributes to existing node
+                            cloneNode.setAttribute("caption", nodeToClone.parentNode.getAttribute("caption"));
+                            //cloneNode.setAttribute("id", nodeToClone.parentNode.getAttribute("id"));
+                        }
+                        else {
+                            cloneNode.setAttribute("caption", inherit);
+                        }
+                        cloneNodes.push(cloneNode);
                     }
-                    else {
-                        cloneNode.setAttribute("caption", inherit);
-                    }
-                    cloneNodes.push(cloneNode);
-                }
-                if (propeditFile.selectSingleNode(inherit + "/group[@caption='Events']")) {
-                    if (!propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']")) {
-                        var groupNode = propeditFile.ownerDocument.createElement("group");
-                        groupNode.setAttribute("caption", "Events");
-                        propeditFile.childNodes[ei].appendChild(groupNode);
-                    }
-                    for (var evtNode, eli = 0, ell = propeditFile.selectSingleNode(inherit + "/group[@caption='Events']").childNodes.length; eli < ell; eli++) {
-                        evtNode = propeditFile.selectSingleNode(inherit + "/group[@caption='Events']").childNodes[eli].cloneNode(true);
-                        
-                        if (propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']"))
-                            propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']").appendChild(evtNode);
+                    if (propeditFile.selectSingleNode(inherit + "/group[@caption='Events']")) {
+                        if (!propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']")) {
+                            var groupNode = propeditFile.ownerDocument.createElement("group");
+                            groupNode.setAttribute("caption", "Events");
+                            propeditFile.childNodes[ei].appendChild(groupNode);
+                        }
+                        for (var evtNode, eli = 0, ell = propeditFile.selectSingleNode(inherit + "/group[@caption='Events']").childNodes.length; eli < ell; eli++) {
+                            evtNode = propeditFile.selectSingleNode(inherit + "/group[@caption='Events']").childNodes[eli].cloneNode(true);
+                            
+                            if (propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']"))
+                                propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']").appendChild(evtNode);
+                        }
                     }
                 }
             }
+
+            // save file for each element
+    //        output = "<props>" + propeditFile.childNodes[ei].xml;
+    //        
+            //output += cloneNodes[cli];
+    //        }
+    //output += "</props>";
+            //fileoutput = propeditFile.childNodes[ei].cloneNode(true);
+
+            for (var cli = 0, cll = cloneNodes.length; cli < cll; cli++) {
+                propeditFile.childNodes[ei].appendChild(cloneNodes[cli]);
+            }
+
+            if (propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']")) {
+                propeditFile.childNodes[ei].appendChild(propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']"));
+            }
+
+            if (outputPathObj) {
+                outputPathObj.get("propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
+                apf.dispatchEvent("docparser_output", {message: outputFolder + "propedit\\" + element + ".xml generated"});
+            }
+            else {
+                $o3.fs.get("refguide/propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
+                apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\propedit\\" + element + ".xml generated"});   
+            }
+            
+    //        $o3.fs.get((outputPath || "refguide/") + "propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + cloneNodes.join("") + "</props>";
         }
-
-        // save file for each element
-//        output = "<props>" + propeditFile.childNodes[ei].xml;
-//        
-        //output += cloneNodes[cli];
-//        }
-//output += "</props>";
-        //fileoutput = propeditFile.childNodes[ei].cloneNode(true);
-
-        for (var cli = 0, cll = cloneNodes.length; cli < cll; cli++) {
-            propeditFile.childNodes[ei].appendChild(cloneNodes[cli]);
+       
+        // save property editor file
+        if (outputPathObj) {
+            outputPathObj.get("propedit/propedit.xml").data = output + propeditFile.xml;
+            apf.dispatchEvent("docparser_output", {message: outputFolder + "propedit\\propedit.xml generated"});
         }
-
-        if (propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']")) {
-            propeditFile.childNodes[ei].appendChild(propeditFile.childNodes[ei].selectSingleNode("group[@caption='Events']"));
+        else {
+            $o3.fs.get("refguide/propedit/propedit.xml").data = output + propeditFile.xml;
+            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\propedit\\propedit.xml generated"});
         }
-
-        fs.get("refguide/propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
-
-//        fs.get("refguide/propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + cloneNodes.join("") + "</props>";
+        
+        // files created!
     }
-   
-    // save property editor file
-    fs.get("refguide/propedit.xml").data = output + propeditFile.xml;
-	
-    // files created!
-    debugger;
 }
 
 function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTree, groups) {
@@ -896,7 +929,8 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
 
 // get xml template for given element type
 function getTemplate(type) {
-    var docEl = new apf.http().getXml("template.xsd", null, {async: false});
+    var docEl = new apf.http().getXml("docparser/template.xsd", null, {async: false});
+
     if (apf.isIE)
         docEl.ownerDocument.setProperty("SelectionNamespaces", "xmlns:xs='http://www.w3.org/2001/XMLSchema'");
     
