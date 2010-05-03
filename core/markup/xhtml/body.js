@@ -26,10 +26,6 @@ apf.XhtmlBodyElement = function(struct, tagName){
 
 (function(){
     //#ifdef __WITH_CONTENTEDITABLE
-    this.implement(apf.ContentEditable2);
-    //#endif
-    
-    //#ifdef __WITH_CONTENTEDITABLE
     this.$coreHtml = true;
     //#endif
     
@@ -41,6 +37,16 @@ apf.XhtmlBodyElement = function(struct, tagName){
         this.$int = document.body;
     }, true);
 }).call(apf.XhtmlBodyElement.prototype = new apf.AmlElement());
+
+apf.Init.addConditional(function(){
+    var prot = apf.XhtmlBodyElement.prototype;
+
+    //#ifdef __WITH_CONTENTEDITABLE
+    prot.implement(
+        apf.ContentEditable2
+    );
+    //#endif
+}, null, ["interactive"]);
 
 apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 //#endif
