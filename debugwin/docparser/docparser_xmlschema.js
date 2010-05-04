@@ -9,7 +9,7 @@ var outputFolder = "";
 
 function parse_xsd(docTree, outputFolderObj) {
     outputPathObj = outputFolderObj;
-    outputFolder = (outputPathObj) ? outputPathObj.fullPath + "/" : $o3.fs.fullPath + "/";
+    outputFolder = (outputPathObj) ? outputPathObj.fullPath + "\\" : $o3.fs.fullPath + "\\";
     
     var output = '<?xml version="1.0" encoding="UTF-8"?>';
     
@@ -57,12 +57,13 @@ function parse_xsd(docTree, outputFolderObj) {
         // save xmlschema file
         if (outputPathObj) {
             outputPathObj.get("xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "xmlschema\\apf_xmlschema.xsd generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "xmlschema\\apf_xmlschema.xsd"});
         }
         else {
             $o3.fs.get("refguide/xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\xmlschema\\apf_xmlschema.xsd generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xmlschema\\apf_xmlschema.xsd"});
         }
+        apf.dispatchEvent("docgen_complete", {type: "xmlschema"});
     }
 
     
@@ -135,11 +136,11 @@ function parse_xsd(docTree, outputFolderObj) {
 
             if (outputPathObj) {
                 outputPathObj.get("propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
-                apf.dispatchEvent("docparser_output", {message: outputFolder + "propedit\\" + element + ".xml generated"});
+                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\" + element + ".xml"});
             }
             else {
                 $o3.fs.get("refguide/propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
-                apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\propedit\\" + element + ".xml generated"});   
+                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\" + element + ".xml"});   
             }
             
     //        $o3.fs.get((outputPath || "refguide/") + "propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + cloneNodes.join("") + "</props>";
@@ -148,14 +149,16 @@ function parse_xsd(docTree, outputFolderObj) {
         // save property editor file
         if (outputPathObj) {
             outputPathObj.get("propedit/propedit.xml").data = output + propeditFile.xml;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "propedit\\propedit.xml generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\propedit.xml"});
         }
         else {
             $o3.fs.get("refguide/propedit/propedit.xml").data = output + propeditFile.xml;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide\\propedit\\propedit.xml generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\propedit.xml"});
         }
         
         // files created!
+        apf.dispatchEvent("docgen_complete", {type: "propedit files"});
+
     }
 }
 
@@ -300,7 +303,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
             groupNode.setAttribute("caption", "General");
             propeditNode.appendChild(groupNode);
             
-            for (var parentNodes, attribute, attNode, type, a = 0, al = attrList.length; a < al; a++) {
+            for (var attContext, attEditor, parentNodes, attribute, attNode, type, a = 0, al = attrList.length; a < al; a++) {
                 attribute = attrList[a];
 
                 //ignore readonly attributes
@@ -455,11 +458,13 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
             propeditNode.appendChild(groupNode);
             
             var evtNode = propeditFile.ownerDocument.createElement("Events");
-            for (var parentNodes, event, attNode, type, a = 0, al = evtList.length; a < al; a++) {
+            for (var attEditor, parentNodes, event, attNode, type, a = 0, al = evtList.length; a < al; a++) {
                 event = evtList[a];
                 /*
                  * generate for property editor
                  */
+
+                attEditor  = "textbox";
 
                 if (!parentNodes) parentNodes = {"root": groupNode}
                 if (!parentNodes[attContext + "/" + event.name])
@@ -929,7 +934,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
 
 // get xml template for given element type
 function getTemplate(type) {
-    var docEl = new apf.http().getXml("docparser/template.xsd", null, {async: false});
+    var docEl = new apf.http().getXml("template.xsd", null, {async: false}) || new apf.http().getXml("docparser/template.xsd", null, {async: false});
 
     if (apf.isIE)
         docEl.ownerDocument.setProperty("SelectionNamespaces", "xmlns:xs='http://www.w3.org/2001/XMLSchema'");

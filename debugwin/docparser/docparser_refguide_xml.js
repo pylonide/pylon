@@ -22,7 +22,7 @@ var outputPathObj = null;
 var outputFolder = "";
 function parse_refguide_xml(docTree, outputFolderObj) {
     outputPathObj = outputFolderObj;
-    outputFolder = (outputPathObj) ? outputPathObj.fullPath + "/" : $o3.fs.fullPath + "/";
+    outputFolder = (outputPathObj) ? outputPathObj.fullPath + "\\" : $o3.fs.fullPath + "\\";
     
     var list = [
         {name: "baseclass", list: docTree.baseclass}, 
@@ -88,10 +88,16 @@ function parse_refguide_xml(docTree, outputFolderObj) {
             }
         }
     }
-    
+    //apf.dispatchEvent("docgen_complete", {type: "xml files"});
+
     if (docparser.outputHtml) {
         var http = new apf.http();
-        http.get("file:///C:/development/javeline/docparser/docgen_refguide_html.lm", {
+        var lmFile = "file:///C:/development/javeline/docparser/docgen_refguide_html.lm";
+        if (outputPathObj) {
+            lmFile = "docparser/docgen_refguide_html.lm";
+        }
+        
+        http.get(lmFile, {
             callback: function(str) {
                 lm = apf.lm.compile(str);
                 
@@ -109,8 +115,10 @@ function parse_refguide_xml(docTree, outputFolderObj) {
                 }
                 
                 // finished generating html and xml files!!
+                //apf.dispatchEvent("docgen_complete", {type: "html files"});
             }
         });
+        
     }
 
     // nav.xml
@@ -174,12 +182,13 @@ function parse_refguide_xml(docTree, outputFolderObj) {
         var fileContent = '<?xml version="1.0"?>' + "\n" + navXml.xml;
         if (outputPathObj) {
             outputPathObj.get("nav/nav.xml").data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "nav/nav.xml generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "nav\\nav.xml"});
         }
         else {
             $o3.fs.get("refguide/nav/nav.xml").data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide/nav.xml generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\nav.xml"});
         }
+        apf.dispatchEvent("docgen_complete", {type: "Nav"});
     }
     
 	//var win = window.open();
@@ -222,11 +231,11 @@ function refguideTerm(obj){
         var fileContent = '<?xml version="1.0"?>' + "\n" + content;
         if (outputPathObj) {
             outputPathObj.get("xml/" + name).data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + name + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         }
         else {
             $o3.fs.get("refguide/xml/" + name).data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide/xml/" + name + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
         }
         
     }
@@ -237,15 +246,15 @@ function refguideTerm(obj){
         var filename = this.xmlFilename;
         apf.console.info("Processing " + filename + ".xml");
         
-        var file = (outputPathObj) ? outputPathObj.get("html/" + filename + ".html") : $o3.fs.get(output + "html/" + filename + ".html");
+        var file = (outputPathObj) ? outputPathObj.get("html/" + filename + ".html") : $o3.fs.get(output + "html\\" + filename + ".html");
         
         //if (file.exists) return;
         file.data = fParsed(xml);
         
         if (outputPathObj)
-            apf.dispatchEvent("docparser_output", {message: outputFolder + name + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         else
-            apf.dispatchEvent("docparser_output", {message: outputFolder + output + "html/" + filename  + ".html generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename  + ".html"});
     }
 }
 
@@ -545,11 +554,11 @@ function refguideDoc(obj, docTree){
         var fileContent = '<?xml version="1.0"?>' + "\n" + content;
         if (outputPathObj) {
             outputPathObj.get("xml/" + name).data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + name + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         }
         else {
             $o3.fs.get("refguide/xml/" + name).data = fileContent;
-            apf.dispatchEvent("docparser_output", {message: outputFolder + "refguide/xml/" + name + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
         }
         
         
@@ -618,9 +627,9 @@ function refguideDoc(obj, docTree){
             //if (file.exists) return;
             file.data = fParsed(xml);
             if (outputPathObj)
-                apf.dispatchEvent("docparser_output", {message: outputFolder + "html/" + filename + ".html" + " generated"});
+                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "html\\" + filename + ".html"});
             else
-                apf.dispatchEvent("docparser_output", {message: outputFolder + output + "html/" + filename + ".html" + " generated"});
+                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename + ".html"});
             
             var nodes = xml.selectNodes("attribute|event|binding|action|method|property|object|skinitem");
             for (var i = 0; i < nodes.length; i++) {
@@ -629,24 +638,24 @@ function refguideDoc(obj, docTree){
                     continue;
                     
                 //var fname = output + "html/" + filename.replace(/\.xml$/, "");
-                var fname = (outputPathObj) ? "html/" + filename : output + "html/" + filename;
-                  + "." + nodes[i].tagName + "." + nodes[i].getAttribute("name").toLowerCase()
+                var fname = (outputPathObj) ? "html/" + filename + "." + nodes[i].tagName + "." + nodes[i].getAttribute("name").toLowerCase() : output + "html/" + filename + "." + nodes[i].tagName + "." + nodes[i].getAttribute("name").toLowerCase();
                 var file = (outputPathObj) ? outputPathObj.get(fname + ".html") : $o3.fs.get(fname + ".html");
                 //if (file.exists) continue;
                 file.data = fParsed(nodes[i]);
                 
                 if (outputPathObj)
-                    apf.dispatchEvent("docparser_output", {message: outputFolder + fname + ".html" + " generated"});
+                    apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + fname + ".html"});
                 else
-                    apf.dispatchEvent("docparser_output", {message: outputFolder + output + fname + ".html" + " generated"});
+                    apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + fname + ".html"});
                 
                 var subnodes = nodes[i].selectNodes("attribute|event");
                 for (var j = 0; j < subnodes.length; j++) {
                     file = (outputPathObj) 
                         ? outputPathObj.get(fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html") 
                         : $o3.fs.get(fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html");
+
                     file.data = fParsed(subnodes[j]);
-                    apf.dispatchEvent("docparser_output", {message: fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html" + " generated"});
+                    apf.dispatchEvent("docgen_message", {message: "Generated: " + fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html"});
                 }
             }
         }
@@ -660,7 +669,7 @@ function refguideDoc(obj, docTree){
 
             file = $o3.fs.get(output + "html/" + file.name.replace(/\.xml$/, "") + ".html");
             file.data = fParsed(xml);
-            apf.dispatchEvent("docparser_output", {message: "html/" + file.name.replace(/\.xml$/, "") + ".html" + " generated"});
+            apf.dispatchEvent("docgen_message", {message: "Generated: html\\" + file.name.replace(/\.xml$/, "") + ".html"});
         }
 */
     }

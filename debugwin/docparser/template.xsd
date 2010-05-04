@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- startElement -->
+    <xs:element name="startElement">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:group ref="a:guielements"/>
+                <xs:group ref="a:nonguielements"/>
+                <xs:group ref="a:actionbinding"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- element -->
+    <xs:element name="element">
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="PROTOTYPENAME">
+                    <xs:choice minOccurs="0" maxOccurs="unbounded"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="elementNoPt">
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded"/>                
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- baseclass -->
+    <xs:complexType name="baseclass">
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="PROTOTYPENAME">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType> 
+    
+    <xs:complexType name="baseclassNoPt">
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            
+        </xs:choice>
+    </xs:complexType> 
+
+    <!-- attributeGroup -->
+    <xs:attributeGroup name="attributeGroup">
+        
+    </xs:attributeGroup>
+    
+    <!-- attribute -->
+    <xs:attribute>
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+    </xs:attribute>
+    
+    <!-- attributeGroupRef -->
+    <xs:attributeGroup ref=""/>
+    
+    <!-- elements group -->
+    <xs:group name="elementsGroup">
+        <xs:annotation><xs:documentation></xs:documentation></xs:annotation>
+        <xs:sequence>
+        </xs:sequence>
+    </xs:group>
+
+    <!-- elementRef -->
+    <xs:element ref="" minOccurs="0" maxOccurs="unbounded"/>
+    
+    <!-- groupRef -->
+    <xs:group ref=""/>
+    
+    <!-- APTANA templates -->
+    <!-- class ref -->
+    <class type="NAME">
+        <description></description>
+    </class>
+    
+    <!-- constructor ref -->
+    <constructors>
+        <constructor scope="instance">
+            <description></description>
+        </constructor>
+    </constructors>
+    
+    <!-- properties -->
+    <properties/>
+    
+    <!-- property -->
+    <property name="NAME" scope="instance">
+        <description></description>
+    </property>
+    
+    <!-- events -->
+    <events/>
+    
+    <!-- event -->
+    <event name="NAME" type="Function">
+        <description></description>
+    </event>
+    
+</xs:schema>

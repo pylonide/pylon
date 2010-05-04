@@ -604,11 +604,15 @@
                     <a:button onclick="docgenBuild()" bottom="0">Generate</a:button>
                 </a:bar>
                 <a:bar skin="basic" align="right-splitter" width="30%">
-                    <a:textarea id="taDocgenLog" anchors="0 0 0 0"/>
+                    <a:text id="txtDocgen" align="left-splitter" scrolldown="true" 
+                        behavior   = "addonly"
+                        focussable = "true" class="apf_console"
+                        border     = "1 1 0 0" />
                 </a:bar>
                 <a:script>//<!--
                     var fileObj = null; 
                     var outputFolderObj = null;
+                    var confirmed = false;
                     
                     var $o3 = $o3 || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
                         // o3 browser extension not found
@@ -618,18 +622,25 @@
                         product : 'O3Demo'
                     });
 
-                    
+                    var oldSrc = "";
                     function docgenBrowseSrc() {
-                        fileObj = $o3.openFileDialog("Javascript files (*.js) [*.js]");
-                        tbDocgenSrc.setValue(fileObj.fullPath);
+                        oldSrc = tbDocgenSrc.value;
+                        if (fileObj = $o3.openFileDialog("Javascript files (*.js) [*.js]")) {
+                            tbDocgenSrc.setValue(fileObj.fullPath);
+                        
+                            //reset docTree is source file is changed
+                            if (oldSrc != tbDocgenSrc.value)
+                                docTree = null;
+                        }
                     }
                     
                     function docgenBrowseOutput() {
-                        outputFolderObj = $o3.selectFolder();
-                        if (outputFolderObj.exists)
-                            tbDocgenOutput.setValue(outputFolderObj.fullPath);
-                        else
-                            alert("It is not possible to save files to: " + outputFolderObj.fullPath);
+                        if (outputFolderObj = $o3.selectFolder()) {
+                            if (outputFolderObj.exists)
+                                tbDocgenOutput.setValue(outputFolderObj.fullPath);
+                            else
+                                alert("It is not possible to save files to: " + outputFolderObj.fullPath);
+                        }
                     }
                     
                     function docgenBuild() {
@@ -651,23 +662,40 @@
                             return;
                         }
                         
-                        docgenLog("Start generating documentation for " + tbDocgenSrc.value);
+                        if (!confirmed) {
+                            if (!(confirmed = confirm("You're about to start generating documentation. Processing large file of code could lead to the browser to freeze temporarily during generation. Are you sure you want to continue?")))
+                                return;
+                        }
+                        
+                        txtDocgen.setValue("Start generating documentation for " + tbDocgenSrc.value + "...<br/>");
 
                         //var outputPath = (tbDocgenOutput.value.charAt(tbDocgenOutput.value.length-1) == "/") ? tbDocgenOutput.value : tbDocgenOutput.value + "/";
                         var outputPath = tbDocgenOutput.value;
-                        //if (cbDocgenXml.checked)       docgenLog("Generating " + cbDocgenXml.value + " to " + outputPath);
-                        //if (cbDocgenHtml.checked)      docgenLog("Generating " + cbDocgenHtml.value + " to " + outputPath);
-                        //if (cbDocgenSchema.checked)    docgenLog("Generating " + cbDocgenSchema.value + " to " + outputPath);
-                        //if (cbDocgenProp.checked)      docgenLog("Generating " + cbDocgenProp.value + " to " + outputPath);
-                        //if (cbDocgenNav.checked)       docgenLog("Generating " + cbDocgenNav.value + " to " + outputPath);
                         
-                        if (cbDocgenXml.checked)       docparser.outputXml = true;
-                        if (cbDocgenHtml.checked)      docparser.outputHtml = true;
-                        if (cbDocgenSchema.checked)    docparser.outputXmlSchema = true;
-                        if (cbDocgenProp.checked)      docparser.outputPropedit = true;
-                        if (cbDocgenNav.checked)       docparser.outputNav = true;
+                        docparser.outputXml         = (cbDocgenXml.checked) ? true : false;
+                        docparser.outputHtml        = (cbDocgenHtml.checked) ? true : false;
+                        docparser.outputXmlSchema   = (cbDocgenSchema.checked) ? true : false;
+                        docparser.outputPropedit    = (cbDocgenProp.checked) ? true : false;
+                        docparser.outputNav         = (cbDocgenNav.checked) ? true : false;
                         
+                        apf.addEventListener("docgen_message", docgenMessage);
+                        apf.addEventListener("docgen_complete", docgenComplete);
+                        
+                        if (!docTree)
+                            apf.dispatchEvent("docgen_message", {message: "Generating docTree..."});
+
                         docparser.generate("file:///" + fileObj.fullPath, outputFolderObj);
+                    }
+                    
+                    function docgenMessage(e) {
+                        txtDocgen.setValue(e.message + "<br/>");                    
+                    }
+                    
+                    function docgenComplete(e) {
+                        //apf.removeEventListener("docgen_message", docgenMessage);
+                        apf.removeEventListener("docgen_complete", docgenComplete);
+
+                        txtDocgen.setValue("Finished generating " + e.type + "<br/>");
                     }
                     
                     function selectionChange(o) {
@@ -681,13 +709,6 @@
                                 cbDocgenXml.setProperty("disabled", "false");
                             }
                         }
-                    }
-                    
-                    function docgenLog(msg) {
-                        if (taDocgenLog.value)
-                            taDocgenLog.setValue(taDocgenLog.value + "\n" + msg + "...");
-                        else
-                            taDocgenLog.setValue(msg + "...");
                     }
                 //--></a:script>
                 
