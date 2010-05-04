@@ -109,6 +109,8 @@ parse: [x] += <node/>
                         jsltCode = apf.lm.compileMatch( args, {node:1} );
                     }else if(lm.indexOf('!!')==0){
                         jsltCode = apf.lm.compile( lm.slice(2), {event:1,parsecode:1,funcglobal:1});
+                    }if(lm.indexOf('??')==0){
+                        jsltCode = apf.lm.compile( lm.slice(2), {precall:1,parsecode:1});
                     }else{
 						//{editable:1,parsecode:0,xpathmode:0} 
                         var opt = {parsecode:1,xpathmode:0,storedyn:1}; 

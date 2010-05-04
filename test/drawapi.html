@@ -1,88 +1,40 @@
 <html>
  <head>
- <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
-  <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
-  <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
-  <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup2.js"></script>
-  <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
-   
-  <script LANGUAGE="JavaScript" type="text/javascript">
+     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+       
+    <script LANGUAGE="JavaScript" type="text/javascript">
     
     function draw(){
-	var ctx = new apf.drawctx_vml('drawnode',800,600,0,0,'white');
-    var a = ['red','green','blue'], t = 0;
-	var r=[];
-	apf.profile_loop(1,function(){
-		for(var i = 0;i<15;i++)
-			r[i] = ctx.rect(i*32,20,160,160,{f:"{lin(t,'red','green','blue')}"});
-		ctx.repaint();
-	});
-    // we have a style to animate 'to' or we have animate 'between'
-    // alright so lets say we want to animate to this over time X
-    // what would that do?
-    //r[0].anim( {w:200},  
-    /*
-    var rt = (new Date()).getTime();
-    setInterval(function(){
-        var t = (((new Date()).getTime()-rt)/1000)
-        for(var i = 0;i<15;i++)
-            r[i].style({fill:a[i%3],r:360*t,sw:32*(Math.sin((i/15+t)*4)*0.5+0.5),o:Math.sin((i/15+t)*4)*0.5+0.5});
-    },10)
-    */
-	/*
-	style = {
-		// pack or not pack
-		pack:
-		// the main shape container is placed by the API, now we can do different shape-styling easily
-		// this means setting the vml node pos
-		x
-		y		w
-		h
-		
-		sx 
-		sy
-		ox
-		oy
-		cx
-		cy
-		
-		r
-		
-		// modify the viewport through various properties
-		vx 		0
-		vy		0
-		vw		parent.width
-		vh		parent.height
-		
-		// shape can be param skinned for interp
-		path:
-		
-		// styling
-		f 	fill
-		fo	fill-opacity
-		s	stroke
-		so	stroke-opacity
-		sw	stroke-weight
-		a	anim
-		
-	}
-	*/
-	// what objects do we have?
-	// image 
-	// text 
-	// rect
-	// circle (and parts)
-	// ellipse 
- 	// path
-}
+        var ctx = new apf.vector.vml('drawnode',400,300,0,0,'white');
+        // lets add a new group to to our root group
+        var g = ctx.group({x:0,y:0,w:400,h:400});
+        var r = [];
+        var i ;
+        for(i = 0;i<600;i++)
+            r[i] = ctx.rect({x:i*16,y:i*1,w:50,h:20,so:0.1,o:0.5,sw:1,s:'blue', f:'red'},g);
+        
+        //lets check our ctx root
+        ctx.repaint();
+        var t = 0;
+        window.setInterval(function(){
+            g.style({r2:t/4})
+            t = t + 4;
+            for(i=0;i<600;i++)
+                r[i].style({/*f:i%1?'blue':'red',*/x:(i*16+t)%400,w:Math.sin(t/100+i/5)*40});
+            ctx.repaint();
+        },40);
+    }
 
   </script>
 
  </head>
  <body onload="draw()">
-	<div id="drawnode" style2="width:300px;height:300px;background-color:black">
-	</div>
-
+    <div id="drawnode" style2="width:300px;height:300px;background-color:black">
+    </div>
  </body>
  
 	
