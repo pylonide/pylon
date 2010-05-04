@@ -215,16 +215,19 @@ apf.propedit    = function(struct, tagName){
     }
     
     this.$propHandlers["filter"] = function(value){
-        if (!value || value.length < 2) {
-            this.$allowLoad = true;
+        if (!value) {
+            this.$allowLoad = 2;
             var xmlRoot = this.xmlRoot;
             this.clear();
+            if (this.$searchProperties) {
+                this.$properties = this.$searchProperties;
+                delete this.$searchProperties;
+            }
             this.load(xmlRoot);
             delete this.$allowLoad;
-            delete this.$searchProperties;
             return;
         }
-        
+
         var p = (this.$searchProperties || (this.$searchProperties = this.$getProperties())).cloneNode(true);
         var nodes = p.selectNodes("//node()[not(local-name()='group' or contains(translate(@caption, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
         for (var i = nodes.length - 1; i >= 0; i--)
@@ -244,9 +247,10 @@ apf.propedit    = function(struct, tagName){
         var xmlRoot = this.xmlRoot;
         this.clear();
         this.$properties = p;
-        this.$allowLoad = true;
+        this.$allowLoad = 2;
         this.load(xmlRoot, {force: true});
         delete this.$allowLoad;
+        //this.$properties = this.$searchProperties;
         //this.$properties = t;
     };
     
@@ -614,8 +618,8 @@ apf.propedit    = function(struct, tagName){
     
     this.$getCurrentFragment = function(){
         var fragment = this.$container.ownerDocument.createDocumentFragment();
-        fragment.properties = this.$prevProperties || this.$properties;
-        
+        fragment.properties = this.$searchProperties || this.$prevProperties || this.$properties;
+
         while (this.$container.childNodes.length) {
             fragment.appendChild(this.$container.childNodes[0]);
         }
@@ -632,10 +636,18 @@ apf.propedit    = function(struct, tagName){
             this.blur();
 
         apf.xmldb.addNodeListener(this.xmlRoot, this); //set node listener if not set yet
-        this.$xmlUpdate(null, this.xmlRoot);
-
-        this.$properties = fragment.properties;
-        this.select(apf.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
+        
+        //@todo most unoptimized way possible:
+        if (this.filter && this.$allowLoad != 2) {
+            delete this.$searchProperties;
+            this.$prevProperties = fragment.properties;
+            this.$propHandlers["filter"].call(this, this.filter);
+        }
+        else {
+            this.$xmlUpdate(null, this.xmlRoot);
+            this.$properties = fragment.properties;
+            this.select(apf.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
+        }
     };
     
     this.$load = function(xmlNode){
@@ -719,6 +731,12 @@ apf.propedit    = function(struct, tagName){
             this.select(this.$findHtmlNode(
               prop.getAttribute(apf.xmldb.xmlIdTag) 
               + "|" + this.$uniqueId));
+        }
+        
+        //@todo most unoptimized way possible:
+        if (this.filter && this.$allowLoad != 2) {
+            delete this.$searchProperties;
+            this.$propHandlers["filter"].call(this, this.filter);
         }
     }
     

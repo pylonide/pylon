@@ -109,7 +109,7 @@ apf.Presentation = function(){
             var _self = this;
             clearTimeout(this.$skinTimer);
             this.$skinTimer = $setTimeout(function(){
-                changeSkin.call(_self, value);
+                changeSkin.call(_self, _self.skin);
                 delete _self.$skinTimer;
             });
         }
