@@ -82,7 +82,11 @@ apf.vbox = function(struct, tagName){
      * <code>
      *  <a:vbox edge="10 10 40 10" />
      * </code>
-     * @attribute {String} pack       
+     * @attribute {String} pack     
+     *   Possible values:
+     *   start
+     *   middle  
+     *   end
      * @attribute {String} lean       
      */
     this.$supportedProperties.push("padding", "margin", "flex", "pack", "stretch");

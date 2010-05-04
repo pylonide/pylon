@@ -406,8 +406,10 @@ apf.textbox  = function(struct, tagName){
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
         if (this.$button && key == 27) {
-            this.clear();
+            //this.clear();
+            this.change("");
             this.blur();
+            //this.focus({mouse:true});
         }
         
         /*if (this.dispatchEvent("keydown", {
@@ -562,7 +564,8 @@ apf.textbox  = function(struct, tagName){
         
         if (this.$button) {
             this.$button.onmousedown = function(){
-                _self.clear();
+                //_self.clear();
+                _self.change("");
                 _self.focus({mouse:true});
             }
         }

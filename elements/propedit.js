@@ -196,10 +196,11 @@ apf.propedit    = function(struct, tagName){
         
         if (this.$properties)
             this.$prevProperties = this.$properties;
+        
         delete this.$properties;
     };
     this.addEventListener("prop.properties", function(e){
-        if (!e.changed)
+        if (!e.changed && this.$loadqueue)
             this.$propHandlers["properties"].call(this, e.value);
     });
     
@@ -212,6 +213,42 @@ apf.propedit    = function(struct, tagName){
             this.$headings[1].setProperty("width", this.$columns[1]);
         }
     }
+    
+    this.$propHandlers["filter"] = function(value){
+        if (!value || value.length < 2) {
+            this.$allowLoad = true;
+            var xmlRoot = this.xmlRoot;
+            this.clear();
+            this.load(xmlRoot);
+            delete this.$allowLoad;
+            delete this.$searchProperties;
+            return;
+        }
+        
+        var p = (this.$searchProperties || (this.$searchProperties = this.$getProperties())).cloneNode(true);
+        var nodes = p.selectNodes("//node()[not(local-name()='group' or contains(translate(@caption, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
+        for (var i = nodes.length - 1; i >= 0; i--)
+            nodes[i].parentNode.removeChild(nodes[i]);
+        
+        nodes = p.selectNodes("//node()[local-name()='group' and not(node())]");
+        
+        var parent;
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            parent = nodes[i].parentNode;
+            parent.removeChild(nodes[i]);
+            if (!parent.childNodes.length && parent.parentNode)
+                parent.parentNode.removeChild(parent);
+        }
+
+        //var t = this.$properties;
+        var xmlRoot = this.xmlRoot;
+        this.clear();
+        this.$properties = p;
+        this.$allowLoad = true;
+        this.load(xmlRoot, {force: true});
+        delete this.$allowLoad;
+        //this.$properties = t;
+    };
     
     function scrollIntoView(){
         var Q = (this.current || this.$selected),
@@ -347,6 +384,9 @@ apf.propedit    = function(struct, tagName){
         
         if (this.oDoc)
             this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
+        
+        if (this.$lastEditor)
+            this.$lastEditor[0].$focus();
     };
 
     this.$blur = function(){
@@ -363,6 +403,9 @@ apf.propedit    = function(struct, tagName){
         
         if (this.oDoc)
             this.$setStyleClass(this.oDoc.documentElement, "", [this.$baseCSSname + "Focus"]);
+        
+        if (this.$lastEditor)
+            this.$lastEditor[0].$blur();
     };
     
     /**** Sliding functions ****/
@@ -588,6 +631,7 @@ apf.propedit    = function(struct, tagName){
         if (!apf.window.hasFocus(this))
             this.blur();
 
+        apf.xmldb.addNodeListener(this.xmlRoot, this); //set node listener if not set yet
         this.$xmlUpdate(null, this.xmlRoot);
 
         this.$properties = fragment.properties;
@@ -751,7 +795,7 @@ apf.propedit    = function(struct, tagName){
 
         this.$setStyleClass(htmlNode, "selected");
         this.$selected = htmlNode;
-        
+
         this.$hideEditor();
         
         var prop = apf.xmldb.getNode(htmlNode);

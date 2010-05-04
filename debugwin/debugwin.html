@@ -127,7 +127,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="packager">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="packager">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -215,9 +215,12 @@
                           border="1 1 0 0">
                             <a:expanded match="[html]" />
                         </a:markupedit>
+                        <a:bar skin="basic" align="right" width="30%" height="26" border="1 0 0 1" style="border:1px solid #c3c3c3;background:#f1f1f1;">
+                            <a:textbox id="tbFilter" skin="tbempty" anchors="3 3 3 3" initial-message="Filter" realtime="true" />
+                        </a:bar>
                         <a:propedit id="pe" columns="35%,65%" model="{mrkAml.selected}" 
                             properties="{$apf_ide_mdlProps.getProperty(%[.] and %[.].localName)}" 
-                            width="30%" align="right" 
+                            align="right" filter="{tbFilter.value}"
                             style="border-width:1px 0 1px 1px"/>
                         <a:bar skin="basic" align="right" edge="2" height="45" 
                           class="prop_desc" model="{pe.selected}"><?lm
@@ -580,7 +583,7 @@
 
                 </a:pages>
             </a:page>
-            <a:page caption="Packager" id="packager"><!--a:comment-->
+            <a:page caption="Packager" id="packager"><a:comment>
                 <a:bar skin="basic" align="left-splitter" width="70%">
                     <a:label>Doc generator</a:label>
                     <a:hbox>
@@ -712,7 +715,7 @@
                     }
                 //--></a:script>
                 
-            <!--/a:comment--></a:page>
+            </a:comment></a:page>
             <a:page caption="Scripts">
             </a:page>
         </a:tab>
