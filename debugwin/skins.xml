@@ -4620,6 +4620,11 @@
         padding: 6px;
         color: #AAA;
     }
+    
+    .tree_demosmenu .loading{
+        padding: 5px;
+        color: #AAA;
+    }
 ]]>
     </a:style>
     <a:style condition="apf.isIE">

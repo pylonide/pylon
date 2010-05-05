@@ -261,7 +261,6 @@ apf.BaseTree = function(){
                 container.style.height = "auto";
                 container.style.overflow = "visible";
             }
-                
             
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return;
@@ -671,7 +670,7 @@ apf.BaseTree = function(){
             }
         }
         else if (!this.prerender) {
-            this.$setLoadStatus(xmlNode, "loading");
+            this.$setLoadStatus(xmlNode, "loaded");
             this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
@@ -702,9 +701,9 @@ apf.BaseTree = function(){
         //this.$hasLoadStatus(e.xmlNode, "loading")
         if (e.action == "insert" && e.result.length > 0) {
             if (this.$hasLoadStatus(e.xmlNode, "loaded")) {
-            var container = this.$getLayoutNode("item", "container", htmlNode);
-            this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
-        }
+                var container = this.$getLayoutNode("item", "container", htmlNode);
+                this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
+            }
             else if (this.$hasLoadStatus(e.xmlNode, "potential")) {
                 this.$setLoadStatus(e.xmlNode, "loaded");
             }

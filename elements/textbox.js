@@ -178,7 +178,7 @@ apf.textbox  = function(struct, tagName){
      * user) are in the value of this element. The second option specifies the
      * character that is displayed when the user hasn't yet filled in a
      * character.
-     *   Possible values:
+     *   Characters:
      *   0  Any digit
      *   1  The number 1 or 2.
      *   9  Any digit or a space.
@@ -564,8 +564,8 @@ apf.textbox  = function(struct, tagName){
         
         if (this.$button) {
             this.$button.onmousedown = function(){
-                //_self.clear();
-                _self.change("");
+                _self.clear(); //@todo why are both needed for doc filter
+                _self.change(""); //@todo only this one should be needed
                 _self.focus({mouse:true});
             }
         }

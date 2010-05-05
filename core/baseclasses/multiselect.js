@@ -698,7 +698,7 @@ apf.MultiSelect = function(){
             }
         }
         
-        if (!(typeof xmlNode.style == "object")) {
+        if (!(typeof (xmlNode.style || "") == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }
@@ -851,7 +851,7 @@ apf.MultiSelect = function(){
         if (this.dispatchEvent("beforechoose", {xmlNode : xmlNode}) === false)
             return false;
 
-        if (xmlNode && !(typeof xmlNode.style == "object"))
+        if (xmlNode && !(typeof (xmlNode.style || "") == "object"))
             this.select(xmlNode);
 
         //#ifdef __WITH_PROPERTY_BINDING
@@ -939,7 +939,7 @@ apf.MultiSelect = function(){
             //Type Detection
             if (typeof xmlNode != "object")
                 xmlNode = apf.xmldb.getNodeById(xmlNode);
-            if (!(typeof xmlNode.style == "object"))
+            if (!(typeof (xmlNode.style || "") == "object"))
                 htmlNode = this.$pHtmlDoc.getElementById(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             else {
@@ -1008,15 +1008,16 @@ apf.MultiSelect = function(){
         var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = apf.xmldb.getNodeById(xmlNode);
-        if (!(typeof xmlNode.style == "object")) {
+        if (!(typeof (xmlNode.style || "") == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
                     apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }
         else {
             var id = (htmlNode = xmlNode).getAttribute(apf.xmldb.htmlIdTag);
-            while (!id && htmlNode.parentNode)
+            while (!id && htmlNode.parentNode && htmlNode.parentNode.nodeType == 1)
                 id = (htmlNode = htmlNode.parentNode).getAttribute(
                     apf.xmldb.htmlIdTag);
+            if (!id) alert(this.$int.outerHTML);
 
             xmlNode = apf.xmldb.getNodeById(id);
         }

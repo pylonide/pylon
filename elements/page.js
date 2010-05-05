@@ -311,6 +311,11 @@ apf.page = function(struct, tagName){
             this.parentNode.$setStyleClass(this.$button, "curbtn");
         }
 
+        // #ifdef __WITH_DELAYEDRENDER
+        if (this.$render)
+            this.$render();
+        // #endif
+        
         if (!this.fake || this.relPage) {
             this.parentNode.$setStyleClass(this.fake
                 ? this.relPage.$ext
@@ -320,11 +325,6 @@ apf.page = function(struct, tagName){
                 apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
             //#endif
         }
-
-        // #ifdef __WITH_DELAYEDRENDER
-        if (this.$render)
-            this.$render();
-        // #endif
         
         if (!this.fake) {
             if (apf.isIE) {
