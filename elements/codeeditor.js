@@ -75,13 +75,15 @@ apf.codeeditor = function(struct, tagName){
     this.$booleanProperties["caching"] = true;
     this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["showinvisibles"] = true;
+    this.$booleanProperties["showprintmargin"] = true;
     this.$booleanProperties["overwrite"] = true;
     this.$booleanProperties["readonly"] = true;
     this.$booleanProperties["softtabs"] = true;
 
     this.$supportedProperties.push("value", "realtime", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
-        "overwrite", "readonly", "tabsize", "softtabs");
+        "showprintmargin", "printmargincolumn", "overwrite", "readonly", 
+        "tabsize", "softtabs");
 
     /**
      * @attribute {String} value the text of this element
@@ -160,10 +162,18 @@ apf.codeeditor = function(struct, tagName){
         this.$editor.setSelectionStyle(value);
     };
 
+    this.$propHandlers["showprintmargin"] = function(value, prop, initial){
+        this.$editor.setShowPrintMargin(value);
+    };
+
+    this.$propHandlers["printmargincolumn"] = function(value, prop, initial){
+        this.$editor.setPrintMarginColumn(value);
+    };
+    
     this.$propHandlers["showinvisibles"] = function(value, prop, initial){
         this.$editor.setShowInvisibles(value);
     };
-
+    
     this.$propHandlers["overwrite"] = function(value, prop, initial){
         this.$editor.setOverwrite(value);
     };

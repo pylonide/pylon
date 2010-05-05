@@ -25,6 +25,8 @@
                 <a:checkbox id="showInvisibles" label="Show invisibles" checked="true"/>
                 <a:checkbox id="overwrite" label="Overwrite mode" checked="false" />
                 <a:checkbox id="readOnly" label="Read only" checked="false" />
+                <a:checkbox id="showPrintMargin" label="Show print margin" checked="true" />
+                <a:spinner id="printMarginColumn" label="Show print margin" realtime="true" value="80" min="1" max="200" />
             </a:bar>
         </a:toolbar>
         
@@ -49,7 +51,9 @@
           softtabs    = "[@softtabs]"
           overwrite   = "{overwrite.value}"        
           readonly    = "{readOnly.value}"        
-          showinvisibles = "{showInvisibles.value}" />        
+          showinvisibles = "{showInvisibles.value}"
+          showprintmargin = "{showPrintMargin.value}"
+          printmargincolumn = "{printMarginColumn.value}" />        
 
         <a:toolbar align="right" height="26">
             <a:bar>
