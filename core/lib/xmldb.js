@@ -278,6 +278,33 @@ apf.xmldb = new (function(){
                         amlNode.$xmlUpdate.apply(amlNode, args);
                 };
             }
+            
+            //#ifdef __WITH_XMLMUTATION_BINDING
+            if (xmlNode.$regbase) {
+                var lut = {
+                    "DOMCharacterDataModified" : "text",
+                    "DOMAttrModified"          : "attribute",
+                    "DOMNodeInserted"          : "add",
+                    "DOMNodeRemoved"           : "remove"
+                }
+                var rFn = this.$listeners[id].rFn || (this.$listeners[id].rFn = function(e){
+                    var node = e.relatedNode && e.relatedNode.nodeType != 1
+                        ? e.relatedNode
+                        : e.currentTarget;
+                    if (node.nodeName && node.nodeName.substr(0, 2) == "a_") 
+                        return;
+                    if (node.nodeType != 1)
+                        node = node.parentNode || node.ownerElement;
+                    if ((node.parentNode && node.parentNode.nodeType == 1))
+                        apf.xmldb.$listeners[id]([lut[e.name], node, this, null, node.parentNode]);
+                });
+                xmlNode.addEventListener("DOMCharacterDataModified", rFn);
+                xmlNode.addEventListener("DOMAttrModified",          rFn);
+                xmlNode.addEventListener("DOMNodeInserted",          rFn);
+                xmlNode.addEventListener("DOMNodeRemoved",           rFn);
+                return;
+            }
+            //#endif
         }
 
         if (!listen || listen.indexOf(id + ";") == -1)
@@ -298,8 +325,19 @@ apf.xmldb = new (function(){
             id = this.$listeners[id];
             delete this.$listeners[id];
         }
-        else
+        else {
             id = "e" + o.$uniqueId;
+            
+            //#ifdef __WITH_XMLMUTATION_BINDING
+            if (xmlNode.$regbase) {
+                var rFn = this.$listeners[id].rFn;
+                xmlNode.removeEventListener("DOMCharacterDataModified", rFn);
+                xmlNode.removeEventListener("DOMAttrModified",          rFn);
+                xmlNode.removeEventListener("DOMNodeInserted",          rFn);
+                xmlNode.removeEventListener("DOMNodeRemoved",           rFn);
+            }
+            //#endif
+        }
 
         for (var newnodes = [], i = 0; i < nodes.length; i++) {
             if (nodes[i] != id)

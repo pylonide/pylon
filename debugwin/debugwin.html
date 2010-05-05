@@ -18,7 +18,7 @@
     <body>
         <a:skin src="skins.xml" media-path="resources/" icon-path="resources/" />
         
-        <a:appsettings debug="0" />
+        <a:appsettings debug="0" undokeys="true" />
 
         <a:rpc id="comm"
           protocol     = "cgi" 
@@ -105,13 +105,15 @@
         
         <a:menu id="mnuData" anim="false">
             <a:item value="doc">Find in documentation</a:item>
+            <a:item id="itRemove" value="remove">Remove</a:item>
             <a:divider />
             <a:item id="itInspAml" value="aml">Inspect as AML</a:item>
             <a:item id="itInspData" value="data">Inspect as Data</a:item>    
             <a:item id="itInspObj" value="obj">Inspect as Object</a:item>
             <a:divider id="div2" />
-            <a:item id="itInspRoot" value="root-data">Inspect element's root data</a:item>
-            <a:item id="itInspSel" value="sel-data">Inspect element's selected item</a:item>
+            <a:item id="itInspModel" value="model-data">Inspect data</a:item>
+            <a:item id="itInspRoot" value="root-data">Inspect root data</a:item>
+            <a:item id="itInspSel" value="sel-data">Inspect selected item</a:item>
         </a:menu>
         
         <a:errorbox id="errBox" left="310" top="33" />
@@ -127,7 +129,7 @@
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
-        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage="docs">
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="docs">
             <a:page caption="Console">
                 <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
                     <a:bar style="padding-left:3px">
@@ -175,13 +177,17 @@
                         <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
                         <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
+                        <a:button disabled="{!atInspect.undolength}" onclick="atInspect.undo()">Undo</a:button>
+                        <a:button disabled="{!atInspect.redolength}" onclick="atInspect.redo()">Redo</a:button>
+                        <a:divider />
                         <a:button submenu="mnuBrowse">Options</a:button>
                     </a:bar>
                     <a:bar id="tbEdit" visible="false" style="background:#f2f2f2;" height="36">
                         
                     </a:bar>
                 </a:toolbar>
-                <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}">
+
+                <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}" actiontracker="atInspect">
                     <a:page caption="AML" render="runtime">
                         <a:tree id="trTools" skin="doctree" 
                           width     = "150"
@@ -237,11 +243,15 @@
                     <a:page caption="Objects" margin="5 5 5 5" render="runtime" style="border-top:1px solid #c3c3c3">
                         <a:model id="$apf_ide_mdlObject" />
                             
-                        <a:textbox id="txtCurObject" edge="5" align="left" height="19" realtime="true"
+                        <a:textbox id="txtCurObject" skin="tbempty" edge="5" 
+                            align="left" height="19" realtime="true"
+                            onclear   = "
+                                trObject.clear();
+                            "
                             onkeydown = "
                                 if (event.keyCode == 13) {
                                     try {
-                                        var obj = self.parent.eval(this.value);
+                                        var obj = self.parent.eval('0,' + this.value);
                                     }catch(e){
                                         obj = e.message;
                                     }
@@ -303,7 +313,11 @@
                   border = "1 1 0 1">
                     <a:caption>{
                         var url;
-                        <span class="size">{prettySize((([response].match(/Content-Length: (\d+)/) || {})[1] || [response].split("\n\n")[1] || "").length)}</span>
+                        <span class="size">{
+                            prettySize(
+                                [response].length - [response].split("\n\n", 1)[0].length - 2
+                            )
+                        }</span>
                         <span class="status">{[response].split(" ")[1] || ""}</span>
                         apf.getFilename(url = [request].split("\n", 1)[0].split(" ")[1])
                         <span class="localname">\[{localName()}\]</span>

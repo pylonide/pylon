@@ -62,7 +62,8 @@ apf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
-            apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            throw new Error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            //apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
@@ -435,7 +436,7 @@ apf.XPath = {
             case "local-name":
                 var c = xmlNode || contextNode;
                 if (c.nodeType != 1) return false;
-                return c.tagName.split(":").pop();//[apf.TAGNAME]
+                return c.localName || (c.tagName || "").split(":").pop();//[apf.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":

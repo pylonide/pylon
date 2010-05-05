@@ -79,6 +79,7 @@ apf.markupedit = function(struct, tagName){
     this.$animSpeed     = 20;
     this.reselectable   = true; //@todo hack!
     this.autoselect     = false;
+    this.bufferselect   = true;
     
     this.prerender     = false;
     this.each          = "node()[local-name(.) and not(@nomk = 'true')]";
@@ -148,8 +149,8 @@ apf.markupedit = function(struct, tagName){
             return;
         
         this.$executeAction("multicall", [
-              {func: "removeAttribute", args: [xmlNode, name]},
-              {func: "setAttribute", args: [xmlNode, newName, xmlNode.getAttribute(name)]}
+              {action: "removeAttribute", args: [xmlNode, name]},
+              {action: "setAttribute", args: [xmlNode, newName, xmlNode.getAttribute(name)]}
             ], "renameAttribute", xmlNode);
     };
     

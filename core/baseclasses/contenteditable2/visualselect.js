@@ -97,6 +97,9 @@ apf.visualSelect = function(selection){
         for (var i = 0; i < 8; i++)
             nodes[i].style.display = "block";
         oOutline.style.display = "block";
+        
+        if (lastSelection)
+            this.updateGeo();
     };
     
     this.hide = function(){

@@ -25,9 +25,9 @@ function prettySize(size) {
     if (size < 1024)
         return size + " Bytes";
     else if (size < 1024*1024)
-        return Math.round(size/1024) + " KB";
+        return Math.round(size/102.4)/10 + " KB";
     else if (size < 1024*1024*1024)
-        return Math.round(size/(1024*1024)) + " MB";
+        return Math.round(size/(1024*102.4))/10 + " MB";
 }
 
 apf.$debugwin = {
@@ -151,14 +151,20 @@ apf.$debugwin = {
                     case "doc":
                         apf.$debugwin.showDocs(this.$lastObj);
                         break;
+                    case "remove":
+                        mrkAml.remove(this.$lastObj);
+                        break;
                     case "aml":
                         apf.$debugwin.showAmlNode(this.$lastObj);
                         break;
                     case "data":
-                        apf.$debugwin.showCmlNode(this.$lastObj);
+                        apf.$debugwin.showXmlNode(this.$lastObj);
                         break;
                     case "obj":
                         apf.$debugwin.showObject(this.$lastObj);
+                        break;
+                    case "model-data":
+                        apf.$debugwin.showXmlNode(this.$lastObj.data);
                         break;
                     case "root-data":
                         apf.$debugwin.showXmlNode(this.$lastObj.xmlRoot);
@@ -174,6 +180,9 @@ apf.$debugwin = {
                 case "doc":
                     eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showDocs"));
                     break;
+                case "remove":
+                    eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "$removeNode"));
+                    break;
                 case "aml":
                     eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showAmlNode"));
                     break;
@@ -182,6 +191,10 @@ apf.$debugwin = {
                     break;
                 case "obj":
                     eval(mnuData.$lastCl.replace(/showObject|showXmlNode|showAmlNode/, "showObject"));    
+                    break;
+                case "model-data":
+                    var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
+                    apf.$debugwin.showXmlNode(hasData[3]);
                     break;
                 case "root-data":
                     var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
@@ -392,7 +405,8 @@ apf.$debugwin = {
                 "Document", "DocumentType", "DocumentFragment", "Notation"],
     
     calcName : function(xmlNode, useDisplay){
-        var name, loopNode = xmlNode.tagName == "method" ? xmlNode.parentNode : xmlNode, path = [];
+        var isMethod = xmlNode.tagName == "method";
+        var name, loopNode = xmlNode, path = [];
         do {
             name = useDisplay 
                 ? loopNode.getAttribute("display") || loopNode.getAttribute("name") 
@@ -407,6 +421,10 @@ apf.$debugwin = {
                     : "[\"" + name.replace(/'/g, "\\'") + "\"]")
                 : name);
             loopNode = loopNode.parentNode;
+            if (isMethod) {
+                loopNode = loopNode.parentNode;
+                isMethod = false;
+            }
         }
         while (loopNode && loopNode.nodeType == 1);
         
@@ -452,14 +470,15 @@ apf.$debugwin = {
             return xml;
         }
     
+        var n;
         if (!pNode) {
             /*var xml = apf.getXml("<obj><item " + (ref ? "name='" + ref + "'" : "") 
                 + (displayName ? " display=\"" + displayName.replace(/"/g, "&quot;") + "\"" : "")
                 + " expand='true' /></obj>").firstChild;*/
             var xml = apf.getXml("<obj />");
-            var n = {};
+            n = {};
             n[displayName] = o;
-            if (typeof o == "object" || o && o.dataType == apf.ARRAY)
+            if (typeof o == "object" || typeof o == "function" || o && o.dataType == apf.ARRAY)
                 n.$isSingleValue = true;
             o = n;
         }
@@ -482,7 +501,7 @@ apf.$debugwin = {
             if (prop.charAt(0) == "$" || prop.substr(0, 2) == "a_") //@todo this could be a setting
                 continue;
             
-            if (typeof obj == "function" && (o.dataType != apf.ARRAY || prop != parseInt(prop))) {
+            if (typeof obj == "function" && (!n || obj != n[displayName]) && (o.dataType != apf.ARRAY || prop != parseInt(prop))) {
                 hasMethods = true;
                 continue;
             }
@@ -654,15 +673,18 @@ apf.$debugwin = {
                 itInspAml.hide();
                 itInspData.hide();
                 itInspObj.show();
+                itRemove.show();
                 
-                var hasData = [obj.xmlRoot, obj.selected];
+                var hasData = [obj.xmlRoot, obj.selected, obj.localName == "model" && obj.data];
                 itInspRoot.setProperty("visible", hasData[0] ? 1 : 0);
                 itInspSel.setProperty("visible", hasData[1] ? 1 : 0);
-                div2.setProperty("visible", hasData[0] || hasData[1] ? 1 : 0);
+                div2.setProperty("visible", hasData[0] || hasData[1] || hasData[2] ? 1 : 0);
+                itInspModel.setProperty("visible", hasData[2] ? 1 : 0);
             }
             else {
                 itInspAml.hide();
                 itInspData.hide();
+                itInspModel.hide();
                 itInspObj.show();
                 
                 itInspRoot.hide();
@@ -688,6 +710,7 @@ apf.$debugwin = {
                 itInspAml.hide();
                 itInspData.hide();
                 itInspObj.show();
+                itRemove.hide();
                 
                 itInspRoot.hide();
                 itInspSel.hide();
@@ -697,6 +720,7 @@ apf.$debugwin = {
                 itInspAml.hide();
                 itInspData.show();
                 itInspObj.show();
+                itRemove.hide();
                 
                 itInspRoot.hide();
                 itInspSel.hide();
@@ -706,11 +730,13 @@ apf.$debugwin = {
                 itInspAml.show();
                 itInspData.hide();
                 itInspObj.show();
+                itRemove.show();
                 
                 var hasData = eval(cl.replace(/showAmlNode/, "$hasAmlData"));
                 itInspRoot.setProperty("visible", hasData[0] ? 1 : 0);
                 itInspSel.setProperty("visible", hasData[1] ? 1 : 0);
-                div2.setProperty("visible", hasData[0] || hasData[1] ? 1 : 0);
+                div2.setProperty("visible", hasData[0] || hasData[1] || hasData[2] ? 1 : 0);
+                itInspModel.setProperty("visible", hasData[2] ? 1 : 0);
             }
             
             mnuData.$lastCl = cl;
@@ -719,8 +745,13 @@ apf.$debugwin = {
         }
     },
     
+    $removeNode : function(amlNode){
+        mrkAml.remove(this.$lastObj);
+    },
+    
     $hasAmlData : function(amlNode){
-        return [amlNode.xmlRoot, amlNode.selected];
+        return [amlNode.xmlRoot, amlNode.selected
+            , amlNode.localName == "model" && amlNode.data];
     },
     
     jRunCode : function(code, scripttype,  model){
@@ -874,7 +905,7 @@ apf.$debugwin = {
             //#ifdef __WITH_STORAGE
             apf.storage.put("apfdebug_debugger", c);
             //#endif
-            
+
             this.apf.$debugwin.setNativeDebug(c, true);
         }
         else
