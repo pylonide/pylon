@@ -817,7 +817,7 @@ apf.xmldb = new (function(){
             var q       = notifyQueue[uId];
             var func    = this.$listeners[uId];
             //!amlNode || 
-            if (!q)
+            if (!q || !func)
                 continue;
 
             //Run queue items

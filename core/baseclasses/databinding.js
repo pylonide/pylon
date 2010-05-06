@@ -605,7 +605,7 @@ apf.DataBinding = function(){
         if (this.$hasLoadStatus(xmlRootNode)) return;
 
         //var loadNode = this.$applyBindRule("load", xmlRootNode);
-        var loadNode, rule = this.$getBindRule("load", xmlRootNode);
+        var rule = this.$getBindRule("load", xmlRootNode);
         if (rule && (!rule[1] || rule[1](xmlRootNode))) {
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
             if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
@@ -634,7 +634,7 @@ apf.DataBinding = function(){
 
             var amlNode = this;
             if (mdl.$insertFrom(rule.getAttribute("get"), {
-              xmlNode     : loadNode,  //@todo apf3.0
+              xmlNode     : xmlRootNode,  //@todo apf3.0
               insertPoint : xmlRootNode, //this.xmlRoot,
               amlNode     : this,
               callback    : function(){
