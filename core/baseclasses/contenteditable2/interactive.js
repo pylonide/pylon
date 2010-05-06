@@ -266,7 +266,7 @@
                   && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
                     if (el.$adding) {
                         lastAmlNode = [];
-                        doReparentDrag(el, amlNode, ev);
+                        doReparentDrag(el, amlNode, e);
                     }
 
                     var ev = {clientX: e.clientX, clientY: e.clientY, ctrlKey: e.ctrlKey}

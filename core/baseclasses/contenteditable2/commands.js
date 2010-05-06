@@ -325,7 +325,7 @@ apf.ContentEditable2.commands = (function(){
             mode = "add";
             var e   = value.ev;
     	    var pos = apf.getAbsolutePosition(e.indicator);
-    	    apf.DragServer.stop(null, true);
+    	    (value.dragserver || apf.DragServer).stop(null, true);
     	    
     	    addType = value.value;
     	    var opt = {
@@ -447,9 +447,6 @@ apf.ContentEditable2.commands = (function(){
         }
         
         um.undo(parseInt(value) || null);
-        
-        apf.layout.processQueue();
-        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     };
     
     commands["redo"] = function(sel, showUI, value, query){
@@ -462,9 +459,6 @@ apf.ContentEditable2.commands = (function(){
         }
         
         um.redo(parseInt(value) || null);
-        
-        apf.layout.processQueue();
-        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     };
     
     commands["cut"] = function(sel, showUI, value, query){

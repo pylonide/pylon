@@ -24,7 +24,8 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 apf.addEventListener("load", function(){
     apf.window.undoManager.addEventListener("afterchange", function(){
-        //regrab here
+        apf.layout.processQueue();
+        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     });
     
     var sel = apf.document.getSelection();

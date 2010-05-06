@@ -46,7 +46,7 @@ apf.plane = {
         
         if (o) { //@experimental
             this.current = o;
-            if (!dontAppend) {
+            if (dontAppend) {
                 this.lastZ = this.current.style.zIndex;
                 this.current.style.zIndex = 100000;
             }
@@ -55,6 +55,7 @@ apf.plane = {
             }
         }
         
+        useRealSize = true;
         var pWidth = (plane.parentNode == document.body
             ? useRealSize ? document.documentElement.offsetWidth : apf.getWindowWidth()
             : plane.parentNode.offsetWidth);
@@ -73,7 +74,7 @@ apf.plane = {
         //this.plane.style.left    = p.scrollLeft;
         //this.plane.style.top     = p.scrollTop;
         
-        var diff = apf.getDiff(plane.parentNode);
+        var diff = apf.getDiff(plane);
         this.plane.style.width  = (pWidth - diff[0]) + "px";
         this.plane.style.height = (pHeight - diff[1]) + "px";
 

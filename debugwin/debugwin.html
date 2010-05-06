@@ -387,8 +387,8 @@
                     </a:bar>
                 </a:toolbar>
 
-                <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}" actiontracker="atInspect">
-                    <a:page caption="AML" render="runtime" actiontracker="{apf.$debugwin.apf.window.undoManager}">
+                <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}" actiontracker="{apf.$debugwin.apf.window.undoManager}">
+                    <a:page caption="AML" render="runtime">
                         <a:tree id="trTools" skin="doctree" 
                           width     = "150"
                           align     = "left-splitter"
@@ -403,12 +403,13 @@
                           icon      = "[@icon]"
                           drag      = "[item]"
                           ondragout = "
-                            apf.document.execCommand('mode', null, {
-                                mode  : 'add',
-                                value : this.selected.childNodes.length
+                            apf.$debugwin.apf.document.execCommand('mode', null, {
+                                mode       : 'add',
+                                dragserver : apf.DragServer,
+                                value      : this.selected.childNodes.length
                                   ? apf.getFirstElement(this.selected)
                                   : this.value.toLowerCase(), 
-                                ev    : event
+                                ev         : event
                             });
                           ">
                             <a:actions />
@@ -479,9 +480,6 @@
                           "
                           onbeforechange = "
                             return apf.$debugwin.checkChange(event.args[0]);
-                          "
-                          onafterchange = "
-                            apf.$debugwin.applyChange(event.xmlNode);
                           ">
                             <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" 
                                 get="{apf.$debugwin.analyze(%[.])}" />
@@ -490,7 +488,7 @@
                             <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
                             <a:column caption="Type" value="[@type]" width="150"/>
                             <a:each match="[item|method]" sort="[@name]" />
-                            <a:actions />
+                            <a:change set="{apf.$debugwin.applyChange(xmlNode);}" />
                         </a:datagrid>
                     </a:page>
                 </a:pages>

@@ -175,6 +175,9 @@ apf.visualSelect = function(selection){
         recursion = true;
         var selection = lastSelection;
 
+        if (!selection.length)
+            return;
+
         //Position
         if (selection.length == 1) {
             var sel = selection[0];
