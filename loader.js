@@ -455,6 +455,7 @@ apf.$x = apf.$loader
         "elements/video/type_wmp.js",
         
         "elements/xmpp/muc.js",
+        "elements/xmpp/rdb.js",
         "elements/xmpp/roster.js",
         
         "elements/bindingdndrule.js",
