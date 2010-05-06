@@ -2365,9 +2365,9 @@ if (!apf.basePath) {
 apf.$loader = {
     queue : [[]],
     state : 0,
-    parallel : true,
+    parallel : !(apf.isChrome && apf.isMac),
     ignorewait : apf.isIE,
-    xhr : apf.isWebkit,
+    xhr : apf.isWebkit && !apf.isMac,
     
     setGlobalDefaults : function(options){
         this.basePath = options.BasePath;
