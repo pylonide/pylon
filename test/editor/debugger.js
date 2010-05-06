@@ -32,7 +32,10 @@ function attachDebugger(tabId) {
         v8debugger.scripts(4, null, false, function(scripts) {
             var xml = [];
             for (var i = 0; i < scripts.length; i++) {
-                var script = scripts[i]
+                var script = scripts[i];
+                if (script.name && script.name.indexOf("chrome-extension://") == 0) {
+                    continue;
+                }
                 xml.push("<script id='" + script.id + "' name='" + (script.name || "anonymous").escapeHTML() + "' partial='true' />");
             }
             mdlScripts.load("<scripts>" + xml.join("") + "</scripts>");  
@@ -60,7 +63,6 @@ var adbg = {
     
     loadScript : function(id, options){
         debugContext.v8debugger.scripts(4, [parseInt(id)], true, function(scripts) {
-            console.log(scripts);
             options.callback(scripts[0].source, apf.SUCCESS);
             
         });

@@ -120,14 +120,14 @@ apf.codeeditor = function(struct, tagName){
                     : value.firstChild && value.firstChild.nodeValue || ""));
             
             var _self = this;
-            doc.addEventListener("change", function(e){
-                var cmd = _self.$executeSingleValue("change", _self.$mainBind, _self.xmlRoot, null, true);
-                cmd.args.push(null, null, e.range);
-                _self.$executeAction(cmd.func, cmd.args, "change", _self.xmlRoot);
-            });
+            doc.setUndoManager(new ace.UndoManager());
             
             if (key)
                 this.$cache[key] = doc;
+        }
+        //@todo value can also be an xml node and should be updated in a similar fashion as above
+        else if (typeof value == "string") {
+            doc.setValue(value);
         }
         
         doc.setMode(this.$modes[this.syntax]);
