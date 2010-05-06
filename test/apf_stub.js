@@ -37,10 +37,13 @@ var apf = {
 	profile_end:function(id){
 		return (new Date()).getTime() - apf.$profiler[id];
 	},
-	profile_log : function(id,txt,delta){
-		apf.logw("Profiling run "+(txt?txt:"")+" "+((new Date()).getTime() - apf.$profiler[id] - (delta||0))+" ms");
+	profile_log : function(id,txt,delta,out){
+        var t = "Profiling run "+(txt?txt:"")+" "+((new Date()).getTime() - apf.$profiler[id] - (delta||0))+" ms"
+        if(!out) apf.logw(t);
+        else document.title = t;
+            
 	},
-	profile_loop : function(times,func){
+	profile_loop : function(times,func,out){
         function test(){};
         var delta = (new Date()).getTime();
         for(var i = 0;i<times;i++) test();
@@ -48,7 +51,7 @@ var apf = {
 		apf.profile_start("loop");
 		for(var i = 0;i<times;i++)
 			func();
-		apf.profile_log("loop",null,delta);
+		apf.profile_log("loop",null,delta,out);
 	},
 	logw:function( txt ){
 		// lets find our log div
