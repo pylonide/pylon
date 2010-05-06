@@ -64,7 +64,7 @@ apf.addEventListener("load", function(){
                 apf.document.execCommand("rename", true);
                 return false;
             case 16:
-                if (!this.dragMode)
+                if (!this.dragMode && apf.document.documentElement.editable) //@todo change this for the IDE
                     apf.document.execCommand("mode", null, "select");
                 break;
             /*case 36: //HOME

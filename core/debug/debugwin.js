@@ -34,6 +34,7 @@ apf.$debugwin = {
     showtime    : true,
     nativedebug : apf.debug ? true : false,
     highlighthover : true,
+    selecteditable : true,
     
     cache : (function(){
         apf.isDebugWindow = self.frameElement 
@@ -70,6 +71,7 @@ apf.$debugwin = {
         this.showtime       = apf.storage.get("apfdebug_console_date") !== false;
         this.nativedebug    = apf.storage.get("apfdebug_debugger") == true;
         this.highlighthover = apf.storage.get("apfdebug_highlight_hover") !== false;
+        this.selecteditable = apf.storage.get("apfdebug_select_editable") !== false;
         
         txtCode.setValue(apf.storage.get("jsexec") || "");
         codetype.setProperty("value", apf.storage.get("scriptype") || "Javascript");
@@ -81,6 +83,7 @@ apf.$debugwin = {
         itmShowtime.setAttribute("checked", this.showtime);
         itmDebug.setAttribute("checked", this.nativedebug);
         cbHighlightHover.setAttribute("checked", this.highlighthover);
+        cbSelectEditable.setAttribute("checked", this.selecteditable);
         
         $apf_ide_mdl.load(this.apf.document.documentElement);//"debugwin.html");//
 
@@ -931,6 +934,13 @@ apf.$debugwin = {
         apf.storage.put("apfdebug_highlight_hover", c);
         //#endif
         this.highlighthover = c;
+    },
+    
+    setSelectEditable : function(c){
+        //#ifdef __WITH_STORAGE
+        apf.storage.put("apfdebug_select_editable", c);
+        //#endif
+        this.selecteditable = c;
     },
     
     firstEdit : true,

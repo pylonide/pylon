@@ -164,7 +164,8 @@ apf.Presentation = function(){
         var oExt       = this.$ext,
             oInt       = this.$int,
             beforeNode = oExt.nextSibling,
-            id         = this.$ext.getAttribute("id"),
+            idExt      = this.$ext.getAttribute("id"),
+            idInt      = this.$int && this.$int.getAttribute("id"),
             oldBase    = this.$baseCSSname;
 
         if (oExt.parentNode)
@@ -182,8 +183,8 @@ apf.Presentation = function(){
         if (this.$draw)
             this.$draw(true);
 
-        if (id)
-            this.$ext.setAttribute("id", id);
+        if (idExt)
+            this.$ext.setAttribute("id", idExt);
 
         if (beforeNode)
             this.$ext.parentNode.insertBefore(this.$ext, beforeNode);
@@ -220,6 +221,9 @@ apf.Presentation = function(){
         if (this.$loadAml)
             this.$loadAml(this.$aml);
         
+        if (idInt)
+            this.$int.setAttribute("id", idInt);
+        
         if (this.$int && this.$int != oInt) {
             var node, newNode = this.$int, nodes = oInt.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--) {
@@ -230,7 +234,7 @@ apf.Presentation = function(){
                 }
                 newNode.insertBefore(node, newNode.firstChild);
             }
-            this.$int.onresize = oInt.onresize;
+            //this.$int.onresize = oInt.onresize;
         }
         
         //#ifdef __WITH_DRAGDROP
@@ -270,6 +274,13 @@ apf.Presentation = function(){
                 this.selectList(valueList, true);
         }
         //#endif
+
+        //Move layout rules
+        if (!apf.hasSingleRszEvent) {
+            apf.layout.activateRules(this.$ext);
+            if (this.$int)
+                apf.layout.activateRules(this.$int);
+        }
 
         //#ifdef __WITH_ANCHORING
         if (this.hasFeature(apf.__ANCHORING__))

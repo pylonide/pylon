@@ -753,7 +753,7 @@ apf.GuiElement.propHandlers = {
         if (!value) {
             this.$at = null;
         }
-        else if (value.tagName == "actiontracker") {
+        else if (value.localName == "actiontracker") {
             this.$at = value;
         }
         else {

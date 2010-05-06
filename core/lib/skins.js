@@ -28,7 +28,7 @@ apf.skins = {
     skins  : {},
     css    : [],
     events : ["onmousemove", "onmousedown", "onmouseup", "onmouseout",
-        "onclick", "ondragcopy", "ondragstart"],
+        "onclick", "ondragcopy", "ondragstart", "ondblclick"],
 
     /* ***********
      Init

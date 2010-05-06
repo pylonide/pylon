@@ -1,8 +1,8 @@
 <category name="Elements" xmlns:a="http://ajax.org/2005/aml" >
-    <subcat name="Default">
+    <!--subcat name="Default">
         <item name="Arrow" icon="Actions.png" />
         <item name="Selection" icon="selection.gif" />
-    </subcat>
+    </subcat-->
     <subcat name="Containers">
         <item name="Accordion" value="elements.accordion" icon="ui-accordion.png" />
         <item name="Bar" value="elements.bar" icon="layout-select.png" />

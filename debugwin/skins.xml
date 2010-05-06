@@ -1016,21 +1016,15 @@
 <a:markupedit name="markupedit">
     <a:style><![CDATA[
         .debugmarkup{
-            background : #fbfbfb url(images/splitter_docs.gif) no-repeat 50% bottom;
+            background : #fbfbfb;
             font-family : Monaco, 'Courier New';
             font-size : 11px;
             cursor : default;
-            padding : 1px 1px 4px 1px;
+            padding : 0;
             border : 1px solid #c3c3c3;
-        }
-        .debugmarkup blockquote{
-            margin : 0;
-            padding : 0px;
             overflow : auto;
-            width : 100%;
-            height : 100%;
-            position : relative;
             line-height : 1.4em;
+            position : relative;
         }
         .debugmarkup dl,
         .debugmarkup dt,
@@ -1246,9 +1240,8 @@
         }
     </a:style>
     <a:presentation>
-        <a:main container="blockquote" startclosed="false">
+        <a:main container="." startclosed="false">
             <div class="debugmarkup">
-                <blockquote> </blockquote>
             </div>
         </a:main>
         <a:item 
@@ -5413,4 +5406,363 @@
         </a:empty>
     </a:presentation>
 </a:tree>
+<a:tslider name="tslider">
+    <a:style><![CDATA[
+        .tslider {
+            height   : 19px;
+            position : relative;
+            overflow : visible;
+        }
+        
+        .tslider .button {
+            width               : 17px;
+            height              : 19px;
+            background-image    : url(images/slider_tbutton.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            overflow            : hidden;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .tsliderFocus .button {
+            background-position : 0 -19px;
+        }
+        
+        .tsliderDown .button {
+            background-position : 0 -38px;
+        }
+        
+        .tsliderError .button {
+            background-position : 0 -57px;
+        }
+        
+        /* 
+        ===========================
+        ======== TEXTBOX ==========
+        ===========================
+        */
+        
+        .tslider .fixdiv {
+            position     : absolute;
+            left         : 0;
+            top          : 0;
+            height       : 17px;
+            border       : 1px solid #c3c3c3;
+            border-right : 0;
+            bottom       : 0;
+            right        : 17px;
+            overflow     : hidden;
+            background   : white url("images/textarea_background2.png") no-repeat 0 0;
+        }
+
+        .tslider .fixdiv .tb {
+            width         : 100%;
+            height        : 15px;
+            color         : #4b4b4b;
+            border        : 0;
+            margin        : 0 0 0 -1px;
+            padding       : 2px 0 0 0;
+            outline       : none;
+            font-family   : Tahoma;
+            font-size     : 11px;
+            text-overflow : ellipsis;
+            text-align    : right;
+            position      : relative;
+            overflow      : hidden;
+        }
+    
+        .tsliderFocus .fixdiv {
+            border : 1px solid #327fbd;
+            border-right:0;
+        }
+        
+        .tsliderDisabled .fixdiv {
+            border       : 1px solid #c3c3c3;
+            border-right : 0;
+        }
+    
+        .tsliderDisabled .fixdiv .tb {
+            color  : #bebebe;
+        }
+    
+        .tsliderError .fixdiv {
+            border       : 2px solid #ffb500;
+            border-right : 0;
+            margin       : -1px 0 0 -1px;
+        }
+    
+        .tsliderInitial .fixdiv .tb {
+            color : gray;
+        }
+
+        /* 
+        ===========================
+        ========= SLIDER ==========
+        ===========================
+        */
+        
+        .tslider_container {
+            position         : absolute;
+            background-color : #ebebeb;
+            border           : 1px solid #cccccc;
+            overflow         : hidden;
+            width            : 154px;
+            height           : 12px;
+            display          : none;
+        }
+
+        .tslider_container .slider {
+            background  : url("images/bar_right.png") no-repeat top right;
+            width       : 150px;
+            height      : 8px;
+            position    : absolute;
+            font-family : Tahoma;
+            font-size   : 9px;
+            text-align  : center;
+            overflow    : visible;
+            display     : block;
+            top         : 2px;
+            left        : 2px;
+        }
+        
+        .tslider_containerDisabled .slider {
+            background-position : right -8px;
+        }
+        
+        .tslider_container .slider .left {
+            background   : url("images/bar_left.png") no-repeat top left;
+            height       : 8px;
+            overflow     : hidden;
+            margin-right : 4px;
+        }
+        
+        .tslider_containerDisabled .slider .left {
+            background-position : left -8px;
+        }
+        
+        .tslider_containerDisabled .slider .filledbar {
+            background-position : 0 -8px;
+        }
+        
+        .tslider_container .slider .grabber {
+            background : url("images/slider.png") no-repeat top left;
+            width      : 20px;
+            height     : 8px;
+            overflow   : hidden;
+            position   : absolute;
+            z-index    : 10;
+        }
+        
+        .tslider_containerDisabled .slider .grabber {
+            background-position : left -8px;
+        }
+
+        .tslider_container .slider U {
+            position    : absolute;
+            background  : #c3c3c3;
+            overflow    : hidden;
+            height      : 4px;
+            margin      : 2px 0 0 0;
+            display     : block;
+            width       : 1px;
+            margin-left : 10px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+        /* Fix for Opera 10.01 */
+        .tslider .fixdiv .tb {
+            padding : 1px 0 1px 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE7"><![CDATA[
+        .tslider .fixdiv .tb {
+            margin  : -1px 0 0 -1px;
+            padding : 2px 0 2px 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko &amp;&amp; apf.versionFF == 3.6"><![CDATA[
+        .tslider .fixdiv .tb {
+            padding : 1px 0 1px 0;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main 
+          container = "."
+          button    = "div[1]"
+          status    = "div[2]/input"
+          direction = "horizontal"
+          minheight = "19"
+          maxheight = "19"
+          minwidth  = "35">
+            <div class="tslider">
+                <div class="button"> </div>
+                <div class="fixdiv">
+                    <input type="text" class="tb" />
+                </div>
+            </div>
+        </a:main>
+        <a:container
+          container = "."
+          slider    = "div" 
+          grabber   = "div/div[1]"
+          markers   = "div/div[2]"> 
+            <div class="tslider_container">
+                    <div class="slider">
+                        <div class="grabber"> </div>
+                        <div class="left"> </div>
+                    </div>
+                </div>
+        </a:container>
+        <marker>
+            <u> </u>
+        </marker>
+    </a:presentation>
+</a:tslider>
+<a:spinner name="spinner">
+    <a:style><![CDATA[
+        .spinner {
+            position  : relative;
+            height    : 19px;
+            margin    : 0;
+            padding   : 0;
+        }
+
+        .spinner .divfix {
+            display    : block;
+            position   : absolute;
+            text-align : right;
+            height     : 19px;
+            left       : 0;
+            right      : 19px;
+            margin     : 0;
+            z-index    : 9000;
+            padding    : 0;
+            border     : 0;
+        }
+
+        .spinner .divfix input {
+            outline             : none;
+            display             : block;
+            border-top          : 1px solid #b2b2b2;
+            border-left         : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-right        : 0;
+            padding             : 1px 1px 2px 0;
+            position            : absolute;
+            text-align          : right;
+            left                : 0;
+            height              : 14px;
+            background-position : 0 0;
+            background-image    : url(images/spinner_body2.png);
+            color               : black;
+            font-family         : Tahoma;
+            font-size           : 11px;
+            width               : 100%;
+            margin              : 0;
+            z-index             : 10000;
+        }
+
+        .spinner .buttons {
+            display  : block;
+            width    : 18px;
+            height   : 19px;
+            position : absolute;
+            right    : 0;
+            z-index  : 11000;
+        }
+
+        .spinner .buttons .plus {
+            height              : 9px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 0;
+            border-top          : 1px solid #b2b2b2;
+            background-image    : url(images/spinner_plus.png);
+            background-position : 0 0;
+            margin              : 0;
+        }
+
+        .spinner .buttons .minus {
+            height              : 8px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-top          : 0;
+            background-image    : url(images/spinner_minus.png);
+            background-position : 0 0;
+        }
+
+        .spinner .buttons .plusFocus {
+            background-position : 0 27px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusFocus {
+            background-position : 0 24px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusDown {
+            background-position : 0 9px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusDown {
+            background-position : 0 8px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusHover {
+            background-position : 0 18px;
+        }
+
+        .spinner .buttons .minusHover {
+            background-position : 0 16px;
+        }
+
+        .spinner .divfix .focus {
+            background-position : 0 17px;
+            border-top          : 1px solid #327fbd;
+            border-bottom       : 1px solid #327fbd;
+            border-left         : 1px solid #327fbd;
+            border-right        : 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+        .spinner .divfix {
+            right : 20px;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main
+            container="."
+            input="div[2]/input"
+            buttonplus="div/div[1]"
+            buttonminus="div/div[2]"
+            minwidth = "35"
+            minheight = "19"
+            maxheight = "19">
+            <div class="spinner">
+                <div class="buttons">
+                    <div class="plus"> </div>
+                    <div class="minus"> </div>
+                </div>
+                <div class="divfix">
+                    <input type="text"  />
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:spinner>
 </a:skin>

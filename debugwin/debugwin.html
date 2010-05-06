@@ -97,6 +97,7 @@
         
         <a:menu id="mnuBrowse">
             <a:item type="check" id="cbHighlightHover" onclick="apf.$debugwin.setHighlightHover(this.checked);">Highlight when hovering</a:item>
+            <a:item type="check" id="cbSelectEditable" onclick="apf.$debugwin.setSelectEditable(this.checked);">Select editable element</a:item>
             <a:divider />
             <a:item type="radio" group="grSelect" value="markup" selected="true">Select inspects markup</a:item>
             <a:item type="radio" group="grSelect" value="data">Select inspects data</a:item>
@@ -178,18 +179,216 @@
                         <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
                         <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
-                        <a:button disabled="{!atInspect.undolength}" onclick="atInspect.undo()">Undo</a:button>
-                        <a:button disabled="{!atInspect.redolength}" onclick="atInspect.redo()">Redo</a:button>
+                        <a:button disabled="{!apf.$debugwin.apf.window.undoManager.undolength}" onclick="apf.$debugwin.apf.window.undoManager.undo()">Undo</a:button>
+                        <a:button disabled="{!apf.$debugwin.apf.window.undoManager.redolength}" onclick="apf.$debugwin.apf.window.undoManager.redo()">Redo</a:button>
                         <a:divider />
                         <a:button submenu="mnuBrowse">Options</a:button>
                     </a:bar>
-                    <a:bar id="tbEdit" visible="false" style="background:#f2f2f2;" height="36">
+                    <a:bar id="tbEdit" render3="runtime" visible="false" style="background:#f2f2f2;" height="36">
+                        <a:hbox id="hboxTools" padding="5" edge="8">
+                            <a:label id="lblX">X:</a:label>
+                            <a:textbox id="elX" value="100" width="30" prop="left"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                            <a:label id="lblY">Y:</a:label>
+                            <a:textbox id="elY" value="100" width="30" prop="top"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                            <a:label id="lblW">W:</a:label>
+                            <a:textbox id="elW" value="100" width="30" prop="width"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                            <a:label id="lblH">H:</a:label>
+                            <a:textbox id="elH" value="100" width="30" prop="height"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                            
+                            <a:divider id="divBaseFeat" />    
+                                
+                            <a:label id="lblCols">Columns:</a:label>
+                            <a:textbox id="tbCols" value="100,100" width="80" prop="columns"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'columns', value: this.value});" />
+                                
+                            <a:label id="lblEdge">Edge:</a:label>
+                            <a:slider id="tbEdge" skin="tslider" mask="#" value="5" min="0" max="50" prop="edge"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'edge', value: this.value});" />
+                            <a:label id="lblPadding">Padding:</a:label>
+                            <a:slider id="tbPadding" skin="tslider" mask="#" value="2" min="0" max="50" prop="padding" 
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'padding', value: this.value});" />
+                            
+                            <a:label id="lblPack">Pack:</a:label>
+                            <a:dropdown id="ddPack" width="50" prop="pack"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'pack', value: this.value});">
+                                <a:item value="start">Start</a:item>
+                                <a:item value="middle">Middle</a:item>
+                                <a:item value="end">End</a:item>
+                            </a:dropdown>
+                            
+                            <a:checkbox id="elStretch" prop="stretch" values="true|false" margin="0 0 0 3"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'stretch', value: this.value});"> 
+                                Stretch
+                            </a:checkbox>
+                            
+                            <a:divider id="divMoreFeat" />
+                            
+                            <a:label id="lblMargin">Margin:</a:label>
+                            <a:slider id="elMargin" skin="tslider" mask="#" value="5" min="0" max="50" prop="margin"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'margin', value: this.value});" />
+                            <a:label id="lblSpan">Span:</a:label>
+                            <a:spinner id="elSpan" value="1" prop="span" min="1" max="20"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'span', value: this.value});" />
+                            <a:label id="lblAlign">Align:</a:label>
+                            <a:dropdown id="ddAlign" width="50" prop="align"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'align', value: this.value});">
+                                <a:item value="">None</a:item>
+                                <a:item value="start">Start</a:item>
+                                <a:item value="end">End</a:item>
+                            </a:dropdown>
+                            
+                            <a:divider id="divActions" />
+                            
+                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar">
+                                <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
+                                <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
+                                <a:divider id="div1" margin="2 2 0 2" />
+                                <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
+                                <a:divider id="div2" margin="2 2 0 2" />
+                                <a:button id="btnFront" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
+                                <a:button id="btnForward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
+                                <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
+                                <a:button id="btnBack" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
+                            </a:hbox>
+                        </a:hbox>
                         
+                        <a:script >//<![CDATA[
+                            var layout    = ["vbox", "hbox", "table"];
+                            var lastList  = [], lastSel, timer;
+                            var selection = apf.$debugwin.apf.document.getSelection();
+                            selection.addEventListener("update", function(e){
+                                clearTimeout(timer);
+                                timer = apf.setTimeout(function(){
+                                    var sel = selection.$getNodeList();//e.value;
+                                    var multiple = sel.length > 1;
+                                    var newList = [];
+                
+                                    btnBar.show();
+                
+                                    //Multiple
+                                    if (multiple) {
+                                        newList.push(btnVBox, btnHBox, btnTable, div1, btnEraser, div2, btnFront, btnForward, btnBackward, btnBack);
+                                    }
+                                    else if (sel.length) {
+                                        sel = sel[0];
+                                        
+                                        if (lastSel != sel) {
+                                            var isLayout   = layout.indexOf(sel.localName) > -1;
+                                            var isTable    = sel.localName == "table";
+                                            var isInLayout = layout.indexOf(sel.parentNode.localName) > -1;
+                
+                                            if (isLayout)
+                                                newList.push(divMoreFeat, btnEraser, divBaseFeat, lblEdge, tbEdge, lblPadding, tbPadding, lblPack, ddPack, elStretch);
+                                            else //if (sel != app)
+                                                newList.push(btnEraser, divActions, div2, btnFront, btnForward, btnBackward, btnBack);
+                                            
+                                            if (isTable) {
+                                                newList.push(lblCols);
+                                                newList.push(tbCols);
+                                            }
+                                            
+                                            if (isInLayout) {
+                                                newList.push(lblW, elW);
+                                                if (sel.parentNode.localName != "table")
+                                                    newList.push(lblH, elH, lblAlign, ddAlign);
+                                                else
+                                                    newList.push(lblSpan, elSpan);
+                    
+                                                newList.push(divMoreFeat, lblMargin, elMargin);
+                                            }
+                                            else
+                                                newList.push(/*lblX, elX, lblY, elY,*/ lblW, elW, lblH, elH /*, lblAlign, ddAlign */);
+                                        }
+                                    }
+                
+                                    if (lastSel != sel) {
+                                        for (var i = 0, il = lastList.length; i < il; i++) {
+                                            lastList[i].setProperty("visible", false);
+                                        }
+                                        lastList = newList;
+                                    }
+                                    
+                                    for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                                        prop = (item = newList[i]).prop;
+                                        
+                                        if (lastSel != sel) {
+                                            if (prop == "height" && sel.top && sel.bottom) {
+                                                lblH.setProperty("visible", false);
+                                                continue;
+                                            }
+                                            if (prop == "width" && sel.left && sel.right) {
+                                                lblW.setProperty("visible", false);
+                                                continue;
+                                            }
+                                            item.setProperty("visible", true);
+                                        }
+                                        
+                                        if (prop) //@todo check this
+                                            item.setProperty("value", sel[prop]);    
+                                    }
+                
+                                    lastSel  = sel;
+                
+                                    if (apf.$debugwin.apf.activeElement && cbSelectEditable.checked)
+                                        mrkAml.expandAndSelect(apf.$debugwin.apf.activeElement);
+                
+                                    apf.layout.processQueue();
+                                }, 100);
+                            });
+                            
+                            selection.addEventListener("update-content", function(e){
+                                var newList = lastList;
+                                var sel     = e.sel;
+                
+                                if (lastSel != sel)
+                                    return;
+                                
+                                for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                                    prop = (item = newList[i]).prop;
+                                    
+                                    if (lastSel != sel) {
+                                        if (prop == "height" && sel.top && sel.bottom) {
+                                            lblH.setProperty("visible", false);
+                                            continue;
+                                        }
+                                        if (prop == "width" && sel.left && sel.right) {
+                                            lblW.setProperty("visible", false);
+                                            continue;
+                                        }
+                                        //item.setProperty("visible", true);
+                                    }
+                
+                                    if (prop) //@todo check this
+                                        item.setProperty("value", sel[prop]);    
+                                }
+                
+                                apf.layout.processQueue();
+                            })
+                            
+                            var nodes = hboxTools.childNodes;
+                            for (var i = 0, il = nodes.length; i < il; i++) {
+                                if (nodes[i].hide)
+                                    nodes[i].hide();
+                            }
+                            var nodes = btnBar.childNodes;
+                            for (var i = 0, il = nodes.length; i < il; i++) {
+                                if (nodes[i].hide)
+                                    nodes[i].hide();
+                            }
+                            
+                            if (apf.isIE)
+                                apf.mouseEventBuffer = 30; //@todo - this should auto-adjust based on the system performance
+                        //]]></a:script>
                     </a:bar>
                 </a:toolbar>
 
                 <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}" actiontracker="atInspect">
-                    <a:page caption="AML" render="runtime">
+                    <a:page caption="AML" render="runtime" actiontracker="{apf.$debugwin.apf.window.undoManager}">
                         <a:tree id="trTools" skin="doctree" 
                           width     = "150"
                           align     = "left-splitter"
