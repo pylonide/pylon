@@ -293,10 +293,15 @@ apf.xmldb = new (function(){
                         : e.currentTarget;
                     if (node.nodeName && node.nodeName.substr(0, 2) == "a_") 
                         return;
-                    if (node.nodeType != 1)
+                    
+                    var action = lut[e.name];
+                    if (node.nodeType != 1) {
+                        action = node.nodeType == 2 ? "attribute" : "text";
                         node = node.parentNode || node.ownerElement;
-                    if ((node.parentNode && node.parentNode.nodeType == 1))
-                        apf.xmldb.$listeners[id]([lut[e.name], node, this, null, node.parentNode]);
+                    }
+
+                    //if ((node.parentNode && node.parentNode.nodeType == 1))
+                        apf.xmldb.$listeners[id]([action, node, this, null, node.parentNode]);
                 });
                 xmlNode.addEventListener("DOMCharacterDataModified", rFn);
                 xmlNode.addEventListener("DOMAttrModified",          rFn);

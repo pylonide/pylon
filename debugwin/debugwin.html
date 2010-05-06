@@ -174,9 +174,9 @@
             <a:page caption="Inspect" id="browse" render="runtime">
                 <a:toolbar>
                     <a:bar>
-                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 0}" value="0">AML</a:radiobutton>
-                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
-                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 0}" value="0">AML</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
                         <a:button disabled="{!atInspect.undolength}" onclick="atInspect.undo()">Undo</a:button>
                         <a:button disabled="{!atInspect.redolength}" onclick="atInspect.redo()">Redo</a:button>
