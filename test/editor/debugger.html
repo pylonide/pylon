@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../../apf.js"></script>
+        
+        <style type="text/css" media="screen">
+            html{
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+    	<embed type="application/o3stem-aaaaaaaa-1111-bbbb-1111-cccccccccccc" width="0" height="0" /> 
+    	
+        <a:skin src="../../skins.xml" media-path="../../images/" icon-path="icons/" />       
+        <a:appsettings debug="0" />
+       
+       	<a:model id="mdlTabs" />
+       	<a:model id="mdlScripts" src="{attachDebugger([{lstTabs.selected}::@id])}" autoinit="false" />
+       	 
+        <a:window id="winTab" title="Choose a Tab" center="true" modal="true" width="300" height="200" icon="application.png" visible="true">
+        	<a:list 
+        		model="mdlTabs" 
+        		anchors="10 10 40 10" 
+        		id="lstTabs" 
+        		multiselect="false" 
+        		eachvalue="[text()]" 
+        		autoselect="false" 
+        		each="[tab]" 
+        		caption="[text()]" 
+        		icon="tab.png" 
+        		empty-message="Loading tabs..."
+        		onafterchoose = "btnOk.dispatchEvent('click');"/>
+        	<a:button id="btnOk"
+        		right="10" 
+        		bottom="10" 
+        		width="60" 
+        		disabled="{!lstTabs.selected}" 
+        		onclick="winTab.close();mdlScripts.init();">OK
+       		</a:button>
+        </a:window>
+        
+		<a:toolbar align="top" height="26">
+			<a:bar>
+	        	<a:textbox id="tbFilter" initial-message="Filter" realtime="true" />
+	        </a:bar>
+        </a:toolbar>
+        <a:list
+          id="lstScripts"
+          model="mdlScripts"
+          width="300"
+          align="left-splitter"
+          each="[script]"
+          filter="{tbFilter.value}"
+          caption="[@name]"
+          icon="page_white_code.png">
+        	<a:actions />
+        </a:list>
+        
+        <a:codeeditor id="ce" 
+            align       = "right"
+            model       = "{lstScripts.selected}"  
+            syntax      = "js" 
+            readonly    = "true"        
+            showinvisibles = "true"
+            showprintmargin = "true"
+            printmargincolumn = "80">
+            <a:load get="{adbg.loadScript([@id])}" />
+            <a:value value="[text()]" />
+        </a:codeeditor>   
+          
+        <a:script src="debugger.js"></a:script>
+    </body>
+</html>
