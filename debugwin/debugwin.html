@@ -98,9 +98,9 @@
         <a:menu id="mnuBrowse">
             <a:item type="check" id="cbHighlightHover" onclick="apf.$debugwin.setHighlightHover(this.checked);">Highlight when hovering</a:item>
             <a:divider />
-            <a:item type="radio" group="grSelect" value="markup" selected="true">Select shows element markup</a:item>
-            <a:item type="radio" group="grSelect" value="data">Select shows element data</a:item>
-            <a:item type="radio" group="grSelect" value="prop">Select shows element properties</a:item>
+            <a:item type="radio" group="grSelect" value="markup" selected="true">Select inspects markup</a:item>
+            <a:item type="radio" group="grSelect" value="data">Select inspects data</a:item>
+            <a:item type="radio" group="grSelect" value="prop">Select inspects properties</a:item>
         </a:menu>
         
         <a:menu id="mnuData" anim="false">
@@ -120,12 +120,13 @@
     
         <a:divider skin="divider_tab" top="11" left="147" />
         <a:button skin="button_edit" top="9" left="160" state="true" tooltip="Edit"
-            onclick="apf.$debugwin.setEditable(this.value);"/>
+            onclick="apf.$debugwin.setEditable(this.value);" focussable="0" />
         <a:button skin="button_select" top="9" left="203" state="true" tooltip="Select"
-            onclick="apf.$debugwin.apf.$debugwin.toggleHighlight(apf.$debugwin, this)"/>
-        <a:button skin="button_save" top="9" left="246" tooltip="Save" />
+            onclick="apf.$debugwin.apf.$debugwin.toggleHighlight(apf.$debugwin, this, grSelect)"
+            focussable="0"/>
+        <a:button skin="button_save" top="9" left="246" tooltip="Save" focussable="0" />
         <a:divider skin="divider_tab" top="11" left="291" />
-        <a:button skin="button_close" top="6" right="5" 
+        <a:button skin="button_close" top="6" right="5" focussable="0" 
             onclick="apf.$debugwin.apf.$debugwin.hide();" />
             
         <!-- removing this first bar bugs the layout engine -->
@@ -173,9 +174,9 @@
             <a:page caption="Inspect" id="browse" render="runtime">
                 <a:toolbar>
                     <a:bar>
-                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 0}" value="0">AML</a:radiobutton>
-                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
-                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 0}" value="0">AML</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" focussable="0" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
                         <a:divider />
                         <a:button disabled="{!atInspect.undolength}" onclick="atInspect.undo()">Undo</a:button>
                         <a:button disabled="{!atInspect.redolength}" onclick="atInspect.redo()">Redo</a:button>
@@ -236,7 +237,7 @@
                         ?></a:bar>
                     </a:page>
                     <a:page caption="Data" render="runtime">
-                        <a:markupedit id="mrkData" render-root="true" 
+                        <a:markupedit id="mrkData" render-root="true" border="1 1 0 0"
                             anchors="0 0 0 0" empty-message="No data loaded"
                             oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);" />
                     </a:page>
@@ -245,11 +246,15 @@
                             
                         <a:textbox id="txtCurObject" skin="tbempty" edge="5" 
                             align="left" height="19" realtime="true"
+                            initial-message="Enter an expression"
                             onclear   = "
                                 trObject.clear();
                             "
                             onkeydown = "
                                 if (event.keyCode == 13) {
+                                    if (!this.value.trim())
+                                        return trObject.clear();
+                                
                                     try {
                                         var obj = self.parent.eval('0,' + this.value);
                                     }catch(e){

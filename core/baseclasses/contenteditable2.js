@@ -344,7 +344,7 @@ apf.ContentEditable2 = function() {
                 
                 //Unset focussable
                 this.$focussable = this.$lastFocussable[0];
-                this.focussable  = this.$lastFocussable[1];
+                this.focussable  = this.$lastFocussable[0] && this.$lastFocussable[1];
                 if (!this.focussable)
                     apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
                 

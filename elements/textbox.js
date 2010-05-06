@@ -147,6 +147,9 @@ apf.textbox  = function(struct, tagName){
         else if (this.$input.value != value)
             this.$input.value = value;
         
+        if (!initial)
+            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
+        
         if (this.$button)
             this.$button.style.display = value && !initial ? "block" : "none";
     };

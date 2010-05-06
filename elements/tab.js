@@ -65,6 +65,8 @@ apf["switch"] = function(struct, tagName){
 apf.pages     = function(struct, tagName){
     this.$hasButtons = false;
     this.$init(tagName || "pages", apf.NODE_VISIBLE, struct);
+    
+    this.$focussable = false;
 };
 
 apf.tab       = function(struct, tagName){

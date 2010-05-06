@@ -163,6 +163,29 @@ apf.item  = function(struct, tagName){
      *  </a:menu>
      * </code>
      */
+    this.$propHandlers["group"] = function(value){
+        if (this.$group && this.$group.$removeRadio)
+            this.$group.$removeRadio(this);
+            
+        if (!value) {
+            this.$group = null;
+            return;
+        }
+        
+        var group = typeof value == "string"
+            ? apf.nameserver.get("radiogroup", value)
+            : value;
+        if (!group) {
+            group = apf.nameserver.register("radiogroup", value, 
+                new apf.$group());
+            group.setAttribute("id", value);
+            group.dispatchEvent("DOMNodeInsertedIntoDocument");
+            group.parentNode = this;
+        }
+        this.$group = group;
+        
+        this.$group.$addRadio(this);
+    };
 
     //#ifdef __WITH_HOTKEY
     /**
@@ -251,6 +274,14 @@ apf.item  = function(struct, tagName){
         else
             apf.setStyleClass(this.$ext, "", ["checked"]);
     }
+    
+    this.$check = function(){
+        apf.setStyleClass(this.$ext, "selected");
+    }
+    
+    this.$uncheck = function(){
+        apf.setStyleClass(this.$ext, "", ["selected"]);
+    }
 
     /**
      * @attribute {Boolean} selected whether the item is selected.
@@ -259,10 +290,13 @@ apf.item  = function(struct, tagName){
         if (this.type != "radio")
             return;
 
+        if (this.$group)
+            this.$group.setProperty("value", this.value);
+
         if (apf.isTrue(value))
-            apf.setStyleClass(this.$ext, "selected");
+            this.$check()
         else
-            apf.setStyleClass(this.$ext, "", ["selected"]);
+            this.$uncheck();
     }
     
     /**
@@ -295,6 +329,7 @@ apf.item  = function(struct, tagName){
 
     /**** Dom Hooks ****/
 
+    //@todo apf3.0
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;

@@ -333,6 +333,8 @@ apf.window = function(){
 
         if (!amlNode.$isWindowContainer)
             amlNode.$focusParent = fParent;
+        else
+            amlNode.$focusParent2 = fParent;
 
         if (list[tabindex])
             list.insertIndex(amlNode, tabindex);
@@ -616,7 +618,7 @@ apf.window = function(){
                 ? (switchWindows && amlNode.$isWindowContainer 
                   && amlNode.$isWindowContainer != -1
                     ? apf.window
-                    : amlNode.$focusParent)
+                    : e && e.innerList ? amlNode.$focusParent : amlNode.$focusParent2 || amlNode.$focusParent)
                 : apf.document.documentElement,
             list    = fParent.$tabList;
 
@@ -965,7 +967,7 @@ apf.window = function(){
             }
             else if (amlNode.$isWindowContainer == -1) {
                 if (amlNode.$tabList.length)
-                    apf.window.moveNext(null, amlNode.$tabList[0], null, {mouse: true});
+                    apf.window.moveNext(null, amlNode.$tabList[0], null, {mouse: true, innerList: true});
                 else
                     apf.window.$focus(amlNode);
             }
@@ -1291,7 +1293,6 @@ apf.window = function(){
         //#endif
 
         delete eInfo.currentTarget;
-
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
         if ((apf.document.activeElement && !apf.document.activeElement.disableKeyboard

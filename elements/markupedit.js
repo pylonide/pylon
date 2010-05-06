@@ -103,8 +103,21 @@ apf.markupedit = function(struct, tagName){
                 return false;
                 
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
-        })(xmlNode) !== false)
+        })(xmlNode) !== false) {
             this.select(xmlNode);
+            
+            var oExt = this.$container;
+            var selHtml = this.$getLayoutNode("item", "select", apf.xmldb.findHtmlNode(xmlNode, this));
+            var top = apf.getAbsolutePosition(selHtml, oExt)[1]
+                 + oExt.scrollTop;
+            if (top <= oExt.scrollTop)
+                oExt.scrollTop = top;
+            else {
+                top += selHtml.offsetHeight;
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
+            }
+        }
     }
     
     /**
@@ -934,12 +947,13 @@ apf.markupedit = function(struct, tagName){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         var selHtml  = this.$caret || this.$selected;
+        var pos, top, el, node, nodes, sNode, pNode, container;
         
         if (!selHtml || this.renaming) 
             return;
 
         var selXml = this.caret || this.selected;
-        var oExt   = this.$ext;
+        var oExt   = this.$container;
 
         switch (key) {
             case 13:
@@ -1025,13 +1039,16 @@ apf.markupedit = function(struct, tagName){
 
                 if (sNode && sNode.nodeType == 1)
                    this.$setTempSelected (sNode, ctrlKey, shiftKey);
+                else
+                    return false;
                 
-                if (this.$tempsel && this.$tempsel.offsetTop < oExt.scrollTop)
-                    oExt.scrollTop = this.$tempsel.offsetTop;
-                
+                selHtml = this.$getLayoutNode("item", "select", apf.xmldb.findHtmlNode(sNode, this));
+                top     = apf.getAbsolutePosition(selHtml, oExt)[1]
+                     + oExt.scrollTop;
+                if (top <= oExt.scrollTop)
+                    oExt.scrollTop = top;
+                    
                 return false;
-             
-                break;
             case 40:
                 //DOWN
                 if (!selXml && !this.$tempsel) 
@@ -1063,14 +1080,16 @@ apf.markupedit = function(struct, tagName){
                 
                 if (sNode && sNode.nodeType == 1)
                    this.$setTempSelected (sNode, ctrlKey, shiftKey);
-                
-                if (this.$tempsel && this.$tempsel.offsetTop + this.$tempsel.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight)
-                    oExt.scrollTop = this.$tempsel.offsetTop 
-                        - oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
+                else
+                    return false;
+
+                selHtml = this.$getLayoutNode("item", "select", apf.xmldb.findHtmlNode(sNode, this));
+                top     = apf.getAbsolutePosition(selHtml, oExt)[1]
+                    + selHtml.offsetHeight + oExt.scrollTop;
+                if (top > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = top - oExt.offsetHeight;
                 
                 return false;
-                break;
             case 33: //@todo
                 //PGUP
                 break;

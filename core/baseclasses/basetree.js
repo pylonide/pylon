@@ -799,11 +799,12 @@ apf.BaseTree = function(){
                 //LEFT
                 if (this.$tempsel)
                     this.$selectTemp();
-                    
+                    debugger;
                 if (this.caret.selectSingleNode(this.each) 
                   && !this.isCollapsed(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 2)
-                else if (pNode = this.getTraverseParent(this.caret))
+                else if ((pNode = this.getTraverseParent(this.caret))
+                  && pNode != this.xmlRoot)
                     this.select(pNode)
                 return false;
             case 107: //+
@@ -901,7 +902,7 @@ apf.BaseTree = function(){
                    this.$setTempSelected(sNode, ctrlKey, shiftKey);
                 else
                     return false;
-                    
+                
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight/2);

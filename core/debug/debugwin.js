@@ -285,7 +285,7 @@ apf.$debugwin = {
         }
     },
     
-    toggleHighlight : function(debugwin, btn){
+    toggleHighlight : function(debugwin, btn, options){
         if (document.onmousemove) {
             document.onmousemove = 
             document.onmousedown = null;
@@ -312,7 +312,17 @@ apf.$debugwin = {
         document.onmousedown = function(e){
             var amlNode = lastAmlNode || apf.findHost((e || (e = event)).srcElement || e.target);
             if (amlNode) {
-                debugwin.showAmlNode(amlNode);
+                if (options.value == "markup")
+                    debugwin.showAmlNode(amlNode);
+                else if (options.value == "data") {
+                    if (amlNode.xmlRoot)
+                        debugwin.showXmlNode(amlNode.xmlRoot);
+                    else
+                        debugwin.showAmlNode(amlNode);
+                }
+                else if (options.value == "prop")
+                    debugwin.showObject(amlNode);
+
                 apf.$debugwin.highlightAmlNode(null, true);
                 btn.setValue(false);
                 
@@ -711,6 +721,7 @@ apf.$debugwin = {
                 itInspData.hide();
                 itInspObj.show();
                 itRemove.hide();
+                itInspModel.hide();
                 
                 itInspRoot.hide();
                 itInspSel.hide();
@@ -721,6 +732,7 @@ apf.$debugwin = {
                 itInspData.show();
                 itInspObj.show();
                 itRemove.hide();
+                itInspModel.hide();
                 
                 itInspRoot.hide();
                 itInspSel.hide();
