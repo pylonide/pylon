@@ -160,8 +160,9 @@ apf.xmpp_rdb = function(){
     this.$rdbSignal = function(oNode) {
         var idx, oEnt,
             sDoc  = null,
-            sJoin = oNode.getAttribute("join"),
-            sJID  = oNode.getAttribute("from");
+            isNS  = (typeof oNode == "string"),
+            sJoin = !isNS ? oNode.getAttribute("join") : null,
+            sJID  = !isNS ? oNode.getAttribute("from") : arguments[1];
         if ((idx = sJID.indexOf("@")) > -1)
             sDoc = sJID.substring(0, idx);
         var f     = "doc_cb_" + (sDoc || "generic"),
@@ -178,7 +179,7 @@ apf.xmpp_rdb = function(){
                     affiliation: "participant",
                     role       : "member",
                     status     : "",
-                    isBot      : this["rdb-bot"]
+                    isRDB      : true
                 });
                 // join request from a client, acknowledge it and send the document
                 this.dispatchEvent("datastatuschange", {
@@ -203,21 +204,43 @@ apf.xmpp_rdb = function(){
                     affiliation: "owner",
                     role       : "owner",
                     status     : "",
-                    isBot      : this["rdb-bot"]
+                    isRDB      : true
                 });
             }
         }
         // client logic...
         else {
-            console.log('got function? ', cb);
-            if (sJoin) {
+            if (isNS && oNode == oXmpp.NS.datastatus) {
+                debugger;
+                this.dispatchEvent("datachange", {
+                    session : sDoc,
+                    body    : arguments[2]
+                });
+            }
+            else if (sJoin) {
                 // a new document session is started
+                this.$addDoc(sJID);
                 oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
                     room       : sDoc,
                     roomJID    : sJID,
-                    affiliation: "owner",
-                    role       : "owner",
-                    status     : ""
+                    affiliation: "participant",
+                    role       : "member",
+                    status     : "",
+                    isRDB      : true
+                });
+
+                // check for baseline time and initial dataset
+                var aBaseline = oNode.getElementsByTagName("baseline"),
+                    aData     = oNode.getElementsByTagName("data");
+
+                this.dispatchEvent("datastatuschange", {
+                    type   : "result",
+                    from   : sJID,
+                    fields : {
+                        session  : sDoc,
+                        baseline : aBaseline.length ? aBaseline[0].firstChild.nodeValue : "",
+                        modeldata: aData.length     ? aData[0].firstChild.nodeValue : ""
+                    }
                 });
             }
         }

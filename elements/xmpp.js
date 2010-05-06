@@ -1703,7 +1703,7 @@ apf.xmpp = function(struct, tagName){
             if ((bRoom ? this.$mucRoster : this.$serverVars[ROSTER])
               .updateMessageHistory(sFrom, sMsg, sThread)) {
             // #endif
-                if (sMsg && sType == constants.MSG_CHAT) {
+                if (sMsg && sType == constants.MSG_CHAT && sThread != "rdb") {
                     this.dispatchEvent("receivechat", {
                         from   : sFrom,
                         message: sMsg
@@ -1720,7 +1720,7 @@ apf.xmpp = function(struct, tagName){
                         fields : fieldsToObject(oX.getElementsByTagName("field"))
                     });
                 }
-                else if (sMsg && sType == constants.MSG_GROUPCHAT && sThread == "rdb") {
+                else if (sMsg && sThread == "rdb") {
                     //#ifdef __DEBUG
                     apf.console.info("received the following from the server: "
                         + sMsg, "xmpp");
@@ -2351,7 +2351,8 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.$headerHook = function(http) {
-        http.setRequestHeader("Host", this.$domain);
+        if (!apf.isWebkit)
+            http.setRequestHeader("Host", this.$domain);
         http.setRequestHeader("Content-Type", this.$isPoll
             ? "application/x-www-form-urlencoded"
             : "text/xml; charset=utf-8");

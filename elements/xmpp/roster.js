@@ -167,7 +167,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
                 isRoom      : bIsRoom,
-                isBot       : options.isBot ? true : false,
+                isRDB       : options.isRDB ? true : false,
                 room        : (bMuc && resource) ? bareJID : null,
                 nick        : (bMuc && resource) ? resource : null,
                 roomJID     : options.roomJID,
@@ -221,8 +221,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
                     : oEnt.isRoom ? "room" : "user");
                 this.updateEntityXml(oEnt);
                 var room   = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
-                    node   = (oEnt.room && !oEnt.isRoom && oEnt.isBot) ? room[0] : oEnt.node,
-                    domain = (oEnt.room && !oEnt.isRoom && oEnt.isBot) ? room[1] : oEnt.domain;
+                    node   = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[0] : oEnt.node,
+                    domain = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[1] : oEnt.domain;
                 apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
                     ? this.getEntity(node, domain, null, true).xml
                     : model.data, oEnt.xml);
