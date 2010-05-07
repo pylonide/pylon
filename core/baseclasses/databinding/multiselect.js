@@ -714,7 +714,7 @@ apf.MultiselectBinding = function(){
         else if (action == "add") {// || !htmlNode (Check Add)
             var parentHTMLNode;
             pNode = this.getTraverseParent(xmlNode);
-            
+
             if (pNode == this.xmlRoot)
                 parentHTMLNode = this.$container;
             
@@ -734,10 +734,10 @@ apf.MultiselectBinding = function(){
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
-              && apf.isChildOf(this.xmlRoot, xmlNode)) {
+              && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
-                    : parentHTMLNode) || this.$container; //@todo I think this is wrong for non rendered sub tree nodes that get changed
+                    : parentHTMLNode) || this.$container;
 
                 result = this.$addNodes(xmlNode, parentHTMLNode, true, true,
                     apf.xmldb.getHtmlNode(this.getNextTraverse(xmlNode), this));

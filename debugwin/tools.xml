@@ -30,7 +30,9 @@
         <item name="Palette" value="elements.palette" icon="palette.png"/>
         <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
         <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
-        <item name="Slider" value="elements.slider" icon="ui-slider.png" />
+        <item name="Slider" value="elements.slider" icon="ui-slider.png">
+            <a:slider width="150" />
+        </item>
         <item name="Spinner" value="elements.spinner" icon="ui-spin.png" />
         <item name="Text" value="elements.text" icon="ui-textarea.png" />
         <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />

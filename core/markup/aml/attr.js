@@ -109,21 +109,17 @@ apf.AmlAttr = function(ownerElement, name, value){
             return;
         }
         //#ifdef __WITH_PROPERTY_BINDING
-        else {
-            if (this.specified)
-                host.$clearDynamicProperty(name);
-            
-            if (typeof value == "string" && (host.$attrExcludePropBind[name] || 
-              (value.indexOf("{") > -1 || value.indexOf("[") > -1))) {
-                host.$setDynamicProperty(name, value);
-                
-                this.specified = true;
-                return;//@todo apf3.0 test this for disabled
-            }
-        }
-        //#endif
+        if (this.specified)
+            host.$clearDynamicProperty(name);
         
-        host.setProperty(name, value); //@todo apf3.0 is this a lot slower?
+        if (typeof value == "string" && (host.$attrExcludePropBind[name] || 
+          (value.indexOf("{") > -1 || value.indexOf("[") > -1)))
+            host.$setDynamicProperty(name, value);
+        else
+        //#endif
+        {
+            host.setProperty(name, value); //@todo apf3.0 is this a lot slower?
+        }
         //host.$handlePropSet(name, value);
 
         if (this.specified) {

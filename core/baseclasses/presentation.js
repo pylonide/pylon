@@ -502,7 +502,7 @@ apf.Presentation = function(){
         }
 
         if (!section)
-            return apf.getFirstElement(node);
+            return htmlNode || apf.getFirstElement(node);
 
         var textNode = node.selectSingleNode("@" + section);
         if (!textNode)

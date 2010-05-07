@@ -857,6 +857,8 @@ apf.propedit    = function(struct, tagName){
                         if (e.keyCode == 13)
                             this.change(this.getValue());
                     }
+                else if (editor == "checkbox")
+                    info.values = "true|false";    
                 
                 //@todo copy all non-known properties of the prop element
 

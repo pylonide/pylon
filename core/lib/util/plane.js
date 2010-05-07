@@ -39,14 +39,14 @@ apf.plane = {
     },
 
     lastCursor : null,
-    show : function(o, dontAppend, copyCursor, useRealSize){
+    show : function(o, reAppend, copyCursor, useRealSize){
         this.init();
 
         var plane    = this.plane;
         
         if (o) { //@experimental
             this.current = o;
-            if (dontAppend) {
+            if (!reAppend || o.parentNode != document.body) {
                 this.lastZ = this.current.style.zIndex;
                 this.current.style.zIndex = 100000;
             }
@@ -118,7 +118,7 @@ apf.plane = {
         
         this.plane.style.display  = "none";
         
-        if (isChild) {
+        if (isChild && apf.document.activeElement) {
             if (!apf.isIE)
                 document.activeElement.focus();
             apf.document.activeElement.$focus();

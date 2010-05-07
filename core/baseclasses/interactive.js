@@ -228,7 +228,7 @@ apf.Interactive = function(){
         if (posAbs && !_self.aData) {
             apf.plane.show(dragOutline
                 ? oOutline
-                : _self.$ext);//, true
+                : _self.$ext, e.reappend);//, true
         }
         //#endif
 

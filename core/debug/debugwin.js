@@ -957,15 +957,18 @@ apf.$debugwin = {
     
     setEditable : function(value){
         this.apf.$debugwin.$setEditable(value);
-        if (!self.pgBrowse) return;
-
+        //if (!self.pgBrowse) return;
+        
         if (value){
+            tabDebug.set(1);
+            pgBrowse.set(0);
+            
             pgBrowse.setAttribute("anchors", "61 0 0 0");
             mrkAml.setAttribute("border", "1 1 0 1");
             tbEdit.show();
             trTools.show();
         }
-        else {
+        else if (self.pgBrowse) {
             pgBrowse.setAttribute("anchors", "25 0 0 0");
             mrkAml.setAttribute("border", "1 1 0 0");
             tbEdit.hide();

@@ -598,10 +598,10 @@ apf.textbox  = function(struct, tagName){
             //Change
             if (!_self.realtime) {
                 var value = _self.getValue();
-                if (e.keyCode == 13 && value != this.value)
+                if (e.keyCode == 13 && value != _self.value)
                     _self.change(value);
             }
-            else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != this.value) //safari issue (only old??)
+            else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != _self.value) //safari issue (only old??)
                 $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 

@@ -291,6 +291,7 @@ apf.xmldb = new (function(){
                     var node = e.relatedNode && e.relatedNode.nodeType != 1
                         ? e.relatedNode
                         : e.currentTarget;
+
                     if (node.nodeName && node.nodeName.substr(0, 2) == "a_") 
                         return;
                     

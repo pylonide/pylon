@@ -238,7 +238,9 @@ apf.slider = function(struct, tagName){
 
     /**
      * @attribute {String} mask a pipe '|' seperated list of strings that are
-     * used as the caption of the slider when their connected value is picked.
+     * used as the caption of the slider when their connected value is picked. 
+     * Or set mask to # to display the numerical value of the position or use %
+     * to display the position as percentage of the total.
      * Example:
      * <code>
      *  <a:label>How big is your cat?</a:label>

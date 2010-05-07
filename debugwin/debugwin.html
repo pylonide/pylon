@@ -405,6 +405,7 @@
                           ondragout = "
                             apf.$debugwin.apf.document.execCommand('mode', null, {
                                 mode       : 'add',
+                                reappend   : true,
                                 dragserver : apf.DragServer,
                                 value      : this.selected.childNodes.length
                                   ? apf.getFirstElement(this.selected)
@@ -471,7 +472,6 @@
                           caching    = "false"
                           prerender  = "false"
                           model      = "$apf_ide_mdlObject"
-                          anchors    = "0 0 0 0"
                           empty-message   = "Please load an object by typing a javascript expression in the textbox."
                           loading-message = "Calculating..."
                           onafterselect = "

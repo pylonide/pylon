@@ -355,21 +355,21 @@ apf.markupedit = function(struct, tagName){
     treeState[IS_LAST | HAS_CHILD | IS_CLOSED]       = "pluslast";
     treeState[IS_ROOT]                               = "root";
 
-    this.fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
+    this.$fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
         if (!htmlNode) return;
 
         if (isDeleting) {
             //if isLast fix previousSibling
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
-                this.fixItem(prevSib, this.$findHtmlNode(
+                this.$fixItem(prevSib, this.$findHtmlNode(
                     prevSib.getAttribute(apf.xmldb.xmlIdTag) + "|" 
                     + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage 
               && xmlNode.parentNode.selectNodes(this.each).length == 1) //@todo each parent??
-                this.fixItem(xmlNode.parentNode, this.$findHtmlNode(
+                this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
                     xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
                     + "|" + this.$uniqueId), null, false, true); 
         }
@@ -397,9 +397,8 @@ apf.markupedit = function(struct, tagName){
             this.$setStyleClass(this.$getLayoutNode("item", "openclose", 
                 htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
-            this.$setStyleClass(this.$getLayoutNode("item", null, 
-                htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
-                "pluslast"]);
+            this.$setStyleClass(htmlNode, 
+                treeState[state], ["min", "plus", "last", "minlast", "pluslast"]);
             
             if (!hasChildren)
                 container.style.display = "none";
@@ -686,21 +685,21 @@ apf.markupedit = function(struct, tagName){
         
         //Fix Images (+, - and lines)
         if (xmlNode.parentNode != this.xmlRoot)
-            this.fixItem(xmlNode, htmlNode, true);
+            this.$fixItem(xmlNode, htmlNode, true);
         
         if (this.emptyMessage && !pContainer.childNodes.length)
             this.setEmpty(pContainer);
         
         //Fix look (tree thing)
-        this.fixItem(xmlNode, htmlNode, true);
+        this.$fixItem(xmlNode, htmlNode, true);
         
         if (xmlNode == this.selected)
             this.clearSelection();
         
-        //this.fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
+        //this.$fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
         /*throw new Error();
         if(xmlNode.previousSibling) //should use each here
-            this.fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
+            this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
     
     function animHighlight(oHtml){
@@ -888,7 +887,7 @@ apf.markupedit = function(struct, tagName){
             }
         }
         else if (!this.prerender) {
-            this.$setLoadStatus(xmlNode, "loading");
+            this.$setLoadStatus(xmlNode, "loaded");
             this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
             
             this.$noanim = true;
@@ -911,22 +910,24 @@ apf.markupedit = function(struct, tagName){
         */
         
         if (e.action == "move-away")
-            this.fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
+            this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
         
-        var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)+"|"+this.$uniqueId);
+        var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(
+            apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         if (!htmlNode) return;
-        if (this.$hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
+
+        if (this.$hasLoadStatus(e.xmlNode, "loaded") && e.result.length > 0) {
             var container = this.$getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode);
         }
         else
-            this.fixItem(e.xmlNode, htmlNode);
+            this.$fixItem(e.xmlNode, htmlNode);
         
         //Can this be removed?? (because it was added in the insert function)
-        if (this.$hasLoadStatus(e.xmlNode, "loading"))
-            this.$setLoadStatus(e.xmlNode, "loaded");
+        //if (this.$hasLoadStatus(e.xmlNode, "loading"))
+            //this.$setLoadStatus(e.xmlNode, "loaded");
     }
     
     this.addEventListener("xmlupdate", xmlUpdateHandler);
@@ -1213,10 +1214,10 @@ apf.markupedit = function(struct, tagName){
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode);
                 
-                //this.fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.fixItem(xmlParentNode, apf.xmldb.findHtmlNode(xmlParentNode, this));
+                //this.$fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
+                this.$fixItem(xmlParentNode, apf.xmldb.findHtmlNode(xmlParentNode, this));
                 if (this.getNextTraverse(xmlNode, true)) { //should use each here
-                    this.fixItem(this.getNextTraverse(xmlNode, true), 
+                    this.$fixItem(this.getNextTraverse(xmlNode, true), 
                         apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true), this));
                 }
             }

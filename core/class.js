@@ -510,6 +510,9 @@ apf.Class.prototype = new (function(){
                         + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
                 }
                 else {
+                    //@todo this is sloppy and not efficient - shouldn't clear 
+                    //and reset and should check if was changed or removed when
+                    //it's set
                     apf.queue.add(prop + ":" + this.$uniqueId, function(){
                         _self.$clearDynamicProperty(prop);
                         _self.$setDynamicProperty(prop, pValue, true);
@@ -526,8 +529,13 @@ apf.Class.prototype = new (function(){
             this.$funcHandlers[prop].push({
                 amlNode : node, 
                 prop    : bProp, 
-                handler : node.$bindProperty(bProp, this, prop, fParsed)
+                handler : node.$bindProperty(bProp, this, prop, fParsed),
+                bidir   : fParsed.type == 4 
+                  && this.$bindProperty(prop, node, bProp, function(){
+                    return _self[prop];
+                  })
             });
+            
             found = true;
         }
 
@@ -595,6 +603,8 @@ apf.Class.prototype = new (function(){
         if (h && typeof h != FUN) {
             for (i = 0, l = h.length; i < l; i++) {
                 (f = h[i]).amlNode.removeEventListener(PROP + f.prop, f.handler);
+                if (f.bidir)
+                    this.removeEventListener(PROP + prop, f.bidir);
             }
             delete this.$funcHandlers[prop];
         }
@@ -667,7 +677,6 @@ apf.Class.prototype = new (function(){
         }catch(e){
             var isChanged = true;
         }
-            
             
         //Check if property has changed
         if (isChanged) {

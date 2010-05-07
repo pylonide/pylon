@@ -90,10 +90,10 @@
             anim  : apf.tween.easeInSine,
             steps : 5
         });
-        
+
         htmlNode.style.left = (apf.getHtmlLeft(htmlNode) - (pos1[0] - pos2[0])) + "px";
         htmlNode.style.top = (apf.getHtmlTop(htmlNode) - (pos1[1] - pos2[1])) + "px";
-    
+
         lastReparent = amlNode;
         el.$ext.onmousedown(e, true);
     }
@@ -263,17 +263,16 @@
 
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
+                  && (htmlNode.parentNode != apf.plane.plane || amlNode.$int != document.body)
                   && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
-                    if (el.$adding) {
-                        lastAmlNode = [];
-                        doReparentDrag(el, amlNode, e);
-                    }
-
                     var ev = {clientX: e.clientX, clientY: e.clientY, ctrlKey: e.ctrlKey}
                     lastAmlNode = [amlNode, new Date().getTime(), e.clientX, e.clientY,
                         setTimeout(function(){
                             doReparentDrag(el, amlNode, ev);
                         }, 300)];
+                    
+                    //if (el.$adding)
+                        //doReparentDrag(el, amlNode, e);
                 }
                 else
                     lastAmlNode = [];
@@ -666,7 +665,7 @@
 
         var container = pEl.$int;
         var isBody    = pEl.$int.tagName == "BODY";
-        var htmlEl = isDrag ? outline : el.$ext;
+        var htmlEl = isDrag && el.dragOutline ? outline : el.$ext;
         var d = dragInfo = {
             left   : apf.getHtmlLeft(htmlEl),
             top    : apf.getHtmlTop(htmlEl),

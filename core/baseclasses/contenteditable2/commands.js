@@ -114,9 +114,9 @@ apf.ContentEditable2.commands = (function(){
         
         if (options.userInteraction)
             amlNode.$adding = true;
-        amlNode.setAttribute("editable", true);
     
         parentNode.insertBefore(amlNode, options.beforeNode);
+        amlNode.setProperty("editable", true);
     
         //#ifdef __WITH_LAYOUT
         apf.layout.processQueue();
@@ -344,8 +344,9 @@ apf.ContentEditable2.commands = (function(){
     	    
     	    amlNode.dragOutline = false;
     	    amlNode.$ext.onmousedown({
-    	        clientX: e.htmlEvent.clientX, 
-    	        clientY: e.htmlEvent.clientY
+    	        reappend : true,
+    	        clientX  : e.htmlEvent.clientX, 
+    	        clientY  : e.htmlEvent.clientY
     	    }, true, true);
     	    //amlNode.dragOutline = true;
     	    

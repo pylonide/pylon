@@ -172,11 +172,11 @@ apf.visualSelect = function(selection){
         if (recursion)
             return;
         
-        recursion = true;
         var selection = lastSelection;
-
         if (!selection.length)
             return;
+
+        recursion = true;
 
         //Position
         if (selection.length == 1) {

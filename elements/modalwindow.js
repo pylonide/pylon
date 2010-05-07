@@ -340,16 +340,20 @@ apf.AmlWindow = function(struct, tagName){
      * layout below it.
      */
     this.$propHandlers["modal"] = function(value){
-        if (value && !this.oCover) {
-            var oCover = this.$getLayoutNode("cover");
-            if (oCover) {
-                this.oCover = apf.insertHtmlNode(oCover, this.$pHtmlNode);
-
-                if (!this.visible)
-                    this.oCover.style.display = "none";
-
-                if (this.zindex)
-                    this.oCover.style.zIndex = this.zindex;
+        if (value) {
+            if (this.oCover)
+                this.oCover.style.display = "block";
+            else {
+                var oCover = this.$getLayoutNode("cover");
+                if (oCover) {
+                    this.oCover = apf.insertHtmlNode(oCover, this.$pHtmlNode);
+    
+                    if (!this.visible)
+                        this.oCover.style.display = "none";
+    
+                    if (this.zindex)
+                        this.oCover.style.zIndex = this.zindex;
+                }
             }
         }
 
