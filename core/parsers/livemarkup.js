@@ -1579,6 +1579,7 @@ apf.lm = new (function(){
      *      1  Function return type
      *      2  Parsed data is a pure string
      *      3  Function return type, but its a single xpath
+     *      4  Function return type, but single propxs
      *   {Array}   xpaths       array of [model,xpath, model,xpath] pairs if model
      *                          or xpath is '#', its dynamic if model is null its a local xpath
      *   {Number}  models        number of models
@@ -1602,7 +1603,7 @@ apf.lm = new (function(){
             };
 		}
 		// lets see if we need to fetch precompiled cachemarker
-		var c, f;
+		var c, f, is_single_prop;
 		if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
             if(c=apf.lm_exec[c[1]]) return c;
 			alert("ERROR, undefined live markup cache marker found:"+istr);
@@ -1647,7 +1648,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
-
+        
         if (cfg.parsecode) {
             if (nesting || s[sl - 1].length == 1)
                 handleError({
@@ -1656,6 +1657,10 @@ apf.lm = new (function(){
                 },last_line);
             if (segment!=ol)
                 o_segs++
+        }else if( (o.length==7 || o.length==8) && o_segs == 1){
+            is_single_prop = 0;
+            for(c in o_props)is_single_prop++;
+            if(is_single_prop!=1)is_single_prop = 0;  
         }
         if (!cfg.nostring && (parse_mode == 2 && segment == 4 || ol == 4)) {
             return {
@@ -1762,7 +1767,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
-        f.type   = (o_segs == 1 && o_xpaths == 1) ? 3 : 1;
+        f.type   = (o_segs == 1 && o_xpaths == 1) ? 3 : (is_single_prop?4:1);
         f.xpaths = o_xpathpairs, f.models = o_models,
         f.props  = o_props, f.asyncs = o_asyncs;
 
