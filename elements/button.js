@@ -179,6 +179,7 @@ apf.button  = function(struct, tagName){
      * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
      */
     this.$booleanProperties["default"] = true;
+    this.$booleanProperties["state"]   = true;
     this.$supportedProperties.push("icon", "value", "tooltip", "state",
         "color", "caption", "action", "target", "default", "submenu", "hotkye");
 
@@ -213,7 +214,10 @@ apf.button  = function(struct, tagName){
     };
 
     this.$propHandlers["state"] = function(value){
-        this.$setStateBehaviour(value == 1);
+        if (value)
+            this.$setStateBehaviour(this.value);
+        else 
+            this.$setNormalBehaviour();
     };
 
     this.$propHandlers["color"] = function(value){

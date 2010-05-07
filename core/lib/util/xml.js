@@ -483,10 +483,10 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
                 .appendChild(doc.createElement(lastpath));
             if (hasId)
                 newNode.setAttribute(hasId[2], hasId[3]);
-            
-            if (addedNodes)
-                addedNodes.push(newNode);
         }
+        
+        if (addedNodes)
+            addedNodes.push(newNode);
         
         foundpath += (foundpath ? "/" : "") + paths[len];
     } while((lastpath = paths[++len]));

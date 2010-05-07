@@ -894,8 +894,12 @@ apf.propedit    = function(struct, tagName){
                 oEditor.$parentRsz = editParent.onresize;
                 
                 //Patch oEditor to forward change
-                oEditor.$executeAction = function(){
-                    this.parentNode.$executeAction.apply(this.parentNode, arguments);
+                oEditor.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
+                    if (atAction == "setAttribute" && !args[2])
+                        atAction = "removeAttribute";
+                    
+                    this.parentNode.$executeAction.call(this.parentNode, 
+                        atAction, args, action, xmlNode, noevent, contextNode, multiple);
                 }
             }
             else {

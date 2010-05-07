@@ -170,11 +170,19 @@ apf.actiontracker.actions = {
     },*/
     
     "setValueByXpath" : function(UndoObj, undo){
-        var q = UndoObj.args;//xmlNode, value, xpath
+        var newNode, q = UndoObj.args;//xmlNode, value, xpath
+        
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            if (UndoObj.extra.newNode) {
-                apf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
+            if (newNode = UndoObj.extra.newNode) {
+                if (newNode.nodeType == 2) {
+                    apf.xmldb.setAttribute(UndoObj.extra.ownerElement, 
+                      newNode.nodeName, newNode.nodeValue);
+                    UndoObj.extra.newNode = UndoObj.extra.ownerElement
+                      .getAttributeNode(newNode.nodeName);
+                }
+                else
+                    apf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
             }
             else {
                 var newNodes = [];
@@ -185,14 +193,22 @@ apf.actiontracker.actions = {
                     forceNew : q[3]
                 });
     
-                UndoObj.extra.newNode = newNodes[0];
+                newNode = UndoObj.extra.newNode = newNodes[0];
+                if (newNode.nodeType == 2)
+                    UndoObj.extra.ownerElement = newNode.ownerElement 
+                      || newNode.selectSingleNode("..");
+                else
+                    UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
             }
         }
         // Undo Setting NodeValue
         else {
-            if (UndoObj.extra.newNode) {
-                UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
-                apf.xmldb.removeNode(UndoObj.extra.newNode);
+            if (newNode = UndoObj.extra.newNode) {
+                if (newNode.nodeType == 2)
+                    apf.xmldb.removeAttribute(UndoObj.extra.ownerElement, 
+                      newNode.nodeName);
+                else
+                    apf.xmldb.removeNode(UndoObj.extra.newNode);
             }
             else
                 apf.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
