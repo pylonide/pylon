@@ -878,7 +878,7 @@ apf.xmldb = new (function(){
                 return;
 
             //#ifdef __DEBUG
-            apf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");
+            apf.console.warn("Could not find model for Remote DataBinding connection, not sending change");
             //#endif
             return;
         }

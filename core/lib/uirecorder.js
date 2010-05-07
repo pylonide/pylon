@@ -8,7 +8,7 @@ apf.uirecorder = {
     isRecording     : false,
     isPlaying       : false,
     captureDetails  : false,
-    $o3             : null,
+    $o3             : null
 } 
 
 apf.uirecorder.capture = {

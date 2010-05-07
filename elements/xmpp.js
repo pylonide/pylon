@@ -111,6 +111,7 @@ apf.xmpp = function(struct, tagName){
     this.$sAJAX_ID   = this.$makeUnique("ajaxRDB");
     this.$retryCount = 0;
     this.$RID        = null;
+    this.$activeReq  = null;
 };
 
 (function() {
@@ -264,8 +265,17 @@ apf.xmpp = function(struct, tagName){
     // #endif
 
     this.$supportedProperties.push("type", "auth", "poll-timeout", "resource",
-        "auto-register", "auto-confirm", "auto-deny", "model", "model-contents",
-        "muc-domain", "muc-model", "rdb-domain", "rdb-model", "rdb-bot");
+        "domain", "auto-register", "auto-confirm", "auto-deny"
+        // #ifdef __TP_XMPP_ROSTER
+        , "model", "model-contents"
+        // #endif
+        // #ifdef __TP_XMPP_MUC
+        , "muc-domain", "muc-model"
+        // #endif
+        // #ifdef __TP_XMPP_RDB
+        , "rdb-domain", "rdb-model", "rdb-bot", "priority"
+        // #endif
+    );
 
     this.$propHandlers["type"] = function(value) {
         this.$xmppMethod = (value == "polling")
@@ -332,7 +342,7 @@ apf.xmpp = function(struct, tagName){
     // #ifdef __TP_XMPP_MUC
     this.$propHandlers["muc-model"] = function(value) {
         // parse MUC parameters
-        this.$mucDomain = this["muc-domain"] || "conference." + this.$domain;
+        this.$mucDomain = this["muc-domain"] || "conference." + this.domain;
         if (value) {
             value          = value + "_muc";
             this.$canMuc   = true;
@@ -357,7 +367,7 @@ apf.xmpp = function(struct, tagName){
     // #ifdef __TP_XMPP_RDB
     this.$propHandlers["rdb-model"] = function(value) {
         // parse MUC parameters
-        this.$rdbDomain = this["rdb-domain"] || "rdb." + this.$domain;
+        this.$rdbDomain = this["rdb-domain"] || "rdb." + this.domain;
         if (value) {
             this.$canRDB   = true;
             this.$rdbModel = apf.setReference(value,
@@ -370,6 +380,11 @@ apf.xmpp = function(struct, tagName){
             // magic!
             this.implement(apf.xmpp_rdb);
         }
+    };
+
+    this.$propHandlers["priority"] = function(value) {
+        // set the new prio
+        this.priority = parseInt(value);
     };
 
     this.$initRDB = function() {
@@ -636,9 +651,10 @@ apf.xmpp = function(struct, tagName){
         var _self = this,
             req   = this.$reqStack.shift();
         ++this.$reqCount;
-        return this.get(this.url, {
+        return this.$activeReq = this.get(this.url, {
             callback: function(data, state, extra) {
                 --_self.$reqCount;
+                _self.$activeReq = null;
                 if (_self.$reqStack.length)
                     _self.$doXmlRequest();
 
@@ -778,20 +794,20 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["register"]       = reg || this.$autoRegister;
         this.$serverVars["previousMsg"]    = [];
         // #ifdef __TP_XMPP_ROSTER
-        this.$serverVars[ROSTER].registerAccount(username, this.$domain);
+        this.$serverVars[ROSTER].registerAccount(username, this.domain);
         // #endif
         // #ifdef __TP_XMPP_MUC
         if (this.$canMuc)
-            this.$mucRoster.registerAccount(username, this.$domain);
+            this.$mucRoster.registerAccount(username, this.domain);
         // #endif
         // #ifdef __TP_XMPP_RDB
         if (this.$canRDB)
-            this.$rdbRoster.registerAccount(username, this.$domain);
+            this.$rdbRoster.registerAccount(username, this.domain);
         // #endif
         this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
-                to             : this.$domain,
+                to             : this.domain,
                 xmlns          : constants.NS.jabber,
                 "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
@@ -800,7 +816,7 @@ apf.xmpp = function(struct, tagName){
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
                 rid            : this.$getRID(),
-                to             : this.$domain,
+                to             : this.domain,
                 route          : "xmpp:jabber.org:9999",
                 secure         : "true",
                 wait           : "120",
@@ -837,6 +853,8 @@ apf.xmpp = function(struct, tagName){
             var sPresence = createPresenceBlock({
                 type: constants.TYPE_UNAVAILABLE
             });
+            if (this.$activeReq)
+                this.cancel(this.$activeReq);
             this.$doXmlRequest(processDisconnect, this.$isPoll
                 ? createStreamElement.call(this, null, {
                     doClose: true
@@ -955,7 +973,9 @@ apf.xmpp = function(struct, tagName){
         // always fall back to anon authentication
         if (!found) {
             //#ifdef __DEBUG
-            apf.console.error("No supported authentication protocol found. Falling back to anonymous authentication, but that could fail!", "xmpp");
+            apf.console.error("No supported authentication protocol found. \
+                               Falling back to anonymous authentication, but \
+                               that could fail!", "xmpp");
             //#endif
             this.$serverVars["AUTH_TYPE"] = "ANONYMOUS";
         }
@@ -1030,7 +1050,7 @@ apf.xmpp = function(struct, tagName){
             var sType = this.$serverVars["AUTH_TYPE"],
                 sAuth = "<auth xmlns='" + constants.NS.sasl + "' mechanism='"
                     + sType + (sType == "PLAIN"
-                        ? "'>" + this.$serverVars["username"] + "@" + this.$domain
+                        ? "'>" + this.$serverVars["username"] + "@" + this.domain
                             + String.fromCharCode(0) + this.$serverVars["username"]
                             + String.fromCharCode(0) + this.$serverVars["password"]
                             + "</auth>"
@@ -1145,7 +1165,7 @@ apf.xmpp = function(struct, tagName){
             var sRealm = this.$serverVars["realm"],
                 md5    = apf.crypto.MD5;
             if (!sRealm)
-                this.$serverVars["realm"] = sRealm = this.$domain; //DEV: option to provide realm with a default
+                this.$serverVars["realm"] = sRealm = this.domain; //DEV: option to provide realm with a default
 
             if (sRealm)
                 this.$serverVars["digest-uri"] = "xmpp/" + sRealm;
@@ -1156,7 +1176,7 @@ apf.xmpp = function(struct, tagName){
 
             // for the calculations of A1, A2 and sResp below, take a look at
             // RFC 2617, Section 3.2.2.1
-            var A1 = md5.str_md5(this.$serverVars["username"] + ":" + this.$domain
+            var A1 = md5.str_md5(this.$serverVars["username"] + ":" + this.domain
                     + ":" + this.$serverVars["password"]) // till here we hash-up with MD5
                     + ":" + this.$serverVars["nonce"] + ":" + this.$serverVars["cnonce"],
 
@@ -1308,7 +1328,7 @@ apf.xmpp = function(struct, tagName){
             }, this.$isPoll
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
-                to             : this.$domain,
+                to             : this.domain,
                 xmlns          : constants.NS.jabber,
                 "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
@@ -1316,7 +1336,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                   rid            : this.$getRID(),
                   sid            : this.$serverVars[SID],
-                  to             : this.$domain,
+                  to             : this.domain,
                   "xml:lang"     : "en",
                   "xmpp:restart" : "true",
                   xmlns          : constants.NS.httpbind,
@@ -1378,7 +1398,7 @@ apf.xmpp = function(struct, tagName){
             var sIq = createIqBlock({
                     from  : this.$serverVars[JID],
                     id    : this.$sAJAX_ID,
-                    to    : this.$domain,
+                    to    : this.domain,
                     type  : "set",
                     xmlns : constants.NS.jabber
                 },
@@ -1529,17 +1549,19 @@ apf.xmpp = function(struct, tagName){
     function restartListener(data, state, extra) {
         clearTimeout(this.$listener);
         this.$listener = null;
+
+        var _self = this;
+        this.$listener = $setTimeout(function() {
+            _self.$listen();
+        }, this.$pollTimeout || 0);
+
+        // parse incoming data AFTER connection is respawned - more stable!
         if (data || state) {
             if (state != apf.SUCCESS)
                 return onError.call(this, constants.ERROR_CONN, extra.message, state);
             else
                 parseData.call(this, data);
         }
-
-        var _self = this;
-        this.$listener = $setTimeout(function() {
-            _self.$listen();
-        }, this.$pollTimeout || 0);
     }
 
     this.$restartListener = restartListener;
@@ -1555,7 +1577,6 @@ apf.xmpp = function(struct, tagName){
     function processStream(oXml, state) {
         clearTimeout(this.$listener);
         this.$listener = null;
-        parseData.call(this, oXml);
 
         var bNoListener = (this.$listening === false); //experimental
         this.$listening = false;
@@ -1567,6 +1588,8 @@ apf.xmpp = function(struct, tagName){
                 _self.$listen();
             }, this.$pollTimeout || 0);
         }
+        // parse incoming data AFTER connection is respawned - more stable!
+        parseData.call(this, oXml);
     }
 
     /*
@@ -1725,7 +1748,7 @@ apf.xmpp = function(struct, tagName){
                     apf.console.info("received the following from the server: "
                         + sMsg, "xmpp");
                     //#endif
-                    this.$mucSignal(constants.NS.datastatus, sFrom, sMsg);
+                    this.$rdbSignal(constants.NS.datastatus, sFrom, sMsg);
                 }
                 // #endif
             // #ifdef __TP_XMPP_ROSTER
@@ -2006,8 +2029,8 @@ apf.xmpp = function(struct, tagName){
         ),
         _self = this;
         this.$doXmlRequest(function(oXml) {
-                parseData.call(_self, oXml);
                 _self.$listen();
+                parseData.call(_self, oXml);
                 // if all is well, a contact is added to the roster.
                 // <presence to='contact@example.org' type='subscribe'/>
                 var sPresence = createPresenceBlock({
@@ -2372,6 +2395,7 @@ apf.xmpp = function(struct, tagName){
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         var _self = this;
         $setTimeout(function() {
+            _self.domain = _self.domain || _self.$domain;
             // #ifdef __TP_XMPP_MUC
             if (!_self.$canMuc)
                 _self.$initMuc();

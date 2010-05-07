@@ -190,7 +190,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
     /**
      * When a JID is added, deleted or updated, it will pass this function that
      * marshalls the Roster contents.
-     * It ensures that the Remote SmartBindings link with a model is synchronized
+     * It ensures that the Remote Databindings link with a model is synchronized
      * at all times.
      *
      * @param {Object} oEnt

@@ -596,7 +596,7 @@
  * Smartbindings enable many other features in a Ajax.org Platform
  * application. Actions done by the user can be undone by calling 
  * {@link element.actiontracker.method.undo} of the element. The 
- * Remote Smartbinding element can send changes on data to other clients.
+ * Remote Databinding element can send changes on data to other clients.
  *
  * This element is created especially for reuse. Multiple elements can reference
  * a single smartbinding element by setting the value of the 'smartbinding'

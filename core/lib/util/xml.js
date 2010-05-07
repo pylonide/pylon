@@ -808,7 +808,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (xmlNode == xmlContext)
         return ".";
 
-    if (!xmlNode.parentNode && !xmlNode.ownerElement) {
+    if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         //#ifdef __DEBUG
         throw new Error(apf.formatErrorString(0, null, 
             "Converting XML to Xpath", 

@@ -86,7 +86,7 @@
  *   queue          handles queuing of actions that can only be executed whilst online.
  *   state          records the state of all elements in this application on a property level.
  * @attribute {Number} rdb-timeout the number of milliseconds
- * after the remote smartbindings server considers a client
+ * after the remote databindings server considers a client
  * offline and destroys all saved offline messages.
  * 
  * @default_private
@@ -402,7 +402,7 @@ apf.offline = {
                         //#ifdef __DEBUG
                         apf.console.warn("Warning, potential data corruption\
                             because you've cancelled reloading the data of all \
-                            remote smartbinding synchronized models.");
+                            remote databinding synchronized models.");
                         //#endif
 
                         break;

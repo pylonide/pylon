@@ -226,10 +226,10 @@ apf.actiontracker = function(struct, tagName){
     this.getDone = function(time) {
         if (typeof time != "number")
             return [];
-        for (var o, l, i = l = this.$stackDone.length; i >= 0; --i) {
-            if (!(o = this.$stackDone[i]) || !o.timestamp) continue;
+        for (var o, i = this.$undostack.length; i >= 0; --i) {
+            if (!(o = this.$undostack[i]) || !o.timestamp) continue;
             if (o.timestamp >= time)
-                return this.$stackDone.slice(i);
+                return this.$undostack.slice(i);
         }
         return [];
     };
@@ -237,10 +237,10 @@ apf.actiontracker = function(struct, tagName){
     this.getUndone = function(time) {
         if (typeof time != "number")
             return [];
-        for (var o, i = 0, l = this.$stackDone.length; i < l; ++i) {
-            if (!(o = this.$stackUndone[i]) || !o.timestamp) continue;
+        for (var o, i = 0, l = this.$redostack.length; i < l; ++i) {
+            if (!(o = this.$redostack[i]) || !o.timestamp) continue;
             if (o.timestamp <= time)
-                return this.$stackUndone.slice(0, i + 1);
+                return this.$redostack.slice(0, i + 1);
         }
         return [];
     };

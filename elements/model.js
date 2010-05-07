@@ -148,7 +148,7 @@ apf.model = function(struct, tagName){
     };
     
     //#ifdef __WITH_RDB
-    //Connect to a remote smartbinding
+    //Connect to a remote databinding
     this.$propHandlers["remote"] = function(value, prop){
         this.unshare();
 
@@ -163,7 +163,7 @@ apf.model = function(struct, tagName){
         if (!this.rdb || !this.rdb.sessions) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading AML into model",
-                "Could not find reference to remote smartbinding: '"
+                "Could not find reference to remote databinding: '"
                 + this.getAttribute("remote") + "'", this))
         }
         //#endif

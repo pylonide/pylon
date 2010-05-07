@@ -67,41 +67,6 @@ apf.xmpp_rdb = function(){
     }
 
     /**
-     * Get the status code from a server response XML document and compare it
-     * with an expected status 'iStatus'. Status codes are usually located in a
-     * 'code' attribute on a <status> stanza.
-     *
-     * @param {XMLDocument} oXml    Document that may contain <status> nodes
-     * @param {Number}      iStatus Expected status code
-     * @type  {mixed}
-     */
-    this.$getStatusCode = function(oXml, iStatus) {
-        var aStatuses = oXml.getElementsByTagName("status");
-        for (var i = 0, l = aStatuses.length; i < l; i++) {
-            if (aStatuses[i]
-              && parseInt(aStatuses[i].getAttribute("code")) == iStatus)
-                return iStatus;
-        }
-        return false;
-    }
-
-    /**
-     * Get a list of available chat rooms from the XMPP server.
-     *
-     * @type {void}
-     */
-    this.queryDocs = function() {
-        if (!this.$canRDB || !this.$serverVars[CONN]) return;
-        doRequest(this.$createIqBlock({
-                from  : this.$serverVars[JID],
-                to    : this.$rdbDomain,
-                type  : "get",
-                id    : this.$makeUnique("disco")
-            }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
-        );
-    };
-
-    /**
      * Adds/ registers a room to the local Roster instance.
      *
      * @param {String} sJID    Jabber ID of the room we're adding
@@ -133,28 +98,6 @@ apf.xmpp_rdb = function(){
      */
     this.$addDocOccupant = function(sJID) {
         return this.$rdbRoster.getEntityByJID(sJID);
-    };
-
-    /**
-     * Provided a room, get all its info and capabilities.
-     * Not implemented yet.
-     *
-     * @param {String} sDoc
-     */
-    this.queryDocInfo = function(sDoc) {
-        // @todo Room info querying
-    };
-
-    this.getDoc = function(sDoc, callback) {
-        if (!this.$canRDB || !this.$serverVars[CONN]) return;
-        rdbVars["doc_cb_" + sDoc] = callback;
-        doRequest(this.$createIqBlock({
-                from  : this.$serverVars[JID],
-                to    : sDoc,
-                type  : "get",
-                id    : this.$makeUnique("disco")
-            }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
-        );
     };
 
     this.$rdbSignal = function(oNode) {
@@ -211,7 +154,6 @@ apf.xmpp_rdb = function(){
         // client logic...
         else {
             if (isNS && oNode == oXmpp.NS.datastatus) {
-                debugger;
                 this.dispatchEvent("datachange", {
                     session : sDoc,
                     body    : arguments[2]
@@ -244,66 +186,6 @@ apf.xmpp_rdb = function(){
                 });
             }
         }
-
-        /*sDoc  = sDoc.replace(/\/.*$/, "");
-        var f  = "doc_cb_" + sDoc,
-            cb = rdbVars[f];
-        delete rdbVars[f];
-        switch (iType) {
-            case apf.xmpp_rdb.DOC_CREATE:
-            case apf.xmpp_rdb.DOC_EXISTS:
-                if (typeof cb == "function")
-                    cb(true);
-                break;
-            case apf.xmpp_rdb.DOC_NOTFOUND:
-                if (typeof cb == "function")
-                    cb(false);
-                break;
-            case apf.xmpp_rdb.DOC_JOINED:
-            case apf.xmpp_rdb.DOC_LEFT:
-                debugger;
-                var oEnt = this.$rdbRoster.getEntityByJID(oData.fullJID, {
-                    room       : sDoc,
-                    roomJID    : oData.roomJID,
-                    affiliation: oData.affiliation,
-                    role       : oData.role,
-                    status     : oData.status
-                });
-                var oOwner    = this.$rdbRoster.getRoomOwner(sDoc),
-                    oRoster   = this.$serverVars["roster"];
-                // #ifdef __WITH_RDB
-                // if the user created this room, the initial data needs to be sent to
-                // any participant other than itself
-                if (!oOwner || oEnt.nick == oRoster.username          // meself
-                  || oOwner.nick != oRoster.username || !oEnt.roomJID // we're not the owner
-                  || oEnt.role == "none")                             // user just left the room
-                    return;
-
-                this.dispatchEvent("datastatuschange", {
-                    from     : oEnt.roomJID,
-                    session  : sDoc.substring(0, sDoc.indexOf("@")),
-                    type     : "submit",
-                    baseline : 1,
-                    modeldata: 1,
-                    fields   : {}
-                });
-                // #endif
-                break;
-            case oXmpp.NS.datastatus:
-                // a datastatus message will typically look like this:
-                // <iq from="romeo@shakespeare.net/home" type="result" xmlns="jabber:iq:rdbstatus">
-                //     <item status="change" prevdelta="x" currdelta="y"><![CDATA[
-                //         ...
-                //     ]]></item>
-                // </iq>
-
-                // 'old' style data message passing
-                this.dispatchEvent("datachange", {
-                    session : sDoc.split("@")[0],
-                    body    : oData
-                });
-                break;
-        }*/
     };
 
     this.joinDoc = function(sDoc, sPassword, fCallback) {
@@ -437,9 +319,8 @@ apf.xmpp_rdb = function(){
     };
 
     this.sendRDB = function(sModel, sMsg) {
-        var sDoc = this.$rdbRoster.sanitizeJID(sModel + "@" + this.$rdbDomain);
         this.sendMessage({
-            to     : sDoc,
+            to     : this.$rdbRoster.sanitizeJID(sModel + "@" + this.$rdbDomain),
             message: sMsg,
             thread : "rdb"
         });
@@ -459,7 +340,7 @@ apf.xmpp_rdb = function(){
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sDomain,
-                prio  : this.dispatchEvent("priority") || null
+                prio  : this.dispatchEvent("priority") || this.priority || null
             })
         );
     };

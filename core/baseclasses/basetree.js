@@ -799,7 +799,6 @@ apf.BaseTree = function(){
                 //LEFT
                 if (this.$tempsel)
                     this.$selectTemp();
-                    debugger;
                 if (this.caret.selectSingleNode(this.each) 
                   && !this.isCollapsed(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 2)

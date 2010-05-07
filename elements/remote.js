@@ -65,7 +65,7 @@
  * </code>
  * Remarks:
  * Although locking is solved in smartbindings it is directly connected
- * to remote smartbindings. When multiple people are working within the same
+ * to remote databindings. When multiple people are working within the same
  * application it's important to have a system that prevents corruption of data
  * and data loss by either user overwriting records edited during the same period.
  * Ajax.org Platform has built in support for optimistic and pessimistic locking
@@ -102,12 +102,12 @@
  * @addnode elements
  *
  * @define unique Element defining what is unique about a set of data elements.
- * This enables remote smartbindings to point to xml data in  the same way on all
+ * This enables remote databindings to point to xml data in  the same way on all
  * clients. This way changes that happen to these elements are described
  * non-ambiguously. The tagName can be replaced by the tagName of the
  * {@link term.datanode data node} for which the uniqueness is specified.
  * Example:
- * This example shows a complex data set and a remote smartbinding that
+ * This example shows a complex data set and a remote databinding that
  * specifies the uniqueness of all nodes concerned.
  * <code>
  *  <a:model id="mdlPersons" remote="rmtPersons">
@@ -311,14 +311,26 @@ apf.remote = function(struct, tagName){
         if (!model) {
             //Maybe make this a warning?
             throw new Error(apf.formatErrorString(0, this, 
-                "Remote Smartbinding Received", "Could not find model when "
-              + "receiving data for it with name '" + oMessage.model + "'"));
+                "Remote Databinding Received", "Could not find model when \
+                 receiving data for it with name '" + oMessage.model + "'"));
         }
         //#endif
-        
+
         var oError, beforeNode, xmlNode,
             disableRDB       = apf.xmldb.disableRDB;
         apf.xmldb.disableRDB = 2; //Feedback prevention
+
+        if (!oSession && oMessage.model)
+            oSession = this.sessions[this.transport.normalizeEntity(oMessage.model)];
+        // #ifdef __DEBUG
+        if (!oSession) {
+            //Maybe make this a warning?
+            throw new Error(apf.formatErrorString(0, this,
+                "Remote Databinding Received", "Could not find session when \
+                 receiving data for it with name '"
+               + this.transport.normalizeEntity(oMessage.model) + "'"));
+        }
+        // #endif
 
         // correct timestamp with the session baseline
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
@@ -375,7 +387,7 @@ apf.remote = function(struct, tagName){
         //#ifdef __DEBUG
         else {
             oError = new Error(apf.formatErrorString(0, this,
-                "Remote Smartbinding Received", "Could not get XML node from \
+                "Remote Databinding Received", "Could not get XML node from \
                  model with Xpath '" + q[1] + "'"));
         }
         //#endif
