@@ -1,4 +1,9 @@
-var o3_mouseTranslate = [3,4];
+var o3_mouseTranslate = (apf.isIE) 
+    ? [3,4] 
+    : (apf.isGecko || apf.isChrome)
+        ? [1, 2]
+        : [0, 0];
+
 var macroList = [];
 var curMacroIdx = 0;
 var curPlaylistIdx = 0;
@@ -22,6 +27,7 @@ var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", {
     },
     product : 'O3Demo'
 });
+
 apf.$debugwin.apf.uirecorder.$o3 = $o3;
 
 // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
@@ -47,7 +53,7 @@ mdlMacro.addEventListener("update", updateMacros);
 mdlPlaylist.addEventListener("update", updatePlaylists);
 
 // if last playlist has children, add new playlist
-if (mdlPlaylist.data.lastChild.childNodes.length) {
+if (mdlPlaylist.data.children && mdlPlaylist.data.lastChild.childNodes.length) {
     addPlaylist();
 }
 
@@ -113,19 +119,6 @@ function loadPlaylists(xml) {
 }
 
 function updateMacros(e) {
-    // look for references in mdlPlaylist on delete macro
-    if (e.action == "remove") {
-        var id = e.xmlNode.getAttribute("id");
-
-        var playlists = mdlPlaylist.data.childNodes;
-        for (var pi = 0, pl = playlists.length; pi < pl; pi++) {
-            var nodes = playlists[pi].selectNodes("test[@id='" + id + "']");
-            for (var ni = 0, nl = nodes.length; ni < nl; ni++) {
-                apf.xmldb.removeNode(nodes[ni]);
-            }
-        }
-        savePlaylists();
-    }
     saveMacros();
 };
 
@@ -201,10 +194,7 @@ function stopPlay() {
     btnRec.setProperty("disabled", false);
 }
 
-var lastClickPos = [];
-function playSingleMacro() {
-    lastClickPos = [event.clientX, event.clientY];
-    
+function playSingleMacro(e) {
     // set buttons state
     btnPlay.setProperty("visible", false);
     btnStopPlay.setProperty("visible", true);
@@ -228,12 +218,6 @@ function playMacro() {
 }
 
 function onPlaybackComplete(e) {
-    if (lastClickPos) {
-        // move mouse to last click position
-        //debugger;
-        //$o3.mouseTo()
-        lastClickPos = [];
-    }
     apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlaybackComplete);
     apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlayNextMacro);
     apf.$debugwin.apf.removeEventListener("apftest_testfailed", onTestFailed);
@@ -335,6 +319,24 @@ function onKeyDown(e) {
         apf.$debugwin.apf.console.error("playback aborted");
         
     }
+}
+
+function removeMacroFromPlaylist() {
+    // look for references in mdlPlaylist on delete macro
+    var id = atPlaylist.$undostack[atPlaylist.$undostack.length-1].args[0].xmlNode.getAttribute("id")
+
+    atPlaylist.begin(mdlPlaylist);
+    var playlists = mdlPlaylist.data.childNodes;
+    for (var pi = 0, pl = playlists.length; pi < pl; pi++) {
+        var nodes = playlists[pi].selectNodes("test[@id='" + id + "']");
+        for (var ni = 0, nl = nodes.length; ni < nl; ni++) {
+            apf.xmldb.removeNode(nodes[ni]);
+        }
+    }
+    atPlaylist.commit(mdlPlaylist);
+    savePlaylists();
+
+    updateMacros();
 }
 
 //var recordings = apf.storage.get("recordings", location.href.split("#")[0]);

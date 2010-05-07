@@ -680,6 +680,7 @@
                                 </a:bar>
                             </a:toolbar>
                             <a:list
+                                actiontracker = "atPlaylist"
                                 align    = "left"
                                 id       = "lstMacro"
                                 class    = "tplist"
@@ -688,6 +689,7 @@
                                 caption  = "[@name]"
                                 skin     = "macro_list">
                                 <a:drag match="[test]" copy="true" />
+                                <a:remove set="{removeMacroFromPlaylist()}" undo="atPlaylist" />
                             </a:list>
                             <a:toolbar
                               align  = "left-splitter"
@@ -739,8 +741,9 @@
                                 <a:rename match="[playlist]" />
                                 <a:move match="[test]" />
                                 <a:copy match="[test]" />
+                                <a:remove />
                             </a:tree>
-                            <div model="mdlPlaylist" class="playlist_buttons">
+                            <div id="plButtons" model="mdlPlaylist" class="playlist_buttons">
                                 <?lm
                                     var btn_top = 27;
                                     var cbx_top = 31;
@@ -769,27 +772,11 @@
                     
                     <a:model id="mdlMacro">
                         <data>
-                            <test name="Recording 1" id="m1" />
-                            <test name="Recording 2" id="m2" />
-                            <test name="Recording 3" id="m3" />
-                            <test name="Recording 4" id="m4" />
                         </data>
                     </a:model>
                     <a:model id="mdlPlaylist">
                         <data>
-                            <playlist caption="playlist1" id="p1">
-                                <test ref="m1"></test>
-                                <test ref="m2"></test>
-                                <test ref="m3"></test>
-                                <test ref="m4"></test>
-                            </playlist>
-                            <playlist caption="playlist2" id="p2">
-                                <test ref="m1"></test>
-                                <test ref="m2"></test>
-                                <test ref="m3"></test>
-                                <test ref="m4"></test>
-                            </playlist>
-                            <playlist caption="Playlist 3" id="p3"/>
+                            <playlist caption="Playlist 1" id="p1"/>
                         </data>
                     </a:model>
                     

@@ -7,9 +7,9 @@
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
     
     <script LANGUAGE="JavaScript" type="text/javascript">
-    var ctx;
+    var ctx, g;
     
-    var gravity     = 0.0015;
+    var gravity     = 0;
     var friction    = 0.99;
     var bounce      = .6;
     var framerate   = 50;
@@ -20,20 +20,26 @@
     
     // [framerate, numRects]
     var tests = [
-        [50, 5, "waterfall"],
-        [50, 5, "bounce"],
-        [50, 10, "waterfall"],
-        [50, 10, "bounce"],
-        [50, 20, "waterfall"],
-        [50, 20, "bounce"],
-        [50, 50, "waterfall"],
-        [50, 50, "bounce"],
         [50, 100, "waterfall"],
         [50, 100, "bounce"],
         [50, 200, "waterfall"],
         [50, 200, "bounce"],
+        [50, 300, "waterfall"],
+        [50, 300, "bounce"],
+        [50, 400, "waterfall"],
+        [50, 400, "bounce"],
         [50, 500, "waterfall"],
-        [50, 500, "bounce"]
+        [50, 500, "bounce"],
+        [50, 600, "waterfall"],
+        [50, 600, "bounce"],
+        [50, 700, "waterfall"],
+        [50, 700, "bounce"],
+        [50, 800, "waterfall"],
+        [50, 800, "bounce"],
+        [50, 900, "waterfall"],
+        [50, 900, "bounce"],
+        [50, 1000, "waterfall"],
+        [50, 1000, "bounce"]
     ]
     
     var curTestIdx = 0;
@@ -41,6 +47,7 @@
     function init(testIdx){
         var testIdx = testIdx || 0;
         ctx = new apf.vector.vml('drawnode',1500,900,0,0,'white');
+        g = ctx.group({x:0,y:0,w:800,h:600});
         
         draw(curTestIdx);
     }
@@ -64,7 +71,7 @@
         var cnt = 0;
         var ignored = 0;
         var interval = window.setInterval(function(){
-            if (ignored == rects.length || new Date().getTime() - startTime >= 2000) {
+            if (ignored == rects.length || new Date().getTime() - startTime >= 4000) {
                 clearInterval(interval);
                 $('stats').innerHTML += "\
                     <div class='statBox'>\
@@ -82,16 +89,19 @@
 
             var timeDiff = new Date().getTime() - lastTime;
             lastTime += timeDiff;
-            
+            var right = 1470;
+            var bottom = 864;
+            var newColor;
+            var newAlpha = (4000-(new Date().getTime() - startTime)) / 4000 || 0;
             for (var i = 0, r, l = rects.length; i < l; i++) {
-                if ((r=rects[i]).ignore) {
-                    continue;
-                }
+                newColor = null;
+                if ((r=rects[i]).ignore) continue;
+                
                 var newX = __floor(r.x + timeDiff*r.dx),
                     newY = __floor(r.y + timeDiff*r.dy);
                 
                 if (anim == "waterfall") {
-                    if (newY <= 1500) {
+                    if (newX > 0 && newX <= right && newY > 0 && newY <= bottom) {
                         r.dy += gravity * timeDiff;
                         newX = r.x + timeDiff*r.dx;
                         newY = r.y + timeDiff*r.dy;
@@ -107,28 +117,31 @@
                 //bounce against borders
                 else if (anim == "bounce") {
                     r.dy += gravity * timeDiff;
-                    if (newY < 0 || newY > 880) {
+                    if (newY < 0 || newY > bottom) {
                         r.dy *= -bounce;
-                        newY = (newY >= 880) ? 880 : 0;
+                        newY = (newY >= bottom) ? bottom : 0;
+                        newColor = colors[Math.floor(colors.length*Math.random())]
                     }
-                    if (newX < 0 || newX > 1500) {
+                    if (newX < 0 || newX > right) {
                         r.dx *= -bounce;
-                        newX = (newX >= 1500) ? 1500 : 0;
+                        newX = (newX >= right) ? right : 0;
+                        newColor = colors[Math.floor(colors.length*Math.random())]
                     }
                     else {
                         r.dx *= friction;
                     }
-                    
-                    if (newY >= 880 && r.dx > -.2 && r.dx < .2 && r.dy > -.2 && r.dy < .2) {
+                    /*
+                    if (newY >= bottom && r.dx > -.2 && r.dx < .2 && r.dy > -.2 && r.dy < .2) {
                         r.dy = 0;
                         r.dx = 0;
-                        newY = 880;
+                        newY = bottom;
                         r.ignore = true;
                         ignored++;
                     }
+                    */
                 }
                 
-                r.shape.style({x: r.x=newX, y: r.y=newY});
+                r.shape.style(newColor?{x: r.x=newX, y: r.y=newY, f: newColor, o: newAlpha}:{x: r.x=newX, y: r.y=newY, o: newAlpha});
             }
             ctx.repaint();
             
@@ -145,12 +158,12 @@
         },1000/framerate);
     }
     
-    var colors = ["black", "blue", "red", "green", "yellow"];
+    var colors = ["blue", "red", "green", "yellow"];
     function Rect() {
         this.ignore = false;  // flag for ignoring calculating this shape
         
-        this.startX  = Math.ceil(900 + 100*Math.random());
-        this.startY  = Math.ceil(150 + 100*Math.random());
+        this.startX  = Math.ceil(725 + 20*Math.random());
+        this.startY  = Math.ceil(422 + 20*Math.random());
         this.x  = this.startX;
         this.y  = this.startY;
 
@@ -162,13 +175,11 @@
         this.shape = ctx.rect({
             x: this.x,
             y: this.y,
-            w: 10,
-            h: 10,
-            s: colors[1],
-            f: colors[1]
-            //s: colors[Math.floor(colors.length*Math.random())],
-            //f: colors[Math.floor(colors.length*Math.random())]
-        })
+            w: 20,
+            h: 20,
+            //f: colors[1]
+            f: colors[Math.floor(colors.length*Math.random())]
+        }, g)
         
         this.reset = function() {
             this.ignore = false;

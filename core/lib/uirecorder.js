@@ -233,7 +233,7 @@ apf.uirecorder.capture = {
             }
         }
         // mouseup after selecting dropdown item, set dropdown as amlNode, dropdown popup not visible after mousedown and mouseup
-        else if (eventName == "mouseup" && this.$prevMouseDownAction && this.$prevMouseDownAction.amlNode.type == "dropdown") {
+        else if (eventName == "mouseup" && this.$prevMouseDownAction && this.$prevMouseDownAction.amlNode && this.$prevMouseDownAction.amlNode.type == "dropdown") {
             // copy amlNode from mousedown
             data = this.$prevMouseDownAction.amlNode;
         }
@@ -463,14 +463,16 @@ apf.uirecorder.capture = {
             actionList[0].time = 0;
             actionList[1].time = 100;
 
-            if (this.$keyActions[1].amlNode.type != "list") {
-                if (!this.$keyActions[1].amlNode.activeElement)
-                    testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
-                else
-                    testXml.setAttribute("name", "click on " + this.$keyActions[1].amlNode.activeElement.name + " of " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
-            }
-            else {
-                testXml.setAttribute("name", "select " + this.$keyActions[1].amlNode.type + " item " + (this.$keyActions[1].amlNode.selected.value || this.$keyActions[1].amlNode.selected.xpath));
+            if (this.$keyActions[1].amlNode) {
+                if (this.$keyActions[1].amlNode.type != "list") {
+                    if (!this.$keyActions[1].amlNode.activeElement)
+                        testXml.setAttribute("name", "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                    else
+                        testXml.setAttribute("name", "click on " + this.$keyActions[1].amlNode.activeElement.name + " of " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath)));
+                }
+                else {
+                    testXml.setAttribute("name", "select " + this.$keyActions[1].amlNode.type + " item " + (this.$keyActions[1].amlNode.selected.value || this.$keyActions[1].amlNode.selected.xpath));
+                }
             }
         }
 
@@ -965,7 +967,9 @@ apf.uirecorder.playback = {
                     return;
                 }
                 // amlNode not visible
-                else if (!amlNode.visible || (amlNode.$ext.offsetTop == 0 && amlNode.$ext.offsetLeft == 0 && amlNode.$ext.offsetWidth == 0 && amlNode.$ext.offsetHeight == 0)) {
+                
+                else if (amlNode.visible == false || ((amlNode.localName && amlNode.localName != "body" || !amlNode.localName) && amlNode.$ext.offsetTop == 0 && amlNode.$ext.offsetLeft == 0 && amlNode.$ext.offsetWidth == 0 && amlNode.$ext.offsetHeight == 0)) {
+                    debugger;
                     this.$testFailed("amlNode " + (amlNodeXml.getAttribute("id") || ((amlNodeXml.getAttribute("caption") ? amlNodeXml.getAttribute("tagName") + " " + amlNodeXml.getAttribute("caption") : amlNodeXml.getAttribute("xpath")))) + " not visible");
                     return;
                 }
