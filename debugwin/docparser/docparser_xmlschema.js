@@ -196,7 +196,6 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
             attrList = aCopy;
         }
 
-
         var evtList = [];
         if (this.obj.event && this.obj.event.length)
             evtList = this.obj.event;
@@ -341,7 +340,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
                 }
                 
                 // search for possible values in description    
-                else if (attribute.description && attribute.description.length) {
+                if (attribute.description && attribute.description.length) {
                     for (var description, possiblevalues, d = 0, dl = attribute.description.length; d < dl; d++) {
                         description = attribute.description[d];
                         if (d == 0 && description.type == "") {
