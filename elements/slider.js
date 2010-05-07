@@ -139,7 +139,7 @@ apf.slider = function(struct, tagName){
     this.min         = 0;
     this.max         = 1000001;
     this.isOpened    = false;
-    this.hasTSlider  = false; 
+    this.$hasTSlider  = false; 
 
     this.$supportedProperties.push("step", "mask", "min", "max", "slide",
         "value", "markers");
@@ -341,13 +341,13 @@ apf.slider = function(struct, tagName){
             return;
 
         this.$value = value;
-        this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
+        var value = Math.max(this.min, Math.min(this.max, value)) || 0;
 
         var max, min, offset,
             _self      = this,
             multiplier = this.max == this.min
                 ? 0
-                : (this.value - this.min) / (this.max - this.min);
+                : (value - this.min) / (this.max - this.min);
 
         if (this.$dir == "horizontal") {
             max = (this.oSlider.offsetWidth
@@ -417,12 +417,12 @@ apf.slider = function(struct, tagName){
                     break;
                 case "#":
                     var tempValue = (this.step
-                        ? (Math.round(this.value / this.step) * this.step)
-                        : this.value);
+                        ? (Math.round(value / this.step) * this.step)
+                        : value);
                     var inputValue = new Number(tempValue).toFixed(mask[1] ? mask[1].length : 0);
                     break;
                 default:
-                    var inputValue = this.mask[Math.round(this.value - this.min) / (this.step || 1)];
+                    var inputValue = this.mask[Math.round(value - this.min) / (this.step || 1)];
                     break;
                    
             }
@@ -440,14 +440,14 @@ apf.slider = function(struct, tagName){
             }
             //Number
             else if (this.mask == "#") {
-                //status = this.value;
+                //status = value;
                 this.oLabel.nodeValue = this.step
-                    ? (Math.round(this.value / this.step) * this.step)
-                    : this.value;
+                    ? (Math.round(value / this.step) * this.step)
+                    : value;
             }
             //Lookup
             else {
-                this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min)
+                this.oLabel.nodeValue = this.mask[Math.round(value - this.min)
                     / (this.step || 1)]; //optional floor ??
             }*/
         }
@@ -527,7 +527,7 @@ apf.slider = function(struct, tagName){
                 break;
             case 13:
                 //ENTER
-                if (this.hasTSlider)
+                if (this.$hasTSlider)
                     this.setLabelValue(this.oLabel.value);
                 break;
             default:
@@ -570,7 +570,7 @@ apf.slider = function(struct, tagName){
         this.oSliderContainer.style.display = "none";
         
         //Place grabber in the same position as button
-        if(this.hasTSlider) {
+        if(this.$hasTSlider) {
             right -= scWidth - parseInt(this.oKnob.style.left) - kWidth;
         } 
 
@@ -624,7 +624,7 @@ apf.slider = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", this.$baseCSSname + "Down"]);
         
-        if (this.hasTSlider)
+        if (this.$hasTSlider)
             this.setLabelValue(this.oLabel.value);
     };
     
@@ -646,25 +646,23 @@ apf.slider = function(struct, tagName){
             }
         });
         
-        this.hasTSlider = this.$hasLayoutNode("container");
-        if (this.hasTSlider) {
+        this.$hasTSlider = this.$hasLayoutNode("container");
+        if (this.$hasTSlider) {
             this.$getNewContext("container");
+            this.oSliderContainer = this.$getExternal("container");
             
-            this.oSliderContainer = this.$getExternal("container", null, function(oExt1) {
-            });
+            //Allows to select text in IE
+            this.$ext.onselectstart = function(e){
+                if (!e) e = event;
+                e.cancelBubble = true;
+            }
         }
 
         this.oLabel   = this.$getLayoutNode("main", "status", this.$ext);
         this.oFill    = this.$getLayoutNode("main", "fill", this.$ext);
         this.oBalloon = this.$getLayoutNode("main", "balloon", this.$ext);
-        
-        //Allows to select text in IE
-        this.$ext.onselectstart = function(e){
-            if (!e) e = event;
-            e.cancelBubble = true;
-        }
 
-        if (this.hasTSlider) {
+        if (this.$hasTSlider) {
             this.oMarkers = this.$getLayoutNode("container", "markers", this.oSliderContainer);
             this.oKnob    = this.$getLayoutNode("container", "grabber", this.oSliderContainer);
             this.oSlider  = this.$getLayoutNode("container", "slider", this.oSliderContainer);
@@ -727,7 +725,7 @@ apf.slider = function(struct, tagName){
         }
 
         this.oKnob.onmousedown = function(e){
-            if (_self.disabled)
+            if (_self.disabled || _self.editable)
                 return false;
 
             //@todo use start action here

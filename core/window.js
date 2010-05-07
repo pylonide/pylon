@@ -1535,6 +1535,8 @@ apf.window = function(){
         window.onmousewheel   =
         window.onblur         = null;
 
+        //@todo use apf.removeEvent
+
         document.oncontextmenu =
         document.onmousedown   =
         document.onmousemove   =

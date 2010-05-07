@@ -319,7 +319,7 @@ apf.Class.prototype = new (function(){
      *                                   is used to calculate a new value.
      * @private
      */
-    this.$bindProperty = function(myProp, bObject, bProp, fParsed){
+    this.$bindProperty = function(myProp, bObject, bProp, fParsed, bRecip){
         if (!fParsed)
             return bObject.$handlePropSet(bProp, this[myProp]);
 
@@ -378,6 +378,21 @@ apf.Class.prototype = new (function(){
             
             isBeingCalled = false;
         });
+
+        //Bi-directional property binding
+        if (bRecip) {
+            eventName = PROP + bProp;
+            var _self = this;
+            (bObject.$eventsStack[eventName] || (bObject.$eventsStack[eventName] = [])).push(
+                eFunc.recip = function(){
+                    if (isBeingCalled) //Prevent circular refs
+                        return;
+                    
+                    isBeingCalled = true;
+                    _self.setProperty(myProp, bObject[bProp], true, false, 10);//e.initial ? 0 :  
+                    isBeingCalled = false;
+                });
+        };
         
         //eFunc({initial: true});
         
@@ -526,14 +541,16 @@ apf.Class.prototype = new (function(){
 
             if (!this.$funcHandlers[prop])
                 this.$funcHandlers[prop] = [];
+                
             this.$funcHandlers[prop].push({
                 amlNode : node, 
                 prop    : bProp, 
-                handler : node.$bindProperty(bProp, this, prop, fParsed),
-                bidir   : fParsed.type == 4 
+                handler : node.$bindProperty(bProp, this, prop, fParsed, 
+                  fParsed.type == 4 && SEL.indexOf(prop) == -1 && exclNr != 3) /*,
+                bidir   : 
                   && this.$bindProperty(prop, node, bProp, function(){
                     return _self[prop];
-                  })
+                  })*/
             });
             
             found = true;
@@ -603,8 +620,8 @@ apf.Class.prototype = new (function(){
         if (h && typeof h != FUN) {
             for (i = 0, l = h.length; i < l; i++) {
                 (f = h[i]).amlNode.removeEventListener(PROP + f.prop, f.handler);
-                if (f.bidir)
-                    this.removeEventListener(PROP + prop, f.bidir);
+                if (f.handler.recip)
+                    this.removeEventListener(PROP + prop, f.handler.recip);
             }
             delete this.$funcHandlers[prop];
         }
