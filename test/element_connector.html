@@ -1,0 +1,85 @@
+<html>
+ <head>
+     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+    
+    <script LANGUAGE="JavaScript" type="text/javascript">
+    var ctx, g;
+
+    function init(testIdx){
+        ctx = new apf.vector.vml('drawnode',800,600,0,0,'white');
+        g = ctx.group({x:0,y:0,w:800,h:600});
+        
+        drawConnections();
+    }
+    var connections = [
+        ["el1", "el2", "connection1"],
+        ["el3", "el4", "connection2"]
+    ];
+    function drawConnections() {
+        for (var p, lines = [], el1, el2, c, i = 0, l = connections.length; i < l; i++) {
+            if (right(el1 = document.getElementById((c = connections[i])[0]))[0] < left(el2 = document.getElementById((c)[1]))[0])
+                p = [right, left];
+            else if (right(el2)[0] < left(el1)[0])
+                p = [left, right];
+            else
+                p = null;
+            if (!p) continue;
+            
+            lines[i] = ctx.rect({
+                x: p[0](el1)[0],
+                y: p[0](el1)[1],
+                w: p[1](el2 = document.getElementById((c)[1]))[0] - p[0](el1)[0],
+                h: 2,
+                //f: colors[1]
+                f: "black"
+            }, g);
+        }
+        ctx.repaint();
+    }
+    
+    function left(el) {
+        return [el.offsetLeft, el.offsetTop + el.offsetHeight/2];
+    }
+    function right(el) {
+        return [el.offsetLeft + el.offsetWidth, el.offsetTop + el.offsetHeight/2, ];
+    }
+    function top(el) {
+        return [el.offsetLeft + el.offsetWidth/2, el.offsetTop];
+    }
+    function bottom(el) {
+        return [el.offsetLeft + el.offsetWidth/2, el.offsetTop + el.offsetHeight];
+    }
+    
+    </script>
+    <style type="text/css">
+        #drawNode {
+            position: absolute;
+            left: 0;
+            top: 0;
+            border: 1px solid red;
+        }
+        .element {
+            position: absolute;
+            width   : 100px;
+            height  : 50px;
+            border  : 1px solid black;
+            background : "yellow";
+        }
+    </style>
+ </head>
+ <body onload="init()">
+    <div id="drawnode">
+    </div>
+    <div id="el1" class="element" style="left: 50px; background: red;"></div>
+    <div id="el2" class="element" style="left: 250px; background: yellow;"></div>
+    <div id="el3" class="element" style="top: 300px; left: 50px; background: green;"></div>
+    <div id="el4" class="element" style="top: 300px; left: 250px; background: blue;"></div>
+ </body>
+ 
+	
+
+ </html>
