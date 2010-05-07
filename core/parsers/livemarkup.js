@@ -1657,7 +1657,7 @@ apf.lm = new (function(){
                 },last_line);
             if (segment!=ol)
                 o_segs++
-        }else if( (o.length==7 || o.length==8) && o_segs == 1){
+        }else if( (ol==7 || ol==8) && o_segs == 1){
             is_single_prop = 0;
             for(c in o_props)is_single_prop++;
             if(is_single_prop!=1)is_single_prop = 0;  
