@@ -269,7 +269,7 @@ apf.AmlNode = function(){
                 "Invalid argument passed. Expecting an AmlElement."));
         }
         //#endif
-        
+
         if (this.nodeType == this.NODE_DOCUMENT) {
             if (this.childNodes.length) {
                 throw new Error(apf.formatErrorString(0, this,

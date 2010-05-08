@@ -42,8 +42,10 @@ apf.XhtmlHtmlElement = function(struct, tagName){
     this.focussable  = true;
     this.visible     = true;
     this.$isWindowContainer = true;
-    this.focus = function(){ this.dispatchEvent("focus"); };
-    this.blur  = function(){ this.dispatchEvent("blur"); };
+    //this.focus = function(){ this.dispatchEvent("focus"); };
+    //this.blur  = function(){ this.dispatchEvent("blur"); };
+    
+    this.implement(apf.Focussable);
     
     //#ifdef __WITH_FOCUS
     apf.window.$addFocus(this);

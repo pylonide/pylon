@@ -252,7 +252,7 @@ apf.AmlDocument = function(){
         return this.$commands[commandId.toLowerCase()] ? true : false;
     };
 
-    var special = {"commit":1,"rollback":1,"begin":1,"undo":1,"redo":1,"contextmenu":2};
+    var special = {"commit":1,"rollback":1,"begin":1,"undo":1,"redo":1,"contextmenu":2,"mode":2,"pause":1};
     this.execCommand = function(commandId, showUI, value, query){
         var f;
 
@@ -261,7 +261,7 @@ apf.AmlDocument = function(){
             return false;
         
         if (special[commandId] == 1)
-            return f.call(this);
+            return f.call(this, null, null, value);
         
         //Get Selection
         var nodes = this.getSelection().$getNodeList();

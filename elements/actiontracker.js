@@ -360,12 +360,18 @@ apf.actiontracker = function(struct, tagName){
      * @see element.actiontracker.method.commit
      * @see element.actiontracker.method.rollback
      */
-    this.begin = function(dataNode){
+    this.begin = function(dataNode, bClear){
         //Currently only supports nodes inheriting from apf.Class
         //In the future this same method should be used for xml dom elements
         //that support the mutation events
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
-            dataNode.$stack = this.$transtack[dataNode.$uniqueId] = [];
+            var id = dataNode.$uniqueId;
+            if (this.$transtack[id] && !bClear) {
+                //throw new Error("Existing transaction found!");
+                return;
+            }
+            
+            dataNode.$stack = this.$transtack[id] = [];
 
             dataNode.addEventListener("DOMCharacterDataModified", domCharMod);
             dataNode.addEventListener("DOMAttrModified",          domCharMod);
@@ -387,8 +393,9 @@ apf.actiontracker = function(struct, tagName){
                 //apf.xmldb.setNodeListener();
             
             var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
-            if (this.$transtack[id]) {
-                throw new Error("Existing transaction found!");
+            if (this.$transtack[id] && !bClear) {
+                //throw new Error("Existing transaction found!");
+                return;
             }
             
             this.$transtack[id] = [];
@@ -484,6 +491,36 @@ apf.actiontracker = function(struct, tagName){
         delete this.$transtack[id];
     }
     
+    this.pause = function(dataNode, bContinue){
+        var id = dataNode && (dataNode.$regbase || dataNode.$regbase === 0)
+            ? dataNode.$uniqueId
+            : dataNode.getAttribute(apf.xmldb.xmlIdTag);
+        
+        var stack = this.$transtack[id];
+        if (!stack) {
+            //#ifdef __DEBUG
+            throw new Error("Pausing non existent transaction");
+            //#endif
+            return;
+        }
+
+        if (bContinue) {
+            dataNode.addEventListener("DOMCharacterDataModified", domCharMod);
+            dataNode.addEventListener("DOMAttrModified",          domCharMod);
+            dataNode.addEventListener("DOMNodeInserted",          domNodeIns);
+            dataNode.addEventListener("DOMNodeRemoved",           domNodeRem);
+        }
+        else {
+            dataNode.removeEventListener("DOMCharacterDataModified", domCharMod);
+            dataNode.removeEventListener("DOMAttrModified",          domCharMod);
+            dataNode.removeEventListener("DOMNodeInserted",          domNodeIns);
+            dataNode.removeEventListener("DOMNodeRemoved",           domNodeRem);
+        }
+    }
+    
+    /**
+     * Executes a function as a single transaction
+     */
     this.transact = function(func, dataNode){
         this.begin(dataNode);
         func();
@@ -498,18 +535,19 @@ apf.actiontracker = function(struct, tagName){
             ? e.relatedNode
             : e.currentTarget;
 
-        this.$stack.push({
-            action : context.nodeType == 2
-              ? "setAttribute"
-              : "setTextNode",
-            args   : context.nodeType == 2
-              ? [e.currentTarget, e.attrName, e.newValue]
-              : [e.currentTarget, e.newValue],
-            extra  : {
-                name     : e.attrName,
-                oldValue : e.prevValue
-            }
-        });
+        if (context.nodeName.substr(0,2) != "a_") //ignore special apf attr
+            this.$stack.push({
+                action : context.nodeType == 2
+                  ? "setAttribute"
+                  : "setTextNode",
+                args   : context.nodeType == 2
+                  ? [e.currentTarget, e.attrName, e.newValue]
+                  : [e.currentTarget, e.newValue],
+                extra  : {
+                    name     : e.attrName,
+                    oldValue : e.prevValue
+                }
+            });
         
         e.$didtrans = true;
     };
@@ -527,13 +565,14 @@ apf.actiontracker = function(struct, tagName){
             });
         }
         else if (n.nodeType == 2) {
-            this.$stack.push({
-                action : "setAttribute",
-                args   : [n.ownerElement, n.nodeName, n.nodeValue],
-                extra  : {
-                    name : n.nodeValue
-                }
-            });
+            if (n.nodeName.substr(0,2) != "a_") //ignore special apf attr
+                this.$stack.push({
+                    action : "setAttribute",
+                    args   : [n.ownerElement, n.nodeName, n.nodeValue],
+                    extra  : {
+                        name : n.nodeValue
+                    }
+                });
         }
         else {
             this.$stack.push({
@@ -549,7 +588,7 @@ apf.actiontracker = function(struct, tagName){
     var domNodeRem = function(e){
         if (e.$didtrans) 
             return;
-            
+
         this.$stack.push({
             action : "removeNode",
             args   : [e.currentTarget],

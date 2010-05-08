@@ -42,10 +42,10 @@ apf.BaseButton = function(){
     this.implement(apf.ChildValue);
     // #endif
     
-    this.refKeyDown  =         // Number of keys pressed.
-    this.refMouseDown = 0;     // Mouse button down?
-    this.mouseOver    =        // Mouse hovering over the button?
-    this.mouseLeft    = false; // Has the mouse left the control since pressing the button.
+    this.$refKeyDown   =        // Number of keys pressed.
+    this.$refMouseDown = 0;     // Mouse button down?
+    this.$mouseOver    =        // Mouse hovering over the button?
+    this.$mouseLeft    = false; // Has the mouse left the control since pressing the button.
 
     /**** Properties and Attributes ****/
 
@@ -106,7 +106,7 @@ apf.BaseButton = function(){
                 break;
             case 32:
                 if (!e.htmlEvent.repeat) { // Only when first pressed, not on autorepeat.
-                    this.refKeyDown++;
+                    this.$refKeyDown++;
                     this.$updateState(e.htmlEvent);
                 }
                 return false;
@@ -118,14 +118,14 @@ apf.BaseButton = function(){
 
         switch (key) {
             case 32:
-                this.refKeyDown--;
+                this.$refKeyDown--;
 
-                if (this.refKeyDown < 0) {
-                    this.refKeyDown = 0;
+                if (this.$refKeyDown < 0) {
+                    this.$refKeyDown = 0;
                     return false;
                 }
 
-                if (this.refKeyDown + this.refMouseDown == 0 && !this.disabled)
+                if (this.$refKeyDown + this.$refMouseDown == 0 && !this.disabled)
                     this.$ext.onmouseup(e, true);
 
                 this.$updateState(e);
@@ -144,18 +144,18 @@ apf.BaseButton = function(){
 
     this.$updateState = function(e, strEvent) {
         if (e.reset) { //this.disabled || 
-            this.refKeyDown   = 0;
-            this.refMouseDown = 0;
-            this.mouseOver    = false;
+            this.$refKeyDown   = 0;
+            this.$refMouseDown = 0;
+            this.$mouseOver    = false;
             return false;
         }
 
-        if (this.refKeyDown > 0
-          || (this.refMouseDown > 0 && this.mouseOver)
+        if (this.$refKeyDown > 0
+          || (this.$refMouseDown > 0 && this.$mouseOver)
           || (this.isBoolean && this.value)) {
             this.$setState("Down", e, strEvent);
         }
-        else if (this.mouseOver)
+        else if (this.$mouseOver)
             this.$setState("Over", e, strEvent);
         else
             this.$setState("Out", e, strEvent);
@@ -173,8 +173,8 @@ apf.BaseButton = function(){
             if (_self.disabled || _self.$notfromext && (e.srcElement || e.target) == this)
                 return;
 
-            _self.refMouseDown = 1;
-            _self.mouseLeft    = false;
+            _self.$refMouseDown = 1;
+            _self.$mouseLeft    = false;
             _self.$updateState(e, "mousedown");
         };
         
@@ -182,18 +182,18 @@ apf.BaseButton = function(){
             e = e || window.event;
             //if (e)  e.cancelBubble = true;
 
-            if (_self.disabled || !force && (!_self.mouseOver || !_self.refMouseDown))
+            if (_self.disabled || !force && (!_self.$mouseOver || !_self.$refMouseDown))
                 return;
 
-            _self.refMouseDown = 0;
+            _self.$refMouseDown = 0;
             _self.$updateState(e, "mouseup");
 
             // If this is coming from a mouse click, we shouldn't have left the button.
-            if (_self.disabled || (e && e.type == "click" && _self.mouseLeft == true))
+            if (_self.disabled || (e && e.type == "click" && _self.$mouseLeft == true))
                 return false;
 
             // If there are still buttons down, this is not a real click.
-            if (_self.refMouseDown + _self.refKeyDown)
+            if (_self.$refMouseDown + _self.$refKeyDown)
                 return false;
 
             if (_self.$clickHandler && _self.$clickHandler())
@@ -205,13 +205,13 @@ apf.BaseButton = function(){
         };
 
         this.$ext.onmousemove = function(e) {
-            if (!_self.mouseOver && !_self.disabled) {
+            if (!_self.$mouseOver && !_self.disabled) {
                 e = e || window.event;
 
                 if (_self.$notfromext && (e.srcElement || e.target) == this)
                     return;
 
-                _self.mouseOver = true;
+                _self.$mouseOver = true;
                 _self.$updateState(e, "mouseover");
             }
         };
@@ -224,9 +224,9 @@ apf.BaseButton = function(){
             if (_self.disabled || this == tEl || apf.isChildOf(this, tEl))
                 return;
 
-            _self.mouseOver    = false;
-            _self.refMouseDown = 0;
-            _self.mouseLeft    = true;
+            _self.$mouseOver    = false;
+            _self.$refMouseDown = 0;
+            _self.$mouseLeft    = true;
             _self.$updateState(e, "mouseout");
         };
 
@@ -267,9 +267,9 @@ apf.BaseButton = function(){
             return; //FIREFOX BUG!
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
-        /*this.refKeyDown   = 0;
-        this.refMouseDown = 0;
-        this.mouseLeft    = true;*/
+        /*this.$refKeyDown   = 0;
+        this.$refMouseDown = 0;
+        this.$mouseLeft    = true;*/
 
         //#ifdef __AMLTOOLBAR || __INC_ALL
         /*if (this.submenu) {
@@ -283,6 +283,13 @@ apf.BaseButton = function(){
         if (e)
             this.$updateState({});//, "onblur"
     };
+    
+    this.addEventListener("prop.disabled", function(e){
+        this.$refKeyDown   =   
+        this.$refMouseDown = 0;
+        this.$mouseOver    =   
+        this.$mouseLeft    = false;
+    });
 
     /*** Clearing potential memory leaks ****/
 

@@ -1064,6 +1064,11 @@
         else {
             //reparent happened
             if (el.$adding || htmlNode.parentNode != el.$ext.parentNode) {
+                if (el.$adding) {
+                    el.removeNode();
+                    el.ownerDocument.execCommand("begin", null, true);
+                }
+                
                 for (var i = 0; i < selected.length; i++) {
                     pNode.appendChild(selected[i]);
                     if (!el.$adding)

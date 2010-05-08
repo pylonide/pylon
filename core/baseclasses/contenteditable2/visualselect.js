@@ -171,7 +171,7 @@ apf.visualSelect = function(selection){
     this.updateGeo = function(force, onlyUpdateAnchors){
         if (recursion)
             return;
-        
+
         var selection = lastSelection;
         if (!selection.length)
             return;

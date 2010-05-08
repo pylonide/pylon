@@ -334,6 +334,8 @@ apf.ContentEditable2.commands = (function(){
     	        ignorePos  : true,
     	        parentNode : apf.document.body
     	    };
+    	    
+    	    commands.begin.call(this);
     	    commands["add"].call(this, null, null, opt);
     	    var amlNode = opt.addedNode;
     	    amlNode.$adding = true;
@@ -812,8 +814,8 @@ apf.ContentEditable2.commands = (function(){
         }
     };
     
-    commands.begin = function(){
-        apf.window.undoManager.begin(this.documentElement);
+    commands.begin = function(sel, showUI, bClear){
+        apf.window.undoManager.begin(this.documentElement, bClear);
     };
     
     commands.rollback = function(){
@@ -822,6 +824,10 @@ apf.ContentEditable2.commands = (function(){
     
     commands.commit = function(){
         apf.window.undoManager.commit(this.documentElement);
+    };
+    
+    commands.pause = function(sel, showUI, bContinue){
+        apf.window.undoManager.pause(this.documentElement, bContinue);
     };
 
     apf.AmlDocument.prototype.$commands = apf.extend(
