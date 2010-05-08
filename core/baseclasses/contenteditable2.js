@@ -200,6 +200,17 @@ apf.addEventListener("load", function(){
             return false;
         }
     });*/
+    
+    apf.ContentEditable2.$contextMenu = function(e){
+        this.ownerDocument.execCommand("contextmenu", true, {
+            amlNode: this,
+            htmlEvent: e
+        });
+
+        e.returnValue  = false;
+        e.cancelBubble = true;
+        return false;
+    }
 });
 
 apf.ContentEditable2 = function() {
@@ -297,16 +308,8 @@ apf.ContentEditable2 = function() {
                 }
                 
                 //Contextmenu
-                this.addEventListener("contextmenu", function(e){
-                    this.ownerDocument.execCommand("contextmenu", true, {
-                        amlNode: this,
-                        htmlEvent: e
-                    });
-        
-                    e.returnValue  = false;
-                    e.cancelBubble = true;
-                    return false;
-                });
+                this.addEventListener("contextmenu", 
+                    apf.ContentEditable2.$contextMenu);
                 
                 //Drag & Resize
                 apf.ContentEditable2.addInteraction(this);
@@ -365,6 +368,10 @@ apf.ContentEditable2 = function() {
                 if (this.ownerDocument.queryCommandEnabled("rename", false, this)) {
                     this.$ext.ondblclick = null;
                 }
+                
+                //Contextmenu
+                this.removeEventListener("contextmenu", 
+                    apf.ContentEditable2.$contextMenu);
                 
                 apf.ContentEditable2.removeInteraction(this);
                 

@@ -262,7 +262,7 @@ apf.AmlDocument = function(){
         
         if (special[commandId] == 1)
             return f.call(this, null, null, value);
-        
+
         //Get Selection
         var nodes = this.getSelection().$getNodeList();
         

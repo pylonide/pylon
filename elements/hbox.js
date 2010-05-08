@@ -87,7 +87,7 @@ apf.vbox = function(struct, tagName){
      *   start
      *   middle  
      *   end
-     * @attribute {String} lean       
+     * @attribute {Boolean} stretch       
      */
     this.$supportedProperties.push("padding", "margin", "flex", "pack", "stretch");
     this.$booleanProperties["stretch"] = true;

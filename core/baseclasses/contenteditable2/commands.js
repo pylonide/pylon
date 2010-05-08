@@ -550,7 +550,7 @@ apf.ContentEditable2.commands = (function(){
         //Copy nodes and add to selection
         sel.each(function(item){
             docsel.addRange(new apf.AmlRange(item)).selectNode(
-                item.parentNode.appendChild(item.cloneNode(true)));
+                item.parentNode.appendChild(apf.getCleanCopy(item)));
         });
         
         /*apf.ContentEditable2.execCommand("resetgeo", {

@@ -934,7 +934,7 @@ apf.markupedit = function(struct, tagName){
     this.addEventListener("beforeload", function(e){
         this.$enableTextNodeHack = !e.xmlNode.$regbase;
         this.each = e.xmlNode.$regbase
-            ? "node()[not(@nomk = 'true')]"
+            ? "node()[not(@nomk = 'true') and not(local-name() = 'include')]"
             : "node()[local-name(.) and not(@nomk = 'true')]";
     });
     
