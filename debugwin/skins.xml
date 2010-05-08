@@ -4012,7 +4012,6 @@
         .tbempty {
             background: white url("images/textarea_background2.png") no-repeat 0 0;
             /*background-attachment: fixed !important; background-attachment: scroll; */
-            width:  161px;
             height: 17px;
             border: 1px solid #c3c3c3;
             position : relative;

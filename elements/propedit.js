@@ -915,7 +915,9 @@ apf.propedit    = function(struct, tagName){
                     + "]");
 
                 oEditor.setProperty("visible", true);
-                if (oEditor.$ext.parentNode && oEditor.$ext.parentNode.nodeType == 1) {
+                if (oEditor.$ext.parentNode 
+                  && oEditor.$ext.parentNode.nodeType == 1
+                  && !apf.hasSingleResizeEvent) {
                     if (!oEditor.$parentRsz) 
                         oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
                     oEditor.$ext.parentNode.removeAttribute("id");
@@ -924,7 +926,7 @@ apf.propedit    = function(struct, tagName){
 
                 editParent.appendChild(oEditor.$ext);
                 editParent.setAttribute("id", editParent.$parentId);
-                if (oEditor.$parentRsz) {
+                if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
                     editParent.onresize = oEditor.$parentRsz;
                     editParent.onresize();
                 }
@@ -1061,10 +1063,7 @@ apf.propedit    = function(struct, tagName){
                 }
                 
                 //#ifdef __WITH_LAYOUT
-                apf.layout.setRules(this.$ext, this.$uniqueId + "_datagrid",
-                    "var o = apf.all[" + this.$uniqueId + "];\
-                     if (o) o.$resize()");
-                apf.layout.queue(this.$ext);
+                this.addEventListener("resize", this.$resize);
                 //#endif
                 
                 this.addEventListener("afterload", this.$resize);
@@ -1120,12 +1119,7 @@ apf.propedit    = function(struct, tagName){
             this.$editors[prop].destroy();
         }
         
-        this.$ext.onclick = this.$body.onresize = null;
-        
-        //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$body, "dg" + this.$uniqueId);
-        apf.layout.activateRules(this.$body);
-        //#endif
+        this.$ext.onclick = null;
     };
 // #ifdef __WITH_DATABINDING
 }).call(apf.propedit.prototype = new apf.DataBinding());

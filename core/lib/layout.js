@@ -1383,7 +1383,7 @@ apf.layout = {
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
 
             oHtml.onresize = rsz;
-            if (!no_exec)
+            if (!no_exec)oHtml.className
                 rsz();
         }
         else {
@@ -1409,12 +1409,14 @@ apf.layout = {
             var f = new Function(strRules.join("\n"));//.replace(/try\{/g, "").replace(/}catch\(e\)\{\s*\}/g, "\n")
             if (this.onresize[htmlId])
                 f.children = this.onresize[htmlId].children;
-                
+            
             if (p && p.nodeType == 1) {
                 var x = this.onresize[p.getAttribute("id")];
-                (x.children || (x.children = {}))[htmlId] = f;
+                this.onresize[htmlId] = (x.children || (x.children = {}))[htmlId] = f;
             }
-            else this.onresize[htmlId] = f;
+            else {
+                this.onresize[htmlId] = f;
+            }
             if (!no_exec)
                 f();
 
