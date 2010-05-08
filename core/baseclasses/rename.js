@@ -405,6 +405,8 @@ apf.Rename.initEditableArea = function(){
         this.$txt.onblur = function(){
             //if (apf.isGecko)
                 //return; //bug in firefox calling onblur too much
+            if (apf.isChrome && !arguments.callee.caller)
+                return;
     
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)

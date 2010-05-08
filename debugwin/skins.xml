@@ -1053,22 +1053,22 @@
             background-color : white;
             color : black;
             border : 1px solid #666;
-            padding : 0 2px 1px 2px;
-            margin : -1px -3px -3px -3px;
-            line-height : auto;
-            height : 15px;
+            padding : 1px 2px 1px 2px;
+            margin : -1px -3px -2px -3px;
+            line-height : 14px;
+            height : 14px;
             cursor : text;
             outline : none;
             
             -moz-box-shadow: 1px 1px 6px -2px #000000;
-            webkit-box-shadow: 1px 1px 6px -2px #000000;
+            -webkit-box-shadow: 1px 1px 6px -2px #000000;
             box-shadow: 1px 1px 6px -2px #000000;
         }
         .debugmarkup #txt_rename.attrvalue{
             position : relative;
             left : -2px;
             padding-right : 2px;
-            margin : -1px -5px -3px -1px;
+            margin : -1px -5px -2px -1px;
         }
         .debugmarkup DIV .attribute{
             cursor : pointer;
@@ -1255,6 +1255,17 @@
         }
         .debugmarkup .generated{
             margin : 0;
+        }
+    </a:style>
+    <a:style condition="apf.isWebkit">
+        .debugmarkup #txt_rename{
+            margin-top : -2px;
+        }
+        .debugmarkup #txt_rename.attrvalue{
+            margin-top : -2px;
+        }
+        .debugmarkup dl{
+            padding-top : 2px;
         }
     </a:style>
     <a:presentation>

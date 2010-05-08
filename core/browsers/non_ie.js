@@ -137,7 +137,7 @@ apf.runNonIe = function (){
         
             HTMLElement.prototype.__defineGetter__("innerText", function(){
                 return this.innerHTML.replace(/<[^>]+>/g,"")
-                    .replace(/\s\s+/g, " ").replace(/^\s*|\s*$/g, " ")
+                    .replace(/\s\s+/g, " ").replace(/^\s+|\s+$/g, " ");
             });
             
             HTMLElement.prototype.__defineGetter__("outerHTML", function(){
