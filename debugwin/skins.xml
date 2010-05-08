@@ -1020,7 +1020,7 @@
             font-family : Monaco, 'Courier New';
             font-size : 11px;
             cursor : default;
-            padding : 0;
+            padding : 1px;
             border : 1px solid #c3c3c3;
             overflow : auto;
             line-height : 1.4em;
