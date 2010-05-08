@@ -990,9 +990,8 @@ apf.window = function(){
     
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug) {
-                var isContentEditable = ta[(e.srcElement || e.target).tagName]
-                    && !(e.srcElement || e.target).disabled
-                    || (e.srcElement && e.srcElement.isContentEditable)
+                var isContentEditable = (ta[e.srcElement.tagName] 
+                    || e.srcElement.isContentEditable) && !e.srcElement.disabled
                     || amlNode.$isContentEditable
                     && amlNode.$isContentEditable(e) && !amlNode.disabled;
     
@@ -1025,9 +1024,8 @@ apf.window = function(){
         if (canSelect && amlNode) {
             //amlNode = apf.findHost(e.target);
             //if (amlNode){
-                var isContentEditable = ta[(e.srcElement || e.target).tagName]
-                    && !(e.srcElement || e.target).disabled
-                    || (e.srcElement && e.srcElement.isContentEditable)
+                var isContentEditable = (ta[e.target.tagName]
+                    || e.target.contentEditable) && !e.target.disabled
                     || amlNode.$isContentEditable
                     && amlNode.$isContentEditable(e) && !amlNode.disabled;
             
@@ -1208,14 +1206,14 @@ apf.window = function(){
         if (e.keyCode == 93)
             apf.contextMenuKeyboard = true;
         // #endif
-        
+
         var amlNode           = apf.findHost(e.srcElement || e.target),
-            isContentEditable = ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
-              || (e.srcElement && e.srcElement.isContentEditable)
-              // #ifdef __WITH_CONTENTEDITABLE
-              || (amlNode && amlNode.hasFeature(apf.__CONTENTEDITABLE__))
-              // #endif
-            ;
+            htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target);
+            isContentEditable = (ta[htmlNode.tagName]
+              || htmlNode.isContentEditable || htmlNode.contentEditable)
+              && !htmlNode.disabled
+              || amlNode.$isContentEditable
+              && amlNode.$isContentEditable(e) && !amlNode.disabled;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey

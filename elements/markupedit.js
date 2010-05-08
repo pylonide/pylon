@@ -472,9 +472,9 @@ apf.markupedit = function(struct, tagName){
                 this.setTextNode(xmlNode, value);
             this.$noanim = false;
         };
-        
+
         this.startRename();
-        
+
         if (isName) {
             this.$txt[apf.hasContentEditable ? "innerHTML" : "value"] = attrName;
             this.$txt.className = "";
@@ -501,30 +501,30 @@ apf.markupedit = function(struct, tagName){
         elName.setAttribute("aname", name);
         elName.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
             apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "', true);\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         elName.setAttribute("onmouseup", "\
-            event.cancelBubble=true;\
+            apf.stopPropagation(event);\
             return false;");
         elName.setAttribute("onkeydown", "if (event.keyCode==13) {\
               this.blur();\
               return false;\
             };\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         elName.setAttribute("onselectstart", "event.cancelBubble = true;");
         elName.setAttribute("ondblclick", "event.cancelBubble = true;");
         
         elValue.setAttribute("aname", name);
         elValue.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
             apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         elValue.setAttribute("onmouseup", "\
-            event.cancelBubble=true;\
+            apf.stopPropagation(event);\
             return false;");
         elValue.setAttribute("onkeydown", "if (event.keyCode==13) {\
               this.blur();\
               return false;\
             };\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         elValue.setAttribute("onselectstart", "event.cancelBubble = true;");
         elValue.setAttribute("ondblclick", "event.cancelBubble = true;");
         
@@ -557,13 +557,13 @@ apf.markupedit = function(struct, tagName){
         elTextNode.setAttribute("onmousedown", "if ((event.which || event.button) == 1)\
             apf.lookup(" + this.$uniqueId + ").startRenameThis(this, '" + Lid + "');");
         elTextNode.setAttribute("onmouseup", "\
-            event.cancelBubble=true;\
+            apf.stopPropagation(event);\
             return false;");
         elTextNode.setAttribute("onkeydown", "if (event.keyCode==13) {\
               this.blur();\
               return false;\
             };\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         elTextNode.setAttribute("onselectstart", "event.cancelBubble = true;");
         elTextNode.setAttribute("ondblclick", "event.cancelBubble = true;");
         
@@ -1332,13 +1332,13 @@ apf.markupedit = function(struct, tagName){
             + ").startRenameThis(this, '" + Lid + "', false, " 
             + (knownElements.push(xmlNode) - 1) + ");");
         txtNode.setAttribute("onmouseup", "\
-            event.cancelBubble=true;\
+            apf.stopPropagation(event);\
             return false;");
         txtNode.setAttribute("onkeydown", "if (event.keyCode==13) {\
               this.blur();\
               return false;\
             };\
-            event.cancelBubble=true;");
+            apf.stopPropagation(event);");
         txtNode.setAttribute("onselectstart", "event.cancelBubble = true;");
         txtNode.setAttribute("ondblclick", "event.cancelBubble = true;");
 
