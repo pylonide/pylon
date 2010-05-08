@@ -3983,8 +3983,6 @@
 <a:pages name="pages">
     <a:style><![CDATA[
         .pages{
-            width: 100px;
-            height: 100px;
         }
 
         .pages .page{

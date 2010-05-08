@@ -389,7 +389,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.left = left + "px";
             }
-            if (!hasLeft && hasRight) {
+            if ((apf.hasStyleAnchors || !hasLeft) && hasRight) {
                 if (parseInt(right) != right) {
                     right = setPercentage(right, "pWidth");
                     rules.push("oHtml.style.right = (" + right + ") + 'px'");
@@ -399,8 +399,9 @@ apf.Anchoring = function(){
             }
 
             if (hasLeft && hasRight) { //right != null && left != null) {
-                rules.push("oHtml.style.width = (pWidth - (" + right
-                    + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
+                if (!apf.hasStyleAnchors)
+                    rules.push("oHtml.style.width = (pWidth - (" + right
+                        + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
             }
             else if (hasWidth) {
                 if (parseInt(width) != width) {
@@ -446,7 +447,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.top = top + "px";
             }
-            if (!hasTop && hasBottom) {
+            if ((apf.hasStyleAnchors || !hasTop) && hasBottom) {
                 if (parseInt(bottom) != bottom) {
                     rules.push("oHtml.style.bottom = (" + bottom + ") + 'px'");
                 }
@@ -454,8 +455,9 @@ apf.Anchoring = function(){
                     this.$ext.style.bottom = bottom + "px";
             }
             if (hasTop && hasBottom) { //bottom != null && top != null) {
-                rules.push("oHtml.style.height = (pHeight - (" + bottom +
-                    ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
+                if (!apf.hasStyleAnchors)
+                    rules.push("oHtml.style.height = (pHeight - (" + bottom +
+                        ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
             }
             else if (hasHeight) {
                 if (parseInt(height) != height) {

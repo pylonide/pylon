@@ -429,6 +429,7 @@ var apf = {
         this.hasHtmlIdsInJs            = apf.isIE && apf.isIE < 8 || apf.isWebkit;
         this.needsCssPx                = !apf.isIE;
         this.hasCSSChildOfSelector     = !apf.isIE || apf.isIE >= 8;
+        this.hasStyleAnchors           = !apf.isIE || apf.isIE >= 8;
         this.styleAttrIsObj            = apf.isIE < 8;
         this.hasAutocompleteXulBug     = apf.isGecko;
         this.loadsLocalFilesSync       = apf.isIE || apf.isGecko;
