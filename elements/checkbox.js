@@ -203,7 +203,7 @@ apf.checkbox = function(struct, tagName){
         this.state = state; // Store the current state so we can check on it coming here again.
 
         if (strEvent)
-            this.dispatchEvent(strEvent, e);
+            this.dispatchEvent(strEvent, {htmlEvent: e});
 
         /*if (state == "Down")
             apf.cancelBubble(e, this);

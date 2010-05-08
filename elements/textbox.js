@@ -139,7 +139,7 @@ apf.textbox  = function(struct, tagName){
 
         // Set Value
         if (!initial && !value) //@todo apf3.x research the use of clear
-            this.clear();
+            return this.clear();
         else if (this.isHTMLBox) {
             if (this.$input.innerHTML != value)
                 this.$input.innerHTML = value;
