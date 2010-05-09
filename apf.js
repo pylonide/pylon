@@ -2321,6 +2321,14 @@ apf.setTimeout = function(f, t){
     }, t);
 }
 
+/*$setTimeout = function(f, ms){
+    setTimeout(function(){
+        console.log(f.toString());
+        if (typeof f == "string") eval(f)
+        else f();
+    }, ms);
+}*/
+
 document.documentElement.className += " has_apf";
 document.documentElement.style.display = "none";
 

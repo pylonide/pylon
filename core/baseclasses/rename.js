@@ -212,11 +212,16 @@ apf.Rename = function(){
         this.$txt.host         = this;
 
         //this.$txt.focus();
-        try {
-            this.$txt.focus();
-            this.$txt.select();
-        }
-        catch(e) {}
+        var txt = this.$txt;
+        var f = function(){
+            try {
+                txt.focus();
+                txt.select();
+            }
+            catch(e) {}
+        };
+        if (apf.isIE) f() 
+        else setTimeout(f);
     };
 
     /**
@@ -230,6 +235,8 @@ apf.Rename = function(){
         if (!this.renaming || contextXml && contextXml != this.$renameSubject
           || !this.$replacedNode)
             return false;
+        
+        this.renaming = false;
 
         if (this.$txt.parentNode && this.$txt.parentNode.nodeType == 1) {
             if (apf.isIE8 || apf.isIE7Emulate)
@@ -237,8 +244,6 @@ apf.Rename = function(){
             
             this.$txt.parentNode.replaceChild(this.$replacedNode, this.$txt);
         }
-
-        this.renaming = false;
 
         if (this.$replacedNode) {
             this.$replacedNode.style.cursor = this.lastCursor || "";
@@ -262,10 +267,9 @@ apf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            if (this.$replacedNode) {
+            if (this.$replacedNode)
                 this.$replacedNode.innerHTML = value.replace(/</g, "&lt;").replace(/\r?\n/g, "<br />");
-            }
-             //this.$selected.innerHTML = this.$txt.innerHTML;
+            //this.$selected.innerHTML = this.$txt.innerHTML;
             this.rename(this.$renameSubject, value);
         }
 
@@ -274,7 +278,7 @@ apf.Rename = function(){
             this.$replacedNode     = null;
             this.$txt.style.width = "";
         }
-        
+
         return true;
     };
 
@@ -405,8 +409,8 @@ apf.Rename.initEditableArea = function(){
         this.$txt.onblur = function(){
             //if (apf.isGecko)
                 //return; //bug in firefox calling onblur too much
-            if (apf.isChrome && !arguments.callee.caller)
-                return;
+            //if (apf.isChrome && !arguments.callee.caller)
+                //return;
     
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)

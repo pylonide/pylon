@@ -1253,18 +1253,13 @@ apf.window = function(){
         //Hotkey
         if (!isContentEditable && apf.dispatchEvent("hotkey", eInfo) === false 
           || eInfo.returnValue === false) {
-            e.returnValue  = false;
-            e.cancelBubble = true;
-            if (e.stopPropagation)
-                e.stopPropagation();
+            apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
                 catch(e) {}
             }
-            if (e.preventDefault)
-                e.preventDefault();
             return false;
         }
         //#endif
@@ -1293,20 +1288,17 @@ apf.window = function(){
         delete eInfo.currentTarget;
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        if ((apf.document.activeElement && !apf.document.activeElement.disableKeyboard
-          && !apf.document.activeElement.editable
-          && apf.document.activeElement.dispatchEvent("keydown", eInfo) 
-          || apf.dispatchEvent("keydown", eInfo)) === false) {
-            e.returnValue  = false;
-            e.cancelBubble = true;
+        var aEl = apf.document.activeElement;
+        if ((aEl && !aEl.disableKeyboard && !aEl.editable
+          ? aEl.dispatchEvent("keydown", eInfo) 
+          : apf.dispatchEvent("keydown", eInfo)) === false) {
+            apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
                 catch(e) {}
             }
-            if (e.preventDefault)
-                e.preventDefault();
             return false;
         }
         //#ifdef __WITH_FOCUS

@@ -107,6 +107,7 @@
     margin : 0px -2px -0px -2px;
     cursor : text;
     white-space : normal;
+    outline : none;
 }
 
 .apf_btn #txt_rename.editable{

@@ -896,7 +896,7 @@ apf.Class.prototype = new (function(){
                 }
             }
         //}
-        
+
         /*var p;
         while (this.$removalQueue.length) {
             p = this.$removalQueue.shift();
