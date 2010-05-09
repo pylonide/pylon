@@ -1495,7 +1495,10 @@ apf.window = function(){
             lastFocusElement  = apf.document.activeElement;
             apf.activeElement = apf.document.activeElement = null;
         });
-      //#endif
+        this.getLastActiveElement = function(){
+            return apf.activeElement || lastFocusElement;
+        }
+        //#endif
     };
 
     /**

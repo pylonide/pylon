@@ -309,8 +309,15 @@ apf.ContentEditable2 = function() {
                   || apf.GuiElement.propHandlers["resizable"]).call(this, true);
                 
                 //Make this element focussable
-                if (!this.$focussable || !this.focussable)
+                if (!this.$focussable || !this.focussable) {
+                    this.$lastFocussable = [this.$focussable, this.focussable];
+                    this.$focussable = 
+                    this.focussable  = true;
+                    
                     apf.GuiElement.propHandlers.focussable.call(this, true);
+                }
+                if (this.$blur)
+                    this.$blur();
                 
                 //Handle invisible elements
                 if (this.$propHandlers.visible)
@@ -332,11 +339,8 @@ apf.ContentEditable2 = function() {
                     this.$propHandlers.visible.call(this, false);
                 }
                 
-                //Focus
-                this.$lastFocussable = [this.$focussable, this.focussable];
-                this.$focussable = 
-                this.focussable  = true;
-                
+                //Disable
+                this.$lastDisabled = this.disabled;
                 this.disabled = -1;
                 
                 //If an element is editable and its parent element is not, or if an element is editable and it has no parent element, then the element is an editing host
@@ -370,10 +374,18 @@ apf.ContentEditable2 = function() {
             }
             this.isContentEditable = true;
             
-            //@todo select the first element??
-            var vsel, lsel = (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
-            if (!this.parentNode.editable && lsel && lsel.length)
-                vsel.show();
+            //@todo apf3.0 this needs optimization
+            var curfoc, vsel, lsel = (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
+            if (!this.parentNode.editable) {
+                if (!(curfoc = apf.window.getLastActiveElement()) && lsel.length 
+                  || curfoc && lsel.indexOf(curfoc) > -1) {
+                    vsel.show();
+                }
+                else {
+                    //@todo check for editable
+                    this.ownerDocument.getSelection().$selectList([curfoc]);
+                }
+            }
             
             apf.setStyleClass(this.$ext, "editable");
         }
@@ -405,10 +417,19 @@ apf.ContentEditable2 = function() {
                       || apf.GuiElement.propHandlers["resizable"]).call(this, false);
                 
                 //Unset focussable
-                this.$focussable = this.$lastFocussable[0];
-                this.focussable  = this.$lastFocussable[0] && this.$lastFocussable[1];
-                if (!this.focussable)
-                    apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
+                if (this.$lastFocussable) {
+                    this.$focussable = this.$lastFocussable[0];
+                    this.focussable  = this.$lastFocussable[0] && this.$lastFocussable[1];
+                    if (!this.focussable)
+                        apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
+                    delete this.$lastFocussable;
+                }
+                if (this.hasFocus && this.hasFocus())
+                    this.$focus();
+                
+                //Enable
+                this.disabled = this.$lastDisabled;
+                delete this.$lastDisabled;
                 
                 //Hide invisible elements
                 if (this.visible === false) {
@@ -445,7 +466,7 @@ apf.ContentEditable2 = function() {
                 
                 apf.ContentEditable2.removeInteraction(this);
                 
-                var sel = this.ownerDocument.getSelection().$getNodeList();
+                var sel = this.ownerDocument.$getVisualSelect().getLastSelection();//this.ownerDocument.getSelection().$getNodeList();
                 if (sel.indexOf(this) > -1)
                     this.ownerDocument.$getVisualSelect().hide()
             }

@@ -88,7 +88,8 @@ apf.Interactive = function(){
     this.$regbase = this.$regbase | apf.__INTERACTIVE__;
 
     this.$dragStart = function(e, reparent){
-        if (!reparent && (e || event).button == 2)
+        var nativeEvent = e || event;
+        if (!reparent && nativeEvent.button == 2)
             return;
 
         //#ifdef __WITH_CONTENTEDITABLE
@@ -99,17 +100,17 @@ apf.Interactive = function(){
                 clientY: event.clientY, 
                 ctrlKey: event.ctrlKey
             };
-            var o = this;
+            var o = nativeEvent.srcElement || this;
             apf.addEventListener("mousedown", f = function(){
                 dragStart.call(o, ev, reparent);
                 apf.removeEventListener("mousedown", f);
             });
-            apf.cancelBubble(e || event, this);
+            apf.cancelBubble(nativeEvent, nativeEvent.srcElement || this);
         } 
         else
         // #endif
         {
-            dragStart.apply(this, arguments);
+            dragStart.apply(nativeEvent.srcElement || this, arguments);
         }
     }
 
@@ -146,22 +147,13 @@ apf.Interactive = function(){
             return;
 
         if (!_self.editable) {        
-            var mdown = o.onmousedown;
-            var mmove = o.onmousemove;
+            apf.addListener(o, "mousedown", function(){
+                resizeStart.apply(o, arguments);
+            });
     
-            o.onmousedown = function(){
-                if (mdown && mdown.apply(this, arguments) === false)
-                    return;
-    
-                resizeStart.apply(this, arguments);
-            };
-    
-            o.onmousemove = function(){
-                if (mmove && mmove.apply(this, arguments) === false)
-                    return;
-    
-                resizeIndicate.apply(this, arguments);
-            };
+            apf.addListener(o, "mousemove", function(){
+                resizeIndicate.apply(o, arguments);
+            });
         }
         
         o.interactive = (o.interactive||0)+2;
