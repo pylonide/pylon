@@ -445,6 +445,7 @@ var apf = {
         var t = document.createElement("div");
         this.hasContentEditable        = (typeof t.contentEditable == "string"
                                        || typeof t.contentEditable == "boolean");
+        apf.hasContentEditableContainerBug = apf.isWebkit;
         // Try transform first for forward compatibility
         var props   = ["transform", "OTransform", "KhtmlTransform", "MozTransform", "WebkitTransform"],
             prefixR = ["", "O", "Khtml", "Moz", "Webkit"],

@@ -264,7 +264,9 @@ apf.AmlDocument = function(){
             return f.call(this, null, null, value);
 
         //Get Selection
-        var nodes = this.getSelection().$getNodeList();
+        //var nodes = this.getSelection().$getNodeList();
+        var nodes = this.$getVisualSelect().getLastSelection()
+            || this.getSelection().$getNodeList();
         
         //Execute Action
         if (special[commandId] == 2)

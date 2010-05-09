@@ -87,45 +87,47 @@ apf.Interactive = function(){
 
     this.$regbase = this.$regbase | apf.__INTERACTIVE__;
 
+    this.$dragStart = function(e, reparent){
+        if (!reparent && (e || event).button == 2)
+            return;
+
+        //#ifdef __WITH_CONTENTEDITABLE
+        if (!reparent) {
+            var f;
+            var ev = e || {
+                clientX: event.clientX, 
+                clientY: event.clientY, 
+                ctrlKey: event.ctrlKey
+            };
+            var o = this;
+            apf.addEventListener("mousedown", f = function(){
+                dragStart.call(o, ev, reparent);
+                apf.removeEventListener("mousedown", f);
+            });
+            apf.cancelBubble(e || event, this);
+        } 
+        else
+        // #endif
+        {
+            dragStart.apply(this, arguments);
+        }
+    }
+
     this.$propHandlers["draggable"] = function(value){
         if (apf.isFalse(value))
             this.draggable = value = false;
         else if (apf.isTrue(value))
             this.draggable = value = true;
-        
+
         var o = this.editable ? this.$ext : this.oDrag || this.$ext;
+        if (value)
+            apf.addListener(o, "mousedown", this.$dragStart);
+        else
+            apf.removeListener(o, "mousedown", this.$dragStart);
+        
+        //deprecated??
         if (o.interactive & 1) 
             return;
-
-        var mdown = o.onmousedown;
-        o.onmousedown = function(e, reparent){
-            if (!_self.editable && mdown && mdown.apply(this, arguments) === false)
-                return;
-            
-            if (!reparent && (e || event).button == 2)
-                return;
-            
-            //#ifdef __WITH_CONTENTEDITABLE
-            if (!reparent) {
-                var f;
-                var ev = e || {
-                    clientX: event.clientX, 
-                    clientY: event.clientY, 
-                    ctrlKey: event.ctrlKey
-                };
-                apf.addEventListener("mousedown", f = function(){
-                    dragStart.call(o, ev, reparent);
-                    apf.removeEventListener("mousedown", f);
-                });
-                apf.cancelBubble(e || event, this);
-            }
-            // #else
-            else
-            {
-                dragStart.apply(this, arguments);
-            }
-            // #endif
-        }
         o.interactive = (o.interactive||0)+1;
         
         //this.$ext.style.position = "absolute";

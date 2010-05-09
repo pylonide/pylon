@@ -464,7 +464,7 @@ apf.window = function(){
             var next, node = amlNode, skip;
             while (node) {
                 if (!skip && node.focussable !== false && node.$focussable === true && !node.$tabList
-                  && (ignoreVisible || node.$ext && node.$ext.offsetHeight) && !node.disabled) {
+                  && (ignoreVisible || node.$ext && node.$ext.offsetHeight) && node.disabled < 1) {
                     this.$focus(node, e, true);
                     break;
                 }
@@ -663,7 +663,7 @@ apf.window = function(){
             amlNode = list[next];
         }
         while (!amlNode
-            || amlNode.disabled
+            || amlNode.disabled > 0
             || amlNode == apf.document.activeElement
             || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
             || amlNode.focussable === false
@@ -971,7 +971,7 @@ apf.window = function(){
                 else
                     apf.window.$focus(amlNode);
             }
-            else if (!amlNode.disabled && amlNode.focussable !== false) {
+            else if (amlNode.disabled < 1 && amlNode.focussable !== false) {
                 if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
@@ -993,7 +993,7 @@ apf.window = function(){
                 var isContentEditable = (ta[e.srcElement.tagName] 
                     || e.srcElement.isContentEditable) && !e.srcElement.disabled
                     || amlNode.$isContentEditable
-                    && amlNode.$isContentEditable(e) && !amlNode.disabled;
+                    && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
     
                 if (!amlNode || !isContentEditable)
                     apf.window.$focusfix();
@@ -1022,27 +1022,24 @@ apf.window = function(){
           ) && !ta[e.target.tagName]);
 
         if (canSelect && amlNode) {
-            //amlNode = apf.findHost(e.target);
-            //if (amlNode){
-                var isContentEditable = (ta[e.target.tagName]
-                    || e.target.contentEditable) && !e.target.disabled
-                    || amlNode.$isContentEditable
-                    && amlNode.$isContentEditable(e) && !amlNode.disabled;
-            
-                //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-                if (!isContentEditable 
-                  && !apf.config.allowSelect
-                  && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-                  && !amlNode.$allowSelect 
-                  && (!amlNode.$int || amlNode.$focussable)) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
-                    canSelect = false;
-            //}
+            var isContentEditable = (ta[e.target.tagName]
+                || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
+                || amlNode.$isContentEditable
+                && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
+        
+            //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
+            if (!isContentEditable 
+              && !apf.config.allowSelect
+              && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+              && !amlNode.$allowSelect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
+                canSelect = false;
         }
        
         if (!canSelect && !cEditable) {
-            if (e.preventDefault)
-                e.preventDefault();
-            return false;
+            e.preventDefault();
+            
+            if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
+                document.activeElement.blur();
         }
     });
 
@@ -1061,8 +1058,7 @@ apf.window = function(){
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
             if (!apf.config.allowSelect 
               && amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-              && !amlNode.$allowSelect 
-              && !amlNode.$int) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
+              && !amlNode.$allowSelect) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
         }
 
@@ -1210,10 +1206,10 @@ apf.window = function(){
         var amlNode           = apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target);
             isContentEditable = (ta[htmlNode.tagName]
-              || htmlNode.isContentEditable || htmlNode.contentEditable)
+              || htmlNode.isContentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
               && !htmlNode.disabled
               || amlNode.$isContentEditable
-              && amlNode.$isContentEditable(e) && !amlNode.disabled;
+              && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey

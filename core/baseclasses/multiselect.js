@@ -636,7 +636,7 @@ apf.MultiSelect = function(){
      *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
-        if (!this.selectable || userAction && this.disabled || this.editable) 
+        if (!this.selectable || userAction && this.disabled) 
             return;
 
         if (fakeselect == -1) {

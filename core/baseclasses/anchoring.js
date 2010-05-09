@@ -402,6 +402,8 @@ apf.Anchoring = function(){
                 if (!apf.hasStyleAnchors)
                     rules.push("oHtml.style.width = (pWidth - (" + right
                         + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
+                else
+                    this.$ext.style.width = "";
             }
             else if (hasWidth) {
                 if (parseInt(width) != width) {
@@ -458,6 +460,8 @@ apf.Anchoring = function(){
                 if (!apf.hasStyleAnchors)
                     rules.push("oHtml.style.height = (pHeight - (" + bottom +
                         ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
+                else
+                    this.$ext.style.height = "";
             }
             else if (hasHeight) {
                 if (parseInt(height) != height) {

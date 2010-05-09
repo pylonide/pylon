@@ -19,7 +19,6 @@
  *
  */
 apf.__CONTENTEDITABLE__  = 1 << 24;
-
 // #ifdef __WITH_CONTENTEDITABLE2
 
 apf.addEventListener("load", function(){
@@ -41,12 +40,21 @@ apf.addEventListener("load", function(){
         var key = e.keyCode;
 
         if (apf.document.queryCommandState("rename")) {
+            if (apf.hasSingleResizeEvent)
+                $setTimeout(function(){
+                    apf.document.$getVisualSelect().updateGeo();
+                });
+            
             if (key == 27 || key == 13) {
                 apf.document.execCommand("rename", false, key == 13);
                 
                 window.focus(); //@todo don't know why this is needed...
                 e.cancelBubble = true;
                 return false;
+            }
+            else if (apf.hasContentEditableContainerBug && key == 8
+              && document.getElementById("txt_rename").innerHTML == "<br>") {
+                e.preventDefault();
             }
 
             return;
@@ -61,7 +69,6 @@ apf.addEventListener("load", function(){
                 }
                 break;
             case 113: //F2
-                //_self.startRename(selected[0]);
                 apf.document.execCommand("rename", true);
                 return false;
             case 16:
@@ -100,7 +107,7 @@ apf.addEventListener("load", function(){
     apf.document.addEventListener("focus", $focus = function(e){
         if (recursion)
             return;
-
+        
         recursion = true;
         var node = e.currentTarget, isSelected;
         if (node.editable) {
@@ -211,6 +218,45 @@ apf.addEventListener("load", function(){
         e.cancelBubble = true;
         return false;
     }
+    
+    var time;
+    apf.ContentEditable2.$renameStart = apf.isIE
+      ? function(){
+        e = event;
+        if (e.srcElement != this)
+            return;
+        
+        apf.findHost(e.srcElement).ownerDocument.execCommand("rename", true);
+        apf.stopPropagation(e);
+      }
+      : function(e){
+        if (e.target != this)
+            return;
+
+        if (!time || new Date() - time[0] > 500 || time[1] != e.target)
+            time = [new Date().getTime(), e.target];
+        else if (time) {
+            apf.findHost(e.target).ownerDocument.execCommand("rename", true);
+            apf.stopPropagation(e);
+            time = null;
+        }
+      }
+    
+    apf.ContentEditable2.$renameSkinChange = function(e){
+        var rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this);
+        var htmlNode = !rInfo[0] 
+            ? this.$ext 
+            : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
+        if (apf.isIE) {
+            htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
+            //@todo apf3.0 memory leak - fix this
+            //e.ext ... .ondblclick        = null;
+        }
+        else {
+            apf.addListener(htmlNode, "mousedown", 
+              apf.ContentEditable2.$renameStart);
+        }
+    }
 });
 
 apf.ContentEditable2 = function() {
@@ -291,20 +337,28 @@ apf.ContentEditable2 = function() {
                 this.$focussable = 
                 this.focussable  = true;
                 
+                this.disabled = -1;
+                
                 //If an element is editable and its parent element is not, or if an element is editable and it has no parent element, then the element is an editing host
                 //if this is the editing host, this value should be set to refrain it from being entered by tabbing
                 if (this.$isWindowContainer)
                     this.$isWindowContainer = -2; //@todo bug in window.js causes child to be selected at window focus change
                 
                 //If this element supports rename, enable it via dblclick
-                if (this.ownerDocument.queryCommandEnabled("rename", false, this)) {
-                    var _self = this;
-                    this.$ext.ondblclick = function(e){
-                        if (!e) e = event;
-
-                        _self.ownerDocument.execCommand("rename", true);
-                        e.cancelBubble = true;
+                var rInfo
+                if (rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this)) {
+                    var htmlNode = !rInfo[0] 
+                        ? this.$ext 
+                        : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
+                    if (apf.isIE)
+                        htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
+                    else {
+                        apf.addListener(htmlNode, "mousedown", 
+                          apf.ContentEditable2.$renameStart);
                     }
+                    
+                    this.addEventListener("$skinchange", 
+                        apf.ContentEditable2.$renameSkinChange);
                 }
                 
                 //Contextmenu
@@ -328,11 +382,15 @@ apf.ContentEditable2 = function() {
                 var n;
                 
                 //Unset draggable
-                if (n = this.getAttributeNode("draggable"))
+                if (n = this.getAttributeNode("draggable")) {
+                    apf.removeListener(this.$ext, "mousedown", this.$dragStart);
                     n.$triggerUpdate();
-                else
+                }
+                else {
+                    apf.removeListener(this.$ext, "mousedown", this.$dragStart);
                     (this.$propHandlers["draggable"]
                       || apf.GuiElement.propHandlers["draggable"]).call(this, this.localName == "window" || false); //@todo hack!
+                }
                 
                 delete this.dragOutline; //@todo hack!
                 delete this.$showDrag;
@@ -365,8 +423,20 @@ apf.ContentEditable2 = function() {
                 
                 delete this.$isWindowContainer; //Should fall back to value from prototype
                 
-                if (this.ownerDocument.queryCommandEnabled("rename", false, this)) {
-                    this.$ext.ondblclick = null;
+                var rInfo;
+                if (rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this)) {
+                    var htmlNode = !rInfo[0] 
+                        ? this.$ext 
+                        : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
+                    if (apf.isIE)
+                        htmlNode.ondblclick = null;
+                    else {
+                        apf.removeListener(htmlNode, "mousedown", 
+                            apf.ContentEditable2.$renameStart);
+                    }
+                    
+                    this.removeEventListener("$skinchange", 
+                        apf.ContentEditable2.$renameSkinChange);
                 }
                 
                 //Contextmenu

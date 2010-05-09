@@ -322,6 +322,7 @@
                                                 continue;
                                             }
                                             if (prop == "width" && sel.left && sel.right) {
+                                                hidWidth = true;
                                                 lblW.setProperty("visible", false);
                                                 continue;
                                             }
@@ -331,6 +332,9 @@
                                         if (prop) //@todo check this
                                             item.setProperty("value", sel[prop]);    
                                     }
+                                    
+                                    if (!lblH.visible && !lblW.visible)
+                                        divActions.hide();
                 
                                     lastSel  = sel;
                 
@@ -366,7 +370,10 @@
                                     if (prop) //@todo check this
                                         item.setProperty("value", sel[prop]);    
                                 }
-                
+                                
+                                if (!lblH.visible && !lblW.visible)
+                                    divActions.hide();
+                                
                                 apf.layout.processQueue();
                             })
                             

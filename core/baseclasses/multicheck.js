@@ -60,7 +60,7 @@ apf.MultiCheck = function(){
      */
     this.check = function(xmlNode, userAction){ 
         if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) > -1 || this.editable)
+          || this.$checkedList.indexOf(xmlNode) > -1)
             return;
         
         if (userAction
@@ -130,7 +130,7 @@ apf.MultiCheck = function(){
      */
     this.uncheck = function(xmlNode, userAction){
         if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) == -1 || this.editable)
+          || this.$checkedList.indexOf(xmlNode) == -1)
             return;
         
         if (userAction

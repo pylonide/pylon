@@ -140,7 +140,7 @@ apf.$debugwin = {
         tabDebug.$ext.onmousedown = function(e){
             if (!e) e = event;
             if (e.clientY < 5)
-                apf.$debugwin.apf.$debugwin.$startResize(e.clientY);
+                apf.$debugwin.apf.$debugwin.$startResize(e.clientY, apf);
         }
         
         //@todo dirty hack! need to fix layout engine
@@ -1079,10 +1079,11 @@ apf.$debugwin = {
         }*/
     },
     
-    $startResize : function(offset){
+    $startResize : function(offset, oApf){
         var $ext = this.$ext;
         apf.plane.show(null, null, null, true);
         apf.dragMode = true;
+        oApf.dragMode = true;
 
         document.body.style.cursor = "s-resize";
         
@@ -1121,6 +1122,7 @@ apf.$debugwin = {
             document.onmouseup   = null;
             
             apf.dragMode = false;
+            oApf.dragMode = false;
             
             apf.plane.hide();
         }

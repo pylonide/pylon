@@ -69,7 +69,7 @@ apf.vbox = function(struct, tagName){
     this.$useLateDom = true; 
     
     this.padding    = 2;
-    this.edge       = "5 5 5 5";
+    this.edge       = 5;
     this.pack       = "start"; //start|center|end
     this.stretch    = true;
     

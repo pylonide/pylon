@@ -203,6 +203,8 @@ apf.ContentEditable2.commands = (function(){
         
         start : function(el){
             var info = this.getEditableProp(el);
+            if (!info) return;
+            
             htmlNode            = info[0];
             this.$editableProp  = info[1];
             
@@ -214,9 +216,9 @@ apf.ContentEditable2.commands = (function(){
     
             this.$renameHtml    = htmlNode;
             this.$renameElement = el;
-            this.$renameContents = htmlNode.nodeType == 1
+            this.$renameContents = (htmlNode.nodeType == 1
                 ? htmlNode.innerHTML 
-                : htmlNode.nodeValue;
+                : htmlNode.nodeValue);
             
             var txt = this.getInput();
     
@@ -229,7 +231,8 @@ apf.ContentEditable2.commands = (function(){
             }
             
             if (apf.hasContentEditable) {
-                txt.innerHTML = this.$renameContents.replace(/</g, "&lt;");
+                txt.innerHTML = this.$renameContents.replace(/</g, "&lt;") 
+                    || apf.hasContentEditableContainerBug && "<br>" || "";
             }
             else 
                 txt.value = this.$renameContents;
@@ -251,6 +254,8 @@ apf.ContentEditable2.commands = (function(){
             if (!this.renaming)
                 return;
 
+            this.renaming = false;
+
             var htmlNode = this.$renameHtml;
             if (htmlNode.nodeType == 1)
                 htmlNode.removeChild(this.$txt);
@@ -260,8 +265,9 @@ apf.ContentEditable2.commands = (function(){
             var value = typeof success == "string"
               ? success
               : (apf.hasContentEditable
-                ? this.$txt.innerHTML
-                : this.$txt.value);
+                ? this.$txt.innerText
+                : this.$txt.value)
+                  .replace(/<.*?nobr>/gi, "").replace(/\n$/, ""); //last replace is for chrome;
             
             var el   = this.$renameElement;
             var prop = this.$editableProp;
@@ -284,15 +290,13 @@ apf.ContentEditable2.commands = (function(){
             this.$renameHtml    = 
             this.$renameElement = 
             this.$renameContents = null;
-            
-            this.renaming = false;
         }
     };
     commands["rename"] = function(sel, showUI, value, query){
         switch(query){
             case STATE: return rename.renaming;
             case VALUE: return String(rename.renaming);
-            case ENABL: return rename.getEditableProp(value || sel[0]) ? true : false;
+            case ENABL: return rename.getEditableProp(value || sel[0]);
             case INDET: return false;
         }
         

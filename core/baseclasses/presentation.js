@@ -265,7 +265,10 @@ apf.Presentation = function(){
             this.$propHandlers["value"].call(this, this.value);
 
         //Dispatch event
-        this.dispatchEvent("$skinchange");
+        this.dispatchEvent("$skinchange", {
+            ext: oExt,
+            int: oInt
+        });
 
         //#ifdef __WITH_MULTISELECT
         //Set Selection

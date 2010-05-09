@@ -203,7 +203,8 @@ apf.Rename = function(){
                     .replace(/>/g, "&gt;")
                     .replace(/\n/g, "<br />"));
             else
-                this.$txt.innerHTML = value.replace(/</g, "&lt;");
+                this.$txt.innerHTML = value.replace(/</g, "&lt;")
+                  || apf.hasContentEditableContainerBug && "<br>" || "";
         }
         else 
             this.$txt.value = value;
@@ -259,7 +260,7 @@ apf.Rename = function(){
         }
         else {
             var value = this.$txt[apf.hasContentEditable ? "innerText" : "value"]
-                            .replace(/<.*?nobr>/gi, "");
+                            .replace(/<.*?nobr>/gi, "").replace(/\n$/, ""); //last replace is for chrome
         }
 
         if (!success || (this.$validateRename && !this.$validateRename(value))) {
@@ -292,6 +293,10 @@ apf.Rename = function(){
                 this.stopRename(null, key == 13 && !this.$autocomplete);
                 e.cancelBubble = true;
                 return false;
+            }
+            else if (apf.hasContentEditableContainerBug && key == 8
+              && this.$txt.innerHTML == "<br>") {
+                e.preventDefault();
             }
 
             return;
@@ -351,8 +356,8 @@ apf.Rename.initEditableArea = function(){
         }
     
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.$txt);
+        //if (apf.hasFocusBug)
+            //apf.sanitizeTextbox(this.$txt);
         //#endif
     
         this.$txt.refCount         = 0;
@@ -362,10 +367,6 @@ apf.Rename.initEditableArea = function(){
         this.$txt.onselectstart    = function(e){
             (e || event).cancelBubble = true;
         };
-        // #ifdef __WITH_WINDOW_FOCUS
-        //this.$txt.host = this;
-        apf.sanitizeTextbox(this.$txt);
-        // #endif
     
         this.$txt.onmouseover = this.$txt.onmouseout = this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
@@ -411,7 +412,7 @@ apf.Rename.initEditableArea = function(){
                 //return; //bug in firefox calling onblur too much
             //if (apf.isChrome && !arguments.callee.caller)
                 //return;
-    
+
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug)
                 apf.window.$blurfix();

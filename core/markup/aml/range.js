@@ -42,14 +42,14 @@ apf.AmlRange = function(doc){
     }
     
     this.$domNodeInsS = function(e){
-        if (e.relatedNode == this) {
+        if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
             var nr = apf.getChildNumber(e.currentTarget);
             if (nr < _self.startOffset)
                 _self.startOffset++;
         }
     }
     this.$domNodeInsE = function(e){
-        if (e.relatedNode == this) {
+        if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
             var nr = apf.getChildNumber(e.currentTarget);
             if (nr < _self.endOffset)
                 _self.endOffset++;
@@ -57,14 +57,14 @@ apf.AmlRange = function(doc){
     }
     
     this.$domNodeRemS = function(e){
-        if (e.relatedNode == this) {
+        if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
             var nr = apf.getChildNumber(e.currentTarget);
             if (nr < _self.startOffset)
                 _self.startOffset--;
         }
     }
     this.$domNodeRemE = function(e){
-        if (e.relatedNode == this) {
+        if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
             var nr = apf.getChildNumber(e.currentTarget);
             if (nr < _self.endOffset)
                 _self.endOffset--;
@@ -132,7 +132,7 @@ apf.AmlRange = function(doc){
             this.startContainer.removeEventListener("DOMNodeInserted", this.$domNodeInsS);
             this.startContainer.removeEventListener("DOMNodeRemoved",  this.$domNodeRemS);
         }
-        
+
         this.startContainer = refNode;
         this.startOffset    = offset;
         

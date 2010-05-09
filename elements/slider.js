@@ -725,7 +725,7 @@ apf.slider = function(struct, tagName){
         }
 
         this.oKnob.onmousedown = function(e){
-            if (_self.disabled || _self.editable)
+            if (_self.disabled)
                 return false;
 
             //@todo use start action here

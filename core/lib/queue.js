@@ -19,6 +19,41 @@
  *
  */
 
+//#ifdef __WITH_ZERO_TIMEOUT
+
+// Only add setZeroTimeout to the window object, and hide everything
+// else in a closure.
+(function() {
+    var timeouts = [];
+    var messageName = "zero-timeout-message";
+
+    // Like setTimeout, but only takes a function argument.  There's
+    // no time argument (always zero) and no arguments (you have to
+    // use a closure).
+    function setZeroTimeout(fn) {
+        timeouts.push(fn);
+        window.postMessage(messageName, "*");
+    }
+
+    function handleMessage(event) {
+        if (event.source == window && event.data == messageName) {
+            event.stopPropagation();
+            if (timeouts.length> 0) {
+                var fn = timeouts.shift();
+                fn();
+            }
+        }
+    }
+
+    window.addEventListener("message", handleMessage, true);
+
+    // Add the one thing we want added to the window object.
+    apf.setZeroTimeout = setZeroTimeout;
+})();
+/* #else
+apf.setZeroTimeout = setTimeout;
+#endif */
+
 // #ifdef __WITH_QUEUE
 
 /**
@@ -32,7 +67,9 @@ apf.queue = {
     add : function(id, f){
         this.q[id] = f;
         if (!this.timer)
-            this.timer = $setTimeout("apf.queue.empty()");
+            this.timer = apf.setZeroTimeout(function(){
+                apf.queue.empty();
+            });
     },
     
     remove : function(id){
