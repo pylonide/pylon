@@ -97,7 +97,7 @@ apf.visualSelect = function(selection){
         for (var i = 0; i < 8; i++)
             nodes[i].style.display = "block";
         oOutline.style.display = "block";
-        
+
         if (lastSelection)
             this.updateGeo();
     };
@@ -279,7 +279,7 @@ apf.visualSelect = function(selection){
             if (!oHtml.offsetParent)
                 return (recursion = false); //@error
                 
-            if (apf.isIE) //@notice this solves an IE drawing bug
+            //if (apf.isIE) //@notice this solves an IE drawing bug
                 oHtml.offsetParent.appendChild(oOutline);
                 //oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
             

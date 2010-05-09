@@ -309,13 +309,11 @@ apf.ContentEditable2 = function() {
                   || apf.GuiElement.propHandlers["resizable"]).call(this, true);
                 
                 //Make this element focussable
-                if (!this.$focussable || !this.focussable) {
-                    this.$lastFocussable = [this.$focussable, this.focussable];
-                    this.$focussable = 
-                    this.focussable  = true;
-                    
+                this.$lastFocussable = [this.$focussable, this.focussable];
+                if (!this.$focussable || !this.focussable)
                     apf.GuiElement.propHandlers.focussable.call(this, true);
-                }
+                this.$focussable = 
+                this.focussable  = true;
                 if (this.$blur)
                     this.$blur();
                 
@@ -375,13 +373,14 @@ apf.ContentEditable2 = function() {
             this.isContentEditable = true;
             
             //@todo apf3.0 this needs optimization
-            var curfoc, vsel, lsel = (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
             if (!this.parentNode.editable) {
+                var curfoc, vsel, lsel = 
+                  (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
                 if (!(curfoc = apf.window.getLastActiveElement()) && lsel.length 
                   || curfoc && lsel.indexOf(curfoc) > -1) {
                     vsel.show();
                 }
-                else {
+                else if (curfoc) {
                     //@todo check for editable
                     this.ownerDocument.getSelection().$selectList([curfoc]);
                 }

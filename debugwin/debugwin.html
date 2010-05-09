@@ -243,7 +243,7 @@
                             
                             <a:divider id="divActions" />
                             
-                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar">
+                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
                                 <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
                                 <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
                                 <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
@@ -332,7 +332,7 @@
                                         if (prop) //@todo check this
                                             item.setProperty("value", sel[prop]);    
                                     }
-                                    
+
                                     if (!lblH.visible && !lblW.visible)
                                         divActions.hide();
                 

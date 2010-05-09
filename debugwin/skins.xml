@@ -1642,7 +1642,7 @@
         .dbg_toolbar .dbg_subbar .toolbarbutton {
             display: block;
             height: 22px;
-            float: left;
+            /*float: left;*/
             cursor: default;
             margin: 2px 1px 0 1px;
             text-decoration: none;
@@ -2665,6 +2665,7 @@
             background-position:0 0;
             margin : 0; /*margin : 0 16px 0 0; Temp disabled for non scrolling */
             white-space : nowrap;
+            border-bottom : 1px solid #c6cdd3;
         }
 
         .fixed .headings{
@@ -2686,7 +2687,6 @@
 
             padding : 2px 1px 0px 3px;
             margin : 0 -1px 0 -1px;
-            /*border-right : 1px solid #c6cdd3;*/
             border-left : 1px solid #c6cdd3;
             display : block;
             height : 15px;
@@ -2835,96 +2835,6 @@
             display : none;
         }
 
-        .propedit #txt_rename{
-            font-family: Tahoma;
-            font-size: 8pt;
-            word-break: keep-all;
-            overflow: hidden;
-            cursor: text;
-            background-color: white;
-
-            height : 14px;
-            border : 1px solid #c6cdd3;
-            border-width : 1px 1px 1px 0;
-            padding : 2px 1px 1px 3px;
-            position : relative;
-            z-index : 10;
-        }
-
-        .propedit input#txt_rename{
-            outline : none;
-            padding : 2px 0 1px 2px;
-            margin : 0 -2px 0 -1px;
-            border-width : 1px 1px 1px 1px;
-        }
-
-        .propedit .ddbtn{
-            width : 11px;
-            height : 10px;
-            padding : 2px 0 2px 2.5px;
-            border : 2px outset;
-            display : none;
-            position : absolute;
-            right : 0;
-            overflow : hidden;
-            background : #c6cdd3 url(images/sort_asc.gif) no-repeat 3px 5px;
-            text-decoration : none;
-        }
-
-        .propeditcontainerdropdown, .propeditcontainerset, .ddjmlcontainer{
-            display : none;
-            text-decoration : none;
-            border : 1px solid black;
-            background : white;
-            position : absolute;
-            overflow : hidden;
-            margin : 0;
-            padding : 0;
-        }
-
-        .ddjmlcontainer{
-            /*padding : 5px;*/
-            overflow : hidden;
-        }
-
-        .propeditcontainerdropdown div, .propeditcontainerset div{
-            display: block;
-            height: 15px;
-            padding: 1px 3px 1px 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            background-color: white;
-            color: black;
-            cursor: default;
-        }
-
-        .propeditcontainerdropdown div.hover{
-            background-color: #2582d1;
-            color: #ffffff;
-        }
-
-        .propeditcontainerset div.hover{
-            background-color : #eee;
-        }
-
-        .propeditcontainerset div{
-            padding : 2px 3px 0 1px;
-        }
-
-        .propeditcontainerset div span{
-            width: 12px;
-            height: 12px;
-            overflow: hidden;
-            margin : 1px 3px 0 1px;
-            float : left;
-            background: url("images/checkbox.png") no-repeat 0 -12px;
-        }
-
-        .propeditcontainerset div.checked span{
-            background-position: 0 -24px;
-        }
-
         .propedit .empty, .propedit .offline, .propedit .loading{
             text-align: center;
             padding: 8px 0 0 5px;
@@ -2979,7 +2889,7 @@
             height : expression(this.parentNode.offsetHeight - 2);
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!apf.isIE || apf.isIE &gt; 7"><![CDATA[
         .propedit .records{
             overflow-x: hidden;
             overflow-y: auto;
@@ -3031,11 +2941,6 @@
             overflow : visible;
             position : relative;
         }
-
-        .propedit input#txt_rename{
-            position : absolute;
-            padding : 1px 1px 0 2px;
-        }
     ]]></a:style>
     <a:style>
         .propedit blockquote{
@@ -3071,7 +2976,7 @@
             background-color: #2582d1;
             border: 1px solid #327fbd;
             position : relative;
-            z-index : 10000;
+            /*z-index : 10000;*/
         }
         
         .propedit .row>u{
@@ -3138,6 +3043,18 @@
             margin : 5px 5px 0 3px;
         }
     </a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+        .propedit .tb{
+            padding-left : 2px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko"><![CDATA[
+        .propedit .tb{
+            padding-left : 2px;
+            padding-top : 1px;
+            padding-bottom : 1px;
+        }
+    ]]></a:style>
 
     <a:presentation>
         <a:main
@@ -4799,7 +4716,6 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
-
 <a:modalwindow name="alert">
     <a:style><![CDATA[
         .alert{

@@ -86,7 +86,7 @@ apf.propedit    = function(struct, tagName){
     this.$booleanProperties["iframe"]     = true;
 
     /**
-     * @attribute {String} template the {@link terms.datainstruction data instruction} 
+     * @attribute {String} properties the {@link terms.datainstruction data instruction} 
      * to fetch a template definition of the layout for this component. A template
      * consists of descriptions of columns (or rows for propedit) for which
      * several settings are determined such as validation rules, edit component 
@@ -799,6 +799,10 @@ apf.propedit    = function(struct, tagName){
     }
     
     this.select = function(htmlNode){
+        if (this.disabled) //@todo apf3.0 userAction
+            return;
+        
+        
         if (this.$selected == htmlNode) {
             /*var oEditor = this.$lastEditor[0];
             $setTimeout(function(){
@@ -845,18 +849,20 @@ apf.propedit    = function(struct, tagName){
                     htmlNode : editParent,
                     width    : "100%+2",
                     height   : 19,
-                    style    : "position:relative;z-index:10000",
+                    style    : "position:relative;", //z-index:10000
                     value    : "[{" + this.id + ".root}::" 
                         + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
                         + "]",
                     focussable : false,
                     realtime   : !isTextbox
                 };
-                if (isTextbox)
+                if (isTextbox) {
+                    info.focusselect = true;
                     info.onkeydown = function(e){
                         if (e.keyCode == 13)
                             this.change(this.getValue());
                     }
+                }
                 else if (editor == "checkbox")
                     info.values = "true|false";    
                 
