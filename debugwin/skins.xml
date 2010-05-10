@@ -11,7 +11,6 @@
             position         : relative;
             float            : left;
             display          : block;
-            min-width        : 1014px;
         }
         
         .macro_tree DIV.root,
@@ -294,6 +293,15 @@
             margin : 0 7px 0 7px;
         }
     ]]></a:style>
+    <a:style condition="apf.isChrome"><![CDATA[
+        .macro_tree BLOCKQUOTE DIV.macro_arrow {
+            margin : 0 7px 0 7px;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
+            float : left;
+        }
+    ]]></a:style>
     
     <a:presentation>
         <a:main container="." startclosed="false">
@@ -309,9 +317,7 @@
           openclose = "div[2]"
           select    = "."
           container = "blockquote/span[2]">
-            <div>
-                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote>
-            </div>
+            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote></div>
         </a:item>
         <a:dragindicator>
             <div class="dragmacro_tree">
@@ -325,9 +331,7 @@
             </div>
         </a:loading>
         <a:empty caption="div[1]/text()">
-            <div>
-                <div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton"> </span></blockquote>
-            </div>
+            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton"> </span></blockquote></div>
         </a:empty>
     </a:presentation>
 </a:tree>
