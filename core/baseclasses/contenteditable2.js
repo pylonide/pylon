@@ -207,56 +207,6 @@ apf.addEventListener("load", function(){
             return false;
         }
     });*/
-    
-    apf.ContentEditable2.$contextMenu = function(e){
-        this.ownerDocument.execCommand("contextmenu", true, {
-            amlNode: this,
-            htmlEvent: e
-        });
-
-        e.returnValue  = false;
-        e.cancelBubble = true;
-        return false;
-    }
-    
-    var time;
-    apf.ContentEditable2.$renameStart = apf.isIE
-      ? function(){
-        e = event;
-        if (e.srcElement != this)
-            return;
-        
-        apf.findHost(e.srcElement).ownerDocument.execCommand("rename", true);
-        apf.stopPropagation(e);
-      }
-      : function(e){
-        if (e.target != this)
-            return;
-
-        if (!time || new Date() - time[0] > 500 || time[1] != e.target)
-            time = [new Date().getTime(), e.target];
-        else if (time) {
-            apf.findHost(e.target).ownerDocument.execCommand("rename", true);
-            apf.stopPropagation(e);
-            time = null;
-        }
-      }
-    
-    apf.ContentEditable2.$renameSkinChange = function(e){
-        var rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this);
-        var htmlNode = !rInfo[0] 
-            ? this.$ext 
-            : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
-        if (apf.isIE) {
-            htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
-            //@todo apf3.0 memory leak - fix this
-            //e.ext ... .ondblclick        = null;
-        }
-        else {
-            apf.addListener(htmlNode, "mousedown", 
-              apf.ContentEditable2.$renameStart);
-        }
-    }
 });
 
 apf.ContentEditable2 = function() {
@@ -499,6 +449,58 @@ apf.ContentEditable2 = function() {
         
     });
 };
+apf.ContentEditable2.$contextMenu = function(e){
+    this.ownerDocument.execCommand("contextmenu", true, {
+        amlNode: this,
+        htmlEvent: e
+    });
+
+    e.returnValue  = false;
+    e.cancelBubble = true;
+    return false;
+};
+
+(function(){
+    var time;
+    apf.ContentEditable2.$renameStart = apf.isIE
+      ? function(){
+        e = event;
+        if (e.srcElement != this)
+            return;
+        
+        apf.findHost(e.srcElement).ownerDocument.execCommand("rename", true);
+        apf.stopPropagation(e);
+      }
+      : function(e){
+        if (e.target != this)
+            return;
+    
+        if (!time || new Date() - time[0] > 500 || time[1] != e.target)
+            time = [new Date().getTime(), e.target];
+        else if (time) {
+            apf.findHost(e.target).ownerDocument.execCommand("rename", true);
+            apf.stopPropagation(e);
+            time = null;
+        }
+      }
+})();
+
+apf.ContentEditable2.$renameSkinChange = function(e){
+    var rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this);
+    var htmlNode = !rInfo[0] 
+        ? this.$ext 
+        : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
+    if (apf.isIE) {
+        htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
+        //@todo apf3.0 memory leak - fix this
+        //e.ext ... .ondblclick        = null;
+    }
+    else {
+        apf.addListener(htmlNode, "mousedown", 
+          apf.ContentEditable2.$renameStart);
+    }
+}
+
 
 apf.XhtmlElement.prototype.implement(apf.ContentEditable2);
 

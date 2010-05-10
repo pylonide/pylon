@@ -77,8 +77,8 @@ apf.Presentation = function(){
     /**
      * @attribute {string} skinset the skinset for
      * this element. If none is specified the skinset attribute
-     * of <a:appsettings /> is used. When not defined the default skinset
-     * is accessed.
+     * of the appsettings is used. When not defined the default skinset
+     * is used.
      * Example:
      * <code>
      *  <a:list skinset="perspex" />
