@@ -238,7 +238,7 @@ apf.remote = function(struct, tagName){
         if (typeof sModel != "string")
             sModel = sModel.id;
         for (var i in this.sessions) {
-            if (this.sessions[i].model.id == sModel)
+            if (this.sessions[i].model && this.sessions[i].model.id == sModel)
                 return this.sessions[i];
         }
         return null;
@@ -248,6 +248,12 @@ apf.remote = function(struct, tagName){
         var oSession = this.getSessionByModel(model.id),
             i        = 0,
             l        = args.length;
+        // #ifdef __DEBUG
+        if (!oSession) {
+            throw new Error(apf.formatErrorString(0, this, "RDB: sending message",
+                "No session initiated yet, please login first!"));
+        }
+        // #endif
 
         for (; i < l; ++i) {
             if (args[i] && args[i].nodeType)
