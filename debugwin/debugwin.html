@@ -667,14 +667,13 @@
                 <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
                     <a:page caption="Tests" render="runtime">
                         <a:window 
-                            id      = "winNoextension"
-                            skin    = "alert"
-                            modal   = "true"
-                            title   = "Please install the o3 browser extension"
-                            width   = "300" 
-                            height  = "{lblIE.visible ? 95: 105}"
-                            center  = "true"
-                        >
+                          id      = "winNoextension"
+                          skin    = "alert"
+                          modal   = "true"
+                          title   = "Please install the o3 browser extension"
+                          width   = "300" 
+                          height  = "{lblIE.visible ? 95: 105}"
+                          center  = "true">
                             <a:label id="lblIE">To use this feature you need to install the o3 browser extension. <br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
                             <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 browser extension.<br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
                         </a:window>
@@ -684,21 +683,21 @@
                               align    = "left"
                               height   ="25"
                               width   = "152"
-                              border   = "0 1 1 0"
-                              >
+                              border   = "0 1 1 0">
                                 <a:bar>
                                     <a:label style="font-weight:bold;margin:3px 0 0 4px;">Recording Booth</a:label>
                                 </a:bar>
                             </a:toolbar>
                             <a:list
-                                actiontracker = "atPlaylist"
-                                align    = "left"
-                                id       = "lstMacro"
-                                class    = "tplist"
-                                model    = "mdlMacro"
-                                each     = "[test]"
-                                caption  = "[@name]"
-                                skin     = "macro_list">
+                              actiontracker = "atPlaylist"
+                              align    = "left"
+                              id       = "lstMacro"
+                              class    = "tplist"
+                              model    = "mdlMacro"
+                              each     = "[test]"
+                              caption  = "[@name]"
+                              skin     = "macro_list"
+                              empty-message = "Press record to start">
                                 <a:drag match="[test]" copy="true" />
                                 <a:remove set="{removeMacroFromPlaylist()}" undo="atPlaylist" />
                             </a:list>
