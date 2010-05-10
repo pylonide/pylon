@@ -26,6 +26,10 @@
 apf.visualConnect = function (sel){
     var active, div;
     
+    //@linh the interaction with shift is flawed. It should be :
+    //  shift-click at start - click at end
+    //  it shouldnt matter when shift is unpressed
+    //  when pressing escape line mode should dissapear
     //@linh This should be here, the vector lib keeps state
     // init draw api
     var width = document.body.clientWidth;
@@ -68,6 +72,7 @@ apf.visualConnect = function (sel){
         for (var i = 0, il = selection.length; i < il; i++) {
             hNode = selection[i].$ext;
             pos = apf.getAbsolutePosition(hNode);
+            //@todo these mouse coords are wrong
             path.push("M", Math.round(pos[0] + (hNode.offsetWidth/2)), Math.round(pos[1] + (hNode.offsetHeight/2)), "L", e.offsetX, e.offsetY);
         }
         p.style({p: path.join(" ")});
@@ -134,26 +139,39 @@ apf.visualConnect = function (sel){
             ctx.repaint();
         }
 
-        /*
-        document.onmouseup = function(e){
-            //return;
+        document.onmousedown = function(e){
+            if (!e) e = event;
+            
             apf.plane.hide();
             apf.dragMode = false; //prevents selection
             
-            if (!e) e = event;
-            var htmlNode = document.elementFromPoint(e.offsetX, e.offsetY);
+            div.style.display = "none";
+            
+            var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
             var amlNode = apf.findHost(htmlNode);
+            if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
+                //@todo this doesnt work!
+                var x = e.clientX;
+                var y = e.clientY;
+                setTimeout(function(){
+                    mnuContentEditable.display(x, y);
+                });
+            }
             
             _self.deactivate();
         };
-        */
     };
 
     this.deactivate = function(){
         active = false;
+        
+        document.onmousedown = 
+        document.onmousemove = null;
+        
         apf.plane.hide();
         //debugger;
         p.style({p:""});
+        r.style({w:0,h:0});
         ctx.repaint();
         div.style.display = "none";
        
