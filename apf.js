@@ -239,29 +239,31 @@ var apf = {
             return;
         this.$bdetect = true;
 
-        var sAgent = navigator.userAgent.toLowerCase() || "";
-
         // Browser Detection, using feature inference methods where possible:
         // http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
         // http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
-        
+        // http://sla.ckers.org/forum/read.php?24,31765,33730
+        var sAgent = navigator.userAgent.toLowerCase() || "",
+            // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
+            b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
+
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera      = (self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera      = b===4;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
          * @type {Boolean}
          */
-        this.isKonqueror  = sAgent.indexOf("konqueror") != -1;
+        this.isKonqueror  = b===5;//sAgent.indexOf("konqueror") != -1;
         
         /**
          * Specifies whether the application is running in the Safari browser.
          * @type {Boolean}
          */
-        this.isSafari     = /a/.__proto__ == "//";
+        this.isSafari     = b===3;//a/.__proto__ == "//";
         
         /**
          * Specifies whether the application is running in the Safari browser version 2.4 or below.
@@ -279,13 +281,13 @@ var apf = {
          * Specifies whether the application is running in the Chrome browser.
          * @type {Boolean}
          */
-        this.isChrome     = Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
+        this.isChrome     = b===2;//Boolean(/source/.test((/a/.toString + ""))) || sAgent.indexOf("chrome") != -1;
         
         /**
          * Specifies whether the application is running in a Webkit-based browser
          * @type {Boolean}
          */
-        this.isWebkit     = this.isSafari || this.isChrome || this.isKonquerer;
+        this.isWebkit     = this.isSafari || this.isChrome || this.isKonqueror;
 
         if (this.isWebkit) {
             var matches   = sAgent.match(/applewebkit\/(\d+)/);
@@ -299,23 +301,23 @@ var apf = {
          * Specifies whether the application is running in a Gecko based browser.
          * @type {Boolean}
          */
-        this.isGecko      = (function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
+        this.isGecko      = b===0;//(function(o) { o[o] = o + ""; return o[o] != o + ""; })(new String("__count__"));
 
         /**
          * Specifies whether the application is running in the Firefox browser version 3.
          * @type {Boolean}
          */
-        this.isGecko3     = this.isGecko && (function x(){})[-5] == "x";
+        this.isGecko3     = this.isGecko;// && (function x(){})[-5] == "x";
         this.isGecko35    = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
         this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
-        this.versionFF    = this.isGecko ? parseFloat(sAgent.match(/(?:firefox)\/([\d\.]+)/i)[1]) : -1;
+        this.versionFF    = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) : -1;
 
         var found;
         /**
          * Specifies whether the application is running in the Internet Explorer browser, any version.
          * @type {Boolean}
          */
-        this.isIE         = ! + "\v1";
+        this.isIE         = b===1;//! + "\v1";
         if (this.isIE)
             this.isIE = parseFloat(sAgent.match(/msie ([\d\.]*)/)[1]);
         
