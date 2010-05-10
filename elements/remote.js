@@ -316,7 +316,7 @@ apf.remote = function(struct, tagName){
         }
         //#endif
 
-        var oError, beforeNode, xmlNode,
+        var oError, xmlNode,
             disableRDB       = apf.xmldb.disableRDB;
         apf.xmldb.disableRDB = 2; //Feedback prevention
 
@@ -367,22 +367,26 @@ apf.remote = function(struct, tagName){
                         this.xpathToXml(q[4], model.data), q[5]);
                     break;
                 case "appendChild":
-                    beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                    if (typeof q[2] == "string")
-                        q[2] = apf.getXml(q[2]);
-                    apf.xmldb.appendChild(xmlNode, //@todo check why there's cleanNode here
-                        apf.xmldb.cleanNode(q[2]), beforeNode, q[4], q[5]);
+                    apf.xmldb.appendChild(xmlNode,
+                        //@todo check why there's cleanNode here:
+                        apf.xmldb.cleanNode(typeof q[2] == "string" ? apf.getXml(q[2]) : q[2]),
+                        (q[3] ? this.xpathToXml(q[3], model.data) : null), q[4], q[5]);
                     break;
                 case "moveNode":
-                    beforeNode = (q[3] ? this.xpathToXml(q[3], model.data) : null);
-                    var sNode = this.xpathToXml(q[2], model.data);
-                    apf.xmldb.appendChild(xmlNode, sNode, beforeNode, q[4], q[5]);
+                    apf.xmldb.appendChild(xmlNode, this.xpathToXml(q[2], model.data),
+                        (q[3] ? this.xpathToXml(q[3], model.data) : null), q[4], q[5]);
+                    break;
+                case "replaceChild":
+                    apf.xmldb.replaceChild(xmlNode, this.xpathToXml(q[2], model.data), q[3]);
                     break;
                 case "removeNode":
                     apf.xmldb.removeNode(xmlNode, q[2]);
                     break;
                 case "removeAttribute":
                     apf.xmldb.removeAttribute(xmlNode, q[2], q[3]);
+                    break;
+                case "removeNodeList":
+                    apf.xmldb.removeNodeList(xmlNode, q[2]);
                     break;
             }
             
