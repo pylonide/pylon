@@ -135,13 +135,13 @@ apf.vector =  new (function(){
             alert("please new the apf.vector.vml object");
             return;
         }
-        if( typeof(dom_parent) == 'string' )
+        if (typeof(dom_parent) == 'string')
             dom_parent = document.getElementById(dom_parent);
         this.$dom_parent = dom_parent || document.body;
 
         var pos = "left:"+x+"px;top:"+y+"px;width:"+w+"px;height:"+h+"px;";
         var css = "av\\:fill {behavior: url(#default#VML);} av\\:stroke {behavior: url(#default#VML);} av\\:shape {behavior: url(#default#VML);} av\\:group {behavior: url(#default#VML);} av\\:path {behavior: url(#default#VML);}"
-        var img = "<img class='apfdrawSS' src='images/spacer.gif' style='z-index:10000;position:absolute;background:url(images/spacer.gif);"+pos+"'/>";
+        var img = "";//"<img class='apfdrawSS' src='images/spacer.gif' style='z-index:10000;position:absolute;background:url(images/spacer.gif);"+pos+"'/>";
         var ns = "<xml:namespace ns='urn:schemas-microsoft-com:vml' prefix='av'/> ";
         if(color)color = "background-color:"+color+";";
         else color = "background:transparent;";

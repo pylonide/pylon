@@ -340,7 +340,7 @@ apf.ContentEditable2.commands = (function(){
     	        //htmlNode   : q,
     	        userInteraction : true,
     	        ignorePos  : true,
-    	        parentNode : apf.document.body
+    	        parentNode : value.parent || apf.document.body
     	    };
     	    
     	    commands.begin.call(this);
@@ -348,12 +348,18 @@ apf.ContentEditable2.commands = (function(){
     	    var amlNode = opt.addedNode;
     	    amlNode.$adding = true;
     	    
+    	    if (value.parent) {
+    	        var ppos = apf.getAbsolutePosition(value.parent.$int);
+    	        pos[0] -= ppos[0];
+    	        pos[1] -= ppos[1];
+    	    }
+    	    
     	    amlNode.$ext.style.left = (amlNode.left = pos[0]) + "px";
     	    amlNode.$ext.style.top  = (amlNode.top  = pos[1]) + "px";
     	    amlNode.$ext.style.position = "absolute";
     	    
     	    amlNode.dragOutline = false;
-    	    amlNode.$ext.onmousedown({
+    	    amlNode.$dragStart({
     	        reappend : true,
     	        clientX  : e.htmlEvent.clientX, 
     	        clientY  : e.htmlEvent.clientY

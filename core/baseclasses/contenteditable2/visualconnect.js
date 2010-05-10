@@ -24,51 +24,49 @@
  * @private
  */
 apf.visualConnect = function (sel){
-    var active, ctx, g, div;
+    var active, div;
+    
+    //@linh This should be here, the vector lib keeps state
+    // init draw api
+    var width = document.body.clientWidth;
+    var height = 800;//document.body.clientHeight;
+    // create drawing node
+    if (div)
+        div.style.display = "block";
+    else {
+        div = document.body.appendChild(document.createElement("div"));
+        
+        div.style.display = "block";
+        div.style.position = "absolute";
+        div.style.top = 0;
+        div.style.left = 0;
+        div.style.zIndex = 100000000;
+    }
+    
+    var ctx = new apf.vector.vml(div,width,height,0,0);
+    var p   = ctx.path({
+        p: "",
+        sw: 2,
+        s: "black"
+    });
     
     this.activate = function(e){
-        if (active) return;
+        if (active) 
+            return;
         active = true
+        
         apf.plane.show();
         var _self = this;
         
-        // init draw api
-        var width = document.body.clientWidth;
-        var height = 800;//document.body.clientHeight;
-        // create drawing node
-        if (div)
-            div.style.display = "block";
-        else {
-            div = document.body.appendChild(document.createElement("div"));
-            
-            div.id = "drawnode";
-            div.style.display = "block";
-            div.style.position = "absolute";
-            div.style.top = 0;
-            div.style.left = 0;
-            div.style.border = "1px solid black";
-            div.style.background = "red";
-        }
-
-        if (!ctx)
-            ctx = new apf.vector.vml('drawnode',width,height,0,0);
-        g = ctx.group({x:0,y:0,w:width,h:height});
-
-        //debugger;
-        var hNode, pos, selection = sel.$getNodeList(), lines = [];
+        var path = [], hNode, pos, selection = sel.$getNodeList(), lines = [];
         for (var i = 0, il = selection.length; i < il; i++) {
             hNode = selection[i].$ext;
             pos = apf.getAbsolutePosition(hNode);
-            pos.push(hNode.offsetWidth, hNode.offsetHeight);
-            
-            //draw the line
-            ctx.path({
-//                p: ["M",pos[0],pos[1],"L",e.clientX,e.clientY].join(" "),
-                p: "M 0 0 L 500 500",
-                s: "black"
-            });
+            path.push("M", pos.join(" "), "L", (pos[0] + hNode.offsetWidth), (pos[1] + hNode.offsetHeight));
         }
+        p.style({p: path.join(" ")});
         ctx.repaint();
+        div.style.display = "block";
       
 //        apf.dragMode = true; //prevents selection
 
@@ -83,7 +81,6 @@ apf.visualConnect = function (sel){
             ctx.repaint();
             apf.console.log("mousemove");
         }
-return;
 
         /*
         document.onmouseup = function(e){

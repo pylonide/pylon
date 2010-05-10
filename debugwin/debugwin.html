@@ -164,7 +164,7 @@
                 <a:codeeditor id="txtCode" realtime="true" align="right" 
                     onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
                     border    = "1 1 1 1" caching="false" showinvisibles="false" 
-                    activeline = "false" syntax="js" />
+                    activeline = "false" syntax="js" selectstyle="{apf.isMac ? 'line' : 'text'}" />
                 <a:toolbar align="right" height="25" border="0 0 0 1">
                     <a:bar>
                         <a:hbox edge="2 0 0 2">
@@ -934,7 +934,7 @@
                 //--></a:script>
                 
             </a:comment></a:page>
-            <a:page caption="Scripts">
+            <a:page caption="Debugger">
             </a:page>
         </a:tab>
         

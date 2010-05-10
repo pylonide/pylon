@@ -148,6 +148,7 @@ apf.$x = apf.$loader
         "core/lib/storage/memory.js",
         "core/lib/storage/cookie.js",
     
+        "core/lib/vector.js",
         "core/markup/aml/node.js"
     )
     .wait()
@@ -258,7 +259,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js"/*,
+        "core/baseclasses/basestatebuttons.js",
         
         "elements/editor/src/ace/lib/core.js",
         "elements/editor/src/ace/lib/oop.js",
@@ -293,7 +294,7 @@ apf.$x = apf.$loader
         "elements/editor/src/ace/TextInput.js",
         "elements/editor/src/ace/KeyBinding.js",	
         "elements/editor/src/ace/Editor.js",	
-        "elements/editor/src/ace/VirtualRenderer.js"*//*,
+        "elements/editor/src/ace/VirtualRenderer.js"/*,
         
         "elements/editor/experiments/o3.js",
         "elements/editor/src/debug/O3Socket.js",

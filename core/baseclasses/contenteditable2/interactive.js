@@ -95,7 +95,8 @@
         htmlNode.style.top = (apf.getHtmlTop(htmlNode) - (pos1[1] - pos2[1])) + "px";
 
         lastReparent = amlNode;
-        el.$ext.onmousedown(e, true);
+        //el.$ext.onmousedown(e, true);
+        el.$dragStart(e, true);
     }
 
     //@todo these functions should be improved to work on a map of the objects, so that it doesnt depend on hovering

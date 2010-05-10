@@ -109,6 +109,8 @@
         
         .ce .marker-layer .selection {
           background: rgb(181, 213, 255);
+          /*color: white;
+          background-color: #2582d1;*/
         }
         
         .ce .marker-layer .bracket {
