@@ -61,24 +61,25 @@ apf.codeeditor = function(struct, tagName){
     this.softtabs          = true;
     this.syntax            = "text";
     this.value             = "";
-    this.overwrite         = true;
+    this.overwrite         = false;
     this.multiline         = true;
     this.caching           = true;
+    this.showinvisibles    = true;
     
     /**
      * @attribute {Boolean} realtime whether the value of the bound data is
      * updated as the user types it, or only when this element looses focus or
      * the user presses enter.
      */
-    this.$booleanProperties["realtime"] = true;
-    this.$booleanProperties["activeline"] = true;
-    this.$booleanProperties["caching"] = true;
-    this.$booleanProperties["readonly"] = true;
-    this.$booleanProperties["showinvisibles"] = true;
-    this.$booleanProperties["showprintmargin"] = true;
-    this.$booleanProperties["overwrite"] = true;
-    this.$booleanProperties["readonly"] = true;
-    this.$booleanProperties["softtabs"] = true;
+    this.$booleanProperties["realtime"]         = true;
+    this.$booleanProperties["activeline"]       = true;
+    this.$booleanProperties["caching"]          = true;
+    this.$booleanProperties["readonly"]         = true;
+    this.$booleanProperties["showinvisibles"]   = true;
+    this.$booleanProperties["showprintmargin"]  = true;
+    this.$booleanProperties["overwrite"]        = true;
+    this.$booleanProperties["readonly"]         = true;
+    this.$booleanProperties["softtabs"]         = true;
 
     this.$supportedProperties.push("value", "realtime", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
@@ -311,5 +312,5 @@ apf.codeeditor = function(struct, tagName){
 apf.config.$inheritProperties["initial-message"] = 1;
 apf.config.$inheritProperties["realtime"]        = 1;
 
-apf.aml.setElement("codeeditor",  apf.codeeditor);
+apf.aml.setElement("codeeditor", self.ace ? apf.codeeditor : apf.textbox);
 // #endif

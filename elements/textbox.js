@@ -522,6 +522,13 @@ apf.textbox  = function(struct, tagName){
     this.$draw = function(){
         var _self = this;
         
+        //#ifdef __WITH_CODEEDITOR
+        if (this.localName == "codeeditor") {
+            this.skin = "textarea";
+            this.$loadSkin();
+        }
+        //#endif
+        
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
             var mask = this.getAttribute("mask");

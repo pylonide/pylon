@@ -34,7 +34,7 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = false; // This object can get the focus
     
     /* ********************************************************************
                                         PUBLIC METHODS

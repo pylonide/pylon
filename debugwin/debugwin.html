@@ -158,9 +158,13 @@
                         <a:textbox id="txtModel" flex="1" onkeydown="return apf.$debugwin.consoleTextHandler(event)" realtime="true" />
                     </a:hbox>
                 </a:bar>
-                <a:textarea id="txtCode" realtime="true" align="right" 
+                <!--a:textarea id="txtCode" realtime="true" align="right" 
                     onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
-                    border    = "1 0 1 1" />
+                    border    = "1 0 1 1" /-->
+                <a:codeeditor id="txtCode" realtime="true" align="right" 
+                    onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
+                    border    = "1 1 1 1" caching="false" showinvisibles="false" 
+                    activeline = "false" syntax="js" />
                 <a:toolbar align="right" height="25" border="0 0 0 1">
                     <a:bar>
                         <a:hbox edge="2 0 0 2">
@@ -479,7 +483,7 @@
                           caching    = "false"
                           prerender  = "false"
                           model      = "$apf_ide_mdlObject"
-                          empty-message   = "Please load an object by typing a javascript expression in the textbox."
+                          empty-message   = "Inspect an object by typing a javascript expression above and pressing enter."
                           loading-message = "Calculating..."
                           onafterselect = "
                             if (this.selected)

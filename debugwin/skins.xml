@@ -1,5 +1,132 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:codeeditor name="codeeditor">
+    <a:style src="../elements/editor/css/editor.css" />
+    <a:style><![CDATA[
+        .ceDisabled {
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+
+        .ceError{
+            border: 1px solid #ffb500;
+            padding : 5px;
+        }
+        
+        /*** TM ***/
+        
+        .ce {
+          border: 1px solid #c3c3c3;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+        }
+        
+        .ce .gutter {
+          width: 40px;
+          background: #e1e7ec; 
+          border-right: 1px solid #c3c3c3;  
+          color: #333;
+          font-family: Monaco, "Courier New";
+          font-size: 12px;  
+          overflow : hidden;
+        }
+        
+        .ceFocus .gutter{
+            background: #c5daec; 
+            border-right : 1px solid #b2b2b2;
+        }
+        
+        .ceFocus{
+            background : #f2f9ff;
+            border-color : #b2b2b2;
+        }
+        
+        .ce .gutter-layer {
+          right: 10px;
+          text-align: right;
+        }
+        
+        .ce .text-layer {
+          font-family: Monaco, "Courier New", monospace;
+          font-size: 12px;
+          cursor: text;
+        }
+        
+        .ce .cursor {
+          border-left: 2px solid black;
+        }
+
+        .ce .cursor.overwrite {
+          border-left: 0px;
+          border-bottom: 1px solid black;
+        }
+        
+        .ce .line .invisible {
+          color: rgb(191, 191, 191);
+         }
+        
+        .ce .line .keyword {
+          color: blue;
+        }
+        
+        .ce .line .buildin-constant {
+          color: rgb(88, 72, 246);
+        }
+        
+        .ce .line .library-constant {
+          color: rgb(6, 150, 14);
+        }
+        
+        .ce .line .buildin-function {
+          color: rgb(60, 76, 114);
+        }
+        
+        .ce .line .string {
+          color: rgb(3, 106, 7);
+        }
+        
+        .ce .line .comment {
+          font-style: italic;
+          color: rgb(76, 136, 107);
+        }
+        
+        .ce .line .doc-comment {
+          color: rgb(0, 102, 255);
+        }
+        
+        .ce .line .doc-comment-tag {
+          color: rgb(128, 159, 191);
+        }
+        
+        .ce .line .number {
+          color: rgb(0, 0, 205);
+        }
+        
+        .ce .line .xml_pe {
+          color: rgb(104, 104, 91);
+        }
+        
+        .ce .marker-layer .selection {
+          background: rgb(181, 213, 255);
+        }
+        
+        .ce .marker-layer .bracket {
+          margin: -1px 0 0 -1px;
+          border: 1px solid rgb(192, 192, 192);
+        }
+        
+        .ce .marker-layer .active_line {
+          background: rgb(232, 242, 254);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main content=".">
+            <div class="ce"> </div>
+        </a:main>
+    </a:presentation>
+</a:codeeditor>
 <a:tree name="macro_tree">
     <a:style><![CDATA[
         .macro_tree {
@@ -3850,6 +3977,8 @@
         }
         
         .textFocus{
+            background : #fbfdff;
+            border-color : #b2b2b2;
         }
     ]]></a:style>
 

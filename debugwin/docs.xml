@@ -123,17 +123,16 @@
     <a:bar id="refguide_container" width="100%" skin="basic" style="border-width:0 0 0 1px;background:white;overflow:auto;padding:10px;">
         <a:text id="txtInfoDocs" class="doc" visible="false"/>
     
-        <a:bar id="txtHome" skin="basic" class="dochome">
-            <h1>Ajax.org Documentation</h1>
-            <p>Reference of all aml elements and javascript objects.</p>
+        <a:bar id="txtHome" skin="basic" class="dochome" left="50%-150" top="50%-25" width="300" height="50" style="text-align:center">
+            <h1 style='color:#c3c3c3'>Documentation</h1>
             
-            <h2 style='color : #2582d1;'>Latest user comments on the documentation</h2>
+            <!--h2 style='color : #2582d1;'>Latest user comments on the documentation</h2>
             <a:list id="lc" model="{comm.getComments('latest');}"
               bindings  = "bndComments"
               caching   = "false" 
               skin      = "listcomments">
                 <a:actions />
-            </a:list>
+            </a:list-->
         </a:bar>
         
         <h2 id="headNotes" class="usernotes" style="display:none">
