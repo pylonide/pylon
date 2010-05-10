@@ -288,18 +288,19 @@
             overflow            : hidden;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko"><![CDATA[
+    <a:style condition="!apf.isIE"><![CDATA[
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
-            margin : 0 7px 0 7px;
+            margin : 0 7px;
         }
     ]]></a:style>
     <a:style condition="apf.isChrome"><![CDATA[
-        .macro_tree BLOCKQUOTE DIV.macro_arrow {
-            margin : 0 7px 0 7px;
-        }
-        
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
             float : left;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+       .macro_tree BLOCKQUOTE {
+            display : block;
         }
     ]]></a:style>
     
@@ -3699,23 +3700,24 @@
 </a:menu>
 <a:label name="label">
     <a:style><![CDATA[
-        .label{
-            font-size: 8pt;
-            font-family: Tahoma;
-            overflow: hidden;
-            cursor: default;
-            color : #333;
-            padding : 2px;
+        .label {
+            font-size   : 8pt;
+            font-family : Tahoma;
+            overflow    : hidden;
+            cursor      : default;
+            color       : #333;
+            padding     : 2px;
+            position    : relative;
         }
 
-        .labelDisabled{
-            color: #bebebe;
+        .labelDisabled {
+            color : #bebebe;
         }
 
-        .error .label{
+        .error .label {
             background : url(images/alert.png) no-repeat 0 0;
             min-height : 37px;
-            padding : 3px 0 0 45px;
+            padding    : 3px 0 0 45px;
         }
     ]]></a:style>
 
