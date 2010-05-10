@@ -149,12 +149,12 @@ apf.vector =  new (function(){
         //if(!apf.isIE8){
             apf.importCssString(css);
             this.$dom_parent.innerHTML += img +
-                "<div class='apfdrawClipper' style='margin:0;padding:0;position2:absolute;display:inline-block;"+color+
-                    pos+"overflow:hidden;'>"+ns+
+                "<div class='apfdrawClipper' style='margin:0;padding:0;"+color+
+                    pos+"overflow:hidden;position:relative;'>"+ns+
                 "</div>";
             this.$vmlroot = this.$dom_parent.lastChild;
             this.$vmlss	  = this.$vmlroot.previousSibling;
-        /*
+            /*
         } else {
             this.$dom_parent.innerHTML += img +
                 "<iframe style='margin:0;padding:0;border:0px;overflow:hidden;"+color+
@@ -351,9 +351,10 @@ apf.vector =  new (function(){
             
             this.toString = function(){
                 this.$viastring = true;
-                return ["<av:group coordorigin='",this.$_vx," ",this.$_vy,"' coordsize='",this.$_vw," ",this.$_vh,
-                        "' style='display:block;",this.$_r?"rotation:"+this.$_r:"",
-                        ";left:",this.$_x,";top:",this.$_y,";width:",this.$_w,";height:",this.$_h,";'>",
+                this.$_y = 0;
+                return ["<av:group coordorigin='",this.$_vx,"px ",this.$_vy,"px' coordsize='",this.$_vw," ",this.$_vh,
+                        "' style='position:absolute;",this.$_r?"rotation:"+this.$_r:"",
+                        ";left:",this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
                             this.$vmlnodes.join(''), 
                          "</av:group>"].join('');
             }        
@@ -440,7 +441,7 @@ apf.vector =  new (function(){
             
             this.toString = function(){
                 var s = this.$isset, d = this.$isdyn;
-                var t = ["<av:shape fill='f' path='",this.$path.join(''),"' style='left:0;top:0;width:100%;height:100%;'>",
+                var t = ["<av:shape fill='f' path='",this.$path.join(''),"' style='position:absolute;left:0;top:0;width:100%;height:100%;'>",
                             // inject gradient support here
                             "<av:fill on='",s&0x1?"t":"f","' color='",this.$_f,"' opacity='",
                                 s&0x30?this.$_fo:1,"' />",

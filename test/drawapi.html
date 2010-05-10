@@ -1,17 +1,21 @@
+<!DOCTYPE html>
 <html>
  <head>
-     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+     <style>
+     </style>
+    <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
     <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
-       
     <script LANGUAGE="JavaScript" type="text/javascript">
     
     function draw(){
         var ctx = new apf.vector.vml('drawnode',800,600,0,0,'darkblue');
         // lets add a new group to to our root group
         var g = ctx.group({x:0,y:0,w:800,h:600});
+        var g2 = ctx.group({x:0,y:0,w:800,h:600});
+
         var r = [];
         var i ; 
         var xw = 16, yw =16, xs = 8, ys = 8, zd = 12;
@@ -22,25 +26,31 @@
             
         }
         col[i] = 'red';
-        /*
+        
+        //ctx.rect({id:"r",x:10,y:20});
+        //ctx.path({p:"M {r.x} {r.y} L 0 0"});
+        
+        
+        
         apf.profile_loop(1,function(){
         for(var y=0,i=0;y<yw;y++)
             for(var x=0;x<xw;x++,i++)
-                r[i] = ctx.rect({x:x*xs,y:y*ys,w:xs,h:ys,o:1,f:col[Math.round((Math.sin((x+y)/2 )*0.5+0.5)*zd)]},g);
+                r[i] = ctx.rect({x:x*xs,y:y*ys,w:xs,h:ys,o:1,f:col[Math.round((Math.sin((x+y)/2 )*0.5+0.5)*zd)]},g2);
             ctx.repaint();
         });
         var t = 0;
-        */
         var e = [];
-        for(var i=0;i<100;i++)
+        var num = 200, st = 15;
+        for(var i=0;i<num;i++)
             e[i] = ctx.path({p:"",s:'black'}, g);
         var t = 0,v = 0,w = 0;
-        for(var c = [],z = 0,m = 255/15;z<15;z++)
-             c[z] = ['rgb(',2*m*z,',',m*z,',',m*z,')'].join('');
+        for(var c = [],z = 0,m = 255/st;z<st;z++)
+             c[z] = ['rgb(',255,',',255,',',z*m,')'].join('');
+        
         window.setInterval(function(){
             t+=0.05,v+=0.01,w+=0.1;var r = Math.round,sin = Math.sin, cos = Math.cos;
-            for(var j,i = 0;i<100;i++)
-               j= i/25,e[i].style({sw:18,o:((i%15)/15),s:c[i%15],p:["M",r( sin(t+v*j-0.2*w)*300+300 ),r( cos(t+v*j+0.1*w)*300+300 ),"L",r( sin(-t+1-v*j+w)*300+300), r(cos(t+3+v*j-w)*300+300)].join(' ')});
+            for(var j,i = 0;i<num;i++)
+               j= i/25,e[i].style({sw:8,o:0.3*((i%st)/st),s:c[i%st],p:["M",r( sin(t+v*j-0.2*w)*600+200 ),r( cos(t+v*j+0.1*w)*300+300 ),"L",r( sin(-t+1-v*j+w)*300+300), r(cos(t+3+v*j-w)*300+300),'XE'].join(' ')});
             ctx.repaint();
         },10);
         /*
@@ -74,7 +84,7 @@
   </script>
 
  </head>
- <body onload="draw()" style="">
+ <body onload="draw()" style="background-color:black">
     <div id="drawnode" style2="width:300px;height:300px;background-color:black">
     </div>
  </body>
