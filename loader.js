@@ -182,6 +182,7 @@ apf.$x = apf.$loader
         "core/baseclasses/contenteditable2/interactive.js",
         "core/baseclasses/contenteditable2/selectrect.js",
         "core/baseclasses/contenteditable2/visualselect.js",
+        "core/baseclasses/contenteditable2/visualconnect.js",
     
         "core/markup/xhtml/ignore.js",
         "core/markup/xhtml/option.js",
@@ -292,7 +293,7 @@ apf.$x = apf.$loader
         "elements/editor/src/ace/TextInput.js",
         "elements/editor/src/ace/KeyBinding.js",	
         "elements/editor/src/ace/Editor.js",	
-        "elements/editor/src/ace/VirtualRenderer.js",
+        "elements/editor/src/ace/VirtualRenderer.js"*//*,
         
         "elements/editor/experiments/o3.js",
         "elements/editor/src/debug/O3Socket.js",
@@ -349,7 +350,6 @@ apf.$x = apf.$loader
         "elements/caldropdown.js",
         "elements/chart.js",
         "elements/checkbox.js",
-        "elements/codeeditor.js", 
         "elements/collection.js",
         "elements/comment.js",
         //"colorpicker.js",
@@ -427,6 +427,8 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "elements/codeeditor.js", 
+        
         "elements/actiontracker/undodata.js",
         "elements/actiontracker/xmlactions.js",
     
