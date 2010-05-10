@@ -1085,7 +1085,7 @@ apf.BaseTree = function(){
     }
     
     this.$removeEmptyMessage = function(htmlNode){
-        var cNode = htmlNode.firstElementChild;
+        var cNode = htmlNode.firstElementChild || htmlNode.firstChild;
         if (!cNode)
             return;
 

@@ -24,6 +24,7 @@
  * @private
  */
 apf.selectrect = function (){
+    var active;
     var p1    = document.body.appendChild(document.createElement("div")),
         p2    = document.body.appendChild(document.createElement("div")),
         q     = document.body.appendChild(document.createElement("div")),
@@ -34,6 +35,9 @@ apf.selectrect = function (){
     q.className  = "new_element";
 
     this.activate = function(){
+        if (active) return;
+        active = true;
+        
         document.onmousemove = function(e){
             if (!e) e = event;
 
@@ -136,6 +140,7 @@ apf.selectrect = function (){
     };
 
     this.deactivate = function(){
+        active = false;
         document.onmousemove = null;
         document.onmousedown = null;
         document.onmouseup = null;

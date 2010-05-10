@@ -146,7 +146,7 @@ apf.vector =  new (function(){
         if(color)color = "background-color:"+color+";";
         else color = "background:transparent;";
         
-        if(!apf.isIE8){
+        //if(!apf.isIE8){
             apf.importCssString(css);
             this.$dom_parent.innerHTML += img +
                 "<div class='apfdrawClipper' style='margin:0;padding:0;position2:absolute;display:inline-block;"+color+
@@ -154,6 +154,7 @@ apf.vector =  new (function(){
                 "</div>";
             this.$vmlroot = this.$dom_parent.lastChild;
             this.$vmlss	  = this.$vmlroot.previousSibling;
+        /*
         } else {
             this.$dom_parent.innerHTML += img +
                 "<iframe style='margin:0;padding:0;border:0px;overflow:hidden;"+color+
@@ -168,7 +169,8 @@ apf.vector =  new (function(){
                         <div style='position:absolute;display:inline-block;'></div></body></html>");
             doc.close();
             this.$vmlroot = doc.body.firstChild;
-        }	
+        }
+        */
         this.root = this.group({x:0,y:0,w:w,h:h});
         this.root.$ctx = this;
     };
