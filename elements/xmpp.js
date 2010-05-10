@@ -1748,7 +1748,7 @@ apf.xmpp = function(struct, tagName){
                     apf.console.info("received the following from the server: "
                         + sMsg, "xmpp");
                     //#endif
-                    this.$rdbSignal(constants.NS.datastatus, sFrom, sMsg);
+                    this.$rdbSignal(oMsg, sMsg);
                 }
                 // #endif
             // #ifdef __TP_XMPP_ROSTER

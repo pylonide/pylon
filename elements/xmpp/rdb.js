@@ -103,9 +103,8 @@ apf.xmpp_rdb = function(){
     this.$rdbSignal = function(oNode) {
         var idx, oEnt,
             sDoc  = null,
-            isNS  = (typeof oNode == "string"),
-            sJoin = !isNS ? oNode.getAttribute("join") : null,
-            sJID  = !isNS ? oNode.getAttribute("from") : arguments[1];
+            sJoin = oNode.getAttribute("join") || null,
+            sJID  = oNode.getAttribute("from");
         if ((idx = sJID.indexOf("@")) > -1)
             sDoc = sJID.substring(0, idx);
         var f     = "doc_cb_" + (sDoc || "generic"),
@@ -153,13 +152,7 @@ apf.xmpp_rdb = function(){
         }
         // client logic...
         else {
-            if (isNS && oNode == oXmpp.NS.datastatus) {
-                this.dispatchEvent("datachange", {
-                    session : sDoc,
-                    body    : arguments[2]
-                });
-            }
-            else if (sJoin) {
+            if (sJoin) {
                 // a new document session is started
                 this.$addDoc(sJID);
                 oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
@@ -183,6 +176,12 @@ apf.xmpp_rdb = function(){
                         baseline : aBaseline.length ? aBaseline[0].firstChild.nodeValue : "",
                         modeldata: aData.length     ? aData[0].firstChild.nodeValue : ""
                     }
+                });
+            }
+            else if (arguments[1] && sJID != oNode.getAttribute("to")) {
+                this.dispatchEvent("datachange", {
+                    session : sDoc,
+                    body    : arguments[1]
                 });
             }
         }

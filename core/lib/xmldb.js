@@ -553,7 +553,7 @@ apf.xmldb = new (function(){
         //Add xmlNode to parent pNode or one selected by xpath statement
         if (xpath) {
             var addedNodes = [];
-            var pNode = apf.createNodeFromXpath(pNode, xpath, addedNodes);
+            pNode = apf.createNodeFromXpath(pNode, xpath, addedNodes);
             if (addedNodes.length) {
                 pNode.appendChild(xmlNode);
                 while(addedNodes.length) {
