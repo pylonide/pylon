@@ -725,7 +725,7 @@
                                 <a:button onclick="atPlaylist.redo()">Redo</a:button>
                             </a:bar>
                         </a:toolbar>
-                        <a:bar skin="basic" border="1 0 0 1" align="right" class="netview">
+                        <a:bar onresize="updateTreeWidth(this)" skin="basic" border="1 0 0 1" align="right" class="macro_tree_bar">
                             <a:tree
                               style="margin-left:61px;"
                               actiontracker = "atPlaylist"
@@ -755,8 +755,8 @@
                             </a:tree>
                             <div id="plButtons" model="mdlPlaylist" class="playlist_buttons">
                                 <?lm
-                                    var btn_top = 27;
-                                    var cbx_top = 31;
+                                    var btn_top = 2;
+                                    var cbx_top = 6;
                                     var line_top = cbx_top + 4;
                                     
                                     foreach([playlist]) {
@@ -767,13 +767,18 @@
                                     }
                                     
                                     <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playCheckedPlaylists();" />
-                                    <a:label top="{btn_top + 4}" left="72" width="100">Play checked playlists</a:label>
+                                    <a:label top="{btn_top + 4}" left="72" width="150">Play checked playlists</a:label>
                                     
                                     <div class="vertical_line" style="top:{line_top}px; height:{btn_top - line_top + 13}px;"></div>
                                     <div class="horizontal_line" style="top:{btn_top + 11}px;"></div>
                                 ?>
                             </div>
-
+                            <a:script><![CDATA[
+                                function updateTreeWidth(htmlNode) {
+                                    var minWidth = htmlNode.$ext.offsetWidth - (apf.isOpera ? 127 : 122) - (document.documentElement.scrollLeft || document.body.scrollLeft);
+                                    trPlaylist.$ext.style.minWidth = minWidth+"px";
+                                }
+                            ]]></a:script>
                          </a:bar>
                     </a:page>
                     <a:page caption="Playlist" render="runtime">

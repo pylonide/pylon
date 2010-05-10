@@ -3589,6 +3589,11 @@
             position : relative;
         }
     ]]></a:style>
+    <a:style condition="apf.isChrome"><![CDATA[
+        .datagrid .treecell strong {
+            top : 0;
+        }
+    ]]></a:style>
 
     <a:presentation>
         <a:main

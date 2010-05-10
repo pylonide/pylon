@@ -24,13 +24,20 @@ body{
     background : #edf2f8;
 }
 
-.netview .label{
+.macro_tree_bar {
+    border : 1px solid #c3c3c3;
+    border-top:0;
+    padding : 5px 5px 5px 5px;
+    background : #edf2f8;
+}
+
+.macro_tree_bar .label{
     white-space : nowrap;
     overflow : hidden;
     text-overflow : ellipsis;
 }
 
-.netview .playlist_buttons {
+.macro_tree_bar .playlist_buttons {
     position : absolute;
     top      : 25px;
     left     : 0;
@@ -38,7 +45,7 @@ body{
     bottom   : 0;
 }
 
-.netview .playlist_buttons .vertical_line {
+.macro_tree_bar .playlist_buttons .vertical_line {
     position     : absolute;
     width        : 0;
     border-left  : 1px solid white;
@@ -47,7 +54,7 @@ body{
     z-index      : 400;
 }
 
-.netview .playlist_buttons .horizontal_line {
+.macro_tree_bar .playlist_buttons .horizontal_line {
     position      : absolute;
     border-bottom : 1px solid white;
     border-top    : 1px solid #caced3;
