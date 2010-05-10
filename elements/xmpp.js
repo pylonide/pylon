@@ -853,8 +853,8 @@ apf.xmpp = function(struct, tagName){
             var sPresence = createPresenceBlock({
                 type: constants.TYPE_UNAVAILABLE
             });
-            if (this.$activeReq)
-                this.cancel(this.$activeReq);
+            //if (this.$activeReq)
+            //    this.cancel(this.$activeReq);
             this.$doXmlRequest(processDisconnect, this.$isPoll
                 ? createStreamElement.call(this, null, {
                     doClose: true
