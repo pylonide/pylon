@@ -27,7 +27,6 @@ apf.vector =  new (function(){
             if(n&x) s+= (s?'   ':'')+dbglut[i]+'=('+values[i]+')';
         return s;
     }
-
     var style_short = {
         'scale-x':'sx','scale-width':'sx','scalex':'sx','scalewidth':'sx',
         'scale-y':'sy','scale-height':'sy','scaley':'sy','scaleheight':'sy',
@@ -57,7 +56,7 @@ apf.vector =  new (function(){
         vx:0x100,vy:0x200,vw:0x400,vh:0x800,
         x:0x1000,y:0x2000,w:0x4000,h:0x8000,
         sx:0x10000,sy:0x20000,ox:0x40000,oy:0x80000,
-        cx:0x100000,cy:0x200000,r :0x400000        
+        cx:0x100000,cy:0x200000,r:0x400000,p:0x800000        
     };
     var sd_s, sd_d, sd_c= {};
     function diffGroup(g,st,s,d,c){
@@ -107,6 +106,7 @@ apf.vector =  new (function(){
             if(c&0x100000 && g.$cx!=(((t=st.cx)==0||t==null)?(s=s&0x7fefffff,t=0):(s=s|0x100000,t=t.indexOf?(t.indexOf('{')!=-1?(d=d|0x100000,sd_c[t]||(sd_c[t]=pe(t))):(d=d&0x7fefffff,pf(t))):(d=d&0x7fefffff,t))))m=m|0x100000,g.$cx=t;
             if(c&0x200000 && g.$cy!=(((t=st.cy)==0||t==null)?(s=s&0x7fdfffff,t=0):(s=s|0x200000,t=t.indexOf?(t.indexOf('{')!=-1?(d=d|0x200000,sd_c[t]||(sd_c[t]=pe(t))):(d=d&0x7fdfffff,pf(t))):(d=d&0x7fdfffff,t))))m=m|0x200000,g.$cy=t;
             if(c&0x400000 && g.$r !=(((t=st.r)==0||t==null)?(s=s&0x7fbfffff,t=0):(s=s|0x400000,t=t.indexOf?(t.indexOf('{')!=-1?(d=d|0x400000,sd_c[t]||(sd_c[t]=pe(t))):(d=d&0x7fbfffff,pf(t))):(d=d&0x7fbfffff,t))))m=m|0x400000,g.$r=t;
+            if(c&0x800000 && g.$p !=(((t=st.p)==null)?(s=s&0x7f7fffff,t=""):(s=s|0x800000,t=t.charAt && t.indexOf('{')!=-1?(d=d|0x400000,sd_c[t]||(sd_c[t]=pe(t))):(d=d&0x7f7fffff,t))))m=m|0x800000,g.$p=t;
         }
         sd_s = s, sd_d = d;
         return m;
@@ -240,7 +240,6 @@ apf.vector =  new (function(){
                     var r = this.$ctx.$vmlroot;
                     r.insertAdjacentHTML("beforeend", this.toString());
                     this.$vmlnode = r.firstChild;
-                   // apf.logw(this.toString());
                 }
                 var d,h,i,j,k,l; 
                 if(this.$viastring){ // our parent created our children
@@ -510,7 +509,6 @@ apf.vector =  new (function(){
                         }
                         this.$vmlshape = vs
                     }
-
                     m = diffVisual(vs, st, vs.$isset, vs.$isdyn, c);
                     if(m)vs.$styleVisual(m, sd_s, sd_d);
                     vs.$isset = sd_s, vs.$isdyn = sd_d;  
@@ -529,15 +527,6 @@ apf.vector =  new (function(){
         function styleRect(m,s,d){
             // someone needs us to update the rect shiz based on our modified stuff
             var w, vs = this.$vmlshape;
-            // lets store our path and slap our $vmlshape in a repaint
-            //apf.logw(this.$pathslot);
-            /*
-            var a = this.$arr || (this.$arr=["m",0,0,"r",0,0,0,0,0,0,"xe "]);
-            a[1] = parseInt(this.$x);
-            a[2] = parseInt(this.$y);
-            a[8] = -(a[4] = parseInt(this.$w));
-            a[7] = parseInt(this.$h);
-            vs.$path[this.$pathslot] = a.join(' ');*/
             var round = Math.round;
             vs.$path[this.$pathslot] =  ["m",round(this.$x),round(this.$y),
                     "r",w=round(this.$w),0,0,round(this.$h),
@@ -547,13 +536,22 @@ apf.vector =  new (function(){
         
         this.rect = function(st, parent){
             var t = new shape(st, parent || this.root, styleRect);
-            
-            // lets say we wanna add a path.. how do we do that?
-            // and how do the dynamics work?
-            
             return t;
         };
 
+        function stylePath(m,s,d){
+            // someone needs us to update the rect shiz based on our modified stuff
+            var w, vs = this.$vmlshape, ps, pt, p;
+            if( (pt = vs.$path)[ps = this.$pathslot] !=  (p = this.$p)){
+                pt[ps] = p;
+                this.$parent.$pathjoin[vs.$uid] = vs;
+            }
+        }
+        
+        this.path = function(st, parent){
+            var t = new shape(st, parent || this.root, stylePath);
+            return t;
+        };
     }).call(vml.prototype);
 });
 
