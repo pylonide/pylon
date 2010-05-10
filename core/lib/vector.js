@@ -148,10 +148,10 @@ apf.vector =  new (function(){
         
         //if(!apf.isIE8){
             apf.importCssString(css);
-            this.$dom_parent.innerHTML += img +
+            this.$dom_parent.insertAdjacentHTML("beforeend", img +
                 "<div class='apfdrawClipper' style='margin:0;padding:0;"+color+
                     pos+"overflow:hidden;position:relative;'>"+ns+
-                "</div>";
+                "</div>");
             this.$vmlroot = this.$dom_parent.lastChild;
             this.$vmlss	  = this.$vmlroot.previousSibling;
             /*

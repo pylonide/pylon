@@ -44,10 +44,16 @@ apf.visualConnect = function (sel){
     }
     
     var ctx = new apf.vector.vml(div,width,height,0,0);
+    var r   = ctx.rect({
+        sw: 1,
+        s: "#24a3f4",
+        f: "#24a3f4",
+        o: 0.2
+    });
     var p   = ctx.path({
         p: "",
-        sw: 2,
-        s: "black"
+        sw: 1.5,
+        s: "#24a3f4"
     });
     
     this.activate = function(e){
@@ -62,7 +68,7 @@ apf.visualConnect = function (sel){
         for (var i = 0, il = selection.length; i < il; i++) {
             hNode = selection[i].$ext;
             pos = apf.getAbsolutePosition(hNode);
-            path.push("M", pos.join(" "), "L", (pos[0] + hNode.offsetWidth), (pos[1] + hNode.offsetHeight));
+            path.push("M", Math.round(pos[0] + (hNode.offsetWidth/2)), Math.round(pos[1] + (hNode.offsetHeight/2)), "L", e.offsetX, e.offsetY);
         }
         p.style({p: path.join(" ")});
         ctx.repaint();
@@ -70,16 +76,62 @@ apf.visualConnect = function (sel){
       
 //        apf.dragMode = true; //prevents selection
 
+        var timer, lastTime
         document.onmousemove = function(e){
             if (!e) e = event;
+            
+            clearTimeout(timer);
+            if (lastTime && new Date().getTime() 
+              - lastTime < apf.mouseEventBuffer) {
+                var z = {
+                    clientX: e.clientX,
+                    clientY: e.clientY
+                }
+                timer = setTimeout(function(){
+                    //@todo
+                }, 10);
+                return;
+            }
+            lastTime = new Date().getTime();
+            
+            apf.plane.hide();
+            div.style.display = "none";
+            
+            var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
+            var amlNode = apf.findHost(htmlNode);
+            if (amlNode) {
+                htmlNode = amlNode.$ext;
+                var pos = apf.getAbsolutePosition(htmlNode);
+                r.style({
+                    x: pos[0], 
+                    y: pos[1],
+                    w: htmlNode.offsetWidth,
+                    h: htmlNode.offsetHeight
+                });
+            }
+            else {
+                r.style({
+                    w: 0, h: 0
+                });
+            }
+            
+            var path = [];
+            for (var i = 0, il = selection.length; i < il; i++) {
+                hNode = selection[i].$ext;
+                pos = apf.getAbsolutePosition(hNode);
+                path.push("M", Math.round(pos[0] + (hNode.offsetWidth/2)), Math.round(pos[1] + (hNode.offsetHeight/2)), "L", e.clientX, e.clientY);
+            }
+            p.style({p: path.join(" ")});
 
-            for (var i = 0, il = lines.length; i < il; i++) {
+            /*for (var i = 0, il = lines.length; i < il; i++) {
                 lines[i].style({
                     p: ["L",e.clientX,e.clientY].join(" ")
                 });
-            }
+            }*/
+            
+            apf.plane.show();
+            div.style.display = "block";
             ctx.repaint();
-            apf.console.log("mousemove");
         }
 
         /*
@@ -101,8 +153,10 @@ apf.visualConnect = function (sel){
         active = false;
         apf.plane.hide();
         //debugger;
+        p.style({p:""});
+        ctx.repaint();
         div.style.display = "none";
-        
+       
     };
 };
 //#endif
