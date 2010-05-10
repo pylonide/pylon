@@ -99,7 +99,7 @@ apf.visualConnect = function (sel){
             
             var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
             var amlNode = apf.findHost(htmlNode);
-            if (amlNode) {
+            if (amlNode && amlNode.editable) {
                 htmlNode = amlNode.$ext;
                 var pos = apf.getAbsolutePosition(htmlNode);
                 r.style({
