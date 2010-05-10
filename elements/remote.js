@@ -359,6 +359,9 @@ apf.remote = function(struct, tagName){
                 case "setAttribute":
                     apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
                     break;
+                case "setNodeValue":
+                    apf.setNodeValue(xmlNode, q[2], true);
+                    break;
                 case "addChildNode":
                     apf.xmldb.addChildNode(xmlNode, q[2], q[3],
                         this.xpathToXml(q[4], model.data), q[5]);
@@ -378,8 +381,8 @@ apf.remote = function(struct, tagName){
                 case "removeNode":
                     apf.xmldb.removeNode(xmlNode, q[2]);
                     break;
-                case "setNodeValue":
-                    apf.setNodeValue(xmlNode, q[2], true);
+                case "removeAttribute":
+                    apf.xmldb.removeAttribute(xmlNode, q[2], q[3]);
                     break;
             }
             
