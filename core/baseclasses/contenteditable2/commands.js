@@ -325,6 +325,10 @@ apf.ContentEditable2.commands = (function(){
     	    mode = value;
     	    this.$getSelectRect().activate();
     	}
+    	else if (value && value.mode == "connect") {
+    	    mode = "connect";
+    	    this.$getVisualConnect().activate(value.event);
+    	}
     	else if (value && value.mode == "add") {
             mode = "add";
             var e   = value.ev;
@@ -361,6 +365,7 @@ apf.ContentEditable2.commands = (function(){
     	else {
     	    mode = value;
     	    this.$getSelectRect().deactivate();
+            this.$getVisualConnect().deactivate();
     	}
     };
     

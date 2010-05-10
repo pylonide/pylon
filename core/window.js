@@ -1073,21 +1073,23 @@ apf.window = function(){
         if (!e) e = event;
 
         //#ifdef __WITH_KEYBOARD
-        if (apf.document && apf.document.activeElement
-          && !apf.document.activeElement.disableKeyboard
-          && apf.document.activeElement.dispatchEvent("keyup", {
-                keyCode  : e.keyCode,
-                ctrlKey  : e.ctrlKey,
-                shiftKey : e.shiftKey,
-                altKey   : e.altkey,
-                htmlEvent: e
-            }) === false) {
-            e.returnValue = false;
+        var ev = {
+            keyCode  : e.keyCode,
+            ctrlKey  : e.ctrlKey,
+            shiftKey : e.shiftKey,
+            altKey   : e.altkey,
+            htmlEvent: e,
+            bubbles  : true //@todo is this much slower?
+        };
+        
+        var aEl = apf.document && apf.document.activeElement;
+        if ((aEl && !aEl.disableKeyboard
+          ? aEl.dispatchEvent("keyup", ev)
+          : apf.dispatchEvent("keyup", ev)) === false) {
+            apf.preventDefault(e);
             return false;
         }
         //#endif
-
-        apf.dispatchEvent("keyup", null, e);
     });
 
     //#ifdef __WITH_MOUSESCROLL

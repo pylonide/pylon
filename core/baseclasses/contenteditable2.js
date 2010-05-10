@@ -72,8 +72,17 @@ apf.addEventListener("load", function(){
                 apf.document.execCommand("rename", true);
                 return false;
             case 16:
-                if (!this.dragMode && apf.document.documentElement.editable) //@todo change this for the IDE
-                    apf.document.execCommand("mode", null, "select");
+                if (!this.dragMode && (apf.document.documentElement.editable 
+                  || self.app && self.app.editable)) { //@hack!
+                    if (e.ctrlKey) //Shift-Ctrl for selection mode
+                        apf.document.execCommand("mode", null, "select");
+                    else
+                        apf.document.execCommand("mode", null, {
+                            mode    : "connect",
+                            timeout : 2000,
+                            event   : e.htmlEvent
+                        });
+                }
                 break;
             /*case 36: //HOME
                 return false;

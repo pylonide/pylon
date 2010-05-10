@@ -224,6 +224,13 @@ apf.AmlDocument = function(){
         return visualselect;
     }
     
+    var visualconnect;
+    this.$getVisualConnect = function(){
+        if (!visualconnect)
+            visualconnect = new apf.visualConnect(this.getSelection());
+        return visualconnect;
+    }
+    
     this.createRange = function(){
         return new apf.AmlRange(this);
     }
