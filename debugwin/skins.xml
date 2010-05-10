@@ -251,6 +251,7 @@
             margin           : 0;
         }
         
+        .macro_tree DIV.empty,
         .macro_tree BLOCKQUOTE BLOCKQUOTE,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
         .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
