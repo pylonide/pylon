@@ -376,7 +376,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {String}
      */
     this.sanitizeJID = function(sJID) {
-        return sJID.replace(/[\"\s\&\\\/\:<>]+/, "").toLowerCase();
+        return sJID.replace(/[\"\s\&\\\/\:<>]+/g, "").toLowerCase();
     };
 };
 
