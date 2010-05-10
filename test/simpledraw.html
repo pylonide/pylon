@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            html{
+                overflow : hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <a:appsettings debug="0" />
+        
+        <div id="test" style="width:800px;height:800px"></div>
+        <a:script>
+            var d = document.getElementById("test");
+            
+            ctx = this.$ctx = new apf.vector.vml('test',800,800,0,0);
+            g = ctx.group({x:0,y:0,w:800,h:800});
+            ctx.path({
+                p: "M 0 0 L 500 500 XE",
+                s: "black"
+            },ctx.root);
+            ctx.rect({x:0,y:0,w:300,h:300,f:'blue'});
+            ctx.repaint();
+        </a:script>
+    </body>
+</html>
