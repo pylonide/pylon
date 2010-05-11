@@ -47,7 +47,7 @@ apf.uirecorder.capture = {
         this.$keyActionIdx      = 0;
         this.$keyActions        = [];
         this.outputXml          = null;
-        
+
         apf.uirecorder.isRecording      = true;
 
         // start capturing
@@ -368,8 +368,8 @@ apf.uirecorder.capture = {
         if (eventName == "mousedown") this.$prevMouseDownAction = actionObj;
     },
     
-    $getTargetName : function(eventName, e) {
-        var amlNode = e.amlNode || e.currentTarget;
+    $getTargetName : function(eventName, e, amlNode) {
+        var amlNode = amlNode || e.amlNode || e.currentTarget;
         if (eventName == "movefocus")
             amlNode = e.toElement;
         else if (eventName == "DOMNodeRemoved")
@@ -413,10 +413,9 @@ apf.uirecorder.capture = {
     validEvents : ["beforedrag", "afterdrag", "dragstart", "dragdrop"],
     captureEvent : function(eventName, e) {
         //if (!apf.uirecorder.$inited) return;
-        if (this.validEvents.indexOf(eventName) == -1) return;
+        //if (this.validEvents.indexOf(eventName) == -1) return;
         var target = this.$getTargetName(eventName, e);
         var eventObj = {
-            //time        : time,
             name        : eventName,
             event       : e
         }
@@ -438,14 +437,54 @@ apf.uirecorder.capture = {
                 amlNode     : e.host
             }
         }
-        if (this.$capturedEvents[eventName]) debugger;
-        this.$capturedEvents[eventName] = eventData;
+        
+        if (this.validEvents.indexOf(eventName) > -1)
+            this.$capturedEvents[eventName] = eventData;
     },
     capturePropertyChange : function(amlNode, prop, value) {
         //if (!apf.uirecorder.$inited) return;
+        var target = this.$getTargetName(null, null, amlNode);
+        var propObj = {
+            name        : prop,
+            value       : value
+        }
+        
+        // save properties to detailList
+        if (!this.$detailList[target.name]) this.$detailList[target.name] = {
+            caption     : target.name,
+            amlNode     : amlNode,
+            events      : [],
+            properties  : [],
+            data        : []
+        };
+        this.$detailList[target.name].properties.push(propObj);
     },
     captureModelChange : function(params) {
         //if (!apf.uirecorder.$inited) return;
+        var target = (params.amlNode) ? this.$getTargetName(null, null, params.amlNode) : null;
+        var dataObj = {
+            name        : param.action
+        }
+        
+        // value of data change
+        if (params.amlNode) {
+            if (!dataObj.value) dataObj.value = {};
+                dataObj.value.amlNode = apf.serialize(params.amlNode).split("<").join("&lt;").split(">").join("&gt;");
+        }
+        if (params.xmlNode) {
+            if (!dataObj.value) dataObj.value = {};
+                dataObj.value.xmlNode = apf.serialize(params.xmlNode).split("<").join("&lt;").split(">").join("&gt;");
+        }
+        
+        // save data to detailList
+        if (!this.$detailList[target.name]) this.$detailList[target.name] = {
+            caption     : target.name,
+            amlNode     : target.amlNode,
+            events      : [],
+            properties  : [],
+            data        : []
+        };
+        this.$detailList[target.name].data.push(dataObj);
     },
     
     // save captured test data
@@ -545,7 +584,6 @@ apf.uirecorder.capture = {
             
             // skip small mousemove between certain actions, like between mousedown/mouseup
             if (action.name == "mousemove" && actionList[i-1] && actionList[i-1].name == "mousedown" && actionList[i+1] && actionList[i+1].name == "mouseup") {
-            debugger;
                 continue;
             }
             
@@ -842,7 +880,7 @@ apf.uirecorder.playback = {
         // hide debugwin if it's open
         if (apf.isDebugWindow)
             apf.$debugwin.hide();
-            
+
         // if capturing
         //apf.uirecorder.capture.$init();
         //apf.uirecorder.capture.$startTime = new Date().getTime();

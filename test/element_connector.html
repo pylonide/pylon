@@ -42,6 +42,7 @@
                 p = null;
                 
             if (!p) continue;
+            
             lines[i] = ctx.path({
                 p: ["M",p[0](el1)[0],p[0](el1)[1],"L",p[1](el2)[0],p[1](el2)[1]].join(" "),
                 s: "black"

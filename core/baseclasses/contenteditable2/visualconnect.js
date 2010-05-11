@@ -25,12 +25,14 @@
  */
 apf.visualConnect = function (sel){
     var active, div;
-    
+    var connections = [];
+    var lineMode;
+    var connectionIdx = 0;
     //@linh the interaction with shift is flawed. It should be :
     //  shift-click at start - click at end
     //  it shouldnt matter when shift is unpressed
     //  when pressing escape line mode should dissapear
-    //@linh This should be here, the vector lib keeps state
+    
     // init draw api
     var width = document.body.clientWidth;
     var height = 800;//document.body.clientHeight;
@@ -61,9 +63,11 @@ apf.visualConnect = function (sel){
     });
     
     this.activate = function(e){
+        
         if (active) 
             return;
         active = true
+        document.getElementById("log").innerHTML += "activated<br>";
         
         apf.plane.show();
         var _self = this;
@@ -72,9 +76,14 @@ apf.visualConnect = function (sel){
         for (var i = 0, il = selection.length; i < il; i++) {
             hNode = selection[i].$ext;
             pos = apf.getAbsolutePosition(hNode);
-            //@todo these mouse coords are wrong
-            path.push("M", Math.round(pos[0] + (hNode.offsetWidth/2)), Math.round(pos[1] + (hNode.offsetHeight/2)), "L", e.offsetX, e.offsetY);
+
+            path.push("M", Math.round(pos[0] + (hNode.offsetWidth/2)), Math.round(pos[1] + (hNode.offsetHeight/2)), "L", e.clientX, e.clientY);
         }
+        
+        var conns = [];
+        //this.hideConnections();
+        this.drawConnections(_self.getConnections(selection));
+        
         p.style({p: path.join(" ")});
         ctx.repaint();
         div.style.display = "block";
@@ -150,12 +159,26 @@ apf.visualConnect = function (sel){
             var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
             var amlNode = apf.findHost(htmlNode);
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
-                //@todo this doesnt work!
+                // create connection
+                for (var connection, i = 0, il = selection.length; i < il; i++) {
+                    connection = {
+                        id       : connectionIdx,
+                        elements : [selection[i], amlNode]
+                    };
+                    connectionIdx++;
+                    
+                    connections.push(connection)
+                    _self.drawConnections([connection]);
+                }
+                
+                /*
                 var x = e.clientX;
                 var y = e.clientY;
+                
                 setTimeout(function(){
                     mnuContentEditable.display(x, y);
                 });
+                */
             }
             
             _self.deactivate();
@@ -163,6 +186,7 @@ apf.visualConnect = function (sel){
     };
 
     this.deactivate = function(){
+        document.getElementById("log").innerHTML += "deactivated<br>";
         active = false;
         
         document.onmousedown = 
@@ -174,7 +198,74 @@ apf.visualConnect = function (sel){
         r.style({w:0,h:0});
         ctx.repaint();
         div.style.display = "none";
-       
+    };
+    
+    this.drawConnections = function(conns) {
+        for (var i = 0, il = connections.length; i < il; i++) {
+            if (!conns.length) {
+                if (connections[i].shape)
+                    connections[i].shape.style({so: 0});
+            }
+            else {
+                for (var found = false, ci = 0, cl = conns.length; ci < cl; ci++) {
+                    if (connections[i].id == conns[ci].id) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    if (connections[i].shape)
+                        connections[i].shape.style({so: 0});
+                }
+                else {
+                    if (connections[i].shape)
+                        connections[i].shape.style({so: 0});
+                    else {
+                        var hNode1 = (c = conns[ci]).elements[0].$ext;
+                        var hNode2 = c.elements[1].$ext;
+                        var pos1 = apf.getAbsolutePosition(hNode1);
+                        var pos2 = apf.getAbsolutePosition(hNode2);
+                        
+                        // @todo draw connection line based on element positions
+                        // @todo add check for multiple connection lines with same source/target
+                        var path = [];
+                        path.push("M", Math.round(pos1[0] + (hNode1.offsetWidth/2)), Math.round(pos1[1] + (hNode1.offsetHeight/2)), "L", Math.round(pos2[0] + (hNode2.offsetWidth/2)), Math.round(pos2[1] + (hNode2.offsetHeight/2)));
+                        c.shape = ctx.path({
+                            p   : path.join(" "),
+                            sw  : 1.5,
+                            s   : "red"
+                        });
+                    }
+                }
+
+            }
+        }
+        
+        ctx.repaint();
+    };
+    
+    this.hideConnections = function() {
+        for (var i = 0, il = connections.length; i < il; i++) {
+            connections[i].shape.style({so: 0});
+        }
+        //ctx.repaint();
+    }
+    
+    this.getConnections = function(elements) {
+        var results = [];
+        for (var i = 0, il = elements.length; i < il; i++) {
+            for (var c, ci = 0, cl = connections.length; ci < cl; ci++) {
+                if ((c = connections[ci]).elements.indexOf(elements[i]) > -1)
+                    results.push(c);
+            }
+        }
+
+        return results;
+    };
+    
+    this.enableLineMode = function() {
+        lineMode = true;
     };
 };
 //#endif
