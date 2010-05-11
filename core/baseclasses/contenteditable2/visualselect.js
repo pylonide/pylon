@@ -86,8 +86,8 @@ apf.visualSelect = function(selection){
     }
     
     var selected = [], anchors,
-        size   = 8,
-        margin = 1;
+        size   = 7,
+        margin = -1;
 
     this.show = function(){
         if (!inited) 
@@ -95,8 +95,8 @@ apf.visualSelect = function(selection){
         
         this.visible = true;
         for (var i = 0; i < 8; i++)
-            nodes[i].style.display = "block";
-        oOutline.style.display = "block";
+            nodes[i].style.display = "";
+        oOutline.style.display = "";
 
         if (lastSelection)
             this.updateGeo();

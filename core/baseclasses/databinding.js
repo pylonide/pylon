@@ -1424,8 +1424,9 @@ apf.DataBinding = function(){
                 
                 //@todo why not set directly here?
             }
-            else if (this.dataParent) { //Data came through data parent
-                this.model = this.dataParent.model; //reset this property
+            else { //if (this.dataParent) { //Data came through data parent
+                if (this.dataParent)
+                    this.model = this.dataParent.model; //reset this property
 
                 model = apf.xmldb.findModel(value);
                 var xpath = apf.xmlToXpath(value, model.data, true) || ".";
@@ -1438,9 +1439,9 @@ apf.DataBinding = function(){
                 model.register(this, xpath);
                 return;
             }
-            else {
+            /*else {
                 //@todo Error ??
-            }
+            }*/
         }
 
         //Optimize xmlroot position and set model async (unset the old one)

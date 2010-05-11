@@ -50,7 +50,6 @@
             div.host = false;
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...
         }
-        
         outline = dragOutline = document.getElementById("apf_outline");
         
         inited = true;

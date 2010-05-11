@@ -381,9 +381,12 @@ apf.Rename.initEditableArea = function(){
             this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
         }
     
+        var sel;
         this.$txt.select = function(){
-            if (!apf.hasMsRangeObject)
-                return this.focus();
+            if (!apf.hasMsRangeObject) {
+                (sel || (sel = new apf.selection())).selectNode(this);
+                return;
+            }
     
             var r = document.selection.createRange();
             //r.moveEnd("character", this.$ext.innerText.length);

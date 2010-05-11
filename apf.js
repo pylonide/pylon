@@ -2446,7 +2446,7 @@ apf.$loader = {
     		xhr.onreadystatechange = function() {
     			if (xhr.readyState === 4) {
     				xhr.onreadystatechange = null; // fix a memory leak in IE
-    				oScr.text = xhr.responseText + "\n//@ sourceURL=" + oScr.src;
+    				oScr.text = xhr.responseText + "\r\n//@sourceURL=" + oScr.src;
   				    done();
     			}
     		}

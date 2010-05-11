@@ -807,9 +807,12 @@ apf.Interactive = function(){
         }
         oOutline.refCount++
     }
-
+    
     if (this.addEventListener && this.hasFeature(apf.__AMLNODE__) && !this.$amlLoaded) {
-        this.addEventListener("DOMNodeInsertedIntoDocument", initOutline);
+        if (document.body)
+            initOutline.call(this);
+        else
+            this.addEventListener("DOMNodeInsertedIntoDocument", initOutline);
     }
     else {
         this.$pHtmlDoc = document;

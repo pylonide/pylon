@@ -1,11 +1,15 @@
 .idegrabber{
     border : 1px solid midnightblue;
     background : white;
-    width : 6px;
-    height : 6px;
+    width : 5px;
+    height : 5px;
     position : absolute;
     overflow : hidden;
     z-index : 1000000;
+    
+    -moz-border-radius: 2px;
+    webkit-border-radius: 2px;
+    border-radius: 2px;
 }
 
 .idegrabber:hover, .idegrabber_resizing{
