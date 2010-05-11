@@ -59,7 +59,9 @@
         <item name="Editor" value="elements.editor" icon="ui-editor.png">
             <a:editor width="550" />
         </item>
-        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png">
+            <a:errorbox>Text</a:errorbox>
+        </item>
         <item name="Label" value="elements.label" icon="ui-label.png">
             <a:label>Text</a:label>
         </item>
