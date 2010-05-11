@@ -2202,7 +2202,6 @@
         .dropdown{
             position: relative;
             background: url("images/dropdown.png") no-repeat top right;
-            width:  134px;
             height: 17px;
             margin: 0;
             padding : 2px 18px 0 0;

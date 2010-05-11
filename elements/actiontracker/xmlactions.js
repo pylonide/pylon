@@ -194,11 +194,13 @@ apf.actiontracker.actions = {
                 });
     
                 newNode = UndoObj.extra.newNode = newNodes[0];
-                if (newNode.nodeType == 2)
-                    UndoObj.extra.ownerElement = newNode.ownerElement 
-                      || newNode.selectSingleNode("..");
-                else
-                    UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
+                if (newNode) {
+                    if (newNode.nodeType == 2)
+                        UndoObj.extra.ownerElement = newNode.ownerElement 
+                          || newNode.selectSingleNode("..");
+                    else
+                        UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
+                }
             }
         }
         // Undo Setting NodeValue

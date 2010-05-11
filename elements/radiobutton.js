@@ -333,8 +333,12 @@ apf.radiobutton = function(struct, tagName){
     this.$disable = function(){
         if (this.oInput)
             this.oInput.disabled = true;
-        this.$ext.onclick = null
-        this.$ext.onmousedown = null
+
+        this.$ext.onclick     =
+        this.$ext.onmousedown =
+        this.$ext.onmouseover =
+        this.$ext.onmouseout  =
+        this.$ext.onmouseup   = null;
     };
 
     /**
@@ -422,7 +426,8 @@ apf.radiobutton = function(struct, tagName){
         if (this.oLabel && this.oLabel.nodeType != 1)
             this.oLabel = this.oLabel.parentNode;
 
-        this.enable();
+        //Set events
+        this.$enable();
     };
 
     this.$childProperty = "label";

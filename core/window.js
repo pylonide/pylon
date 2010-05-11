@@ -1210,7 +1210,7 @@ apf.window = function(){
             isContentEditable = (ta[htmlNode.tagName]
               || htmlNode.isContentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
               && !htmlNode.disabled
-              || amlNode.$isContentEditable
+              || amlNode && amlNode.$isContentEditable
               && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS

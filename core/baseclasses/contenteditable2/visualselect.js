@@ -94,7 +94,7 @@ apf.visualSelect = function(selection){
             init.call(this);
         
         this.visible = true;
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < nodes.length; i++)
             nodes[i].style.display = "";
         oOutline.style.display = "";
 
@@ -103,8 +103,11 @@ apf.visualSelect = function(selection){
     };
     
     this.hide = function(){
+        if (!inited)
+            return;
+        
         this.visible = false;
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < nodes.length; i++)
             nodes[i].style.display = "none";
         oOutline.style.display = "none";
     };

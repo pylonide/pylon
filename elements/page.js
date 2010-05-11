@@ -347,6 +347,16 @@ apf.page = function(struct, tagName){
             this.$propHandlers["icon"].call(this, this.icon);
     });
 
+    this.$enable = function(){
+        if (this.$button)
+            this.$setStyleClass(this.$button, null, ["btnDisabled"]);//@todo this.$baseCSSname + 
+    };
+
+    this.$disable = function(){
+        if (this.$button)
+            this.$setStyleClass(this.$button, "btnDisabled");//@todo this.$baseCSSname + 
+    };
+
     /**** Init ****/
 
     this.$canLeechSkin = true;

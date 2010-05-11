@@ -39,6 +39,10 @@ apf.addEventListener("load", function(){
     apf.addEventListener("keydown", function(e){
         var key = e.keyCode;
 
+        if (!apf.document.activeElement
+          || !apf.document.activeElement.editable)
+            return;
+
         if (apf.document.queryCommandState("rename")) {
             if (apf.hasSingleResizeEvent)
                 $setTimeout(function(){
