@@ -338,17 +338,19 @@ var ID        = "id",
             info.$int = oHtml.$int;
             oHtml     = oHtml.$ext;
         }
-        try{ //@TODO hack where currentStyle is still undefined
+        try { //@TODO hack where currentStyle is still undefined
             if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
                 oHtml.style.position = "relative";
-        }catch(e){}
+        } catch(e){}
         
         var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
             isTransform = (info.type == TRANSFORM);
 
         info.method = useCSSAnim ? info.type : isTransform
             ? modules[TRANSFORM + (info.subType || SCALE)]
-            : modules[info.type] || modules.htmlcss;
+            : modules[info.type] || (info.needsPx = needsPix[info.type] || false) 
+                ? modules.htmlcss
+                : modules.htmlcss;
 
         //#ifdef __DEBUG
         if (!info.method)
@@ -527,7 +529,9 @@ var ID        = "id",
                 ? data.type
                 : isTransform
                     ? modules[TRANSFORM + (data.subType)]
-                    : modules[data.type] || modules.htmlcss;
+                    : modules[data.type] || (data.needsPx = needsPix[data.type] || false) 
+                        ? modules.htmlcss
+                        : modules.htmlcss;
 
 
             //#ifdef __DEBUG
@@ -742,15 +746,19 @@ var ID        = "id",
     },
 
     needsPix = {
-        "left"       : true,
-        "top"        : true,
-        "bottom"     : true,
-        "right"      : true,
-        "width"      : true,
-        "height"     : true,
-        "fontSize"   : true,
-        "lineHeight" : true,
-        "textIndent" : true
+        "left"        : true,
+        "top"         : true,
+        "bottom"      : true,
+        "right"       : true,
+        "width"       : true,
+        "height"      : true,
+        "fontSize"    : true,
+        "lineHeight"  : true,
+        "textIndent"  : true,
+        "marginLeft"  : true,
+        "marginTop"   : true,
+        "marginRight" : true,
+        "marginBottom": true
     },
 
     cssProps = "|backgroundColor|backgroundPosition|color|width|filter"
