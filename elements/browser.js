@@ -192,13 +192,7 @@ apf.browser = function(struct, tagName){
         //this.$browser.host = this;
         
         //@todo remove this
-        this.$ext.style.borderTop = "1px solid #c3c3c3";
-        
-        //@todo remove this
-        this.$ext.style.borderTop = "1px solid #c3c3c3";
-        
-        //@todo remove this
-        this.$ext.style.borderTop = "1px solid #c3c3c3";
+        this.$ext.style.border = "1px solid #c3c3c3";
     };
 }).call(apf.browser.prototype = new apf.GuiElement());
 
