@@ -47,33 +47,17 @@
         <item name="Calendar" value="elements.calendar" icon="data.png">
             <a:calendar output-format="mm-dd-yyyy HH:MM:ss" width="150" />
         </item>
-        <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png">
-            <a:colorpicker />
-        </item>
-        <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png">
-            <a:checkbox>Text</a:checkbox>
-        </item>
-        <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png">
-            <a:dropdown />
-        </item>
+        <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png" />
+        <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png" />
+        <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png" />
         <item name="Editor" value="elements.editor" icon="ui-editor.png">
             <a:editor width="550" />
         </item>
-        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png">
-            <a:errorbox>Text</a:errorbox>
-        </item>
-        <item name="Label" value="elements.label" icon="ui-label.png">
-            <a:label>Text</a:label>
-        </item>
-        <item name="Palette" value="elements.palette" icon="palette.png">
-            <a:palette />
-        </item>
-        <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png">
-            <a:progressbar />
-        </item>
-        <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png">
-            <a:radiobutton>Text</a:radiobutton>
-        </item>
+        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+        <item name="Label" value="elements.label" icon="ui-label.png" />
+        <item name="Palette" value="elements.palette" icon="palette.png" />
+        <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
+        <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
         <item name="Slider" value="elements.slider" icon="ui-slider.png">
             <a:slider width="150" />
         </item>
@@ -81,14 +65,10 @@
             <a:spinner width="75" />
         </item>
         <item name="Text" value="elements.text" icon="ui-textarea.png">
-            <a:text width="150" height="100" value="Text" />
+            <a:text width="150" height="100" />
         </item>
-        <item name="Textarea" value="elements.textarea" icon="ui-textarea.png">
-            <a:textarea />
-        </item>
-        <item name="Textbox" value="elements.textbox" icon="ui-text-field.png">
-            <a:textbox />
-        </item>
+        <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />
+        <item name="Textbox" value="elements.textbox" icon="ui-text-field.png" />
         <!--<item name="Upload" value="elements.upload"/>-->
     </subcat>
     <subcat name="Selection elements">
