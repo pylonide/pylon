@@ -259,7 +259,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js",
+        "core/baseclasses/basestatebuttons.js"/*,
         
         "elements/editor/src/ace/lib/core.js",
         "elements/editor/src/ace/lib/oop.js",
