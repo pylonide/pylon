@@ -522,7 +522,7 @@ apf.textbox  = function(struct, tagName){
     this.$draw = function(){
         var _self = this;
         
-        //#ifdef __WITH_CODEEDITOR
+        //#ifdef __AMLCODEEDITOR
         if (this.localName == "codeeditor") {
             this.skin = "textarea";
             this.$loadSkin();
