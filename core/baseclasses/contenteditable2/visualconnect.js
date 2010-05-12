@@ -67,7 +67,7 @@ apf.visualConnect = function (sel){
         if (active) 
             return;
         active = true
-        document.getElementById("log").innerHTML += "activated<br>";
+        //document.getElementById("log").innerHTML += "activated<br>";
         
         apf.plane.show();
         var _self = this;
@@ -186,7 +186,7 @@ apf.visualConnect = function (sel){
     };
 
     this.deactivate = function(){
-        document.getElementById("log").innerHTML += "deactivated<br>";
+        //document.getElementById("log").innerHTML += "deactivated<br>";
         active = false;
         
         document.onmousedown = 
