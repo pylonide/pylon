@@ -10,7 +10,6 @@
             var d = document.getElementById("test");
             ctx = this.$ctx = new apf.vector.vml('test3',100,100,0,0,'red');
             g = ctx.group({x:0,y:0,w:300,h:300});
-
             ctx.rect({x:0,y:0,w:100,h:100,f:'blue'},g);
             ctx.repaint();
             apf.logw(1);

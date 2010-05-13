@@ -3,154 +3,10 @@
   <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
   <script LANGUAGE="JavaScript" type="text/javascript">//<![CDATA[
   function bench(){
-    var style_short = {
-        'scale-x':'sx','scale-width':'sx','scalex':'sx','scalewidth':'sx',
-        'scale-y':'sy','scale-height':'sy','scaley':'sy','scaleheight':'sy',
-        'offset-x':'ox','offset-left':'ox', 'offsetx':'ox','offsetleft':'ox',
-        'offset-y':'oy','offset-top':'oy','offsety':'oy','offsettop':'oy',
-        'center-x':'cx','center-left':'cx', 'centerx':'cx','centerleft':'cx',
-        'center-y':'cy','center-top':'cy','centery':'cy', 'centertop':'cy',
-        'left':'x', 'top':'y', 'width':'w','height':'h',
-        'view-x':'vx','view-left':'vx','viewx':'vx','viewleft':'vx',
-        'view-y':'vy','view-top':'vy','viewy':'vy','viewtop':'vy',
-        'view-w':'vw','view-width':'vw','vieww':'vw','viewwidth':'vw',
-        'view-h':'vh','view-height':'vh','viewh':'vh','viewheight':'vh',
-        'rot':'r','rotate':'r','rotation':'r',
-        'color':'f','fill':'f','fill-color':'f','fillcolor':'f',
-        'stroke':'s','stroke-color':'s','strokecolor':'s',
-        'alpha':'o','transparency':'o','opacity':'o',
-        'fill-alpha':'fo','fill-transparency':'fo','fill-opacity':'fo',
-        'fillalpha':'fo','filltransparency':'fo','fillopacity':'fo',
-        'stroke-alpha':'fo','stroke-transparency':'fo','stroke-opacity':'so',
-        'strokealpha':'fo','stroketransparency':'fo','strokeopacity':'so',
-        'stroke-width':'sw','stroke-weight':'sw',
-        'stroke-cap':'sc',
-        'stroke-pattern':'sp','pattern':'sp',
-        'path':'p','curve':'p','points':'p',
-        f:0x1,s:0x2,sc:0x4,sp:0x8,
-        o:0x10,fo:0x20,so:0x40,sw:0x80,
-        vx:0x100,vy:0x200,vw:0x400,vh:0x800,
-        x:0x1000,y:0x2000,w:0x4000,h:0x8000,
-        sx:0x10000,sy:0x20000,ox:0x40000,oy:0x80000,
-        cx:0x100000,cy:0x200000,r :0x400000
-    };    
-    function style(st,m){
-        var ss = style_short;
-        for(p in st)if(p.length>2 && (t=ss[p])){if(t in st)alert("warning syle overwrite "+t+" with "+p);st[t]=st[p];}
-        // only detect style-setting
-        if((t=st.f)!=undefined)m=m|0x1;
-        if((t=st.s)!=undefined)m=m|0x2; 
-        if((t=st.sc)!=undefined)m=m|0x4;
-        if((t=st.sp)!=undefined)m=m|0x8;
-
-        if((t=st.o)!=undefined)m=m|0x10
-        if((t=st.fo)!=undefined)m=m|0x20;
-        if((t=st.so)!=undefined)m=m|0x40;
-        if((t=st.sw)!=undefined)m=m|0x80;
-
-        // basic xywh
-        if((t=st.x)!=undefined)m=m|0x1;
-        if((t=st.y)!=undefined)m=m|0x1;
-        if((t=st.w)!=undefined)m=m|0x1;
-        if((t=st.h)!=undefined)m=m|0x1;
-
-        // xywh transform
-        if((t=st.sx)!=undefined)m=m|0x1;
-        if((t=st.sy)!=undefined)m=m|0x1;
-        if((t=st.ox)!=undefined)m=m|0x1;
-        if((t=st.oy)!=undefined)m=m|0x1;
-
-        if((t=st.cx)!=undefined)m=m|0x1;
-        if((t=st.cy)!=undefined)m=m|0x1;
-        if((t=st.r)!=undefined)m=m|0x1;
-    }
-    function style2(st,m){
-        var ss = style_short,c = 0;
-        for(p in st)if(p.length>2){if(t=ss[p]){if(t in st)alert("warning syle overwrite "+t+" with "+p);st[t]=st[p];}}else{ c|=ss[p];}
-        // only detect style-setting
-        if(c&0xff){
-            if((t=st.f)!=undefined)m=m|0x1;
-            if((t=st.s)!=undefined)m=m|0x2; 
-            if((t=st.sc)!=undefined)m=m|0x4;
-            if((t=st.sp)!=undefined)m=m|0x8;
-
-            if((t=st.o)!=undefined)m=m|0x10
-            if((t=st.fo)!=undefined)m=m|0x20;
-            if((t=st.so)!=undefined)m=m|0x40;
-            if((t=st.sw)!=undefined)m=m|0x80;
-        }
-        if(c&0xf000){
-            // basic xywh
-            if((t=st.x)!=undefined)m=m|0x1;
-            if((t=st.y)!=undefined)m=m|0x1;
-            if((t=st.w)!=undefined)m=m|0x1;
-            if((t=st.h)!=undefined)m=m|0x1;
-        }
-        if(c&0xff0000){
-            // xywh transform
-            if((t=st.sx)!=undefined)m=m|0x1;
-            if((t=st.sy)!=undefined)m=m|0x1;
-            if((t=st.ox)!=undefined)m=m|0x1;
-            if((t=st.oy)!=undefined)m=m|0x1;
-
-            if((t=st.cx)!=undefined)m=m|0x1;
-            if((t=st.cy)!=undefined)m=m|0x1;
-            if((t=st.r)!=undefined)m=m|0x1;
-       }
-    }
-    function style3(st,m){
-        var ss = style_short,c = 0;
-        for(p in st)if(p.length>2){if(t=ss[p]){if(t in st)alert("warning syle overwrite "+t+" with "+p);st[t]=st[p];}}else{ c|=ss[p];}
-        // only detect style-setting
-        if(c&0xff){
-            if(c&0xf){
-                if(c&0x1)m=m|0x1;
-                if(c&0x2)m=m|0x2; 
-                if(c&0x3)m=m|0x4;
-                if(c&0x4)m=m|0x8;
-            }
-            if(c&0xf0){
-                if(c&0x10)m=m|0x10
-                if(c&0x20)m=m|0x20;
-                if(c&0x40)m=m|0x40;
-                if(c&0x80)m=m|0x80;
-            }
-        }
-        if(c&0xff00){
-            if(c&0xf00){
-                if(c&0x100)m=m|0x100
-                if(c&0x200)m=m|0x200;
-                if(c&0x400)m=m|0x400;
-                if(c&0x800)m=m|0x800;
-            }
-            if(c&0xf000){
-                if(c&0x1000)m=m|0x1000
-                if(c&0x2000)m=m|0x2000;
-                if(c&0x4000)m=m|0x4000;
-                if(c&0x8000)m=m|0x8000;
-            }
-        }
-        if(c&0xff0000){
-            if(c&0xf0000){
-                if(c&0x10000)m=m|0x10000
-                if(c&0x20000)m=m|0x20000;
-                if(c&0x40000)m=m|0x40000;
-                if(c&0x80000)m=m|0x80000;
-            }
-            if(c&0xf00000){
-                if(c&0x100000)m=m|0x100000
-                if(c&0x200000)m=m|0x200000;
-                if(c&0x400000)m=m|0x400000;
-                if(c&0x800000)m=m|0x800000;
-            }
-       }
-    }
-    var st = {
-        x:1,y:10,o2:1
-    }
-    var x = {};
+  var i  = 1.6;
+    var round = Math.floor;
     apf.profile_loop(100000,function(){
-        for(var i in x);
+        round(i);
     });
    }
   //]]>
@@ -158,7 +14,7 @@
   
  </head>
  <body onload="bench()">
-	<div id="drawnode" style2="width:300px;height:300px;background-color:black">
+	<div id="drawnode" style="width:300px;height:300px;background-color:red">
 	</div>
 	
  </body>

@@ -138,9 +138,9 @@ apf.vector =  new (function(){
     this.group = function(st,htmlroot){
         htmlroot = typeof(htmlroot)=='string'?document.getElementById(htmlroot):(htmlroot||document.body);
         // pick renderer to use SVG or VML
-        if(document.all)
+        if(apf.supportVML)
             return this.vml.group(st,htmlroot);
-        else
+        else if(apf.supportSVG)
             return this.svg.group(st,htmlroot);
     }
     
@@ -447,9 +447,9 @@ apf.vector =  new (function(){
                     else {// init
                         var vg,vd,s;
                         if(this.$htmlroot){
-                            (s=(this.$domnode=vd=document.createElement("div")).style).position = 'relative'
+                            (s=(this.$domnode=vd=document.createElement("div")).style).position = 'absolute'
                             s.overflow = 'hidden';
-                            (s=(vg=document.createElement("av:group")).style).position = 'absolute';
+                            (s=(vg=document.createElement("av:group")).style).position = this.$htmlroot==document.body?'absolute':'relative';
                             s.left = s.top = '0px';
                             s.width = this.$w;
                             s.height = this.$h;
@@ -496,6 +496,15 @@ apf.vector =  new (function(){
                 return t;
             }
             
+            this.circlePath = function(x,y,rx,ry){
+                var u,v;
+                return [
+                    "AR",u=~~(x-rx),~~(y-ry),
+                    ~~(x+rx),~~(y+ry),
+                    u,~~y,u,~~y,
+                    'XE'
+                ].join(' ');
+            }
         }).call(group.prototype);
                 
     })();
@@ -731,6 +740,8 @@ apf.vector =  new (function(){
                     }
                     else {// init
                         var vg = this.$domnode = document.createElementNS(svgns,"svg");
+                        if(this.$htmlroot == document.body)
+                            vg.style.position = 'absolute'
                         if(this.$htmlroot)
                             this.$insert = true;
                         else 
@@ -770,6 +781,14 @@ apf.vector =  new (function(){
             this.shape = function(st){
                 var t = new shape(st, this, styleShape);
                 return t;
+            }
+            
+            this.circlePath = function(x,y,rx,ry){
+                var u,v;
+                return [
+                    "M",u=~~(x+rx),~~y,
+                    "A",~~rx,~~ry,0,1,0,u,~~(y+1),"Z"
+                ].join(' ');
             }
             
         }).call(group.prototype);

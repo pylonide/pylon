@@ -968,9 +968,7 @@ apf.draw = {
 		return this.$lut.apply(this,arg);
 	},
 	$rgbpack : function( r,g,b){
-		return ('#'+('000000'+(((r<0?0:(r>255?255:parseInt(r)))<<16)+
-				((g<0?0:(g>255?255:parseInt(g)))<<8)+
-				((b<0?0:(b>255?255:parseInt(b))))).toString(16)).slice(-6));
+		return a
 	},
 	rgb : function(r,g,b){
 		if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)

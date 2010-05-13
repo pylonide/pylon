@@ -16,6 +16,18 @@
         for(i=0;i<5;i++)
             g.rect({x:140+8*i,y:40+8*i,w:100,h:100,sw:1,s:'red',f:'green',s:'blue'});
         g.rect({x:0,y:0,w:100,h:100,f:'purple',s:'green'});
+        // this is a small circle in SVG country
+        
+        // circle at x,y radius xw,yw
+        //g.shape({p:"M 105 100 A5 5 0 1 0 105 101 ",f:'blue'});
+        //g.shape({p:"M 100 100 L 160 100",s:"black"});
+        g.shape({p:g.circlePath(100,100,5,5),f:"black"});
+        apf.logw(g.circlePath(100,100,5,5));
+     //   g.shape({p:"AR 95 95 105 105 95 100 95 100 XE",f:'blue'});
+     //   g.shape({p:"M 100 100 L 160 100 XE",s:'black'});
+        
+        
+        
         g.repaint();
         g.style({f:'red'});
         g.repaint();
@@ -27,7 +39,7 @@
 
  </head>
  <body onload="draw()" style="background-color:black">
-    <div id="drawnode" style="display:block;">
+    <div id="drawnode" style="height:300px;display:block;">
     </div>
  </body>
  

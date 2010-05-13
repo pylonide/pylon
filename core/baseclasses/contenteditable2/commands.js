@@ -330,7 +330,7 @@ apf.ContentEditable2.commands = (function(){
     	}
     	else if (value && value.mode == "connect") {
     	    mode = "connect";
-    	    //this.$getVisualConnect().activate(value.event);
+    	    this.$getVisualConnect().activate(value.event,value.timeout);
     	}
     	else if (value && value.mode == "add") {
             mode = "add";
@@ -374,7 +374,7 @@ apf.ContentEditable2.commands = (function(){
     	else {
     	    mode = value;
     	    this.$getSelectRect().deactivate();
-            //this.$getVisualConnect().deactivate();
+            this.$getVisualConnect().deactivate();
     	}
     };
     

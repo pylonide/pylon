@@ -1,4 +1,6 @@
 var apf = {
+    supportVML : document.all?true:false,
+    supportSVG : document.all?false:true,
 	SUCCESS:1,
 	xmldb:{
 		removeNode:function(xmlNode){
@@ -155,3 +157,51 @@ var apf = {
 };
 apf.console.error = apf.logw;
 apf.console.warn = apf.logw;
+
+ if (typeof HTMLElement!="undefined") {
+    if (!HTMLElement.prototype.insertAdjacentElement) {
+        Text.prototype.insertAdjacentElement =
+        HTMLElement.prototype.insertAdjacentElement = function(where,parsedNode){
+            switch (where.toLowerCase()) {
+                case "beforebegin":
+                    this.parentNode.insertBefore(parsedNode,this);
+                    break;
+                case "afterbegin":
+                    this.insertBefore(parsedNode,this.firstChild);
+                    break;
+                case "beforeend":
+                    this.appendChild(parsedNode);
+                    break;
+                case "afterend":
+                    if (this.nextSibling)
+                        this.parentNode.insertBefore(parsedNode,this.nextSibling);
+                    else
+                        this.parentNode.appendChild(parsedNode);
+                    break;
+            }
+        };
+    }
+
+    if (!HTMLElement.prototype.insertAdjacentHTML) {
+        Text.prototype.insertAdjacentHTML =
+        HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
+            var r = this.ownerDocument.createRange();
+            r.setStartBefore(apf.isWebkit
+                ? document.body
+                : (self.document ? document.body : this));
+            var parsedHTML = r.createContextualFragment(htmlStr);
+            this.insertAdjacentElement(where, parsedHTML);
+        };
+    }
+
+    if (!HTMLBodyElement.prototype.insertAdjacentHTML) //apf.isWebkit)
+        HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
+
+    if (!HTMLElement.prototype.insertAdjacentText) {
+        Text.prototype.insertAdjacentText =
+        HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
+            var parsedText = document.createTextNode(txtStr);
+            this.insertAdjacentElement(where,parsedText);
+        };
+    }
+}
