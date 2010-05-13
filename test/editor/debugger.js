@@ -77,6 +77,8 @@ function onContinue() {
 
 function attachDebugger(tabId) {
     debugContext.v8ds.attach(tabId, function() {
+        mdlDebugger.setQueryValue("@connected", true);
+        
         var dbg = debugContext.dbg = new V8Debugger(tabId, debugContext.v8ds);
                
         dbg.addEventListener("break", onBreak);
@@ -117,6 +119,8 @@ function disconnect() {
     debugContext.v8ds.detach(debugContext.dbg.tabId, function() {        
         debugContext.socket.close();
     });
+    
+    mdlDebugger.setQueryValue("@connected", false);
 };
 
 window.onunload = disconnect;

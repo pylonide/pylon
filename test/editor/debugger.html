@@ -18,7 +18,7 @@
        	<a:model id="mdlTabs" />
        	<a:model id="mdlScripts" src="{attachDebugger([{lstTabs.selected}::@id])}" autoinit="false" />
        	<a:model id="mdlDebugger">
-       		<debugger running="true">
+       		<debugger running="true" connected="false">
        			<breakpoints />
        			<scripts />
        		</debugger>
@@ -51,8 +51,8 @@
 			<a:bar>
 	        	<a:textbox id="tbFilter" initial-message="Filter" realtime="true" />
 	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="continueScript();" disabled="[mdlDebugger::@running]" />
-	        	<a:button icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}" />
-	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="disconnect();" />
+	        	<a:button icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}" disabled="true" />
+	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="disconnect();" disabled="{![mdlDebugger::@connected]}" />
 	        	<a:button icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" onclick="stepInto();" disabled="[mdlDebugger::@running]" />
 	        	<a:button icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}" onclick="stepNext();" disabled="[mdlDebugger::@running]" />
 	        	<a:button icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" onclick="stepOut();" disabled="[mdlDebugger::@running]" />
