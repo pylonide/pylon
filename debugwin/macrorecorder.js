@@ -177,6 +177,7 @@ function recordMacro() {
     btnPlay.setProperty("disabled", true);
     
     // IE
+    debugger;
     if (document.parentWindow)
         apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
     
@@ -217,27 +218,27 @@ function playSingleMacro(e) {
     btnStopPlay.setProperty("visible", true);
     btnRec.setProperty("disabled", true);
 
-    apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlaybackComplete);
-    apf.$debugwin.apf.addEventListener("apftest_testfailed", onTestFailed);
+    apf.$debugwin.apf.addEventListener("testcomplete", onPlaybackComplete);
+    apf.$debugwin.apf.addEventListener("testerror", onTestFailed);
 
     // play selected macro
 //speed = (cbMax.checked) ? "max" : "realtime";
-    apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+    apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
 }
 
 function playMacro() {
-    apf.$debugwin.apf.addEventListener("apftest_testcomplete", onPlayNextMacro);
-    apf.$debugwin.apf.addEventListener("apftest_testfailed", onTestFailed);
+    apf.$debugwin.apf.addEventListener("testcomplete", onPlayNextMacro);
+    apf.$debugwin.apf.addEventListener("testerror", onTestFailed);
 
     // select current playing macro
     apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "playing");
-    apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]});
+    apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
 }
 
 function onPlaybackComplete(e) {
-    apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlaybackComplete);
-    apf.$debugwin.apf.removeEventListener("apftest_testcomplete", onPlayNextMacro);
-    apf.$debugwin.apf.removeEventListener("apftest_testfailed", onTestFailed);
+    apf.$debugwin.apf.removeEventListener("testcomplete", onPlaybackComplete);
+    apf.$debugwin.apf.removeEventListener("testcomplete", onPlayNextMacro);
+    apf.$debugwin.apf.removeEventListener("testerror", onTestFailed);
 
     btnStopPlay.setProperty("visible", false);
     btnRec.setProperty("disabled", false);
