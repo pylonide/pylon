@@ -484,7 +484,9 @@ apf.DataAction = function(){
             var model      = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
                 node       = model
                     ? model.queryNode(sel[1])
-                    : (xmlNode || this.xmlRoot).selectSingleNode(sel[1]);
+                    : (xmlNode || this.xmlRoot).selectSingleNode(sel[1])
+            if (model)
+                xmlNode    = model.data; //@experimental
         }
 
         if (node) {

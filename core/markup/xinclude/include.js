@@ -68,7 +68,8 @@ apf.aml.setElement("include", apf.XiInclude);
         if (this.callback) {
             this.callback({
                 xmlNode : xmlNode,
-                amlNode : this.parentNode
+                amlNode : this.parentNode,
+                addedNode: this.previousSibling || this.nextSibling
             })
         }
         

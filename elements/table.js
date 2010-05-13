@@ -184,7 +184,7 @@ apf.table = function(struct, tagName){
         var table = e.parentNode || this.parentNode;
         if (e.sync || e.value && !this.$altExt || !e.value && this.$altExt) {
             var nodes = table.childNodes;
-            
+
             var cells = apf.getArrayFromNodelist(table.$tbody.getElementsByTagName("td"));
             var rows  = table.$tbody.getElementsByTagName("tr");
             var empty = [], row = 1, cs, rs, collen = table.$columns.length;
@@ -194,6 +194,8 @@ apf.table = function(struct, tagName){
                     continue;
 
                 td = node.$altExt = last = cells[z++];
+                if (!td) break;
+                    //td = node.$altExt = last = document.createElement("td");
                 
                 if (!rows[row])
                     table.$tbody.appendChild(document.createElement("tr"));
@@ -229,9 +231,9 @@ apf.table = function(struct, tagName){
             
             //Fix padding of last row
             var lastCells = rows[rows.length - 1].getElementsByTagName("td");
-            for (i = 0, l = lastCells.length; i < l; i++) {
+            for (i = 0, il = lastCells.length; i < il; i++) {
                 lastCells[i].style.padding = "0 " 
-                    + (i == l - 1 ? 0 : table.padding) + "px 0 0"
+                    + (i == il - 1 ? 0 : table.padding) + "px 0 0"
             } 
             
             for (;z < cells.length; z++)

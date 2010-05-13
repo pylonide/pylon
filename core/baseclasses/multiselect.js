@@ -1751,7 +1751,7 @@ apf.MultiSelect = function(){
         
         //Set caret property
         this.setProperty("caret", e.caret);
-        
+
         //Set selection length
         if (this.sellength != e.selection.length)
             this.setProperty("sellength", e.selection.length);
