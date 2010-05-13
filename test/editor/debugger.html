@@ -15,10 +15,10 @@
         <a:skin src="../../skins.xml" media-path="../../images/" icon-path="debugger_icons/" />       
         <a:appsettings debug="0" />
        
-       	<a:model id="mdlTabs" />
-       	<a:model id="mdlScripts" src="{attachDebugger([{lstTabs.selected}::@id])}" autoinit="false" />
-       	<a:model id="mdlStack" />
-       	<a:model id="mdlDebugger">
+       	<a:model id="$apf_dbg_mdlTabs" />
+       	<a:model id="$apf_dbg_mdlScripts" src="{apf.$debugger.attach([{lstTabs.selected}::@id])}" autoinit="false" />
+       	<a:model id="$apf_dbg_mdlStack" />
+       	<a:model id="$apf_dbg_mdlDebugger">
        		<debugger running="true" connected="false">
        			<breakpoints />
        			<scripts />
@@ -28,7 +28,7 @@
 
         <a:window id="winTab" title="Choose a Tab" zindex="10" center="true" modal="true" width="450" height="200" visible="true">
         	<a:list 
-        		model="mdlTabs" 
+        		model="$apf_dbg_mdlTabs" 
         		anchors="10 10 40 10" 
         		id="lstTabs" 
         		multiselect="false" 
@@ -44,18 +44,18 @@
         		width="60" 
         		disabled="{!lstTabs.selected}" 
         		default="true"
-        		onclick="winTab.close();mdlScripts.init();">OK
+        		onclick="winTab.close();$apf_dbg_mdlScripts.init();">OK
        		</a:button>
         </a:window>
         
 		<a:toolbar align="top" height="26">
 			<a:bar>
-	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="continueScript();" disabled="[mdlDebugger::@running]" />
+	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="continueScript();" disabled="[$apf_dbg_mdlDebugger::@running]" />
 	        	<a:button icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}" disabled="true" />
-	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="disconnect();" disabled="{![mdlDebugger::@connected]}" />
-	        	<a:button icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" onclick="stepInto();" disabled="[mdlDebugger::@running]" />
-	        	<a:button icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}" onclick="stepNext();" disabled="[mdlDebugger::@running]" />
-	        	<a:button icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" onclick="stepOut();" disabled="[mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="apf.$debugger.disconnect();" disabled="{![$apf_dbg_mdlDebugger::@connected]}" />
+	        	<a:button icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" onclick="apf.$debugger.stepInto();" disabled="[$apf_dbg_mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}" onclick="apf.$debugger.stepNext();" disabled="[$apf_dbg_mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" onclick="apf.$debugger.stepOut();" disabled="[$apf_dbg_mdlDebugger::@running]" />
 	        </a:bar>
         </a:toolbar>
         
@@ -63,10 +63,11 @@
         <a:window skin="dockwin" dock="true" align="left-splitter" width="400" visible="true" title="Sources" zindex="9">
 	        <a:list
 	          id="lstScripts"
-	          model="mdlScripts"
+	          model="$apf_dbg_mdlScripts"
 	          anchors="0 0 0 0"
 	          each="[script]"
 	          caption="[@text]"
+	          onafterselect = "apf.$debugger.changeScript(this.selected)"
 	          icon="file_obj.gif">
 	        	<a:actions />
 	        </a:list>
@@ -79,8 +80,8 @@
 	          options    = "size|move"
 	          caching    = "false"
 	          prerender  = "false"
-	          model      = "mdlStack"
-	          loading-message = "Calculating..."
+	          model      = "$apf_dbg_mdlStack"
+	          onafterselect = "apf.$debugger.changeStackFrame(this.selected)"
 	          >
 	        	<a:actions />
 	            <a:column caption="Function" value="[@name]" width="100%" icon="stckframe_obj.gif" />
@@ -88,16 +89,7 @@
 	            <a:column caption="Line" value="[@line]" width="40"/>
 	            <a:column caption="Column" value="[@column]" width="40"/>
 	            <a:each match="[frame]" />
-	        </a:datagrid>		
-	        <!-- <a:list
-	          id="lstStack"
-	          model="mdlStack"
-	          anchors="0 0 0 0"
-	          each="[frame]"
-	          caption="[@text]"
-	          icon="stckframe_obj.gif">
-	        	<a:actions />
-	        </a:list> -->        
+	        </a:datagrid>    
         </a:window>
         
         <a:window skin="dockwin" dock="true" align="left-splitter" height="200" visible="true" title="Watch" zindex="9">
@@ -109,9 +101,10 @@
 	          model      = "{lstStack.selected}"
 	          loading-message = "Calculating..."
 	          >
-	        	<a:actions />
+                <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" 
+                  get="{adbg.loadObjects(%[.])}" />
 	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
-	            <a:column caption="Value" value="[@text]" width="100%" editor="textbox" />
+	            <a:column caption="Value" value="[@text]" width="100%" />
 	            <a:column caption="Type" value="[@type]" width="80"/>
 	            <a:each match="[vars/var]" sort="[@name]" />
 	        </a:datagrid>		
@@ -125,7 +118,7 @@
             showinvisibles = "true"
             showprintmargin = "true"
             printmargincolumn = "80"
-            ongutterdblclick = "toggleBreakPoint([{lstScripts.selected}::@id], event.row)">
+            ongutterdblclick = "apf.$debugger.toggleBreakPoint([{lstScripts.selected}::@id], event.row)">
             <a:load get="{adbg.loadScript([@id])}"/>
             <a:value value="[text()]" />
         </a:codeeditor>   
