@@ -69,6 +69,14 @@
                     <a:item value="8">8</a:item>
                 </a:dropdown>
                 <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
+                <a:divider />
+                <a:label width="80">Line {ce.line}</a:label>
+                <a:divider />
+                <a:label width="80">Col {ce.col}</a:label>
+                <a:divider />
+                <a:label width="80">Ch {ce.char}</a:label>
+                <a:divider />
+                <a:label width="80">{ce.overwrite ? "INS" : ""}</a:label>
             </a:bar>
         </a:toolbar>
         

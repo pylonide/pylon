@@ -39,6 +39,10 @@ apf.codeeditor = function(struct, tagName){
     
     this.documents = [];
     this.$cache    = {};
+    
+    this.setProperty("overwrite", false);
+    this.setProperty("line", 1);
+    this.setProperty("col", 1)
 };
 
 (function(){
@@ -135,7 +139,27 @@ apf.codeeditor = function(struct, tagName){
         doc.setTabSize(parseInt(this.tabsize));
         doc.setUseSoftTabs(this.softtabs);
         
+        this.$removeDocListeners && this.$removeDocListeners();
+        this.$removeDocListeners = this.$addDocListeners(doc);
+        
         this.$editor.setDocument(doc);
+    };
+    
+    this.$addDocListeners = function(doc) {
+        var self = this;
+        var onCursorChange = function() {
+            var cursor = doc.getSelection().getCursor();
+            self.setProperty("line", cursor.row+1);
+            self.setProperty("col", cursor.column+1);
+        };
+        
+        doc.getSelection().addEventListener("changeCursor", onCursorChange);
+        
+        onCursorChange();
+        
+        return function() {
+            doc.getSelection().removeEventListener("changeCursor", onCursorChange);
+        };
     };
     
     if (self.ace)
@@ -289,7 +313,11 @@ apf.codeeditor = function(struct, tagName){
         });
 
         this.$editor = new ace.Editor(new ace.VirtualRenderer(this.$input));
+        
         var self = this;
+        this.$editor.addEventListener("changeOverwrite", function(e) {
+            self.setProperty("overwrite", e.data);
+        });
 
         this.$editor.addEventListener("gutterclick", function(e) {
             self.dispatchEvent("gutterclick", e);
