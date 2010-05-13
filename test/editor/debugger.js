@@ -60,9 +60,86 @@ function onBreak(e) {
     script.$marker = ce.$editor.renderer.addMarker(range, "step", "text");
     
     ce.$editor.moveCursorTo(row, response.sourceColumn);
+    
+    debugContext.dbg.backtrace(null, null, null, true, function(body, refs) {
+        
+        function valueString(value) {
+            switch (value.type) {
+                case "undefined":
+                case "null":
+                    return value.type;
+                    
+                case "boolean":
+                case "number":
+                case "string":
+                    return value.value + "";
+                    
+                case "object":
+                    return "[" + value.className + "] (id: " + value.ref + ")";
+                    
+                case "function":
+                    return "function " + value.inferredName + "()";
+                    
+                default:
+                    return value.type;
+            };
+        };
+        
+        function frameToString(frame) {
+            var str = [];
+            str.push(
+                "<", valueString(frame.receiver), ">.",
+                frame.func.name || frame.func.inferredName, "("
+            );
+            var args = frame.arguments;
+            var argsStr = [];
+            for (var i=0; i<args.length; i++) {
+                var arg = args[i];
+                if (!arg.name)
+                    continue;
+                argsStr.push(arg.name);
+            }
+            str.push(argsStr.join(", "), ")");
+            return str.join("");
+        }
+        
+        function ref(id) {
+            for (var i=0; i<refs.length; i++) {
+                if (refs[i].handle == id) {
+                    return refs[i];
+                }
+            }
+            return [];
+        }
+        
+        var xml = [];
+        var frames = body.frames;
+        for (var i = 0; i < frames.length; i++) {
+            var frame = frames[i];
+            var script = ref(frame.script.ref);
+            xml.push("<frame index='", frame.index, 
+                "' name='", escapeXml(escapeXml(frameToString(frame))),
+                "' column='", frame.column,
+                "' line='", frame.line,
+                "' script='", script.name,
+                "'>");
+                xml.push("<vars>");
+                for (var j=0; j<frame.arguments.length; j++) {
+                    xml.push("<var name='", escapeXml(frame.arguments[j].name || ("argument " + j)), "' text='", escapeXml(valueString(frame.arguments[j].value)), "' type='", frame.arguments[j].value.type, "'/>")
+                }
+                for (var j=0; j<frame.locals.length; j++) {
+                    xml.push("<var name='", escapeXml(frame.locals[j].name), "' text='", escapeXml(valueString(frame.locals[j].value)), "' type='", frame.locals[j].value.type, "' />")
+                }
+                xml.push("</vars>");
+                xml.push("</frame>");
+        }
+        mdlStack.load("<frames>" + xml.join("") + "</frames>");          
+    });
 }
 
 function onContinue() {
+    mdlStack.load("<frames></frames>");
+
     if (!debugContext.$break)
         return;
     
@@ -121,6 +198,8 @@ function disconnect() {
     });
     
     mdlDebugger.setQueryValue("@connected", false);
+    mdlScripts.load("<scripts></scripts>");
+    mdlStack.load("<frames></frames>");
 };
 
 window.onunload = disconnect;
