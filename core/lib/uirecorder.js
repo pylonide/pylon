@@ -487,6 +487,7 @@ apf.uirecorder.capture = {
     
     $getTargetName : function(eventName, e, amlNode) {
         var amlNode = amlNode || e.amlNode || e.currentTarget;
+        if (!amlNode) return;
         if ((amlNode.root && amlNode.isIE != undefined) || amlNode.tagName == "head") return;
         
         if (eventName == "movefocus")
