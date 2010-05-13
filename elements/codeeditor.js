@@ -291,12 +291,15 @@ apf.codeeditor = function(struct, tagName){
         this.$editor = new ace.Editor(new ace.VirtualRenderer(this.$input));
         var self = this;
 
-        apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);
+        this.$editor.addEventListener("gutterclick", function(e) {
+            self.dispatchEvent("gutterclick", e);
+        });
+
+        this.$editor.addEventListener("gutterdblclick", function(e) {
+            self.dispatchEvent("gutterdblclick", e);
+        });
         
-//        this.$editor.addEventListener("changeOverwrite", function(e) {
-//            self.setProperty("overwrite", e.data);
-//        });
-//        this.setProperty("overwrite", this.$editor.getOverwrite());
+        apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);        
     };
 
     this.$loadAml = function() {
