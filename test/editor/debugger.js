@@ -1,6 +1,14 @@
-var debugContext = {
+
+(function() {
+    
+apf.$debugger = {
     breakpoints: {},
     scripts: {}
+};
+
+apf.$debugger.init = function() {
+    this.loadTabs();
+    window.onunload = ace.bind(this.disconnect, this);
 };
 
 function escapeXml(str) {
@@ -13,15 +21,68 @@ function escapeXml(str) {
     );
 }
 
+function valueString(value) {
+    switch (value.type) {
+        case "undefined":
+        case "null":
+            return value.type;
+            
+        case "boolean":
+        case "number":
+        case "string":
+            return value.value + "";
+            
+        case "object":
+            return "[" + value.className + "] (id: " + value.ref + ")";
+            
+        case "function":
+            return "function " + value.inferredName + "()";
+            
+        default:
+            return value.type;
+    };
+};
 
-function loadTabs(){
+function frameToString(frame) {
+    var str = [];
+    str.push(
+        //"<", valueString(frame.receiver), ">.",
+        frame.func.name || frame.func.inferredName, "("
+    );
+    var args = frame.arguments;
+    var argsStr = [];
+    for (var i=0; i<args.length; i++) {
+        var arg = args[i];
+        if (!arg.name)
+            continue;
+        argsStr.push(arg.name);
+    }
+    str.push(argsStr.join(", "), ")");
+    return str.join("");
+}
+
+function serializeVariable(item, name) {
+    var str = [];
+    var numtype = {
+        "object": 8,
+        "function": 4
+    };
+    str.push("<var name='", escapeXml(name || item.name),
+        "' text='", escapeXml(valueString(item.value)),
+        "' type='", item.value.type,
+        "' numtype='", (numtype[item.value.type] || 0),
+        "' />");
+    return str.join("");            
+}
+
+apf.$debugger.loadTabs = function() {
     var o3obj = document.getElementsByTagName("embed")[0];
-    var socket = debugContext.socket = new O3Socket("127.0.0.1", 9222, o3obj);
+    var socket = apf.$debugger.$socket = new O3Socket("127.0.0.1", 9222, o3obj);
     var msgStream = new V8DebugMessageStream(socket);
 
     msgStream.addEventListener("connect", function() {
-        var dts = debugContext.dts = new DevToolsService(msgStream);
-        var v8ds = debugContext.v8ds = new V8DebuggerService(msgStream);
+        var dts = apf.$debugger.dts = new DevToolsService(msgStream);
+        var v8ds = apf.$debugger.v8ds = new V8DebuggerService(msgStream);
         
         dts.getVersion(function(version) {
             dts.listTabs(function(tabs) {
@@ -29,7 +90,7 @@ function loadTabs(){
                 for (var i = 0; i < tabs.length; i++) {
                     xml.push("<tab id='" + tabs[i][0] + "'>" + escapeXml(tabs[i][1]) + "</tab>");
                 }
-                mdlTabs.load("<tabs>" + xml.join("") + "</tabs>");  
+                $apf_dbg_mdlTabs.load("<tabs>" + xml.join("") + "</tabs>");  
             });
         });
     });
@@ -37,71 +98,8 @@ function loadTabs(){
     msgStream.connect();
 }
 
-loadTabs();
-
-
 function onBreak(e) {
-    var response = e.data;
-
-    var script = debugContext.scripts[response.script.id];
-    if (!script) 
-        return;
-    
-    debugContext.$break = response;
-    
-    lstScripts.select(mdlScripts.queryNode("//node()[@id='" + script.id + "']"));
-    
-    if (script.$marker) {
-        ce.$editor.renderer.removeMarker(script.$marker);
-    }
-
-    var row = response.sourceLine - script.lineOffset;
-    range = new ace.Range(row, 0, row+1, 0);
-    script.$marker = ce.$editor.renderer.addMarker(range, "step", "text");
-    
-    ce.$editor.moveCursorTo(row, response.sourceColumn);
-    
-    debugContext.dbg.backtrace(null, null, null, true, function(body, refs) {
-        
-        function valueString(value) {
-            switch (value.type) {
-                case "undefined":
-                case "null":
-                    return value.type;
-                    
-                case "boolean":
-                case "number":
-                case "string":
-                    return value.value + "";
-                    
-                case "object":
-                    return "[" + value.className + "] (id: " + value.ref + ")";
-                    
-                case "function":
-                    return "function " + value.inferredName + "()";
-                    
-                default:
-                    return value.type;
-            };
-        };
-        
-        function frameToString(frame) {
-            var str = [];
-            str.push(
-                "<", valueString(frame.receiver), ">.",
-                frame.func.name || frame.func.inferredName, "("
-            );
-            var args = frame.arguments;
-            var argsStr = [];
-            for (var i=0; i<args.length; i++) {
-                var arg = args[i];
-                if (!arg.name)
-                    continue;
-                argsStr.push(arg.name);
-            }
-            str.push(argsStr.join(", "), ")");
-            return str.join("");
-        }
+    apf.$debugger.dbg.backtrace(null, null, null, true, function(body, refs) {
         
         function ref(id) {
             for (var i=0; i<refs.length; i++) {
@@ -109,11 +107,12 @@ function onBreak(e) {
                     return refs[i];
                 }
             }
-            return [];
+            return {};
         }
         
         var xml = [];
         var frames = body.frames;
+        console.log(frames);
         for (var i = 0; i < frames.length; i++) {
             var frame = frames[i];
             var script = ref(frame.script.ref);
@@ -122,45 +121,40 @@ function onBreak(e) {
                 "' column='", frame.column,
                 "' line='", frame.line,
                 "' script='", script.name,
+                "' script_id='", script.id,
                 "'>");
-                xml.push("<vars>");
-                for (var j=0; j<frame.arguments.length; j++) {
-                    xml.push("<var name='", escapeXml(frame.arguments[j].name || ("argument " + j)), "' text='", escapeXml(valueString(frame.arguments[j].value)), "' type='", frame.arguments[j].value.type, "'/>")
-                }
-                for (var j=0; j<frame.locals.length; j++) {
-                    xml.push("<var name='", escapeXml(frame.locals[j].name), "' text='", escapeXml(valueString(frame.locals[j].value)), "' type='", frame.locals[j].value.type, "' />")
-                }
-                xml.push("</vars>");
-                xml.push("</frame>");
+            xml.push("<vars>");
+            for (var j=0; j<frame.arguments.length; j++) {
+                xml.push(serializeVariable(frame.arguments[j],  frame.arguments[j].name || ("argument " + j)));
+            }
+            for (var j=0; j<frame.locals.length; j++) {
+                xml.push(serializeVariable(frame.locals[j]));
+            }
+            xml.push("</vars>");
+            xml.push("</frame>");
         }
-        mdlStack.load("<frames>" + xml.join("") + "</frames>");          
+        $apf_dbg_mdlStack.load("<frames>" + xml.join("") + "</frames>");          
     });
 }
 
 function onContinue() {
-    mdlStack.load("<frames></frames>");
+    $apf_dbg_mdlStack.load("<frames></frames>");
 
-    if (!debugContext.$break)
-        return;
-    
-    var script = debugContext.scripts[debugContext.$break.script.id];
-    if (!script) 
-        return;
-
-    if (script && script.$marker) {
-        ce.$editor.renderer.removeMarker(script.$marker);
+    if (apf.$debugger.$marker) {
+        ce.$editor.renderer.removeMarker(apf.$debugger.$marker);
+        apf.$debugger.$marker = null;
     }    
 }
 
-function attachDebugger(tabId) {
-    debugContext.v8ds.attach(tabId, function() {
-        mdlDebugger.setQueryValue("@connected", true);
+apf.$debugger.attach = function(tabId) {
+    apf.$debugger.v8ds.attach(tabId, function() {
+        $apf_dbg_mdlDebugger.setQueryValue("@connected", true);
         
-        var dbg = debugContext.dbg = new V8Debugger(tabId, debugContext.v8ds);
+        var dbg = apf.$debugger.dbg = new V8Debugger(tabId, apf.$debugger.v8ds);
                
         dbg.addEventListener("break", onBreak);
         dbg.addEventListener("changeRunning", function() {
-            mdlDebugger.setQueryValue("@running", dbg.isRunning());
+            $apf_dbg_mdlDebugger.setQueryValue("@running", dbg.isRunning());
             if (dbg.isRunning()) {
                 onContinue()
             };
@@ -171,7 +165,7 @@ function attachDebugger(tabId) {
                 var xml = [];
                 for (var i = 0; i < scripts.length; i++) {
                     var script = scripts[i];
-                    debugContext.scripts[script.id] = script;
+                    apf.$debugger.scripts[script.id] = script;
                     if (script.name && script.name.indexOf("chrome-extension://") == 0) {
                         continue;
                     }
@@ -181,31 +175,61 @@ function attachDebugger(tabId) {
                         "' lineoffset='", script.lineOffset,                    
                         "' />");
                 }
-                mdlScripts.load("<scripts>" + xml.join("") + "</scripts>");  
+                $apf_dbg_mdlScripts.load("<scripts>" + xml.join("") + "</scripts>");  
             });
         });
     });
 }    
 
-function disconnect() {
-    if (!debugContext.dbg) {
-        debugContext.socket.close();
+apf.$debugger.changeStackFrame = function(frame) {
+    var script = apf.$debugger.scripts[frame.getAttribute("script_id")];
+    if (!script)
+        return;
+    
+    lstScripts.select($apf_dbg_mdlScripts.queryNode("//node()[@id='" + script.id + "']"));
+    
+    if (apf.$debugger.$marker) {
+        ce.$editor.renderer.removeMarker(apf.$debugger.$marker);
+        apf.$debugger.$marker = null;
+    }
+
+    var row = parseInt(frame.getAttribute("line")) - script.lineOffset;
+    range = new ace.Range(row, 0, row+1, 0);
+    apf.$debugger.$marker = ce.$editor.renderer.addMarker(range, "step", "text");
+    apf.$debugger.$markerRange = range;
+    apf.$debugger.$markerScript = script;
+    
+    ce.$editor.moveCursorTo(row, parseInt(frame.getAttribute("line")));
+};
+
+apf.$debugger.changeScript = function(scriptEl) {
+    var ctx = apf.$debugger;
+    if (ctx.$marker)
+        ce.$editor.renderer.removeMarker(ctx.$marker);
+
+    var script = ctx.$markerScript;
+    if (script && script.id == scriptEl.getAttribute("id")) {
+        ctx.$marker = ce.$editor.renderer.addMarker(ctx.$markerRange, "step", "text");
+    }
+};
+
+apf.$debugger.disconnect = function() {
+    if (!this.dbg) {
+        this.$socket.close();
         return;
     }
     
-    debugContext.v8ds.detach(debugContext.dbg.tabId, function() {        
-        debugContext.socket.close();
+    this.v8ds.detach(apf.$debugger.dbg.tabId, function() {        
+        this.$socket.close();
     });
     
-    mdlDebugger.setQueryValue("@connected", false);
-    mdlScripts.load("<scripts></scripts>");
-    mdlStack.load("<frames></frames>");
+    $apf_dbg_mdlDebugger.setQueryValue("@connected", false);
+    $apf_dbg_mdlScripts.load("<scripts></scripts>");
+    $apf_dbg_mdlStack.load("<frames></frames>");
 };
 
-window.onunload = disconnect;
-
-function toggleBreakPoint(scriptId, relativeRow) {
-    var ctx = debugContext;
+apf.$debugger.toggleBreakPoint = function(scriptId, relativeRow) {
+    var ctx = apf.$debugger;
     
     var script = ctx.scripts[scriptId];
     if (!script)
@@ -221,30 +245,30 @@ function toggleBreakPoint(scriptId, relativeRow) {
             ce.$editor.getDocument().clearBreakpoint(relativeRow);
         });
     } else {
-        breakpoint = debugContext.breakpoints[id] = new Breakpoint(script.name, row);
+        breakpoint = apf.$debugger.breakpoints[id] = new Breakpoint(script.name, row);
         breakpoint.attach(ctx.dbg, function() {
             ce.$editor.getDocument().setBreakpoint(breakpoint.line - script.lineOffset);
         });
     }
 };
 
-function continueScript() {
-    debugContext.dbg.continueScript();
+apf.$debugger.continueScript = function() {
+    apf.$debugger.dbg.continueScript();
 };
 
-function stepInto() {
-    debugContext.dbg.continueScript("in", 1);
+apf.$debugger.stepInto = function() {
+    apf.$debugger.dbg.continueScript("in", 1);
 };
 
-function stepNext() {
-    debugContext.dbg.continueScript("next", 1);
+apf.$debugger.stepNext = function() {
+    apf.$debugger.dbg.continueScript("next", 1);
 };
 
-function stepOut() {
-    debugContext.dbg.continueScript("out", 1);
+apf.$debugger.stepOut = function() {
+    apf.$debugger.dbg.continueScript("out", 1);
 };
 
-var adbg = {
+window.adbg = {
    exec : function(method, args, callback, options){
         if (method == "loadScript" && args[0]) {
             if (!options)
@@ -264,13 +288,15 @@ var adbg = {
     },
     
     loadScript : function(id, options){
-        debugContext.dbg.scripts(4, [parseInt(id)], true, function(scripts) {
+        apf.$debugger.dbg.scripts(4, [parseInt(id)], true, function(scripts) {
             if (scripts.length) {                
                 var script = scripts[0];
-                debugContext.scripts[script.id].source = script.source;
+                apf.$debugger.scripts[script.id].source = script.source;
                 options.callback(script.source, apf.SUCCESS);
             }
         });
     }
 };
 (apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+
+})();

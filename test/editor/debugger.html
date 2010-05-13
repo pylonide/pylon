@@ -2,6 +2,7 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <script src="../../apf.js"></script>
+        <script src="debugger.js"></script>
         
         <style type="text/css" media="screen">
             html{
@@ -50,7 +51,7 @@
         
 		<a:toolbar align="top" height="26">
 			<a:bar>
-	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="continueScript();" disabled="[$apf_dbg_mdlDebugger::@running]" />
+	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="apf.$debugger.continueScript();" disabled="[$apf_dbg_mdlDebugger::@running]" />
 	        	<a:button icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}" disabled="true" />
 	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="apf.$debugger.disconnect();" disabled="{![$apf_dbg_mdlDebugger::@connected]}" />
 	        	<a:button icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" onclick="apf.$debugger.stepInto();" disabled="[$apf_dbg_mdlDebugger::@running]" />
@@ -123,7 +124,8 @@
             <a:value value="[text()]" />
         </a:codeeditor>   
           
-          
-        <a:script src="debugger.js"></a:script>
+        <a:script>//<!--
+            apf.$debugger.init();
+        //--></a:script>
     </body>
 </html>
