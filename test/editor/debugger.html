@@ -18,7 +18,7 @@
        	<a:model id="mdlTabs" />
        	<a:model id="mdlScripts" src="{attachDebugger([{lstTabs.selected}::@id])}" autoinit="false" />
        	 
-        <a:window id="winTab" title="Choose a Tab" center="true" modal="true" width="300" height="200" icon="application.png" visible="true">
+        <a:window id="winTab" title="Choose a Tab" center="true" modal="true" width="450" height="200" icon="application.png" visible="true">
         	<a:list 
         		model="mdlTabs" 
         		anchors="10 10 40 10" 
@@ -36,6 +36,7 @@
         		bottom="10" 
         		width="60" 
         		disabled="{!lstTabs.selected}" 
+        		default="true"
         		onclick="winTab.close();mdlScripts.init();">OK
        		</a:button>
         </a:window>
@@ -43,6 +44,8 @@
 		<a:toolbar align="top" height="26">
 			<a:bar>
 	        	<a:textbox id="tbFilter" initial-message="Filter" realtime="true" />
+	        	<a:button id="btnContinue" icon="control_play.png" onclick="continueScript();" disabled="false" />
+	        	<a:button onclick="disconnect();">Disconnect</a:button>
 	        </a:bar>
         </a:toolbar>
         <a:list
@@ -52,7 +55,7 @@
           align="left-splitter"
           each="[script]"
           filter="{tbFilter.value}"
-          caption="[@name]"
+          caption="[@text]"
           icon="page_white_code.png">
         	<a:actions />
         </a:list>
@@ -64,8 +67,9 @@
             readonly    = "true"        
             showinvisibles = "true"
             showprintmargin = "true"
-            printmargincolumn = "80">
-            <a:load get="{adbg.loadScript([@id])}" />
+            printmargincolumn = "80"
+            ongutterdblclick = "toggleBreakPoint([{lstScripts.selected}::@id], event.row)">
+            <a:load get="{adbg.loadScript([@id])}"/>
             <a:value value="[text()]" />
         </a:codeeditor>   
           
