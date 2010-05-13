@@ -72,7 +72,7 @@
         </a:list>
         
         <a:codeeditor id="ce" 
-            align       = "right"
+            align       = "right-splitter"
             model       = "{lstScripts.selected}"  
             syntax      = "js" 
             readonly    = "true"        
@@ -83,6 +83,10 @@
             <a:load get="{adbg.loadScript([@id])}"/>
             <a:value value="[text()]" />
         </a:codeeditor>   
+          
+          
+        <a:window skin="dockwin" dock="true" align="right-splitter" height="200" visible="true" title="Stacktrace">
+        </a:window>
           
         <a:script src="debugger.js"></a:script>
     </body>
