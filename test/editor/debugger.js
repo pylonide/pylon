@@ -40,17 +40,55 @@ function loadTabs(){
 loadTabs();
 
 
+function onBreak(e) {
+    var response = e.data;
+
+    var script = debugContext.scripts[response.script.id];
+    if (!script) 
+        return;
+    
+    debugContext.$break = response;
+    
+    lstScripts.select(mdlScripts.queryNode("//node()[@id='" + script.id + "']"));
+    
+    if (script.$marker) {
+        ce.$editor.renderer.removeMarker(script.$marker);
+    }
+
+    var row = response.sourceLine - script.lineOffset;
+    range = new ace.Range(row, 0, row+1, 0);
+    script.$marker = ce.$editor.renderer.addMarker(range, "step", "text");
+    
+    ce.$editor.moveCursorTo(row, response.sourceColumn);
+}
+
+function onContinue() {
+    if (!debugContext.$break)
+        return;
+    
+    var script = debugContext.scripts[debugContext.$break.script.id];
+    if (!script) 
+        return;
+
+    if (script && script.$marker) {
+        ce.$editor.renderer.removeMarker(script.$marker);
+    }    
+}
+
 function attachDebugger(tabId) {
     debugContext.v8ds.attach(tabId, function() {
-        var v8debugger = debugContext.v8debugger = new V8Debugger(tabId, debugContext.v8ds);
+        var dbg = debugContext.dbg = new V8Debugger(tabId, debugContext.v8ds);
                
-        v8debugger.addEventListener("changeRunning", function() {
-            console.log("running:", v8debugger.isRunning())
-            btnContinue.setAttribute("disabled", v8debugger.isRunning());
+        dbg.addEventListener("break", onBreak);
+        dbg.addEventListener("changeRunning", function() {
+            mdlDebugger.setQueryValue("@running", dbg.isRunning());
+            if (dbg.isRunning()) {
+                onContinue()
+            };
         });
         
-        v8debugger.version(function(version) {
-            v8debugger.scripts(4, null, false, function(scripts) {
+        dbg.version(function(version) {
+            dbg.scripts(4, null, false, function(scripts) {
                 var xml = [];
                 for (var i = 0; i < scripts.length; i++) {
                     var script = scripts[i];
@@ -71,12 +109,12 @@ function attachDebugger(tabId) {
 }    
 
 function disconnect() {
-    if (!debugContext.v8debugger) {
+    if (!debugContext.dbg) {
         debugContext.socket.close();
         return;
     }
     
-    debugContext.v8ds.detach(debugContext.v8debugger.tabId, function() {        
+    debugContext.v8ds.detach(debugContext.dbg.tabId, function() {        
         debugContext.socket.close();
     });
 };
@@ -90,23 +128,37 @@ function toggleBreakPoint(scriptId, relativeRow) {
     if (!script)
         return;
     
-    var row = script.lineOffset + relativeRow + 1;
+    var row = script.lineOffset + relativeRow;
     var id = scriptId + "|" + row;
     
     var breakpoint = ctx.breakpoints[id]; 
     if (breakpoint) {
         delete ctx.breakpoints[id];
-        breakpoint.clear();
+        breakpoint.clear(function() {
+            ce.$editor.getDocument().clearBreakpoint(relativeRow);
+        });
     } else {
         breakpoint = debugContext.breakpoints[id] = new Breakpoint(script.name, row);
-        breakpoint.attach(ctx.v8debugger, function() {
-            console.log("breakpoint set", breakpoint.line)
+        breakpoint.attach(ctx.dbg, function() {
+            ce.$editor.getDocument().setBreakpoint(breakpoint.line - script.lineOffset);
         });
     }
 };
 
 function continueScript() {
-    debugContext.v8debugger.continueScript();
+    debugContext.dbg.continueScript();
+};
+
+function stepInto() {
+    debugContext.dbg.continueScript("in", 1);
+};
+
+function stepNext() {
+    debugContext.dbg.continueScript("next", 1);
+};
+
+function stepOut() {
+    debugContext.dbg.continueScript("out", 1);
 };
 
 var adbg = {
@@ -120,17 +172,17 @@ var adbg = {
                         callback("<script />", state, extra);
                         return false;
                     }
-                    else
+                    else {
                         callback("<script>" + escapeXml(data) + "</script>", state, extra);
+                    }
                 }
             this.loadScript(args[0], options);
         }
     },
     
     loadScript : function(id, options){
-        debugContext.v8debugger.scripts(4, [parseInt(id)], true, function(scripts) {
-            console.log(scripts)
-            if (scripts.length) {
+        debugContext.dbg.scripts(4, [parseInt(id)], true, function(scripts) {
+            if (scripts.length) {                
                 var script = scripts[0];
                 debugContext.scripts[script.id].source = script.source;
                 options.callback(script.source, apf.SUCCESS);

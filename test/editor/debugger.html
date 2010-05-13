@@ -12,13 +12,20 @@
     <body>
     	<embed type="application/o3stem-aaaaaaaa-1111-bbbb-1111-cccccccccccc" width="0" height="0" /> 
     	
-        <a:skin src="../../skins.xml" media-path="../../images/" icon-path="icons/" />       
+        <a:skin src="../../skins.xml" media-path="../../images/" icon-path="debugger_icons/" />       
         <a:appsettings debug="0" />
        
        	<a:model id="mdlTabs" />
        	<a:model id="mdlScripts" src="{attachDebugger([{lstTabs.selected}::@id])}" autoinit="false" />
-       	 
-        <a:window id="winTab" title="Choose a Tab" center="true" modal="true" width="450" height="200" icon="application.png" visible="true">
+       	<a:model id="mdlDebugger">
+       		<debugger running="true">
+       			<breakpoints />
+       			<scripts />
+       		</debugger>
+    	</a:model>
+
+
+        <a:window id="winTab" title="Choose a Tab" center="true" modal="true" width="450" height="200" visible="true">
         	<a:list 
         		model="mdlTabs" 
         		anchors="10 10 40 10" 
@@ -28,7 +35,6 @@
         		autoselect="false" 
         		each="[tab]" 
         		caption="[text()]" 
-        		icon="tab.png" 
         		empty-message="Loading tabs..."
         		onafterchoose = "btnOk.dispatchEvent('click');"/>
         	<a:button id="btnOk"
@@ -44,10 +50,15 @@
 		<a:toolbar align="top" height="26">
 			<a:bar>
 	        	<a:textbox id="tbFilter" initial-message="Filter" realtime="true" />
-	        	<a:button id="btnContinue" icon="control_play.png" onclick="continueScript();" disabled="false" />
-	        	<a:button onclick="disconnect();">Disconnect</a:button>
+	        	<a:button id="btnContinue" icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}" onclick="continueScript();" disabled="[mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}" />
+	        	<a:button icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}" onclick="disconnect();" />
+	        	<a:button icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" onclick="stepInto();" disabled="[mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}" onclick="stepNext();" disabled="[mdlDebugger::@running]" />
+	        	<a:button icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" onclick="stepOut();" disabled="[mdlDebugger::@running]" />
 	        </a:bar>
         </a:toolbar>
+        
         <a:list
           id="lstScripts"
           model="mdlScripts"
@@ -56,7 +67,7 @@
           each="[script]"
           filter="{tbFilter.value}"
           caption="[@text]"
-          icon="page_white_code.png">
+          icon="file_obj.gif">
         	<a:actions />
         </a:list>
         
