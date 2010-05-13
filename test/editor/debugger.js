@@ -112,7 +112,6 @@ function onBreak(e) {
         
         var xml = [];
         var frames = body.frames;
-        console.log(frames);
         for (var i = 0; i < frames.length; i++) {
             var frame = frames[i];
             var script = ref(frame.script.ref);
@@ -220,7 +219,7 @@ apf.$debugger.disconnect = function() {
     }
     
     this.v8ds.detach(apf.$debugger.dbg.tabId, function() {        
-        this.$socket.close();
+        apf.$debugger.$socket.close();
     });
     
     $apf_dbg_mdlDebugger.setQueryValue("@connected", false);
@@ -248,6 +247,18 @@ apf.$debugger.toggleBreakPoint = function(scriptId, relativeRow) {
         breakpoint = apf.$debugger.breakpoints[id] = new Breakpoint(script.name, row);
         breakpoint.attach(ctx.dbg, function() {
             ce.$editor.getDocument().setBreakpoint(breakpoint.line - script.lineOffset);
+
+            var xml = [];
+            xml.push("<breakpoint",
+                " id='", breakpoint.$id,
+                "' text='", escapeXml(script.name), ":", breakpoint.line,
+                "' script='", escapeXml(script.name),
+                "' line='", breakpoint.line,       
+                "' condition='", escapeXml(breakpoint.condition || ""),
+                "' ignorecount='", breakpoint.ignoreCount || 0,
+                "' enabled='", breakpoint.enabled,
+                "' />")
+            $apf_dbg_mdlBreakpoints.appendXml(xml.join(""));
         });
     }
 };
