@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
      <style>
      </style>
@@ -11,81 +11,23 @@
     <script LANGUAGE="JavaScript" type="text/javascript">
     
     function draw(){
-        var ctx = new apf.vector.vml('drawnode',800,600,0,0,'darkblue');
-        // lets add a new group to to our root group
-        var g = ctx.group({x:0,y:0,w:800,h:600});
-        var g2 = ctx.group({x:0,y:0,w:800,h:600});
-
-        var r = [];
-        var i ; 
-        var xw = 16, yw =16, xs = 8, ys = 8, zd = 12;
-        var col = [];
-        for(var c, i = 0, j= 255/zd;i<zd;i++){
-            c = parseInt(i*j); c = (c<<16)+(c<<8)+c;
-            col[i] = '#'+('000000'+parseInt(c).toString(16)).slice(-6);
-            
-        }
-        col[i] = 'red';
-        
-        //ctx.rect({id:"r",x:10,y:20});
-        //ctx.path({p:"M {r.x} {r.y} L 0 0"});
-        
-        
-        
         apf.profile_loop(1,function(){
-        for(var y=0,i=0;y<yw;y++)
-            for(var x=0;x<xw;x++,i++)
-                r[i] = ctx.rect({x:x*xs,y:y*ys,w:xs,h:ys,o:1,f:col[Math.round((Math.sin((x+y)/2 )*0.5+0.5)*zd)]},g2);
-            ctx.repaint();
-        });
-        var t = 0;
-        var e = [];
-        var num = 200, st = 15;
-        for(var i=0;i<num;i++)
-            e[i] = ctx.path({p:"",s:'black'}, g);
-        var t = 0,v = 0,w = 0;
-        for(var c = [],z = 0,m = 255/st;z<st;z++)
-             c[z] = ['rgb(',255,',',255,',',z*m,')'].join('');
-        
-        window.setInterval(function(){
-            t+=0.05,v+=0.01,w+=0.1;var r = Math.round,sin = Math.sin, cos = Math.cos;
-            for(var j,i = 0;i<num;i++)
-               j= i/25,e[i].style({sw:8,o:0.3*((i%st)/st),s:c[i%st],p:["M",r( sin(t+v*j-0.2*w)*600+200 ),r( cos(t+v*j+0.1*w)*300+300 ),"L",r( sin(-t+1-v*j+w)*300+300), r(cos(t+3+v*j-w)*300+300),'XE'].join(' ')});
-            ctx.repaint();
-        },10);
-        /*
-        window.setInterval(function(){
-        apf.profile_loop(1,function(){
-//        document.onkeydown=function(){
-        t++;
-        //for(t = 0;t<32;t++){
-        for(var y = 0,i=0;y<yw;y++)
-            for(var x = 0;x<xw;x++,i++){
-                var c = Math.round((Math.sin(((Math.sqrt(x*x+y*y))-t/5)/2 )*0.5+0.5)*zd);
-                if(c>=zd)c = zd-1; if(c<0)c = 0;
-                //if(t==31 && x==6 && y==2){c = 16;
-                //apf.logw((((((Math.sqrt((x-1)*(x-1)+y*y))+t/10)/2 )*0.5+0.5)));
-                //}//c=16;//debugger;
-                //if((x+t)&1)c = 'rgb('+((255/xs)*(x+t))%255+',0,1)';
-                r[i].style({o:1,s:col[c],f:col[c]});
-            }
-            ctx.repaint();
-         //for(i=0,d = g.$vmlnodes,j=d.length;i<j;i++)
-         //   d[i].$vmlnode.style.display='none';
-            
-         //   d[j-10].$vmlnode.style.display='block';
-         //   document.title = g.$vmlnodes.length;
-       // }
-        },1);
-       },10);
-    */
-        ctx.repaint();
+        var g = apf.vector.group({w:300,h:300,f:'gray'},'drawnode');
+        for(i=0;i<5;i++)
+            g.rect({x:140+8*i,y:40+8*i,w:100,h:100,sw:1,s:'red',f:'green',s:'blue'});
+        g.rect({x:0,y:0,w:100,h:100,f:'purple',s:'green'});
+        g.repaint();
+        g.style({f:'red'});
+        g.repaint();
+    });
+    
+    
     }
   </script>
 
  </head>
  <body onload="draw()" style="background-color:black">
-    <div id="drawnode" style2="width:300px;height:300px;background-color:black">
+    <div id="drawnode" style="display:block;">
     </div>
  </body>
  

@@ -144,6 +144,61 @@ apf.vector =  new (function(){
             return this.svg.group(st,htmlroot);
     }
     
+    // style function used by both svg and vml shapes as their merge-allocator
+    function shapeMergeStyle(st){
+        var c = 0, m, s, d, t, i, j, k, 
+            isnew,styleid, parent = this.$parent, ss = style_short, oldpath; 
+        
+        for(i in st)if(i.length>2){if(t=ss[i])st[i]=st[i],c|=ss[i];}else c|=ss[i];            
+
+        if(c&0xff){ // we have a visual style change
+            styleid = [st.f,st.s,st.o,st.fo,st.so,st.sw,st.z,st.a].join(',');
+            if(!(sm = this.$shapemerge) || sm.$styleid!=styleid){
+                if(sm){ // drop our current node
+                    oldpath = sm.$path[t = this.$pathslot];
+                    sm.$path[t = this.$pathslot] = null;
+                    if(--sm.$nodes == 0){ // trash it
+                        delete parent.$cache[sm.$styleid];
+                        parent.$trash[sm.$styleid] = sm;
+                        parent.$pathdirty[sm.$uid] = sm;
+                    }
+                    if(sm.$free>t)sm.$free = t;
+                }
+                if(!(sm = parent.$cache[styleid])){   // no cache available
+                    if(sm = parent.$trash[styleid]){ // found one in the trash
+                        delete parent.$trash[styleid];
+                    } else {
+                        i = null;
+                        for(i in parent.$trash)break; // find one in trash
+                        if(i){
+                            sm = parent.$trash[i];
+                            delete parent.$trash[i];
+                        } else {
+                            isnew = 1;
+                            sm = new this.shapemerge(parent,styleid);
+                        }
+                    }
+                    parent.$cache[sm.$styleid=styleid] = sm;
+                };
+                sm.$nodes++;
+                for(i = sm.$free,j = sm.$path, k = j.length;i<k && j[i]!=null;i++);
+                sm.$free = (this.$pathslot = i)+1;
+                if(oldpath){ // old shape
+                    sm.$path[i] = oldpath;
+                    if(!isnew)parent.$pathdirty[sm.$uid] = sm;
+                }
+                this.$shapemerge = sm
+            }
+            m = diffVisual(sm, st, sm.$isset, sm.$isdyn, c);
+            if(m)sm.$styleVisual(m, sd_s, sd_d);
+            sm.$isset = sd_s, sm.$isdyn = sd_d;  
+        }
+        if(c&0x7fffff00){ // we have path style changes
+            this.$styleShape(diffShape(this,st,this.$isset, this.$isdyn, c), sd_s, sd_d);
+            this.$isset = sd_s, this.$isdyn = sd_d;
+        }
+    }
+    
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
@@ -154,29 +209,18 @@ apf.vector =  new (function(){
     
     this.vml = new (function(){
 
-        function vmlmerge(parent, styleid){
+        function shapemerge(parent, styleid){
             this.$styleid = styleid;
             this.$path = [];
             this.$parent = parent;
             this.$uid = parent.$guid++;
-            parent.$vmlnodes.push(this);// add ourself
-            parent.$nodeupdate = 1;
         };
 
         (function(){
-            this.$isvmlmerge = true;
-
-            this.$vmlnode = null;
-            this.$vmlvoid = {style:{},firstChild:{},lastChild:{}};
-            this.$uid       = 0; // prototype anim UID counter
-
-            this.$nodes = 
-            this.$free = 
-            this.$_f  = 
-            this.$_s  = 
-            this.$_fo  = 
-            this.$_so  = 0;
-            this.$_z   = 0;
+            this.$nodes = this.$free = this.$_f  = this.$_s  = 
+            this.$_z   = this.$uid = this.$domnode = 0;
+            this.$_fo  =  this.$_so  = 1;
+            
             var codecache = {};
             
             this.$styleVisual = function(m,s,d){
@@ -204,234 +248,128 @@ apf.vector =  new (function(){
                     this.$c_so = "if( (_t = ("+(d&0x40?this.$so:"this.$so")+"))!=this.$_so)v.lastChild.opacity = this.$_so =_t;\n";
                     
                 var code = [
-                    "function _f(t){var v = this.$vmlnode || this.$vmlvoid;\n",
-                    this.$c_fo,
-                    this.$c_so,
-                    this.$c_s,
-                    this.$c_sw,
-                    this.$c_f,
-                    this.$c_z,
+                    "function _f(t){var v = this.$domnode;\n",
+                        this.$c_fo,
+                        this.$c_so,
+                        this.$c_s,
+                        this.$c_sw,
+                        this.$c_f,
+                        this.$c_z,
                     "}"
                 ].join('');
                 this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
-                if(this.$vmlnode){ // if we have a vmlnode, put ourself on the update list
-                    this.$parent.$updatevml[this.$uid] = this;
-                }else {// else we are in init, update now to get our initial values set
-                    // optimization: for trivial nondynamic cases of f,s,o,fo and inline assign here
+                
+                if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
+                    this.$parent.$dirtynodes[this.$uid] = this;
+                } else {
+                    var vs,s;
+                    (s=(this.$domnode=vs=document.createElement("av:shape")).style).position = 'absolute';
+                    s.left = s.top = '0px';
+                    s.width = s.height = '100%';
+                    vs.appendChild(document.createElement("av:fill"));
+                    vs.appendChild(document.createElement("av:stroke"));
+                    this.$parent.$insertnodes.push(vs);
                     this.$update(0);
                 }
             };
                         
             this.$join = function(){
-                if(!this.$vmlnode){
-                }
-                else{
-                    this.$vmlnode.path = this.$path.join('')||" ";
-                    delete this.$parent.$pathjoin[this.$uid];
+                if(this.$domnode){
+                    this.$domnode.path = this.$path.join('')||" ";
+                    delete this.$parent.$dirtypaths[this.$uid];
                 }
             }
-            
-            this.toString = function(){
-                var s = this.$isset;//
-                var t = ["<av:shape path='",this.$path.join(''),"' style='position:absolute;left:0px;top:0px;width:100%;height:100%;'>",
-                            // inject gradient support here
-                            "<av:fill on='",s&0x1?"t":"f","' color='",this.$_f,"' opacity='",
-                                s&0x30?this.$_fo:1,"' />",
-                            "<av:stroke on='",s&0x2?"t":"f","' color='",this.$_s,"' opacity='",
-                                s&0x40?this.$_so:(s&0x30?this.$_fo:1),"' weight='",
-                                s&0x80?this.$_sw:1,"'/>",
-                         "</av:shape>"].join('');
-                return t ;
-            };        
-        }).call(vmlmerge.prototype);
+        }).call(shapemerge.prototype);
 
         //------------------------------------------------------------------------
-        // vmlshape
+        // shape
         //------------------------------------------------------------------------
 
-        function vmlshape(st, parent, styleShape){
+        function shape(st, parent, styleShape){
             this.$parent = parent;
-            parent.$vmlshapes.push(this);
             this.$styleShape = styleShape;
             this.$uid = parent.$uid++;
             this.style(st);
         };
         var i = 0;
         (function(){
-            this.$isvmlshape = true;
             this.$_v = true;
-            this.$x = 0, this.$y = 0, this.$w = 0, this.$h = 0;
-            // lets create the style function based on a code-gen            
-            this.style = function(st){
-                var c = 0, m, s, d, t, i, j, k, 
-                    isnew,styleid, parent = this.$parent, ss = style_short, oldpath; 
-                
-                for(i in st)if(i.length>2){if(t=ss[i])st[i]=st[i],c|=ss[i];}else c|=ss[i];            
-
-                if(c&0xff){ // we have a visual style change
-                    styleid = [st.f,st.s,st.o,st.fo,st.so,st.sw,st.z,st.a].join(',');
-                    if(!(vm = this.$vmlmerge) || vm.$styleid!=styleid){
-                        if(vm){ // drop our current node
-                            oldpath = vm.$path[t = this.$pathslot];
-                            vm.$path[t = this.$pathslot] = null;
-                            if(--vm.$nodes == 0){ // trash it
-                                delete parent.$cache[vm.$styleid];
-                                parent.$trash[vm.$styleid] = vm;
-                                parent.$pathjoin[vm.$uid] = vm;
-                            }
-                            if(vm.$free>t)vm.$free = t;
-                        }
-                        if(!(vm = parent.$cache[styleid])){   // no cache available
-                            if(vm = parent.$trash[styleid]){ // found one in the trash
-                                delete parent.$trash[styleid];
-                            } else {
-                                i = null;
-                                for(i in parent.$trash)break; // find one in trash
-                                if(i){
-                                    vm = parent.$trash[i];
-                                    delete parent.$trash[i];
-                                } else {
-                                    isnew = 1;
-                                    vm = new vmlmerge(parent,styleid);
-                                }
-                            }
-                            parent.$cache[vm.$styleid=styleid] = vm;
-                        };
-                        vm.$nodes++;
-                        for(i = vm.$free,j = vm.$path, k = j.length;i<k && j[i]!=null;i++);
-                        vm.$free = (this.$pathslot = i)+1;
-                        if(oldpath){ // old vmlshape
-                            vm.$path[i] = oldpath;
-                            if(!isnew)parent.$pathjoin[vm.$uid] = vm;
-                        }
-                        this.$vmlmerge = vm
-                    }
-                    m = diffVisual(vm, st, vm.$isset, vm.$isdyn, c);
-                    if(m)vm.$styleVisual(m, sd_s, sd_d);
-                    vm.$isset = sd_s, vm.$isdyn = sd_d;  
-                }
-                if(c&0x7fffff00){ // we have path style changes
-                    this.$styleShape(diffShape(this,st,this.$isset, this.$isdyn, c), sd_s, sd_d);
-                    this.$isset = sd_s, this.$isdyn = sd_d;
-                }
-            }
-        }).call(vmlshape.prototype);
+            this.$x = this.$y = this.$w = this.$h = 0;
+            this.shapemerge = shapemerge;
+            this.style = shapeMergeStyle;
+        }).call(shape.prototype);
         
         //-----------------------------------------------------------------------
         // Group
         //------------------------------------------------------------------------
 
         this.group = function(st, htmlroot){
-            if(!this.$cssInited){
+            if(!this.$vmlInited){
                 var css = "av\\:vmlframe {behavior: url(#default#VML);} av\\:fill {behavior: url(#default#VML);} av\\:stroke {behavior: url(#default#VML);} av\\:shape {behavior: url(#default#VML);} av\\:group {behavior: url(#default#VML);} av\\:path {behavior: url(#default#VML);}";
                 apf.importCssString(css);
-                this.$cssInited = true;
+                document.namespaces.add("av","urn:schemas-microsoft-com:vml");
+                this.$vmlInited = true;
             }
-            return new vmlgroup(st, null, htmlroot);
+            return new group(st, null, htmlroot);
         };
         
-        function vmlgroup(st, parent, htmlroot){
+        function group(st, parent, htmlroot){
             if(parent){
-                parent.$vmlgroups.push(this); // need this for repaint
-                parent.$vmlnodes.push(this); // need this for init-vml-join
-                this.$paint  = parent.$updatevml;// 
+                parent.$groups.push(this); // need this for repaint
+                parent.$insertnodes.push(this); // need this for init-vml-join
                 this.$uid    = parent.$guid++;
                 this.$parent = parent;
             } else {// we are rootnode.
+                this.$uid = 0;
+                this.$parent = this;
                 this.$htmlroot = htmlroot;
             }
-            
-            this.$vmlshapes	= []; // childvmlshapes
-            this.$vmlgroups    = []; // childvmlgroups
-            this.$updatevmlshape= {}; // all modified or animating paths indexed by UID
-            this.$updatevml  = {}; // all modified or animating vmlnode holding things
-            this.$pathjoin  = {};
-            
-            this.$vmlnodes    = []; // list of vml nodes in z-order
-            this.$cache     = {}; // style indexed node cache
-            this.$trash     = {}; // trashed nodes (usage = 0)
+            this.$groups = [], this.$dirtynodes  = {}, this.$dirtypaths  = {};
+            this.$insertnodes  = [], this.$cache = {}, this.$trash = {}; 
             if(st) this.style(st);
         };
 
         (function(){
-            this.$isvmlgroup   = true;
-            this.$guid      = 0; // child uid counter.
-            this.$vmlnode   = null;
-
-            this.pos = function(x,y,w,h){
-                this.$x = x, this.$y = y, this.$w = w, this.$h = h;
-                this.$paint[this.$uid] = this;
-            };
-            
-            this.$vmlvoid = {style:{}};
-            this.$c_trans = "if( x!=this.$_x )v.style.left = this.$_x = x;\nif( y!=this.$_y )v.style.top = this.$_y = y;\nif( (w<0?(w=0):w)!=this.$_w )v.style.width = this.$_w = w;\nif( (h<0?(h=0):h)!=this.$_h )v.style.height = this.$_h = h;\n";
-            this.$c_xyhw  = "var x = this.$x, y = this.$y, w = this.$w, h = this.$h;\n";
-            this.$c_z     =
-            this.$c_vxy   = "";
-            this.$c_vwh   = "if((_u=this.$_h,_t=this.$_w)!=this.$_vw||_u!=this.$_vh)v.coordsize=(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
-            this.$c_r     = "if((_t=this.$r%360)!=this.$_r)v.style.rotation = this.$_r = _t;\n";	 // codeblocks for dynamic code
-            this.$x = 0, this.$y = 0, this.$w = 1, this.$h = 1;
-            this.$_x = 0, this.$_y = 0, this.$_w = 1, this.$_h = 1;
-            this.$_vx = 0,this.$_vy = 0,this.$_vw = 1,this.$_vh = 1;
-            this.$_r  = 0;
-            this.$_z  = null;
-            this.$_v  = true;
-            
-            this.$nodeupdate = 0;
-            
-            this.$update = function(){
-            }
+            this.$guid = 1; 
+            this.$domnode = null;
+            this.$insert = false;
+                   
+            this.$x = this.$y = this.$w = this.$h = this.$r = 0;
+            this.$v = true;
             
             this.repaint = function(){
-                if(!this.$vmlnode){ // init the root node
-                    if(this.$parent) return false; // faulty setup
-                    var r = this.$htmlroot;
-                    r.insertAdjacentHTML("beforeend",this.toRoot());
-                    this.$vmlnode = r.lastChild.firstChild;
-                }
-                var d,h,i,j,k,l; 
-                if(this.$viastring){ // our parent created our children
-                    // update our vmlnode refs
-                    for(d = this.$vmlnodes,k = this.$vmlnode.childNodes,l=d.length,i=0;i<l;i++)
-                        d[i].$vmlnode = k[i];
-                    
-                    this.$viastring = 0;
-                    this.$nodeupdate = 0;
-                } else if(this.$nodeupdate){
-                    // dynamically update childranges
-                    for( i = 0, d = this.$vmlnodes, l = d.length;i<l;i++) if(!d[i].$vmlnode){
-                        // we now have to find the last one in our scan
-                        for(h = i;h<l && !d[h].$vmlnode;h++);
-                        
-                        if(i==0) // we need to insert at the head
-                            this.$vmlnode.insertAdjacentHTML("afterBegin",t=d.slice(i,h).join(''));
-                        else  // insert after a node
-                            d[i-1].$vmlnode.insertAdjacentHTML("afterEnd",t=d.slice(i,h).join(''));
-                            
-                        for(k = this.$vmlnode.childNodes,j = i;j<h;j++)
-                            d[j].$vmlnode = k[j];                        
-                        i = k;
-                    }
-                    this.$nodeupdate = 0;
-                }
-                if(this.$needupdate){
-                    this.$update();
-                    this.$needupdate = 0;
-                }
-                for(i in (d=this.$updatevmlshape)) // update all vmlshapes
+                var d,i,l,v; 
+                
+                for(i in (d=this.$dirtynodes))
                     d[i].$update();
 
-                for(i in (d=this.$updatevml))   // update all vmlnodes that are animating/need update
-                    d[i].$update();
-
-                for(i in (d=this.$pathjoin))   // update all vmlnodes that are animating/need update
+                for(i in (d=this.$dirtypaths))  
                     d[i].$join();
                 
-                
-                for(i = 0, d = this.$vmlgroups,l = d.length;i<l;i++)// repaint all childvmlgroups
-                    d[i].repaint();                    
+                for(i = 0, d = this.$groups,l = d.length;i<l;i++)
+                    d[i].repaint();
+                    
+                if(this.$insertnodes.length){
+                    v = this.$htmlroot?this.$domnode.firstChild:this.$domnode;
+                    for(i = 0, d = this.$insertnodes, l = d.length;i<l;i++)
+                        v.appendChild( d[i] );
+                    d.length = 0;
+                }
+
+                if(this.$insert){
+                    this.$insert = false;
+                    this.$htmlroot.appendChild(this.$domnode);
+                }
             }
+            
             var codecache = {};
+            this.$c_trans = "if( x!=this.$_x )v.style.left = this.$_x = x;\nif( y!=this.$_y )v.style.top = this.$_y = y;\nif( (w<0?(w=0):w)!=this.$_w )v.style.width = this.$_w = w;\nif( (h<0?(h=0):h)!=this.$_h )v.style.height = this.$_h = h;\n";
+            this.$c_xywh  = "var x = this.$x, y = this.$y, w = this.$w, h = this.$h;\n";
+            this.$c_vwh   = "if((_u=this.$_h,_t=this.$_w)!=this.$_vw||_u!=this.$_vh)v.coordsize=(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
+            this.$c_r     = "if((_t=this.$r%360)!=this.$_r)v.style.rotation = this.$_r = _t;\n";
+            this.$c_z     = "";
+            this.$c_vxy   = "";
+              
             this.style = function(st){
                 // run the stylediff
                 var ss = style_short, c = 0, i, t;
@@ -489,15 +427,13 @@ apf.vector =  new (function(){
                         this.$c_v = "if((_t=this.$v)!=this.$_v)v.style.display=(this.$_v=_t)?'block':'none';\n";
                     }
                     var code = [
-                                this.$htmlroot?
-                                    "function _f(t){var v = this.$vmlnode?this.$vmlnode.parentNode:this.$vmlvoid,_t,_u,_v;\n":
-                                    "function _f(t){var v = this.$vmlnode || this.$vmlvoid,_t,_u,_v;\n",
-                                this.$c_xyhw,
+                                "function _f(t){var v = this.$domnode,_t,_u,_v;\n",
+                                this.$c_xywh,
                                 this.$c_trans,
                                 this.$c_z,
                                 this.$c_v,
                                 this.$c_f,
-                                this.$htmlroot?"v = this.$vmlnode || this.$vmlvoid;\n":"",    
+                                this.$htmlroot?"v = this.$domnode.firstChild;\n":"",    
                                 this.$c_vxy,
                                 this.$c_vwh,
                                 this.$c_r,
@@ -505,86 +441,62 @@ apf.vector =  new (function(){
                     
                     this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
                     
-                    if(this.$vmlnode){ // if we have a vmlnode, put ourself on the update list
-                        if(this.$htmlroot)this.$needupdate = true;
-                        else this.$parent.$updatevml[this.$uid] = this;
+                    if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
+                        this.$parent.$dirtynodes[this.$uid] = this; 
                     }
-                    else {// else we are in init, update now to get our initial values set
-                        // optimization: for trivial nondynamic cases of xywh vwvh and r
-                        // just inline assign the _ versions here
+                    else {// init
+                        var vg,vd,s;
+                        if(this.$htmlroot){
+                            (s=(this.$domnode=vd=document.createElement("div")).style).position = 'relative'
+                            s.overflow = 'hidden';
+                            (s=(vg=document.createElement("av:group")).style).position = 'absolute';
+                            s.left = s.top = '0px';
+                            s.width = this.$w;
+                            s.height = this.$h;
+                            vd.appendChild(vg);
+                            this.$insert = true;
+                        } else {
+                            (this.$domnode=vg=document.createElement("av:group")).style.position = 'absolute';
+                            this.$parent.$insertnodes.push(vg);
+                        }
                         this.$update(0);
                     }
                     this.$isset = s, this.$isdyn = d;
                 }
             }
-            // the root node has a wrapping div for clipping
-            this.toRoot = function(){
-                this.$viastring = true;
-                var s = this.$isset;
-                return ["<xml:namespace ns='urn:schemas-microsoft-com:vml' prefix='av'/>",
-                        "<div style='position:relative;overflow:hidden;margin:0;padding:0;left:",
-                            this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;",
-                            s&0x8?"z-index:"+this.$_z+";":"",s&0x1?"background:"+this.$_f+";":"",
-                            "position:relative;display:",this.$_v?"block;":"none;","'>",
-                        "<av:group  coordorigin='",this.$_vx," ",this.$_vy,"' coordsize='",this.$_vw," ",this.$_vh,
-                        "' style='",this.$_r?"rotation:"+this.$_r:"",
-                       // ";left:",this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
-                         ";position:absolute;left:0px;top:0px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
-                        this.$vmlnodes.join(''), 
-                         "</av:group></div>"].join('');
-            }
-            
-            this.toString = function(){
-                this.$viastring = true;
-                var s = this.$isset;
-                return ["<av:group coordorigin='",this.$_vx," ",this.$_vy,"' coordsize='",this.$_vw," ",this.$_vh,
-                       "' style='",s&0x8?"z-index:"+this.$_z+";":"",s&0x1?"background-color:"+this.$_f+";":"",
-                            "position:absolute;display:",this.$_v?"block;":"none;",this.$_r?"rotation:"+this.$_r:"",
-                        ";left:",this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
-                            this.$vmlnodes.join(''), 
-                         "</av:group>"].join('');
-            }
 
-
-            //-----------------------------------------------------------------------
-            // Sub object factories
-            //------------------------------------------------------------------------
-
-            // factories 
             this.group = function(st){
-                return new vmlgroup(st,this);
+                return new group(st,this);
             };  
         
             function styleRect(m,s,d){
-                // someone needs us to update the rect shiz based on our modified stuff
-                var w, vm = this.$vmlmerge;
+                var w, vm = this.$shapemerge;
                 vm.$path[this.$pathslot] = this.$_v?
-                    ["m",~~this.$x,~~this.$y,
-                        "r",w=~~this.$w,0,0,~~this.$h,
-                        -w,0,"xe "].join(' ') : "";
-                this.$parent.$pathjoin[vm.$uid] = vm;
+                    ["M",~~this.$x,~~this.$y,
+                        "R",w=~~this.$w,0,0,~~this.$h,
+                        -w,0,"XE "].join(' ') : "";
+                this.$parent.$dirtypaths[vm.$uid] = vm;
             }
         
             this.rect = function(st){
-                var t = new vmlshape(st, this, styleRect);
+                var t = new shape(st, this, styleRect);
                 return t;
             }
             
             function styleShape(m,s,d){
-                // someone needs us to update the rect shiz based on our modified stuff
-                var w, vm = this.$vmlmerge, ps, pt, p;
-                if( (pt = vm.$path)[ps = this.$pathslot] !=  (p = this.$_v?this.$p:"")){
-                    pt[ps] = p;
-                    this.$parent.$pathjoin[vm.$uid] = vm;
+                var t;
+                if((t=this.$_v?this.$p:"")!=this.$_p){
+                    this.$shapemerge.$path[this.$pathslot] = this.$_p = t;
+                    this.$parent.$dirtypaths[sm.$uid] = sm;
                 }
             }            
             
             this.shape = function(st){
-                var t = new vmlshape(st, this, styleShape);
+                var t = new shape(st, this, styleShape);
                 return t;
             }
             
-        }).call(vmlgroup.prototype);
+        }).call(group.prototype);
                 
     })();
     
@@ -595,275 +507,157 @@ apf.vector =  new (function(){
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
-        
+    
     this.svg = new (function(){
-        function svgmerge(parent, styleid){
+        var svgns = "http://www.w3.org/2000/svg";
+        
+        function shapemerge(parent, styleid){
             this.$styleid = styleid;
             this.$path = [];
             this.$parent = parent;
             this.$uid = parent.$guid++;
-            parent.$svgnodes.push(this);// add ourself
-            parent.$nodeupdate = 1;
         };
 
         (function(){
-            this.$issvgmerge = true;
-
-            this.$svgnode = null;
-            this.$svgvoid = {style:{},firstChild:{},lastChild:{}};
-            this.$uid       = 0; // prototype anim UID counter
-
-            this.$nodes = 
-            this.$free = 
-            this.$_f  = 
-            this.$_s  = 
-            this.$_fo  = 
-            this.$_so  = 0;
-            this.$_z   = 0;
+            this.$nodes = this.$free = this.$_f  = this.$_s  = 
+            this.$_z   = this.$uid = this.$domnode = 0;
+            this.$_fo  =  this.$_so = 1;
             var codecache = {};
-
+            
             this.$styleVisual = function(m,s,d){
                 if(m&0x1)
-                    this.$c_f  = "if( (_t = ("+(d&0x1?this.$f:"this.$f")+"))!=this.$_f)this.$_f = _t;\n";
+                    this.$c_f  = "if( (_t = ("+(d&0x1?this.$f:"this.$f")+"))!=this.$_f)v.setAttribute('fill', this.$_f = _t);\n";
                 if(m&0x2)// stroke
-                    this.$c_s  = "if( (_t = ("+(d&0x2?this.$s:"this.$s")+"))!=this.$_s)this.$_s = _t;\n";
-                if(m&0x8)// z-index
-                    this.$c_z  = "if((_t=("+(d&0x8?this.$z:"this.$z")+"))!=this.$_z)this.$_z = _t;\n";
+                    this.$c_s  = "if( (_t = ("+(d&0x2?this.$s:"this.$s")+"))!=this.$_s)v.setAttribute('stroke', this.$_s = _t);\n";
+//                if(m&0x8)// z-index
+ //                   this.$c_z  = "if((_t=("+(d&0x8?this.$z:"this.$z")+"))!=this.$_z)v.style.zIndex = this.$_z = _t;\n";
                 if(m&0x80)// stroke weight
-                    this.$c_sw = "if( (_t = ("+(d&0x80?this.$sw:"this.$sw")+"))!=this.$_sw)this.$_sw = _t;\n";
+                    this.$c_sw = "if( (_t = ("+(d&0x80?this.$sw:"this.$sw")+"))!=this.$_sw)v.setAttribute('stroke-width', this.$_sw = _t);\n";
                 
                 if( m&0x10 || (this.$isset^s)&0x60 ){ //o modified or fo/so had they set status changed
                     if(!(_t=s&0x60)) // fo/so both not set
-                        this.$c_fo = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_fo)this.$_fo = _t;\n",
+                        this.$c_fo = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_fo)v.setAttribute('fill-opacity',this.$_fo = _t), v.setAttribute('stroke-opacity',_t);\n",
                         this.$c_so = "";
                     else if(_t == 0x20)// fo set, so assign o to so
-                        this.$c_so = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_so)this.$_so =_t;\n";                    
+                        this.$c_so = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_so)v.setAttribute('stroke-opacity',this.$_so =_t);\n";                    
                     else if(_t == 0x40)// so set so assign o to fo
-                        this.$c_fo = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_fo)this.$_fo =_t;\n";
+                        this.$c_fo = "if( (_t = ("+(d&0x10?this.$o:"this.$o")+"))!=this.$_fo)v.setAttribute('fill-opacity',this.$_fo =_t);\n";
                 }
                 if( m&s&0x20) // fill opacity got set
-                    this.$c_fo = "if( (_t = ("+(d&0x20?this.$fo:"this.$fo")+"))!=this.$_fo)this.$_fo =_t;\n";
+                    this.$c_fo = "if( (_t = ("+(d&0x20?this.$fo:"this.$fo")+"))!=this.$_fo)v.setAttribute('fill-opacity',this.$_fo =_t);\n";
                 if( m&s&0x40) // stroke opacity got set
-                    this.$c_so = "if( (_t = ("+(d&0x40?this.$so:"this.$so")+"))!=this.$_so)this.$_so =_t;\n";
+                    this.$c_so = "if( (_t = ("+(d&0x40?this.$so:"this.$so")+"))!=this.$_so)v.setAttribute('stroke-opacity',this.$_so =_t);\n";
                     
                 var code = [
-                    "function _f(t){var v = this.$svgnode || this.$svgvoid;\n",
-                    this.$c_fo,
-                    this.$c_so,
-                    this.$c_s,
-                    this.$c_sw,
-                    this.$c_f,
-                    this.$c_z,
+                    "function _f(t){var v = this.$domnode;\n",
+                        this.$c_fo,
+                        this.$c_so,
+                        this.$c_s,
+                        this.$c_sw,
+                        this.$c_f,
+                        this.$c_z,
                     "}"
                 ].join('');
                 this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
-                if(this.$svgnode){ // if we have a svgnode, put ourself on the update list
-                    this.$parent.$updatesvg[this.$uid] = this;
-                }else {// else we are in init, update now to get our initial values set
-                    // optimization: for trivial nondynamic cases of f,s,o,fo and inline assign here
+                
+                if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
+                    this.$parent.$dirtynodes[this.$uid] = this;
+                } else {
+                    var vs = (this.$domnode=document.createElementNS(svgns,"path"));
+                    this.$parent.$insertnodes.push(vs);
                     this.$update(0);
                 }
             };
                         
             this.$join = function(){
-                if(!this.$svgnode){
-                }
-                else{
-                    this.$svgnode.path = this.$path.join('')||" ";
-                    delete this.$parent.$pathjoin[this.$uid];
+                if(this.$domnode){
+                    this.$domnode.setAttribute('d', this.$path.join('')||" ");
+                    delete this.$parent.$dirtypaths[this.$uid];
                 }
             }
-            
-            this.toString = function(){
-                var s = this.$isset;
-                var t = ["<svg:path path='",this.$path.join(''),"' style='position:absolute;left:0;top:0;width:100%;height:100%;",
-                            s&0x1?"fill:"+this.$_f:"", s&0x2?";stroke:"+this.$_s:"",";stroke-weight:",s&0x80?this.$_sw:1,
-                                ";fill-opacity:",s&0x30?this.$_fo:1,";stroke-opacity:",s&0x40?this.$_so:(s&0x30?this.$_fo:1),";' />"].join('');
-                               
-                return t;             
-            };        
-        }).call(svgmerge.prototype);
+        }).call(shapemerge.prototype);
 
         //------------------------------------------------------------------------
-        // svgshape
+        // shape
         //------------------------------------------------------------------------
 
-        function svgshape(st, parent, styleShape){
+        function shape(st, parent, styleShape){
             this.$parent = parent;
-            parent.$svgshapes.push(this);
             this.$styleShape = styleShape;
             this.$uid = parent.$uid++;
             this.style(st);
         };
         var i = 0;
         (function(){
-            this.$issvgshape = true;
             this.$_v = true;
-            this.$x = 0, this.$y = 0, this.$w = 0, this.$h = 0;            
-            // lets create the style function based on a code-gen            
-            this.style = function(st){
-                var c = 0, m, s, d, t, i, j, k, 
-                    isnew,styleid, parent = this.$parent, ss = style_short, oldpath; 
-                
-                for(i in st)if(i.length>2){if(t=ss[i])st[i]=st[i],c|=ss[i];}else c|=ss[i];            
-
-                if(c&0xff){ // we have a visual style change
-                    styleid = [st.f,st.s,st.o,st.fo,st.so,st.sw,st.z,st.a].join(',');
-                    if(!(vm = this.$svgshape) || vm.$styleid!=styleid){
-                        if(vm){ // drop our current node
-                            oldpath = vm.$path[t = this.$pathslot];
-                            vm.$path[t = this.$pathslot] = null;
-                            if(--vm.$nodes == 0){ // trash it
-                                delete parent.$cache[vm.$styleid];
-                                parent.$trash[vm.$styleid] = vm;
-                                parent.$pathjoin[vm.$uid] = vm;
-                            }
-                            if(vm.$free>t)vm.$free = t;
-                        }
-                        if(!(vm = parent.$cache[styleid])){   // no cache available
-                            if(vm = parent.$trash[styleid]){ // found one in the trash
-                                delete parent.$trash[styleid];
-                            } else {
-                                i = null;
-                                for(i in parent.$trash)break; // find one in trash
-                                if(i){
-                                    vm = parent.$trash[i];
-                                    delete parent.$trash[i];
-                                } else {
-                                    isnew = 1;
-                                    vm = new svgmerge(parent,styleid);
-                                }
-                            }
-                            parent.$cache[vm.$styleid=styleid] = vm;
-                        };
-                        vm.$nodes++;
-                        for(i = vm.$free,j = vm.$path, k = j.length;i<k && j[i]!=null;i++);
-                        vm.$free = (this.$pathslot = i)+1;
-                        if(oldpath){ // old svgshape
-                            vm.$path[i] = oldpath;
-                            if(!isnew)parent.$pathjoin[vm.$uid] = vm;
-                        }
-                        this.$svgmerge = vm
-                    }
-                    m = diffVisual(vm, st, vm.$isset, vm.$isdyn, c);
-                    if(m)vm.$styleVisual(m, sd_s, sd_d);
-                    vm.$isset = sd_s, vm.$isdyn = sd_d;  
-                }
-                if(c&0x7fffff00){ // we have path style changes
-                    this.$styleShape(diffShape(this,st,this.$isset, this.$isdyn, c), sd_s, sd_d);
-                    this.$isset = sd_s, this.$isdyn = sd_d;
-                }
-            }
-        }).call(svgshape.prototype);
+            this.$x = this.$y = this.$w = this.$h = 0;
+            this.shapemerge = shapemerge;
+            this.style = shapeMergeStyle;
+        }).call(shape.prototype);
         
         //-----------------------------------------------------------------------
         // Group
         //------------------------------------------------------------------------
 
         this.group = function(st, htmlroot){
-            return new svggroup(st, null, htmlroot);
+            return new group(st, null, htmlroot);
         };
         
-        function svggroup(st, parent, htmlroot){
+        function group(st, parent, htmlroot){
             if(parent){
-                parent.$svggroups.push(this); // need this for repaint
-                parent.$svgnodes.push(this); // need this for init-svg-join
-                this.$paint  = parent.$updatesvg;// 
+                parent.$groups.push(this); // need this for repaint
+                parent.$insertnodes.push(this); // need this for init-vml-join
                 this.$uid    = parent.$guid++;
                 this.$parent = parent;
             } else {// we are rootnode.
+                this.$uid = 0;
+                this.$parent = this;
                 this.$htmlroot = htmlroot;
-                
             }
-            
-            this.$svgshapes	= []; // childsvgshapes
-            this.$svggroups    = []; // childsvggroups
-            this.$updatesvgshape= {}; // all modified or animating paths indexed by UID
-            this.$updatesvg  = {}; // all modified or animating svgnode holding things
-            this.$pathjoin  = {};
-            
-            this.$svgnodes    = []; // list of svg nodes in z-order
-            this.$cache     = {}; // style indexed node cache
-            this.$trash     = {}; // trashed nodes (usage = 0)
-
+            this.$groups = [], this.$dirtynodes  = {}, this.$dirtypaths  = {};
+            this.$insertnodes  = [], this.$cache = {}, this.$trash = {}; 
             if(st) this.style(st);
         };
 
         (function(){
-            this.$issvggroup   = true;
-            this.$guid      = 0; // child uid counter.
-            this.$svgnode   = null;
-
-            this.pos = function(x,y,w,h){
-                this.$x = x, this.$y = y, this.$w = w, this.$h = h;
-                this.$paint[this.$uid] = this;
-            };
-            
-            this.$svgvoid = {style:{}};
-            this.$c_trans = "if( x!=this.$_x )this.$_x = x;\nif( y!=this.$_y )this.$_y = y;\nif( (w<0?(w=0):w)!=this.$_w )this.$_w = w;\nif( (h<0?(h=0):h)!=this.$_h )this.$_h = h;\n";
-            this.$c_xyhw  = "var x = this.$x, y = this.$, w = this.$h, h = this.$w;\n";
-            this.$c_z     =
-            this.$c_vxy   = "";
-            this.$c_vwh   = "if((_t=this.$_w+' '+this.$_h)!=this.$_vwh) this.$_vwh = _t;\n";
-            this.$c_r     = "if((_t=this.$r%360)!=this.$_r)this.$_r = _t;\n";	 // codeblocks for dynamic code
-            this.$_x = 0, this.$_y = 0, this.$_w = 1, this.$_h = 1;
-            this.$_vx = 0,this.$_vy = 0,this.$_vw = 1,this.$_vh = 1;
-            this.$_r  = 0;
-            this.$_z  = null;
-            this.$_v  = true;
-            
-            this.$nodeupdate = 0;
-            
-            this.$update = function(){
-            }
+            this.$guid = 1; 
+            this.$domnode = null;
+            this.$insert = false;
+                   
+            this.$x = this.$y = this.$w = this.$h = this.$r = 0;
+            this.$v = true;
             
             this.repaint = function(){
-                if(!this.$svgnode){ // init the root node
-                    if(this.$parent) return false; // faulty setup
-                    var r = this.$htmlroot;
-                    r.insertAdjacentHTML("beforeend",this.toRoot());
-                    this.$svgnode = r.lastChild;
-                }
-                var d,h,i,j,k,l; 
-                if(this.$viastring){ // our parent created our children
-                    // update our svgnode refs
-                    for(d = this.$svgnodes,k = this.$svgnode.childNodes,l=d.length,i=0;i<l;i++)
-                        d[i].$svgnode = k[i];
-                    
-                    this.$viastring = 0;
-                    this.$nodeupdate = 0;
-                } else if(this.$nodeupdate){
-                    // dynamically update childranges
-                    for( i = 0, d = this.$svgnodes, l = d.length;i<l;i++) if(!d[i].$svgnode){
-                        // we now have to find the last one in our scan
-                        for(h = i;h<l && !d[h].$svgnode;h++);
-                        
-                        if(i==0) // we need to insert at the head
-                            this.$svgnode.insertAdjacentHTML("afterBegin",t=d.slice(i,h).join(''));
-                        else  // insert after a node
-                            d[i-1].$svgnode.insertAdjacentHTML("afterEnd",t=d.slice(i,h).join(''));
-                            
-                        for(k = this.$svgnode.childNodes,j = i;j<h;j++)
-                            d[j].$svgnode = k[j];                        
-                        i = k;
-                    }
-                    this.$nodeupdate = 0;
-                }
-               
-                for(i in (d=this.$updatesvgmerge)) // update all svgshapes
+                var d,i,l,v; 
+                
+                for(i in (d=this.$dirtynodes))
                     d[i].$update();
 
-                for(i in (d=this.$updatesvg))   // update all svgnodes that are animating/need update
-                    d[i].$update();
-
-                for(i in (d=this.$pathjoin))   // update all svgnodes that are animating/need update
+                for(i in (d=this.$dirtypaths))
                     d[i].$join();
                 
-                
-                for(i = 0, d = this.$svggroups,l = d.length;i<l;i++)// repaint all childsvggroups
-                    d[i].repaint();                    
+                for(i = 0, d = this.$groups,l = d.length;i<l;i++)
+                    d[i].repaint();
+                    
+                if(this.$insertnodes.length){
+                    v = this.$domnode;
+                    for(i = 0, d = this.$insertnodes, l = d.length;i<l;i++)
+                        v.appendChild( d[i] );
+                    d.length = 0;
+                }
+
+                if(this.$insert){
+                    this.$insert = false;
+                    this.$htmlroot.appendChild(this.$domnode);
+                }
             }
+            
             var codecache = {};
+            this.$c_trans = "if( x!=this.$_x )v.style.left = this.$_x = x;\nif( y!=this.$_y )v.style.top = this.$_y = y;\nif( (w<0?(w=0):w)!=this.$_w )v.setAttribute('width',this.$_w = w);\nif( (h<0?(h=0):h)!=this.$_h )v.setAttribute('height', this.$_h = h);\n";
+            this.$c_xywh  = "var x = this.$x, y = this.$y, w = this.$w, h = this.$h;\n";
+            this.$c_r     = "if((_t=this.$r%360)!=this.$_r)this.$_r = _t;\n";
+            this.$c_z     = "";
+
             this.style = function(st){
                 // run the stylediff
                 var ss = style_short, c = 0, i, t;
@@ -873,10 +667,10 @@ apf.vector =  new (function(){
 
                 if(m){
                     if(m&0x8)// z-index
-                        this.$c_z  = "if((_t=("+(d&0x8?this.$z:"this.$z")+"))!=this.$_z) this.$_z = _t;\n";
+                        this.$c_z  = "if((_t=("+(d&0x8?this.$z:"this.$z")+"))!=this.$_z)v.style.zIndex = this.$_z = _t;\n";
 
-                    if(m&0x1)// fill
-                        this.$c_f  = "if((_t=("+(d&0x8?this.$f:"this.$f")+"))!=this.$_f) (this.$_f = _t)==null?'transparent':_t;\n";
+                 if(m&0x1)// fill
+                      this.$c_f  = "if((_t=("+(d&0x8?this.$f:"this.$f")+"))!=this.$_f)v.style.backgroundColor = (this.$_f = _t)==null?'transparent':_t;\n";
                         
                     // any of our xywh values modified? ifso any dynamic? no?
                     if( m&0xf000 ){
@@ -894,124 +688,93 @@ apf.vector =  new (function(){
                         if(s&0x3f0000){ // any of our transform values set?
                             if( (d|this.$isdyn)&0x3f0000 ) // we only need to recompute this thing when dynamics modified
                                 this.$c_trans = [
-                                    "if((_t=",(s&0x110000)==0x110000?"x*(_u="+(d&0x10000?this.$sx:"this.$sx")+")+(1-_u)*(x+("+(d&0x100000?this.$cx:"this.$cx")+")*w)":"x",s&0x40000?"+("+(d&0x40000?this.$ox:"this.$ox")+")":"",")!= this.$_x )this.$_x=_t;\n",
-                                    "if((_t=",(s&0x220000)==0x220000?"y*(_v="+(d&0x20000?this.$sy:"this.$sy")+")+(1-_v)*(y+("+(d&0x200000?this.$cy:"this.$cy")+")*h)":"y",s&0x80000?"+("+(d&0x80000?this.$oy:"this.$oy")+")":"",")!= this.$_y )this.$_y=_t;\n",
-                                    "if(((_t=",s&0x10000?(s&0x100000?"w*_u":"w*("+(d&0x10000?this.$sx:"this.$sx")+")"):"w",")<0?0:_t)!=this.$_w)this.$_w=_t;\n",
-                                    "if(((_t=",s&0x20000?(s&0x200000?"h*_v":"h*("+(d&0x20000?this.$sy:"this.$sy")+")"):"h",")<0?0:_t)!=this.$_h)this.$_h=_t;\n"
+                                    "if((_t=",(s&0x110000)==0x110000?"x*(_u="+(d&0x10000?this.$sx:"this.$sx")+")+(1-_u)*(x+("+(d&0x100000?this.$cx:"this.$cx")+")*w)":"x",s&0x40000?"+("+(d&0x40000?this.$ox:"this.$ox")+")":"",")!= this.$_x )v.setAttribute('x',this.$_x=_t);\n",
+                                    "if((_t=",(s&0x220000)==0x220000?"y*(_v="+(d&0x20000?this.$sy:"this.$sy")+")+(1-_v)*(y+("+(d&0x200000?this.$cy:"this.$cy")+")*h)":"y",s&0x80000?"+("+(d&0x80000?this.$oy:"this.$oy")+")":"",")!= this.$_y )v.setAttribute('y',this.$_y=_t);\n",
+                                    "if(((_t=",s&0x10000?(s&0x100000?"w*_u":"w*("+(d&0x10000?this.$sx:"this.$sx")+")"):"w",")<0?0:_t)!=this.$_w)v.setAttribute('width',this.$_w=_t);\n",
+                                    "if(((_t=",s&0x20000?(s&0x200000?"h*_v":"h*("+(d&0x20000?this.$sy:"this.$sy")+")"):"h",")<0?0:_t)!=this.$_h)v.setAttribute('height',this.$_h=_t);\n"
                                 ].join('');
                         } else   
                             delete this.$c_trans; // default transform
                     }
-                    
+                    /*
                     if(m&0x300) // check if vx or vy is modified
                         this.$c_vxy = "if((_u=("+(d&0x200?this.$vy:"this.$vy")+"),_t=("+(d&0x100?this.$vx:"this.$vx")+"))!=this.$_vx||_u!=this.$vy)(this.$vx=_t)+' '+(this.$_vy=_u);\n";
                     
                     if(!(s&0xc00) && (m&0xc000)) // when we dont have vwh set but we do have wh modified:
-                        this.$c_vwh = "if((_u=this.$_h,_t=this.$_w)!=this.$_vw||_u!=this.$_vh)(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
+                        this.$c_vwh = "if((_u=this.$_h,_t=this.$_w)!=this.$_vw||_u!=this.$_vh)v.viewBox='0 0'+(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
                     else if(m&0xc00)  // vw or vh is modified
-                        this.$c_vwh = "if((_u=("+(d&0x800?this.$vh:"this.$vh")+"),_t=("+(d&0x400?this.$vw:"this.$vw")+"))!=this.$_vw||_u!=this.$_vh)(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
+                        this.$c_vwh = "if((_u=("+(d&0x800?this.$vh:"this.$vh")+"),_t=("+(d&0x400?this.$vw:"this.$vw")+"))!=this.$_vw||_u!=this.$_vh)v.viewBox = '0 0'+(this.$_vw=_t)+' '+(this.$_vh=_u);\n";
                     
                     if(m&0x400000)// rotate modfied
-                        this.$c_r = "if((_t=("+(d&0x400000?this.$r:"this.$r")+")%360)!=this.$_r)this.$_r=_t;\n";
-
+                        this.$c_r = "if((_t=("+(d&0x400000?this.$r:"this.$r")+")%360)!=this.$_r)v.style.rotation=this.$_r=_t;\n";
+*/
                     if(m&0x20000000)// z-index modfied
-                        this.$c_z = "if((_t=this.$z)!=this.$_z)this.$_z=_t;\n";
+                        this.$c_z = "if((_t=this.$z)!=this.$_z)v.style.zIndex=this.$_z=_t;\n";
                         
-                    var code = ["function _f(t){var v = this.$svgnode || this.$svgvoid,_t,_u,_v;\n",
-                                this.$c_xyhw,
-                                this.$c_trans,
-                                this.$c_vxy,
-                                this.$c_vwh,
-                                this.$c_r,
-                                this.$c_z,
-                                "}"].join('');     
-                    
-                    this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
-                    
-                    if(this.$svgnode){ // if we have a svgnode, put ourself on the update list
-                        this.$parent.$updatesvg[this.$uid] = this;
+                    if(m&0x10000000){//visible modfied
+                        this.$c_v = "if((_t=this.$v)!=this.$_v)v.style.display=(this.$_v=_t)?'block':'none';\n";
                     }
-                    else {// else we are in init, update now to get our initial values set
-                        // optimization: for trivial nondynamic cases of xywh vwvh and r
-                        // just inline assign the _ versions here
+                    var code = [
+                        "function _f(t){var v = this.$domnode,_t,_u,_v;\n",
+                            this.$c_xywh,
+                            this.$c_trans,
+                            this.$c_z,
+                            this.$c_v,
+                            this.$c_f,
+                            this.$c_vxyw,
+                            this.$c_r,
+                        "}"
+                    ].join('');     
+                    this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
+                    if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
+                        this.$parent.$dirtynodes[this.$uid] = this;
+                    }
+                    else {// init
+                        var vg = this.$domnode = document.createElementNS(svgns,"svg");
+                        if(this.$htmlroot)
+                            this.$insert = true;
+                        else 
+                            this.$parent.$insertnodes.push(vg);
                         this.$update(0);
                     }
                     this.$isset = s, this.$isdyn = d;
                 }
             }
-            // the root node has a z-index
-            this.toRoot = function(){
-                this.$viastring = true;
-                var s = this.$isset;
-                /*return ["<av:svggroup coordorigin='",
-                        this.$_vx," ",this.$_vy,"' coordsize='",this.$_vw," ",this.$_vh,
-                        "' style='",s&0x8?"z-index:"+this.$_z+";":"",s&0x1?"background-color:"+this.$_f+";":"",
-                            "position:relative;",this.$_r?"rotation:"+this.$_r:"",
-                        ";left:",this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
-                            this.$svgnodes.join(''), 
-                         "</av:svggroup>"].join('');*/
-                return [
-                "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='300px' height='300px' viewBox='0 0 100 100' ",
-                    "style='width:300px;height:100px;position:absolute;border:1px solid blue;'> ",
-                    "<rect x='0' y='0' width='100' height='100' style='fill:red'/>",
-                        //  this.$svgnodes.join(''), 
-                        "</svg>"].join('');                         
-            }        
-            
-            this.toString = function(){
-                this.$viastring = true;
-                return ["<svg:g>",
-                           this.$svgnodes.join(''), 
-                        "</svg:g>"].join('');               
-               /* return ["<av:svggroup coordorigin='",this.$_vx," ",this.$_vy,"' coordsize='",this.$_vw," ",this.$_vh,
-                       "' style='",s&0x8?"z-index:"+this.$_z+";":"",s&0x1?"background-color:"+this.$_f+";":"",
-                            "position:absolute;",this.$_r?"rotation:"+this.$_r:"",
-                        ";left:",this.$_x,"px;top:",this.$_y,"px;width:",this.$_w,"px;height:",this.$_h,"px;'>",
-                            this.$svgnodes.join(''), 
-                         "</av:svggroup>"].join('');*/
-            }        
 
-            //-----------------------------------------------------------------------
-            // Sub object factories
-            //------------------------------------------------------------------------
-
-            // factories 
             this.group = function(st){
-                return new svggroup(st,this);
+                return new group(st,this);
             };  
         
             function styleRect(m,s,d){
-                // someone needs us to update the rect shiz based on our modified stuff
-                var w, vm = this.$svgmerge;
-                vm.$path[this.$pathslot] =  
-                    this.$_v?
+                var w, vm = this.$shapemerge;
+                vm.$path[this.$pathslot] = this.$_v?
                     ["M",~~this.$x,~~this.$y,
-                        "R",w=~~this.$w,0,0,~~this.$h,
-                        -w,0,"Z"].join(' ') : "";
-                this.$parent.$pathjoin[vm.$uid] = vm;
+                        "l",w=~~this.$w,0,0,~~this.$h,
+                        -w,0,"Z "].join(' ') : "";
+                this.$parent.$dirtypaths[vm.$uid] = vm;
             }
         
             this.rect = function(st){
-                var t = new svgshape(st, this, styleRect);
+                var t = new shape(st, this, styleRect);
                 return t;
             }
             
             function styleShape(m,s,d){
-                // someone needs us to update the rect shiz based on our modified stuff
-                var w, vm = this.$svgshape, ps, pt, p;
-                if((pt = vm.$path)[ps = this.$pathslot] !=  (p=this.$_v?this.$p:"")){
-                    pt[ps] = p;
-                    this.$parent.$pathjoin[vm.$uid] = vm;
+                var t, sm = this.$shapemerge;
+                if((t=this.$_v?this.$p:"")!=this.$_p){
+                    sm.$path[this.$pathslot] = this.$_p = t;
+                    this.$parent.$dirtypaths[sm.$uid] = sm;
                 }
             }            
             
             this.shape = function(st){
-                var t = new svgshape(st, this, styleShape);
+                var t = new shape(st, this, styleShape);
                 return t;
             }
             
-        }).call(svggroup.prototype);
-    })();    
+        }).call(group.prototype);
+                
+    })();
  });
 
  //#endif 
