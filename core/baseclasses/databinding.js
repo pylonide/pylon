@@ -1232,11 +1232,6 @@ apf.DataBinding = function(){
         if (!this.model && this.$setClearMessage && !this.value)
             this.$setClearMessage(this["empty-message"], "empty");
         
-        /*var hasInitSb = apf.AmlParser.sbInit[this.$uniqueId] ? true : false;
-        if ((!hasInitSb || !hasModel) && this.$setClearMessage
-          && (!this.$loadqueue && !this.xmlRoot && (this.hasFeature(apf.__MULTISELECT__)
-          || this.ref || hasInitSb)))*/
-
         this.$amlLoaded = true; //@todo this can probably be removed
         this.$checkLoadQueue();
     });
