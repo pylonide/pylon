@@ -95,6 +95,7 @@ apf.browser = function(struct, tagName){
             this.$browser.src = "about:blank";
         }
     };
+    this.$propHandlers["border"] = apf.Presentation.prototype.$propHandlers["border"];
 
     this.getValue = function() {
         return this.value || this.src;
@@ -177,6 +178,7 @@ apf.browser = function(struct, tagName){
             this.$browser              = this.$ext;
             //this.$ext.style.border = "2px inset white";
         }
+        this.$ext.className = "apfbrowser"
         
         var _self = this;
         apf.addListener(this.$browser, "load", function(){
@@ -190,9 +192,6 @@ apf.browser = function(struct, tagName){
         //this.$browser = this.$ext.contentWindow.document.body;
         this.$ext.host = this;
         //this.$browser.host = this;
-        
-        //@todo remove this
-        this.$ext.style.border = "1px solid #c3c3c3";
     };
 }).call(apf.browser.prototype = new apf.GuiElement());
 

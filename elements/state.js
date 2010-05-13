@@ -226,7 +226,7 @@ apf.state = function(struct, tagName){
                 apf.StateServer.groups[this.group].pState.dispatchEvent("change");
             }
 
-            this.dispatchEvent("change");
+            this.dispatchEvent("activate");
 
             //#ifdef __DEBUG
             apf.console.info("Setting state '" + this.name + "' to ACTIVE");
@@ -236,7 +236,7 @@ apf.state = function(struct, tagName){
         //Deactivate State
         else {
             this.setProperty("active", false);
-            this.dispatchEvent("change");
+            this.dispatchEvent("deactivate");
 
             //#ifdef __DEBUG
             apf.console.info("Setting state '" + this.name + "' to INACTIVE");

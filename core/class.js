@@ -469,7 +469,7 @@ apf.Class.prototype = new (function(){
         if (exclNr == 2 || fParsed.xpaths.length && exclNr != 1) {
             if (!this.hasFeature(apf.__DATABINDING__))
                 this.implement(apf.StandardBinding);
-            
+
             this.$addAttrBind(prop, fParsed, pValue);
         }
         //#endif

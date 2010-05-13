@@ -343,7 +343,7 @@ apf.ContentEditable2 = function() {
                   || curfoc && lsel.indexOf(curfoc) > -1) {
                     vsel.show();
                 }
-                else if (curfoc) {
+                else if (curfoc && curfoc.editable) {
                     //@todo check for editable
                     this.ownerDocument.getSelection().$selectList([curfoc]);
                 }

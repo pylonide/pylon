@@ -240,13 +240,16 @@ apf.ContentEditable2.commands = (function(){
             txt.unselectable = "Off";
     
             //this.$txt.focus();
-            setTimeout(function(){
+            var f = function(){
                 try {
                     txt.focus();
                     txt.select();
                 }
                 catch(e) {}
-            });
+            };
+            if (apf.isIE) f() 
+            else setTimeout(f);
+                
             this.renaming = true;
         },
         
@@ -327,7 +330,7 @@ apf.ContentEditable2.commands = (function(){
     	}
     	else if (value && value.mode == "connect") {
     	    mode = "connect";
-    	    this.$getVisualConnect().activate(value.event);
+    	    //this.$getVisualConnect().activate(value.event);
     	}
     	else if (value && value.mode == "add") {
             mode = "add";
@@ -371,7 +374,7 @@ apf.ContentEditable2.commands = (function(){
     	else {
     	    mode = value;
     	    this.$getSelectRect().deactivate();
-            this.$getVisualConnect().deactivate();
+            //this.$getVisualConnect().deactivate();
     	}
     };
     
@@ -532,8 +535,9 @@ apf.ContentEditable2.commands = (function(){
             docsel.removeAllRanges();
             
             //Copy nodes and add to selection
+            var _self = this;
             content.each(function(item){
-                docsel.addRange(new apf.AmlRange(this)).selectNode(
+                docsel.addRange(new apf.AmlRange(_self)).selectNode(
                     pNode.appendChild(item.cloneNode(true)));
             });
         }

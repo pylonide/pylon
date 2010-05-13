@@ -325,7 +325,7 @@ apf.Presentation = function(){
 
     function setLeechedSkin(e){
         if (!this.$amlLoaded || e && (e.$isMoveWithinParent 
-          || e.currentTarget != this))
+          || e.currentTarget != this || !e.$oldParent))
             return;
 
         this.$setInheritedAttribute(this, "skinset");

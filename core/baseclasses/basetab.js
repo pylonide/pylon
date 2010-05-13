@@ -217,7 +217,7 @@ apf.BaseTab = function(){
         //If page is given as first argument, let's use its position
         if (next.tagName) {
             next = info.position;
-            this.activepage = page.name || next;
+            this.activepage = page.type || page.name || next;
         }
 
         //Call the onbeforeswitch event;
@@ -317,10 +317,12 @@ apf.BaseTab = function(){
      * @param {String} [name]    the name of the page which is can be referenced by.
      * @return {page} the created page element.
      */
-    this.add = function(caption, name, jml){
-        var page = apf.document.createElement(jml || "page");
+    this.add = function(caption, name, type){
+        var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
         if (name)
             page.setAttribute("id", name);
+        if (type)
+            page.setAttribute("type", type);
         if (caption)
             page.setAttribute("caption", caption);
         this.appendChild(page);

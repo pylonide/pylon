@@ -1477,7 +1477,7 @@ apf.layout = {
 
         var els = oHtml.getElementsByTagName("*");
         for (var i = 0, l = els.length; i < l; i++) {
-            if (els[i].onresize)
+            if (els[i] && els[i].onresize)
                 els[i].onresize();
         }
     },

@@ -26,7 +26,7 @@
  */
 apf.AmlRange = function(doc){
     this.$init();
-    
+
     this.$ownerDocument = 
     this.startContainer = 
     this.endContainer   = doc || apf.document;

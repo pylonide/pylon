@@ -135,14 +135,16 @@ apf.Anchoring = function(){
         this.removeEventListener("DOMNodeRemoved", remove); 
         this.removeEventListener("DOMNodeInserted", reparent); 
 
-        this.$ext.style.left   = 
-        this.$ext.style.right  = 
-        this.$ext.style.top    = 
-        this.$ext.style.bottom = 
-        this.$ext.style.width  = 
-        this.$ext.style.height = 
-        this.$ext.style.position = "";
-
+        if (this.$ext) {
+            this.$ext.style.left   = 
+            this.$ext.style.right  = 
+            this.$ext.style.top    = 
+            this.$ext.style.bottom = 
+            this.$ext.style.width  = 
+            this.$ext.style.height = 
+            this.$ext.style.position = "";
+        }
+        
         /*if (this.right)
             this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
 

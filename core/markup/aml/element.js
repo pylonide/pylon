@@ -398,7 +398,10 @@ apf.AmlElement = function(struct, tagName){
     /**
      * Inserts new aml into this element.
      * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {HTMLElement} oInt        the html parent of the created aml elements.
+     * @param {Object}      options     
+     *    Properties:
+     *    callback
+     *    clear
      */
     this.insertMarkup = function(amlDefNode, options){
         //#ifdef __DEBUG

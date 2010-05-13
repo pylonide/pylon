@@ -56,6 +56,9 @@ apf.item  = function(struct, tagName){
     this.$childProperty = "caption";
     this.$canLeechSkin  = "item";
 
+    this.checked  = false;
+    this.selected = false;
+
     this.implement(apf.ChildValue);
 
     /**** Properties and Attributes ****/

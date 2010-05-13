@@ -1249,7 +1249,7 @@ apf.window = function(){
         
         //#ifdef __WITH_HOTKEY
         //Hotkey
-        if (!isContentEditable && apf.dispatchEvent("hotkey", eInfo) === false 
+        if (!isContentEditable && apf && apf.dispatchEvent("hotkey", eInfo) === false 
           || eInfo.returnValue === false) {
             apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {

@@ -281,6 +281,15 @@ apf.page = function(struct, tagName){
                 ? this.relPage.$ext
                 : this.$ext, "", ["curpage"]);
             
+            if (this.fake) {
+                if (!this.relPage.visible)
+                    this.relPage.$ext.style.display = "none";
+                    
+                //#ifdef __WITH_PROPERTY_WATCH
+                this.relPage.dispatchEvent("prop.visible", {value:false});
+                //#endif
+            }
+            
             //#ifdef __WITH_PROPERTY_WATCH
             this.dispatchEvent("prop.visible", {value:false});
             //#endif
@@ -312,9 +321,23 @@ apf.page = function(struct, tagName){
         }
 
         if (!this.fake || this.relPage) {
-            this.parentNode.$setStyleClass(this.fake
-                ? this.relPage.$ext
-                : this.$ext, "curpage");
+            if (this.fake) {
+                this.relPage.$ext.style.display = "";
+                this.parentNode.$setStyleClass(this.relPage.$ext, "curpage");
+
+                // #ifdef __WITH_DELAYEDRENDER
+                if (this.relPage.$render)
+                    this.relPage.$render();
+                // #endif
+                
+                //#ifdef __WITH_PROPERTY_WATCH
+                this.relPage.dispatchEvent("prop.visible", {value:true});
+                //#endif
+            }
+            else {
+                this.parentNode.$setStyleClass(this.$ext, "curpage");
+            }
+            
             //#ifdef __WITH_LAYOUT
             if (apf.layout)
                 apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);

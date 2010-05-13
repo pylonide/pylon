@@ -1361,7 +1361,6 @@ apf.DataBinding = function(){
 
             return;
         }
-        
         this.$initingModel = true;
 
         var fParsed;

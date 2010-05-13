@@ -42,6 +42,11 @@ apf.aml.setElement("include", apf.XiInclude);
 
     this.$propHandlers["href"] = 
     this.$propHandlers["src"]  = function(value){
+        if (value.trim().charAt(0) == "<") {
+            loadIncludeFile.call(this, value.trim());
+            return;
+        }
+        
         if (typeof value != "string")
             return finish.call(this, value);
 
@@ -84,7 +89,7 @@ apf.aml.setElement("include", apf.XiInclude);
                 include    : true
             });
             
-            if (!this.defer) {
+            if (!this.defer && this.$parseContext) {
                 var o     = (this.$parseContext[1] || (this.$parseContext[1] = {})),
                     cb    = o.callback,
                     _self = this;
