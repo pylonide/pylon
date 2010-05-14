@@ -1193,7 +1193,7 @@ apf.window = function(){
     //@todo optimize this function
     apf.addListener(document, "keydown", this.$keydown = function(e){
         e = e || event;
-
+            
         //#ifdef __WITH_DEBUG_WIN
         if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
             apf.$debugwin.activate();

@@ -55,7 +55,7 @@ apf.plane = {
             }
         }
         
-        useRealSize = true;
+        useRealSize = apf.isIE;
         var pWidth = (plane.parentNode == document.body
             ? useRealSize ? document.documentElement.offsetWidth : apf.getWindowWidth()
             : plane.parentNode.offsetWidth);

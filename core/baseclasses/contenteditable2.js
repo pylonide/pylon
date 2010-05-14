@@ -83,7 +83,7 @@ apf.addEventListener("load", function(){
                     else
                         apf.document.execCommand("mode", null, {
                             mode    : "connect",
-                            timeout : 2000,
+                            timeout : 1000,
                             event   : e.htmlEvent
                         });
                 }

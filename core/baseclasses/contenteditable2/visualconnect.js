@@ -51,9 +51,9 @@ apf.visualConnect = function (sel){
     });
     
     this.activate = function(e, timeout){
-        
         if (active) 
             return;
+
         active = true
         //document.getElementById("log").innerHTML += "activated<br>";
         var _self = this;
@@ -62,6 +62,17 @@ apf.visualConnect = function (sel){
         apf.plane.show();
 
         var showAllTimer = setTimeout(function(){
+            // lets show the drawing till someone clicks and then its gone
+            // lets create some random lines
+            var n = [];
+            path = [];
+            for(var i = 0;i<100;i++){
+                var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
+                path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
+            }
+            paintLine.style({p: path.join(" ")});
+            paintGroup.style({v:1});
+            paintGroup.repaint();
         }, timeout);
         
         var timer, lastTime;
@@ -79,14 +90,6 @@ apf.visualConnect = function (sel){
             isDrawing = true;
             
             updateDraw(e);
-            /*
-            for (var i = 0, il = selection.length; i < il; i++) {
-                hNode = selection[i].$ext;
-                pos = apf.getAbsolutePosition(hNode);
-                var sx = ~~(pos[0] + (hNode.offsetWidth/2)), sy = ~~(pos[1] + (hNode.offsetHeight/2)), ex = e.clientX, ey = e.clientY;
-                path.push(paintGroup.circlePath(sx,sy,5,5),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
-            }
-            */
         }
         
         function stopDraw(e){
@@ -141,7 +144,7 @@ apf.visualConnect = function (sel){
                 hNode = selection[i].$ext;
                 pos = apf.getAbsolutePosition(hNode);
                 var sx =  ~~(pos[0] + (hNode.offsetWidth/2)), sy = ~~(pos[1] + (hNode.offsetHeight/2)), ex = e.clientX, ey = e.clientY;
-                path.push("M",sx,sy,"L",ex,ey,paintGroup.circlePath(sx,sy,4,4),paintGroup.circlePath(ex,ey,3,3));
+                path.push("M",sx,sy,"L",ex,ey,paintGroup.circlePath(sx,sy,3,3),paintGroup.circlePath(ex,ey,3,3));
             }
             paintLine.style({p: path.join(" ")});
 
