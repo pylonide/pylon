@@ -111,7 +111,7 @@ apf.table = function(struct, tagName){
         "cellheight", "span");
     
     this.$propHandlers["columns"] = function(value){
-        if (!value.match(/^(\d+\%?\s*(?:,\s*|\s*$))+$/)) {
+        if (!value.match(/^((?:\d+\%?|\*)\s*(?:,\s*|\s*$))+$/)) {
             //#ifdef __DEBUG
             apf.console.warn("Invalid column string found for table: " + value);
             //#endif
