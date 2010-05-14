@@ -564,6 +564,8 @@ apf.model = function(struct, tagName){
         if (!xmlNode) return;
 
         apf.xmldb.appendChild(insertNode, xmlNode);
+        
+        this.dispatchEvent("update", {xmlNode: xmlNode});
     };
 
     /**
@@ -881,7 +883,8 @@ apf.model = function(struct, tagName){
         this.data = xmlNode;
         
         this.dispatchEvent("afterload", {xmlNode: xmlNode});
-
+        this.dispatchEvent("update", {xmlNode: xmlNode});
+        
         for (var id in this.$amlNodes)
             this.$loadInAmlNode(this.$amlNodes[id]);
 

@@ -905,6 +905,21 @@ apf.slider = function(struct, tagName){
         apf.layout.removeRule(this.$ext, "knob");
         //#endif
     };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $knob       : this.oKnob,
+                $slider     : this.oSlider
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
+
 // #ifdef __WITH_DATABINDING
 }).call(apf.slider.prototype = new apf.StandardBinding());
 /* #else

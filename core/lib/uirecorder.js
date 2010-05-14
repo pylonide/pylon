@@ -159,7 +159,6 @@ apf.uirecorder.capture = {
         //apf.uirecorder.$o3.DOM.onkeypress = apf.uirecorder.capture.keypress = function(e){
         document.documentElement.onkeypress = apf.uirecorder.capture.keypress = function(e) {
             if (apf.uirecorder.isPaused || !(apf.uirecorder.isPlaying || apf.uirecorder.isRecording || apf.uirecorder.isTesting)) return;
-                return;
             e = e || event;
 
             //if (apf.uirecorder.capture.$validKeys.indexOf(e.keyCode) > -1) return;
@@ -1072,7 +1071,7 @@ apf.uirecorder.playback = {
             apf.uirecorder.captureDetails   = true;
         
             this.createCheckList();
-            
+
             // if capturing
             apf.uirecorder.capture.$init();
             apf.uirecorder.capture.$startTime = new Date().getTime();
@@ -1155,7 +1154,7 @@ apf.uirecorder.playback = {
         //if (this.$curAction.getAttribute("keyActionIdx") == undefined)
             //this.$nextAction();
         
-        //if (this.$playSpeed == "max") {
+        if (this.$playSpeed == "max") {
             if (this.$curAction.getAttribute("name") == "keypress") {
                 for (var i = this.$curActionIdx, l = this.$curTestXml.childNodes.length; i < l; i++) {
                     if (this.$curTestXml.childNodes[i].getAttribute("name") != "keypress") {
@@ -1171,7 +1170,7 @@ apf.uirecorder.playback = {
                     this.$curAction = this.$curTestXml.childNodes[i];
                 }
             }
-        //}
+        }
         
         if (this.$playSpeed == "realtime") {
             if (this.$playTimer) {
