@@ -382,7 +382,7 @@ apf.getInheritedAttribute = function(xml, attr, func){
     var result, avalue;
 
     //@todo optimize this and below
-    if (xml.nodeValue != 1)
+    if (xml.nodeType != 1)
         xml = xml.parentNode;
 
     while (xml && (xml.nodeType != 1 || !(result = attr 

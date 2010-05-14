@@ -45,6 +45,9 @@ apf.ContentEditable2.commands = (function(){
         }
         else//apf.document.createElementNS(apf.ns.apf, addType),
             var amlNode = apf.getXml("<a:application xmlns:a='" + apf.ns.aml + "'><a:" + addType + " /></a:application>");
+        
+        if (options.skinset && options.skinset != "default")
+            amlNode.firstChild.setAttribute("skinset", options.skinset);
 
         var htmlNode   = options.htmlNode,
             parentNode = options.parentNode;
@@ -343,7 +346,8 @@ apf.ContentEditable2.commands = (function(){
     	        //htmlNode   : q,
     	        userInteraction : true,
     	        ignorePos  : true,
-    	        parentNode : value.parent || apf.document.body
+    	        parentNode : value.parent || apf.document.body,
+    	        skinset    : apf.getInheritedAttribute(value.parent || apf.document.body, "skinset")
     	    };
     	    
     	    commands.begin.call(this);

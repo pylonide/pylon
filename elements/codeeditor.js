@@ -131,8 +131,10 @@ apf.codeeditor = function(struct, tagName){
                 this.$cache[key] = doc;
         }
         //@todo value can also be an xml node and should be updated in a similar fashion as above
-        else if (typeof value == "string") {
+        else if (typeof value == "string" && !doc.hasValue) {
+            //@todo big hack!
             doc.setValue(value);
+            doc.hasValue = true;
         }
         
         doc.setMode(this.$modes[this.syntax]);
@@ -284,8 +286,9 @@ apf.codeeditor = function(struct, tagName){
     this.$blur = function(e){
         if (!this.$ext)
             return;
-        
-        if (!this.realtime)
+
+        //if (!this.realtime)
+        if (this.value != this.getValue())
             this.change(this.getValue());
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
