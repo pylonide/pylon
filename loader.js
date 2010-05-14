@@ -259,7 +259,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js",
+        "core/baseclasses/basestatebuttons.js"/*,
         
         "elements/editor/src/ace/lib/core.js",
         "elements/editor/src/ace/lib/oop.js",
@@ -303,7 +303,7 @@ apf.$x = apf.$loader
         "elements/editor/src/debug/DevToolsMessage.js",
         "elements/editor/src/debug/V8DebuggerService.js",
         "elements/editor/src/debug/V8Debugger.js",
-        "elements/editor/src/debug/V8Message.js"
+        "elements/editor/src/debug/V8Message.js"*/
     )
     .wait()
     .script(
