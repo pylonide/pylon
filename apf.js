@@ -2479,6 +2479,6 @@ apf.$loader = {
     }
 }
 
-apf.$loader.script(apf.basePath + "loader.js");
+apf.$loader.script(apf.basePath + (self.loader2 ? "loader2.js" : "loader.js"));
 //#endif
 //#endif
