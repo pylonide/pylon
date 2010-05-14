@@ -589,12 +589,11 @@ apf.convertMethods = {
         if (!basename)
             basename = "";
         
-        var nodes = xml.childNodes, node;
-        var output = [], tagNames = {};
-        var nm = "", name, value;
-        var a, i, j;
-        var attr, attr_len;
-        var isOnly;
+        var node, name, value, a, i, j, attr, attr_len, isOnly,
+            nodes    = xml.childNodes,
+            output   = [],
+            tagNames = {},
+            nm       = "";
         
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -646,6 +645,10 @@ apf.convertMethods = {
                 }
                 
                 tagNames[name]++;
+            }
+            // handle node values (for form submission)
+            else if (node.nodeType == 3 && isSub) {
+                output = node.nodeType;
             }
         }
 
