@@ -266,8 +266,8 @@ apf.Presentation = function(){
 
         //Dispatch event
         this.dispatchEvent("$skinchange", {
-            ext: oExt,
-            int: oInt
+            ext  : oExt,
+            "int": oInt
         });
 
         //#ifdef __WITH_MULTISELECT
