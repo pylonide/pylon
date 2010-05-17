@@ -77,7 +77,7 @@
 	        </a:list>
         </a:window>
           
-        <a:window skin="dockwin" dock="true" align="left-splitter" height="150" visible="true" title="Stack" zindex="9">
+        <a:window skin="dockwin" dock="true" align="left-splitter" visible="true" title="Stack" zindex="9">
 	        <a:datagrid
 	          id         = "lstStack"
 	          anchors    = "0 0 0 0" 
@@ -96,25 +96,24 @@
 	        </a:datagrid>    
         </a:window>
         
-        <a:window skin="dockwin" dock="true" align="left-splitter" height="150" visible="true" title="Watch" zindex="9">
-	        <a:datagrid
+        <a:window skin="dockwin" dock="true" align="left-splitter" visible="true" title="Watch" zindex="9">
+	        <a:datagrid id="dgWatch"
 	          anchors    = "0 0 0 0" 
 	          options    = "size|move"
 	          caching    = "false"
 	          prerender  = "false"
-	          model      = "{lstStack.selected}"
+	          model      = "[{lstStack.selected}::vars]"
 	          loading-message = "Calculating..."
 	          >
-                <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" 
-                  get="{adbg.loadObjects(%[.])}" />
+                <a:insert match="[item[@children]]" get="{adbg.loadObjects(%[.])}" />
 	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
-	            <a:column caption="Value" value="[@text]" width="100%" />
+	            <a:column caption="Value" value="[@value]" width="100%" />
 	            <a:column caption="Type" value="[@type]" width="80"/>
-	            <a:each match="[vars/var]" sort="[@name]" />
+	            <a:each match="[item]" sort="[@name]" />
 	        </a:datagrid>		
         </a:window>
 
-        <a:window skin="dockwin" dock="true" align="left-splitter" height="150" visible="true" title="Breakpoints" zindex="9">
+<!--         <a:window skin="dockwin" dock="true" align="left-splitter" visible="true" title="Breakpoints" zindex="9">
 			<a:list
 			  id="lstBreakpoints"
 			  anchors="0 0 0 0"
@@ -125,7 +124,7 @@
 			  onafterchoose = "winBreakpointEdit.show();">
 			    <a:actions />
 			</a:list>
-        </a:window>
+        </a:window> -->
         
         <a:codeeditor id="ce" 
             align       = "right"
@@ -141,7 +140,7 @@
         </a:codeeditor>  
         
         
-        
+        <!-- 
         <a:window
           id="winBreakpointEdit"
           title="Breakpoint"
@@ -165,7 +164,8 @@
 	          	<a:textarea span="*" height="*" id="txtCondition" value="[{lstBreakpoints.selected}::@condition]" />
           	</a:table>
         </a:window> 
-          
+        -->
+           
         <a:script>//<!--
             apf.$debugger.init();
         //--></a:script>

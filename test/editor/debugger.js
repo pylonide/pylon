@@ -12,7 +12,7 @@ apf.$debugger.init = function() {
 };
 
 function escapeXml(str) {
-    return (str
+    return (str.toString()
         .replace(/&/g, "&amp;")
         .replace(/"/g, "&quot;")
         .replace(/</g, "&lt;")
@@ -33,7 +33,7 @@ function valueString(value) {
             return value.value + "";
             
         case "object":
-            return "[" + value.className + "] (id: " + value.ref + ")";
+            return "[" + value.className + "]";
             
         case "function":
             return "function " + value.inferredName + "()";
@@ -63,14 +63,15 @@ function frameToString(frame) {
 
 function serializeVariable(item, name) {
     var str = [];
-    var numtype = {
+    var hasChildren = {
         "object": 8,
         "function": 4
     };
-    str.push("<var name='", escapeXml(name || item.name),
-        "' text='", escapeXml(valueString(item.value)),
+    str.push("<item name='", escapeXml(name || item.name),
+        "' value='", escapeXml(valueString(item.value)),
         "' type='", item.value.type,
-        "' numtype='", (numtype[item.value.type] || 0),
+        "' ref='", item.value.ref || item.value.handle,
+        hasChildren[item.value.type] ? "' children='true" : "",
         "' />");
     return str.join("");            
 }
@@ -124,10 +125,12 @@ function onBreak(e) {
                 "'>");
             xml.push("<vars>");
             for (var j=0; j<frame.arguments.length; j++) {
-                xml.push(serializeVariable(frame.arguments[j],  frame.arguments[j].name || ("argument " + j)));
+                if (frame.arguments[j].name) 
+                    xml.push(serializeVariable(frame.arguments[j]));
             }
             for (var j=0; j<frame.locals.length; j++) {
-                xml.push(serializeVariable(frame.locals[j]));
+                if (frame.locals[j].name !== ".arguments")
+                    xml.push(serializeVariable(frame.locals[j]));
             }
             xml.push("</vars>");
             xml.push("</frame>");
@@ -296,15 +299,51 @@ window.adbg = {
                 }
             this.loadScript(args[0], options);
         }
+        else if (method == "loadObjects" && args[0]) {
+            if (!options)
+                options = {};
+            if (!options.callback)
+                options.callback = function(data, state, extra){
+                    if (state != apf.SUCCESS) {
+                        callback("<item />", state, extra);
+                        return false;
+                    }
+                    else {
+                        callback(data, state, extra);
+                    }
+                }
+            
+            this.loadObjects(args[0].getAttribute("ref"), options);
+        }
     },
     
-    loadScript : function(id, options){
+    loadScript : function(id, options) {
         apf.$debugger.dbg.scripts(4, [parseInt(id)], true, function(scripts) {
             if (scripts.length) {                
                 var script = scripts[0];
                 apf.$debugger.scripts[script.id].source = script.source;
                 options.callback(script.source, apf.SUCCESS);
             }
+        });
+    },
+    
+    loadObjects : function(ref, options) {
+        apf.$debugger.dbg.lookup([ref], false, function(body) {
+            var refs = [];
+            var props = body[ref].properties;
+            for (var i=0; i<props.length; i++) {
+                refs.push(props[i].ref);
+            }
+
+            apf.$debugger.dbg.lookup(refs, false, function(body) {
+                var xml = ["<item>"];
+                for (var i=0; i<props.length; i++) {
+                    props[i].value = body[props[i].ref];
+                    xml.push(serializeVariable(props[i]));
+                }
+                xml.push("</item>");
+                options.callback(xml.join(""), apf.SUCCESS);
+            });
         });
     }
 };
