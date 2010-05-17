@@ -572,11 +572,12 @@ apf.datagrid = function(struct, tagName){
             
             if (h.icon) {
                 var node = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", oRow.appendChild(cell));
-                (node.nodeType == 1 && node || node.parentNode)
-                    .setAttribute("style", "padding-left:19px;background:url(" 
+                    node = (node.nodeType == 1 && node || node.parentNode);
+                    node.setAttribute("style", "background-image:url(" 
                         + apf.getAbsolutePath(this.iconPath, 
                             ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
-                        + ") no-repeat 0 0;");
+                        + ");");
+                    this.$setStyleClass(node, "iconCell", []);
             }
             
             if (h.value) {
