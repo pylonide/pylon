@@ -438,7 +438,6 @@ var apf = {
         this.mouseEventBuffer          = apf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.supportCSSAnim            = apf.isWebkit && (apf.webkitRev > 525);//apf.isIphone;
         this.w3cRange                  = Boolean(window["getSelection"]);
         this.locale                    = (apf.isIE
                                             ? navigator.userLanguage
