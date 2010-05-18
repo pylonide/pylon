@@ -348,9 +348,11 @@ var ID        = "id",
 
         info.method = useCSSAnim ? info.type : isTransform
             ? modules[TRANSFORM + (info.subType || SCALE)]
-            : modules[info.type] || (info.needsPx = needsPix[info.type] || false) 
-                ? modules.htmlcss
-                : modules.htmlcss;
+            : modules[info.type]
+                ? modules[info.type]
+                : (info.needsPx = needsPix[info.type] || false)
+                    ? modules.htmlcss
+                    : modules.htmlcss;
 
         //#ifdef __DEBUG
         if (!info.method)
@@ -529,9 +531,11 @@ var ID        = "id",
                 ? data.type
                 : isTransform
                     ? modules[TRANSFORM + (data.subType)]
-                    : modules[data.type] || (data.needsPx = needsPix[data.type] || false) 
-                        ? modules.htmlcss
-                        : modules.htmlcss;
+                    : modules[data.type]
+                        ? modules[data.type]
+                        : (data.needsPx = needsPix[data.type] || false)
+                            ? modules.htmlcss
+                            : modules.htmlcss;
 
 
             //#ifdef __DEBUG
