@@ -302,6 +302,7 @@ apf.$x = apf.$loader
         "elements/editor/src/debug/DevToolsService.js",
         "elements/editor/src/debug/DevToolsMessage.js",
         "elements/editor/src/debug/V8DebuggerService.js",
+        "elements/editor/src/debug/Breakpoint.js",
         "elements/editor/src/debug/V8Debugger.js",
         "elements/editor/src/debug/V8Message.js"
     )
