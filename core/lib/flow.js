@@ -401,6 +401,9 @@ apf.flow.block = function(htmlElement, objCanvas, other) {
     this.updateOutputs = function() {
         var id, input, pos, _x, _y,
             inp = this.other.inputList;
+            
+        if (this.other.lock)
+           return;
 
         for (id in inp) {
             input = this.htmlOutputs[id]
@@ -1133,9 +1136,13 @@ apf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         var sIPos, dIPos,
             l = [],
             s = [parseInt(sourceHtml.style.left),
-                 parseInt(sourceHtml.style.top)],
-            d = [parseInt(destinationHtml.style.left),
-                 parseInt(destinationHtml.style.top)];
+                 parseInt(sourceHtml.style.top),
+                 parseInt(sourceHtml.style.width),
+                 parseInt(sourceHtml.style.height)],
+             d = [parseInt(destinationHtml.style.left),
+                 parseInt(destinationHtml.style.top),
+                 parseInt(destinationHtml.style.width),
+                 parseInt(destinationHtml.style.height)];
 
         htmlSegmentsTemp = this.htmlSegments;
         /*for (var i = 0, l = this.htmlSegments.length; i < l; i++) {
