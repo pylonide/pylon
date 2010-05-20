@@ -41,7 +41,7 @@ apf.xmpp_rdb = function(){
         SID     = "SID",
         JID     = "JID",
         CONN    = "connected";
-    this.$rdbRoster = new apf.xmpp_roster(this.$rdbModel, {rdb: true}, this.resource);
+    this.$rdbRoster = new apf.xmpp_roster(this["rdb-model"], {rdb: true}, this.resource);
 
     /*
      * Wrapper function for apf.xmpp.$doXmlRequest. Since all RDB request are
@@ -276,7 +276,7 @@ apf.xmpp_rdb = function(){
         $setTimeout(function() {
             doRequest(_self.$createPresenceBlock({
                     from  : _self.$serverVars[JID],
-                    to    : sSession + "@" + _self.$rdbDomain,
+                    to    : sSession + "@" + _self["rdb-domain"],
                     join  : sTo
                 }, sData
                     ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
@@ -290,7 +290,7 @@ apf.xmpp_rdb = function(){
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this.$rdbDomain),
+        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-domain"]),
             f    = function() {
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
@@ -300,7 +300,7 @@ apf.xmpp_rdb = function(){
                 // and metadata from the owner of the room
             };
         if (this["rdb-bot"]) {
-            this.botRegister(this.$rdbDomain, f);
+            this.botRegister(this["rdb-domain"], f);
         }
         else {
             // a password may be returned from the 'rdb-password' event handler
@@ -312,14 +312,14 @@ apf.xmpp_rdb = function(){
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
         if (this["rdb-bot"])
-            this.botUnregister(this.$rdbDomain);
+            this.botUnregister(this["rdb-domain"]);
         else
             this.leaveDoc(sSession);
     };
 
     this.sendRDB = function(sModel, sMsg) {
         this.sendMessage({
-            to     : this.$rdbRoster.sanitizeJID(sModel + "@" + this.$rdbDomain),
+            to     : this.$rdbRoster.sanitizeJID(sModel + "@" + this["rdb-domain"]),
             message: sMsg,
             thread : "rdb"
         });

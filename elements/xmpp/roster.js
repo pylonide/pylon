@@ -47,6 +47,15 @@ apf.xmpp_roster = function(model, modelContent, res) {
                      "fullJID": 1, "status": 1, "affiliation": 1, "role": 1,
                      "nick": 1};
 
+    if (typeof model == "string") {
+        var sModel = model;
+        model = apf.setReference(sModel,
+            apf.nameserver.register("model", sModel, new apf.model()));
+        // set the root node for this model
+        model.id = model.name = sModel;
+        model.load("<xmpp/>");
+    }
+
     this.registerAccount = function(username, domain, resource) {
         if (!resource)
             resource = this.resource;
@@ -354,6 +363,22 @@ apf.xmpp_roster = function(model, modelContent, res) {
         }
 
         return o;
+    };
+
+    this.rebuild = function(mc) {
+        if (mc) {
+            modelContent = mc;
+            bMuc         = (modelContent.muc || modelContent.rdb);
+        }
+        if (!model || !(modelContent.roster || bMuc))
+            return;
+        model.load("<xmpp/>");
+        var i = 0,
+            l = aEntities.length;
+        for (; i < l; i++) {
+            delete aEntities[i].xml;
+            this.updateEntityXml(aEntities[i]);
+        }
     };
 
     /**

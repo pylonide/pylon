@@ -46,7 +46,7 @@ apf.xmpp_muc = function(){
         SID     = "SID",
         JID     = "JID",
         CONN    = "connected";
-    this.$mucRoster = new apf.xmpp_roster(this.$mucModel, {muc: true}, this.resource);
+    this.$mucRoster = new apf.xmpp_roster(this["muc-model"], {muc: true}, this.resource);
 
     /*
      * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are 
@@ -99,7 +99,7 @@ apf.xmpp_muc = function(){
         if (!this.$canMuc || !this.$serverVars[CONN]) return;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
-                to    : this.$mucDomain,
+                to    : this["muc-domain"],
                 type  : "get",
                 id    : this.$makeUnique("disco")
             }, "<query xmlns='" + oXmpp.NS.disco_items + "'/>")
@@ -416,7 +416,7 @@ apf.xmpp_muc = function(){
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this.$mucDomain);
+        var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this["muc-domain"]);
         this.joinOrCreateRoom(sRoom, this.$serverVars["roster"].username, function() {
             if (mucVars.created[sRoom]) {
                 // room was created, so no need to fetch the latest changes,
@@ -476,7 +476,7 @@ apf.xmpp_muc = function(){
     };
 
     this.sendRDB = function(sModel, sMsg) {
-        var sRoom = this.$mucRoster.sanitizeJID(sModel + "@" + this.$mucDomain);
+        var sRoom = this.$mucRoster.sanitizeJID(sModel + "@" + this["muc-domain"]);
         this.sendMessage({
             to     : sRoom,
             message: sMsg,

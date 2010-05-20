@@ -178,7 +178,7 @@ apf.xmpp = function(struct, tagName){
         MSG_HEADLINE  : "headline",
         MSG_NORMAL    : "normal"
     };
-    apf.extend(apf.xmpp, constants)
+    apf.extend(apf.xmpp, constants);
 
     this.$server     = null;
     this.timeout     = 10000;
@@ -191,12 +191,12 @@ apf.xmpp = function(struct, tagName){
     this.$modelContent  = null;
     this.$xmppMethod    = constants.CONN_BOSH;
     this.$isPoll        = false;
-    this.$pollTimeout   = 2000;
-    this.$autoRegister  = false;
-    this.$autoConfirm   = true;
-    this.$autoDeny      = false;
-    this.$canMuc        = false;
-    this.$modelContent  = {
+    this["poll-timeout"]  = 2000;
+    this["auto-register"] = false;
+    this["auto-confirm"]  = true;
+    this["auto-deny"]     = false;
+    this.$canMuc          = false;
+    this.$modelContent    = {
         roster: true,
         chat  : true,
         typing: true
@@ -256,6 +256,8 @@ apf.xmpp = function(struct, tagName){
      *                                        synchronized to.
      * @attribute {Boolean}  [rdb-bot]        Specifies if the this client will
      *                                        connect to the XMPP server as a bot
+     * @attribute {Number}   [priority]       Specifies the load - as in 'workload'
+     *                                        of the client - connected as a bot.
      */
     this.$booleanProperties["auto-register"] = true;
     this.$booleanProperties["auto-confirm"]  = true;
@@ -290,39 +292,18 @@ apf.xmpp = function(struct, tagName){
     };
 
     this.$propHandlers["poll-timeout"] = function(value) {
-        this.$pollTimeout = parseInt(value) || 2000;
+        this["poll-timeout"] = parseInt(value) || 2000;
     };
 
     this.$propHandlers["resource"] = function(value) {
         this.resource = value || apf.config.name || "apf".appendRandomNumber(5);
     };
 
-    this.$propHandlers["auto-register"] = function(value) {
-        this.$autoRegister = value;
-    };
-
-    this.$propHandlers["auto-confirm"] = function(value) {
-        this.$autoConfirm = value;
-    };
-
-    this.$propHandlers["auto-deny"] = function(value) {
-        this.$autoDeny = value;
-    };
-
     // #ifdef __TP_XMPP_ROSTER
-    this.$propHandlers["model"] = function(value) {
-        if (!value) return;
+    this.$propHandlers["model-contents"] = function(value) {
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
-        this.$model = apf.setReference(value,
-            apf.nameserver.register("model", value, new apf.model()));
-        // set the root node for this model
-        this.$model.id = this.$model.name = value;
-        this.$model.load("<xmpp/>");
-    };
-
-    this.$propHandlers["model-contents"] = function(value) {
         var aContents = (value || "all").splitSafe("\\|", 0, true),
             i         = 0,
             l         = aContents.length;
@@ -336,23 +317,18 @@ apf.xmpp = function(struct, tagName){
             if (!this.$modelContent[aContents[i]])
                 this.$modelContent[aContents[i]] = true;
         }
+
+        if (this.$serverVars[ROSTER])
+            this.$serverVars[ROSTER].rebuild(this.$modelContent);
     };
     // #endif
 
     // #ifdef __TP_XMPP_MUC
     this.$propHandlers["muc-model"] = function(value) {
         // parse MUC parameters
-        this.$mucDomain = this["muc-domain"] || "conference." + this.domain;
-        if (value) {
-            value          = value + "_muc";
+        this["muc-domain"] = this["muc-domain"] || "conference." + this.domain;
+        if (!this.$canMuc) {
             this.$canMuc   = true;
-            this.$mucModel = apf.setReference(value,
-                apf.nameserver.register("model", value, new apf.model()));
-            // set the root node for this model
-            this.$mucModel.id   =
-            this.$mucModel.name = value;
-            this.$mucModel.load("<xmpp_muc/>");
-
             // magic!
             this.implement(apf.xmpp_muc);
         }
@@ -367,16 +343,9 @@ apf.xmpp = function(struct, tagName){
     // #ifdef __TP_XMPP_RDB
     this.$propHandlers["rdb-model"] = function(value) {
         // parse MUC parameters
-        this.$rdbDomain = this["rdb-domain"] || "rdb." + this.domain;
-        if (value) {
+        this["rdb-domain"] = this["rdb-domain"] || "rdb." + this.domain;
+        if (!this.$canRDB) {
             this.$canRDB   = true;
-            this.$rdbModel = apf.setReference(value,
-                apf.nameserver.register("model", value, new apf.model()));
-            // set the root node for this model
-            this.$rdbModel.id   =
-            this.$rdbModel.name = value;
-            this.$rdbModel.load("<xmpp_rdb/>");
-
             // magic!
             this.implement(apf.xmpp_rdb);
         }
@@ -729,7 +698,7 @@ apf.xmpp = function(struct, tagName){
                 this.$listener = null;
                 return this.connect(this.$serverVars["username"], this.$serverVars["password"],
                     this.$serverVars["login_callback"],
-                    this.$serverVars["register"] || this.$autoRegister);
+                    this.$serverVars["register"] || this["auto-register"]);
             }
             this.$retryCount++;
             this.$listen();
@@ -791,7 +760,7 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["username"]       = username;
         this.$serverVars["password"]       = password;
         this.$serverVars["login_callback"] = callback;
-        this.$serverVars["register"]       = reg || this.$autoRegister;
+        this.$serverVars["register"]       = reg || this["auto-register"];
         this.$serverVars["previousMsg"]    = [];
         // #ifdef __TP_XMPP_ROSTER
         this.$serverVars[ROSTER].registerAccount(username, this.domain);
@@ -906,11 +875,21 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["nc"]     = "00000001";
         this.$serverVars[CONN]     = false;
         // #ifdef __TP_XMPP_ROSTER
-        this.$serverVars[ROSTER]   = new apf.xmpp_roster(this.$model,
+        this.$serverVars[ROSTER]   = new apf.xmpp_roster(this.model,
            this.$modelContent, this.resource);
         // #endif
         this.$serverVars["bind_count"] = 0;
         this.$serverVars["mess_count"] = 0;
+
+        this.domain = this.domain || this.$domain;
+        // #ifdef __TP_XMPP_MUC
+        if (!this.$canMuc)
+            this.$initMuc();
+        // #endif
+        // #ifdef __TP_XMPP_RDB
+        if (!this.$canRDB)
+            this.$initRDB();
+        // #endif
 
     };
 
@@ -1553,7 +1532,7 @@ apf.xmpp = function(struct, tagName){
         var _self = this;
         this.$listener = $setTimeout(function() {
             _self.$listen();
-        }, this.$pollTimeout || 0);
+        }, this["poll-timeout"] || 0);
 
         // parse incoming data AFTER connection is respawned - more stable!
         if (data || state) {
@@ -1586,7 +1565,7 @@ apf.xmpp = function(struct, tagName){
             var _self = this;
             this.$listener = $setTimeout(function() {
                 _self.$listen();
-            }, this.$pollTimeout || 0);
+            }, this["poll-timeout"] || 0);
         }
         // parse incoming data AFTER connection is respawned - more stable!
         parseData.call(this, oXml);
@@ -1779,8 +1758,8 @@ apf.xmpp = function(struct, tagName){
             oP   = aPresence[i],
             sJID = oP.getAttribute("from"),
             aX   = oP.getElementsByTagName("x"),
-            bMuc = (sJID.indexOf(this.$mucDomain) > -1),
-            bRDB = (sJID.indexOf(this.$rdbDomain) > -1);
+            bMuc = (sJID.indexOf(this["muc-domain"]) > -1),
+            bRDB = (sJID.indexOf(this["rdb-domain"]) > -1);
             // #ifdef __TP_XMPP_MUC
             if (aX.length) {
                 for (k = 0, l2 = aX.length; k < l2; k++) {
@@ -2099,7 +2078,7 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function incomingAdd(sJID) {
-        if (this.$autoConfirm) {
+        if (this["auto-confirm"]) {
             var sMsg = createIqBlock({
                     from  : this.$serverVars[JID],
                     type  : "get",
@@ -2120,7 +2099,7 @@ apf.xmpp = function(struct, tagName){
                 }, sMsg)
             );
         }
-        if (this.$autoDeny) {
+        if (this["auto-deny"]) {
             // <presence to='user@example.com' type='unsubscribed'/>
             var sPresence = createPresenceBlock({
                 type  : constants.TYPE_UNSUBSCRIBED,
@@ -2285,6 +2264,18 @@ apf.xmpp = function(struct, tagName){
         );
     };
 
+    /**
+     * Provides the ability to send a message to any node inside the user's
+     * Roster, of any type. In this way the client may send custom XML stanza's,
+     * e.g. for a proprietary protocol or to aid in protocol design.
+     *
+     * @param {Object}   options    An object containing all the details for the
+     *                              message to be sent:
+     *      {String}   to         Must be of the format 'node@domainname.ext'
+     *      {String}   message    The XML message to be sent
+     *      {Function} [callback] Function to be executed on completion of the request
+     * @type  {void}
+     */
     this.sendXml = function(options) {
         if (!options || !(options.message || options.x)) return false;
         var _self = this;
@@ -2329,6 +2320,9 @@ apf.xmpp = function(struct, tagName){
         );
     };
 
+    /**
+     *
+     */
     this.getTime = function(sEntity, fCallback) {
         var sIq = createIqBlock({
                 type  : "get",
@@ -2391,23 +2385,6 @@ apf.xmpp = function(struct, tagName){
         this.disconnect();
     });
 
-    // #ifdef __TP_XMPP_MUC || __TP_XMPP_RDB
-    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
-        var _self = this;
-        $setTimeout(function() {
-            _self.domain = _self.domain || _self.$domain;
-            // #ifdef __TP_XMPP_MUC
-            if (!_self.$canMuc)
-                _self.$initMuc();
-            // #endif
-            // #ifdef __TP_XMPP_RDB
-            if (!_self.$canRDB)
-                _self.$initRDB();
-            // #endif
-        });
-    });
-    // #endif
-    
     // #ifdef __WITH_DATA
     
     /**
