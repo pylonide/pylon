@@ -772,9 +772,9 @@ apf.AmlWindow = function(struct, tagName){
         // init $activeElements
         if (!this.$activeElements) {
             this.$activeElements = {
-                // oTitle       : this.oTitle,
-                $oIcon          : this.oIcon
-                // oDrag        : this.oDrag,
+                $title       : this.oTitle,
+                $icon        : this.oIcon
+                // $drag        : this.oDrag,
             }
             
             // set buttons

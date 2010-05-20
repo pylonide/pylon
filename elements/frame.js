@@ -135,6 +135,19 @@ apf.frame    = function(struct, tagName){
     this.$loadAml = function(x){
         // not implement now.
     };
+    
+        // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $caption       : this.oCaption
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 }).call(apf.frame.prototype = new apf.Presentation());
 
 apf.panel.prototype    =
