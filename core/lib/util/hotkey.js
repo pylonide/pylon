@@ -100,7 +100,7 @@ apf.registerHotkey = function(hotkey, handler){
                 || String.fromCharCode(e.keyCode)).toLowerCase()];
             if (handler) {
                 handler();
-                e.returnValue = false;
+                //e.returnValue = false;
                 
                 // #ifdef __WITH_QUEUE
                 apf.queue.empty();
