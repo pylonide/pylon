@@ -128,8 +128,8 @@
  *  <a:remote transport="myXMPP" id="rmtPersons" />
  *  </a:remote>
  * </code>
- * @attribute {String} select   the xpath that selects the set of {@link term.datanode data nodes}
- *                              that share a similar uniqueness trait.
+ * @attribute {String} transport   ID of a Teleport element that is able to serve
+ *                                 as a transport for RDB message like {@link element.xmpp xmpp}
  */
 /**
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -163,6 +163,60 @@ apf.remote = function(struct, tagName){
     this.$attrExcludePropBind = apf.extend({
         match : 1
     }, this.$attrExcludePropBind);
+
+    this.$supportedProperties.push("transport");
+
+    this.$propHandlers["transport"] = function(value) {
+        this.transport = self[this["transport"]];
+
+        //#ifdef __DEBUG
+        if (!this.transport) {
+            throw new Error(apf.formatErrorString(0, this, "RDB: Missing transport",
+                "A transport element with ID '" + value + "' could not be found."));
+        }
+        //#endif
+
+        var _self = this;
+
+        this.transport.addEventListener("connected", function() {
+            var s;
+            for (s in _self.pendingTerminations)
+                _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
+            for (s in _self.pendingSessions)
+                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
+        });
+
+        this.transport.addEventListener("datachange", function(e){
+            var oData    = apf.unserialize(e.body),
+                oSession = _self.sessions[e.session],
+                i        = 0,
+                l        = oData.length;//@todo error check here.. invalid message
+            for (; i < l; i++)
+                _self.receiveChange(oData[i], oSession);
+        });
+
+        this.transport.addEventListener("datastatuschange", function(e) {
+            // e looks like { type: "submit", from: "benvolio@shakespeare.lit", fields: [] }
+            // #ifdef __DEBUG
+            apf.console.log("datastatuschange msg: " + e);
+            // #endif
+            if (!e.session && !e.fields["session"]) return;
+            var sSession = e.session || e.fields["session"].value,
+                oSession = _self.sessions[sSession];
+            if (!oSession) return; // @todo : send failure message
+            if (e.type == "submit") {
+                var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
+                    sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
+
+                this.sendSyncRDB(e.from, sSession, iBaseline, sModel);
+            }
+            else if (e.type == "result") {
+                // @todo: replace the current XML with the document provided by the session owner
+                _self.sessions[sSession].model.load(e.fields["modeldata"].value);
+                _self.sessionStarted(sSession, e.fields["baseline"].value);
+            }
+        });
+    };
 
     this.startSession = function(model, xpath) {
         if (!model.id)
@@ -207,8 +261,9 @@ apf.remote = function(struct, tagName){
         // check if time is provided, otherwise user created the session
         var now = new Date().getTime();
         oSession.baseline = iTime ? parseInt(iTime) : now;
-
+        // #ifdef __DEBUG
         apf.console.log("session started: " + sSession + ", " + oSession.baseline);
+        // #endif
     };
 
     this.pauseSession = function() {
@@ -313,14 +368,15 @@ apf.remote = function(struct, tagName){
         var model = oSession ? oSession.model : apf.nameserver.get("model", oMessage.model),
             q     = oMessage.args;
         
-        //#ifdef __DEBUG
         if (!model) {
+            //#ifdef __DEBUG
             //Maybe make this a warning?
             throw new Error(apf.formatErrorString(0, this, 
                 "Remote Databinding Received", "Could not find model when \
                  receiving data for it with name '" + oMessage.model + "'"));
+            //#endif
+            return;
         }
-        //#endif
 
         var oError, xmlNode,
             disableRDB       = apf.xmldb.disableRDB;
@@ -328,15 +384,17 @@ apf.remote = function(struct, tagName){
 
         if (!oSession && oMessage.model)
             oSession = this.sessions[this.transport.normalizeEntity(oMessage.model)];
-        // #ifdef __DEBUG
         if (!oSession) {
+            // #ifdef __DEBUG
             //Maybe make this a warning?
             throw new Error(apf.formatErrorString(0, this,
                 "Remote Databinding Received", "Could not find session when \
                  receiving data for it with name '"
                + this.transport.normalizeEntity(oMessage.model) + "'"));
+            // #endif
+            apf.xmldb.disableRDB = disableRDB;
+            return;
         }
-        // #endif
 
         // correct timestamp with the session baseline
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
@@ -427,8 +485,6 @@ apf.remote = function(struct, tagName){
             : "Creating implicitly assigned remote");
         //#endif
 
-        var _self = this;
-
         //#ifdef __WITH_OFFLINE
         if (apf.offline && apf.offline.enabled) {
             var queue = [];
@@ -440,55 +496,6 @@ apf.remote = function(struct, tagName){
             });
         }
         //#endif
-        
-        /**
-         * @attribute {String} transport the id of the teleport module instance 
-         * that provides a means to sent change messages to other clients.
-         */
-        this.transport = self[this["transport"]];
-
-        //#ifdef __DEBUG
-        if (!this.transport) {
-            throw new Error("Missing transport");//@todo make this a proper apf3.0 error
-        }
-        //#endif
-
-        this.transport.addEventListener("connected", function() {
-            var s;
-            for (s in _self.pendingTerminations)
-                _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
-            for (s in _self.pendingSessions)
-                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
-        });
-
-        this.transport.addEventListener("datachange", function(e){
-            var oData    = apf.unserialize(e.body),
-                oSession = _self.sessions[e.session],
-                i        = 0,
-                l        = oData.length;//@todo error check here.. invalid message
-            for (; i < l; i++)
-                _self.receiveChange(oData[i], oSession);
-        });
-
-        this.transport.addEventListener("datastatuschange", function(e) {
-            // e looks like { type: "submit", from: "benvolio@shakespeare.lit", fields: [] }
-            apf.console.log("datastatuschange msg: " + e);
-            if (!e.session && !e.fields["session"]) return;
-            var sSession = e.session || e.fields["session"].value,
-                oSession = _self.sessions[sSession];
-            if (!oSession) return; // @todo : send failure message
-            if (e.type == "submit") {
-                var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
-                    sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
-
-                this.sendSyncRDB(e.from, sSession, iBaseline, sModel);
-            }
-            else if (e.type == "result") {
-                // @todo: replace the current XML with the document provided by the session owner
-                _self.sessions[sSession].model.load(e.fields["modeldata"].value);
-                _self.sessionStarted(sSession, e.fields["baseline"].value);
-            }
-        });
     });
 
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
@@ -498,7 +505,5 @@ apf.remote = function(struct, tagName){
 }).call(apf.remote.prototype = new apf.AmlElement());
 
 apf.aml.setElement("remote", apf.remote);
-apf.aml.setElement("unique", apf.BindingRule);
-
 
 // #endif
