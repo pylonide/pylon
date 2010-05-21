@@ -196,7 +196,7 @@ apf.remote = function(struct, tagName){
         });
 
         this.transport.addEventListener("datastatuschange", function(e) {
-            // e looks like { type: "submit", from: "benvolio@shakespeare.lit", fields: [] }
+            // e looks like { type: "submit", annotator: "benvolio@shakespeare.lit", fields: [] }
             // #ifdef __DEBUG
             apf.console.log("datastatuschange msg: " + e);
             // #endif
@@ -208,7 +208,7 @@ apf.remote = function(struct, tagName){
                 var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
                     sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
 
-                this.sendSyncRDB(e.from, sSession, iBaseline, sModel);
+                this.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
             }
             else if (e.type == "result") {
                 // @todo: replace the current XML with the document provided by the session owner

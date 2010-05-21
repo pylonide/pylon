@@ -125,7 +125,7 @@ apf.xmpp_rdb = function(){
                 });
                 // join request from a client, acknowledge it and send the document
                 this.dispatchEvent("datastatuschange", {
-                    from     : sJoin,
+                    annotator: sJoin,
                     session  : sDoc,
                     type     : "submit",
                     baseline : 1,
@@ -169,9 +169,9 @@ apf.xmpp_rdb = function(){
                     aData     = oNode.getElementsByTagName("data");
 
                 this.dispatchEvent("datastatuschange", {
-                    type   : "result",
-                    from   : sJID,
-                    fields : {
+                    type     : "result",
+                    annotator: sJID,
+                    fields   : {
                         session  : sDoc,
                         baseline : aBaseline.length ? aBaseline[0].firstChild.nodeValue : "",
                         modeldata: aData.length     ? aData[0].firstChild.nodeValue : ""
@@ -180,8 +180,9 @@ apf.xmpp_rdb = function(){
             }
             else if (arguments[1] && sJID != oNode.getAttribute("to")) {
                 this.dispatchEvent("datachange", {
-                    session : sDoc,
-                    body    : arguments[1]
+                    annotator: sJID,
+                    session  : sDoc,
+                    body     : arguments[1]
                 });
             }
         }

@@ -458,7 +458,7 @@ apf.DataAction = function(){
         }
         //#endif
 
-        var atAction,
+        var atAction, model, node,
             sel        = compiled.xpaths, //get first xpath
             shouldLoad = false;
         
@@ -467,26 +467,26 @@ apf.DataAction = function(){
                 xpathmode: 5
             })))(xmlNode);
             
-            var model = m.model && m.model.$isModel && m.model;
+            model = m.model && m.model.$isModel && m.model;
             if (model) {
-                var node  = model.queryNode(m.xpath);
+                node  = model.queryNode(m.xpath);
                 xmlNode = model.data;
             }
             else {
                 model = apf.xmldb.findModel(m.model);
-                var node  = m.model.selectSingleNode(m.xpath);
+                node  = m.model.selectSingleNode(m.xpath);
                 xmlNode = m.model;
             }
 
             sel[1] = m.xpath;
         }
         else {
-            var model      = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
-                node       = model
-                    ? model.queryNode(sel[1])
-                    : (xmlNode || this.xmlRoot).selectSingleNode(sel[1])
-            if (model)
-                xmlNode    = model.data; //@experimental
+            model = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
+            node  = model
+                ? model.queryNode(sel[1])
+                : (xmlNode || this.xmlRoot).selectSingleNode(sel[1]);
+            if (model && !xmlNode)
+                xmlNode = model.data; //@experimental, after changing this, please run test/test_rename_edge.html
         }
 
         if (node) {

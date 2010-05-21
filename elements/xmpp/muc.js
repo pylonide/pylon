@@ -197,7 +197,7 @@ apf.xmpp_muc = function(){
                     return;
 
                 this.dispatchEvent("datastatuschange", {
-                    from     : oEnt.roomJID,
+                    annotator: oEnt.roomJID,
                     session  : sRoom.substring(0, sRoom.indexOf("@")),
                     type     : "submit",
                     baseline : 1,
@@ -216,8 +216,9 @@ apf.xmpp_muc = function(){
                 
                 // 'old' style data message passing
                 this.dispatchEvent("datachange", {
-                    session : sRoom.split("@")[0],
-                    body    : oData
+                    annotator: sRoom.substr(sRoom.lastIndexOf("/") + 1),
+                    session  : sRoom.split("@")[0],
+                    body     : oData
                 });
                 break;
         }

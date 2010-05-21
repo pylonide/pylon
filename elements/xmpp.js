@@ -1717,9 +1717,9 @@ apf.xmpp = function(struct, tagName){
                     if (!oX) continue;
                     sType = oX.getAttribute("type");
                     this.dispatchEvent("datastatuschange", {
-                        type   : sType,
-                        from   : sFrom,
-                        fields : fieldsToObject(oX.getElementsByTagName("field"))
+                        type      : sType,
+                        annotator : sFrom,
+                        fields    : fieldsToObject(oX.getElementsByTagName("field"))
                     });
                 }
                 else if (sMsg && sThread == "rdb") {
