@@ -447,7 +447,20 @@ apf.radiobutton = function(struct, tagName){
     this.$destroy = function(){
         if (this.$group)
             this.$group.$removeRadio(this);
-    }
+    };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $radiobutton       : this.oInput
+            }
+        }
+
+        return this.$activeElements;
+    };
+    //#endif
 }).call(apf.radiobutton.prototype = new apf.Presentation());
 
 apf.aml.setElement("radiobutton", apf.radiobutton);

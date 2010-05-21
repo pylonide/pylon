@@ -710,6 +710,42 @@ apf.calendar = function(struct, tagName){
         apf.destroyHtmlNode(this.$ext);
         this.oCalendar = null;
     };
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {}
+            
+            // set navigation buttons
+            for (var b, bi = 0, bl = this.oNavigation.childNodes.length; bi < bl; bi++) {
+                if ((b = this.oNavigation.childNodes[bi]).className.trim().indexOf("status") == -1)
+                    this.$activeElements["$" + b.className.trim().split(" ")[1] + "Btn"] = b;
+                else
+                    this.$activeElements["$" + b.className.trim().split(" ")[1] + "Label"] = b;
+            }
+            // set day of week labels
+            for (bi = 0, bl = this.oDow.childNodes.length; bi < bl; bi++) {
+                if ((b = this.oDow.childNodes[bi]).innerHTML != "&nbsp;")
+                    this.$activeElements["$" + b.innerHTML + "Label"] = b;
+            }
+        }
+        
+        // / set againset day selection buttons
+        for (var row, ri = 0, rl = (row = this.oContent.childNodes).length; ri < rl; ri++) {
+            for (bi = 0, bl = row[ri].childNodes.length; bi < bl; bi++) {
+                if ((b = row[ri].childNodes[bi]).className.indexOf("weeknumber") == -1) {
+                    this.$activeElements["$day" + b.innerHTML + "Btn"] = b;
+                }
+                else {
+                    this.$activeElements["$week" + b.innerHTML + "Label"] = b;
+                }
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 }).call(apf.calendar.prototype = new apf.StandardBinding());
 
 apf.aml.setElement("calendar", apf.calendar);

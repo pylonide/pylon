@@ -241,6 +241,19 @@ apf.checkbox = function(struct, tagName){
             this.$propHandlers["label"].call(this, this.label);
     })
     //#endif
+    
+    // #ifdef __WITH_UIRECORDER
+    this.$getActiveElements = function() {
+        // init $activeElements
+        if (!this.$activeElements) {
+            this.$activeElements = {
+                $checkbox       : this.$input
+            }
+        }
+
+        return this.$activeElements;
+    }
+    //#endif
 }).call(apf.checkbox.prototype = new apf.BaseButton());
 
 apf.aml.setElement("checkbox", apf.checkbox);

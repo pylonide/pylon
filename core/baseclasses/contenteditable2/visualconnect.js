@@ -49,7 +49,12 @@ apf.visualConnect = function (sel){
         s: "#24a3f4",
         f: "#24a3f4"
     });
-    
+    var paintConnections = paintGroup.shape({
+        p: "",
+        sw: 1.5,
+        s: "#24a3f4",
+        f: "#24a3f4"
+    });
     this.activate = function(e, timeout){
         if (active) 
             return;
@@ -57,10 +62,10 @@ apf.visualConnect = function (sel){
         active = true
         //document.getElementById("log").innerHTML += "activated<br>";
         var _self = this;
-        var path = [], hNode, pos, selection = sel.$getNodeList(), lines = [];
+        var drawPath = [], connectionPath = [], hNode, pos, selection = sel.$getNodeList(), lines = [];
 
         apf.plane.show();
-
+/*
         var showAllTimer = setTimeout(function(){
             // lets show the drawing till someone clicks and then its gone
             // lets create some random lines
@@ -70,21 +75,40 @@ apf.visualConnect = function (sel){
                 var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
                 path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
             }
+
             paintLine.style({p: path.join(" ")});
             paintGroup.style({v:1});
             paintGroup.repaint();
         }, timeout);
-        
+*/
         var timer, lastTime;
         var isDrawing = false;
         var isFar = false;
-        if(selection.length>1){
+
+        if(selection.length){
+            for (var i = 0, l = selection.length; i < l; i++) {
+                for (var val, targetEl, targetProp, split, j = 0, jl = selection[i].attributes.length; j < jl; j++) {
+                    if ((val = selection[i].attributes[j].value).charAt(0) == "{") {
+                        targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1));
+                        targetProp = split[1].substr(0, split[1].length-1);
+                        drawConnection(selection[0], targetEl);
+                    }
+                }
+            }
+            if (connectionPath.length) {
+                paintConnections.style({p: connectionPath.join(" ")});
+
+                apf.plane.show();
+                paintGroup.style({v:1});
+                paintGroup.repaint();
+            }
+            
             startDraw(e);
         }
-        
+
         function startDraw(e){
             apf.dragMode = true; //prevents selection
-            paintLine.style({p: path.join(" ")});
+            paintLine.style({p: drawPath.join(" ")});
             paintGroup.style({v:1});
             paintGroup.repaint();
             isDrawing = true;
@@ -101,6 +125,16 @@ apf.visualConnect = function (sel){
             var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
             var amlNode = apf.findHost(htmlNode);
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
+                for (var i = 0, l = selection.length; i < l; i++) {
+                    drawConnection(selection[i], amlNode);
+                }
+                if (connectionPath.length) {
+                    paintConnections.style({p: connectionPath.join(" ")});
+
+                    apf.plane.show();
+                    paintGroup.style({v:1});
+                    paintGroup.repaint();
+                }
                 // we are going to make a connection between nodes
                 
                 /*
@@ -111,6 +145,7 @@ apf.visualConnect = function (sel){
                     mnuContentEditable.display(x, y);
                 });
                 */
+                
             }
             _self.deactivate();
             isDrawing = false;
@@ -139,14 +174,14 @@ apf.visualConnect = function (sel){
                 });
             }
             
-            var path = [];
+            var drawPath = [];
             for (var i = 0, il = selection.length; i < il; i++) {
                 hNode = selection[i].$ext;
                 pos = apf.getAbsolutePosition(hNode);
                 var sx =  ~~(pos[0] + (hNode.offsetWidth/2)), sy = ~~(pos[1] + (hNode.offsetHeight/2)), ex = e.clientX, ey = e.clientY;
-                path.push("M",sx,sy,"L",ex,ey,paintGroup.circlePath(sx,sy,3,3),paintGroup.circlePath(ex,ey,3,3));
+                drawPath.push("M",sx,sy,"L",ex,ey,paintGroup.circlePath(sx,sy,3,3),paintGroup.circlePath(ex,ey,3,3));
             }
-            paintLine.style({p: path.join(" ")});
+            paintLine.style({p: drawPath.join(" ")});
 
             apf.plane.show();
             paintGroup.style({v:1});
@@ -178,14 +213,16 @@ apf.visualConnect = function (sel){
         document.onmousedown = function(e){
             if (!e) e = event;
 
-            clearTimeout(showAllTimer);
+            //clearTimeout(showAllTimer);
             
             if(!isDrawing){
-                apf.plane.hide();
-                var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-                var amlNode = apf.findHost(htmlNode);
-                sel.$selectList(selection = [amlNode]);
-                apf.plane.show();
+                if (!selection.length) {
+                    apf.plane.hide();
+                    var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
+                    var amlNode = apf.findHost(htmlNode);
+                    sel.$selectList(selection = [amlNode]);
+                    apf.plane.show();
+                }
                 // lets get the selection we clicked on to draw a line
                 startDraw(e);
             } else {
@@ -197,6 +234,16 @@ apf.visualConnect = function (sel){
             // lets see if we should stop drawing
             if(!isDrawing)
                 apf.dragMode = false; //prevents selection
+        }
+        
+        function drawConnection(el1, el2) {
+            hNode = el1.$ext;
+            var hNode2 = el2.$ext;
+            var pos1 = apf.getAbsolutePosition(hNode);
+            var pos2 = apf.getAbsolutePosition(hNode2);
+            
+            var sx =  ~~(pos1[0] + (hNode.offsetWidth/2)), sy = ~~(pos1[1] + (hNode.offsetHeight/2)), ex = ~~(pos2[0] + (hNode2.offsetWidth/2)), ey = ~~(pos2[1] + (hNode2.offsetHeight/2));
+            connectionPath.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
         }
     };
 
@@ -210,6 +257,7 @@ apf.visualConnect = function (sel){
         apf.plane.hide();
         //debugger;
         paintLine.style({p:""});
+        paintConnections.style({p:""});
         paintRect.style({w:0,h:0});
         paintGroup.style({v:0});
         paintGroup.repaint();
