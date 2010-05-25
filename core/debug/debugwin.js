@@ -880,7 +880,7 @@ apf.$debugwin = {
                 }
 
                 return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(null, " 
-                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + code.split(";").pop().replace(/"/g, "\\&quot;") + "\")'>" 
+                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + (code || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>" 
                         + out.join(" ") + " }</a>";
             }
             else {

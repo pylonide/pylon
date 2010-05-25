@@ -199,7 +199,7 @@ apf.uirecorder.capture = {
         data.type       = amlNode.localName;
         var xpath       = apf.xmlToXpath(amlNode)
         data.xpath      = xpath.substr(xpath.indexOf("/")+1);
-        if (amlNode.getValue() && ["text","textarea","textbox"].indexOf(amlNode.localName) == -1) data.value = (eventName != "keypress") ? amlNode.getValue() : amlNode.getValue() + value;
+        if (amlNode.getValue && ["text","textarea","textbox"].indexOf(amlNode.localName) == -1) data.value = (eventName != "keypress") ? amlNode.getValue() : amlNode.getValue() + value;
         if (amlNode.label) data.label = amlNode.label;
         
         var pos = apf.getAbsolutePosition(amlNode.$ext, document.body);
@@ -218,7 +218,7 @@ apf.uirecorder.capture = {
                 
                 if (amlNode.selected) {
                     data.selected = {};
-                    if (amlNode.getValue())
+                    if (amlNode.getValue)
                         data.selected.value = amlNode.getValue();
                     var xpath = apf.xmlToXpath(amlNode.selected);
                     data.selected.xpath     = xpath.substr(xpath.indexOf("/")+1);
@@ -363,7 +363,14 @@ apf.uirecorder.capture = {
             }
         }
         */
-        if (["mousemove", "mousescroll"].indexOf(eventName) == -1) {
+        if (this.$prevAction) {
+            if (this.$prevAction.name == "mousedown")
+                this.$mousedownMode = true;
+            else if (this.$mousedownMode && this.$prevAction.name == "mouseup")
+                this.$mousedownMode = false;
+        }
+        
+        if (this.$mousedownMode || ["mousemove", "mousescroll"].indexOf(eventName) == -1) {
             actionObj.keyActionIdx = this.$keyActionIdx;
             this.$keyActions.push(actionObj);
             this.$keyActionIdx++;
@@ -680,12 +687,12 @@ apf.uirecorder.capture = {
             if (this.$keyActions[1].amlNode) {
                 if (this.$keyActions[1].amlNode.type != "list") {
                     if (!this.$keyActions[1].amlNode.activeElement)
-                        apf.uirecorder.capture.$curTestId = "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + (this.$keyActions[0].amlNode.label || this.$keyActions[0].amlNode.value || this.$keyActions[0].amlNode.xpath)));
+                        apf.uirecorder.capture.$curTestId = "click on " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + (this.$keyActions[0].amlNode.label || (typeof this.$keyActions[0].amlNode.value == "string" ? this.$keyActions[0].amlNode.value : this.$keyActions[0].amlNode.xpath))));
                     else
-                        apf.uirecorder.capture.$curTestId = "click on " + this.$keyActions[1].amlNode.activeElement.name + " of " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + (this.$keyActions[0].amlNode.label || this.$keyActions[0].amlNode.value || this.$keyActions[0].amlNode.xpath)));
+                        apf.uirecorder.capture.$curTestId = "click on " + this.$keyActions[1].amlNode.activeElement.name + " of " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + (this.$keyActions[0].amlNode.label || (typeof this.$keyActions[0].amlNode.value == "string" ? this.$keyActions[0].amlNode.value : this.$keyActions[0].amlNode.xpath))));
                 }
                 else {
-                    apf.uirecorder.capture.$curTestId = "select " + this.$keyActions[1].amlNode.type + " item " + (this.$keyActions[1].amlNode.selected.value || this.$keyActions[1].amlNode.selected.xpath);
+                    apf.uirecorder.capture.$curTestId = "select " + this.$keyActions[1].amlNode.type + " item " + (typeof this.$keyActions[1].amlNode.value == "string" ? this.$keyActions[1].amlNode.value : this.$keyActions[1].amlNode.xpath);
                 }
             }
         }
@@ -1239,7 +1246,6 @@ apf.uirecorder.playback = {
             apf.uirecorder.isTesting = false;
             apf.uirecorder.isPlaying = false;
             apf.uirecorder.capture.stop();
-            debugger;
         }, 500);
     },
     
