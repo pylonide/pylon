@@ -174,16 +174,16 @@ apf.$x = apf.$loader
         
         "core/markup/xhtml/element.js",
         "core/markup/xsd/element.js",
-        "core/baseclasses/contenteditable2.js"
+        "core/baseclasses/contenteditable.js"
     )
     .wait()
     .script(
-        "core/baseclasses/contenteditable2/clipboard.js",
-        "core/baseclasses/contenteditable2/commands.js",
-        "core/baseclasses/contenteditable2/interactive.js",
-        "core/baseclasses/contenteditable2/selectrect.js",
-        "core/baseclasses/contenteditable2/visualselect.js",
-        "core/baseclasses/contenteditable2/visualconnect.js",
+        "core/baseclasses/contenteditable/clipboard.js",
+        "core/baseclasses/contenteditable/commands.js",
+        "core/baseclasses/contenteditable/interactive.js",
+        "core/baseclasses/contenteditable/selectrect.js",
+        "core/baseclasses/contenteditable/visualselect.js",
+        "core/baseclasses/contenteditable/visualconnect.js",
     
         "core/markup/xhtml/ignore.js",
         "core/markup/xhtml/option.js",

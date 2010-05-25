@@ -105,7 +105,7 @@ apf.selectrect = function (){
             if (!amlNode.editable)
                 return;
               
-            //apf.ContentEditable2.resize.grab(amlNode);
+            //apf.ContentEditable.resize.grab(amlNode);
 
             q.style.display = "block";
             q.style.left    = (startX = event.clientX) + "px";

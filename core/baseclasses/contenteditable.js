@@ -19,7 +19,7 @@
  *
  */
 apf.__CONTENTEDITABLE__  = 1 << 24;
-// #ifdef __WITH_CONTENTEDITABLE2
+// #ifdef __WITH_CONTENTEDITABLE
 
 apf.addEventListener("load", function(){
     apf.window.undoManager.addEventListener("afterchange", function(){
@@ -222,7 +222,7 @@ apf.addEventListener("load", function(){
     });*/
 });
 
-apf.ContentEditable2 = function() {
+apf.ContentEditable = function() {
     this.$regbase = this.$regbase | apf.__CONTENTEDITABLE__;
 
     this.editable = false;
@@ -240,7 +240,7 @@ apf.ContentEditable2 = function() {
         
         if (value) {
             //#ifdef __WITH_DEBUG_WIN
-            if (!apf.ContentEditable2.inited && this.parentNode.nodeType == 9) {
+            if (!apf.ContentEditable.inited && this.parentNode.nodeType == 9) {
                 apf.getData(apf.basePath + "/debugwin/editable.css", {
                     callback: function(data){
                         apf.importCssString(data);
@@ -256,7 +256,7 @@ apf.ContentEditable2 = function() {
                     apf.document.documentElement.insertMarkup(apf.basePath 
                         + "/debugwin/editable.inc");
                 
-                apf.ContentEditable2.inited = true;
+                apf.ContentEditable.inited = true;
             }
             //#endif
             
@@ -316,22 +316,22 @@ apf.ContentEditable2 = function() {
                         ? this.$ext 
                         : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
                     if (apf.isIE)
-                        htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
+                        htmlNode.ondblclick = apf.ContentEditable.$renameStart;
                     else {
                         apf.addListener(htmlNode, "mousedown", 
-                          apf.ContentEditable2.$renameStart);
+                          apf.ContentEditable.$renameStart);
                     }
                     
                     this.addEventListener("$skinchange", 
-                        apf.ContentEditable2.$renameSkinChange);
+                        apf.ContentEditable.$renameSkinChange);
                 }
                 
                 //Contextmenu
                 this.addEventListener("contextmenu", 
-                    apf.ContentEditable2.$contextMenu);
+                    apf.ContentEditable.$contextMenu);
                 
                 //Drag & Resize
-                apf.ContentEditable2.addInteraction(this);
+                apf.ContentEditable.addInteraction(this);
             }
             this.isContentEditable = true;
             
@@ -415,18 +415,18 @@ apf.ContentEditable2 = function() {
                         htmlNode.ondblclick = null;
                     else {
                         apf.removeListener(htmlNode, "mousedown", 
-                            apf.ContentEditable2.$renameStart);
+                            apf.ContentEditable.$renameStart);
                     }
                     
                     this.removeEventListener("$skinchange", 
-                        apf.ContentEditable2.$renameSkinChange);
+                        apf.ContentEditable.$renameSkinChange);
                 }
                 
                 //Contextmenu
                 this.removeEventListener("contextmenu", 
-                    apf.ContentEditable2.$contextMenu);
+                    apf.ContentEditable.$contextMenu);
                 
-                apf.ContentEditable2.removeInteraction(this);
+                apf.ContentEditable.removeInteraction(this);
                 
                 var sel = this.ownerDocument.$getVisualSelect().getLastSelection();//this.ownerDocument.getSelection().$getNodeList();
                 if (sel.indexOf(this) > -1)
@@ -435,7 +435,7 @@ apf.ContentEditable2 = function() {
             this.isContentEditable = false;
             
             //@todo hack!
-            //apf.ContentEditable2.resize.hide();
+            //apf.ContentEditable.resize.hide();
             
             apf.setStyleClass(this.$ext, "", ["editable"]);
         }
@@ -462,7 +462,7 @@ apf.ContentEditable2 = function() {
         
     });
 };
-apf.ContentEditable2.$contextMenu = function(e){
+apf.ContentEditable.$contextMenu = function(e){
     this.ownerDocument.execCommand("contextmenu", true, {
         amlNode: this,
         htmlEvent: e
@@ -475,7 +475,7 @@ apf.ContentEditable2.$contextMenu = function(e){
 
 (function(){
     var time;
-    apf.ContentEditable2.$renameStart = apf.isIE
+    apf.ContentEditable.$renameStart = apf.isIE
       ? function(){
         e = event;
         if (e.srcElement != this)
@@ -498,24 +498,24 @@ apf.ContentEditable2.$contextMenu = function(e){
       }
 })();
 
-apf.ContentEditable2.$renameSkinChange = function(e){
+apf.ContentEditable.$renameSkinChange = function(e){
     var rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this);
     var htmlNode = !rInfo[0] 
         ? this.$ext 
         : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
     if (apf.isIE) {
-        htmlNode.ondblclick = apf.ContentEditable2.$renameStart;
+        htmlNode.ondblclick = apf.ContentEditable.$renameStart;
         //@todo apf3.0 memory leak - fix this
         //e.ext ... .ondblclick        = null;
     }
     else {
         apf.addListener(htmlNode, "mousedown", 
-          apf.ContentEditable2.$renameStart);
+          apf.ContentEditable.$renameStart);
     }
 }
 
 
-apf.XhtmlElement.prototype.implement(apf.ContentEditable2);
+apf.XhtmlElement.prototype.implement(apf.ContentEditable);
 
 apf.config.$inheritProperties["editable"] = 2;
 // #endif

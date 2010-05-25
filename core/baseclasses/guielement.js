@@ -194,7 +194,7 @@ apf.GuiElement = function(){
         ,apf.Alignment
         //#endif
         //#ifdef __WITH_CONTENTEDITABLE
-        ,apf.ContentEditable2
+        ,apf.ContentEditable
         //#endif
     );
     
@@ -785,7 +785,7 @@ apf.GuiElement.propHandlers = {
      */
     //#ifdef __WITH_CONTENTEDITABLE
     /*"editable": function(value){
-        this.implement(apf.ContentEditable2);
+        this.implement(apf.ContentEditable);
         this.$propHandlers["editable"].apply(this, arguments);
     },*/
     // #endif

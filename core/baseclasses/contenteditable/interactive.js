@@ -22,7 +22,7 @@
 //#ifdef __WITH_CONTENTEDITABLE
 
 /*
-    Adds complex resize/drag behaviour for contentEditable2
+    Adds complex resize/drag behaviour for ContentEditable
 */
 (function(){
     function isCoord(n){
@@ -1327,7 +1327,7 @@
             amlNode.$stuck = [false, false, false, false];
     }
 
-    apf.ContentEditable2.addInteraction    = function(amlNode){
+    apf.ContentEditable.addInteraction    = function(amlNode){
         if (!inited)
             init();
         
@@ -1342,7 +1342,7 @@
         setDefaultStuck(amlNode);
     }
     
-    apf.ContentEditable2.removeInteraction = function(amlNode){
+    apf.ContentEditable.removeInteraction = function(amlNode){
         amlNode.removeEventListener("beforedragstart", beforedragstart);
         amlNode.removeEventListener("beforedrag",      beforedrag);
         amlNode.removeEventListener("beforeresize",    beforeresize);

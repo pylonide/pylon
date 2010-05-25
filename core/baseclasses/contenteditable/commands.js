@@ -20,7 +20,7 @@
  */
 
 //#ifdef __WITH_CONTENTEDITABLE
-apf.ContentEditable2.commands = (function(){
+apf.ContentEditable.commands = (function(){
     var STATE = 1;
     var VALUE = 2;
     var ENABL = 3;
@@ -576,7 +576,7 @@ apf.ContentEditable2.commands = (function(){
                 item.parentNode.appendChild(apf.getCleanCopy(item)));
         });
         
-        /*apf.ContentEditable2.execCommand("resetgeo", {
+        /*apf.ContentEditable.execCommand("resetgeo", {
             sel: nodes
         });*/
         
@@ -703,15 +703,15 @@ apf.ContentEditable2.commands = (function(){
             case INDET: return false;
         }
         
-        apf.ContentEditable2.execCommand("property", {
+        apf.ContentEditable.execCommand("property", {
             name: "align", value: options.to
         });
         if ("left|middle|right".indexOf(options.to) > -1)
-            apf.ContentEditable2.execCommand("property", {
+            apf.ContentEditable.execCommand("property", {
                 name: "height", value: ""
             });
         if ("top|middle|bottom".indexOf(options.to) > -1)
-            apf.ContentEditable2.execCommand("property", {
+            apf.ContentEditable.execCommand("property", {
                 name: "width", value: ""
             });
 
