@@ -24,7 +24,6 @@ apf.V8DebugHost = function(hostname, port) {
             return;
 
         this.state = "connecting";
-
         
         // TODO #IDE-52
         var o3obj = document.getElementsByTagName("embed")[0];
@@ -59,24 +58,22 @@ apf.V8DebugHost = function(hostname, port) {
     };
     
     this.detach = function(dbg, callback) {        
-        if (this.$debugger && this.$debugger !== dbg)
+        if (!dbg.$debugger || this.$debugger !== dbg)
             return callback();
         
+        this.$debugger = null;
+
         var self = this;
         this.$v8ds.detach(0, function(err) {
-            self.$debugger = null;
             dbg.dispatchEvent("detach");
+            self.$socket.close();
+            self.dispatchEvent("disconnect", {});
             callback && callback(err);
         });                
     };  
     
     this.disconnect = function(callback) {
-        var self = this;
-        this.detach(this.$debugger, function() {
-            self.$socket.close();
-            self.dispatchEvent("disconnect", {});
-            callback && callback();
-        });
+        this.detach(this.$debugger, callback);
     };
     
 }).call(apf.V8DebugHost.prototype = new apf.Class());

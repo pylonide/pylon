@@ -57,13 +57,12 @@
 			<a:bar>
 	        	<a:button
 	        	  icon="standalone_v8_16.png"
-	        	  onclick="dbg.attach(dbgNode)" />
+	        	  onclick="dbg.attach(dbgNode)"
+	        	  disabled="{stConnected.active}" />
 	        	<a:button
 	        	  icon="chromium_16"
-	        	  onclick="winTab.show(); dbgChrome.loadTabs()" />
-	        	<a:button
-	        	  icon="ldebug_obj.gif"
-	        	  onclick="winTab.show(); dbgChrome.loadTabs()" />
+	        	  onclick="winTab.show(); dbgChrome.loadTabs()"
+	        	  disabled="{stConnected.active}" />
 	        	<a:divider />
 	        	<a:button
 	        	  icon="{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
@@ -71,7 +70,7 @@
 	        	  disabled="{!stAttached.active}" />
 	        	<a:button
 	        	  icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}"
-	        	  onclick="dbgChrome.disconnect();"
+	        	  onclick="dbgChrome.disconnect();dbgNode.disconnect();"
 	        	  disabled="{!stConnected.active}" />
 	        </a:bar>
         </a:toolbar>
