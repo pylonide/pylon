@@ -36,6 +36,14 @@
           model-tabs      = "mdlTabs"
           state-connected = "stConnected" />
 
+        <a:debughost id="dbgNode"
+          port     = "5858" 
+          server   = "localhost" 
+          type     = "v8"
+          autoinit = "false"
+          model-tabs      = "mdlTabs"
+          state-connected = "stConnected" />
+
          <!-- tab       = "{ide.getProjectUrl()}" 
           active    = "auto"-->
          
@@ -47,6 +55,12 @@
 
 		<a:toolbar align="top" height="26">
 			<a:bar>
+	        	<a:button
+	        	  icon="standalone_v8_16.png"
+	        	  onclick="dbg.attach(dbgNode)" />
+	        	<a:button
+	        	  icon="chromium_16"
+	        	  onclick="winTab.show(); dbgChrome.loadTabs()" />
 	        	<a:button
 	        	  icon="ldebug_obj.gif"
 	        	  onclick="winTab.show(); dbgChrome.loadTabs()" />

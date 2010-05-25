@@ -1,7 +1,6 @@
-apf.ChromeDebugHost = function(hostname, port, o3obj) {
+apf.ChromeDebugHost = function(hostname, port) {
     this.$hostname = hostname;
     this.$port = port;
-    this.o3obj = o3obj;
     
     this.$debuggers = {};
     
@@ -12,10 +11,15 @@ apf.ChromeDebugHost = function(hostname, port, o3obj) {
 (function() {
      
     this.$connect = function(callback) {
+        var self = this;
+
         if (this.state == "connected") {
             return callback.call(this);
         } else {
-            this.addEventListener("connect", callback);
+            this.addEventListener("connect", function() {
+                self.removeEventListener("connect", arguments.callee);
+                callback.call(self);
+            });
         }
         if (this.state == "connecting")
             return;
@@ -28,7 +32,6 @@ apf.ChromeDebugHost = function(hostname, port, o3obj) {
         var socket = this.$socket = new O3Socket(this.$hostname, this.$port, o3obj);
         var msgStream = new ChromeDebugMessageStream(socket);
 
-        var self = this;
         msgStream.addEventListener("connect", function() {
             self.$dts = new DevToolsService(msgStream);
             self.$v8ds = new V8DebuggerService(msgStream);

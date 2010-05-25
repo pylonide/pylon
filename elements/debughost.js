@@ -22,8 +22,8 @@ apf.debughost = function(struct, tagName){
     this.$propHandlers["model-tabs"] = function(value) {
         if (!value) return;
 
-        this.$modelTabs = apf.setReference(value,
-            apf.nameserver.register("model", value, new apf.model()));
+        this.$modelTabs = apf.nameserver.get("model", value) || 
+            apf.setReference(value, apf.nameserver.register("model", value, new apf.model()));
         
         // set the root node for this model
         this.$modelTabs.id = this.$modelTabs.name = value;
@@ -32,9 +32,8 @@ apf.debughost = function(struct, tagName){
 
     this.$propHandlers["state-connected"] = function(value) {
         if (!value) return;
-        
-        this.$stateConnected = apf.setReference(value,
-                apf.nameserver.register("state", value, new apf.state()));
+        this.$stateConnected = apf.nameserver.get("state", value) || 
+            apf.setReference(value, apf.nameserver.register("state", value, new apf.state()));
         
         // set the root node for this model
         this.$stateConnected.id = this.$stateConnected.name = value;
@@ -46,10 +45,14 @@ apf.debughost = function(struct, tagName){
             return;
         }
         
-        if (this.type == "chrome") {
-            this.$o3obj =  
+        if (this.type == "chrome" || this.type == "v8") {
             
-            this.$host = new apf.ChromeDebugHost(this.server, this.port);
+            if (this.type == "chrome") {
+                this.$host = new apf.ChromeDebugHost(this.server, this.port);
+            } else {
+                this.$host = new apf.V8DebugHost(this.server, this.port);
+            }
+                
             var self = this;
             this.$host.addEventListener("connect", function() {
                 self.dispatchEvent("connect");
@@ -79,9 +82,9 @@ apf.debughost = function(struct, tagName){
             this.init();
     });
     
-    this.$attach = function(dbg, tab, callback) {
+    this.$attach = function(dbg, tab, callback) {        
         if (!this.$host) 
-            throw new Error("unable to attach to an uninitialized host.");
+            this.init();
         
         if (tab) {
             var id = tab.getAttribute("id");
