@@ -5,6 +5,11 @@ apf.V8Debugger = function(dbg, host) {
     this.$host = host;
     
     this.$breakpoints = {};
+    
+    var self = this;
+    dbg.addEventListener("changeRunning", function(e) {        
+        self.dispatchEvent("changeRunning", e);
+    });
 };
 
 (function() {
@@ -102,6 +107,22 @@ apf.V8Debugger = function(dbg, host) {
         }
     };
     
+    this.continueScript = function() {
+        this.$debugger.continueScript();
+    };
+
+    this.stepInto = function() {
+        this.$debugger.continueScript("in", 1);
+    };
+
+    this.stepNext = function() {
+        this.$debugger.continueScript("next", 1);
+    };
+
+    this.stepOut = function() {
+        this.$debugger.continueScript("out", 1);
+    };
+
     this.$valueString = function(value) {
         switch (value.type) {
             case "undefined":

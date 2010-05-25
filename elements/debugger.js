@@ -59,6 +59,10 @@ apf.dbg = function(struct, tagName){
             
             self.$loadSources();
             
+            dbgImpl.addEventListener("changeRunning", function(e) {
+                self.$stRunning.setProperty("active", dbgImpl.isRunning());
+            });
+            
             dbgImpl.addEventListener("detach", function() {
                 self.$host = null;
                 self.$debugger = null;
@@ -91,6 +95,22 @@ apf.dbg = function(struct, tagName){
         this.$debugger.toggleBreakpoint(script, row, this.$mdlBreakpoints);
     };
 
+    this.continueScript = function() {
+        this.$debugger.continueScript();
+    };
+
+    this.stepInto = function() {
+        this.$debugger.stepInto();
+    };
+
+    this.stepNext = function() {
+        this.$debugger.stepNext();
+    };
+
+    this.stepOut = function() {
+        this.$debugger.stepOut();
+    };    
+    
 }).call(apf.dbg.prototype = new apf.AmlElement());
 
 apf.aml.setElement("debugger", apf.dbg);
