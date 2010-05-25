@@ -696,6 +696,10 @@ apf.xmpp = function(struct, tagName){
                 this.$retryCount = 0;
                 clearTimeout(this.$listener);
                 this.$listener = null;
+                this.dispatchEvent("reconnect", {
+                    username: this.$serverVars["username"],
+                    server  : this.url
+                });
                 return this.connect(this.$serverVars["username"], this.$serverVars["password"],
                     this.$serverVars["login_callback"],
                     this.$serverVars["register"] || this["auto-register"]);
@@ -1494,7 +1498,6 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.$listen = function() {
-
         if (this.$listening === true || !this.$serverVars[CONN]) return;
 
         this.$listening = true;
