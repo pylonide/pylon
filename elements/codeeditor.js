@@ -34,7 +34,7 @@
  * @version     %I%, %G%
  * @since       0.1
  */
-apf.codeeditor = function(struct, tagName){
+apf.codeeditor = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
     
     this.documents = [];
@@ -45,13 +45,10 @@ apf.codeeditor = function(struct, tagName){
     this.setProperty("col", 1)
 };
 
-(function(){
+(function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
         apf.DataAction
-        //#endif
-        //#ifdef __WITH_XFORMS
-        //,apf.XForms
         //#endif
     );
 
@@ -59,7 +56,6 @@ apf.codeeditor = function(struct, tagName){
     this.$childProperty    = "value";
     this.isContentEditable = true;
 
-    //this.realtime          = false;
     this.syntax            = "text";
     this.tabsize           = 4;
     this.softtabs          = true;
@@ -70,12 +66,6 @@ apf.codeeditor = function(struct, tagName){
     this.caching           = true;
     this.showinvisibles    = true;
     
-    /**
-     * @attribute {Boolean} realtime whether the value of the bound data is
-     * updated as the user types it, or only when this element looses focus or
-     * the user presses enter.
-     */
-    this.$booleanProperties["realtime"]         = true;
     this.$booleanProperties["activeline"]       = true;
     this.$booleanProperties["caching"]          = true;
     this.$booleanProperties["readonly"]         = true;
@@ -85,7 +75,7 @@ apf.codeeditor = function(struct, tagName){
     this.$booleanProperties["readonly"]         = true;
     this.$booleanProperties["softtabs"]         = true;
 
-    this.$supportedProperties.push("value", "realtime", "syntax", 
+    this.$supportedProperties.push("value", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
         "showprintmargin", "printmargincolumn", "overwrite", "readonly", 
         "tabsize", "softtabs");
@@ -175,10 +165,6 @@ apf.codeeditor = function(struct, tagName){
     
     this.$propHandlers["syntax"] = function(value){
         this.$editor.getDocument().setMode(this.$modes[value]);
-    };
-    
-    this.$propHandlers["realtime"] = function(value){
-        
     };
     
     this.$propHandlers["activeline"] = function(value){
@@ -287,7 +273,6 @@ apf.codeeditor = function(struct, tagName){
         if (!this.$ext)
             return;
 
-        //if (!this.realtime)
         if (this.value != this.getValue())
             this.change(this.getValue());
 
@@ -333,10 +318,6 @@ apf.codeeditor = function(struct, tagName){
         apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);        
     };
 
-    this.$loadAml = function() {
-        if (typeof this.realtime == "undefined")
-            this.$setInheritedAttribute("realtime");
-    }
 // #ifdef __WITH_DATABINDING
 }).call(apf.codeeditor.prototype = new apf.StandardBinding());
 /* #else
@@ -344,7 +325,6 @@ apf.codeeditor = function(struct, tagName){
 #endif*/
 
 apf.config.$inheritProperties["initial-message"] = 1;
-apf.config.$inheritProperties["realtime"]        = 1;
 
 apf.aml.setElement("codeeditor", self.ace ? apf.codeeditor : apf.textbox);
 // #endif
