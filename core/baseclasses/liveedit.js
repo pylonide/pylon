@@ -60,11 +60,11 @@ apf.LiveEdit = function() {
                             "justifyfull", "removeformat", "cut", "copy",
                             "paste", "outdent", "indent", "undo", "redo"];
 
-    this.$supportedProperties.push("contenteditable", "state", "plugins",
+    this.$supportedProperties.push("liveedit", "state", "plugins",
         "realtime", "language");
-    this.$booleanProperties["contenteditable"] = true;
-    this.$booleanProperties["realtime"]        = true;
-    this.$propHandlers["contenteditable"]      = function(value){
+    this.$booleanProperties["liveedit"] = true;
+    this.$booleanProperties["realtime"] = true;
+    this.$propHandlers["liveedit"]      = function(value){
         var o = this.$edVars;
         if (apf.isTrue(value)) {
             var _self = this;
@@ -214,7 +214,7 @@ apf.LiveEdit = function() {
 
     this.addEventListener("focus", function(e){
         var o = this.$edVars;
-        if (!this.contenteditable || o.skipFocusOnce && !(o.skipFocusOnce = false)) {
+        if (!this.liveedit || o.skipFocusOnce && !(o.skipFocusOnce = false)) {
             o.lastActiveNode = null;
             return;
         }
@@ -248,7 +248,7 @@ apf.LiveEdit = function() {
     });
     
     this.addEventListener("blur", function(e){
-        if (!this.contenteditable)
+        if (!this.liveedit)
             return;
         
         var o = this.$edVars;
@@ -270,7 +270,7 @@ apf.LiveEdit = function() {
     });
 
     this.addEventListener("load", function(){
-        if (!this.contenteditable)
+        if (!this.liveedit)
             return;
 
         createEditor(initTabStack()[0]);
@@ -292,7 +292,7 @@ apf.LiveEdit = function() {
      */
     this.addEventListener("keydown", function(e) {
         var o = this.$edVars;
-        if (!this.contenteditable && !o.bStandalone)
+        if (!this.liveedit && !o.bStandalone)
             return;
 
         e = e || window.event;
@@ -499,7 +499,7 @@ apf.LiveEdit = function() {
     this.addEventListener("keyup", function(e) {
         var _self = this,
             o     = this.$edVars;
-        if (!this.contenteditable && !o.bStandalone)
+        if (!this.liveedit && !o.bStandalone)
             return;
 
         if (this.$selection)
@@ -1891,10 +1891,10 @@ apf.LiveEdit.plugin = function(sName, fExec) {
     };
 };
 
-apf.GuiElement.propHandlers["contenteditable"] = function(value) {
+apf.GuiElement.propHandlers["liveedit"] = function(value) {
     this.implement(apf.LiveEdit);
     if (!this.hasFeature(apf.__VALIDATION__))
         this.implement(apf.Validation);
-    this.$propHandlers["contenteditable"].apply(this, arguments);
+    this.$propHandlers["liveedit"].apply(this, arguments);
 }
 // #endif

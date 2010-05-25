@@ -2146,7 +2146,7 @@ apf.lm_exec = new (function(){
 
     function _valed(n, m, x){ 	// a value with editable div
         if(n) x = m;
-        return "<div contenteditable='true' class='contenteditable'>CONTENT_EDITABLE_TODO</div>";
+        return "<div liveedit='true' class='liveedit'>CONTENT_EDITABLE_TODO</div>";
     }
 
     function _nod_del(n, m, x){ // delete node

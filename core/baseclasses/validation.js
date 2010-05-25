@@ -379,7 +379,7 @@ apf.Validation = function(){
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
 
     this.$fValidate = function(){
-        if (this.contenteditable)
+        if (this.liveedit)
             return;
         
         if (!this.$validgroup)

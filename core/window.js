@@ -933,8 +933,8 @@ apf.window = function(){
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target),
             cEditable = amlNode && amlNode.$editable
-              // #ifdef __WITH_CONTENTEDITABLE
-              || (amlNode && amlNode.hasFeature(apf.__CONTENTEDITABLE__))
+              // #ifdef __WITH_LIVEEIDT
+              || (amlNode && amlNode.hasFeature(apf.__LIVEEDIT__))
               // #endif
             ;
 
@@ -990,12 +990,12 @@ apf.window = function(){
     
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug) {
-                var isContentEditable = (ta[e.srcElement.tagName] 
-                    || e.srcElement.isContentEditable) && !e.srcElement.disabled
-                    || amlNode.$isContentEditable
-                    && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
+                var isLiveEdit = (ta[e.srcElement.tagName]
+                    || e.srcElement.isLiveEdit) && !e.srcElement.disabled
+                    || amlNode.$isLiveEdit
+                    && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
     
-                if (!amlNode || !isContentEditable)
+                if (!amlNode || !isLiveEdit)
                     apf.window.$focusfix();
             }
             else if (!last) {
@@ -1022,13 +1022,13 @@ apf.window = function(){
           ) && !ta[e.target.tagName]);
 
         if (canSelect && amlNode) {
-            var isContentEditable = (ta[e.target.tagName]
+            var isLiveEdit = (ta[e.target.tagName]
                 || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
-                || amlNode.$isContentEditable
-                && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
+                || amlNode.$isLiveEdit
+                && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
         
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (!isContentEditable 
+            if (!isLiveEdit
               && !apf.config.allowSelect
               && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.$allowSelect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
@@ -1207,17 +1207,17 @@ apf.window = function(){
 
         var amlNode           = apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target);
-            isContentEditable = (ta[htmlNode.tagName]
-              || htmlNode.isContentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
+            isLiveEdit = (ta[htmlNode.tagName]
+              || htmlNode.isLiveEdit || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
               && !htmlNode.disabled
-              || amlNode && amlNode.$isContentEditable
-              && amlNode.$isContentEditable(e) && amlNode.disabled < 1;
+              || amlNode && amlNode.$isLiveEdit
+              && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
         var o,
             ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
-        if (!isContentEditable && apf.config.undokeys && ctrlKey) {
+        if (!isLiveEdit && apf.config.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 o = apf.document.activeElement;
@@ -1249,7 +1249,7 @@ apf.window = function(){
         
         //#ifdef __WITH_HOTKEY
         //Hotkey
-        if (!isContentEditable && apf && apf.dispatchEvent("hotkey", eInfo) === false 
+        if (!isLiveEdit && apf && apf.dispatchEvent("hotkey", eInfo) === false
           || eInfo.returnValue === false) {
             apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {
@@ -1333,7 +1333,7 @@ apf.window = function(){
         var altKey = apf.isMac ? e.metaKey : e.altKey;
         if (apf.config.disableBackspace
           && e.keyCode == 8// || (altKey && (e.keyCode == 37 || e.keyCode == 39)))
-          && !isContentEditable) {
+          && !isLiveEdit) {
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
@@ -1374,7 +1374,7 @@ apf.window = function(){
 
         if (!apf.config.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
-          && !isContentEditable) {
+          && !isLiveEdit) {
             e.returnValue = false;
         }
 
@@ -1396,7 +1396,7 @@ apf.window = function(){
             apf.nameserver.register("actiontracker", "default", this.$at);
         }
         
-        //#ifdef __WITH_CONTENTEDITABLE
+        //#ifdef __WITH_CONTENTEDITABLE || __WITH_LIVEEDIT
         this.undoManager = new apf.actiontracker();
         //#endif
         //#endif

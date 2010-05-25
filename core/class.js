@@ -169,7 +169,7 @@
  * <code>
  * - apf.Cache
  * - apf.ChildValue
- * - apf.ContentEditable
+ * - apf.LiveEdit
  * - apf.DataAction
  * - apf.Media
  * - apf.MultiCheck

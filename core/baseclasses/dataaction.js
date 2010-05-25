@@ -152,7 +152,7 @@ apf.DataAction = function(){
      *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
-        if (this.disabled || this.contenteditable && name != "edit")
+        if (this.disabled || this.liveedit && name != "edit")
             return false;
 
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
@@ -339,7 +339,7 @@ apf.DataAction = function(){
      * @see  element.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
-        if (this.disabled || this.contenteditable && action != "edit") 
+        if (this.disabled || this.liveedit && action != "edit")
             return; //hack
 
         //#ifdef __WITH_OFFLINE

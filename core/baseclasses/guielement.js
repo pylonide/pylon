@@ -428,7 +428,7 @@ apf.GuiElement = function(){
 
     //#ifdef __AMLCONTEXTMENU
     this.addEventListener("contextmenu", function(e){
-        // #ifdef __WITH_CONTENTEDITABLE2
+        // #ifdef __WITH_CONTENTEDITABLE
         if (this.editable) { //@todo when the event system is done proper this should be handled in ce2.js
             e.returnValue  = false;
             e.cancelBubble = true;
@@ -788,16 +788,17 @@ apf.GuiElement.propHandlers = {
         this.implement(apf.ContentEditable2);
         this.$propHandlers["editable"].apply(this, arguments);
     },*/
-    
+    // #endif
+    //#ifdef __WITH_LIVEEDIT
     /**
-     * @attribute {String} sets this aml element to be contenteditable
+     * @attribute {String} sets this aml element to be liveedit
      * that loads new aml as children of this element.
      */
-    ,"contenteditable": function(value) {
-        this.implement(apf.ContentEditable);
+    ,"liveedit": function(value) {
+        this.implement(apf.LiveEdit);
         if (!this.hasFeature(apf.__VALIDATION__))
             this.implement(apf.Validation);
-        this.$propHandlers["contenteditable"].apply(this, arguments);
+        this.$propHandlers["liveedit"].apply(this, arguments);
     }
     //#endif
     

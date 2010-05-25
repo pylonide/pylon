@@ -39,7 +39,7 @@ apf.LiveEdit.plugin("spell", function(){
         
         if (basepath === null) {
             // #ifndef __PACKAGED
-            basepath = (apf.config.resourcePath || apf.basePath) + "core/baseclasses/contenteditable/resources/";
+            basepath = (apf.config.resourcePath || apf.basePath) + "core/baseclasses/liveedit/resources/";
             /* #else
             basepath = (apf.config.resourcePath || apf.basePath) + "resources/";
             #endif */
