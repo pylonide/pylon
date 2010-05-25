@@ -10,6 +10,9 @@ apf.V8Debugger = function(dbg, host) {
     dbg.addEventListener("changeRunning", function(e) {        
         self.dispatchEvent("changeRunning", e);
     });
+    dbg.addEventListener("break", function(e) {        
+        self.dispatchEvent("break", e);
+    });
 };
 
 (function() {
@@ -35,6 +38,47 @@ apf.V8Debugger = function(dbg, host) {
             }
             model.load("<sources>" + xml.join("") + "</sources>");
         });
+    };
+    
+    this.backtrace = function(model) {
+        var self = this;
+        this.$debugger.backtrace(null, null, null, true, function(body, refs) {
+            
+            function ref(id) {
+                for (var i=0; i<refs.length; i++) {
+                    if (refs[i].handle == id) {
+                        return refs[i];
+                    }
+                }
+                return {};
+            }
+            
+            var xml = [];
+            var frames = body.frames;
+            for (var i = 0; i < frames.length; i++) {
+                var frame = frames[i];
+                var script = ref(frame.script.ref);
+                xml.push("<frame index='", frame.index, 
+                    "' name='", apf.escapeXML(apf.escapeXML(self.$frameToString(frame))),
+                    "' column='", frame.column,
+                    "' line='", frame.line,
+                    "' script='", script.name,
+                    "' script_id='", script.id,
+                    "'>");
+                xml.push("<vars>");
+                for (var j=0; j<frame.arguments.length; j++) {
+                    if (frame.arguments[j].name) 
+                        xml.push(self.$serializeVariable(frame.arguments[j]));
+                }
+                for (var j=0; j<frame.locals.length; j++) {
+                    if (frame.locals[j].name !== ".arguments")
+                        xml.push(self.$serializeVariable(frame.locals[j]));
+                }
+                xml.push("</vars>");
+                xml.push("</frame>");
+            }
+            model.load("<frames>" + xml.join("") + "</frames>");          
+        }); 
     };
     
     this.loadScript = function(script, callback) {
@@ -148,7 +192,7 @@ apf.V8Debugger = function(dbg, host) {
     this.$frameToString = function(frame) {
         var str = [];
         str.push(
-            //"<", valueString(frame.receiver), ">.",
+            //"<", this.$valueString(frame.receiver), ">.",
             frame.func.name || frame.func.inferredName, "("
         );
         var args = frame.arguments;
@@ -170,7 +214,7 @@ apf.V8Debugger = function(dbg, host) {
             "function": 4
         };
         str.push("<item name='", apf.escapeXML(name || item.name),
-            "' value='", apf.escapeXML(this.valueString(item.value)),
+            "' value='", apf.escapeXML(this.$valueString(item.value)),
             "' type='", item.value.type,
             "' ref='", item.value.ref || item.value.handle,
             hasChildren[item.value.type] ? "' children='true" : "",

@@ -38,7 +38,7 @@ apf.dbg = function(struct, tagName){
     };
     
     this.$propHandlers["model-sources"] = this.$createModelPropHandler("$mdlSources", "<sources />");
-    this.$propHandlers["model-stacks"] = this.$createModelPropHandler("$mdlStacks", "<frames />");
+    this.$propHandlers["model-stack"] = this.$createModelPropHandler("$mdlStack", "<frames />");
     this.$propHandlers["model-breakpoints"] = this.$createModelPropHandler("$mdlBreakpoints", "<breakpoints />");
 
     this.$propHandlers["state-running"] = this.$createStatePropHandler("$stRunning");
@@ -59,22 +59,30 @@ apf.dbg = function(struct, tagName){
             
             self.$loadSources();
             
-            dbgImpl.addEventListener("changeRunning", function(e) {
-                self.$stRunning.setProperty("active", dbgImpl.isRunning());
-            });
-            
-            dbgImpl.addEventListener("detach", function() {
-                self.$host = null;
-                self.$debugger = null;
-                
-                self.$mdlSources.load("<sources />");
-                self.$mdlStacks.load("<stacks />");
-                self.$mdlBreakpoints.load("<breakpoints />");
-                self.$stAttached.deactivate();
-            });
+            dbgImpl.addEventListener("changeRunning", ace.bind(self.$onChangeRunning, self));
+            dbgImpl.addEventListener("break", ace.bind(self.$onBreak, self));
+            dbgImpl.addEventListener("detach", ace.bind(self.$onDetach, self));
         });
     };
 
+    this.$onChangeRunning = function() {
+        this.$stRunning.setProperty("active", this.$debugger.isRunning());
+    };
+    
+    this.$onBreak = function() {
+        this.$debugger.backtrace(this.$mdlStack);
+    };
+    
+    this.$onDetach = function() {
+        this.$host = null;
+        this.$debugger = null;
+        
+        this.$mdlSources.load("<sources />");
+        this.$mdlStack.load("<frames />");
+        this.$mdlBreakpoints.load("<breakpoints />");
+        this.$stAttached.deactivate();
+    };
+    
     this.detach = function(callback) {
         this.$host.$detach(this.$debugger, callback);
     };

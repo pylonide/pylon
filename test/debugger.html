@@ -16,7 +16,7 @@
           state-running     = "stRunning"
           state-attached    = "stAttached"
           model-sources     = "mdlDbgSources"
-       	  model-stacks      = "mdDbglStack"
+       	  model-stack       = "mdDbgStack"
        	  model-breakpoints = "mdlDbgBreakpoints" 
        	  onbreak           = ""
        	  oncontinue        = "" />
@@ -98,6 +98,7 @@
           modal="true" 
           width="450" 
           height="200" 
+          buttons="close"
           visible="false">
         	<a:list id="lstTabs" 
         	  model="mdlTabs" 
@@ -120,12 +121,12 @@
         </a:window>        
         
         <a:window
+          title="Sources" 
           skin="dockwin" 
-          dock="true"
           align="left-splitter" 
+          dock="true"
           width="400" 
           visible="true" 
-          title="Sources" 
           zindex="9">
 	        <a:list id="lstScripts"
 	          model="mdlDbgSources"
@@ -137,6 +138,30 @@
 	        </a:list>
         </a:window>
         
+        <a:window 
+          title="Stack"
+          skin="dockwin" 
+          align="left-splitter" 
+          dock="true"
+          visible="true" 
+          zindex="9">
+	        <a:datagrid
+	          id         = "lstStack"
+	          anchors    = "0 0 0 0" 
+	          options    = "size|move"
+	          caching    = "false"
+	          prerender  = "false"
+	          model      = "mdDbgStack"
+	          empty-message = "No stack trace">
+        	    <a:actions />
+	            <a:column caption="Function" value="[@name]" width="60%" icon="stckframe_obj.gif" />
+	            <a:column caption="Script" value="[@script]" width="40%" />
+	            <a:column caption="Ln" value="[@line]" width="25"/>
+	            <a:column caption="Col" value="[@column]" width="25"/>
+	            <a:each match="[frame]" />
+	        </a:datagrid>    
+        </a:window>
+
         <a:codeeditor id="ce" 
           align       = "right"
           model       = "{lstScripts.selected}"
