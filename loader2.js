@@ -310,7 +310,7 @@ apf.$x = apf.$loader
         "elements/editor/src/debug/WebSocketV8DebuggerService.js",
 
         "elements/debughost.js",
-        "elements/dbg/chromedebugger.js",
+        "elements/dbg/v8debugger.js",
         "elements/dbg/chromedebughost.js",
         "elements/dbg/v8debughost.js",
         "elements/debugger.js"

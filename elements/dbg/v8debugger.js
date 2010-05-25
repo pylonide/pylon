@@ -1,4 +1,4 @@
-apf.ChromeDebugger = function(dbg, host) {
+apf.V8Debugger = function(dbg, host) {
     this.$init();
     
     this.$debugger = dbg;
@@ -157,4 +157,4 @@ apf.ChromeDebugger = function(dbg, host) {
         return str.join("");
     }        
     
-}).call(apf.ChromeDebugger.prototype = new apf.Class());
+}).call(apf.V8Debugger.prototype = new apf.Class());

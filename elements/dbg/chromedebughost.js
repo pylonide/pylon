@@ -66,7 +66,7 @@ apf.ChromeDebugHost = function(hostname, port) {
         var self = this;
         this.$connect(function() {
             self.$v8ds.attach(tabId, function() {
-                dbg = new apf.ChromeDebugger(new V8Debugger(tabId, self.$v8ds), this);
+                dbg = new apf.V8Debugger(new V8Debugger(tabId, self.$v8ds), this);
                 self.$debuggers[tabId] = dbg;
                 callback(null, dbg);
             });
