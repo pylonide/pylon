@@ -1304,13 +1304,13 @@ apf.DataBinding = function(){
      *      <data />
      *  </a:model>
      * </code>
-     * When no model is specified the default model is choosen. The default
+     * When no model is specified the default model is chosen. The default
      * model is the first model that is found without a name, or if all models
      * have a name, the first model found.
      * Example:
      * This example shows a dropdown from which the user can select a country.
      * The list of countries is loaded from a model. Usually this would be loaded
-     * from a seperate url, but for clarity it's inlined. When the user selects
+     * from a separate url, but for clarity it's inlined. When the user selects
      * a country in the dropdown the value of the item is stored in the second
      * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
@@ -1328,7 +1328,7 @@ apf.DataBinding = function(){
      *  <a:model id="mdlCountries">
      *      <countries>
      *          <country value="USA">USA</country>
-     *          <country value="GB">Great Brittain</country>
+     *          <country value="GB">Great Britain</country>
      *          <country value="NL">The Netherlands</country>
      *      </countries>
      *  </a:model>
