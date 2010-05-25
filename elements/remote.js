@@ -231,6 +231,7 @@ apf.remote = function(struct, tagName){
     };
 
     this.startSession = function(model, xpath) {
+        if (!model) return;
         if (!model.id)
             model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
         xpath  = xpath || "//";

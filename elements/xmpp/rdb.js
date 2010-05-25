@@ -291,8 +291,10 @@ apf.xmpp_rdb = function(){
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sDoc = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-domain"]),
-            f    = function() {
+        var sDoc  = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-domain"]),
+            _self = this,
+            f     = function() {
+                rdbVars["bot_started"] = true;
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
                 if (fCallback)
@@ -300,8 +302,11 @@ apf.xmpp_rdb = function(){
                 // room joined, now wait till we get the latest model version
                 // and metadata from the owner of the room
             };
-        if (this["rdb-bot"]) {
-            this.botRegister(this["rdb-domain"], f);
+        if (this["rdb-bot"] && !rdbVars["bot_started"]) {
+            clearTimeout(rdbVars["bot_timer"]);
+            rdbVars["bot_timer"] = $setTimeout(function() {
+                _self.botRegister(_self["rdb-domain"], f);
+            }, 200);
         }
         else {
             // a password may be returned from the 'rdb-password' event handler
@@ -312,10 +317,18 @@ apf.xmpp_rdb = function(){
     this.endRDB = function(sSession) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
-        if (this["rdb-bot"])
-            this.botUnregister(this["rdb-domain"]);
-        else
+        if (this["rdb-bot"] && rdbVars["bot_started"]) {
+            var _self = this;
+            clearTimeout(rdbVars["bot_timer2"]);
+            rdbVars["bot_timer2"] = $setTimeout(function() {
+                _self.botUnregister(_self["rdb-domain"], function() {
+                    rdbVars["bot_started"] = false;
+                });
+            });
+        }
+        else {
             this.leaveDoc(sSession);
+        }
     };
 
     this.sendRDB = function(sModel, sMsg) {
