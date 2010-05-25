@@ -111,12 +111,13 @@ apf.textbox  = function(struct, tagName){
 
     this.$focussable       = true; // This object can get the focus
     this.$masking          = false;
+    this.$autoComplete     = false;
 
     this.$childProperty    = "value";
 
     //this.realtime          = false;
     this.value             = "";
-    this.isContentEditable = true;
+    this.isLiveEdit = true;
     this.multiline         = false;
 
     /**
@@ -442,6 +443,12 @@ apf.textbox  = function(struct, tagName){
         }*/
     };
 
+    this.$registerElement = function(oNode) {
+        if (!oNode) return;
+        if (oNode.localName == "autocomplete")
+            this.$autoComplete = oNode;
+    };
+
     var fTimer;
     this.$focus = function(e){
         if (!this.$ext || this.$ext.disabled)
@@ -620,11 +627,13 @@ apf.textbox  = function(struct, tagName){
             }
 
             //Autocomplete
-            if (_self.oContainer) {
-                var oTxt    = _self;
+            if (_self.$autoComplete || _self.oContainer) {
                 var keyCode = e.keyCode;
                 $setTimeout(function(){
-                    oTxt.fillAutocomplete(keyCode);
+                    if (_self.$autoComplete)
+                        _self.$autoComplete.fillAutocomplete(keyCode);
+                    else
+                        _self.fillAutocomplete(keyCode);
                 });
             }
 
