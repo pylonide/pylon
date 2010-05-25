@@ -33,14 +33,16 @@
  * @constructor
  */
 apf.xmpp_rdb = function(){
-    var _self   = this,
-        rdbVars = {},
+    var _self     = this,
+        rdbVars   = {},
+        docQueue  = [],
+        syncQueue = [],
         // keep reference to access class constants in function scope chain
-        oXmpp   = apf.xmpp,
+        oXmpp     = apf.xmpp,
         // munge often-used strings
-        SID     = "SID",
-        JID     = "JID",
-        CONN    = "connected";
+        SID       = "SID",
+        JID       = "JID",
+        CONN      = "connected";
     this.$rdbRoster = new apf.xmpp_roster(this["rdb-model"], {rdb: true}, this.resource);
 
     /*
@@ -172,9 +174,9 @@ apf.xmpp_rdb = function(){
                     type     : "result",
                     annotator: sJID,
                     fields   : {
-                        session  : sDoc,
-                        baseline : aBaseline.length ? aBaseline[0].firstChild.nodeValue : "",
-                        modeldata: aData.length     ? aData[0].firstChild.nodeValue : ""
+                        session  : {value: sDoc},
+                        baseline : {value: aBaseline.length ? aBaseline[0].firstChild.nodeValue : ""},
+                        modeldata: {value: aData.length     ? aData[0].firstChild.nodeValue : ""}
                     }
                 });
             }
@@ -202,6 +204,41 @@ apf.xmpp_rdb = function(){
         );
     };
 
+    this.$joinDocs = function() {
+        if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
+        var o, sDoc, sPassword,
+            _self         = this,
+            doc           = [],
+            queueProgress = docQueue,
+            i             = 0,
+            l             = docQueue.length,
+            parts         = docQueue[0][0].split("@");
+        docQueue = [];
+        if (parts[0] && parts[1])
+            this.$rdbRoster.registerAccount(parts[0], parts[1], this.$serverVars["username"]);
+        for (; i < l; ++i) {
+            o = queueProgress[i];
+            if (!o || !o.length) continue;
+            sDoc      = o[0],
+            sPassword = o[1]
+            doc.push(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : sDoc
+            }, sPassword
+                ? "<x xmlns='" + oXmpp.NS.rdb + "'><password>" + sPassword + "</password></x>"
+                : ""
+            ));
+        }
+        if (!doc.length) return;
+        doRequest(doc.join(""), function() {
+            var args = Array.prototype.slice.apply(arguments);
+            while (o = queueProgress.shift()) {
+                if (!o || !o.length) continue;
+                o[2].apply(_self, args);
+            }
+        });
+    }
+
     this.leaveDoc = function(sDoc, sMsg, fCallback) {
         if (!sDoc || !this.$canRDB || !this.$serverVars[CONN]) return;
         doRequest(this.$createPresenceBlock({
@@ -212,13 +249,32 @@ apf.xmpp_rdb = function(){
         );
     };
 
+    this.$leaveDocs = function() {
+        if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
+        var o,
+            doc           = [],
+            queueProgress = docQueue;
+        docQueue = [];
+        while(o = queueProgress.shift()) {
+            doc.push(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : o[0],
+                type  : oXmpp.TYPE_UNAVAILABLE
+            }, o[1] ? "<status>" + o[1] + "</status>" : ""));
+        }
+        doRequest(doc.join(""));
+    };
+
     this.leaveAllDocs = function(sMsg, sNick) {
-        if (!this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!this.$canRDB || !this.$serverVars[CONN] || this["is-bot"]) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
-        var i, l, aDocs = this.$rdbRoster.getRooms();
-        for (i = 0, l = aDocs.length; i < l; i++)
-            this.leaveDoc(aDocs[i].bareJID, sMsg);
+        var aDocs = this.$rdbRoster.getRooms(),
+            i     = 0,
+            l     = aDocs.length;
+        for (; i < l; ++i)
+            docQueue.push([aDocs[i].bareJID, sMsg]);
+        this.$leaveDocs();
     };
 
     this.invite = function(sDoc, sJID, sReason, fCallback) {
@@ -274,18 +330,26 @@ apf.xmpp_rdb = function(){
 
     this.sendSyncRDB = function(sTo, sSession, iBaseline, sData) {
         var _self = this;
-        $setTimeout(function() {
-            doRequest(_self.$createPresenceBlock({
-                    from  : _self.$serverVars[JID],
-                    to    : sSession + "@" + _self["rdb-domain"],
-                    join  : sTo
-                }, sData
-                    ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
-                      + "</baseline><data><![CDATA[" + sData + "]]></data></x>"
-                    : ""
-                )
-            );
+        clearTimeout(rdbVars["bot_timer"]);
+        syncQueue.push(this.$createPresenceBlock({
+            from  : this.$serverVars[JID],
+            to    : sSession + "@" + _self["rdb-domain"],
+            join  : sTo
+        }, sData
+            ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
+              + "</baseline><data><![CDATA[" + sData + "]]></data></x>"
+            : ""
+        ));
+        rdbVars["bot_timer"] = $setTimeout(function() {
+            _self.$sendSyncs();
         });
+    };
+
+    this.$sendSyncs = function() {
+        if (!syncQueue.length) return;
+        var data = syncQueue.join("");
+        syncQueue = [];
+        doRequest(data);
     };
 
     this.startRDB = function(sSession, fCallback) {
@@ -294,7 +358,8 @@ apf.xmpp_rdb = function(){
         var sDoc  = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-domain"]),
             _self = this,
             f     = function() {
-                rdbVars["bot_started"] = true;
+                if (_self["rdb-bot"])
+                    rdbVars["bot_started"] = true;
                 // room was created, so no need to fetch the latest changes,
                 // just start broadcasting them
                 if (fCallback)
@@ -302,22 +367,29 @@ apf.xmpp_rdb = function(){
                 // room joined, now wait till we get the latest model version
                 // and metadata from the owner of the room
             };
-        if (this["rdb-bot"] && !rdbVars["bot_started"]) {
+        if (this["rdb-bot"]) {
+            if (rdbVars["bot_started"] || rdbVars["bot_timer"]) return;
             clearTimeout(rdbVars["bot_timer"]);
             rdbVars["bot_timer"] = $setTimeout(function() {
                 _self.botRegister(_self["rdb-domain"], f);
-            }, 200);
+            });
         }
         else {
-            // a password may be returned from the 'rdb-password' event handler
-            this.joinDoc(sDoc, this.dispatchEvent("rdb-password") || null, f);
+            clearTimeout(rdbVars["rdb_timer"]);
+            // add the doc to the queue
+            // NOTE: a password may be returned from the 'rdb-password' event handler
+            docQueue.push([sDoc, this.dispatchEvent("rdb-password") || null, f])
+            rdbVars["rdb_timer"] = $setTimeout(function() {
+                _self.$joinDocs();
+            });
         }
     };
 
     this.endRDB = function(sSession) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
-        if (this["rdb-bot"] && rdbVars["bot_started"]) {
+        if (this["rdb-bot"]) {
+            if (!rdbVars["bot_started"] || rdbVars["bot_timer2"]) return;
             var _self = this;
             clearTimeout(rdbVars["bot_timer2"]);
             rdbVars["bot_timer2"] = $setTimeout(function() {
@@ -327,7 +399,11 @@ apf.xmpp_rdb = function(){
             });
         }
         else {
-            this.leaveDoc(sSession);
+            clearTimeout(rdbVars["rdb_timer"]);
+            docQueue.push([sSession]);
+            rdbVars["rdb_timer"] = $setTimeout(function() {
+                _self.$leaveDocs();
+            }, 200);
         }
     };
 
