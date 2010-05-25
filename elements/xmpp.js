@@ -696,6 +696,7 @@ apf.xmpp = function(struct, tagName){
                 this.$retryCount = 0;
                 clearTimeout(this.$listener);
                 this.$listener = null;
+                this.$serverVars[CONN] = false;
                 this.dispatchEvent("reconnect", {
                     username: this.$serverVars["username"],
                     server  : this.url

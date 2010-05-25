@@ -186,6 +186,18 @@ apf.remote = function(struct, tagName){
                 _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
         });
 
+        this.transport.addEventListener("reconnect", function() {
+            var s, o, model, xpath;
+            for (s in _self.sessions) {
+                o = _self.sessions[s],
+                model = o.model,
+                xpath = o.xpath,
+                o     = null;
+                delete _self.sessions[s];
+                _self.startSession(model, xpath);
+            }
+        });
+
         this.transport.addEventListener("datachange", function(e){
             var oData    = apf.unserialize(e.body),
                 oSession = _self.sessions[e.session],
