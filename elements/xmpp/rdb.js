@@ -204,7 +204,7 @@ apf.xmpp_rdb = function(){
         );
     };
 
-    this.$joinDocs = function() {
+    function joinDocs() {
         if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
         var o, sDoc, sPassword,
             _self         = this,
@@ -249,7 +249,7 @@ apf.xmpp_rdb = function(){
         );
     };
 
-    this.$leaveDocs = function() {
+    function leaveDocs() {
         if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
         var o,
             doc           = [],
@@ -274,7 +274,7 @@ apf.xmpp_rdb = function(){
             l     = aDocs.length;
         for (; i < l; ++i)
             docQueue.push([aDocs[i].bareJID, sMsg]);
-        this.$leaveDocs();
+        leaveDocs.call(this);
     };
 
     this.invite = function(sDoc, sJID, sReason, fCallback) {
@@ -341,11 +341,11 @@ apf.xmpp_rdb = function(){
             : ""
         ));
         rdbVars["bot_timer"] = $setTimeout(function() {
-            _self.$sendSyncs();
+            sendSyncs.call(_self);
         });
     };
 
-    this.$sendSyncs = function() {
+    function sendSyncs() {
         if (!syncQueue.length) return;
         var data = syncQueue.join("");
         syncQueue = [];
@@ -380,7 +380,7 @@ apf.xmpp_rdb = function(){
             // NOTE: a password may be returned from the 'rdb-password' event handler
             docQueue.push([sDoc, this.dispatchEvent("rdb-password") || null, f])
             rdbVars["rdb_timer"] = $setTimeout(function() {
-                _self.$joinDocs();
+                joinDocs.call(_self);
             });
         }
     };
@@ -402,8 +402,8 @@ apf.xmpp_rdb = function(){
             clearTimeout(rdbVars["rdb_timer"]);
             docQueue.push([sSession]);
             rdbVars["rdb_timer"] = $setTimeout(function() {
-                _self.$leaveDocs();
-            }, 200);
+                leaveDocs.call(_self);
+            });
         }
     };
 

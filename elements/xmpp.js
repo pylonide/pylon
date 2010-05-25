@@ -187,15 +187,14 @@ apf.xmpp = function(struct, tagName){
     this.method      = "POST";
     this.auth        = "DIGEST-MD5";
 
-    this.$model         = null;
-    this.$modelContent  = null;
-    this.$xmppMethod    = constants.CONN_BOSH;
-    this.$isPoll        = false;
+    this.$xmppMethod      = constants.CONN_BOSH;
+    this.$isPoll          = false;
     this["poll-timeout"]  = 2000;
     this["auto-register"] = false;
     this["auto-confirm"]  = true;
     this["auto-deny"]     = false;
     this.$canMuc          = false;
+    this.$canRDB          = false;
     this.$modelContent    = {
         roster: true,
         chat  : true,
@@ -848,6 +847,29 @@ apf.xmpp = function(struct, tagName){
         }
     };
 
+    /*
+     * The connection has been terminated (set to state 'paused'). Theoretically
+     * it could be resumed, but doing a complete reconnect would be more secure
+     * and stable for RDB and other implementations that rely on stable stream
+     * traffic.
+     *
+     * Example:
+     *   @todo: put the spec response here...
+     *
+     * @param {Object} oXml
+     * @type  {void}
+     * @private
+     */
+    function processDisconnect(oXml, state, extra) {
+        // #ifdef __DEBUG
+        apf.console.dir(oXml);
+        // #endif
+        var cb = this.$serverVars["logout_callback"];
+        this.reset();
+        if (cb)
+            cb(oXml, state, extra);
+    }
+
     this.isConnected = function() {
         return Boolean(this.$serverVars[CONN]);
     };
@@ -1068,29 +1090,6 @@ apf.xmpp = function(struct, tagName){
                 }, sIq)
             );
         }
-    }
-
-    /*
-     * The connection has been terminated (set to state 'paused'). Theoretically
-     * it could be resumed, but doing a complete reconnect would be more secure
-     * and stable for RDB and other implementations that rely on stable stream
-     * traffic.
-     *
-     * Example:
-     *   @todo: put the spec response here...
-     *
-     * @param {Object} oXml
-     * @type  {void}
-     * @private
-     */
-    function processDisconnect(oXml, state, extra) {
-        // #ifdef __DEBUG
-        apf.console.dir(oXml);
-        // #endif
-        var cb = this.$serverVars["logout_callback"];
-        this.reset();
-        if (cb)
-            cb(oXml, state, extra);
     }
 
     /*
@@ -1425,8 +1424,13 @@ apf.xmpp = function(struct, tagName){
         this.$doXmlRequest(function(oXml) {
                 parseData.call(_self, oXml);
                 // #ifdef __TP_XMPP_ROSTER
-                getRoster.call(_self);
-                // #endif
+                if (this["model"]) // @todo 3.0 improve detection for retrieving roster
+                    getRoster.call(_self);
+                else
+                    connected.call(_self);
+                /* #else
+                connected.call(_self);
+                #endif */
             }, this.$isPoll
             ? createStreamElement.call(this, null, null, sPresence)
             : createBodyElement({
@@ -1456,31 +1460,10 @@ apf.xmpp = function(struct, tagName){
             },
             "<query xmlns='" + constants.NS.roster + "'/>"
         ),
-        _self = this,
-        v     = this.$serverVars;
+        _self = this;
         this.$doXmlRequest(function(oXml) {
                 parseData.call(_self, oXml);
-                var cb  = v["login_callback"],
-                    msg = v["previousMsg"];
-                if (cb) {
-                    cb(null, apf.SUCCESS, {
-                        username : v["username"]
-                    });
-                    delete v["login_callback"];
-                }
-                // @todo apf3.0 properly test the delayed messaging after reconnect
-                if (msg && msg.length) {
-                    for (var i = 0, l = msg.length; i < l; i++)
-                        _self.sendMessage.apply(_self, msg[i]);
-                    delete msg;
-                    v["previousMsg"] = [];
-                }
-
-                // flag as 'connected'
-                v[CONN] = true;
-                _self.dispatchEvent(CONN, {username: v["username"]});
-                // poll the server again for messages
-                _self.$listen();
+                connected.call(_self);
             }, this.$isPoll
             ? createStreamElement.call(this, null, null, sIq)
             : createBodyElement({
@@ -1491,6 +1474,31 @@ apf.xmpp = function(struct, tagName){
         );
     }
     // #endif
+
+    function connected() {
+        var v   = this.$serverVars,
+            cb  = v["login_callback"],
+            msg = v["previousMsg"];
+        if (cb) {
+            cb(null, apf.SUCCESS, {
+                username : v["username"]
+            });
+            delete v["login_callback"];
+        }
+        // @todo apf3.0 properly test the delayed messaging after reconnect
+        if (msg && msg.length) {
+            for (var i = 0, l = msg.length; i < l; i++)
+                this.sendMessage.apply(this, msg[i]);
+            delete msg;
+            v["previousMsg"] = [];
+        }
+
+        // flag as 'connected'
+        v[CONN] = true;
+        this.dispatchEvent(CONN, {username: v["username"]});
+        // poll the server again for messages
+        this.$listen();
+    }
     /**
      * Open a PUSH connection to the XMPP server and wait for messages to
      * arrive (i.e. 'listen' to the stream).
@@ -2325,7 +2333,15 @@ apf.xmpp = function(struct, tagName){
     };
 
     /**
+     * Retrieves the local time of a JID, if it supports such a query.
      *
+     * @param {String}   sEntity   Jabber ID to send the query to
+     * @param {Function} sCallback Function to be executed when the result gets back.
+     *                             Its first argument will be 'false' on failure of
+     *                             any kind or {Object} upon success:
+     *                             {String} tzo Time Zone Offset
+     *                             {String} utc Timestamp in Universal Time
+     * @type  {void}
      */
     this.getTime = function(sEntity, fCallback) {
         var sIq = createIqBlock({
