@@ -283,7 +283,7 @@ apf.$debugger.stepOut = function() {
     apf.$debugger.dbg.continueScript("out", 1);
 };
 
-window.adbg = {
+window.$adbg = {
    exec : function(method, args, callback, options){
         if (method == "loadScript" && args[0]) {
             if (!options)
@@ -348,6 +348,6 @@ window.adbg = {
         });
     }
 };
-(apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+(apf.$asyncObjects || (apf.$asyncObjects = {}))["$adbg"] = 1;
 
 })();

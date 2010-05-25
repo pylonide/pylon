@@ -105,7 +105,7 @@
 	          model      = "[{lstStack.selected}::vars]"
 	          loading-message = "Calculating..."
 	          >
-                <a:insert match="[item[@children]]" get="{adbg.loadObjects(%[.])}" />
+                <a:insert match="[item[@children]]" get="{$adbg.loadObjects(%[.])}" />
 	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
 	            <a:column caption="Value" value="[@value]" width="100%" />
 	            <a:column caption="Type" value="[@type]" width="80"/>
@@ -135,7 +135,7 @@
           showprintmargin = "true"
           printmargincolumn = "80"
           ongutterdblclick = "apf.$debugger.toggleBreakPoint([{lstScripts.selected}::@id], event.row)">
-            <a:load get="{adbg.loadScript([@id])}"/>
+            <a:load get="{$adbg.loadScript([@id])}"/>
             <a:value value="[text()]" />
         </a:codeeditor>  
         <!-- 
