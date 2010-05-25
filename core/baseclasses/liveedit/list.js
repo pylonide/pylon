@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_LIST || __INC_ALL
 
-apf.ContentEditable.listPlugin = function(sName) {
+apf.LiveEdit.listPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
@@ -127,7 +127,7 @@ apf.ContentEditable.listPlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin("bullist", apf.ContentEditable.listPlugin);
-apf.ContentEditable.plugin("numlist", apf.ContentEditable.listPlugin);
+apf.LiveEdit.plugin("bullist", apf.LiveEdit.listPlugin);
+apf.LiveEdit.plugin("numlist", apf.LiveEdit.listPlugin);
 
 // #endif

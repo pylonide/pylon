@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_HR || __INC_ALL
 
-apf.ContentEditable.plugin("hr", function(){
+apf.LiveEdit.plugin("hr", function(){
     this.name        = "hr";
     this.icon        = "hr";
     this.type        = apf.TOOLBARITEM;

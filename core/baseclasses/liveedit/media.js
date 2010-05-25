@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-apf.ContentEditable.plugin("media", function(){
+apf.LiveEdit.plugin("media", function(){
     this.name        = "media";
     this.icon        = "media";
     this.type        = apf.TOOLBARITEM;

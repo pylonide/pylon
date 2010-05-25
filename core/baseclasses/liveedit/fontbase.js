@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.ContentEditable.plugin("fonts", function() {
+apf.LiveEdit.plugin("fonts", function() {
     this.name        = "fonts";
     this.icon        = "fonts";
     this.type        = apf.TOOLBARITEM;
@@ -129,7 +129,7 @@ apf.ContentEditable.plugin("fonts", function() {
     };
 });
 
-apf.ContentEditable.plugin("fontsize", function() {
+apf.LiveEdit.plugin("fontsize", function() {
     this.name        = "fontsize";
     this.icon        = "fontsize";
     this.type        = apf.TOOLBARITEM;

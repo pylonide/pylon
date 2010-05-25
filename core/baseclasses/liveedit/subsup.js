@@ -19,25 +19,33 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
+// #ifdef __ENABLE_EDITOR_SUBSUP || __INC_ALL
 
-apf.ContentEditable.plugin("help", function(){
-    this.name        = "help";
-    this.icon        = "help";
+apf.LiveEdit.subSupCommand = function(sName) {
+    this.name        = sName;
+    this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
-    this.keyBinding  = "ctrl+h";
+    this.keyBinding  = sName == "sub" ? "ctrl+alt+s" : "ctrl+shift+s";
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        // @todo: implement this plugin
+        var other = this.name == "sub" ? "Superscript" : "Subscript";
+        if (editor.$queryCommandState(other) == apf.ON)
+            editor.$execCommand(other);
+        editor.$execCommand(this.name == "sub" ? "Subscript" : "Superscript");
+
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        return this.state;
+        return editor.$queryCommandState(this.name == "sub"
+            ? "Subscript"
+            : "Superscript");
     };
-});
+}
+apf.LiveEdit.plugin("sub", apf.LiveEdit.subSupCommand);
+apf.LiveEdit.plugin("sup", apf.LiveEdit.subSupCommand);
 
 // #endif

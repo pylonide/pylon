@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-apf.ContentEditable.plugin("code", function() {
+apf.LiveEdit.plugin("code", function() {
     this.name        = "code";
     this.icon        = "code";
     this.type        = apf.TOOLBARITEM;

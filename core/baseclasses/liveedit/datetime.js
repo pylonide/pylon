@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_DATETIME || __INC_ALL
 
-apf.ContentEditable.dateTimePlugin = function(sName) {
+apf.LiveEdit.dateTimePlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
@@ -74,7 +74,7 @@ apf.ContentEditable.dateTimePlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin("insertdate", apf.ContentEditable.dateTimePlugin);
-apf.ContentEditable.plugin("inserttime", apf.ContentEditable.dateTimePlugin);
+apf.LiveEdit.plugin("insertdate", apf.LiveEdit.dateTimePlugin);
+apf.LiveEdit.plugin("inserttime", apf.LiveEdit.dateTimePlugin);
 
 // #endif

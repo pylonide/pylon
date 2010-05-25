@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-apf.ContentEditable.plugin("link", function(){
+apf.LiveEdit.plugin("link", function(){
     this.name        = "link";
     this.icon        = "link";
     this.type        = apf.TOOLBARITEM;
@@ -169,7 +169,7 @@ apf.ContentEditable.plugin("link", function(){
     };
 });
 
-apf.ContentEditable.plugin("unlink", function(){
+apf.LiveEdit.plugin("unlink", function(){
     this.name        = "unlink";
     this.icon        = "unlink";
     this.type        = apf.TOOLBARITEM;

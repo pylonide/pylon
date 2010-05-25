@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-apf.ContentEditable.plugin("image", function(){
+apf.LiveEdit.plugin("image", function(){
     this.name        = "image";
     this.icon        = "image";
     this.type        = apf.TOOLBARITEM;
@@ -116,7 +116,7 @@ apf.ContentEditable.plugin("image", function(){
     };
 });
 
-apf.ContentEditable.plugin("imagespecial", function() {
+apf.LiveEdit.plugin("imagespecial", function() {
     this.name        = "imagespecial";
     this.icon        = "image";
     this.type        = apf.TOOLBARITEM;

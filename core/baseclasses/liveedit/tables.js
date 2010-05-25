@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-apf.ContentEditable.plugin("table", function() {
+apf.LiveEdit.plugin("table", function() {
     this.name       = "table",
     this.icon       = "table",
     this.type       = apf.TOOLBARITEM,
@@ -233,7 +233,7 @@ apf.ContentEditable.plugin("table", function() {
     };
 });
 
-apf.ContentEditable.plugin("tablewizard", function() {
+apf.LiveEdit.plugin("tablewizard", function() {
     this.name        = "tablewizard";
     this.icon        = "tablewizard";
     this.type        = apf.CONTEXTPANEL;

@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-apf.ContentEditable.plugin("emotions", function() {
+apf.LiveEdit.plugin("emotions", function() {
     this.name        = "emotions";
     this.icon        = "emotions";
     this.type        = apf.TOOLBARITEM;

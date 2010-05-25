@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-apf.ContentEditable.plugin("visualaid", function(){
+apf.LiveEdit.plugin("visualaid", function(){
     this.name        = "visualaid";
     this.icon        = "visualaid";
     this.type        = apf.TOOLBARITEM;

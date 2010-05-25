@@ -19,47 +19,26 @@
  *
  */
 
-// #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
+// #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
-apf.ContentEditable.plugin("print", function(){
-    this.name        = "print";
-    this.icon        = "print";
+apf.LiveEdit.plugin("blockquote", function(){
+    this.name        = "blockquote";
+    this.icon        = "blockquote";
     this.type        = apf.TOOLBARITEM;
     this.subType     = apf.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
-    this.keyBinding  = "ctrl+p";
+    this.keyBinding  = "ctrl+shift+b";
+    this.buttonBuilt = false;
     this.state       = apf.OFF;
 
     this.execute = function(editor) {
-        if (apf.print)
-            apf.print(editor.getValue());
+        editor.$execCommand("FormatBlock", "BLOCKQUOTE");
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
-    this.queryState = function() {
-        return this.state;
-    };
-});
-
-apf.ContentEditable.plugin("preview", function(){
-    this.name        = "preview";
-    this.icon        = "preview";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
-    this.hook        = "ontoolbar";
-    this.keyBinding  = "ctrl+shift+p";
-    this.state       = apf.OFF;
-
-    this.execute = function(editor) {
-        if (apf.printer)
-            apf.printer.preview(editor.getValue()).show();
-
-        editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
-    };
-
-    this.queryState = function() {
-        return this.state;
+    this.queryState = function(editor) {
+        return editor.$queryCommandState("FormatBlock");
     };
 });
 

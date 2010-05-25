@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-apf.ContentEditable.pasteDialog = function(sName) {
+apf.LiveEdit.pasteDialog = function(sName) {
     this.name        = sName;
     this.icon        = sName == "pasteworddialog" ? "pasteword" : sName;
     this.type        = apf.TOOLBARITEM;
@@ -145,10 +145,10 @@ apf.ContentEditable.pasteDialog = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin("pasteworddialog", apf.ContentEditable.pasteDialog);
-apf.ContentEditable.plugin("pastetext", apf.ContentEditable.pasteDialog);
+apf.LiveEdit.plugin("pasteworddialog", apf.LiveEdit.pasteDialog);
+apf.LiveEdit.plugin("pastetext", apf.LiveEdit.pasteDialog);
 
-apf.ContentEditable.plugin("pasteword", function() {
+apf.LiveEdit.plugin("pasteword", function() {
     this.name        = "pasteword";
     this.icon        = "pasteword";
     this.type        = apf.CMDMACRO;

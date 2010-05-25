@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-apf.ContentEditable.plugin("anchor", function() {
+apf.LiveEdit.plugin("anchor", function() {
     this.name        = "anchor";
     this.icon        = "anchor";
     this.type        = apf.TOOLBARITEM;

@@ -69,7 +69,7 @@ apf.editor = function(struct, tagName){
 
 (function() {
     this.implement(
-        apf.ContentEditable
+        apf.LiveEdit
         //#ifdef __WITH_XFORMS
         //,apf.XForms
         //#endif
@@ -84,7 +84,7 @@ apf.editor = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.isContentEditable = true;
+    this.isLiveEdit = true;
 
     this.$supportedProperties.push("value", "characterset");
 
@@ -281,7 +281,7 @@ apf.editor = function(struct, tagName){
      * @param {Event} e
      * @type  {Boolean}
      */
-    this.$isContentEditable = function(e){
+    this.$isLiveEdit = function(e){
         return apf.isChildOf(this.$activeDocument, e.srcElement, true);
     };
 

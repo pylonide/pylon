@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-apf.ContentEditable.plugin("charmap", function() {
+apf.LiveEdit.plugin("charmap", function() {
     this.name        = "charmap";
     this.icon        = "charmap";
     this.type        = apf.TOOLBARITEM;

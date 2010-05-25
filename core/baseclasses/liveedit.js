@@ -18,9 +18,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-apf.__CONTENTEDITABLE__  = 1 << 23;
+apf.__LIVEEDIT__  = 1 << 23;
 
-// #ifdef __WITH_CONTENTEDITABLE
+// #ifdef __WITH_LIVEEDIT
 
 /**
  * Baseclass of an element whose content is editable. This is usually an
@@ -37,8 +37,8 @@ apf.__CONTENTEDITABLE__  = 1 << 23;
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.ContentEditable = function() {
-    this.$regbase = this.$regbase | apf.__CONTENTEDITABLE__;
+apf.LiveEdit = function() {
+    this.$regbase = this.$regbase | apf.__LIVEEDIT__;
 
     //#ifdef __WITH_DATAACTION
     this.implement(apf.DataAction);
@@ -1008,14 +1008,14 @@ apf.ContentEditable = function() {
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
-     * @type  {apf.ContentEditable.plugin}
+     * @type  {apf.LiveEdit.plugin}
      */
     this.$addPlugin = function(sPlugin) {
         if (this.$plugins[sPlugin])
             return this.$plugins[sPlugin];
-        if (!apf.ContentEditable.plugin[sPlugin]) return null;
+        if (!apf.LiveEdit.plugin[sPlugin]) return null;
         // yay, plugin does exist, so we can instantiate it for the editor
-        var plugin = new apf.ContentEditable.plugin[sPlugin](sPlugin);
+        var plugin = new apf.LiveEdit.plugin[sPlugin](sPlugin);
         // add it to main plugin collection
         this.$plugins[plugin.name] = plugin;
 
@@ -1418,8 +1418,8 @@ apf.ContentEditable = function() {
             this.oToolbar = this.$getLayoutNode("main", "toolbar", this.$ext);
         }
         //@todo apf3.0 get this from portal.js
-        else if (!o.docklet && !(apf.ContentEditable.toolwin = o.docklet)) {
-            o.docklet = apf.ContentEditable.toolwin =
+        else if (!o.docklet && !(apf.LiveEdit.toolwin = o.docklet)) {
+            o.docklet = apf.LiveEdit.toolwin =
                 new apf.modalwindow("toolwindow", document.body, null, true);
 
             o.docklet.parentNode = apf.document.documentElement;
@@ -1496,7 +1496,7 @@ apf.ContentEditable = function() {
      * Make an instance of apf.popup (identified with a pointer to the cached
      * DOM node - sCacheId) visible to the user.
      *
-     * @param {apf.ContentEditable.plugin} oPlugin  The plugin instance
+     * @param {apf.LiveEdit.plugin} oPlugin  The plugin instance
      * @param {String}            sCacheId Pointer to the cached DOM node
      * @param {DOMElement}        oRef     Button node to show popup below to
      * @param {Number}            iWidth   New width of the popup
@@ -1557,15 +1557,15 @@ apf.ContentEditable = function() {
      */
     this.$translate = function(key, bIsPlugin) {
         // #ifdef __DEBUG
-        if ((!bIsPlugin && !apf.ContentEditable.i18n[this.language][key])
-          || (bIsPlugin && !apf.ContentEditable.i18n[this.language]["plugins"][key]))
+        if ((!bIsPlugin && !apf.LiveEdit.i18n[this.language][key])
+          || (bIsPlugin && !apf.LiveEdit.i18n[this.language]["plugins"][key]))
             apf.console.error("Translation does not exist"
                 + (bIsPlugin ? " for plugin" : "") + ": " + key);
         // #endif
 
         return bIsPlugin
-            ? apf.ContentEditable.i18n[this.language]["plugins"][key]
-            : apf.ContentEditable.i18n[this.language][key];
+            ? apf.LiveEdit.i18n[this.language]["plugins"][key]
+            : apf.LiveEdit.i18n[this.language][key];
     };
 
     /**
@@ -1621,7 +1621,7 @@ apf.ContentEditable = function() {
      * Corrects the default/ standard behavior of user agents that do not match
      * our intentions or those of the user.
      *
-     * @param {DOMElement} oParent ContentEditable element
+     * @param {DOMElement} oParent LiveEdit element
      * @type  void
      * @private
      */
@@ -1672,7 +1672,7 @@ apf.VISIBLE  = 2;
 apf.HIDDEN   = 3;
 apf.SELECTED = 4;
 
-apf.ContentEditable.i18n = {
+apf.LiveEdit.i18n = {
     "en_GB": {
         "cancel": "Cancel",
         "insert": "Insert",
@@ -1814,13 +1814,13 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
 /**
  * @class plugin
  * @constructor
- * @extends ContentEditable
+ * @extends LiveEdit
  * @namespace apf
  * @author Mike de Boer  (mike AT javeline DOT com)
  *
  * Example plugin:
  * <code language=javascript>
- * apf.ContentEditable.plugin("sample", function() {
+ * apf.LiveEdit.plugin("sample", function() {
  *     this.name    = "SamplePluginName";
  *     this.type    = "PluginType";
  *     this.subType = "PluginSubType";
@@ -1834,8 +1834,8 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
  * });
  * </code>
  */
-apf.ContentEditable.plugin = function(sName, fExec) {
-    apf.ContentEditable.plugin[sName] = function() {
+apf.LiveEdit.plugin = function(sName, fExec) {
+    apf.LiveEdit.plugin[sName] = function() {
         this.$uniqueId = apf.all.push(this) - 1;
 
         /**
@@ -1892,7 +1892,7 @@ apf.ContentEditable.plugin = function(sName, fExec) {
 };
 
 apf.GuiElement.propHandlers["contenteditable"] = function(value) {
-    this.implement(apf.ContentEditable);
+    this.implement(apf.LiveEdit);
     if (!this.hasFeature(apf.__VALIDATION__))
         this.implement(apf.Validation);
     this.$propHandlers["contenteditable"].apply(this, arguments);

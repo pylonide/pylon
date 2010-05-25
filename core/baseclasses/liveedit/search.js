@@ -21,7 +21,7 @@
 
 // #ifdef __ENABLE_EDITOR_SEARCH || __INC_ALL
 
-apf.ContentEditable.searchPlugin = function(sName) {
+apf.LiveEdit.searchPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
     this.type        = apf.TOOLBARITEM;
@@ -281,7 +281,7 @@ apf.ContentEditable.searchPlugin = function(sName) {
     };
 };
 
-apf.ContentEditable.plugin("search",  apf.ContentEditable.searchPlugin);
-apf.ContentEditable.plugin("replace", apf.ContentEditable.searchPlugin);
+apf.LiveEdit.plugin("search",  apf.LiveEdit.searchPlugin);
+apf.LiveEdit.plugin("replace", apf.LiveEdit.searchPlugin);
 
 // #endif
