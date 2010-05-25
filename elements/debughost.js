@@ -1,0 +1,112 @@
+
+apf.debughost = function(struct, tagName){
+    this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
+};
+
+(function(){
+
+    this.port = 9222;
+    this.server = "localhost";
+    this.type = "chrome";
+    this.autoinit = false;
+    this.$modelTabs = null;
+    this.$stateConnected = null;
+    
+    this.$host = null;
+    
+    this.$booleanProperties["autostart"] = true;
+    
+    this.$supportedProperties.push("port", "server", "type", "autoinit",
+        "model-tabs", "state-connected");
+
+    this.$propHandlers["model-tabs"] = function(value) {
+        if (!value) return;
+
+        this.$modelTabs = apf.setReference(value,
+            apf.nameserver.register("model", value, new apf.model()));
+        
+        // set the root node for this model
+        this.$modelTabs.id = this.$modelTabs.name = value;
+        this.$modelTabs.load("<tabs/>");
+    };
+
+    this.$propHandlers["state-connected"] = function(value) {
+        if (!value) return;
+        
+        this.$stateConnected = apf.setReference(value,
+                apf.nameserver.register("state", value, new apf.state()));
+        
+        // set the root node for this model
+        this.$stateConnected.id = this.$stateConnected.name = value;
+        this.$stateConnected.deactivate();
+    };
+    
+    this.init = function() {
+        if (this.$host) {
+            return;
+        }
+        
+        if (this.type == "chrome") {
+            this.$o3obj =  
+            
+            this.$host = new apf.ChromeDebugHost(this.server, this.port);
+            var self = this;
+            this.$host.addEventListener("connect", function() {
+                self.dispatchEvent("connect");
+                self.$stateConnected.activate();
+            });
+            this.$host.addEventListener("disconnect", function() {
+                self.dispatchEvent("disconnect");
+                self.$stateConnected.deactivate();
+            });
+            
+            this.loadTabs();
+        }
+    };
+    
+    this.loadTabs = function() {
+        if (!this.host)
+            this.init();
+        
+        var self = this;
+        this.$host.loadTabs(this.$modelTabs, function() {
+            self.$dispatchEvent("tabsloaded");
+        });        
+    }
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e) {
+        if (this.autoinit)
+            this.init();
+    });
+    
+    this.$attach = function(dbg, tab, callback) {
+        if (!this.$host) 
+            throw new Error("unable to attach to an uninitialized host.");
+        
+        if (tab) {
+            var id = tab.getAttribute("id");
+        } else {
+            var id = null;
+        }
+        
+        this.$host.attach(id, callback);
+    };
+
+    this.$detach = function(dbgImpl, callback) {
+        if (!this.$host) 
+            return;
+        
+        this.$host.detach(dbgImpl, callback);
+    };
+    
+    this.disconnect = function() {
+        if (!this.$host) 
+            return;
+        
+        this.$host.disconnect();
+        this.$host = null;
+    };
+    
+}).call(apf.debughost.prototype = new apf.AmlElement());
+
+apf.aml.setElement("debughost", apf.debughost);

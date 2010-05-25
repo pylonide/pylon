@@ -49,6 +49,23 @@ apf.isChildOf = function(pNode, childnode, orItself){
 };
 
 /**
+ * Escapes "&amp;", greater than and less than signs and quotation marks into
+ * the proper XML entities.
+ * 
+ * @param {String} str   The string to escape
+ * @returns {String}     The escaped string
+ */
+apf.escapeXML = function(str) {
+    return ((str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/'/g, "&apos;")
+    );
+};
+
+/**
  * Determines whether a node is it's parent's only child.
  * @param {DOMNode} node     the potential only child.
  * @param {Array}   nodeType list of the node types that this child can be.

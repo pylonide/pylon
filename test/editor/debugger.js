@@ -79,7 +79,7 @@ function serializeVariable(item, name) {
 apf.$debugger.loadTabs = function() {
     var o3obj = document.getElementsByTagName("embed")[0];
     var socket = apf.$debugger.$socket = new O3Socket("127.0.0.1", 9222, o3obj);
-    var msgStream = new V8DebugMessageStream(socket);
+    var msgStream = new ChromeDebugMessageStream(socket);
 
     msgStream.addEventListener("connect", function() {
         var dts = apf.$debugger.dts = new DevToolsService(msgStream);
@@ -256,6 +256,7 @@ apf.$debugger.toggleBreakPoint = function(scriptId, relativeRow) {
                 " id='", breakpoint.$id,
                 "' text='", escapeXml(script.name), ":", breakpoint.line,
                 "' script='", escapeXml(script.name),
+                "' scriptId='", script.id,
                 "' line='", breakpoint.line,       
                 "' condition='", escapeXml(breakpoint.condition || ""),
                 "' ignorecount='", breakpoint.ignoreCount || 0,

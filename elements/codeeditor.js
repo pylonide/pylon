@@ -78,7 +78,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$supportedProperties.push("value", "syntax", 
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
         "showprintmargin", "printmargincolumn", "overwrite", "readonly", 
-        "tabsize", "softtabs");
+        "tabsize", "softtabs", "debugger");
 
     /**
      * @attribute {String} value the text of this element
@@ -134,6 +134,7 @@ apf.codeeditor = function(struct, tagName) {
         this.$removeDocListeners && this.$removeDocListeners();
         this.$removeDocListeners = this.$addDocListeners(doc);
         
+        this.$updateBreakpoints(doc);
         this.$editor.setDocument(doc);
     };
     
@@ -163,44 +164,85 @@ apf.codeeditor = function(struct, tagName) {
             js   : new ace.mode.JavaScript()
         };
     
-    this.$propHandlers["syntax"] = function(value){
+    this.$updateBreakpoints = function(doc) {
+        var doc = doc || this.$editor.getDocument();
+        
+        if (!this.$breakpoints)
+            return;
+        
+        if (this.xmlRoot) {
+            var scriptId = this.xmlRoot.getAttribute("id");
+            if (!scriptId) 
+                return;
+            
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@scriptid = " + scriptId + "]");
+            
+            var doc = this.$editor.getDocument();
+            var rows = [];
+            for (var i=0; i<breakpoints.length; i++) {
+                rows.push(parseInt(breakpoints[i].getAttribute("line")) - parseInt(breakpoints[i].getAttribute("lineoffset")));
+            }
+            doc.setBreakpoints(rows);
+        }
+    };
+    
+    this.$toggleBreakpoint = function(row) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    };
+    
+    this.$propHandlers["syntax"] = function(value) {
         this.$editor.getDocument().setMode(this.$modes[value]);
     };
     
-    this.$propHandlers["activeline"] = function(value){
+    this.$propHandlers["activeline"] = function(value) {
         this.$editor.setHighlightActiveLine(value);
     };
     
-    this.$propHandlers["selectstyle"] = function(value){
+    this.$propHandlers["selectstyle"] = function(value) {
         this.$editor.setSelectionStyle(value);
     };
 
-    this.$propHandlers["showprintmargin"] = function(value, prop, initial){
+    this.$propHandlers["showprintmargin"] = function(value, prop, initial) {
         this.$editor.setShowPrintMargin(value);
     };
 
-    this.$propHandlers["printmargincolumn"] = function(value, prop, initial){
+    this.$propHandlers["printmargincolumn"] = function(value, prop, initial) {
         this.$editor.setPrintMarginColumn(value);
     };
     
-    this.$propHandlers["showinvisibles"] = function(value, prop, initial){
+    this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
     
-    this.$propHandlers["overwrite"] = function(value, prop, initial){
+    this.$propHandlers["overwrite"] = function(value, prop, initial) {
         this.$editor.setOverwrite(value);
     };
 
-    this.$propHandlers["readonly"] = function(value, prop, initial){
+    this.$propHandlers["readonly"] = function(value, prop, initial) {
         this.$editor.setReadOnly(value);
     };
     
-    this.$propHandlers["tabsize"] = function(value, prop, initial){
+    this.$propHandlers["tabsize"] = function(value, prop, initial) {
         this.$editor.getDocument().setTabSize(parseInt(value));
     };
     
-    this.$propHandlers["softtabs"] = function(value, prop, initial){
+    this.$propHandlers["softtabs"] = function(value, prop, initial) {
         this.$editor.getDocument().setUseSoftTabs(value);
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (typeof value === "string") {
+            this.$debugger = apf.nameserver.get("model", value);
+        } else { 
+            this.$debugger = value;
+        }
+        this.$breakpoints = this.$debugger.$mdlBreakpoints;
+        this.$updateBreakpoints();
+        
+        var self = this;
+        this.$breakpoints.addEventListener("update", function() {
+            self.$updateBreakpoints();
+        });
     };
     
     this.addEventListener("xmlupdate", function(e){
@@ -313,6 +355,9 @@ apf.codeeditor = function(struct, tagName) {
 
         this.$editor.addEventListener("gutterdblclick", function(e) {
             self.dispatchEvent("gutterdblclick", e);
+            if (self.$debugger) {
+                self.$toggleBreakpoint(e.row);
+            }
         });
         
         apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);        

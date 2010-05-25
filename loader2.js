@@ -298,13 +298,18 @@ apf.$x = apf.$loader
         
         "elements/editor/experiments/o3.js",
         "elements/editor/src/debug/O3Socket.js",
-        "elements/editor/src/debug/V8DebugMessageStream.js",
+        "elements/editor/src/debug/ChromeDebugMessageStream.js",
         "elements/editor/src/debug/DevToolsService.js",
         "elements/editor/src/debug/DevToolsMessage.js",
         "elements/editor/src/debug/V8DebuggerService.js",
         "elements/editor/src/debug/Breakpoint.js",
         "elements/editor/src/debug/V8Debugger.js",
-        "elements/editor/src/debug/V8Message.js"
+        "elements/editor/src/debug/V8Message.js",
+
+        "elements/debughost.js",
+        "elements/dbg/chromedebugger.js",
+        "elements/dbg/chromedebughost.js",
+        "elements/debugger.js"
     )
     .wait()
     .script(
