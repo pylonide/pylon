@@ -135,6 +135,8 @@ apf.codeeditor = function(struct, tagName) {
         this.$removeDocListeners = this.$addDocListeners(doc);
         
         this.$updateBreakpoints(doc);
+        this.$updateMarker(doc);
+        
         this.$editor.setDocument(doc);
     };
     
@@ -163,6 +165,29 @@ apf.codeeditor = function(struct, tagName) {
             css  : new ace.mode.Css(),
             js   : new ace.mode.JavaScript()
         };
+    
+    this.$updateMarker = function(doc) {
+        var doc = doc || this.$editor.getDocument();
+        if (this.$marker) {
+            this.$editor.renderer.removeMarker(this.$marker);
+            this.$marker = null;
+        }
+        
+        if (!this.$debugger) 
+            return;
+        
+        var frame = this.$debugger.activeframe;
+        if (!frame)
+            return;
+
+        var script = this.xmlRoot;
+        var lineOffset = parseInt(script.getAttribute("lineoffset"));
+        var row = parseInt(frame.getAttribute("line")) - lineOffset;
+        range = new ace.Range(row, 0, row+1, 0);
+        this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "text");
+        
+        this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+    };
     
     this.$updateBreakpoints = function(doc) {
         var doc = doc || this.$editor.getDocument();
@@ -243,6 +268,11 @@ apf.codeeditor = function(struct, tagName) {
         this.$breakpoints.addEventListener("update", function() {
             self.$updateBreakpoints();
         });
+        
+        this.$updateMarker();
+        this.$debugger.addEventListener("prop.activeframe", function() {
+            self.$updateMarker();
+        })
     };
     
     this.addEventListener("xmlupdate", function(e){
