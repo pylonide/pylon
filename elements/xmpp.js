@@ -201,11 +201,16 @@ apf.xmpp = function(struct, tagName){
         typing: true
     };
 
-    // munge often-used strings
-    var SID     = "SID",
-        JID     = "JID",
-        CONN    = "connected",
-        ROSTER  = "roster";
+    var SASL_MECHS = {
+            "PLAIN"     : 1,
+            "DIGEST-MD5": 1,
+            "ANONYMOUS" : 1
+        },
+        // munge often-used strings
+        SID        = "SID",
+        JID        = "JID",
+        CONN       = "connected",
+        ROSTER     = "roster";
 
     /**
      * @attribute {String}   [type]           The type of method used to connect
@@ -287,7 +292,8 @@ apf.xmpp = function(struct, tagName){
     };
 
     this.$propHandlers["auth"] = function(value) {
-        this.auth = (value || "").toLowerCase().indexOf("plain") > -1 ? "PLAIN" : "DIGEST-MD5";
+        value = (value || "").toUpperCase();
+        this.auth = SASL_MECHS[value] ? value : "DIGEST_MD5";
     };
 
     this.$propHandlers["poll-timeout"] = function(value) {
@@ -1047,6 +1053,9 @@ apf.xmpp = function(struct, tagName){
      * or stream to the server OR after a successful In-Band registration
      * We also support Non-SASL Authentication
      * @see http://xmpp.org/extensions/attic/jep-0078-1.7.html
+     * @see http://tools.ietf.org/html/rfc2245 SASL Anonymous
+     * @see http://tools.ietf.org/html/rfc2595 SASL PLAIN
+     * @see http://tools.ietf.org/html/rfc2831 SASL DIGEST-MD5
      *
      * @type {void}
      */
@@ -1055,11 +1064,13 @@ apf.xmpp = function(struct, tagName){
             // start the authentication process by sending a request
             var sType = this.$serverVars["AUTH_TYPE"],
                 sAuth = "<auth xmlns='" + constants.NS.sasl + "' mechanism='"
-                    + sType + (sType == "PLAIN"
-                        ? "'>" + this.$serverVars["username"] + "@" + this.domain
-                            + String.fromCharCode(0) + this.$serverVars["username"]
-                            + String.fromCharCode(0) + this.$serverVars["password"]
-                            + "</auth>"
+                    + sType + (sType == "PLAIN" || sType == "ANONYMOUS"
+                        ? "'>" + apf.crypto.Base64.encode(sType == "ANONYMOUS"
+                            ? this.resource
+                            : this.$serverVars["username"] + "@" + this.domain
+                                + String.fromCharCode(0) + this.$serverVars["username"]
+                                + String.fromCharCode(0) + this.$serverVars["password"]
+                          ) + "</auth>"
                         : "'/>");
             this.$doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
                 ? reOpenStream // skip a few steps...
