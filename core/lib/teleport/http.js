@@ -1034,13 +1034,15 @@ apf.teleportLog = function(extra){
     
     var response = "";
     this.response = function(extra){
-        var headers = extra.http.getAllResponseHeaders();
-        response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
-            + (headers ? headers + "\n" : "\n")
-            + extra.http.responseText;
-        
-        if (xml)
-            apf.setQueryValue(xml, "response/text()", response);
+        try {
+            var headers = extra.http.getAllResponseHeaders();
+            response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
+                + (headers ? headers + "\n" : "\n")
+                + extra.http.responseText;
+
+            if (xml)
+                apf.setQueryValue(xml, "response/text()", response);
+        } catch(ex) {}
     }
 }
 //#endif
