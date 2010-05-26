@@ -1248,12 +1248,12 @@ automatically. Defaults to 'true'"/><prop caption="auto-deny" editor="textbox" v
 subscription request should be denied
 automatically. Defaults to 'false'"/><prop caption="model" editor="textbox" value="[@model]" description="Name of the model where roster and
 (chat) messages will be synchronized to."/><prop caption="model-contents" editor="dropdown" value="[@model-contents]" description="Specifies the items that will be
-stored inside the model. Defaults to 'all'"><item value="all">all</item><item value="roster">roster</item><item value="chat">chat</item><item value="typing">typing</item><item value="roster|typing">roster|typing</item><item value="roster|chat">roster|chat</item><item value="chat|typing">chat|typing</item></prop><prop caption="muc-domain" editor="textbox" value="[@muc-domain]" description="Domain name of the Multi User Chat
+stored inside the model. Defaults to 'all'"><item value="all">all</item><item value="roster">roster</item><item value="chat">chat</item><item value="typing">typing</item><item value="roster|typing">roster|typing</item><item value="roster|chat">roster|chat</item><item value="chat|typing">chat|typing</item></prop><prop caption="muc-host" editor="textbox" value="[@muc-host]" description="Domain name of the Multi User Chat
 service of an XMPP server. Defaults
 to the domain that is parsed from
 {@link element.xmpp.url}."/><prop caption="muc-model" editor="textbox" value="[@muc-model]" description="Name of the model where chat messages
 sent and received from Multi User
-Chats will be synchronized to."/><prop caption="rdb-domain" editor="textbox" value="[@rdb-domain]" description="Domain name of the Remote
+Chats will be synchronized to."/><prop caption="rdb-host" editor="textbox" value="[@rdb-host]" description="Domain name of the Remote
 DataBindingservice of an XMPP server.
 Defaults to the domain that is parsed
 from {@link element.xmpp.url}."/><prop caption="rdb-model" editor="textbox" value="[@rdb-model]" description="Name of the model where Remote

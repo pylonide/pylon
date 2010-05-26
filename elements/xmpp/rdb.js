@@ -333,7 +333,7 @@ apf.xmpp_rdb = function(){
         clearTimeout(rdbVars["bot_timer"]);
         syncQueue.push(this.$createPresenceBlock({
             from  : this.$serverVars[JID],
-            to    : sSession + "@" + _self["rdb-domain"],
+            to    : sSession + "@" + _self["rdb-host"],
             join  : sTo
         }, sData
             ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
@@ -355,7 +355,7 @@ apf.xmpp_rdb = function(){
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
             throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
-        var sDoc  = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-domain"]),
+        var sDoc  = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-host"]),
             _self = this,
             f     = function() {
                 if (_self["rdb-bot"])
@@ -371,7 +371,7 @@ apf.xmpp_rdb = function(){
             if (rdbVars["bot_started"] || rdbVars["bot_timer"]) return;
             clearTimeout(rdbVars["bot_timer"]);
             rdbVars["bot_timer"] = $setTimeout(function() {
-                _self.botRegister(_self["rdb-domain"], f);
+                _self.botRegister(_self["rdb-host"], f);
             });
         }
         else {
@@ -393,7 +393,7 @@ apf.xmpp_rdb = function(){
             var _self = this;
             clearTimeout(rdbVars["bot_timer2"]);
             rdbVars["bot_timer2"] = $setTimeout(function() {
-                _self.botUnregister(_self["rdb-domain"], function() {
+                _self.botUnregister(_self["rdb-host"], function() {
                     rdbVars["bot_started"] = false;
                 });
             });
@@ -409,7 +409,7 @@ apf.xmpp_rdb = function(){
 
     this.sendRDB = function(sModel, sMsg) {
         this.sendMessage({
-            to     : this.$rdbRoster.sanitizeJID(sModel + "@" + this["rdb-domain"]),
+            to     : this.$rdbRoster.sanitizeJID(sModel + "@" + this["rdb-host"]),
             message: sMsg,
             thread : "rdb"
         });

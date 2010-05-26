@@ -165,7 +165,7 @@ apf.__TELEPORT__ = 1 << 28;
                 "Invalid server url provided."));
         }
 
-        this.$domain   = url.host;
+        this.$host     = url.host;
         this.$rootPath = url.path;
         this.$server   = value.replace(new RegExp(this.$rootPath + "$"), "");
     };

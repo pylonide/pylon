@@ -38,12 +38,12 @@
  */
 apf.xmpp_roster = function(model, modelContent, res) {
     this.resource = res;
-    this.username = this.domain = this.fullJID = "";
+    this.username = this.host = this.fullJID = "";
 
     var bMuc      = (modelContent.muc || modelContent.rdb),
         aEntities = [],
         aRooms    = [],
-        userProps = {"node": 1, "domain": 1, "resource": 1, "bareJID": 1,
+        userProps = {"node": 1, "host": 1, "resource": 1, "bareJID": 1,
                      "fullJID": 1, "status": 1, "affiliation": 1, "role": 1,
                      "nick": 1};
 
@@ -61,31 +61,31 @@ apf.xmpp_roster = function(model, modelContent, res) {
         model.load("<xmpp/>");
     }
 
-    this.registerAccount = function(username, domain, resource) {
+    this.registerAccount = function(username, host, resource) {
         if (!resource)
             resource = this.resource;
         else
             this.resource = resource;
         this.username = username || "";
-        this.domain   = domain   || "";
-        this.bareJID  = this.username + "@" + this.domain;
-        this.fullJID  = this.username + "@" + this.domain
+        this.host     = host   || "";
+        this.bareJID  = this.username + "@" + this.host;
+        this.fullJID  = this.username + "@" + this.host
             + (resource ? "/" + resource : "");
     };
 
     /**
-     * Lookup function; searches for a JID with node object, domain and/ or
+     * Lookup function; searches for a JID with node object, host and/ or
      * resource info provided.
      * It may return an collection of JID's when little info to search with is
      * provided.
      *
      * @param {String}  node
-     * @param {String}  [domain]
+     * @param {String}  [host]
      * @param {String}  [resource]
      * @param {Boolean} [bRoom]
      * @type  {mixed}
      */
-    this.getEntity = function(node, domain, resource, bRoom) {
+    this.getEntity = function(node, host, resource, bRoom) {
         if (typeof node == "undefined") return null;
 
         var aResult = [];
@@ -95,17 +95,17 @@ apf.xmpp_roster = function(model, modelContent, res) {
         if (node.indexOf("@") != -1) {
             var aTemp = node.split("@");
             node      = aTemp[0];
-            domain    = aTemp[1];
+            host      = aTemp[1];
         }
-        domain = domain || this.domain;
+        host = host || this.host;
 
         var n, i, l, oExact,
             bResource = (resource && !bRoom),
-            fullJID   = node + "@" + domain + (resource ? "/" + resource : "");
+            fullJID   = node + "@" + host + (resource ? "/" + resource : "");
 
         for (i = 0, l = aEntities.length; i < l; i++) {
             n = aEntities[i]
-            if (n && n.node == node && n.domain == domain
+            if (n && n.node == node && n.host == host
               && (!bResource || n.resource == resource)
               && (!bRoom || n.isRoom)) {
                 aResult.push(n);
@@ -125,7 +125,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
 
     /**
      * Lookup function; searches for a JID object with JID info provided in the
-     * following, common, XMPP format: 'node@domain/resource'
+     * following, common, XMPP format: 'node@host/resource'
      *
      * @param {String}  jid
      * @param {String}  [sSubscr]
@@ -147,9 +147,9 @@ apf.xmpp_roster = function(model, modelContent, res) {
             jid  = jid.substring(jid.indexOf("@") + 1);
         }
 
-        var domain  = jid,
-            oEnt    = this.getEntity(node, domain, resource),
-            bareJID = node + "@" + domain;
+        var host    = jid,
+            oEnt    = this.getEntity(node, host, resource),
+            bareJID = node + "@" + host;
         if (!resource) {
             apf.console.warn("No resource provided for Jabber entity '" + bareJID
                 + "'. Roster may get corrupted this way!", "xmpp");
@@ -172,11 +172,11 @@ apf.xmpp_roster = function(model, modelContent, res) {
 
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
-        if (!oEnt) {// && node && domain) {
+        if (!oEnt) {// && node && host) {
             var bIsRoom = (bMuc && !resource);
             oEnt = this.update({
                 node        : node,
-                domain      : domain,
+                host        : host,
                 resource    : resource || null,
                 bareJID     : bareJID,
                 fullJID     : bareJID + (resource ? "/" + resource : ""),
@@ -223,7 +223,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
 
         if (!oEnt.xml) {
             var bIsAccount = (oEnt.node == this.username
-                              && oEnt.domain == this.domain
+                              && oEnt.host == this.host
                               && (!bMuc || oEnt.resource == this.resource));
             aEntities.push(oEnt);
             if (oEnt.isRoom)
@@ -234,11 +234,11 @@ apf.xmpp_roster = function(model, modelContent, res) {
                     ? "account"
                     : oEnt.isRoom ? "room" : "user");
                 this.updateEntityXml(oEnt);
-                var room   = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
-                    node   = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[0] : oEnt.node,
-                    domain = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[1] : oEnt.domain;
+                var room = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
+                    node = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[0] : oEnt.node,
+                    host = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[1] : oEnt.host;
                 apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
-                    ? this.getEntity(node, domain, null, true).xml
+                    ? this.getEntity(node, host, null, true).xml
                     : model.data, oEnt.xml);
             }
         }
@@ -297,7 +297,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
         apf.xmldb.applyChanges("synchronize", oEnt.xml);
 
         // only send events to messages from contacts, not the acount itself
-        return !(oEnt.node == this.username && oEnt.domain == this.domain);
+        return !(oEnt.node == this.username && oEnt.host == this.host);
     };
 
     /**
@@ -396,7 +396,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
             model.reset();
         aEntities = [];
         aRooms    = [];
-        this.username = this.domain = this.fullJID = "";
+        this.username = this.host = this.fullJID = "";
     };
 
     /**

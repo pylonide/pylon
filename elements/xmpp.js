@@ -244,14 +244,14 @@ apf.xmpp = function(struct, tagName){
      *   roster|typing
      *   roster|chat
      *   chat|typing
-     * @attribute {String}   [muc-domain]     Domain name of the Multi User Chat
+     * @attribute {String}   [muc-host]       Domain name of the Multi User Chat
      *                                        service of an XMPP server. Defaults
      *                                        to the domain that is parsed from
      *                                        {@link element.xmpp.url}.
      * @attribute {String}   [muc-model]      Name of the model where chat messages
      *                                        sent and received from Multi User
      *                                        Chats will be synchronized to.
-     * @attribute {String}   [rdb-domain]     Domain name of the Remote
+     * @attribute {String}   [rdb-host]       Domain name of the Remote
      *                                        DataBinding service of an XMPP server.
      *                                        Defaults to the domain that is parsed
      *                                        from {@link element.xmpp.url}.
@@ -271,15 +271,15 @@ apf.xmpp = function(struct, tagName){
     // #endif
 
     this.$supportedProperties.push("type", "auth", "poll-timeout", "resource",
-        "domain", "auto-register", "auto-confirm", "auto-deny"
+        "host", "auto-register", "auto-confirm", "auto-deny"
         // #ifdef __TP_XMPP_ROSTER
         , "model", "model-contents"
         // #endif
         // #ifdef __TP_XMPP_MUC
-        , "muc-domain", "muc-model"
+        , "muc-host", "muc-model"
         // #endif
         // #ifdef __TP_XMPP_RDB
-        , "rdb-domain", "rdb-model", "rdb-bot", "priority"
+        , "rdb-host", "rdb-model", "rdb-bot", "priority"
         // #endif
     );
 
@@ -331,7 +331,7 @@ apf.xmpp = function(struct, tagName){
     // #ifdef __TP_XMPP_MUC
     this.$propHandlers["muc-model"] = function(value) {
         // parse MUC parameters
-        this["muc-domain"] = this["muc-domain"] || "conference." + this.domain;
+        this["muc-host"] = this["muc-host"] || "conference." + this.host;
         if (!this.$canMuc) {
             this.$canMuc   = true;
             // magic!
@@ -348,7 +348,7 @@ apf.xmpp = function(struct, tagName){
     // #ifdef __TP_XMPP_RDB
     this.$propHandlers["rdb-model"] = function(value) {
         // parse MUC parameters
-        this["rdb-domain"] = this["rdb-domain"] || "rdb." + this.domain;
+        this["rdb-host"] = this["rdb-host"] || "rdb." + this.host;
         if (!this.$canRDB) {
             this.$canRDB   = true;
             // magic!
@@ -773,20 +773,20 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["register"]       = reg || this["auto-register"];
         this.$serverVars["previousMsg"]    = [];
         // #ifdef __TP_XMPP_ROSTER
-        this.$serverVars[ROSTER].registerAccount(username, this.domain);
+        this.$serverVars[ROSTER].registerAccount(username, this.host);
         // #endif
         // #ifdef __TP_XMPP_MUC
         if (this.$canMuc)
-            this.$mucRoster.registerAccount(username, this.domain);
+            this.$mucRoster.registerAccount(username, this.host);
         // #endif
         // #ifdef __TP_XMPP_RDB
         if (this.$canRDB)
-            this.$rdbRoster.registerAccount(username, this.domain);
+            this.$rdbRoster.registerAccount(username, this.host);
         // #endif
         this.$doXmlRequest(processConnect, this.$isPoll
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
-                to             : this.domain,
+                to             : this.host,
                 xmlns          : constants.NS.jabber,
                 "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
@@ -795,7 +795,7 @@ apf.xmpp = function(struct, tagName){
                 content        : "text/xml; charset=utf-8",
                 hold           : "1",
                 rid            : this.$getRID(),
-                to             : this.domain,
+                to             : this.host,
                 route          : "xmpp:jabber.org:9999",
                 secure         : "true",
                 wait           : "120",
@@ -914,7 +914,7 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["bind_count"] = 0;
         this.$serverVars["mess_count"] = 0;
 
-        this.domain = this.domain || this.$domain;
+        this.host = this.host || this.$host;
         // #ifdef __TP_XMPP_MUC
         if (!this.$canMuc)
             this.$initMuc();
@@ -1067,7 +1067,7 @@ apf.xmpp = function(struct, tagName){
                     + sType + (sType == "PLAIN" || sType == "ANONYMOUS"
                         ? "'>" + apf.crypto.Base64.encode(sType == "ANONYMOUS"
                             ? this.resource
-                            : this.$serverVars["username"] + "@" + this.domain
+                            : this.$serverVars["username"] + "@" + this.host
                                 + String.fromCharCode(0) + this.$serverVars["username"]
                                 + String.fromCharCode(0) + this.$serverVars["password"]
                           ) + "</auth>"
@@ -1159,7 +1159,7 @@ apf.xmpp = function(struct, tagName){
             var sRealm = this.$serverVars["realm"],
                 md5    = apf.crypto.MD5;
             if (!sRealm)
-                this.$serverVars["realm"] = sRealm = this.domain; //DEV: option to provide realm with a default
+                this.$serverVars["realm"] = sRealm = this.host; //DEV: option to provide realm with a default
 
             if (sRealm)
                 this.$serverVars["digest-uri"] = "xmpp/" + sRealm;
@@ -1170,7 +1170,7 @@ apf.xmpp = function(struct, tagName){
 
             // for the calculations of A1, A2 and sResp below, take a look at
             // RFC 2617, Section 3.2.2.1
-            var A1 = md5.str_md5(this.$serverVars["username"] + ":" + this.domain
+            var A1 = md5.str_md5(this.$serverVars["username"] + ":" + this.host
                     + ":" + this.$serverVars["password"]) // till here we hash-up with MD5
                     + ":" + this.$serverVars["nonce"] + ":" + this.$serverVars["cnonce"],
 
@@ -1322,7 +1322,7 @@ apf.xmpp = function(struct, tagName){
             }, this.$isPoll
             ? createStreamElement.call(this, null, {
                 doOpen         : true,
-                to             : this.domain,
+                to             : this.host,
                 xmlns          : constants.NS.jabber,
                 "xmlns:stream" : constants.NS.stream,
                 version        : "1.0"
@@ -1330,7 +1330,7 @@ apf.xmpp = function(struct, tagName){
             : createBodyElement({
                   rid            : this.$getRID(),
                   sid            : this.$serverVars[SID],
-                  to             : this.domain,
+                  to             : this.host,
                   "xml:lang"     : "en",
                   "xmpp:restart" : "true",
                   xmlns          : constants.NS.httpbind,
@@ -1392,7 +1392,7 @@ apf.xmpp = function(struct, tagName){
             var sIq = createIqBlock({
                     from  : this.$serverVars[JID],
                     id    : this.$sAJAX_ID,
-                    to    : this.domain,
+                    to    : this.host,
                     type  : "set",
                     xmlns : constants.NS.jabber
                 },
@@ -1781,8 +1781,8 @@ apf.xmpp = function(struct, tagName){
             oP   = aPresence[i],
             sJID = oP.getAttribute("from"),
             aX   = oP.getElementsByTagName("x"),
-            bMuc = (sJID.indexOf(this["muc-domain"]) > -1),
-            bRDB = (sJID.indexOf(this["rdb-domain"]) > -1);
+            bMuc = (sJID.indexOf(this["muc-host"]) > -1),
+            bRDB = (sJID.indexOf(this["rdb-host"]) > -1);
             // #ifdef __TP_XMPP_MUC
             if (aX.length) {
                 for (k = 0, l2 = aX.length; k < l2; k++) {
@@ -2200,7 +2200,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @param {Object}   options    An object containing all the details for the
      *                              message to be sent:
-     *      {String}   to         Must be of the format 'node@domainname.ext'
+     *      {String}   to         Must be of the format 'node@hostname.ext'
      *      {String}   message
      *      {String}   [thread]   For threading messages, i.e. to log a conversation
      *      {String}   [type]     Message type, defaults to 'chat'
@@ -2257,14 +2257,12 @@ apf.xmpp = function(struct, tagName){
             oUser = this.$serverVars[ROSTER].getEntityByJID(options.to);
         // #endif
 
+        //#ifdef __DEBUG
         if (!oUser && !bRoom){
-            //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
-                        "XMPP sendMessage error: no valid 'to' address provided",
-                        "To: " + options.to + "\nMessage: " + options.message));
-            //#endif
-            return false;
+            apf.console.error("XMPP sendMessage error: no valid 'to' address provided"
+                + options.to + "\nMessage: " + options.message, "xmpp");
         }
+        //#endif
 
         var sMsg = createMessageBlock.call(this, apf.extend({
                 type       : constants.MSG_CHAT,
@@ -2294,7 +2292,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @param {Object}   options    An object containing all the details for the
      *                              message to be sent:
-     *      {String}   to         Must be of the format 'node@domainname.ext'
+     *      {String}   to         Must be of the format 'node@hostname.ext'
      *      {String}   message    The XML message to be sent
      *      {Function} [callback] Function to be executed on completion of the request
      * @type  {void}
@@ -2400,7 +2398,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.$headerHook = function(http) {
         if (!apf.isWebkit)
-            http.setRequestHeader("Host", this.$domain);
+            http.setRequestHeader("Host", this.$host);
         http.setRequestHeader("Content-Type", this.$isPoll
             ? "application/x-www-form-urlencoded"
             : "text/xml; charset=utf-8");
