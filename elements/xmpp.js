@@ -581,10 +581,12 @@ apf.xmpp = function(struct, tagName){
         decRE = /&#60;\[CDATA\[([^(?:\]\]&#62;)]*)\]\]&#62;/;
 
     function encodeCDATA(s) {
+        if (typeof s != "string") return s;
         return s.replace(encRE, "&#60;[CDATA[$1]]&#62;");
     }
     
     function decodeCDATA(s) {
+        if (typeof s != "string") return s;
         return s.replace(decRE, "<![CDATA[$1]]>");
     }
 
@@ -1669,7 +1671,7 @@ apf.xmpp = function(struct, tagName){
             if ((node = oNode.childNodes[i]) && node.nodeType == 3)
                 msg.push(node.nodeValue);
         }
-        return msg.join("").replace(/\&quot;/g, '"');
+        return decodeCDATA(msg.join("").replace(/\&quot;/g, '"'));
     }
 
     function fieldsToObject(aFields) {
@@ -1729,7 +1731,7 @@ apf.xmpp = function(struct, tagName){
             if (oThread.length)
                 sThread = oThread[0].firstChild.nodeValue.trim();
             sFrom = oMsg.getAttribute("from");
-            sMsg  = decodeCDATA(getMessage(oBody));
+            sMsg  = getMessage(oBody);
             // #ifdef __TP_XMPP_ROSTER
             // #ifdef __TP_XMPP_MUC
             if (bRoom && sFrom == this.$mucRoster.fullJID)
