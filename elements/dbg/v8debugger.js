@@ -174,6 +174,10 @@ apf.V8Debugger = function(dbg, host) {
         this.$debugger.continueScript("out", 1);
     };
 
+    this.suspend = function() {
+        this.$debugger.suspend();
+    };
+    
     this.$valueString = function(value) {
         switch (value.type) {
             case "undefined":

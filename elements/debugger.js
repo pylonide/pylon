@@ -118,6 +118,10 @@ apf.dbg = function(struct, tagName){
     this.stepOut = function() {
         this.$debugger.stepOut();
     };    
+
+    this.suspend = function() {
+        this.$debugger.suspend();
+    };    
     
 }).call(apf.dbg.prototype = new apf.AmlElement());
 

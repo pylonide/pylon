@@ -66,7 +66,8 @@
                   disabled="{stRunning.active or !stConnected.active}" />
 	        	<a:button
 	              icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}"
-	              disabled="true"/>
+                  onclick="dbg.suspend();"
+	              disabled="{!stRunning.active or !stConnected.active}"/>
 	        	<!-- a:button
 	        	  icon="{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
 	        	  onclick="dbg.detach();"
