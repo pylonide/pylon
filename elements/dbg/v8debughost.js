@@ -58,7 +58,7 @@ apf.V8DebugHost = function(hostname, port) {
     };
     
     this.detach = function(dbg, callback) {        
-        if (!dbg.$debugger || this.$debugger !== dbg)
+        if (!dbg || this.$debugger !== dbg)
             return callback();
         
         this.$debugger = null;

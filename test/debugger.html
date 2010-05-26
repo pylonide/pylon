@@ -4,9 +4,15 @@
         <title>Debugger</title>
         <script>var loader2 = true</script>        
         <script src="../apf.js"></script>
+        
+        <style type="text/css" media="screen">
+            html{
+                overflow: hidden;
+            }
+        </style>        
     </head>
     <body>
-    	<embed type="application/o3stem-aaaaaaaa-1111-bbbb-1111-cccccccccccc" width="0" height="0" />
+    	<embed type="application/o3demo-8a66ecac-63fd-4afa-9d42-3034d18c88f4" width="0" height="0" />
     
         <a:skin src="../skins.xml" media-path="../images/" icon-path="editor/debugger_icons/" />
 
@@ -19,6 +25,7 @@
        	  model-stack       = "mdDbgStack"
        	  model-breakpoints = "mdlDbgBreakpoints" 
        	  onbreak           = ""
+       	  onchangeframe     = "if (event.data) lstScripts.setProperty('selected', mdlDbgSources.queryNode('file[@id=' + event.data.getAttribute('scriptid') +']'));"
        	  oncontinue        = "" />
         
         <!--
@@ -139,9 +146,9 @@
         	  empty-message="Loading tabs..."
         	  onafterchoose = "btnOk.dispatchEvent('click');"/>
         	<a:button id="btnOk"
-        	  right="10" 
-        	  bottom="10" 
-        	  width="60" 
+        	  right="10"
+        	  bottom="10"
+        	  width="60"
         	  disabled="{!lstTabs.selected}" 
         	  default="true"
         	  onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
@@ -181,7 +188,7 @@
 	          caching    = "false"
 	          prerender  = "false"
 	          model      = "mdDbgStack"
-	          empty-message = "No stack trace">
+	          selected   = "{dbg.activeframe}">
         	    <a:actions />        	    
 	            <a:column caption="Function" value="[@name]" width="60%" icon="stckframe_obj.gif" />
 	            <a:column caption="Script" value="[@script]" width="40%" />
@@ -202,14 +209,14 @@
 	          anchors    = "0 0 0 0" 
 	          options    = "size|move"
 	          prerender  = "false"
-	          model      = "[{dgStack.selected}::vars]"
+	          model      = "{dbg.activeframe}"
 	          loading-message = "Calculating...">
-	          	<a:load get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+	          	<a:load get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
                 <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
 	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
 	            <a:column caption="Value" value="[@value]" width="100%" />
 	            <a:column caption="Type" value="[@type]" width="80"/>
-	            <a:each match="[item]" sort="[@name]" />
+	            <a:each match="[vars/item]" sort="[@name]" />
 	        </a:datagrid>		
         </a:window>
 

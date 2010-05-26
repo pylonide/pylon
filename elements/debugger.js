@@ -9,9 +9,9 @@ apf.dbg = function(struct, tagName){
     this.$debugger = null;
     
     this.$supportedProperties.push("state-running", "state-attached", 
-        "model-sources", "model-stacks", "model-breakpoints");
+        "model-sources", "model-stacks", "model-breakpoints", "activeframe");
   
-    this.$createModelPropHandler = function(name, xml) {
+    this.$createModelPropHandler = function(name, xml, callback) {
         return function(value) {
             if (!value) return;
             
@@ -44,8 +44,13 @@ apf.dbg = function(struct, tagName){
     this.$propHandlers["state-running"] = this.$createStatePropHandler("$stRunning");
     this.$propHandlers["state-attached"] = this.$createStatePropHandler("$stAttached");
     
-    this.$getDebugger = function() {
-        return this.$debugger;
+    this.$propHandlers["activeframe"] = function(value) {
+        if (this.$debugger) {
+            this.$ignoreFrameEvent = true;
+            this.$debugger.setFrame(value);
+            this.$ignoreFrameEvent = false;
+        }
+        this.dispatchEvent("changeframe", {data: value});
     };
     
     this.attach = function(host, tab) {
@@ -62,9 +67,10 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("changeRunning", ace.bind(self.$onChangeRunning, self));
             dbgImpl.addEventListener("break", ace.bind(self.$onBreak, self));
             dbgImpl.addEventListener("detach", ace.bind(self.$onDetach, self));
+            dbgImpl.addEventListener("changeFrame", ace.bind(self.$onChangeFrame, self));
         });
     };
-
+    
     this.$onChangeRunning = function() {
         var isRunning = this.$debugger.isRunning();
         this.$stRunning.setProperty("active", isRunning);
@@ -86,10 +92,23 @@ apf.dbg = function(struct, tagName){
         this.$mdlStack.load("<frames />");
         this.$mdlBreakpoints.load("<breakpoints />");
         this.$stAttached.deactivate();
+    };   
+
+    this.$onChangeFrame = function() {
+        if (!this.$ignoreFrameEvent) {
+            this.setProperty("activeframe", this.$debugger.getActiveFrame());
+        }
+    };
+    
+    this.changeFrame = function(frame) {
+        this.$debugger.setFrame(frame);
     };
     
     this.detach = function(callback) {
-        this.$host.$detach(this.$debugger, callback);
+        var self = this;
+        this.continueScript(function() {
+            self.$host.$detach(self.$debugger, callback);
+        });
     };
 
     this.$loadSources = function(callback) {
@@ -113,23 +132,23 @@ apf.dbg = function(struct, tagName){
     };
 
     this.continueScript = function() {
-        this.$debugger.continueScript();
+        this.$debugger && this.$debugger.continueScript();
     };
 
     this.stepInto = function() {
-        this.$debugger.stepInto();
+        this.$debugger && this.$debugger.stepInto();
     };
 
     this.stepNext = function() {
-        this.$debugger.stepNext();
+        this.$debugger && this.$debugger.stepNext();
     };
 
     this.stepOut = function() {
-        this.$debugger.stepOut();
+        this.$debugger && this.$debugger.stepOut();
     };    
 
     this.suspend = function() {
-        this.$debugger.suspend();
+        this.$debugger && this.$debugger.suspend();
     };    
     
 }).call(apf.dbg.prototype = new apf.AmlElement());

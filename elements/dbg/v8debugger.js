@@ -7,12 +7,17 @@ apf.V8Debugger = function(dbg, host) {
     this.$breakpoints = {};
     
     var self = this;
-    dbg.addEventListener("changeRunning", function(e) {        
+    dbg.addEventListener("changeRunning", function(e) {      
         self.dispatchEvent("changeRunning", e);
+        if (dbg.isRunning()) {
+            self.setFrame(null);
+        }
     });
-    dbg.addEventListener("break", function(e) {        
+    dbg.addEventListener("break", function(e) {
         self.dispatchEvent("break", e);
     });
+    
+    this.setFrame(null);
 };
 
 (function() {
@@ -63,7 +68,7 @@ apf.V8Debugger = function(dbg, host) {
                     "' column='", frame.column,
                     "' line='", frame.line,
                     "' script='", script.name,
-                    "' script_id='", script.id,
+                    "' scriptid='", script.id,
                     "'>");
                 xml.push("<vars>");
                 
@@ -93,7 +98,8 @@ apf.V8Debugger = function(dbg, host) {
                 
                 xml.push("</frame>");
             }
-            model.load("<frames>" + xml.join("") + "</frames>");          
+            model.load("<frames>" + xml.join("") + "</frames>");
+            self.setFrame(model.data.firstChild);
         }); 
     };
     
@@ -165,6 +171,16 @@ apf.V8Debugger = function(dbg, host) {
         if (expected == 0)
             return callback("<vars />");
     };
+    
+    this.setFrame = function(frame) {
+        this.$activeFrame = frame;
+        this.dispatchEvent("changeFrame", {data: frame});
+    };
+    
+    
+    this.getActiveFrame = function() {
+        return this.$activeFrame;
+    }; 
     
     this.toggleBreakpoint = function(script, relativeRow, model) {
         var self = this;
