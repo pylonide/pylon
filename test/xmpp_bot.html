@@ -29,7 +29,7 @@
         <!-- <a:xmpp id="myXMPP" url="http://chatslave4.hyves.org:5222/http-poll" roster-model="myRoster" -->
         <a:xmpp id="myXMPP"
             url               = "http://rdb1.localhost:5280/http-bind"
-            domain            = "localhost"
+            host              = "localhost"
             model             = "myRoster"
             model-contents    = "roster|typing|chat"
             rdb-bot           = "true"
@@ -57,7 +57,7 @@
             </a:bindings> 
         </a:tree>
 
-        <a:list model="myRoster" each="[user]" caption="[@node]@[@domain]" icon="icoUsers.gif" width="200" height="100" />
+        <a:list model="myRoster" each="[user]" caption="[@node]@[@host]" icon="icoUsers.gif" width="200" height="100" />
 
         <!--a:list id="lstPersons" model="mdlFs" each="[file]" caption="[@caption|@filename]" icon="icoUsers.gif" width="200" height="100" />
 
