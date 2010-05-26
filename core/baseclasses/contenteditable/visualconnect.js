@@ -24,11 +24,16 @@
  * @private
  */
 apf.visualConnect = function (sel){
+    /* 
+     * modes: 
+     * draw     : mode to create a new connection
+     * element  : mode for displaying connections of selected element
+     * all      : mode for displaying connections of all elements
+     */
+    var lineMode = "element";
     var active, div;
-    var connections = [];
-    var allElements = [];
-    var lineMode;
-    var connectionIdx = 0;
+    var fromEl, toEl;
+    var connections;
     //@linh the interaction with shift is flawed. It should be :
     //  shift-click at start - click at end
     //  it shouldnt matter when shift is unpressed
@@ -36,6 +41,7 @@ apf.visualConnect = function (sel){
     
     // init draw api
     var width = document.body.clientWidth;
+    //@todo adjust height to browser window height?
     var height = 800;//document.body.clientHeight;
     var paintGroup = apf.vector.group({w:width,h:height,z:1000000});
     var paintRect = paintGroup.rect({
@@ -64,62 +70,84 @@ apf.visualConnect = function (sel){
         //document.getElementById("log").innerHTML += "activated<br>";
         var _self = this;
         var drawPath = [], connectionPath = [], hNode, pos, selection = sel.$getNodeList(), lines = [];
-        if (!div) div = document.body.appendChild(document.createElement("div"));
-        div.style.display = "block";
-        
-        apf.plane.show();
-/*
-        var showAllTimer = setTimeout(function(){
-            // lets show the drawing till someone clicks and then its gone
-            // lets create some random lines
-            var n = [];
-            path = [];
-            for(var i = 0;i<100;i++){
-                var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
-                path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
-            }
-
-            paintLine.style({p: path.join(" ")});
-            paintGroup.style({v:1});
-            paintGroup.repaint();
-        }, timeout);
-*/
         var timer, lastTime;
         var isDrawing = false;
-        var isFar = false;
-        if(selection.length){
-            connections = [];
-            for (var i = 0, l = selection.length; i < l; i++) {
-                for (var val, targetEl, targetAttr, split, j = 0, jl = selection[i].attributes.length; j < jl; j++) {
-                    if ((val = selection[i].attributes[j].value).charAt(0) == "{") {
-                        targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1));
-                        targetAttr = split[1].substr(0, split[1].length-1);
-                        //drawConnection(selection[0], targetEl);
-                        createConnection(selection[0], targetEl, selection[i].attributes[j].name, targetAttr);
-                    }
+        
+        (function draw() {
+            div = document.body.appendChild(document.createElement("div"));
+            div.style.display = "block";
+            div.style.zIndex = 9999;
+            apf.plane.show();
+    /*
+            var showAllTimer = setTimeout(function(){
+                // lets show the drawing till someone clicks and then its gone
+                // lets create some random lines
+                var n = [];
+                path = [];
+                for(var i = 0;i<100;i++){
+                    var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
+                    path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
                 }
-            }
-            
-            if (connections.length) {
-                drawConnections();
-                paintConnections.style({p: connectionPath.join(" ")});
 
-                apf.plane.show();
+                paintLine.style({p: path.join(" ")});
                 paintGroup.style({v:1});
                 paintGroup.repaint();
-            }
-            
-            startDraw(e);
-        }
+            }, timeout);
+    */
 
+            switch (lineMode) {
+                case "draw":
+                    startDraw(e);
+                    break;
+                case "element":
+                    if (selection.length)
+                        showConnections(selection);
+                    break;
+                case "all":
+                    // @todo get all elements
+                    var all = [];
+                    for (var el, i = 0, l = apf.all.length; i < l; i++) {
+                        if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
+                    }
+                    showConnections(all);
+                    break;
+            }
+        })();
+        
+        function showConnections(elements) {
+            if (elements.length){
+                connections = null;
+                for (var i = 0, l = elements.length; i < l; i++) {
+                    for (var val, targetEl, targetAttr, split, j = 0, jl = elements[i].attributes.length; j < jl; j++) {
+                        // @todo regex search of "{"
+                        if ((val = elements[i].attributes[j].value).charAt(0) == "{") {
+                            // check if value is attribute of an element
+                            if (targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) {
+                                targetAttr = split[1].substr(0, split[1].length-1);
+                                createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr);
+                            }
+                            else {
+                            }
+                        }
+                    }
+                }
+                
+                if (connections) {
+                    drawConnections();
+                    paintConnections.style({p: connectionPath.join(" ")});
+
+                    apf.plane.show();
+                    paintGroup.style({v:1});
+                    paintGroup.repaint();
+                }
+            }
+        }
+        
         function startDraw(e){
             apf.dragMode = true; //prevents selection
-            paintLine.style({p: drawPath.join(" ")});
-            paintGroup.style({v:1});
-            paintGroup.repaint();
-            isDrawing = true;
             
-            updateDraw(e);
+            fromEl = null;
+            toEl = null;
         }
         
         function stopDraw(e){
@@ -132,26 +160,16 @@ apf.visualConnect = function (sel){
             var amlNode = apf.findHost(htmlNode);
             // target amlNode found, create connection
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
-                for (var s, attributes = [], dd, i = 0, l = selection.length; i < l; i++) {
-                    //drawConnection((s=selection[i]), amlNode);
-                }
-                // show connections
-                if (connectionPath.length) {
-                    paintConnections.style({p: connectionPath.join(" ")});
-                    // hide drawLine
-                    paintLine.style({p:""});
+                toEl = amlNode;
+                fromEl.setAttribute("caption", "{" + toEl.id + ".caption}");
+                //createConnection(fromEl, toEl, "value", "value");
+                mode = "element";
 
-                    apf.plane.show();
-                    paintGroup.style({v:1});
-                    paintGroup.repaint();
-                }
+                paintLine.style({p:""});
+                //paintGroup.repaint();
                 
-                // we are going to make a connection between nodes
-                
+                showConnections([fromEl]);
                 /*
-                var x = e.clientX;
-                var y = e.clientY;
-                
                 setTimeout(function(){
                     mnuContentEditable.display(x, y);
                 });
@@ -225,17 +243,45 @@ apf.visualConnect = function (sel){
             if (!e) e = event;
 
             //clearTimeout(showAllTimer);
-            
-            if(!isDrawing){
-                if (!selection.length) {
-                    apf.plane.hide();
-                    var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-                    var amlNode = apf.findHost(htmlNode);
-                    sel.$selectList(selection = [amlNode]);
-                    apf.plane.show();
+            if (lineMode == "element") {
+                if (selection.length) {
+                    paintGroup.style({v:0});
+                    paintGroup.repaint();
+
+                    showConnections(selection);
                 }
+            }
+            else if (lineMode == "draw" && !fromEl) {
+                apf.plane.hide();
+                var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
+                fromEl = apf.findHost(htmlNode);
+                sel.$selectList(selection = [fromEl]);
+                
+                //setTimeout(function(e){
+                var menu = new apf.menu({
+                  htmlNode   : document.body,
+                  id         : "attMenu",
+                  childNodes : [
+                    new apf.item({
+                      caption : "Attribute 1",
+                    }),
+                    new apf.item({
+                      caption : "Attribute 2"
+                    }),
+                    new apf.item({
+                      caption : "Attribute 3"
+                    })
+                  ]
+                });
+
+                menu.display(e.clientX, e.clientY);
+                //});
+
+                //apf.plane.show();
+                    
+                    // show contextmenu
                 // lets get the selection we clicked on to draw a line
-                startDraw(e);
+                //isDrawing = true;
             } else {
                 stopDraw(e);
             }
@@ -245,6 +291,13 @@ apf.visualConnect = function (sel){
             // lets see if we should stop drawing
             if(!isDrawing)
                 apf.dragMode = false; //prevents selection
+        }
+        
+        document.onkeydown = function(e) {
+            e = e || event;
+            // Esc key
+            if (e.keyCode == 27)
+                this.deactivate();
         }
         
         // create new connection
@@ -276,169 +329,133 @@ apf.visualConnect = function (sel){
                 c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
             }
 
-            // @todo more detailed calculation of line positions based on element positions
-            if (from.r[0] < to.l[0] && from.b[1] < to.t[1] && from.b[0] < to.l[0]) {
-                pos1 = "b";
-                pos2 = "l";
-            }
-            else if (to.r[0] < from.l[0] && to.b[1] < from.b[1] && to.b[0] < from.l[0]) {
-                pos1 = "l";
-                pos2 = "b";
-            }
-            else if (to.r[0] < from.l[0] && to.b[1] < from.b[1] && to.b[0] < from.l[0]) {
-                pos1 = "r";
-                pos2 = "b";
-            }
-            else {
-                pos1 = "c";
-                pos2 = "c";
-            }
-            
-            // add connection
-            connections.push({
+            if (!connections) connections = {};
+            if (!connections[el1.id]) connections[el1.id] = [];
+            connections[el1.id].push({
                 from : {
                     el      : el1,
                     at      : at1,
-                    pos     : pos1,
-                    coords  : from
+                    pos     : from.c
                 },
                 to : {
                     el      : el2,
                     at      : at2,
-                    pos     : pos2,
-                    coords  : to
+                    pos     : to.c
                 }
-            });
+            })
         }
         
         function drawConnections() {
-            // check for overlapping lines
-            var numLines = {};
-            for (var from, to, id1, id2, c, i = 0, l = connections.length; i < l; i++) {
-                // from elemenet
-                if (!numLines[(id1=(from=connections[i].from).el.id)]) numLines[id1] = {};
-                if (!numLines[id1][(pos1=from.pos)])
-                    numLines[id1][pos1] = 1;
-                else
-                    numLines[id1][pos1]++;
+            var oDiv = document.createElement("div");
+            oDiv.style.position = "absolute";
+            oDiv.style.width = "320px";
+            oDiv.style.height = "20px";
+            oDiv.style.border = "1px solid black";
+            oDiv.style.background = "yellow";
+            oDiv.style.fontSize = "12px";
+            
+            var srcDiv = document.createElement("div");
+            srcDiv.style.display = "inline-block";
+            srcDiv.style.width = "100px";
+            var tgtInput = document.createElement("input");
+            tgtInput.type = "text";
+            tgtInput.style.display = "inline";
+            tgtInput.style.width = "170px";
+            tgtInput.style.fontSize = "12px";
+
+            var saveDiv = document.createElement("div");
+            saveDiv.style.width = "20px";
+            saveDiv.style.height = "20px";
+            saveDiv.style.display = "inline";
+            saveDiv.style.background = "green";
+            saveDiv.style.color = "white";
+            saveDiv.innerHTML = "Save";
+            
+            var delDiv = document.createElement("div");
+            delDiv.style.width = "20px";
+            delDiv.style.height = "20px";
+            delDiv.style.display = "inline";
+            delDiv.style.background = "red";
+            delDiv.style.color = "white";
+            delDiv.innerHTML = "Del";
+            
+            oDiv.appendChild(srcDiv);
+            oDiv.appendChild(tgtInput);
+            oDiv.appendChild(saveDiv);
+            oDiv.appendChild(delDiv);
+
+            for (var id in connections) {
+                for (var aDiv, centerPos, pos1, pos2, i = 0, l = connections[id].length; i < l; i++) {
+                    // default positions for lines, start and end
+                    pos1 = connections[id][i].from.pos;
+                    pos2 = connections[id][i].to.pos;
+
+                    // calculate center of line
+                    centerPos = [Math.round((pos1[0]+pos2[0])/2), Math.round((pos1[1]+pos2[1])/2)];
                     
-                // to element
-                if (!numLines[(id2=(to=connections[i].to).el.id)]) numLines[id2] = {};
-                if (!numLines[id2][(pos2=to.pos)])
-                    numLines[id2][pos2] = 1;
-                else
-                    numLines[id2][pos2]++;
-            }
-
-            // 
-            // actually draw the lines
-            for (pos1, pos2, i = 0, l = connections.length; i < l; i++) {
-                pos1 = (from=(c=connections[i]).from).coords[from.pos];
-                pos2 = (to=c.to).coords[to.pos];
-
-                if ((from.pos == "b" && to.pos == "l") || (from.pos == "l" && to.pos == "b")) {
-                    if (from.pos == "l" && to.pos == "b") {
-                        var tmp = pos1;
-                        pos1 = pos2;
-                        pos2 = tmp;
+                    // value divs
+                    aDiv = oDiv.cloneNode(true);
+                    aDiv.getElementsByTagName("div")[0].innerHTML = connections[id][i].from.el.id + "." + connections[id][i].from.at
+                    aDiv.getElementsByTagName("input")[0].id = id + "_" + i;
+                    aDiv.getElementsByTagName("input")[0].value = "{" + connections[id][i].to.el.id + "." + connections[id][i].to.at + "}";
+                    
+                    // saveBtn
+                    aDiv.getElementsByTagName("div")[1].setAttribute("onclick", connections[id][i].from.el.id + ".setAttribute('" + connections[id][i].from.at + "', document.getElementById('" + id + "_" + i + "').value)");
+                    // delBtn
+                    aDiv.getElementsByTagName("div")[2].setAttribute("onclick", connections[id][i].from.el.id + ".setAttribute('" + connections[id][i].from.at + "', '')");
+                    
+                    // even number of connections
+                    var linePadding = 4;
+                    if (l % 2 == 0) {
+                        pos1 = [pos1[0], pos1[1] - (l/2*linePadding*i) + linePadding/2];
+                        pos2 = [pos2[0], pos2[1] - (l/2*linePadding*i) + linePadding/2];
+                        centerPos = [centerPos[0] - aDiv.style.width.replace("px", "")/2, centerPos[1] - l/2*aDiv.style.height.replace("px", "")*i];
                     }
-                    connectionPath.push(
-                        paintGroup.circlePath(pos1[0],pos1[1],3,3),
-                        "M",pos1[0],pos1[1],"L",pos1[0],pos2[1],
-                        "M",pos1[0],pos2[1],"L",pos2[0],pos2[1],
-                        paintGroup.circlePath(pos2[0],pos2[1],3,3)
-                    );
-                }
-                else {
-                    if (!(pos1 && pos2)) {
-                        pos1 = from.coords.c;
-                        pos2 = to.coords.c;
+                    // odd number of connections                    
+                    else {
+                        pos1 = [pos1[0], pos1[1] - (l+1)/2*linePadding*(i+0.5) + 3];
+                        pos2 = [pos2[0], pos2[1] - (l+1)/2*linePadding*(i+0.5) + 3];
+                        centerPos = [centerPos[0] - aDiv.style.width.replace("px", "")/2, centerPos[1] - (l+1)/2*aDiv.style.height.replace("px", "")*(i+0.5)]
                     }
+                    
+                    aDiv.style.top = centerPos[1] + "px";
+                    aDiv.style.left = centerPos[0] + "px";
+                    div.appendChild(aDiv);
+                    
+                    // draw line
                     connectionPath.push(
-                        paintGroup.circlePath(pos1[0],pos1[1],3,3),
+                        //paintGroup.circlePath(pos1[0],pos1[1],1,1),
                         "M",pos1[0],pos1[1],"L",pos2[0],pos2[1],
-                        paintGroup.circlePath(pos2[0],pos2[1],3,3)
+                        paintGroup.circlePath(pos2[0],pos2[1],1,1)
                     );
+                    
+                    /*
+                    connectionPath.push(
+                        paintGroup.circlePath(centerPos[0],centerPos[1],3,3)
+                    )
+                    */
                 }
             }
-        }
-        
-        /*
-        function drawConnection(el1, el2) {
-            hNode = el1.$ext;
-            var hNode2 = el2.$ext;
-            var pos1 = apf.getAbsolutePosition(hNode);
-            var pos2 = apf.getAbsolutePosition(hNode2);
-
-            // @todo calculate line position and direction
-            var dx = Math.abs((x1=pos1[0]) - (x2=pos2[0]));
-            var dy = Math.abs((y1=pos1[1]) - (y2=pos2[1]));
-            
-            var l1 = [x1+hNode.offsetWidth/2, y1+hNode.offsetHeight, x1+hNode.offsetWidth/2, y1+dy/2];
-            var l2 = [x1+hNode.offsetWidth/2, y1+dy/2, x2+hNode2.offsetWidth/2, y1+dy/2];
-            var l3 = [x2+hNode2.offsetWidth/2, y1+dy/2, x2+hNode2.offsetWidth/2, y2];
-            
-            connectionPath.push(
-                paintGroup.circlePath(l1[0],l1[1],3,3),
-                "M",l1[0],l1[1],"L",l1[2],l1[3],
-                "M",l2[0],l2[1],"L",l2[2],l2[3],
-                "M",l3[0],l3[1],"L",l3[2],l3[3],
-                paintGroup.circlePath(l3[2],l3[3],3,3)
-            );
-            
-//            var sx =  ~~(pos1[0] + (hNode.offsetWidth/2)), sy = ~~(pos1[1] + (hNode.offsetHeight/2)), ex = ~~(pos2[0] + (hNode2.offsetWidth/2)), ey = ~~(pos2[1] + (hNode2.offsetHeight/2));
-//            connectionPath.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
-return;            
-            // display dropdowns with attributes
-            // @todo display dropdowns with properties, default value
-            // @todo should change property value
-            var dd1 = new apf.dropdown({
-                htmlNode          : div
-            });
-            for (var ai = 0, al = el1.attributes.length; ai < al; ai++) {
-                dd1.childNodes.push(new apf.item({
-                  data : el1.attributes[ai].name
-                }));
-            }
-            
-            // @todo position dropdown depends on connection position
-            dd1.$ext.style.position = "absolute";
-            dd1.setProperty("left", el1.$ext.offsetLeft);
-            dd1.setProperty("top", el1.$ext.offsetTop);
-            
-            if (el1.getValue())
-                el1.value = "{" + el2.id + ".value}";
-            else (el1.caption)
-                el1.caption = "{" + el2.id + ".caption}";
-        }
-        */
+        }        
     };
 
     this.deactivate = function(){
-        //document.getElementById("log").innerHTML += "deactivated<br>";
+        if (!active) return;
+        if (lineMode != "draw") return;
         active = false;
         
         document.onmousedown = 
-        document.onmousemove = null;
+        document.onmousemove = 
+        document.onmouseup = 
+        document.onkeydown = null;
         
         apf.plane.hide();
-        //debugger;
         paintLine.style({p:""});
         paintConnections.style({p:""});
         paintRect.style({w:0,h:0});
         paintGroup.style({v:0});
         paintGroup.repaint();
         div.style.display = "none";
-    };
-        
-    this.enableLineMode = function() {
-        lineMode = true;
-
-        // collect all visible elements
-        for (var el, i = 0, l = apf.all.length; i < l; i++) {
-            if ((el=apf.all[i]).$ext && el.prefix == "a") allElements.push(apf.all[i]);
-        }
-
     };
 };
 //#endif

@@ -1630,7 +1630,7 @@ apf.uirecorder.playback = {
         else if (aName === "mousescroll") {
             apf.uirecorder.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
-apf.console.info(aName + " executed");
+
         this.$nextAction();
     },
     
