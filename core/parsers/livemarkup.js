@@ -145,20 +145,20 @@ apf.lm = new (function(){
             ";":1, ",":2, "^":3, "=":4, "+=":4, "-=":4, "/=":4, "*=":4, "/":5, ":":6
         },
         xpath_lut_code = { // which autoxpath to use when doing macro({xpath})
-            "~": "_val(_n,", "%": "_nod(_n,", "*": "_nods(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_valed(_n,", "%": "_nod(_n,", "*": "_nods(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_text = { // which autoxpath to use when doing xpath macros in textmode
-            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_attr = { // xpath lut for node attributes
             "~": "_val(_n,", "%": "_val(_n,", "*": "_val(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_node,
         xpath_lut_node_normal = { // normal xpath lookup
-            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_node_langedit = { // language edit xpath lookup
-            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lnged("
+            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lnged("
         },
         pre_regexp = {
             "[":1, "(":1, ",":1, "=":1, "return":1, "throw":1
@@ -1315,6 +1315,7 @@ apf.lm = new (function(){
                                     ol --;
                                 else
                                     v = xpath_macro[last_ns ? c_elemxpath : 0];
+                                    
                                 s[sl++] = scope | 0x40000000
                             }
                             else {
@@ -1612,7 +1613,7 @@ apf.lm = new (function(){
 			
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
-                | (cfg.nostate && 0x200) | (cfg.editable && 0x400) | (cfg.langedit && 0x800)
+                | (cfg.nostate && 0x200) | (cfg.editable && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
 
         if (c = cache[key])
@@ -2143,12 +2144,7 @@ apf.lm_exec = new (function(){
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valst"),/*#endif*/"");
         return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + "/" + x + "]";
     }
-
-    function _valed(n, m, x){ 	// a value with editable div
-        if(n) x = m;
-        return "<div liveedit='true' class='liveedit'>CONTENT_EDITABLE_TODO</div>";
-    }
-
+    
     function _nod_del(n, m, x){ // delete node
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
@@ -2417,6 +2413,12 @@ apf.lm_exec = new (function(){
 #endif*/        
     }
 
+    function _valed(n, m, x){ 	// wrap a value with editable div
+        return "<div contenteditable='true' class='contenteditable'>" + 
+                    (n?__val(n,m):__valm(m,x))+
+                "</div>";
+    }
+    
     function _injself(s){			// self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
