@@ -468,7 +468,7 @@ apf.xmpp_muc = function(){
                 x    : "<field type='text-single' var='session'><value>" + sSession + "</value></field>"
                      + "<field type='text-single' var='baseline'><value>" + iBaseline + "</value></field>"
                      + (sData
-                        ? "<field type='text-multi' var='modeldata'><value><![CDATA[" + sData + "]]></value></field>"
+                        ? "<field type='text-multi' var='modeldata'><value><![CDATA[" + this.$encodeCDATA[sData] + "]]></value></field>"
                         : ""),
                 xtype: "result",
                 type : oXmpp.MSG_NORMAL

@@ -337,7 +337,7 @@ apf.xmpp_rdb = function(){
             join  : sTo
         }, sData
             ? "<x xmlns='" + oXmpp.NS.data + "'><baseline>" + iBaseline
-              + "</baseline><data><![CDATA[" + sData + "]]></data></x>"
+              + "</baseline><data><![CDATA[" + this.$encodeCDATA(sData) + "]]></data></x>"
             : ""
         ));
         rdbVars["bot_timer"] = $setTimeout(function() {

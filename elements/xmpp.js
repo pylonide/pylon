@@ -604,12 +604,14 @@ apf.xmpp = function(struct, tagName){
     };
 
     // expose functions to interfaces:
-    this.$makeUnique          = makeUnique;
-    this.$createBodyElement   = createBodyElement;
-    this.$createStreamElement = createStreamElement;
-    this.$createIqBlock       = createIqBlock;
-    this.$createPresenceBlock = createPresenceBlock;
-    this.$createMessageBlock  = createMessageBlock;
+    this.$makeUnique          = makeUnique,
+    this.$createBodyElement   = createBodyElement,
+    this.$createStreamElement = createStreamElement,
+    this.$createIqBlock       = createIqBlock,
+    this.$createPresenceBlock = createPresenceBlock,
+    this.$createMessageBlock  = createMessageBlock,
+    this.$encodeCDATA         = encodeCDATA,
+    this.$decodeCDATA         = decodeCDATA;
 
     /*
      * Generic function that provides a basic method for making HTTP calls to
