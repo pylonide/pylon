@@ -117,7 +117,8 @@ apf.runGecko = function(){
 
         if (beforeNode)
             htmlNode.insertBefore(o.firstChild, beforeNode);
-        htmlNode.appendChild(o.firstChild);
+        else
+            htmlNode.appendChild(o.firstChild);
 
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
