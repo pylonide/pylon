@@ -82,6 +82,15 @@ apf.V8Debugger = function(dbg, host) {
                         xml.push(self.$serializeVariable(frame.locals[j]));
                 }
                 xml.push("</vars>");
+                
+                xml.push("<scopes>");
+                var scopes = frame.scopes;
+                for (var j=0; j<scopes.length; j++) {
+                    var scope = scopes[j];
+                    xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
+                }
+                xml.push("</scopes>");
+                
                 xml.push("</frame>");
             }
             model.load("<frames>" + xml.join("") + "</frames>");          
@@ -119,6 +128,42 @@ apf.V8Debugger = function(dbg, host) {
                 callback(xml.join(""));
             });
         });
+    };
+    
+    this.loadFrame = function(frame, callback) {
+        //var xml = "<vars><item name='juhu' value='42' type='number'/></vars>"
+        var scopes = frame.getElementsByTagName("scope");
+        
+        var frameIndex = parseInt(frame.getAttribute("index"));
+        
+        var self = this;
+        var processed = 0;
+        var expected = 0;
+        var xml = ["<vars>"];
+        
+        for (var i=0; i<scopes.length; i++) {
+            var scope = scopes[i];
+            var type = parseInt(scope.getAttribute("type"));
+            
+            // ignore local and global scope
+            if (type > 1) {
+                expected += 1;
+                var index = parseInt(scope.getAttribute("index"));
+                this.$debugger.scope(index, frameIndex, true, function(body) {
+                    var props = body.object.properties;
+                    for (j=0; j<props.length; j++) {
+                        xml.push(self.$serializeVariable(props[j]))
+                    }
+                    processed += 1;
+                    if (processed == expected) {
+                        xml.push("</vars>");
+                        callback(xml.join(""));
+                    } 
+                });
+            }
+        }
+        if (expected == 0)
+            return callback("<vars />");
     };
     
     this.toggleBreakpoint = function(script, relativeRow, model) {
@@ -224,7 +269,7 @@ apf.V8Debugger = function(dbg, host) {
         str.push("<item name='", apf.escapeXML(name || item.name),
             "' value='", apf.escapeXML(this.$valueString(item.value)),
             "' type='", item.value.type,
-            "' ref='", item.value.ref || item.value.handle,
+            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
             hasChildren[item.value.type] ? "' children='true" : "",
             "' />");
         return str.join("");

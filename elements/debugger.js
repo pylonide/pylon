@@ -66,7 +66,12 @@ apf.dbg = function(struct, tagName){
     };
 
     this.$onChangeRunning = function() {
-        this.$stRunning.setProperty("active", this.$debugger.isRunning());
+        var isRunning = this.$debugger.isRunning();
+        this.$stRunning.setProperty("active", isRunning);
+        
+        if (isRunning) {
+            this.$mdlStack.load("<frames />");
+        }
     };
     
     this.$onBreak = function() {
@@ -97,6 +102,10 @@ apf.dbg = function(struct, tagName){
 
     this.loadObjects = function(item, callback) {
         this.$debugger.loadObjects(item, callback);
+    };
+    
+    this.loadFrame = function(frame, callback) {
+        this.$debugger.loadFrame(frame, callback);
     };
     
     this.toggleBreakpoint = function(script, row) {
@@ -146,6 +155,18 @@ window.adbg = {
              var item = args[1];
              
              dbg.loadObjects(item, function(xml) {
+                 if (options && options.callback) {
+                     options.callback(xml, apf.SUCCESS);
+                 } else {
+                     callback(xml, apf.SUCCESS);
+                 }
+             });
+         }
+         else if (method == "loadFrame") {
+             var dbg = args[0];
+             var frame = args[1];
+             
+             dbg.loadFrame(frame, function(xml) {
                  if (options && options.callback) {
                      options.callback(xml, apf.SUCCESS);
                  } else {
