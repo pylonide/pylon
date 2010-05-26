@@ -546,7 +546,10 @@ apf.Class.prototype = new (function(){
                 amlNode : node, 
                 prop    : bProp, 
                 handler : node.$bindProperty(bProp, this, prop, fParsed, 
-                  fParsed.type == 4 && SEL.indexOf(prop) == -1 && exclNr != 3) /*,
+                    //@todo check if it breaks something. I removed
+                    // "&& exclNr != 3" from the expression to enable two way
+                    // binding of selections
+                    fParsed.type == 4 && SEL.indexOf(prop) == -1) /*,
                 bidir   : 
                   && this.$bindProperty(prop, node, bProp, function(){
                     return _self[prop];
