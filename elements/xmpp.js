@@ -578,13 +578,13 @@ apf.xmpp = function(struct, tagName){
     }
 
     var encRE = /<\!\[CDATA\[([^(?:\]\]>]*)\]\]>/g,
-        decRE = /~~~###~~~\[CDATA\[([^(?:\]\]~~~###~~~)]*)\]\]~~~###~~~/;
+        decRE = /&#60;\[CDATA\[([^(?:\]\]&#62;)]*)\]\]&#62;/;
 
     function encodeCDATA(s) {
         if (typeof s != "string")return s;
-        return s.replace(encRE, "~~~###~~~[CDATA[$1]]~~~###~~~");
+        return s.replace(encRE, "&#60;[CDATA[$1]]&#62;");
     }
-    
+
     function decodeCDATA(s) {
         if (typeof s != "string") return s;
         return s.replace(decRE, "<![CDATA[$1]]>");
