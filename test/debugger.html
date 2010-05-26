@@ -33,8 +33,8 @@
           state-connected = "stConnected" />
 
         <a:debughost id="dbgNode"
-          port     = "5858" 
-          server   = "localhost" 
+          port     = "{txtV8Port.value}" 
+          server   = "{txtV8Host.value}" 
           type     = "v8"
           autoinit = "false"
           model-tabs      = "mdlTabs"
@@ -53,10 +53,10 @@
 			<a:bar>
 	        	<a:button
 	        	  icon="standalone_v8_16.png"
-	        	  onclick="dbg.attach(dbgNode)"
+	        	  onclick="winV8.show();"
 	        	  disabled="{stConnected.active}" />
 	        	<a:button
-	        	  icon="chromium_16"
+	        	  icon="chromium_16.png"
 	        	  onclick="winTab.show(); dbgChrome.loadTabs()"
 	        	  disabled="{stConnected.active}" />
 	        	<a:divider />
@@ -92,8 +92,36 @@
 	        </a:bar>
         </a:toolbar>
         
+        <a:window id="winV8" 
+          title="Connect to V8"
+          icon="standalone_v8_16.png"
+          zindex="10" 
+          center="true" 
+          modal="true" 
+          width="200" 
+          height="120" 
+          buttons="close"
+          visible="false">
+			<a:table columns="90,90" padding="5" edge="5">
+				<a:label>Hostname</a:label>
+				<a:textbox id="txtV8Host" value="localhost" />
+				<a:label>Port</a:label>
+				<a:textbox id="txtV8Port" value="5858" />
+			</a:table>
+        	<a:button id="btnOk"
+        	  right="5" 
+        	  bottom="5" 
+        	  width="80" 
+        	  default="true"
+        	  onclick="winV8.close();dbg.attach(dbgNode)">
+        	    Connect
+       		</a:button>
+        </a:window>        
+        
+        
         <a:window id="winTab" 
           title="Choose a Tab"
+          icon="chromium_16.png"
           zindex="10" 
           center="true" 
           modal="true" 
