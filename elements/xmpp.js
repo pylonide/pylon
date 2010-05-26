@@ -571,10 +571,21 @@ apf.xmpp = function(struct, tagName){
         }
 
         if (options.message)
-            aOut.push("<body><![CDATA[", options.message.trim(), "]]></body>");
+            aOut.push("<body><![CDATA[", encodeCDATA(options.message.trim()), "]]></body>");
 
         aOut.push("</message>");
         return aOut.join("");
+    }
+
+    var encRE = /<\!\[CDATA\[([^(?:\]\]>]*)\]\]>/g,
+        decRE = /&#60;\[CDATA\[([^(?:\]\]&#62;)]*)\]\]&#62;/;
+
+    function encodeCDATA(s) {
+        return s.replace(encRE, "&#60;[CDATA[$1]]&#62;");
+    }
+    
+    function decodeCDATA(s) {
+        return s.replace(decRE, "<![CDATA[$1]]>");
     }
 
     /*
@@ -1718,7 +1729,7 @@ apf.xmpp = function(struct, tagName){
             if (oThread.length)
                 sThread = oThread[0].firstChild.nodeValue.trim();
             sFrom = oMsg.getAttribute("from");
-            sMsg  = getMessage(oBody);
+            sMsg  = decodeCDATA(getMessage(oBody));
             // #ifdef __TP_XMPP_ROSTER
             // #ifdef __TP_XMPP_MUC
             if (bRoom && sFrom == this.$mucRoster.fullJID)
