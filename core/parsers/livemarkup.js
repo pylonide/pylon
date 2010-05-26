@@ -145,20 +145,20 @@ apf.lm = new (function(){
             ";":1, ",":2, "^":3, "=":4, "+=":4, "-=":4, "/=":4, "*=":4, "/":5, ":":6
         },
         xpath_lut_code = { // which autoxpath to use when doing macro({xpath})
-            "~": "_valed(_n,", "%": "_nod(_n,", "*": "_nods(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_val(_n,", "%": "_nod(_n,", "*": "_nods(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_text = { // which autoxpath to use when doing xpath macros in textmode
-            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_attr = { // xpath lut for node attributes
             "~": "_val(_n,", "%": "_val(_n,", "*": "_val(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_node,
         xpath_lut_node_normal = { // normal xpath lookup
-            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
+            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lng("
         },
         xpath_lut_node_langedit = { // language edit xpath lookup
-            "~": "_valed(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lnged("
+            "~": "_val(_n,", "%": "_xml(_n,", "*": "_xmls(_n,", "#": "_cnt(_n,", "$": "_lnged("
         },
         pre_regexp = {
             "[":1, "(":1, ",":1, "=":1, "return":1, "throw":1
@@ -304,7 +304,7 @@ apf.lm = new (function(){
             "apf.ajax" :1
         },
         c_xpathmode,    // guess 'node' as the type for {} o_xpathpairs, 1 = node, 2 = nodes
-        c_elemxpath,    // which xpath macro to use inside a ns'ed element
+        c_elemxpath,    // which xpath macro to use inside an element
         c_statexpath,   // which xpath to use for the stateful value
         c_injectself,   // add self:: in some o_xpathpairs
 		c_propassign, 	// support property assigns
@@ -1314,7 +1314,7 @@ apf.lm = new (function(){
                                 if((v = xpath_lut_node[last_tok]))
                                     ol --;
                                 else
-                                    v = xpath_macro[last_ns ? c_elemxpath : 0];
+                                    v = xpath_macro[c_elemxpath];
                                     
                                 s[sl++] = scope | 0x40000000
                             }
@@ -1565,7 +1565,7 @@ apf.lm = new (function(){
      *      5: xpathobj        returns a {model:model,xpath:xpath} object from xpaths
      *   {Boolean} parsecode   start in codemode. if 0 its textmode.
       *  {Boolean} nostate       dont' use _valst macro on [xpath] in namespaced xml.
-     *   {Boolean} editable    use the _valed macro for <xml>[xpath]</xml> in namespaced xml.
+     *   {Boolean} liveedit    use the _valed macro for <xml>[xpath]</xml> in namespaced xml.
      *   {Boolean} langedit    use of language items in namespaced xml text.
      *   {Boolean} injectself  injects self:: to suitable xpaths
      *   {Boolean} event       its an event thats being compiled, results in no returnvalue for this function.
@@ -1613,14 +1613,14 @@ apf.lm = new (function(){
 			
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
-                | (cfg.nostate && 0x200) | (cfg.editable && 0x400)| (cfg.langedit && 0x800)
+                | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
 
         if (c = cache[key])
             return c;
 
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
-        c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.editable ? 7:0;
+        c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.liveedit ? 7:0;
 		c_funcglobal = cfg.funcglobal;
 		
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
