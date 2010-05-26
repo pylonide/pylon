@@ -66,6 +66,13 @@ apf.V8Debugger = function(dbg, host) {
                     "' script_id='", script.id,
                     "'>");
                 xml.push("<vars>");
+                
+                var receiver = {
+                    name: "this",
+                    value: frame.receiver 
+                };
+                xml.push(self.$serializeVariable(receiver));
+                
                 for (var j=0; j<frame.arguments.length; j++) {
                     if (frame.arguments[j].name) 
                         xml.push(self.$serializeVariable(frame.arguments[j]));
@@ -106,7 +113,7 @@ apf.V8Debugger = function(dbg, host) {
                 var xml = ["<item>"];
                 for (var i=0; i<props.length; i++) {
                     props[i].value = body[props[i].ref];
-                    xml.push(self.serializeVariable(props[i]));
+                    xml.push(self.$serializeVariable(props[i]));
                 }
                 xml.push("</item>");
                 callback(xml.join(""));
@@ -191,10 +198,7 @@ apf.V8Debugger = function(dbg, host) {
 
     this.$frameToString = function(frame) {
         var str = [];
-        str.push(
-            //"<", this.$valueString(frame.receiver), ">.",
-            frame.func.name || frame.func.inferredName, "("
-        );
+        str.push(frame.func.name || frame.func.inferredName, "(");
         var args = frame.arguments;
         var argsStr = [];
         for (var i=0; i<args.length; i++) {

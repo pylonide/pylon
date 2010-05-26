@@ -146,7 +146,7 @@
           visible="true" 
           zindex="9">
 	        <a:datagrid
-	          id         = "lstStack"
+	          id         = "dgStack"
 	          anchors    = "0 0 0 0" 
 	          options    = "size|move"
 	          caching    = "false"
@@ -160,6 +160,28 @@
 	            <a:column caption="Col" value="[@column]" width="25"/>
 	            <a:each match="[frame]" />
 	        </a:datagrid>    
+        </a:window>
+
+        <a:window 
+          title="Watch"
+          skin="dockwin" 
+          align="left-splitter" 
+          dock="true"
+          visible="true" 
+          zindex="9">
+	        <a:datagrid id="dgWatch"
+	          anchors    = "0 0 0 0" 
+	          options    = "size|move"
+	          prerender  = "false"
+	          model      = "[{dgStack.selected}::vars]"
+	          loading-message = "Calculating..."
+	          >
+                <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
+	            <a:column caption="Value" value="[@value]" width="100%" />
+	            <a:column caption="Type" value="[@type]" width="80"/>
+	            <a:each match="[item]" sort="[@name]" />
+	        </a:datagrid>		
         </a:window>
 
         <a:codeeditor id="ce" 

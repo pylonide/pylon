@@ -96,7 +96,7 @@ apf.dbg = function(struct, tagName){
     };
 
     this.loadObjects = function(item, callback) {
-        this.$debugger.loadScript(item, callback);
+        this.$debugger.loadObjects(item, callback);
     };
     
     this.toggleBreakpoint = function(script, row) {
