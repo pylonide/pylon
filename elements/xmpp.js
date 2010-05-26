@@ -767,8 +767,8 @@ apf.xmpp = function(struct, tagName){
     this.connect = function(username, password, callback, reg) {
         this.reset();
 
-        this.$serverVars["username"]       = username;
-        this.$serverVars["password"]       = password;
+        this.$serverVars["username"]       = username || this.resource;
+        this.$serverVars["password"]       = password || "";
         this.$serverVars["login_callback"] = callback;
         this.$serverVars["register"]       = reg || this["auto-register"];
         this.$serverVars["previousMsg"]    = [];
