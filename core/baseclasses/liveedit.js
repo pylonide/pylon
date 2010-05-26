@@ -60,33 +60,36 @@ apf.LiveEdit = function() {
                             "justifyfull", "removeformat", "cut", "copy",
                             "paste", "outdent", "indent", "undo", "redo"];
 
-    this.$supportedProperties.push("liveedit", "state", "plugins",
+    this.$supportedProperties.push("live-edit", "liveedit", "state", "plugins",
         "realtime", "language");
-    this.$booleanProperties["liveedit"] = true;
-    this.$booleanProperties["realtime"] = true;
-    this.$propHandlers["liveedit"]      = function(value){
+    this.$booleanProperties["live-edit"] = true;
+    this.$booleanProperties["liveedit"]  = true;
+    this.$booleanProperties["realtime"]  = true;
+    this.$propHandlers["live-edit"]      =
+    this.$propHandlers["liveedit"]       = function(value){
+        this["live-edit"] = this["liveedit"] = value;
         var o = this.$edVars;
         if (apf.isTrue(value)) {
             var _self = this;
             apf.addListener(_self.$ext, "mouseover", o.mouseOver = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
                     el = el.parentNode;
                 }
                 if (!el || el == _self.$ext || el == o.activeNode)
                     return;
-                apf.setStyleClass(el, "contentEditable_over");
+                apf.setStyleClass(el, "liveEdit_over");
             });
             apf.addListener(_self.$ext, "mouseout",  o.mouseOut = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
                     el = el.parentNode;
                 }
                 if (!el || el == _self.$ext || el == o.activeNode)
                     return;
-                apf.setStyleClass(el, null, ["contentEditable_over"]);
+                apf.setStyleClass(el, null, ["liveEdit_over"]);
             });
             apf.addListener(_self.$ext, "mousedown", o.mouseDown = function(e) {
                 var el = e.srcElement || e.target;
@@ -94,7 +97,7 @@ apf.LiveEdit = function() {
                 if (o.activeNode && _self.$selection && apf.isChildOf(o.activeNode, el, true))
                     _self.$selection.cache();
 
-                while (el && (!el.className || el.className.indexOf("contentEditable") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
                     el = el.parentNode;
                 }
 
@@ -304,7 +307,7 @@ apf.LiveEdit = function() {
                 if (this.$selected) {
                     var nodes = this.$selected.getElementsByTagName("*");
                     for (var i = nodes.length - 1; i >= 0; i--) {
-                        if ((nodes[i].className || "").indexOf("contentEditable") > -1) {
+                        if ((nodes[i].className || "").indexOf("liveEdit") > -1) {
                             oNode = nodes[i];
                             break;
                         }
@@ -563,7 +566,7 @@ apf.LiveEdit = function() {
             o.skipFocusOnce = true;
 
         o.activeNode = oNode;
-        apf.setStyleClass(oNode, "contentEditable_active", ["contentEditable_over"]);
+        apf.setStyleClass(oNode, "liveEdit_active", ["liveEdit_over"]);
         
         // #ifdef __WITH_HTML_CLEANER
         if (rule && apf.isTrue(rule.richtext)) {
@@ -699,7 +702,7 @@ apf.LiveEdit = function() {
 
         o.activeNode = null;
 
-        apf.setStyleClass(oNode, null, ["contentEditable_over", "contentEditable_active"]);
+        apf.setStyleClass(oNode, null, ["liveEdit_over", "liveEdit_active"]);
 
         if (o.docklet)
             o.docklet.setProperty("visible", false);
@@ -747,7 +750,7 @@ apf.LiveEdit = function() {
         var aNodes = this.$ext.getElementsByTagName("*");
         for (var i = 0, l = aNodes.length; i < l && aNodes[i].nodeType == 1; i++) {
             if (aNodes[i].className
-              && aNodes[i].className.indexOf("contentEditable") != -1) {
+              && aNodes[i].className.indexOf("liveEdit") != -1) {
                 o.tabStack.push(aNodes[i]);
             }
         }
@@ -1207,7 +1210,7 @@ apf.LiveEdit = function() {
 
     this.$restoreFocus = function(bWithSel) {
         // for now, only IE needs this workaround to return the focus to the
-        // contentEditable area - whilst preserving the correct state.
+        // liveEdit area - whilst preserving the correct state.
         if (apf.isIE) {
             var _self = this;
             $setTimeout(function() {
@@ -1891,7 +1894,8 @@ apf.LiveEdit.plugin = function(sName, fExec) {
     };
 };
 
-apf.GuiElement.propHandlers["liveedit"] = function(value) {
+apf.GuiElement.propHandlers["live-edit"] =
+apf.GuiElement.propHandlers["liveedit"]  = function(value) {
     this.implement(apf.LiveEdit);
     if (!this.hasFeature(apf.__VALIDATION__))
         this.implement(apf.Validation);
