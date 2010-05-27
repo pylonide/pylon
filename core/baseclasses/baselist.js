@@ -723,8 +723,9 @@ apf.BaseList = function(){
         }
         // #endif
 
-        if (this.$addModifier)
-            this.$addModifier(xmlNode, oItem);
+        if (this.$addModifier && 
+          this.$addModifier(xmlNode, oItem, htmlParentNode, beforeNode) === false)
+            return;
 
         if (htmlParentNode)
             apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
