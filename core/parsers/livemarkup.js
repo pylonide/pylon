@@ -292,7 +292,7 @@ apf.lm = new (function(){
             "_nods(_n,"     : "_nods_del(_n,"
         },
         parserx = /(\r?[\n]|\/\*|\*\/|\/\/|\<\!\-\-|\-\-\>|[=\!+\/\*-]=|\+\+|\-\-|["'{(\[\])}\]\<\>]|$)|([ \t]+)|([a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF.$_][\w.$_]*)|(\d[x\d.]*)|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>]?)/g,
-		selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g, // inject self regexp
+        selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g, // inject self regexp
         macro_o = {},
         macro_c = {},
         macro_m = {},
@@ -307,15 +307,15 @@ apf.lm = new (function(){
         c_elemxpath,    // which xpath macro to use inside an element
         c_statexpath,   // which xpath to use for the stateful value
         c_injectself,   // add self:: in some o_xpathpairs
-		c_propassign, 	// support property assigns
-		c_funcglobal,	// globalize function
+        c_propassign,   // support property assigns
+        c_funcglobal,   // globalize function
         // outputs
         o, ol,          // output and output len
         o_asyncs,       // number of async calls
         o_xpathpairs,   // all xpaths and their models in pairs
         o_props,        // the js properties found
-        o_segs,     	// segments at groundlevel
-        o_xpaths,    	// xpaths at groundlevel
+        o_segs,         // segments at groundlevel
+        o_xpaths,       // xpaths at groundlevel
         o_models,       // number of xpaths with models
         // temp and state vars
         s = [], sl,     // scopestack and scopestack len
@@ -334,34 +334,34 @@ apf.lm = new (function(){
         last_dot,       // . pos when last token was a word
         last_model,     // last model found
         last_prop,      // last property found
-        last_cmt_mode,	// the parse mode outside the comment
-        last_cmt_tok,	// last token before comment
-        last_cmt_type,	// last type before comment
+        last_cmt_mode,  // the parse mode outside the comment
+        last_cmt_tok,   // last token before comment
+        last_cmt_type,  // last type before comment
         last_line,      // offset of last newline
         last_ns,        // last namespace found
-        last_word; 	    // last word in code mode
+        last_word;      // last word in code mode
     // macros used in code()
     macro_o["if"]       = "if(",
     macro_c["if"]       = ")",
-    macro_o["while"] 	= "while(",
-    macro_c["while"] 	= ")",
+    macro_o["while"]    = "while(",
+    macro_c["while"]    = ")",
     macro_o["for"]      = "for(",
     macro_c["for"]      = ")",
-    macro_o["switch"] 	= "switch(",
-    macro_c["switch"] 	= ")",
-    macro_o["catch"] 	= "catch(",
-    macro_c["catch"] 	= ")",
+    macro_o["switch"]   = "switch(",
+    macro_c["switch"]   = ")",
+    macro_o["catch"]    = "catch(",
+    macro_c["catch"]    = ")",
     macro_c["function"] = ")  ";
 
-    macro_o.foreach 	=
+    macro_o.foreach     =
     macro_o.each        = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,("
-    macro_c.foreach 	=
+    macro_c.foreach     =
     macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)"
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local("
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)"
     macro_o.localName   = "_localName(_n",
-    macro_c.localName 	= ")"
-    macro_o.output  	= "_o.join(''",
+    macro_c.localName   = ")"
+    macro_o.output      = "_o.join(''",
     macro_c.output      = ")"
     macro_o.reset       = "(_o=[],l=0",
     macro_c.reset       = ")"
@@ -375,11 +375,11 @@ apf.lm = new (function(){
     macro_c.last        = ")",
     macro_o.total       = "(_t[_t.length-1].length",
     macro_c.total       = ")",
-    macro_o.pos	        = "(_t[_t.length-2]-1",
-    macro_c.pos	        = ")",
+    macro_o.pos         = "(_t[_t.length-2]-1",
+    macro_c.pos         = ")",
 
     macro_o.tagName     = "_tagName(_n",
-    macro_c.tagName  	= ")"
+    macro_c.tagName     = ")"
     macro_o._nodeValue  = "_nodeValue(_n",
     macro_c._nodeValue  = ")"
     macro_c.async       = "])";
@@ -454,7 +454,7 @@ apf.lm = new (function(){
         cc_m_v_c       = ");",
         cc_m_n_string  = "\nreturn _n;",
         cc_m_n_o       = "\nreturn (_r = (",
-		// decision point for compileMatch node-mode for the return type
+        // decision point for compileMatch node-mode for the return type
         cc_m_n_c       = "))?(_r.nodeType?_r:_n):(_r===null?null:_n);",
 
         cc_m_o         = "var _r, _n = _m;",
@@ -469,7 +469,7 @@ apf.lm = new (function(){
             u = scope-1; // scan for our root expression block to switch to block
         else
             for (v = sl - 2, u = 0; v >= 0 && o[u=(s[v] & 0xfffffff) - 1] != "{{"; v -=2 ){};
-		
+        
         if (!no_output && ol > u + 1)  // inject auto output unless no output or nothing to output in buffer
             o[u] = cf_block_o + cf_str_output
         else
@@ -532,41 +532,41 @@ apf.lm = new (function(){
                                         o[ol++] = "^";
                                     break;
                                 case 4: //'= += -= assignment macro mode
-									if(last_tok!='<' && last_tok!='>'){
-										// we should only switch to block when we are not in a ( ) scope
-										if (!parse_mode && o[scope-1]!='(')
-											switchToBlock(true);
-										o[ol++] = tok;
-										// lets scan in reverse to see if we have an output or a non-output
+                                    if(last_tok!='<' && last_tok!='>'){
+                                        // we should only switch to block when we are not in a ( ) scope
+                                        if (!parse_mode && o[scope-1]!='(')
+                                            switchToBlock(true);
+                                        o[ol++] = tok;
+                                        // lets scan in reverse to see if we have an output or a non-output
 
-										for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
-											|| o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
+                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
+                                            || o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
 
-										if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
-											if(c_propassign){
-												ol -= 2;
-												while (is_out_space[o[ol]])
-													ol--;
-												w = last_tok;
-												o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
-												o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
-												o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
-												s[sl++] = ""; // notabene, this stored item is checked everywhere
-											}
-										}
-										else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
-											if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
-												throw {
-													t: "Invalid xpath assign",
-													p: pos
-												};
-											o[w] = u,o[v] = ",", o[v + 1] = "", o[v + 2] = "";
-											s[sl++] = scope | (parse_mode << 28),
-											s[sl++] = "" // this value is checked everywhere
-										}
-									}else{
-										o[ol++] = tok;
-									}break;
+                                        if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
+                                            if(c_propassign){
+                                                ol -= 2;
+                                                while (is_out_space[o[ol]])
+                                                    ol--;
+                                                w = last_tok;
+                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
+                                                o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
+                                                o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
+                                                s[sl++] = ""; // notabene, this stored item is checked everywhere
+                                            }
+                                        }
+                                        else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
+                                            if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
+                                                throw {
+                                                    t: "Invalid xpath assign",
+                                                    p: pos
+                                                };
+                                            o[w] = u,o[v] = ",", o[v + 1] = "", o[v + 2] = "";
+                                            s[sl++] = scope | (parse_mode << 28),
+                                            s[sl++] = "" // this value is checked everywhere
+                                        }
+                                    }else{
+                                        o[ol++] = tok;
+                                    }break;
                                 case 5: // '/' // regexp mode
                                     if (pre_regexp[last_tok]) {
                                         s[sl++] = scope | (parse_mode << 28);
@@ -589,9 +589,9 @@ apf.lm = new (function(){
                                         tok = ";"; //fixes auto output problem
                                     o[ol++] = ":";
                                     break;
-								default:
-									 o[ol++] = tok;
-									break;
+                                default:
+                                     o[ol++] = tok;
+                                    break;
                             }
                         }
                         else
@@ -601,14 +601,14 @@ apf.lm = new (function(){
                     case 4: // ------- number -------
                         v = u = w = 0;// last_word used for case 'bla bla':
                         last_dot = (last_word = tok).lastIndexOf(".");
-						if (tok.charAt(0) != '.' // .obj shouldnt trigger block
+                        if (tok.charAt(0) != '.' // .obj shouldnt trigger block
                           && ((v = (u = ((out_context_word[last_tok]  // check if we need to switch
                                 || o[ol - 1] == "\n")  && !new_block[last_tok]))
                                 && !s[sl - 1].indexOf("{") && ol > scope)
                                 || (w = statement_lut[tok])) && !parse_mode){ // check statement
-							if(w == 2 && s[sl - 1].indexOf("{")) w = 0; // (function() shouldnt trigger blockmode
-							switchToBlock(w);  // pass in statement_lut[tok] as outputflag
-						}
+                            if(w == 2 && s[sl - 1].indexOf("{")) w = 0; // (function() shouldnt trigger blockmode
+                            switchToBlock(w);  // pass in statement_lut[tok] as outputflag
+                        }
                         if (u && !s[sl - 1]) { // assign macro close
                             o[ol-1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
                             o[ol++] = "\n", v = 1, sl -= 2;
@@ -800,7 +800,7 @@ apf.lm = new (function(){
 
                         if (u && !s[sl-1]) // close = macro
                             o[ol-1]=="\n"&&(o[ol-1]=""),o[ol++]=")", o[ol++]="\n",v = 1,sl -=2;
-						
+                        
                         if (v && parse_mode) // inject output
                             o[ol++] = (nesting?cf_str_output:cf_mode_output), last_type = 0;
 
@@ -815,12 +815,12 @@ apf.lm = new (function(){
                                     if (last_tok == "function" || o[ol - 3] == "function" || o[ol - 4] == "function") {
                                         s[sl++] = scope, s[sl++] = "function", //func def
                                         o[ol++] = "(", scope = segment = ol;
-										//TODO! check the depth with which functions are made global
-										if(last_tok!="function" && c_funcglobal && sl==4){
-											o[v=(o[ol - 4] == "function")?(ol-4):(ol-5)] =
-												"var "+last_tok+" = self."+last_tok+" = function";
-											o[v+2] = "";
-										}
+                                        //TODO! check the depth with which functions are made global
+                                        if(last_tok!="function" && c_funcglobal && sl==4){
+                                            o[v=(o[ol - 4] == "function")?(ol-4):(ol-5)] =
+                                                "var "+last_tok+" = self."+last_tok+" = function";
+                                            o[v+2] = "";
+                                        }
                                     }
                                     else { // its a call and not a new
                                         if (!call_exclusion[last_tok] && o[ol-3]!="new") {
@@ -933,14 +933,14 @@ apf.lm = new (function(){
 
                         o[ol++] = unesc_txt[tok] || tok;
                         break;
-					case 3: // word
+                    case 3: // word
                         if (ol == segment)
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
-						if(tok.charAt(tok.length-1)=='$'){
-							o[ol++] = tok.slice(0,-1);
-							o[ol++] = tok = '$';// fix word$[xpath] 
-						}else o[ol++] = tok;
-						break;
+                        if(tok.charAt(tok.length-1)=='$'){
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break;
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
@@ -1046,14 +1046,14 @@ apf.lm = new (function(){
                             }
                         }
                         break;
-					case 3: // word
-						if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "\"" : "+\"";					
+                    case 3: // word
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";                 
                         if(tok.charAt(tok.length-1)=='$'){
-							o[ol++] = tok.slice(0,-1);
-							o[ol++] = tok = '$';// fix word$[xpath] 
-						}else o[ol++] = tok;
-						break
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
@@ -1085,7 +1085,7 @@ apf.lm = new (function(){
                     case 9: // -------- [ --------
                         // lets see if we are an xpath
                         if (s[sl - 1] == "'" || s[sl - 1] == '"' || 
-							((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
+                            ((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
                             if (last_model)
                                 o_xpathpairs.push(last_model, "#"), o_models++;
                             last_model = null;
@@ -1235,14 +1235,14 @@ apf.lm = new (function(){
                             last_ns = last_tok; // found a namespace item in a tag
                         o[ol++] = unesc_txt[tok] || tok;
                         break;
-					case 3: // word
+                    case 3: // word
                         if (ol == segment)
-                            o[ol++] = "+\"";		
+                            o[ol++] = "+\"";        
                         if(tok.charAt(tok.length-1)=='$'){
-							o[ol++] = tok.slice(0,-1);
-							o[ol++] = tok = '$';// fix word$[xpath] 
-						}else o[ol++] = tok;
-						break						
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break                       
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol++] = "+\"";
@@ -1327,7 +1327,7 @@ apf.lm = new (function(){
                                 }
                                 else
                                     v = xpath_macro[last_ns ? c_statexpath : 8];
-								
+                                
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
@@ -1378,14 +1378,14 @@ apf.lm = new (function(){
                             o[ol++] = (s[sl - 1] != "/" && unesc_str[tok]) || tok;
                         }
                         break;
-					case 3: // word
-						if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "" : "+\"";		
+                    case 3: // word
+                        if (ol == segment)
+                            o[ol] = (ol++ == scope) ? "" : "+\"";       
                         if(tok.charAt(tok.length-1)=='$'){
-							o[ol++] = tok.slice(0,-1);
-							o[ol++] = tok = '$';// fix word$[xpath] 
-						}else o[ol++] = tok;
-						break							
+                            o[ol++] = tok.slice(0,-1);
+                            o[ol++] = tok = '$';// fix word$[xpath] 
+                        }else o[ol++] = tok;
+                        break                           
                     case 5: // -------- stringquotes --------
                         if (s[sl - 1] == tok) { // closed by matching quote
                             if (scope != segment) // string is segmented, output )
@@ -1593,24 +1593,24 @@ apf.lm = new (function(){
     this.resetCache = function(){
         cache = {};
     };
-	var lmcache_rx = /^\s*~~(c\d+)~~/;
+    var lmcache_rx = /^\s*~~(c\d+)~~/;
     this.compile = function(istr, cfg){
         if (!cfg)
             cfg = emptyCfg;
-		if(istr == null || !istr.length){
-			return cfg.nostring?function(){return istr}:{
+        if(istr == null || !istr.length){
+            return cfg.nostring?function(){return istr}:{
                 type: 2,
                 str :istr
             };
-		}
-		// lets see if we need to fetch precompiled cachemarker
-		var c, f, is_single_prop;
-		if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
+        }
+        // lets see if we need to fetch precompiled cachemarker
+        var c, f, is_single_prop;
+        if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
             if(c=apf.lm_exec[c[1]]) return c;
-			alert("ERROR, undefined live markup cache marker found:"+istr);
-			return {type:2,str:istr};
-		}
-			
+            alert("ERROR, undefined live markup cache marker found:"+istr);
+            return {type:2,str:istr};
+        }
+            
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
@@ -1621,8 +1621,8 @@ apf.lm = new (function(){
 
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.liveedit ? 7:0;
-		c_funcglobal = cfg.funcglobal;
-		
+        c_funcglobal = cfg.funcglobal;
+        
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
@@ -1691,34 +1691,34 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_cb_o, o[ol++] = cc_v_cb_c;
             }
-			
+            
             if (o_asyncs) { 
-				// for parse_mode == 1 we can squeeze in before [3] and cb close
-				// else we put var _r= in 3 and put our ending last and put
-				// the cb at the end
-				if(parse_mode==1){
-					if (cfg.precall)
-						o[2] = cc_pc_o, o[ol-1] = cc_pc_c + o[ol-1];
-					else
-						o[2] = cc_async_o, o[ol-1] = cc_async_c + o[ol-1];
-				}else{
-					o[ol++] = o[3] + '_r' + o[ol-2];
-					if (cfg.precall)
-						o[2] = cc_pc_o, o[3] = cc_o_blk_o, o[ol-2] = cc_pc_c;
-					else
-						o[2] = cc_async_o, o[3] = cc_o_blk_o, o[ol-2] = cc_async_c;
-				}
-				/*
-				if (cfg.precall)
-					o[2] = cc_pc_o, o[ol++] = cc_pc_c;
-				else
-					o[2] = cc_async_o, o[ol++] = cc_async_c;
-				*/
+                // for parse_mode == 1 we can squeeze in before [3] and cb close
+                // else we put var _r= in 3 and put our ending last and put
+                // the cb at the end
+                if(parse_mode==1){
+                    if (cfg.precall)
+                        o[2] = cc_pc_o, o[ol-1] = cc_pc_c + o[ol-1];
+                    else
+                        o[2] = cc_async_o, o[ol-1] = cc_async_c + o[ol-1];
+                }else{
+                    o[ol++] = o[3] + '_r' + o[ol-2];
+                    if (cfg.precall)
+                        o[2] = cc_pc_o, o[3] = cc_o_blk_o, o[ol-2] = cc_pc_c;
+                    else
+                        o[2] = cc_async_o, o[3] = cc_o_blk_o, o[ol-2] = cc_async_c;
+                }
+                /*
+                if (cfg.precall)
+                    o[2] = cc_pc_o, o[ol++] = cc_pc_c;
+                else
+                    o[2] = cc_async_o, o[ol++] = cc_async_c;
+                */
             }
 
             if (cfg.withopt)
                 o[1] = cc_opt_o, o[ol++] = cc_opt_c;
-				
+                
             o[0] = cfg.event 
                 ? cc_fe_async_o
                 : ((c_xpathmode == 1 || c_xpathmode == 3) ? cc_fc_async_o : cc_f_async_o);
@@ -1776,7 +1776,7 @@ apf.lm = new (function(){
         return f;
     };
 
-	/**
+    /**
      * description of the method.
      * Remarks:
      * @param  {String}  str      the code to compile
@@ -1798,7 +1798,7 @@ apf.lm = new (function(){
      *   {Number}  asyncs       description
      *   {String]  str          optional, returned with type 2
      */
-	
+    
     this.compileMatch = function(strarray, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -1854,10 +1854,10 @@ apf.lm = new (function(){
                 ob = ol = scope = segment = o.length, cf_mode_output = cf_str_output;
                 c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
                 last_type = o_asyncs = last_line = 0;
-				if(cfg.node)
-					c_xpathmode = 2;
+                if(cfg.node)
+                    c_xpathmode = 2;
                 parse_mode = 2, c_injectself = 0;
-				
+                
                 if (cfg.nothrow) {
                     str.replace(parserx, parser);
                 }
@@ -1873,18 +1873,18 @@ apf.lm = new (function(){
 
                 if (o_asyncs)
                     handleError({t:"Asynchronous calls not supported in match/value"});
-				
-				if(cfg.node){
-					if (parse_mode == 2 && segment == ob || ol == ob)
-						o[ob-1] = cc_m_n_string;
-					else
-						o[ob-1] = cc_m_n_o, o[ol++] = cc_m_n_c;
-				}else{
-					if (parse_mode == 2 && segment == ob || ol == ob)
-						o[ob-1] = cc_m_v_string;
-					else
-						o[ob-1] = cc_m_v_o, o[ol++] = cc_m_v_c;
-				}
+                
+                if(cfg.node){
+                    if (parse_mode == 2 && segment == ob || ol == ob)
+                        o[ob-1] = cc_m_n_string;
+                    else
+                        o[ob-1] = cc_m_n_o, o[ol++] = cc_m_n_c;
+                }else{
+                    if (parse_mode == 2 && segment == ob || ol == ob)
+                        o[ob-1] = cc_m_v_string;
+                    else
+                        o[ob-1] = cc_m_v_o, o[ol++] = cc_m_v_c;
+                }
 
                 if (strarray[i])
                     o[ol++] = cc_m_c;
@@ -1895,13 +1895,13 @@ apf.lm = new (function(){
                 if (!strarray[i])
                     handleError({t:"Both match and value are empty"});
 
-				if(cfg.node)
-					o[ol++] = cc_m_n_ret;				
-				else
-					o[ol++] = cc_m_v_ret;				
-				
-				c_xpathmode = 2;
-					
+                if(cfg.node)
+                    o[ol++] = cc_m_n_ret;               
+                else
+                    o[ol++] = cc_m_v_ret;               
+                
+                c_xpathmode = 2;
+                    
                 o[ol++] = cc_m_c;
             }
         }
@@ -2002,10 +2002,10 @@ apf.lm_exec = new (function(){
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
     }
 
-	var __valattrrx = /(["'])/g;
-	function __valattrrp(m,a){
-		return m=='"'?"&quot;":"&apos;";
-	}
+    var __valattrrx = /(["'])/g;
+    function __valattrrp(m,a){
+        return m=='"'?"&quot;":"&apos;";
+    }
     function __valattr(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
@@ -2014,7 +2014,7 @@ apf.lm_exec = new (function(){
           &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
     }
 
-	
+    
     // value of model node by xpath
     function __valm(m, x){
         var n;
@@ -2027,15 +2027,15 @@ apf.lm_exec = new (function(){
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x),/*#endif*/"");
     }
 
-    function __nod(n, x){			// node by xpath
+    function __nod(n, x){           // node by xpath
         return n ? n.selectSingleNode(x) : (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x, "_nod"),/*#endif*/null);
     }
 
-    function _nods(n, x){			// array of nodes by xpath
+    function _nods(n, x){           // array of nodes by xpath
         return n ? n.selectNodes(x) : (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x, "_nods"),/*#endif*/[]);
     }
 
-    function __nodm(m, x){			// node of model by xpath
+    function __nodm(m, x){          // node of model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
@@ -2045,7 +2045,7 @@ apf.lm_exec = new (function(){
         return n.selectSingleNode(x);
     }
 
-    function _nodsm(m, x){			// array of nodes from model by xpath
+    function _nodsm(m, x){          // array of nodes from model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
@@ -2055,11 +2055,11 @@ apf.lm_exec = new (function(){
         return n.selectNodes(x);
     }
 
-    function __cnt(n, x){		 // count nodes by xpath
+    function __cnt(n, x){        // count nodes by xpath
         return n ? n.selectNodes(x).length:(/*#ifdef __DEBUG*/wlvl > 1 && wnode(x, "_cnt"),/*#endif*/0);
     }
 
-    function __cntm(m, x){		// count nodes from model by xpath
+    function __cntm(m, x){      // count nodes from model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
@@ -2069,7 +2069,7 @@ apf.lm_exec = new (function(){
         return n.selectNodes(x).length;
     }
 
-    function _xpt(n, x){		// return the query wrapped in an object
+    function _xpt(n, x){        // return the query wrapped in an object
         return {
             xpath   : x,
             toString: function(){
@@ -2078,7 +2078,7 @@ apf.lm_exec = new (function(){
         };
     }
 
-    function _xptm(m, x){		// return the query with model wrapped in an object
+    function _xptm(m, x){       // return the query with model wrapped in an object
         return {
             model:    m,
             xpath:    x,
@@ -2090,7 +2090,7 @@ apf.lm_exec = new (function(){
 
     //----- the following functions are combined model and normal mode ------
 
-    function _xml(n, m, x){		// serialize node by xpath via .xml
+    function _xml(n, m, x){     // serialize node by xpath via .xml
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
@@ -2101,7 +2101,7 @@ apf.lm_exec = new (function(){
         (/*#ifdef __DEBUG*/wlvl>0&&!n&&wnode(x,"_xml"),/*#endif*/"");
     }
 
-    function _xmls(n, m, x){	// serialize nodes by xpath with .xml concatenated
+    function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
@@ -2138,7 +2138,7 @@ apf.lm_exec = new (function(){
         return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
     }
 
-    function _valst(n, x){  	// a value with state holding
+    function _valst(n, x){      // a value with state holding
         var m = apf.xmldb.findModel(n);
         if(!m)
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valst"),/*#endif*/"");
@@ -2321,7 +2321,7 @@ apf.lm_exec = new (function(){
         return v;
     }
 
-    function _asn(o, p, v){		// assign propert
+    function _asn(o, p, v){     // assign propert
         if(!o || typeof(o)!="object")
             throw new Error(apf.formatErrorString(0,0,"LM Property Assign",
                 "Cannot assign property on non object, property:"+p));
@@ -2333,24 +2333,24 @@ apf.lm_exec = new (function(){
         return v;
     }
 
-    function _add(o, p, v){		// += property
+    function _add(o, p, v){     // += property
         return _asn(o,p,o && o[p]+v);
     }
 
-    function _sub(o, p, v){		// -= propery
+    function _sub(o, p, v){     // -= propery
         return _asn(o,p,o && o[p]-v);
     }
 
-    function _div(o, p, v){		// /= property
+    function _div(o, p, v){     // /= property
         return _asn(o,p,o && o[p]/v);
     }
 
-    function _mul(o, p, v){		// *= property
+    function _mul(o, p, v){     // *= property
         return _asn(o,p,o && o[p]*v);
     }
 
     // macro implementations
-    function _local(n){			// local(x) for local n
+    function _local(n){         // local(x) for local n
         // check what n is.. if string parse
         if(n && n.charAt && n.charAt(0)=="<")
             return apf.getXmlDom(n).documentElement;
@@ -2358,15 +2358,15 @@ apf.lm_exec = new (function(){
         return n;
     }
 
-    function _tagName(n1, n2){	// tagname macro
+    function _tagName(n1, n2){  // tagname macro
         return (n2 && n2.tagName) || (n1 && n1.tagName);
     }
 
-    function _localName(n1, n2){	// localname macro
+    function _localName(n1, n2){    // localname macro
         return (n2 && n2[apf.TAGNAME]) || (n1 && n1[apf.TAGNAME]);
     }
 
-    function _nodeValue(n,n2){		// value of a node, or localnode.
+    function _nodeValue(n,n2){      // value of a node, or localnode.
         if(n2) n = n2;
         return (n = (n.nodeType != 1 && n ||
             (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
@@ -2377,17 +2377,17 @@ apf.lm_exec = new (function(){
     var langrx = /(\\*)\$\[(.*?)\]/g;
     var lang = apf.language;
 
-	apf.$lm_has_lang = 0;
+    apf.$lm_has_lang = 0;
 
-    function _lngrx(tok,esc,x){	// language replacement regex callback
+    function _lngrx(tok,esc,x){ // language replacement regex callback
         apf.$lm_has_lang = 1;
-		if(esc)
+        if(esc)
             return "$["+x+"]";
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lngrx"),/*#endif*/"");
     }
 //#endif            
 
-    function __ret(r){			// return function, translates $[lang] things in data
+    function __ret(r){          // return function, translates $[lang] things in data
 //#ifdef __WITH_MULTI_LANG    
         if(r && r.indexOf && r.indexOf("$[")!=-1)
             return r.replace(langrx, _lngrx);
@@ -2395,7 +2395,7 @@ apf.lm_exec = new (function(){
         return r;
     }
 
-    function __lng(x,x2){			// the language macro
+    function __lng(x,x2){           // the language macro
 //#ifdef __WITH_MULTI_LANG    
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lng"),/*#endif*/"");
@@ -2404,7 +2404,7 @@ apf.lm_exec = new (function(){
 #endif*/        
     }
 
-    function _lnged(x,x2){			// editable language macro
+    function _lnged(x,x2){          // editable language macro
 //#ifdef __WITH_MULTI_LANG    
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lnged"),/*#endif*/"");
@@ -2413,17 +2413,17 @@ apf.lm_exec = new (function(){
 #endif*/        
     }
 
-    function _valed(n, m, x){ 	// wrap a value with editable div
+    function _valed(n, m, x){   // wrap a value with editable div
         return "<div contenteditable='true' class='contenteditable'>" + 
                     (n?__val(n,m):__valm(m,x))+
                 "</div>";
     }
     
-    function _injself(s){			// self inject helper func
+    function _injself(s){           // self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
 
-	apf.$lmx = null;
+    apf.$lmx = null;
 
     function _async(_n,_c,_a,_w,_f,_this,obj,func,args){ // Async handling
         var i = _a.i, v;
@@ -2446,7 +2446,7 @@ apf.lm_exec = new (function(){
                 _c(null, state, extra);
             }
             else{
-				apf.$lmx = extra;
+                apf.$lmx = extra;
                 _a.ret[i] = data;
 
                 if (_w)
@@ -2546,24 +2546,24 @@ apf.lm_exec = new (function(){
         return _f;
     }
 
-	var LMBEGINCACHE;
-	/*LIVEMARKUP BEGIN CACHE
-	var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
-	_nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
-	this.c342 = function(_n,_a,_w){
-		..cached LM function..
-	}
-	this.c342.type = 2; 
-	this.c342.xpaths = {...}; 
-	this.c342.props = {...};
-	this.c723 = function(....){
-	
-	}
-	// replace
-	d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
-	_async(_n,_c,_a,_w,_f,this,
-	_async(_n,_c,_a,_w,apf.lm_exec.c342,this,
-	LIVEMARKUP END CACHE*/
-	var LMENDCACHE;
+    var LMBEGINCACHE;
+    /*LIVEMARKUP BEGIN CACHE
+    var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
+    _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
+    this.c342 = function(_n,_a,_w){
+        ..cached LM function..
+    }
+    this.c342.type = 2; 
+    this.c342.xpaths = {...}; 
+    this.c342.props = {...};
+    this.c723 = function(....){
+    
+    }
+    // replace
+    d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
+    _async(_n,_c,_a,_w,_f,this,
+    _async(_n,_c,_a,_w,apf.lm_exec.c342,this,
+    LIVEMARKUP END CACHE*/
+    var LMENDCACHE;
 })();
 // #endif
