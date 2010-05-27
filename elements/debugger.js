@@ -165,7 +165,9 @@ window.adbg = {
                  if (options && options.callback) {
                      options.callback(apf.escapeXML(source), apf.SUCCESS);
                  } else {
-                     callback("<script>" + apf.escapeXML(source) + "</script>", apf.SUCCESS);
+//                     callback("<file>" + apf.escapeXML(source) + "</file>", apf.SUCCESS);
+                     //TODO: ugly text() bug workaround
+                     callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", apf.SUCCESS);
                  }
              });
          }
