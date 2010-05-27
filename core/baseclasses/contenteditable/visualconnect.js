@@ -30,7 +30,7 @@ apf.visualConnect = function (sel){
      * element  : mode for displaying connections of selected element
      * all      : mode for displaying connections of all elements
      */
-    var lineMode = "draw";  // current lineMode of visualConnect
+    var lineMode = "element";  // current lineMode of visualConnect
     var active, div;    // visualconnect is active
     var fromEl, toEl;   // selected 'from element' and 'to element' during draw mode
     var fromAtt, toAtt; // selected attribute of 'from' and 'to' element;
@@ -105,7 +105,6 @@ apf.visualConnect = function (sel){
                         showConnections(selection);
                     break;
                 case "all":
-                    // @todo get all elements
                     var all = [];
                     for (var el, i = 0, l = apf.all.length; i < l; i++) {
                         if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
@@ -126,8 +125,6 @@ apf.visualConnect = function (sel){
                             if (targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) {
                                 targetAttr = split[1].substr(0, split[1].length-1);
                                 createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr);
-                            }
-                            else {
                             }
                         }
                     }
@@ -152,6 +149,7 @@ apf.visualConnect = function (sel){
         }
         
         function stopDraw(e){
+            apf.dragMode = true;
             apf.plane.hide();
             
             paintGroup.style({v:0});
@@ -162,35 +160,38 @@ apf.visualConnect = function (sel){
             // target amlNode found, create connection
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
                 toEl = amlNode;
-                
+
                 var x = e.clientX, y = e.clientY;
+                
+                if (!toEl.attributes.length) return;
+                for (var name, attList = [], i = 0, l = toEl.attributes.length; i < l; i++) {
+                    if (ignoreToAtts.indexOf((name = toEl.attributes[i].name)) > -1) continue;
+                    attList.push(new apf.item({
+                        caption: name
+                    }));
+                }
+
+                attMenu = new apf.menu({
+                  htmlNode   : div,
+                  id         : "attMenu",
+                  childNodes : attList
+                });
+
                 setTimeout(function(e){
-                    if (!toEl.attributes.length) return;
-                    for (var name, attList = [], i = 0, l = toEl.attributes.length; i < l; i++) {
-                        if (ignoreToAtts.indexOf((name = toEl.attributes[i].name)) > -1) continue;
-                        attList.push(new apf.item({
-                            caption: name
-                        }));
-                    }
-
-                    attMenu = new apf.menu({
-                      htmlNode   : document.body,
-                      id         : "attMenu",
-                      childNodes : attList
-                    });
-
                     attMenu.display(x, y);
+                });
                     
-                    attMenu.addEventListener("itemclick", function(e) {
-                        toAtt = e.value;
-                        attMenu.setProperty("visible", false);
-                        fromEl.setAttribute(fromAtt, "{" + toEl.id + "." + toAtt + "}");
-                        mode = "element";
-                        
-                        paintLine.style({p:""});    // remove drawLine
-                        
-                        showConnections([fromEl]);
-                    });
+                attMenu.addEventListener("itemclick", function(e) {
+                    sel.$selectList(selection = [fromEl]);
+                    apf.dragMode = true; //prevents selection
+                    toAtt = e.value;
+                    attMenu.setProperty("visible", false);
+                    fromEl.setAttribute(fromAtt, "{" + toEl.id + "." + toAtt + "}");
+                    mode = "element";
+                    
+                    paintLine.style({p:""});    // remove drawLine
+                    
+                    showConnections([fromEl]);
                 });
             }
             isDrawing = false;
@@ -259,7 +260,7 @@ apf.visualConnect = function (sel){
         
         document.onmousedown = function(e){
             if (!e) e = event;
-
+            
             //clearTimeout(showAllTimer);
             if (lineMode == "element") {
                 if (selection.length) {
@@ -272,11 +273,14 @@ apf.visualConnect = function (sel){
             else if (lineMode == "draw" && !fromEl) {
                 apf.plane.hide();
                 var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-                fromEl = apf.findHost(htmlNode);
-                sel.$selectList(selection = [fromEl]);
-                
-                var x = e.clientX, y = e.clientY;
-                setTimeout(function(e){
+                amlNode = apf.findHost(htmlNode);
+                if (amlNode) {
+                    apf.console.info("mousedown in draw mode");
+                    fromEl = amlNode;
+                    sel.$selectList(selection = [fromEl]);
+                    
+                    var x = e.clientX, y = e.clientY;
+                    
                     if (!fromEl.attributes.length) return;
                     for (var name, attList = [], i = 0, l = fromEl.attributes.length; i < l; i++) {
                         if (ignoreFromAtts.indexOf((name = fromEl.attributes[i].name)) > -1) continue
@@ -286,55 +290,32 @@ apf.visualConnect = function (sel){
                     }
 
                     attMenu = new apf.menu({
-                      htmlNode   : document.body,
+                      htmlNode   : div,
                       id         : "attMenu",
                       childNodes : attList
                     });
-
-                    attMenu.display(x, y);
+                    
+                    setTimeout(function(e){
+                        attMenu.display(x, y);
+                    });
                     
                     attMenu.addEventListener("itemclick", function(e) {
+                        sel.$selectList(selection = [fromEl]);
                         fromAtt = e.value;
                         attMenu.setProperty("visible", false);
                         isDrawing = true;
                     });
-                });
-                
-                /*
-                if (!attMenu) {
-                    attMenu = new apf.dropdown({
-                      htmlNode        : document.body
-                    });
-                } 
-                else
-                    attMenu.setProperty("visible", true);
-                    
-                attMenu.childNodes = [];
-                for (var i = 0, l = fromEl.attributes.length; i < l; i++) {
-                    attMenu.childNodes.push(new apf.item({
-                        caption: fromEl.attributes[i].name,
-                        data: fromEl.attributes[i].name
-                    }));
                 }
-
-                attMenu.$ext.style.position = "absolute";
-                attMenu.$ext.style.left = e.clientX + "px";
-                attMenu.$ext.style.top = e.clientY + "px";
-                */
+               
                 //debugger;
-                //apf.plane.show();
+                apf.plane.show();
                     
-                    // show contextmenu
-                // lets get the selection we clicked on to draw a line
-                
-                /*
-                attMenu.addEventListener("afterselect", function(e) {
-                    attMenu.setProperty("visible", false);
-                    isDrawing = true;
-                });
-                */
+                   
             } else {
-                stopDraw(e);
+                if (attMenu.visible)
+                    attMenu.setProperty("visible", false);
+                if (fromEl)
+                    stopDraw(e);
             }
         };
         
@@ -348,6 +329,7 @@ apf.visualConnect = function (sel){
             e = e || event;
             // Esc key
             if (e.keyCode == 27) {
+                fromEl = toEl = fromAtt = toAtt = null;
                 lineMode = null;
                 _self.deactivate();
             }
@@ -437,6 +419,10 @@ apf.visualConnect = function (sel){
             oDiv.appendChild(saveDiv);
             oDiv.appendChild(delDiv);
 
+            // reset div
+            document.body.removeChild(div);
+            div = document.body.appendChild(document.createElement("div"));
+            
             for (var id in connections) {
                 for (var aDiv, centerPos, pos1, pos2, i = 0, l = connections[id].length; i < l; i++) {
                     // default positions for lines, start and end
@@ -451,6 +437,10 @@ apf.visualConnect = function (sel){
                     aDiv.getElementsByTagName("div")[0].innerHTML = connections[id][i].from.el.id + "." + connections[id][i].from.at
                     aDiv.getElementsByTagName("input")[0].id = id + "_" + i;
                     aDiv.getElementsByTagName("input")[0].value = "{" + connections[id][i].to.el.id + "." + connections[id][i].to.at + "}";
+                    
+                    // redraw on property change
+                    var at = connections[id][i].from.at;
+                    //connections[id][i].from.el.addEventListener("prop." + connections[id][i].from.at, draw);
                     
                     // saveBtn
                     aDiv.getElementsByTagName("div")[1].setAttribute("onclick", connections[id][i].from.el.id + ".setAttribute('" + connections[id][i].from.at + "', document.getElementById('" + id + "_" + i + "').value)");
@@ -494,9 +484,9 @@ apf.visualConnect = function (sel){
 
     this.deactivate = function(){
         if (!active) return;
-        if (lineMode) return;
+        //if (lineMode) return;
         active = false;
-        
+
         document.onmousedown = 
         document.onmousemove = 
         document.onmouseup = 

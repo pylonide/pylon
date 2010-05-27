@@ -290,7 +290,7 @@ apf.uirecorder.capture = {
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement) && apf.findHost(htmlElement).tagName) ? apf.findHost(htmlElement) : null;
 
-        if (this.$mousedownMode || eventName != "mousemove") {
+        if (eventName != "mousemove") { //this.$mousedownMode
             if (amlNode) {
                 var amlNodeData = this.$getAmlNodeData(amlNode, htmlElement, eventName, value);
             }
@@ -370,7 +370,7 @@ apf.uirecorder.capture = {
                 this.$mousedownMode = false;
         }
         
-        if (this.$mousedownMode || ["mousemove", "mousescroll"].indexOf(eventName) == -1) {
+        if (["mousemove", "mousescroll"].indexOf(eventName) == -1) { //this.$mousedownMode || 
             actionObj.keyActionIdx = this.$keyActionIdx;
             this.$keyActions.push(actionObj);
             this.$keyActionIdx++;
@@ -1255,7 +1255,6 @@ apf.uirecorder.playback = {
         if ((checkList=apf.uirecorder.playback.$waitForList).length) {
             if (new Date().getTime() - apf.uirecorder.playback.$waitForStartTime > 10000) {
                 clearInterval(apf.uirecorder.playback.$waitForInterval);
-                debugger;
                 apf.uirecorder.playback.$testError("It takes too long to set " + checkList[0].type + " " + checkList[0].name + " on element " + checkList[0].elName);
                 return;
             }
@@ -1440,7 +1439,7 @@ apf.uirecorder.playback = {
                         if (amlNodeXml.getAttribute("type") == "dropdown" && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1]) {
                             original = null;
                             
-                            if (this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup") == "40") {
+                            if (this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode") && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup") == "40") {
                                 targetCentre = true;
                                 var dropdownItems = apf.popup.cache[this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1].selectSingleNode("amlNode").getAttribute("popup")].content.childNodes
                                 for (var i = 0, l = dropdownItems.length; i < l; i++) {
