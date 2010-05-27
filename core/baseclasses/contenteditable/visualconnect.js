@@ -30,14 +30,15 @@ apf.visualConnect = function (sel){
      * element  : mode for displaying connections of selected element
      * all      : mode for displaying connections of all elements
      */
-    var lineMode = "element";
-    var active, div;
-    var fromEl, toEl;
-    var connections;
-    //@linh the interaction with shift is flawed. It should be :
-    //  shift-click at start - click at end
-    //  it shouldnt matter when shift is unpressed
-    //  when pressing escape line mode should dissapear
+    var lineMode = "draw";  // current lineMode of visualConnect
+    var active, div;    // visualconnect is active
+    var fromEl, toEl;   // selected 'from element' and 'to element' during draw mode
+    var fromAtt, toAtt; // selected attribute of 'from' and 'to' element;
+    var connections;    // connections that are drawn
+    var attMenu;        // menu with attributes of element that appears when creating connection
+    var ignoreFromAtts = ["id"];    // attributes for from element to ignore in attMenu
+    var ignoreToAtts = ["for"];    // attributes for to elements to ignore in attMenu
+    var _self = this;
     
     // init draw api
     var width = document.body.clientWidth;
@@ -161,23 +162,40 @@ apf.visualConnect = function (sel){
             // target amlNode found, create connection
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
                 toEl = amlNode;
-                fromEl.setAttribute("caption", "{" + toEl.id + ".caption}");
-                //createConnection(fromEl, toEl, "value", "value");
-                mode = "element";
+                
+                var x = e.clientX, y = e.clientY;
+                setTimeout(function(e){
+                    if (!toEl.attributes.length) return;
+                    for (var name, attList = [], i = 0, l = toEl.attributes.length; i < l; i++) {
+                        if (ignoreToAtts.indexOf((name = toEl.attributes[i].name)) > -1) continue;
+                        attList.push(new apf.item({
+                            caption: name
+                        }));
+                    }
 
-                paintLine.style({p:""});
-                //paintGroup.repaint();
-                
-                showConnections([fromEl]);
-                /*
-                setTimeout(function(){
-                    mnuContentEditable.display(x, y);
+                    attMenu = new apf.menu({
+                      htmlNode   : document.body,
+                      id         : "attMenu",
+                      childNodes : attList
+                    });
+
+                    attMenu.display(x, y);
+                    
+                    attMenu.addEventListener("itemclick", function(e) {
+                        toAtt = e.value;
+                        attMenu.setProperty("visible", false);
+                        fromEl.setAttribute(fromAtt, "{" + toEl.id + "." + toAtt + "}");
+                        mode = "element";
+                        
+                        paintLine.style({p:""});    // remove drawLine
+                        
+                        showConnections([fromEl]);
+                    });
                 });
-                */
-                
             }
-            //_self.deactivate();
             isDrawing = false;
+
+            //_self.deactivate();
         }
         
         function updateDraw(e){
@@ -257,31 +275,64 @@ apf.visualConnect = function (sel){
                 fromEl = apf.findHost(htmlNode);
                 sel.$selectList(selection = [fromEl]);
                 
-                //setTimeout(function(e){
-                var menu = new apf.menu({
-                  htmlNode   : document.body,
-                  id         : "attMenu",
-                  childNodes : [
-                    new apf.item({
-                      caption : "Attribute 1",
-                    }),
-                    new apf.item({
-                      caption : "Attribute 2"
-                    }),
-                    new apf.item({
-                      caption : "Attribute 3"
-                    })
-                  ]
+                var x = e.clientX, y = e.clientY;
+                setTimeout(function(e){
+                    if (!fromEl.attributes.length) return;
+                    for (var name, attList = [], i = 0, l = fromEl.attributes.length; i < l; i++) {
+                        if (ignoreFromAtts.indexOf((name = fromEl.attributes[i].name)) > -1) continue
+                        attList.push(new apf.item({
+                            caption: name
+                        }));
+                    }
+
+                    attMenu = new apf.menu({
+                      htmlNode   : document.body,
+                      id         : "attMenu",
+                      childNodes : attList
+                    });
+
+                    attMenu.display(x, y);
+                    
+                    attMenu.addEventListener("itemclick", function(e) {
+                        fromAtt = e.value;
+                        attMenu.setProperty("visible", false);
+                        isDrawing = true;
+                    });
                 });
+                
+                /*
+                if (!attMenu) {
+                    attMenu = new apf.dropdown({
+                      htmlNode        : document.body
+                    });
+                } 
+                else
+                    attMenu.setProperty("visible", true);
+                    
+                attMenu.childNodes = [];
+                for (var i = 0, l = fromEl.attributes.length; i < l; i++) {
+                    attMenu.childNodes.push(new apf.item({
+                        caption: fromEl.attributes[i].name,
+                        data: fromEl.attributes[i].name
+                    }));
+                }
 
-                menu.display(e.clientX, e.clientY);
-                //});
-
+                attMenu.$ext.style.position = "absolute";
+                attMenu.$ext.style.left = e.clientX + "px";
+                attMenu.$ext.style.top = e.clientY + "px";
+                */
+                //debugger;
                 //apf.plane.show();
                     
                     // show contextmenu
                 // lets get the selection we clicked on to draw a line
-                //isDrawing = true;
+                
+                /*
+                attMenu.addEventListener("afterselect", function(e) {
+                    attMenu.setProperty("visible", false);
+                    isDrawing = true;
+                });
+                */
             } else {
                 stopDraw(e);
             }
@@ -296,8 +347,10 @@ apf.visualConnect = function (sel){
         document.onkeydown = function(e) {
             e = e || event;
             // Esc key
-            if (e.keyCode == 27)
-                this.deactivate();
+            if (e.keyCode == 27) {
+                lineMode = null;
+                _self.deactivate();
+            }
         }
         
         // create new connection
@@ -441,7 +494,7 @@ apf.visualConnect = function (sel){
 
     this.deactivate = function(){
         if (!active) return;
-        if (lineMode != "draw") return;
+        if (lineMode) return;
         active = false;
         
         document.onmousedown = 
