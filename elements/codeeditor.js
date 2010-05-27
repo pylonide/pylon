@@ -181,7 +181,7 @@ apf.codeeditor = function(struct, tagName) {
 
         var script = this.xmlRoot;
         if (script.getAttribute("id") !== frame.getAttribute("scriptid"))
-            return console.log("not  id");
+            return;
         
         
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
