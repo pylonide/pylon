@@ -154,7 +154,8 @@ apf.LiveEdit = function() {
         }
 
         o.tabStack = null; // redraw of editable region, invalidate cache
-        this.reload();
+        if (this.reload)
+            this.reload();
     };
 
     this.$propHandlers["state"] = function(value){
