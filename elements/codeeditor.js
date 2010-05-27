@@ -134,8 +134,8 @@ apf.codeeditor = function(struct, tagName) {
         this.$removeDocListeners && this.$removeDocListeners();
         this.$removeDocListeners = this.$addDocListeners(doc);
         
+        this.$updateMarker();
         this.$updateBreakpoints(doc);
-        this.$updateMarker(doc);
         
         this.$editor.setDocument(doc);
     };
@@ -166,8 +166,7 @@ apf.codeeditor = function(struct, tagName) {
             js   : new ace.mode.JavaScript()
         };
     
-    this.$updateMarker = function(doc) {
-        var doc = doc || this.$editor.getDocument();
+    this.$updateMarker = function() {
         if (this.$marker) {
             this.$editor.renderer.removeMarker(this.$marker);
             this.$marker = null;
@@ -181,6 +180,10 @@ apf.codeeditor = function(struct, tagName) {
             return;
 
         var script = this.xmlRoot;
+        if (script.getAttribute("id") !== frame.getAttribute("scriptid"))
+            return console.log("not  id");
+        
+        
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         range = new ace.Range(row, 0, row+1, 0);
@@ -192,8 +195,10 @@ apf.codeeditor = function(struct, tagName) {
     this.$updateBreakpoints = function(doc) {
         var doc = doc || this.$editor.getDocument();
         
-        if (!this.$breakpoints)
+        if (!this.$breakpoints) {
+            doc.setBreakpoints([]);
             return;
+        }
         
         if (this.xmlRoot) {
             var scriptId = this.xmlRoot.getAttribute("id");
@@ -273,6 +278,14 @@ apf.codeeditor = function(struct, tagName) {
         this.$debugger.addEventListener("prop.activeframe", function() {
             self.$updateMarker();
         })
+    };
+    
+    var propModelHandler = this.$propHandlers["model"];
+    this.$propHandlers["model"] = function(value) {
+        propModelHandler.call(this, value);
+        
+        this.$updateMarker();
+        this.$updateBreakpoints();
     };
     
     this.addEventListener("xmlupdate", function(e){
