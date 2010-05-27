@@ -45,6 +45,9 @@ apf.xmldb = new (function(){
     this.$xmlDocLut   = [];
     this.$nodeCount   = {};
 
+    var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
+        whiteRE       = />[\s\n\r\t]+</g;
+
     /**
      * @private
      */
@@ -573,7 +576,7 @@ apf.xmldb = new (function(){
         this.applyChanges("add", xmlNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["appendChild", pNode, xmlNode.xml, beforeNode, unique, xpath], undoObj);
+        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj);
         // #endif
 
         return xmlNode;
@@ -908,6 +911,15 @@ apf.xmldb = new (function(){
             toNode.setAttribute(this.xmlIdTag, fromNode.getAttribute(this.xmlIdTag));
         }
         catch (e) {}
+    };
+
+    /**
+     * @private
+     */
+    this.cleanXml = function(xml) {
+        if (typeof xml != "string")
+            return xml;
+        return xml.replace(cleanRE, "").replace(whiteRE, "><");
     };
 
     /**
