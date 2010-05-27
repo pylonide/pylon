@@ -1059,7 +1059,7 @@ apf.DataBinding = function(){
      * </code>
      */
     this.$propHandlers["bindings"] = function(value, prop){
-        var local = "$" + prop;
+        var local = "$" + prop + "Element";
         if (this[local])
             this[local].unregister(this);
         

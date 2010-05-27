@@ -67,6 +67,7 @@ apf.actions = function(struct, tagName){
         
         this.$amlNodes[amlNode.$uniqueId] = amlNode;
         amlNode.$actions = this.$actions;
+        amlNode.$actionsElement = this;
         amlNode.dispatchEvent("actionsload", {bindings: this});
     }
 
@@ -74,7 +75,8 @@ apf.actions = function(struct, tagName){
         //unregister element
         this.$amlNodes[amlNode.$uniqueId] = null;
         delete this.$amlNodes[amlNode.$uniqueId];
-        
+
+        delete amlNode.$actionsElement;
         delete amlNode.$actions;
         amlNode.dispatchEvent("actionsunload", {bindings: this});
     };

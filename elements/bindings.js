@@ -85,6 +85,7 @@ apf.bindings = function(struct, tagName){
         
         amlNode.$bindings  = this.$bindings;
         amlNode.$cbindings = this.$cbindings;
+        amlNode.$bindingsElement = this;
         
         //@todo apf3.0 should be deprecated
         amlNode.dispatchEvent("bindingsload", {
@@ -97,15 +98,16 @@ apf.bindings = function(struct, tagName){
         amlNode.$checkLoadQueue();
     };
 
-    this.unregister = function(){
+    this.unregister = function(amlNode){
         //unregister element
-        this.$amlNodes[this.amlNode.$uniqueId] = null;
-        delete this.$amlNodes[this.amlNode.$uniqueId];
+        this.$amlNodes[amlNode.$uniqueId] = null;
+        delete this.$amlNodes[amlNode.$uniqueId];
+
+        amlNode.$bindingsElement = 
+        amlNode.$bindings  = 
+        amlNode.$cbindings = false;
         
-        this.amlNode.$bindings  = 
-        this.amlNode.$cbindings = false;
-        
-        this.amlNode.dispatchEvent("bindingsunload", {
+        amlNode.dispatchEvent("bindingsunload", {
             bindings: this.$bindings, 
             compiled: this.$cbindings
         });
