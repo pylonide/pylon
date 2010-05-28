@@ -2461,7 +2461,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
         var v = this.$serverVars;
-        if (v["INACTIVITY"] && v[CONN]) {
+        if (v["MAXPAUSE"] && v[CONN]) {
             delete v[ROSTER];
             apf.setcookie(COOKIE, apf.serialize(v) + "|" + (new Date()).valueOf()
                 + "|" + this.resource + "|" + this.$RID);
