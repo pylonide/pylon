@@ -262,10 +262,11 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (typeof value === "string") {
-            this.$debugger = apf.nameserver.get("model", value);
+            this.$debugger = apf.nameserver.get("debugger", value);
         } else { 
             this.$debugger = value;
         }
+
         this.$breakpoints = this.$debugger.$mdlBreakpoints;
         this.$updateBreakpoints();
         
