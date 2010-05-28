@@ -210,7 +210,8 @@ apf.xmpp = function(struct, tagName){
         SID        = "SID",
         JID        = "JID",
         CONN       = "connected",
-        ROSTER     = "roster";
+        ROSTER     = "roster",
+        COOKIE     = "ajaxorg_xmpp";
 
     /**
      * @attribute {String}   [type]           The type of method used to connect
@@ -854,9 +855,9 @@ apf.xmpp = function(struct, tagName){
                     doClose: true
                   }, sPresence)
                 : createBodyElement({
-                      pause : 120,
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
+                      type  : "terminate",
                       xmlns : constants.NS.httpbind
                   }, sPresence)
             );
@@ -866,6 +867,27 @@ apf.xmpp = function(struct, tagName){
             if (callback)
                 callback(null, apf.SUCCESS);
         }
+    };
+
+    /**
+     *
+     * <body rid='1249243564'
+     * sid='SomeSID'
+     * pause='60'
+     * xmlns='http://jabber.org/protocol/httpbind'/>
+     */
+    this.pause = function(secs) {
+        var max, v = this.$serverVars;
+        if (!v[CONN] || this.$isPoll || !(max = v["MAXPAUSE"])) return;
+
+        secs = parseInt(secs) || max;
+        this.$doXmlRequest(processBindingResult, createBodyElement({
+              rid   : this.$getRID(),
+              sid   : v[SID],
+              pause : secs > max ? max : secs,
+              xmlns : constants.NS.httpbind
+          })
+        );
     };
 
     /*
@@ -887,6 +909,8 @@ apf.xmpp = function(struct, tagName){
         // #endif
         var cb = this.$serverVars["logout_callback"];
         this.reset();
+        if (this.$activeReq)
+            this.cancel(this.$activeReq);
         if (cb)
             cb(oXml, state, extra);
     }
@@ -971,8 +995,15 @@ apf.xmpp = function(struct, tagName){
         // reset retry/ connection counter
         this.$retryCount = 0;
         if (!this.$isPoll) {
-            this.$serverVars[SID]       = oXml.getAttribute("sid");
-            this.$serverVars["AUTH_ID"] = oXml.getAttribute("authid");
+            this.$serverVars[SID]          = oXml.getAttribute("sid");
+            this.$serverVars["AUTH_ID"]    = oXml.getAttribute("authid");
+            // get other properties:
+            this.$serverVars["WAIT"]       = (parseInt(oXml.getAttribute("wait"))       || 0) * 1000;
+            this.$serverVars["REQUESTS"]   = parseInt(oXml.getAttribute("requests"))    || 0;
+            this.$serverVars["INACTIVITY"] = (parseInt(oXml.getAttribute("inactivity")) || 0) * 1000;
+            this.$serverVars["MAXPAUSE"]   = (parseInt(oXml.getAttribute("maxpause"))   || 0) * 1000;
+            this.$serverVars["POLLING"]    = parseInt(oXml.getAttribute("polling"))     || 0;
+            this.$serverVars["VER"]        = parseFloat(oXml.getAttribute("ver"))       || 1.1;
         }
         else {
             var aCookie = extra.http.getResponseHeader("Set-Cookie").splitSafe(";");
@@ -1450,7 +1481,7 @@ apf.xmpp = function(struct, tagName){
         this.$doXmlRequest(function(oXml) {
                 parseData.call(_self, oXml);
                 // #ifdef __TP_XMPP_ROSTER
-                if (this["model"]) // @todo 3.0 improve detection for retrieving roster
+                if (_self["model"]) // @todo 3.0 improve detection for retrieving roster
                     getRoster.call(_self);
                 else
                     connected.call(_self);
@@ -2426,7 +2457,59 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
-        this.disconnect();
+        var v = this.$serverVars;
+        if (v["INACTIVITY"] && v[CONN]) {
+            delete v[ROSTER];
+            apf.setcookie(COOKIE, apf.serialize(v) + "|" + (new Date()).valueOf()
+                + "|" + this.resource + "|" + this.$RID);
+            this.pause();
+        }
+        else {
+            apf.delcookie(COOKIE);
+        }
+
+        //this.disconnect();
+    });
+
+    /*
+     * Boot - check if a previous session exists and if so, start the session
+     * again!
+     *
+     * @type {void}
+     */
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        // retrieve cookie and check if we can simply restart the session
+        var c = apf.getcookie(COOKIE);
+        if (c && (c = c.split("|")).length == 4) {
+            var v   = apf.unserialize(c[0]),
+                max = v["MAXPAUSE"],
+                t   = parseInt(c[1]),
+                now = (new Date()).valueOf();
+
+            if (!v[CONN] || !max || Math.abs(now - t) >= max)
+                return;
+            this.setAttribute("resource", c[2]);
+            v[CONN] = false;
+            this.$serverVars = v;
+            this.$RID        = parseInt(c[3]);
+            // #ifdef __TP_XMPP_ROSTER
+            this.$serverVars[ROSTER] = new apf.xmpp_roster(this.model,
+               this.$modelContent, this.resource);
+            // #endif
+            this.host = this.host || this.$host;
+            // #ifdef __TP_XMPP_MUC
+            if (!this.$canMuc)
+                this.$initMuc();
+            // #endif
+            // #ifdef __TP_XMPP_RDB
+            if (!this.$canRDB)
+                this.$initRDB();
+            // #endif
+            var _self = this;
+            $setTimeout(function() {
+                connected.call(_self);
+            }, 200);
+        }
     });
 
     // #ifdef __WITH_DATA
