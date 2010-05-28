@@ -46,11 +46,18 @@ apf.debughost = function(struct, tagName){
         }
         
         if (this.type == "chrome" || this.type == "v8") {
-            
+            // TODO #IDE-52
+            if (!apf.debughost.$o3obj) {
+                apf.debughost.$o3obj = window.o3Obj || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                    oninstallprompt: function() { alert("can't find o3 plugin"); },
+                    product: "O3Demo"
+                }); 
+            }
+
             if (this.type == "chrome") {
-                this.$host = new apf.ChromeDebugHost(this.server, this.port);
+                this.$host = new apf.ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
             } else {
-                this.$host = new apf.V8DebugHost(this.server, this.port);
+                this.$host = new apf.V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
             }
                 
             var self = this;

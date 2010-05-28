@@ -1,6 +1,7 @@
-apf.V8DebugHost = function(hostname, port) {
+apf.V8DebugHost = function(hostname, port, o3obj) {
     this.$hostname = hostname;
     this.$port = port;
+    this.$o3obj = o3obj;
     
     this.$debugger = null;
     
@@ -25,9 +26,7 @@ apf.V8DebugHost = function(hostname, port) {
 
         this.state = "connecting";
         
-        // TODO #IDE-52
-        var o3obj = document.getElementsByTagName("embed")[0];
-        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, o3obj);
+        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
         this.$v8ds = new StandaloneV8DebuggerService(socket);
         
         this.state = "connected";

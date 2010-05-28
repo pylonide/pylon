@@ -1,7 +1,8 @@
-apf.ChromeDebugHost = function(hostname, port) {
+apf.ChromeDebugHost = function(hostname, port, o3obj) {
     this.$hostname = hostname;
     this.$port = port;
-    
+    this.$o3obj = o3obj;
+
     this.$debuggers = {};
     
     this.$init();
@@ -26,10 +27,7 @@ apf.ChromeDebugHost = function(hostname, port) {
 
         this.state = "connecting";
 
-        // TODO #IDE-52
-        var o3obj = document.getElementsByTagName("embed")[0];
-        
-        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, o3obj);
+        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
         var msgStream = new ChromeDebugMessageStream(socket);
 
         msgStream.addEventListener("connect", function() {

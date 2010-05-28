@@ -296,7 +296,6 @@ apf.$x = apf.$loader
         "elements/editor/src/ace/Editor.js",	
         "elements/editor/src/ace/VirtualRenderer.js",
         
-        "elements/editor/experiments/o3.js",
         "elements/editor/src/debug/O3Socket.js",
         "elements/editor/src/debug/ChromeDebugMessageStream.js",
         "elements/editor/src/debug/DevToolsService.js",
