@@ -463,7 +463,7 @@ apf.DataBinding = function(){
           && (!this.hasFeature(apf.__MULTISELECT__) || !this.each) 
           || this.$canLoadData && !this.$canLoadData()) {
             
-            if (!this.caching)
+            if (!this.caching || !this.hasFeature(apf.__CACHE__))
                 this.xmlRoot = xmlNode;
             
             //#ifdef __DEBUG
