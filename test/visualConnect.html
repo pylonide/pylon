@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml" editable = "true">
+    <head>
+        <script src="../apf.js"></script>
+        <!--script src="o3.js"></script-->
+        <style>
+            html{overflow:hidden}
+        </style>
+        <title>APF 3.0 ActionTracker</title>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+<a:label id="lbl1" caption="{tbLabel.value}" />
+<a:datagrid 
+  width   = "300"
+  height  = "100"
+  id      = "ss4"
+  options = "size">
+    <a:each match="[element]">
+        <a:column 
+          caption = "Caption 1" 
+          value   = "[@caption1]"
+          width   = "50%"></a:column>
+        <a:column 
+          caption = "Caption 2" 
+          value   = "[@caption2]"
+          width   = "50%"></a:column>
+    </a:each>
+    <a:actions>
+        <a:rename />
+        <a:remove /> 
+        <a:add>
+            <element caption1="New" caption2="row" />
+        </a:add>
+    </a:actions>
+    <a:model>
+        <data>
+            <element caption1="Text 1" caption2="Text2"></element>
+        </data>
+    </a:model>
+</a:datagrid>
+<a:table columns="150, 150" cellheight="24" padding="5">
+    <a:button id="btnRemove" action="remove" target="ss4" caption="{tbLabel2.value}"></a:button>
+</a:table>
+
+        <!-- remove, move list item -->
+        <a:list id="myList2" model="mdlList" each="[item]" caption="[@caption]" drag="true">
+            <a:drop
+                match         = "item"
+                target         = "[item]"
+                action         = "insert-before"
+            />
+        </a:list>
+        
+        <a:model id="mdlList" skin="basic">
+            <data>
+                <item caption="item 1"/>
+                <item caption="item 2"/>
+                <item caption="item 3"/>
+                <item caption="item 4"/>
+                <item caption="item 5"/>
+            </data>
+        </a:model>
+        <a:textbox left="500" id="tbLabel" value="{tbLabel2.value}" for="{lbl1.value}">This is a label</a:textbox>
+        <a:textbox top="400" left="0" id="tbLabel2" value="This is a label"></a:textbox>
+        
+        <a:label id="lblLineMode" />
+        <a:script>//<!--
+
+//--></a:script>     
+    </body>
+</html>

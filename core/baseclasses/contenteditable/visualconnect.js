@@ -30,7 +30,8 @@ apf.visualConnect = function (sel){
      * element  : mode for displaying connections of selected element
      * all      : mode for displaying connections of all elements
      */
-    var lineMode = "element";  // current lineMode of visualConnect
+    var lineMode = "draw";  // current lineMode of visualConnect
+    
     var active, div;    // visualconnect is active
     var fromEl, toEl;   // selected 'from element' and 'to element' during draw mode
     var fromAtt, toAtt; // selected attribute of 'from' and 'to' element;
@@ -327,6 +328,7 @@ apf.visualConnect = function (sel){
         
         document.onkeydown = function(e) {
             e = e || event;
+            
             // Esc key
             if (e.keyCode == 27) {
                 fromEl = toEl = fromAtt = toAtt = null;
