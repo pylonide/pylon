@@ -20,14 +20,14 @@ apf.calendarlist      = function(struct, tagName){
     this.interval   = null;
     this.intervals  = {
         "day"   : 30,   //half an hour
-        "week"  : 1440, //day 
-        "month" : 10080 //week
+        "week"  : 60, //day 
+        "month" : 60 //week
     };
     
     this.ranges = {
         "day"   : 1440,
         "week"  : 10080,
-        "month" : this.months[this.date.getMonth()].number //nie uwzgledniłem roku przestępnego
+        "month" : this.months[this.date.getMonth()].number * 1440 //nie uwzgledniłem roku przestępnego
     };
 };
 
@@ -61,11 +61,22 @@ apf.calendarlist      = function(struct, tagName){
     this.$supportedProperties.push("appearance", "more", "range", "date", "date-format", "interval");
 
     this.$propHandlers["range"] = function(value) {
-        this.range = value;
+        this.date = this.getStartDate(this.date, this.range = value); 
     };
     
     this.$propHandlers["date"] = function(value) {
-        this.date = Date.parse(value, this.dateFormat);
+        this.date = this.getStartDate(Date.parse(value, this.dateFormat), this.range);
+    };
+    
+    this.getStartDate = function(objDate, range) {
+        switch(range) {
+            case "day":
+                return objDate;
+            case "week":
+                return new Date(objDate.getFullYear(), objDate.getMonth(), objDate.getDate() - objDate.getDay(), 0, 0, 0);
+            case "month":
+                return new Date(objDate.getFullYear(), objDate.getMonth(), 1, 0, 0, 0);
+        }
     };
     
     this.$propHandlers["date-format"] = function(value) {
@@ -148,31 +159,37 @@ apf.calendarlist      = function(struct, tagName){
         this.behaviour = parseInt(this.$getOption("main", "behaviour")) || 1; 
     };
     
+    this.getInterval = function(unit) {
+        if (unit == "minutes")
+            return this.interval || this.intervals[this.range];
+        else if (unit == "pixels") {
+            var nodes = this.$oHours.childNodes,
+                l     = nodes.length
+            
+            for (var i = 0; i < l; i++) {
+                if ((nodes[i].className || "").indexOf("hour") > -1) {
+                    return nodes[i].offsetHeight;
+                }
+            }
+        }
+    };
+    
     this.$addModifier = function(xmlNode, oItem, htmlParentNode, beforeNode) {
         apf.insertHtmlNodes([oItem], this.$container);
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
         
-        //get real size of the interval html representation  
-        var nodes = this.$oHours.childNodes,
-            l     = nodes.length,
-            intervalHeight;
-        
-        for (var i = 0; i < l; i++) {
-            if ((nodes[i].className || "").indexOf("hour") > -1) {
-                intervalHeight = nodes[i].offsetHeight;
-                break;
-            }
-        }
-        
         var date1           = Date.parse(this.$applyBindRule("date", xmlNode), this.dateFormat),
             date2           = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0), 
             duration        = parseInt(this.$applyBindRule("duration", xmlNode)),
-            time_difference = (date1.getTime() - date2.getTime())/60000; //[min]1000*60
+            interval        = this.getInterval("minutes"),
+            intervalHeight  = this.getInterval("pixels"),
+            max             = parseInt(this.ranges[this.range] / interval) * intervalHeight,
+            top             = (((date1.getTime() - date2.getTime())/60000)/interval) * intervalHeight;
         
-        if (time_difference >= 0) {
+        if (top >= 0 && top < max) {
             htmlNode.style.display = "block";
-            htmlNode.style.top     = (time_difference/this.interval)* intervalHeight + intervalHeight*parseInt(time_difference/(24*60))*2 + "px";
-            htmlNode.style.height  = (duration/this.interval) * intervalHeight + "px";
+            htmlNode.style.top     = top + "px";
+            htmlNode.style.height  = ((duration/interval) * intervalHeight) - apf.getDiff(htmlNode)[1] - 1 + "px";
         }
         else {
             htmlNode.style.display = "none";
@@ -182,28 +199,46 @@ apf.calendarlist      = function(struct, tagName){
     }
     
     this.$loadAml = function(x){
+        this.$addHours();
+    };
+
+    this.$addHours = function() {
         //Calculating number of labels
         var range    = this.ranges[this.range], 
-            interval = this.interval || this.intervals[this.range],
+            interval = this.getInterval("minutes"),
             start    = 0, hours = 0, minutes = 0,
-            day = this.date.getDate(), month = this.date.getMonth(), year = this.date.getFullYear();
+            day      = this.date.getDate(), 
+            caption, cssClass, isMidnight, oHour;
         
         var nodes = [];
 
         for (var i = 0, l = parseInt(range / interval); i < l; i++) {
             hours   = parseInt(start / 60);
-            //hours   = hours < 10 ? "0" + hours : hours;
             minutes = start % 60;
             minutes = minutes < 10 ? "0" + minutes : minutes;
+            cssClass = null;
+            isMidnight = parseInt(hours) == 24 && parseInt(minutes) == 0;
             
-            if (( parseInt(hours) == 24) && parseInt(minutes) == 0) {
+            if (isMidnight) {
                 hours = 0; minutes = "00"; start = 0;
-                nodes.push(this.$addHour(new Date(year, month, ++day, 0, 0, 0).format(this.dateFormat), "midnight"));
-                //just create an empty row
-                nodes.push(this.$addHour("", null));
-            }
+                cssClass = "midnight";
+            } 
             
-            nodes.push(this.$addHour(i%2 == 0 ? hours + ":" + minutes : "", i%2 == 0 ? null : "odd"));
+            caption = (i%2 == 0 
+                ? hours + ":" + minutes 
+                : "") + (isMidnight 
+                    ? " (" + new Date(this.date.getFullYear(), this.date.getMonth(), ++day, 0, 0, 0).format(this.dateFormat) + ")"
+                    : "");
+            if (i%2 == 0)
+                cssClass = cssClass ? cssClass + " odd" : "odd";
+            
+            this.$getNewContext("hour");
+            oHour = this.$getLayoutNode("hour");
+            if (cssClass)
+                this.$setStyleClass(oHour, cssClass, []);
+            
+            apf.setNodeValue(this.$getLayoutNode("hour", "caption"), caption);
+            nodes.push(oHour);
             
             start += interval;
         }
@@ -211,16 +246,8 @@ apf.calendarlist      = function(struct, tagName){
         apf.insertHtmlNodes(nodes, this.$oHours);
         
         this.$container.style.height = this.$oHours.offsetHeight + "px";
-    };
-    
-    this.$addHour = function(caption, cssClass) {
-        this.$getNewContext("hour");
-        var oHour = this.$getLayoutNode("hour");
-        if (cssClass)
-            this.$setStyleClass(oHour, cssClass, []);
         
-        apf.setNodeValue(this.$getLayoutNode("hour", "caption"), caption);
-        return oHour;
+        
     };
 
     this.$destroy = function(){
