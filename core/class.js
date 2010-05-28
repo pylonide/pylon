@@ -428,8 +428,11 @@ apf.Class.prototype = new (function(){
             options = {nostring : true};
         }
         else if (exclNr === 0) {
-            options = {parsecode : true 
-             /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) ? true : false /* #endif */};
+            options = {
+                parsecode : true,
+                liveedit  : this.liveedit
+                /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) ? true : false /* #endif */
+            };
         }
         
         //#ifdef __DEBUG

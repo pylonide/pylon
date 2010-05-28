@@ -174,7 +174,8 @@ apf.$x = apf.$loader
         
         "core/markup/xhtml/element.js",
         "core/markup/xsd/element.js",
-        "core/baseclasses/contenteditable.js"
+        "core/baseclasses/contenteditable.js",
+        "core/baseclasses/liveedit.js"
     )
     .wait()
     .script(
@@ -184,6 +185,30 @@ apf.$x = apf.$loader
         "core/baseclasses/contenteditable/selectrect.js",
         "core/baseclasses/contenteditable/visualselect.js",
         "core/baseclasses/contenteditable/visualconnect.js",
+
+        "core/baseclasses/liveedit/anchor.js",
+        "core/baseclasses/liveedit/blockquote.js",
+        "core/baseclasses/liveedit/charmap.js",
+        "core/baseclasses/liveedit/clipboard.js",
+        "core/baseclasses/liveedit/code.js",
+        "core/baseclasses/liveedit/color.js",
+        "core/baseclasses/liveedit/datetime.js",
+        "core/baseclasses/liveedit/directions.js",
+        "core/baseclasses/liveedit/emotions.js",
+        "core/baseclasses/liveedit/fontbase.js",
+        "core/baseclasses/liveedit/fontstyle.js",
+        "core/baseclasses/liveedit/help.js",
+        "core/baseclasses/liveedit/hr.js",
+        "core/baseclasses/liveedit/image.js",
+        "core/baseclasses/liveedit/links.js",
+        "core/baseclasses/liveedit/list.js",
+        "core/baseclasses/liveedit/media.js",
+        "core/baseclasses/liveedit/printing.js",
+        //"core/baseclasses/liveedit/spell.js",
+        "core/baseclasses/liveedit/search.js",
+        "core/baseclasses/liveedit/subsup.js",
+        "core/baseclasses/liveedit/tables.js",
+        "core/baseclasses/liveedit/visualaid.js",
     
         "core/markup/xhtml/ignore.js",
         "core/markup/xhtml/option.js",
@@ -252,7 +277,6 @@ apf.$x = apf.$loader
         "core/baseclasses/transaction.js",
         "core/baseclasses/virtualviewport.js",
         //"baseclasses/xforms.js",
-        "core/baseclasses/liveedit.js",
 
         "core/baseclasses/basebutton.js",
         "core/baseclasses/baselist.js",
@@ -316,30 +340,6 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
-        "core/baseclasses/liveedit/anchor.js",
-        "core/baseclasses/liveedit/blockquote.js",
-        "core/baseclasses/liveedit/charmap.js",
-        "core/baseclasses/liveedit/clipboard.js",
-        "core/baseclasses/liveedit/code.js",
-        "core/baseclasses/liveedit/color.js",
-        "core/baseclasses/liveedit/datetime.js",
-        "core/baseclasses/liveedit/directions.js",
-        "core/baseclasses/liveedit/emotions.js",
-        "core/baseclasses/liveedit/fontbase.js",
-        "core/baseclasses/liveedit/fontstyle.js",
-        "core/baseclasses/liveedit/help.js",
-        "core/baseclasses/liveedit/hr.js",
-        "core/baseclasses/liveedit/image.js",
-        "core/baseclasses/liveedit/links.js",
-        "core/baseclasses/liveedit/list.js",
-        "core/baseclasses/liveedit/media.js",
-        "core/baseclasses/liveedit/printing.js",
-        //"core/baseclasses/liveedit/spell.js",
-        "core/baseclasses/liveedit/search.js",
-        "core/baseclasses/liveedit/subsup.js",
-        "core/baseclasses/liveedit/tables.js",
-        "core/baseclasses/liveedit/visualaid.js",
-    
         "elements/accordion.js",
         "elements/actions.js",
         "elements/actionrule.js",

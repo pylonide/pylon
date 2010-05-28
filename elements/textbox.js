@@ -117,7 +117,7 @@ apf.textbox  = function(struct, tagName){
 
     //this.realtime          = false;
     this.value             = "";
-    this.isLiveEdit = true;
+    this.$isLiveEdit       = true;
     this.multiline         = false;
 
     /**
@@ -298,6 +298,10 @@ apf.textbox  = function(struct, tagName){
             this.focusselect = true;
             this.$propHandlers["focusselect"].call(this, true);
         }
+    };
+
+    this.$isLiveEdit = function(e){
+        return true;
     };
 
     /**** Public Methods ****/

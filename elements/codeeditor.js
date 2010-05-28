@@ -54,7 +54,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
-    this.isLiveEdit = true;
+    this.$isLiveEdit       = true;
 
     this.syntax            = "text";
     this.tabsize           = 4;
@@ -375,7 +375,7 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$isLiveEdit = function(e){
         return true;
-    }
+    };
     
     this.$draw = function(){
         //Build Main Skin

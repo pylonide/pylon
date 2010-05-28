@@ -1022,6 +1022,8 @@ apf.window = function(){
           ) && !ta[e.target.tagName]);
 
         if (canSelect && amlNode) {
+            if (!e.target && e.srcElement)
+                e.target = {};
             var isLiveEdit = (ta[e.target.tagName]
                 || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
                 || amlNode.$isLiveEdit
@@ -1193,7 +1195,7 @@ apf.window = function(){
     //@todo optimize this function
     apf.addListener(document, "keydown", this.$keydown = function(e){
         e = e || event;
-            
+
         //#ifdef __WITH_DEBUG_WIN
         if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
             apf.$debugwin.activate();
@@ -1206,9 +1208,9 @@ apf.window = function(){
         // #endif
 
         var amlNode           = apf.findHost(e.srcElement || e.target),
-            htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target);
+            htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
             isLiveEdit = (ta[htmlNode.tagName]
-              || htmlNode.isLiveEdit || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
+              || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
               && !htmlNode.disabled
               || amlNode && amlNode.$isLiveEdit
               && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
@@ -1286,7 +1288,7 @@ apf.window = function(){
         delete eInfo.currentTarget;
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        var aEl = apf.document.activeElement;
+        var aEl = isLiveEdit ? amlNode : apf.document.activeElement;
         if ((aEl && !aEl.disableKeyboard && !aEl.editable
           ? aEl.dispatchEvent("keydown", eInfo) 
           : apf.dispatchEvent("keydown", eInfo)) === false) {

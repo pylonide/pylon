@@ -799,11 +799,11 @@ apf.formatXml = function(strXml){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RDB: xmlNode --> Xpath statement
-apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
+apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
     if (!xmlNode) //@todo apf3.0
         return "";
     
-    if (useJid === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
+    if (useAID === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
         return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
             + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
     }
@@ -852,7 +852,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useJid){
             break;
         }
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
-            + "[" + (useJid && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
+            + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
                 : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.tagName)) + 1))
              + "]");

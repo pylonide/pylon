@@ -41,7 +41,7 @@ apf.LiveEdit = function() {
     this.$regbase = this.$regbase | apf.__LIVEEDIT__;
 
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction);
+    this.implement(apf.DataAction || apf.K);
     //#endif
 
     this.$activeDocument = document;
@@ -60,15 +60,16 @@ apf.LiveEdit = function() {
                             "justifyfull", "removeformat", "cut", "copy",
                             "paste", "outdent", "indent", "undo", "redo"];
 
-    this.$supportedProperties.push("live-edit", "liveedit", "state", "plugins",
-        "realtime", "language");
-    this.$booleanProperties["live-edit"] = true;
+    //this.$supportedProperties.push("liveedit", "state", "plugins",
+    //    "realtime", "language");
     this.$booleanProperties["liveedit"]  = true;
     this.$booleanProperties["realtime"]  = true;
-    this.$propHandlers["live-edit"]      =
     this.$propHandlers["liveedit"]       = function(value){
-        this["live-edit"] = this["liveedit"] = value;
         var o = this.$edVars;
+        //#ifdef __WITH_DATAACTION
+        if (!this.hasFeature(apf.__DATAACTION__))
+            this.implement(apf.DataAction);
+        //#endif
         if (apf.isTrue(value)) {
             var _self = this;
             apf.addListener(_self.$ext, "mouseover", o.mouseOver = function(e) {
@@ -92,6 +93,7 @@ apf.LiveEdit = function() {
                 apf.setStyleClass(el, null, ["liveEdit_over"]);
             });
             apf.addListener(_self.$ext, "mousedown", o.mouseDown = function(e) {
+                apf.cancelBubble(e);
                 var el = e.srcElement || e.target;
                 if (!el) return;
                 if (o.activeNode && _self.$selection && apf.isChildOf(o.activeNode, el, true))
@@ -103,11 +105,11 @@ apf.LiveEdit = function() {
 
                 if (!el || el == _self.$ext) {
                     if (o.activeNode)
-                        removeEditor(o.activeNode, true);
+                        removeEditor.call(_self, o.activeNode, true);
                     return;
                 }
 
-                createEditor(el);
+                createEditor.call(_self, el);
                 if (!o.lastTemplate) {
                     e.cancelBubble = true;
                     apf.window.$mousedown({srcElement: o.activeNode});
@@ -149,13 +151,13 @@ apf.LiveEdit = function() {
             o.activeNode = null;
             o.lastActiveNode = null;
 
-            this.$focussable = o.wasFocussable[0];
-            this.setProperty("focussable", o.wasFocussable[1]);
+            if (o.wasFocussable) {
+                this.$focussable = o.wasFocussable[0];
+                this.setProperty("focussable", o.wasFocussable[1]);
+            }
         }
 
         o.tabStack = null; // redraw of editable region, invalidate cache
-        if (this.reload)
-            this.reload();
     };
 
     this.$propHandlers["state"] = function(value){
@@ -190,7 +192,7 @@ apf.LiveEdit = function() {
         if (typeof this.realtime == "undefined")
             this.$setInheritedAttribute("realtime");
 
-        if (typeof this.plugins == "undefined")
+        if (typeof this.plugins == "undefined" && this.$propHandlers["plugins"])
             this.$propHandlers["plugins"].call(this, this.$pluginsOn.join(","));
     });
 
@@ -229,8 +231,8 @@ apf.LiveEdit = function() {
 
         if (o.lastActiveNode && o.lastActiveNode.parentNode
           || typeof e.shiftKey == "boolean") {
-            createEditor(o.lastActiveNode || (o.tabStack
-                || initTabStack())[e.shiftKey ? o.tabStack.length - 1 : 0]);
+            createEditor.call(this, o.lastActiveNode || (o.tabStack
+                || initTabStack.call(this))[e.shiftKey ? o.tabStack.length - 1 : 0]);
 
             if (o.lastActiveNode && !o.lastTemplate)
                 o.lastActiveNode.focus();
@@ -268,7 +270,7 @@ apf.LiveEdit = function() {
 
         if (this.$selection)
             this.$selection.cache();
-        removeEditor(o.activeNode, true);
+        removeEditor.call(this, o.activeNode, true);
 
         this.setProperty("state", apf.DISABLED);
     });
@@ -277,7 +279,7 @@ apf.LiveEdit = function() {
         if (!this.liveedit)
             return;
 
-        createEditor(initTabStack()[0]);
+        createEditor.call(this, initTabStack.call(this)[0]);
     });
 
     this.addEventListener("xmlupdate", function(){
@@ -300,11 +302,10 @@ apf.LiveEdit = function() {
             return;
 
         e = e || window.event;
-        var isDone, found, code = e.which || e.keyCode;
+        var oNode, isDone, found, code = e.which || e.keyCode;
         if (!o.activeNode && !o.bStandalone) {
             //F2 starts editing
             if (code == 113) {
-                var oNode;
                 if (this.$selected) {
                     var nodes = this.$selected.getElementsByTagName("*");
                     for (var i = nodes.length - 1; i >= 0; i--) {
@@ -315,7 +316,7 @@ apf.LiveEdit = function() {
                     }
                 }
                 
-                createEditor(oNode || (o.tabStack || initTabStack())[0]);
+                createEditor.call(this, oNode || (o.tabStack || initTabStack.call(this))[0]);
                 if (o.activeNode) {
                     o.activeNode.focus();
                     this.$selection.selectNode(o.activeNode);
@@ -433,23 +434,23 @@ apf.LiveEdit = function() {
         // Tab navigation handling
         if (code == 9 || isDone) {
             if (o.bStandalone) {
-                if (listBehavior.call(this, e.htmlEvent || e)) {
-                    apf.stopEvent(e.htmlEvent || e);
-                    return false;
-                }
+                if (listBehavior.call(this, e.htmlEvent || e))
+                    return apf.stopEvent(e.htmlEvent || e);
             }
             else {
-                var bShift = e.shiftKey,
+                var idx,
+                    bShift = e.shiftKey,
                     // a callback is passed, because the call is a-sync
-                    lastPos = (o.tabStack || initTabStack()).indexOf(o.activeNode),
-                    oNode   = removeEditor(o.activeNode, true) || initTabStack()[lastPos];
-
+                    lastPos = (o.tabStack || initTabStack.call(this)).indexOf(o.activeNode);
+                removeEditor.call(this, o.activeNode, true) || initTabStack.call(this)[lastPos];
                 oNode = o.tabStack[
-                    o.tabStack.indexOf(oNode) + (bShift ? -1 : 1)
+                    (idx = o.tabStack.indexOf(oNode) + (bShift ? -1 : 1)) < o.tabStack.length 
+                        ? idx < 0 ? o.tabStack.length -1 : idx
+                        : 0
                 ];
 
                 if (oNode) {
-                    createEditor(oNode);
+                    createEditor.call(this, oNode);
                     if (o.lastTemplate) {
                         o.lastTemplate.childNodes[0].focus();
                     }
@@ -468,7 +469,7 @@ apf.LiveEdit = function() {
         }
         // Esc key handling
         else if (!o.bStandalone && code == 27) {
-            removeEditor(o.activeNode);
+            removeEditor.call(this, o.activeNode);
             found = true;
         }
         else if (code == 8 || code == 46) { //backspace or del
@@ -480,14 +481,8 @@ apf.LiveEdit = function() {
             resumeChangeTimer();
         }
 
-        if (found) {
-            if (e.preventDefault)
-                e.preventDefault();
-            if (e.stopPropagation)
-                e.stopPropagation();
-            e.returnValue = false;
-            return false;
-        }
+        if (found)
+            return apf.stopEvent(e);
         else if (o.activeNode)
             e.returnValue = -1;
     }, true);
@@ -534,16 +529,16 @@ apf.LiveEdit = function() {
             this.$selection = new apf.selection(window, document);
 
         if (o.activeNode) {
-            var lastPos = initTabStack().indexOf(oNode);//tabStack can be old...
-            removeEditor(o.activeNode, true);
-            oNode = initTabStack()[lastPos];
+            var lastPos = initTabStack.call(this).indexOf(oNode);//tabStack can be old...
+            removeEditor.call(this, o.activeNode, true);
+            oNode = initTabStack.call(this)[lastPos];
             $setTimeout(function(){oNode.focus();}, 10);
         }
 
         var _self = this;
 
         if (this.validityState && !this.validityState.valid) {
-            oNode = initTabStack()[this.validityState.$lastPos];
+            oNode = initTabStack.call(this)[this.validityState.$lastPos];
             $setTimeout(function(){
                 oNode.focus();
                 _self.$selection.selectNode(oNode);
@@ -563,7 +558,7 @@ apf.LiveEdit = function() {
         if (v = this.getModel(true).$validation)
             rule = v.getRule(xmlNode);
 
-        if (!this.hasFocus())
+        if (this.hasFocus && !this.hasFocus())
             o.skipFocusOnce = true;
 
         o.activeNode = oNode;
@@ -676,7 +671,7 @@ apf.LiveEdit = function() {
         var o = this.$edVars;
         if (!oNode) oNode = o.activeNode;
         if (!oNode || oNode.nodeType != 1) return false;
-        
+
         var model   = this.getModel(true),
             xpath   = oNode.getAttribute("xpath"),
             xmlNode = this.xmlRoot.ownerDocument.selectSingleNode(xpath),
@@ -720,7 +715,7 @@ apf.LiveEdit = function() {
         // do additional handling, first we check for a change in the data...
         // @todo this will not always work in IE
         if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
-            var lastPos = (o.tabStack || initTabStack()).indexOf(oNode);
+            var lastPos = (o.tabStack || initTabStack.call(this)).indexOf(oNode);
 
             this.edit(xmlNode, rule && apf.isTrue(rule.richtext)
                 ? apf.htmlCleaner.parse(oNode.innerHTML)
@@ -729,7 +724,7 @@ apf.LiveEdit = function() {
             if (v) {
                 (this.validityState || (this.validityState =
                     new apf.validator.validityState())).$errorHtml = 
-                        (o.tabStack || initTabStack())[lastPos]
+                        (o.tabStack || initTabStack.call(this))[lastPos]
 
                 this.validityState.$lastPos = lastPos;
 
@@ -1895,11 +1890,5 @@ apf.LiveEdit.plugin = function(sName, fExec) {
     };
 };
 
-apf.GuiElement.propHandlers["live-edit"] =
-apf.GuiElement.propHandlers["liveedit"]  = function(value) {
-    this.implement(apf.LiveEdit);
-    if (!this.hasFeature(apf.__VALIDATION__))
-        this.implement(apf.Validation);
-    this.$propHandlers["liveedit"].apply(this, arguments);
-}
+apf.config.$inheritProperties["liveedit"] = 2;
 // #endif

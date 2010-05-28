@@ -84,7 +84,7 @@ apf.editor = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.isLiveEdit = true;
+    this.$isLiveEdit = true;
 
     this.$supportedProperties.push("value", "characterset");
 

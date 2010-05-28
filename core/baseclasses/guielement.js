@@ -196,6 +196,9 @@ apf.GuiElement = function(){
         //#ifdef __WITH_CONTENTEDITABLE
         ,apf.ContentEditable
         //#endif
+        //#ifdef __WITH_LIVEEDIT
+        ,apf.LiveEdit
+        //#endif
     );
     
     /**** Convenience functions for gui nodes ****/

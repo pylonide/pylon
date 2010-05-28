@@ -22,12 +22,6 @@
 // #ifdef __WITH_AMLPROCESSINGINSTRUCTION
 apf.AmlProcessingInstruction = function(isPrototype){
     this.$init(isPrototype);
-    
-    //@todo apf3.0 possibly move this to an init function
-    this.$supportedProperties = [];
-    this.$propHandlers        = {};
-    this.$booleanProperties   = {};
-    this.$inheritProperties   = {};
 };
 
 (function(){
@@ -49,7 +43,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.reload = function(){
         this.$handlePropSet("data", this.data);
-    }
+    };
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -58,10 +52,14 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.getAttribute = function(){};
     this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+    this.$supportedProperties = [];
+    this.$propHandlers        = {};
+    this.$booleanProperties   = {};
+    this.$inheritProperties   = {};
     
     this.$setValue = function(value){
         this.setProperty("data", value);
-    }
+    };
     
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
@@ -69,6 +67,14 @@ apf.AmlProcessingInstruction = function(isPrototype){
             this.$clearDynamicProperty("calcdata");
             this.$setDynamicProperty("calcdata", value);
         }
+        // #ifdef __WITH_LIVEEDIT
+        else if (prop == "liveedit") {
+            this.$propHandlers["liveedit"].call(this, value);
+
+            this.$clearDynamicProperty("calcdata");
+            this.$setDynamicProperty("calcdata", this.data);
+        }
+        // #endif
         else if (prop == "target") {
             //not implemented
         }
@@ -86,6 +92,15 @@ apf.AmlProcessingInstruction = function(isPrototype){
         pHtmlNode.appendChild(this.$ext = document.createElement("span"));
         this.$ext.host = this;
 
+        // #ifdef __WITH_LIVEEDIT
+        this.liveedit = apf.isTrue(apf.getInheritedAttribute(this, "liveedit"));
+        if (this.liveedit) {
+            this.implement(apf.LiveEdit);
+            this.$inheritProperties["liveedit"] = 2;
+            this.$propHandlers["liveedit"].call(this, this.liveedit);
+        }
+        //#endif
+
         this.$setDynamicProperty("calcdata", this.data);
         
         //#ifdef __DEBUG
@@ -102,6 +117,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.$destroy = function(){
         this.$clearDynamicProperty("calcdata");
         this.$propHandlers["calcdata"].call(this, "");
-    }
+    };
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 // #endif
