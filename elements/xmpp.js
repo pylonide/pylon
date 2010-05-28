@@ -870,11 +870,14 @@ apf.xmpp = function(struct, tagName){
     };
 
     /**
+     * If the client uses a BOSH session to connect to the XMPP server, the
+     * connection can be paused to any number of seconds until the maximum set
+     * by the server.
      *
-     * <body rid='1249243564'
-     * sid='SomeSID'
-     * pause='60'
-     * xmlns='http://jabber.org/protocol/httpbind'/>
+     * @see http://xmpp.org/extensions/xep-0124.html#inactive
+     * @param {Number} secs Number of seconds to pause the connection.
+     *                      Defaults to the max set by the server. (usually 120)
+     * @type {void}
      */
     this.pause = function(secs) {
         var max, v = this.$serverVars;
