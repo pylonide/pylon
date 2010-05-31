@@ -280,7 +280,8 @@ apf.xsd.typeHandlers = {
             return /^(?:http:\/\/)?([\w-]+\.)+\w{2,4}$/.test(value.trim());
         },
         "email": function(value){
-            return /^[A-Z0-9\.\_\%\-]+@(?:[A-Z0-9\-]+\.)+[A-Z]{2,4}$/i
+            // @see http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+            return /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i
                 .test(value.trim());
         },
         "creditcard": function(value){
