@@ -17,6 +17,7 @@ apf.calendarlist      = function(struct, tagName){
                        {name : "November",  number : 30},
                        {name : "December",  number : 31}];
     this.range      = "day";
+    this.mode       = "normal";
     this.dateFormat = "mm-dd-yyyy";
     this.interval   = null;
     this.intervals  = {
@@ -83,6 +84,15 @@ apf.calendarlist      = function(struct, tagName){
         this.interval = value > 10 ? value : 10;
         this.$updateHours();
     };
+    /**
+     * Possible values
+     * normal (default)
+     * add
+     * @param {Object} value
+     */
+    this.$propHandlers["mode"] = function(value) {
+        this.mode = value;
+    };
     
     this.getStartDate = function(objDate, range) {
         switch(range) {
@@ -114,6 +124,11 @@ apf.calendarlist      = function(struct, tagName){
         this.$ext       = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
         this.$oHours    = this.$getLayoutNode("main", "hours", this.$ext);
+        
+        
+        this.$container.onmouseover = function() {
+            alert('ok')
+        };
         
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
