@@ -60,7 +60,7 @@ apf.setcookie = function(name, value, expire, path, domain, secure) {
  * @param {String} name the name of the stored cookie.
  * @return {String} Returns a value of the cookie or the empty string if it isn't found
  */
-apf.getcookie = function (name) {
+apf.getcookie = function(name) {
   var aCookie = document.cookie.split("; ");
   for (var i = 0; i < aCookie.length; i++) {
       var aCrumb = aCookie[i].split("=");
