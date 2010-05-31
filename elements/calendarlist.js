@@ -81,7 +81,7 @@ apf.calendarlist      = function(struct, tagName){
     
     this.$propHandlers["interval"] = function(value) {
         value = parseInt(value);
-        this.interval = value > 10 ? value : 10;
+        this.interval = value > 5 ? value : 5;
         this.$updateHours();
     };
     /**
@@ -161,20 +161,32 @@ apf.calendarlist      = function(struct, tagName){
         
         var cy             = e.clientY;
         var intervalHeight = this.getInterval("pixels");
-        var interval = this.getInterval("minutes");
+        var interval       = this.getInterval("minutes");
         
         this.$oNoteField.style.display = "block";
-        this.$oNoteField.style.height = intervalHeight * 2 + "px";
-        this.$oNoteField.style.marginTop = -1*intervalHeight + "px";
+        this.$oNoteField.style.height = (intervalHeight * 2 - apf.getDiff(this.$oNoteField)[1]) + "px";
+        this.$oNoteField.style.marginTop = -1 * intervalHeight + "px";
         this.$oNoteField.style.top = (cy + this.$ext.scrollTop) + "px";
         
-        var top = parseInt((cy + this.$ext.scrollTop + parseInt(this.$oNoteField.style.marginTop))/intervalHeight);
-            top *= interval;
-        var hours   = parseInt(top / 60);
-        var minutes = top % 60;
+        //Unit relative to interval and intervalHeight  
+         
+        //var unit = parseInt((cy + this.$ext.scrollTop + parseInt(this.$oNoteField.style.marginTop)) / intervalHeight);
+            //unit *= interval;
+        
+        //Constant interval = 5 min;
+        intervalHeight = 5 * intervalHeight / interval;
+        var unit = parseInt((cy + this.$ext.scrollTop + parseInt(this.$oNoteField.style.marginTop)) / intervalHeight);
+            unit *= 5;
+            
+        var hours   = parseInt(unit / 60);
+        var minutes = unit % 60;
+        
+        if (minutes < 0)
+            minutes = 0;
+            
             minutes = minutes < 10 ? "0" + minutes : minutes;
         
-        if (hours > 24)
+        if (hours >= 24)
             hours %= 24; 
         
         this.$oNoteFieldCon.innerHTML = hours+":"+minutes; 
