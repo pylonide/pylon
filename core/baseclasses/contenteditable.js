@@ -22,6 +22,8 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 // #ifdef __WITH_CONTENTEDITABLE
 
 apf.addEventListener("load", function(){
+    var lastShift;
+
     apf.window.undoManager.addEventListener("afterchange", function(){
         apf.layout.processQueue();
         apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
@@ -78,14 +80,28 @@ apf.addEventListener("load", function(){
             case 16:
                 if (!this.dragMode && (apf.document.documentElement.editable 
                   || self.app && self.app.editable)) { //@hack!
-                    if (e.ctrlKey) //Shift-Ctrl for selection mode
+                    if (e.ctrlKey)
                         apf.document.execCommand("mode", null, "select");
-                    else
+                    else {
                         apf.document.execCommand("mode", null, {
                             mode    : "connect",
                             timeout : 1000,
                             event   : e.htmlEvent
                         });
+                    }
+                }
+                break;
+            case 17:
+                if (!lastShift || new Date() - lastShift > 500 || e.htmlEvent.repeat)
+                    lastShift = new Date().getTime();
+                else {
+                    var isShowingConnections = (apf.document.queryCommandState("mode") || "").substr(0,8) == "connect-";
+                    apf.document.execCommand("mode", null, {
+                        mode    : isShowingConnections ? "arrow" : "connect-element",
+                        timeout : 1000,
+                        event   : e.htmlEvent
+                    });
+                    lastShift = null;
                 }
                 break;
             /*case 36: //HOME
@@ -112,7 +128,8 @@ apf.addEventListener("load", function(){
     });
 
     apf.addEventListener("keyup", function(e){
-        if (e.keyCode == 16 && !this.dragMode)
+        if (e.keyCode == 16
+          && "select|connect".indexOf(apf.document.queryCommandState("mode")) > -1)
             apf.document.execCommand("mode", null, "arrow");
     });
 
@@ -167,6 +184,9 @@ apf.addEventListener("load", function(){
     
     //Focus isn't set when the node already has the focus
     apf.addEventListener("mouseup", function(e){
+        if ((apf.document.queryCommandState("mode") || "").indexOf("connect-") > -1)
+            apf.document.execCommand("mode", null, "arrow");
+    
         if (Math.abs(lastPos[0] - e.htmlEvent.clientX) > 2 
           || Math.abs(lastPos[1] - e.htmlEvent.clientY) > 2)
             return;

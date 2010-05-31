@@ -317,7 +317,7 @@ apf.ContentEditable.commands = (function(){
         }
     };
     
-    var mode;
+    var mode, vcinited;
     commands["mode"] = function(sel, showUI, value, query){
         switch(query){
             case STATE: return mode || "default";
@@ -333,7 +333,32 @@ apf.ContentEditable.commands = (function(){
     	}
     	else if (value && value.mode == "connect") {
     	    mode = "connect";
-    	    this.$getVisualConnect().activate(value.event,value.timeout);
+    	    var vc = this.$getVisualConnect();
+            vc.setMode("draw");
+            vc.activate(value.event,value.timeout);
+            
+            if (!vcinited) {
+                this.$getVisualConnect().onchangemode = function(e){
+                    if (e.mode != mode) {
+                        if (e.mode == "element") mode = "connect-element"
+                        else if (e.mode == "all") mode = "connect-all";
+                        else if (e.mode == "draw") mode = "connect";
+                        else if (e.mode == "draw-started") mode = "connecting";
+                    }
+                }
+            }
+    	}
+        else if (value && value.mode == "connect-element") {
+    	    mode = value.mode;
+    	    var vc = this.$getVisualConnect();
+            vc.setMode("element");
+            vc.activate(value.event,value.timeout);
+    	}
+        else if (value && value.mode == "connect-all") {
+    	    mode = value.mode;
+    	    var vc = this.$getVisualConnect();
+            vc.setMode("all");
+            vc.activate(value.event,value.timeout);
     	}
     	else if (value && value.mode == "add") {
             mode = "add";
@@ -376,7 +401,7 @@ apf.ContentEditable.commands = (function(){
     	    addType = null;
     	}
     	else {
-    	    mode = value;
+    	    mode = value.mode || value;
     	    this.$getSelectRect().deactivate();
             this.$getVisualConnect().deactivate();
     	}

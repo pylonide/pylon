@@ -787,7 +787,8 @@ apf.uirecorder.capture = {
         // remove redundant actions for dblclick
         // reset keyActionsIdxs if neccessary
         for (var resetKeyIdx = false, a, i = 0, l = actionList.length; i < l; i++) {
-
+            //if (actionList[i].keyActionIdx != undefined)
+                //this.$keyActions[actionList[i].keyActionIdx] = actionList[i];
             if (actionList[i].name == "dblClick") {
                 if (actionList.length > 3 && i >= 3 && actionList[i-3].name == "mousedown" && actionList[i-2].name == "mouseup" && actionList[i-1].name == "mouseup") {
                     resetKeyIdx = true;
@@ -797,13 +798,22 @@ apf.uirecorder.capture = {
                     l -= 3;
                     if (!actionList[i+1]) break;
                 }
+                else if (!apf.uirecorder.isPlaying) {
+                    debugger;
+                }
             }
         }
         if (resetKeyIdx) {
-            for (i = 0, l = this.$keyActions.length; i < l; i++) {
-                this.$keyActions[i].keyActionIdx = i;
+            var curKeyActionIdx = 0;
+            for (var i = 0, l = actionList.length; i < l; i++) {
+                if (actionList[i].keyActionIdx != undefined) {
+                    actionList[i].keyActionIdx = curKeyActionIdx;
+                    curKeyActionIdx++;
+                }
             }
         }
+
+        
         
         return actionList;
     },
@@ -949,9 +959,6 @@ apf.uirecorder.capture = {
                     if (action.htmlElement.popup) htmlElement.setAttribute("popup", action.htmlElement.popup);
                     if (action.htmlElement.innerHTML) htmlElement.setAttribute("innerHTML", action.htmlElement.innerHTML);
                     aNode.appendChild(htmlElement);
-                    
-//                    if (specialAction)
-//                        testXml.setAttribute("name", specialAction + (action.htmlElement.id || (action.htmlElement.type.toLowerCase() + " " + action.htmlElement.innerHTML)));
                 }
             }
             
@@ -969,9 +976,6 @@ apf.uirecorder.capture = {
                 dropNode.setAttribute("width"    , action.dropTarget.width);
                 dropNode.setAttribute("height"   , action.dropTarget.height);
                 
-//                if (specialAction)
-//                    testXml.setAttribute("name", testXml.getAttribute("name") + " on " + (action.dropTarget.id || (action.dropTarget.caption ? action.dropTarget.type + " " + action.dropTarget.caption : null) || (action.dropTarget.type + " " + action.dropTarget.xpath)));
-
                 amlNode.appendChild(dropNode);
             }
 
@@ -981,20 +985,7 @@ apf.uirecorder.capture = {
             if (action.multiselectValue != undefined) aNode.setAttribute("multiselectValue", action.multiselectValue);
             if (action.multiselectItem != undefined) aNode.setAttribute("multiselectItem", action.multiselectItem);
             
-            // set apf.activeElement
-            if (action.activeElement) {
-                var eNode, iNode;
-                eNode = testXml.ownerDocument.createElement("element");
-                eNode.setAttribute("name", "apf");
-                iNode = testXml.ownerDocument.createElement("activeElement");
-                iNode.appendChild(testXml.ownerDocument.createTextNode(action.activeElement));
-                eNode.appendChild(iNode);
-                
-                aNode.appendChild(eNode);
-            }
-            
             // loop through detailList
-            //if (action.detailList) {
             for (var detailNode, dli = 0, dll = action.detailList.length; dli < dll; dli++) {
                 detailNode = testXml.ownerDocument.createElement("details");
                 detailNode.setAttribute("index", dli);
@@ -1010,23 +1001,11 @@ apf.uirecorder.capture = {
 
                     for (var type in detailTypes) {
                         if (action.detailList[dli][elementName][type].length) {
-                        //if (type == "properties" && action.name != "mousemove") debugger;
                             dNode = testXml.ownerDocument.createElement(type)
                             for (var item, vNode, di = 0, dl = action.detailList[dli][elementName][type].length; di < dl; di++) {
                                 item = action.detailList[dli][elementName][type][di];
                                 iNode = testXml.ownerDocument.createElement(detailTypes[type]);
                                 iNode.setAttribute("name", item.name);
-                                if (type == "events") {
-                                    var caption = item.name;
-                                    if (item.calls) {
-                                        caption = (item.calls) ? caption + " (" + item.calls+ "x)" : caption;
-                                        //caption = (item.value) ? caption + ": " + item.value : caption;
-                                   }
-                                   iNode.setAttribute("caption", caption || item.name);
-                                }
-
-                                // time
-                                //iNode.setAttribute("time", item.time);
                                 
                                 if (item.value || typeof item.value == "boolean") {
                                     if (typeof item.value === "string")
@@ -1264,7 +1243,6 @@ apf.uirecorder.playback = {
         //}
         
         if (this.$activeEl) {
-        debugger;
             if (this.$curActionIdx > 0 && this.$curTestXml.childNodes[this.$curActionIdx].getAttribute("name") == "mousedown") debugger;
             //brwTest.focus();
             this.$activeEl.focus();
