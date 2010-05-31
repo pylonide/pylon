@@ -756,6 +756,19 @@ apf.caldropdown = function(struct, tagName){
 
         this.redraw(newMonth, newYear);
     };
+    
+    /**
+     * Select today's date in calendar component
+     */
+    this.nextDay = function() {
+        var c = this.$calVars;
+        this.change(new Date(c.year, c.month, c.day + 1, 0, 0, 0).format(this.outputFormat));
+    };
+    
+    this.previousDay = function() {
+        var c = this.$calVars;
+        this.change(new Date(c.year, c.month, c.day - 1, 0, 0, 0).format(this.outputFormat));
+    };
 
     /**
      * Select today's date in calendar component
