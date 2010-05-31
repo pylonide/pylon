@@ -86,8 +86,9 @@ apf.calendarlist      = function(struct, tagName){
     };
     /**
      * Possible values
-     * normal (default)
-     * add
+     * normal (default)   - adding/editing notes are NOT possible
+     * add                - selecting time range for note 
+     * edit               - editing note
      * @param {Object} value
      */
     this.$propHandlers["mode"] = function(value) {
@@ -121,14 +122,28 @@ apf.calendarlist      = function(struct, tagName){
     
     this.$draw = function() {
         //Build Main Skin
-        this.$ext       = this.$getExternal();
-        this.$container = this.$getLayoutNode("main", "container", this.$ext);
-        this.$oHours    = this.$getLayoutNode("main", "hours", this.$ext);
+        this.$ext           = this.$getExternal();
+        this.$container     = this.$getLayoutNode("main", "container", this.$ext);
+        this.$oHours        = this.$getLayoutNode("main", "hours", this.$ext);
+        this.$oNoteField    = this.$getLayoutNode("main", "note_field", this.$ext);
+        this.$oNoteFieldCon = this.$getLayoutNode("main", "note_field_con", this.$ext);
         
         
-        this.$container.onmouseover = function() {
-            alert('ok')
-        };
+        this.$container.setAttribute("onmousemove",
+            "var o = apf.lookup(" + this.$uniqueId 
+            + "); if (o.mode == 'add')o.$showNoteField(event);");
+        
+        this.$oNoteField.setAttribute("onmousemove",
+            "var o = apf.lookup(" + this.$uniqueId 
+            + "); if (o.mode == 'add')o.$showNoteField(event);");
+            
+        this.$oNoteField.setAttribute("onmouseout",
+            "var o = apf.lookup(" + this.$uniqueId 
+            + "); o.$hideNoteField(event);");
+        
+        this.$oNoteField.setAttribute("onclick",
+            "var o = apf.lookup(" + this.$uniqueId 
+            + "); if (o.mode == 'add')o.$editNoteField();");
         
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
@@ -139,6 +154,40 @@ apf.calendarlist      = function(struct, tagName){
                 htmlEvent : e || event
             });
         }
+    };
+    
+    this.$showNoteField = function(e) {
+        e = e || event;
+        
+        var cy             = e.clientY;
+        var intervalHeight = this.getInterval("pixels");
+        var interval = this.getInterval("minutes");
+        
+        this.$oNoteField.style.display = "block";
+        this.$oNoteField.style.height = intervalHeight * 2 + "px";
+        this.$oNoteField.style.marginTop = -1*intervalHeight + "px";
+        this.$oNoteField.style.top = (cy + this.$ext.scrollTop) + "px";
+        
+        var top = parseInt((cy + this.$ext.scrollTop + parseInt(this.$oNoteField.style.marginTop))/intervalHeight);
+            top *= interval;
+        var hours   = parseInt(top / 60);
+        var minutes = top % 60;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+        
+        if (hours > 24)
+            hours %= 24; 
+        
+        this.$oNoteFieldCon.innerHTML = hours+":"+minutes; 
+    };
+    
+    this.$hideNoteField = function(e) {
+        e = e || event;
+        if (this.mode !== "edit")
+            this.$oNoteField.style.display = "none";
+    };
+    
+    this.$editNoteField = function() {
+        this.mode = "edit";
     };
     
     this.getInterval = function(unit) {
