@@ -166,7 +166,7 @@ apf.calendarlist      = function(struct, tagName){
         this.$oNoteField.style.display = "block";
         this.$oNoteField.style.height = (intervalHeight * 2 - apf.getDiff(this.$oNoteField)[1]) + "px";
         this.$oNoteField.style.marginTop = -1 * intervalHeight + "px";
-        this.$oNoteField.style.top = (cy + this.$ext.scrollTop) + "px";
+        this.$oNoteField.style.top = (cy + this.$ext.scrollTop - apf.getAbsolutePosition(this.$ext)[1] + intervalHeight/2) + "px";
         
         //Unit relative to interval and intervalHeight  
          
@@ -175,7 +175,7 @@ apf.calendarlist      = function(struct, tagName){
         
         //Constant interval = 5 min;
         intervalHeight = 5 * intervalHeight / interval;
-        var unit = parseInt((cy + this.$ext.scrollTop + parseInt(this.$oNoteField.style.marginTop)) / intervalHeight);
+        var unit = parseInt((cy + this.$ext.scrollTop - apf.getAbsolutePosition(this.$ext)[1] + intervalHeight/2 + parseInt(this.$oNoteField.style.marginTop)) / intervalHeight);
             unit *= 5;
             
         var hours   = parseInt(unit / 60);
