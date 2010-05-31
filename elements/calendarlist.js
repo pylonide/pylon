@@ -156,6 +156,13 @@ apf.calendarlist      = function(struct, tagName){
         }
     };
     
+    function getScrollPage() {
+        return [
+            document.documentElement.scrollLeft || document.body.scrollLeft,
+            document.documentElement.scrollTop || document.body.scrollTop
+        ];
+    }
+    
     this.$showNoteField = function(e) {
         e = e || event;
         
@@ -166,7 +173,12 @@ apf.calendarlist      = function(struct, tagName){
         this.$oNoteField.style.display = "block";
         this.$oNoteField.style.height = (intervalHeight * 2 - apf.getDiff(this.$oNoteField)[1]) + "px";
         this.$oNoteField.style.marginTop = -1 * intervalHeight + "px";
-        this.$oNoteField.style.top = (cy + this.$ext.scrollTop - apf.getAbsolutePosition(this.$ext)[1] + intervalHeight/2) + "px";
+        
+        var scrollPage = getScrollPage()[1];//333 px
+        var absPosE = apf.getAbsolutePosition(this.$ext)[1];//822
+        var marginTop = parseInt(this.$oNoteField.style.marginTop);
+
+        this.$oNoteField.style.top = (cy + scrollPage - absPosE + this.$ext.scrollTop + marginTop + intervalHeight / 2) + "px";
         
         //Unit relative to interval and intervalHeight  
          
@@ -175,7 +187,7 @@ apf.calendarlist      = function(struct, tagName){
         
         //Constant interval = 5 min;
         intervalHeight = 5 * intervalHeight / interval;
-        var unit = parseInt((cy + this.$ext.scrollTop - apf.getAbsolutePosition(this.$ext)[1] + intervalHeight/2 + parseInt(this.$oNoteField.style.marginTop)) / intervalHeight);
+        var unit = parseInt((cy + scrollPage - absPosE + this.$ext.scrollTop + marginTop + intervalHeight / 2) / intervalHeight);
             unit *= 5;
             
         var hours   = parseInt(unit / 60);
