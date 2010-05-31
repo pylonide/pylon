@@ -422,7 +422,7 @@ apf.caldropdown = function(struct, tagName){
      * Hides the container with the calendar using a slide effect.
      */
     this.slideUp = function() {
-        if (!this.isOpen) return false;
+        /*if (!this.isOpen) return false;*/
         if (this.dispatchEvent("slideup") === false) return false;
 
         this.isOpen = false;

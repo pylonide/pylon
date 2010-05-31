@@ -21,7 +21,7 @@ apf.calendarlist      = function(struct, tagName){
     this.dateFormat = "mm-dd-yyyy";
     this.interval   = null;
     this.intervals  = {
-        "day"   : 30, //half an hour
+        "day"   : 15, //half an hour
         "week"  : 60, //day 
         "month" : 60  //week
     };
@@ -178,7 +178,7 @@ apf.calendarlist      = function(struct, tagName){
         var absPosE = apf.getAbsolutePosition(this.$ext)[1];//822
         var marginTop = parseInt(this.$oNoteField.style.marginTop);
 
-        this.$oNoteField.style.top = (cy + scrollPage - absPosE + this.$ext.scrollTop + marginTop + intervalHeight / 2) + "px";
+        this.$oNoteField.style.top = (cy + scrollPage - absPosE + this.$ext.scrollTop + intervalHeight / 2) + "px";
         
         //Unit relative to interval and intervalHeight  
          
