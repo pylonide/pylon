@@ -60,8 +60,8 @@ apf.LiveEdit = function() {
                             "justifyfull", "removeformat", "cut", "copy",
                             "paste", "outdent", "indent", "undo", "redo"];
 
-    //this.$supportedProperties.push("liveedit", "state", "plugins",
-    //    "realtime", "language");
+    this.$supportedProperties.push("liveedit", "state", "plugins", "realtime",
+        "language");
     this.$booleanProperties["liveedit"]  = true;
     this.$booleanProperties["realtime"]  = true;
     this.$propHandlers["liveedit"]       = function(value){
@@ -75,9 +75,8 @@ apf.LiveEdit = function() {
             apf.addListener(_self.$ext, "mouseover", o.mouseOver = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
                     el = el.parentNode;
-                }
                 if (!el || el == _self.$ext || el == o.activeNode)
                     return;
                 apf.setStyleClass(el, "liveEdit_over");
@@ -85,9 +84,8 @@ apf.LiveEdit = function() {
             apf.addListener(_self.$ext, "mouseout",  o.mouseOut = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
-                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
                     el = el.parentNode;
-                }
                 if (!el || el == _self.$ext || el == o.activeNode)
                     return;
                 apf.setStyleClass(el, null, ["liveEdit_over"]);
@@ -99,9 +97,8 @@ apf.LiveEdit = function() {
                 if (o.activeNode && _self.$selection && apf.isChildOf(o.activeNode, el, true))
                     _self.$selection.cache();
 
-                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext) {
+                while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
                     el = el.parentNode;
-                }
 
                 if (!el || el == _self.$ext) {
                     if (o.activeNode)
@@ -679,22 +676,13 @@ apf.LiveEdit = function() {
         if (v = model.$validation)
             rule = v.getRule(xmlNode);
         
-        if (o.lastTemplate) {
-            if (o.lastTemplate.childNodes.indexOf(apf.document.activeElement) > -1)
-                this.focus();
-            o.lastTemplate.detach();
-            oNode.innerHTML = o.lastTemplate.childNodes[0].getValue();
-            o.lastTemplate = null;
-            oNode.style.height = rule.$lastHeight;
-        }
-        else {
-            this.$selection.collapse(true);
-            
-            if (apf.hasContentEditable)
-                oNode.contentEditable = false;
-            else
-                document.designMode = "off";
-        }
+
+        this.$selection.collapse(true);
+
+        if (apf.hasContentEditable)
+            oNode.contentEditable = false;
+        else
+            document.designMode = "off";
 
         o.activeNode = null;
 
@@ -717,9 +705,12 @@ apf.LiveEdit = function() {
         if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oNode.innerHTML) {
             var lastPos = (o.tabStack || initTabStack.call(this)).indexOf(oNode);
 
-            this.edit(xmlNode, rule && apf.isTrue(rule.richtext)
-                ? apf.htmlCleaner.parse(oNode.innerHTML)
-                : oNode.innerHTML);
+            this.$executeAction("setValueByXpath", [this.xmlRoot.ownerDocument,
+                rule && apf.isTrue(rule.richtext)
+                    ? apf.htmlCleaner.parse(oNode.innerHTML)
+                    : oNode.innerHTML, xpath], "setValueByXpath", xmlNode);
+
+            //this.edit(xmlNode, );
 
             if (v) {
                 (this.validityState || (this.validityState =
@@ -860,6 +851,7 @@ apf.LiveEdit = function() {
         if (!this.realtime || o.changeTimer !== null) return;
         o.changeTimer = $setTimeout(function() {
             clearTimeout(o.changeTimer);
+            console.log("resuming change....");
             // #ifdef __WITH_DATAACTION
             this.change(this.getValue());
             /* #else

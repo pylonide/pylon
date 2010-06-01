@@ -56,14 +56,14 @@ apf.LiveMarkupPi = function(){
 
     this.getDocument = function(){
         return this.$data && this.$data.ownerDocument;
-    }
+    };
     
     this.clear = function(msg){
         if (msg == "loading" && apf.getInheritedAttribute(this, "loading-message")) {
             this.$propHandlers["calcdata"].call(this, "<span class='loading'>Loading...</span>");
             this.calcdata = "";
         }
-    }
+    };
 
     this.$propHandlers["calcdata"] = function(data){
         if (this.$data) {

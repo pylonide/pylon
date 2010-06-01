@@ -339,9 +339,6 @@ apf.DataAction = function(){
      * @see  element.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
-        if (this.disabled || this.liveedit && action != "edit")
-            return; //hack
-
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
             return false;
