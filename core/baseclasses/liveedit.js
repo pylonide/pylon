@@ -72,7 +72,7 @@ apf.LiveEdit = function() {
         //#endif
         if (apf.isTrue(value)) {
             var _self = this;
-            apf.addListener(_self.$ext, "mouseover", o.mouseOver = function(e) {
+            apf.addListener(this.$ext, "mouseover", o.mouseOver = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
                 while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
@@ -81,7 +81,7 @@ apf.LiveEdit = function() {
                     return;
                 apf.setStyleClass(el, "liveEdit_over");
             });
-            apf.addListener(_self.$ext, "mouseout",  o.mouseOut = function(e) {
+            apf.addListener(this.$ext, "mouseout",  o.mouseOut = function(e) {
                 var el = e.srcElement || e.target;
                 if (!el) return;
                 while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
@@ -90,7 +90,7 @@ apf.LiveEdit = function() {
                     return;
                 apf.setStyleClass(el, null, ["liveEdit_over"]);
             });
-            apf.addListener(_self.$ext, "mousedown", o.mouseDown = function(e) {
+            apf.addListener(this.$ext, "mousedown", o.mouseDown = function(e) {
                 apf.cancelBubble(e);
                 var el = e.srcElement || e.target;
                 if (!el) return;
@@ -126,10 +126,18 @@ apf.LiveEdit = function() {
 
                 return false;
             });
-            apf.addListener(_self.$ext, "mouseup", o.mouseUp = function(e) {
+            apf.addListener(this.$ext, "mouseup", o.mouseUp = function(e) {
                 var el = e.srcElement || e.target;
                 if (o.activeNode && _self.$selection && apf.isChildOf(o.activeNode, el, true))
                     _self.$selection.cache();
+            });
+
+            $setTimeout(function() {
+                if (_self.getModel && (o.model = _self.getModel(true))) {
+                    o.model.addEventListener("afterload", o.afterLoad = function() {
+                        o.tabStack = null;
+                    });
+                }
             });
 
             o.wasFocussable = [this.$focussable,
@@ -142,6 +150,9 @@ apf.LiveEdit = function() {
             apf.removeListener(this.$ext, "mouseout",  o.mouseOut);
             apf.removeListener(this.$ext, "mousedown", o.mouseDown);
             apf.removeListener(this.$ext, "mouseup",   o.mouseUp);
+
+            if (o.model)
+                o.model.removeEventListener("afterload", o.afterLoad);
 
             if (o.docklet)
                 o.docklet.hide();
@@ -273,9 +284,7 @@ apf.LiveEdit = function() {
     });
 
     this.addEventListener("load", function(){
-        if (!this.liveedit)
-            return;
-
+        if (!this.liveedit) return;
         createEditor.call(this, initTabStack.call(this)[0]);
     });
 
@@ -439,6 +448,7 @@ apf.LiveEdit = function() {
                     bShift = e.shiftKey,
                     // a callback is passed, because the call is a-sync
                     lastPos = (o.tabStack || initTabStack.call(this)).indexOf(o.activeNode);
+                oNode = o.activeNode;
                 removeEditor.call(this, o.activeNode, true) || initTabStack.call(this)[lastPos];
                 oNode = o.tabStack[
                     (idx = o.tabStack.indexOf(oNode) + (bShift ? -1 : 1)) < o.tabStack.length 
