@@ -89,7 +89,7 @@ apf.table = function(struct, tagName){
     this.$update     = false;
     this.$useLateDom = true; 
     
-    this.columns    = "150,200";
+    this.columns    = null;//"150,200";
     this.padding    = 2;
     this.$edge      = [5, 5, 5, 5];
     this.cellheight = 19;
@@ -465,7 +465,7 @@ apf.table = function(struct, tagName){
         this.$amlLoaded = false; //@todo hack
 
         if (!this.$columns)
-            this.$propHandlers.columns.call(this, this.columns);
+            this.$propHandlers.columns.call(this, this.columns = "150, 200");
         this.$amlLoaded = true; //@todo hack
     };
 }).call(apf.table.prototype = new apf.GuiElement());
