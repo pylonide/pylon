@@ -35,7 +35,8 @@ apf.uirecorder.capture = {
                         27,             // Esc
                         16, 17, 18,     // Shift, Ctrl, Alt
                         13,             // Enter
-                        8, 46, 36, 35,          // Backspace, Del, Home, End
+                        8, 46, 36, 35,  // Backspace, Del, Home, End
+                        9               // Tab
                       ],       
     
     // start capturing
@@ -174,8 +175,8 @@ apf.uirecorder.capture = {
                 character = e.keyCode
             }
             
-            // ignore when no character is outputted, like the Enter key
-            if (character.trim() == "") return;
+            // ignore when no character is outputted, like the Enter key, except for space character
+            if (character.trim() == "" && character != " ") return;
 
 //            if (e.shiftKey) character = "[SHIFT]" + character;
 //            if (e.altKey)   character = "[ALT]" + character;
@@ -203,7 +204,11 @@ apf.uirecorder.capture = {
         data.type       = amlNode.localName;
         var xpath       = apf.xmlToXpath(amlNode)
         data.xpath      = xpath.substr(xpath.indexOf("/")+1);
-        if (amlNode.getValue && ["text","textarea","textbox"].indexOf(amlNode.localName) == -1) data.value = (eventName != "keypress") ? amlNode.getValue() : amlNode.getValue() + value;
+        if (amlNode.getValue && ["text","textarea","textbox"].indexOf(amlNode.localName) == -1) 
+            data.value = amlNode.getValue();
+        else if (eventName == "keypress") 
+            data.value = value;
+            
         if (amlNode.label) data.label = amlNode.label;
         
         var pos = apf.getAbsolutePosition(amlNode.$ext, document.body);
@@ -283,6 +288,12 @@ apf.uirecorder.capture = {
         data.tagName    = htmlElement.tagName;
         data.type       = (data.tagName.toLowerCase() == "a") ? "link" : data.tagName;
 
+        var pos = apf.getAbsolutePosition(htmlElement, document.body);
+        data.x          = pos[0];
+        data.y          = pos[1];
+        data.width      = htmlElement.offsetWidth;
+        data.height     = htmlElement.offsetHeight;
+
         if (apf.popup.last && apf.isChildOf(apf.popup.cache[apf.popup.last].content, htmlElement, true))
             data.popup = true;
             
@@ -293,12 +304,14 @@ apf.uirecorder.capture = {
         //if (!apf.uirecorder.$inited) return;
         // prevent double mousedown action capture one after another
         if (eventName == "mousedown" && this.$prevAction && this.$prevAction.name == "mousedown") return;
+//        if (eventName == "keydown" && this.$prevAction && this.$prevAction.name == "keydown") return;
+//        if (eventName == "keyup" && this.$prevAction && this.$prevAction.name == "keyup") return;
 
         var htmlElement = (e) ? e.srcElement || e.target : null;
         var amlNode     = (htmlElement && apf.findHost(htmlElement) && apf.findHost(htmlElement).tagName) ? apf.findHost(htmlElement) : null;
 
 //        if (eventName != "mousemove") { //this.$mousedownMode
-            if (amlNode) {
+            if (amlNode && amlNode.prefix == "a") {
                 var amlNodeData = this.$getAmlNodeData(amlNode, htmlElement, eventName, value);
             }
             else if (htmlElement && htmlElement.tagName) {
@@ -386,13 +399,15 @@ apf.uirecorder.capture = {
                 this.$mousedownMode = false;
         }
         
-        if (["mousemove", "mousescroll"].indexOf(eventName) == -1) { //this.$mousedownMode || 
+        if (["mousemove", "mousescroll"].indexOf(eventName) == -1) { //
             actionObj.keyActionIdx = this.$keyActionIdx;
             this.$keyActions.push(actionObj);
             this.$keyActionIdx++;
         }
         
         // save details if action is keyAction
+/*
+TEMPORARILY DISABLED
         if (actionObj.keyActionIdx != undefined && actionObj.name != "mousemove") {
             // check if expected keyAction is executed
             if (apf.uirecorder.isTesting && apf.uirecorder.playback.$keyActions[actionObj.keyActionIdx]) {
@@ -419,8 +434,7 @@ apf.uirecorder.capture = {
                 break;
             }
         }        
-      
-        
+*/        
         // save action object
         actionObj.actionIdx = this.$actionList.length;
         this.$actionList.push(actionObj);
@@ -502,12 +516,15 @@ apf.uirecorder.capture = {
                     // detail
                     for (var waitFor = false, d, i = 0, l = checkList.details[checkIdx][elName][dType].length; i < l; i++) {
                         waitFor = (check1 = checkList.details[checkIdx][elName][dType][i]).waitFor;
-                        
+
+/*
+TEMPORARILY DISABLED
                         if (!waitFor && !(actionObj.detailList && actionObj.detailList[checkIdx] && actionObj.detailList[checkIdx][elName] && actionObj.detailList[checkIdx][elName][dType])) {
                             if (apf.uirecorder.playback.$warningList.indexOf("No " + dType + " set on element " + elName + ". Expected " + checkList.details[checkIdx][elName][dType][i].type + " " + checkList.details[checkIdx][elName][dType][i].name + " to be set ") == -1)
                                 apf.uirecorder.playback.$warningList.push("No " + dType + " set on element " + elName + ". Expected " + checkList.details[checkIdx][elName][dType][i].type + " " + checkList.details[checkIdx][elName][dType][i].name + " to be set ");
                             continue;
                         }
+*/
                         if (actionObj.detailList && actionObj.detailList[checkIdx] && actionObj.detailList[checkIdx][elName] && actionObj.detailList[checkIdx][elName][dType] && actionObj.detailList[checkIdx][elName][dType].length) {
                             for (var found = false, j = 0, jl = actionObj.detailList[checkIdx][elName][dType].length; j < jl; j++) {
                                 // event, property or data is set during action on corrent element
@@ -542,9 +559,12 @@ apf.uirecorder.capture = {
                             });
                         }
                         else if (!found) {
+/*
+TEMPORARILY DISABLED
                             if (apf.uirecorder.playback.$warningList.indexOf(check1.type + " " + check1.name + " not set on element " + elName) == -1) {
                                 apf.uirecorder.playback.$warningList.push(check1.type + " " + check1.name + " not set on element " + elName);
                             }
+*/
                         }
                     }
                     
@@ -579,7 +599,7 @@ apf.uirecorder.capture = {
             }
         }
         // html element
-        else if (amlNode && e.htmlEvent) {
+        else if (amlNode && e && e.htmlEvent) {
             // skip capturing event calls on html element, already captured on amlNodes
             if (["keydown", "hotkey"].indexOf(eventName) > -1) return;
             var htmlElement = e.htmlEvent.srcElement;
@@ -644,6 +664,7 @@ apf.uirecorder.capture = {
     capturePropertyChange : function(amlNode, prop, value) {
         //if (!apf.uirecorder.$inited) return;
         var target = this.$getTargetName(null, null, amlNode);
+        if (!target) return;
         var propObj = {
             name        : prop,
             value       : value
@@ -692,6 +713,31 @@ apf.uirecorder.capture = {
     // clean up actionList, remove redundant mousedown/up/up on dblclick
     $cleanupActions : function() {
         var actionList = [];
+
+        actionList = this.$actionList;
+
+        // trim actionList from trailing mousemove actions
+        actionList.reverse();
+        for (var i = 0, l = actionList.length; i < l; i++) {
+            if (actionList[i].name != "mousemove") {
+                break;
+            }
+        }
+        actionList = actionList.slice(i);
+
+        // trim actionList from leading mousemove actions, also adjust time
+        actionList.reverse();
+        for (var startIndex = 0, reduceTime = 0, i = 0, l = actionList.length; i < l; i++) {
+            if (!startIndex && actionList[i].name != "mousemove") {
+                startIndex = i;
+                reduceTime = actionList[i].time;
+            }
+            if (reduceTime) {
+                actionList[i].time -= reduceTime;
+            }
+        }
+        actionList = actionList.slice(startIndex);
+        
         /* special cases */
         // only one click recorded
         if ((this.$keyActions.length == 2 && this.$keyActions[0].name == "mousedown" && this.$keyActions[1].name == "mouseup")
@@ -710,7 +756,7 @@ apf.uirecorder.capture = {
                 }
             }
             // caption and optimization for clicking some element
-            else {
+            else if (actionList.length == 2) {
                 actionList = this.$keyActions;
                 actionList[0].time = 0;
                 actionList[1].time = 100;
@@ -738,7 +784,7 @@ apf.uirecorder.capture = {
         // other
         else {
             // caption for selecting item in dropdown
-            if (this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[2].amlNode && this.$keyActions[2].amlNode.popup && this.$keyActions[2] && this.$keyActions[2].name == "mousedown" && this.$keyActions[2].amlNode && this.$keyActions[2].amlNode.type == "dropdown" && this.$keyActions[3] && this.$keyActions[3].name == "mouseup")  {
+            if (this.$keyActions.length == 4 && this.$keyActions[0] && this.$keyActions[0].name == "mousedown" && this.$keyActions[1] && this.$keyActions[1].name == "mouseup" && this.$keyActions[2].amlNode && this.$keyActions[2].amlNode.popup && this.$keyActions[2] && this.$keyActions[2].name == "mousedown" && this.$keyActions[2].amlNode && this.$keyActions[2].amlNode.type == "dropdown" && this.$keyActions[3] && this.$keyActions[3].name == "mouseup")  {
                 if (this.$keyActions[2].amlNode.selected)
                     apf.uirecorder.capture.$curTestId = "select " + this.$keyActions[2].amlNode.type + " item '" + (this.$keyActions[2].amlNode.selected.value || this.$keyActions[2].amlNode.selected.xpath) + "'";
             }
@@ -753,11 +799,11 @@ apf.uirecorder.capture = {
                         break;
                     
                     if (i == this.$keyActions.length-1)
-                        apf.uirecorder.capture.$curTestId = "type " + this.$keyActions[i].amlNode.value + " in '" + this.$keyActions[i].amlNode.type + "' " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath));
+                        apf.uirecorder.capture.$curTestId = "type text in '" + this.$keyActions[i].amlNode.type + "' " + (this.$keyActions[0].amlNode.id || (this.$keyActions[0].amlNode.caption ? this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.caption : null) || (this.$keyActions[0].amlNode.type + " " + this.$keyActions[0].amlNode.xpath));
                 }
             }
             
-            
+            /*
             actionList = this.$actionList;
 
             // trim actionList from trailing mousemove actions
@@ -781,6 +827,7 @@ apf.uirecorder.capture = {
                 }
             }
             actionList = actionList.slice(startIndex);
+            */
         }
         
         
@@ -954,8 +1001,13 @@ apf.uirecorder.capture = {
                 if (action.htmlElement) {
                     var htmlElement = testXml.ownerDocument.createElement("htmlElement");
                     if (action.htmlElement.id) htmlElement.setAttribute("id", action.htmlElement.id);
-                    htmlElement.setAttribute("type", action.htmlElement.type.toLowerCase());
-                    htmlElement.setAttribute("tagName", action.htmlElement.tagName.toLowerCase());
+                    htmlElement.setAttribute("type"     , action.htmlElement.type.toLowerCase());
+                    htmlElement.setAttribute("tagName"  , action.htmlElement.tagName.toLowerCase());
+                    htmlElement.setAttribute("x"        , action.htmlElement.x);
+                    htmlElement.setAttribute("y"        , action.htmlElement.y);
+                    htmlElement.setAttribute("width"    , action.htmlElement.width);
+                    htmlElement.setAttribute("height"   , action.htmlElement.height);
+
                     if (action.htmlElement.popup) htmlElement.setAttribute("popup", action.htmlElement.popup);
                     if (action.htmlElement.innerHTML) htmlElement.setAttribute("innerHTML", action.htmlElement.innerHTML);
                     aNode.appendChild(htmlElement);
@@ -1096,7 +1148,7 @@ apf.uirecorder.playback = {
     $lastMousePosition : [0, 0],
     
     $eventsToCheck  : [],
-    $waitForEvents  : ["afterload"],
+    $waitForEvents  : [], //"afterload", "afterswitch"
 
     test : function(testXml, playSpeed, o3, offset) {
         this.play(testXml, playSpeed, o3, offset);
@@ -1319,6 +1371,8 @@ apf.uirecorder.playback = {
         if (!this.$curAction) debugger;
 
         // display warnings if any
+/*
+TEMPORARILY DISABLED
         if (this.$warningList.length && this.$curAction.getAttribute("name") != "mouseup") {
             apf.console.info("testwarning on: " + this.$curAction.getAttribute("keyActionIdx") + ". " + this.$curAction.getAttribute("name"));
             this.$activeEl = (apf.activeElement) ? apf.activeElement : null;
@@ -1326,9 +1380,9 @@ apf.uirecorder.playback = {
             this.$warningList = [];
             return;
         }
-
+*/
         // wait for events before continuing
-        if (this.$waitForList.length && this.$curAction.getAttribute("name") != "mousedown") {
+        if (this.$waitForList.length) {
             this.$waitForStartTime = new Date().getTime();
             apf.dispatchEvent("beforetestwaiting");
             this.$waitForInterval = setInterval(this.$waitForChecks, 50);
@@ -1340,18 +1394,18 @@ apf.uirecorder.playback = {
         
         if (this.$playSpeed == "max") {
             if (this.$curAction.getAttribute("name") == "keypress") {
-                for (var i = this.$curActionIdx, l = this.$curTestXml.childNodes.length; i < l; i++) {
-                    if (this.$curTestXml.childNodes[i].getAttribute("name") != "keypress") {
+                for (var i = this.$curActionIdx, l = this.$keyActions.length; i < l; i++) {
+                    if (this.$keyActions[i].getAttribute("name") != "keypress") {
                         break;
                     }
-                    this.$keyString += this.$curTestXml.childNodes[i].getAttribute("value");
+                    this.$keyString += this.$keyActions[i].getAttribute("value");
                 }
 
                 if (this.$keyString != "") {
                     i--;
-                    this.$speedUpTime = parseInt(this.$curTestXml.childNodes[i].getAttribute("time")) - parseInt(this.$curAction.getAttribute("time"));
+                    this.$speedUpTime = parseInt(this.$keyActions[i].getAttribute("time")) - parseInt(this.$curAction.getAttribute("time"));
                     this.$curActionIdx = i;
-                    this.$curAction = this.$curTestXml.childNodes[i];
+                    this.$curAction = this.$keyActions[i];
                 }
             }
         }
@@ -1387,7 +1441,9 @@ apf.uirecorder.playback = {
         var amlNode;
         if (amlNodeXml.getAttribute("id")) {
             amlNode = apf.document.getElementById(amlNodeXml.getAttribute("id"));
+            return amlNode;
         }
+        
         
         // amlNode with certain tagName and caption
         if (!amlNode && amlNodeXml.getAttribute("tagName")) {
@@ -1444,7 +1500,6 @@ apf.uirecorder.playback = {
                 }
                 
                 targetNode = amlNode.$ext;
-                
                 // htmlNode of amlNode
                 // multiselect selection
                 
@@ -1646,6 +1701,7 @@ apf.uirecorder.playback = {
         else if (aName === "mousescroll") {
             apf.uirecorder.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
+apf.console.info(aName + " executed");
         this.$nextAction();
     },
     
@@ -1662,12 +1718,14 @@ apf.uirecorder.playback = {
         // stop playback
         else {
             // display warnings if any
+/*
+TEMPORARILY DISABLED
             if (this.$warningList.length && this.$curAction.getAttribute("name") != "mousedown") {
                 apf.dispatchEvent("testwarning", {warnings: this.$warningList});
                 this.$warningList = [];
                 return;
             }
-
+*/
             setTimeout(function() {
                 apf.uirecorder.playback.stop();
                 apf.dispatchEvent("testcomplete");

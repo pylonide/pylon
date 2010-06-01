@@ -32,7 +32,7 @@ apf.visualConnect = function (sel){
      */
     var lineMode = "draw";  // current lineMode of visualConnect
     
-    var active, div;    // visualconnect is active
+    var active, div, cTemplate;    // visualconnect is active
     var fromEl, toEl;   // selected 'from element' and 'to element' during draw mode
     var fromAtt, toAtt; // selected attribute of 'from' and 'to' element;
     var connections;    // connections that are drawn
@@ -118,7 +118,7 @@ apf.visualConnect = function (sel){
                     break;
                 case "element":
                     if (selection.length)
-                        createConnections(selection)
+                        createConnections(selection);
                         showConnections();
                     break;
                 case "all":
@@ -127,6 +127,7 @@ apf.visualConnect = function (sel){
                         if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
                     }
                     if (createConnections(all))
+                        selection = all;
                         showConnections();
                     break;
             }
@@ -135,6 +136,13 @@ apf.visualConnect = function (sel){
         function createConnections(elements) {
             connections = null;
             if (elements.length){
+                // get all elements
+                var all = [];
+                for (var el, i = 0, l = apf.all.length; i < l; i++) {
+                    if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i])
+                }
+
+                // element as source element
                 for (var i = 0, l = elements.length; i < l; i++) {
                     for (var val, targetEl, targetAttr, split, j = 0, jl = elements[i].attributes.length; j < jl; j++) {
                         // @todo regex search of "{"
@@ -143,6 +151,20 @@ apf.visualConnect = function (sel){
                             if (targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) {
                                 targetAttr = split[1].substr(0, split[1].length-1);
                                 createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr);
+                            }
+                        }
+                    }
+                    
+                    // check all elements if attribute of any element points to attribute of selected element
+                    for (var ei = 0, el = all.length; ei < el; ei++) {
+                        if (all[ei] == elements[i]) continue;
+                        for (var ai = 0, al = all[ei].attributes.length; ai < al; ai++) {
+                            // check for value with string {...}
+                            if ((val = all[ei].attributes[ai].value).toString().charAt(0) == "{" && val.toString().charAt(val.length-1) == "}") {
+                                if ((targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) == elements[i]) {
+                                    targetAttr = split[1].substr(0, split[1].length-1);
+                                    createConnection(all[ei], targetEl, all[ei].attributes[ai].name, targetAttr);
+                                }
                             }
                         }
                     }
@@ -194,7 +216,7 @@ apf.visualConnect = function (sel){
             var amlNode = apf.findHost(htmlNode);
             // target amlNode found, create connection
 
-            if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
+            if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1 && amlNode.tagName != "html") {
                 toEl = amlNode;
 
                 // draw connection line
@@ -458,10 +480,8 @@ apf.visualConnect = function (sel){
                 }
             })
         }
-        
-        function drawConnections() {
-            connectionPath = [];
-            
+
+        function getTemplate() {
             var oDiv = document.createElement("div");
             oDiv.style.position = "absolute";
             oDiv.style.width = "320px";
@@ -499,7 +519,15 @@ apf.visualConnect = function (sel){
             oDiv.appendChild(tgtInput);
             oDiv.appendChild(saveDiv);
             oDiv.appendChild(delDiv);
-
+            
+            return oDiv;
+        }
+        
+        function drawConnections() {
+            if (!cTemplate)
+                cTemplate = getTemplate();
+            connectionPath = [];
+            
             // reset div
             if (div) document.body.removeChild(div);
             div = document.body.appendChild(document.createElement("div"));
@@ -519,7 +547,7 @@ apf.visualConnect = function (sel){
                     centerPos = [Math.round((pos1[0]+pos2[0])/2), Math.round((pos1[1]+pos2[1])/2)];
                     
                     // value divs
-                    aDiv = oDiv.cloneNode(true);
+                    aDiv = cTemplate.cloneNode(true);
                     aDiv.getElementsByTagName("div")[0].innerHTML = connections[id][i].from.el.id + "." + connections[id][i].from.at
                     aDiv.getElementsByTagName("input")[0].id = id + "_" + i;
                     aDiv.getElementsByTagName("input")[0].value = "{" + connections[id][i].to.el.id + "." + connections[id][i].to.at + "}";
@@ -537,14 +565,25 @@ apf.visualConnect = function (sel){
                     aDiv.getElementsByTagName("div")[1].setAttribute("onmousedown", connections[id][i].from.el.id + ".setAttribute('" + connections[id][i].from.at + "', document.getElementById('" + id + "_" + i + "').value); event.cancelBubble = true;");
                     aDiv.getElementsByTagName("div")[1].setAttribute("onmouseup", "event.cancelBubble = true;");
                     
+                    // delBtn
+                    aDiv.getElementsByTagName("div")[2].setAttribute("el", connections[id][i].from.el.id);
+                    aDiv.getElementsByTagName("div")[2].setAttribute("at", connections[id][i].from.at);
                     aDiv.getElementsByTagName("div")[2].onmousedown = function(e) {
-                        debugger;
-                        connections[id][i].from.el.setAttribute(connections[id][i].from.at, '');
-                        event.cancelBubble = true;
+                        
+                        (e||event).cancelBubble = true;
                     }
-                    aDiv.getElementsByTagName("div")[2].onmousedown = function(e) {
-                        event.cancelBubble = true;
+                    aDiv.getElementsByTagName("div")[2].onmouseup = function(e) {
+                        apf.document.getElementById(this.getAttribute("el")).setAttribute(this.getAttribute("at"), '');
+                        if (createConnections(selection))
+                            showConnections();
+                        else {
+                            paintGroup.style({v:0});
+                            paintGroup.repaint();
+                            div.style.display = "none";
+                        }
+                        (e||event).cancelBubble = true;
                     }
+                    
                     // delBtn
                     //aDiv.getElementsByTagName("div")[2].setAttribute("onmousedown", connections[id][i].from.el.id + ".setAttribute('" + connections[id][i].from.at + "', ''); event.cancelBubble = true;");
                     //aDiv.getElementsByTagName("div")[2].setAttribute("onmouseup", "event.cancelBubble = true;");
