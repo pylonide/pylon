@@ -1,6 +1,5 @@
 apf.flow = {
     objCanvases        : {},
-    XPaths : {},
 
     init : function(skinXpaths) {
         document.body.onmousedown = function(e) {
@@ -65,10 +64,6 @@ apf.flow = {
                 document.body.onmousemove = null;
             };
         };
-    },
-    
-    setSkinXpaths : function(XPaths) {
-        apf.flow.XPaths = XPaths;
     }
 };
 
@@ -165,47 +160,19 @@ apf.flow.isBlock = function(htmlNode) {
     return false;
 };
 
-apf.flow.convertToW3CXPath = function(expression) {
-    return expression.replace(/\[\d\]/g, function(str, strPos) {
-        if (!apf.isIE)
-            return str;
-        
-        var value = parseInt(str.substr(1));
-        return value > 0 
-            ? "[" +(value - 1) + "]" 
-            : "";
-    });
-};
-
 apf.flow.block = function(htmlNode, objCanvas, settings) {
     this.objCanvas      = objCanvas;
     this.htmlNode       = htmlNode;
     this.id             = htmlNode.getAttribute("id");
     this.draggable      = true;
     this.xmlNode        = settings.xmlNode;
-    this.blockNodes     = {};
+    this.blockNodes     = settings.blockNodes;
     this.xmlConnections = settings.xmlConnections;
     this.properties     = settings.properties;
 
     this.init = function() {
-        var temp;
         //Creating inputs
         this.createInputs();
-        
-        var XPaths = apf.flow.XPaths;
-        //@todo - maybe Ruben know better way to get this nodes
-        //Get image container
-        var prefix = apf.isIE ? "" : "self::div/";
-        var temp = document.evaluate(prefix + apf.flow.convertToW3CXPath(XPaths["imagecontainer"]), this.htmlNode, null, XPathResult.ANY_TYPE, null);
-        this.blockNodes.elImageContainer = temp.iterateNext();
-          
-        //Get image node 
-        var temp = document.evaluate(prefix + apf.flow.convertToW3CXPath(XPaths["image"]), this.htmlNode, null, XPathResult.ANY_TYPE, null);
-        this.blockNodes.elImage = temp.iterateNext();
-        
-        //Get caption
-        var temp = document.evaluate(prefix + apf.flow.convertToW3CXPath(XPaths["caption"]), this.htmlNode, null, XPathResult.ANY_TYPE, null);
-        this.blockNodes.elCaption = temp.iterateNext();
     };
     
     /* Getters */
@@ -300,104 +267,23 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
         this.setRotation(rotation = parseInt(rotation) % 360 || 0);
         this.setFlipH(fliph = apf.flow.toBoolean(fliph));
         this.setFlipV(flipv = apf.flow.toBoolean(flipv));
-
-        var flip = (fliph && !flipv
-            ? "horizontal"
-            : (!fliph && flipv
-                ? "vertical"
-                : "none"));
         
         //if (prev[0] !== rotation || prev[1] !== fliph || prev[2] !== flipv) {
-            this.repaintImage(flip, rotation);
+            var graphics = new apf.flow.graphics(this.blockNodes.elImage, this);
+                graphics.init();
+                
+                graphics.rotate(rotation);
+                
+                if (fliph && !flipv)
+                    graphics.flip('horizontaly');
+                else if(!fliph && flipv)
+                    graphics.flip('verticaly');
+                
+                
+                graphics.save();
+            
             this.updateInputsPosition(flipv, fliph, rotation);
         //}
-    };
-    
-    this.repaintImage = function(flip, angle) {
-        var image = this.blockNodes.elImage;
-        
-        if (image.style.display == "none")
-            return;
-        
-        image.angle = (flip !== "none" ? -1 : 1) * angle;
-        
-        var canvas,
-            rotation = Math.PI * (image.angle >= 0 ? image.angle : 360 + image.angle) / 180,
-            costheta = Math.cos(rotation),
-            sintheta = Math.sin(rotation);
-        
-        if (document.all && !window.opera) {
-            canvas              = document.createElement('img');
-            canvas.src          = image.src;
-            canvas.style.height = image.height + "px";
-            canvas.style.width  = image.width + "px";
-
-            canvas.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11="
-                                + costheta + ",M12=" + (-sintheta)
-                                + ",M21=" + sintheta
-                                + ",M22=" + costheta
-                                + ",SizingMethod='auto expand')";
-
-            if (flip !== "none") {
-                canvas.style.filter += "progid:DXImageTransform.Microsoft.BasicImage("
-                                    +(flip == "horizontal"
-                                        ? "mirror=1"
-                                        : "rotation=2, mirror=1")
-                                    +")";
-            }
-        }
-        else {
-            canvas = document.createElement('canvas');
-            if (!image.oImage) {
-                canvas.oImage = new Image();
-                canvas.oImage.src = image.src;
-            }
-            else {
-                canvas.oImage = image.oImage;
-            }
-
-            canvas.style.width  = canvas.width
-                                = Math.abs(costheta * canvas.oImage.width)
-                                + Math.abs(sintheta * canvas.oImage.height);
-            canvas.style.height = canvas.height
-                                = Math.abs(costheta * canvas.oImage.height)
-                                + Math.abs(sintheta * canvas.oImage.width);
-
-            var context = canvas.getContext('2d');
-            context.save();
-
-            switch (flip) {
-                case "vertical":
-                    context.translate(0, canvas.oImage.height);
-                    context.scale(1, -1);
-                    break;
-                case "horizontal":
-                    context.translate(canvas.oImage.height, 0);
-                    context.scale(-1, 1);
-                    break;
-            }
-
-            if (rotation <= Math.PI / 2)
-                context.translate(sintheta * canvas.oImage.height, 0);
-            else if (rotation <= Math.PI)
-                context.translate(canvas.width, -costheta * canvas.oImage.height);
-            else if (rotation <= 1.5 * Math.PI)
-                context.translate(-costheta * canvas.oImage.width, canvas.height);
-            else
-                context.translate(0, -sintheta * canvas.oImage.width);
-            context.rotate(rotation);
-
-            try {
-                context.drawImage(canvas.oImage, 0, 0, canvas.oImage.width,
-                    canvas.oImage.height);
-                context.restore();
-            }
-            catch (e) {}
-        }
-        
-        canvas.angle = image.angle;
-        this.blockNodes.elImageContainer.replaceChild(canvas, image);
-        this.blockNodes.elImage = canvas;
     };
     
     this.createInputs = function() {
@@ -429,25 +315,28 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
             ver       = position == "top" || position == "bottom" ? width : 0;
             hor       = position == "left" || position == "right" ? width : 0;
             
+            _x = x;
+            _y = y;
+            
+            position = positions[(positions[position] + rotation / 90) % 4];
+            
             if (flipv) {
-                y = bHeight - y - hor;
-                position = position == "top" 
+                _y = bHeight - y - hor;
+                /*position = position == "top" 
                     ? "bottom" 
                     : (position == "bottom" 
                         ? "top" 
-                        : position);
+                        : position);*/
             }
             
             if (fliph) {
-                x = bWidth - x - ver;
-                position = position == "left" 
+                _x = bWidth - x - ver;
+                /*position = position == "left" 
                     ? "right" 
                     : (position == "right" 
                         ? "left" 
-                        : position);
+                        : position);*/
             }
-            _x = x;
-            _y = y;
             
             _x = rotation == 90 
                 ? bWidth - y - hor 
@@ -460,10 +349,122 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
                     ? bHeight - y - hor
                     : (rotation == 270 ? bHeight - x - ver : _y));
             
-            position = positions[(positions[position] + rotation / 90) % 4];
+            
             
             input.updatePosition(_x, _y, position);
         }
+    };
+};
+
+apf.flow.graphics = function(imgNode, objBlock) {
+    this.htmlNode = imgNode;
+    this.objBlock = objBlock;
+    this.canvas   = null;
+    this.context  = null;
+    this.filters  = {rotate : null, flip : null};
+    
+    this.isIE = document.all && !window.opera;
+    
+    this.init = function() {
+        var width  = this.objBlock.getWidth();
+        var height = this.objBlock.getHeight();
+        
+        if (this.isIE) {
+            this.canvas              = document.createElement('img');
+            this.canvas.src          = this.htmlNode.src;
+            this.canvas.style.height = height + "px";
+            this.canvas.style.width  = width + "px";
+            this.canvas.style.filter = "";
+        }
+        else {
+            this.canvas = document.createElement("canvas");
+            if (!this.htmlNode.oImage) {
+                this.canvas.oImage     = new Image();
+                this.canvas.oImage.src = this.htmlNode.src;
+            }
+            else {
+                this.canvas.oImage = this.htmlNode.oImage;
+            }
+            
+            this.canvas.width  = width;
+            this.canvas.height = height;
+            
+            this.context = this.canvas.getContext('2d');
+            this.context.save();
+        }
+    };
+    
+    this.rotate = function(degrees) {
+        var pi     = Math.PI,
+            width  = this.objBlock.getWidth(),
+            height = this.objBlock.getHeight();
+        
+        degrees = pi * ((degrees % 360) / 180);
+        
+        var costheta = Math.cos(degrees),
+            sintheta = Math.sin(degrees);
+            
+        if (this.isIE) {
+            this.filters.rotate = "progid:DXImageTransform.Microsoft.Matrix(M11="
+                + costheta + ",M12=" + (-sintheta)
+                + ",M21=" + sintheta
+                + ",M22=" + costheta
+                + ",SizingMethod='auto expand')";
+        }
+        else {
+            if (degrees <= pi / 2)
+                this.context.translate(sintheta * height, 0);
+            else if (degrees <= pi)
+                this.context.translate(width, -costheta * height);
+            else if (degrees <= 1.5 * pi)
+                this.context.translate(-costheta * width, height);
+            else
+                this.context.translate(0, -sintheta * width);
+            
+            this.context.rotate(degrees);
+        }
+    };
+    
+    this.flip = function(type) {
+        var width  = this.objBlock.getWidth(),
+            height = this.objBlock.getHeight();
+        
+        switch(type) {
+            case "verticaly":
+                if (this.isIE) {
+                    this.filters.flip = "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+                }
+                else {
+                    this.context.translate(0, height);
+                    this.context.scale(1, -1);
+                }
+                break;
+            case "horizontaly":
+                if (this.isIE) {
+                    this.filters.flip = "progid:DXImageTransform.Microsoft.BasicImage(mirror=1)";
+                }
+                else {
+                    this.context.translate(height, 0);
+                    this.context.scale(-1, 1);
+                }
+                break;
+        }
+    };
+    
+    this.save = function() {
+        var width  = this.objBlock.getWidth(),
+            height = this.objBlock.getHeight();
+        
+        if (!this.isIE) {
+            this.context.drawImage(this.canvas.oImage, 0, 0, width, height);
+            this.context.restore();
+        }
+        else {
+            this.canvas.style.filter = this.filters.flip + this.filters.rotate; 
+        }
+        
+        this.objBlock.blockNodes.elImageContainer.replaceChild(this.canvas, this.htmlNode);
+        this.objBlock.blockNodes.elImage = this.canvas;
     };
 };
 

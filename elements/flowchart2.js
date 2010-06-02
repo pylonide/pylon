@@ -630,11 +630,6 @@ apf.flowchart = function(struct, tagName){
 
         this.objCanvas = new apf.flow.getCanvas(this.$container);
         apf.flow.init();
-        apf.flow.setSkinXpaths({
-            "imagecontainer" : this.$getOption("item", "imagecontainer"),
-            "image"          : this.$getOption("item", "image"),
-            "caption"        : this.$getOption("item", "caption")
-        });
         
         //apf.flow.onconnectionrename = function(e) {
         //   _self.$beforeRename(e);
@@ -892,7 +887,6 @@ apf.flowchart = function(struct, tagName){
         var style = [];
         style.push("width:"   + properties.width  + "px");
         style.push("height:"  + properties.height + "px");
-        blockNodes.elImageContainer.setAttribute("style", style.join(";"));
         style.push("top:"     + properties.top    + "px");
         style.push("left:"    + properties.left   + "px");
         style.push("z-index:" + properties.zindex);
@@ -900,7 +894,7 @@ apf.flowchart = function(struct, tagName){
         
         
         //Set Image
-        style = ["width:" + properties.width + "px", "height:" + properties.height + "px"];
+        /*style = ["width:" + properties.width + "px", "height:" + properties.height + "px"];*/
         if (templateValues.picture)
             blockNodes.elImage.setAttribute("src", properties.picture);
         else 
@@ -961,6 +955,11 @@ apf.flowchart = function(struct, tagName){
                 objBlock;
                 
                 if (!apf.flow.isBlock(htmlElement)) {
+                    fv.blocks[id].blockNodes = {
+                        elImageContainer : this.$getLayoutNode("item", "imagecontainer", htmlElement),
+                        elImage          : this.$getLayoutNode("item", "image", htmlElement),
+                        elCaption        : this.$getLayoutNode("item", "caption", htmlElement)
+                    };
                     objBlock = this.objCanvas.addBlock(htmlElement, fv.blocks[id]);
                     this.$flowVars.objBlocks[id] = objBlock;
                     connections = connections.concat(fv.blocks[id].xmlConnections);
