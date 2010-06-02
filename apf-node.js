@@ -29,8 +29,8 @@ window = global;
 
 require("./apf-o3");
 require("./loader-o3");
-o3.print("AML: " + cwd.get("bot.aml").data);
-apf.start(cwd.get("bot.aml").data);
+o3.print("AML: " + cwd.get(apf.config.name + ".aml").data);
+apf.start(cwd.get(apf.config.name + ".aml").data);
 //sys.puts(sys.inspect(apf));
 //#endif
 //#endif
