@@ -23,7 +23,7 @@
 
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
-apf.setZeroTimeout = apf.isIE 
+apf.setZeroTimeout = apf.isIE || apf.isO3
   ? setTimeout
   : (function() {
         var timeouts = [];

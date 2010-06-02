@@ -1469,7 +1469,7 @@ apf.DataBinding = function(){
     //#endif
 };
 // #ifdef __WITH_PRESENTATION
-    apf.DataBinding.prototype = new apf.Presentation();
+    apf.DataBinding.prototype = new apf[apf.Presentation ? "Presentation" : "AmlElement"]();
 /* #else
     apf.DataBinding.prototype = new apf.AmlElement();
 #endif*/

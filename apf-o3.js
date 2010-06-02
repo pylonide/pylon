@@ -304,7 +304,6 @@ apf = {
         return !url || !base || url.match(/^\w+\:\/\//) ? url : base.replace(/\/$/, "") + "/" + url;
     },
 
- 
     include : function(sourceFile, doBase){
         if (doBase) {
             var base = apf.basePath || "";
@@ -312,7 +311,8 @@ apf = {
                 sourceFile = base + sourceFile;
         }
         apf.console.info("including js file: " + sourceFile);
-        o3.js.include(sourceFile);
+        //o3.js.include(sourceFile);
+        require("./" + sourceFile.replace(/\.js$/i, ""));
         //var fd = fs.child(sourceFile);
         //eval(fd.data, self);
     },

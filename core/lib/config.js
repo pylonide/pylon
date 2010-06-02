@@ -81,7 +81,7 @@ apf.extend(apf.config, {
     },
     //#endif
     skinset            : "default",
-    name               : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
+    name               : apf.isO3 ? "o3App" : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
 
     tags               : {},
     defaults           : {},

@@ -99,8 +99,9 @@ apf.XhtmlElement = function(struct, tagName){
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
 
 apf.Init.addConditional(function(){
+    if (apf.isO3) return;
     var prot = apf.XhtmlElement.prototype;
-    
+
     //prot.implement(apf.Interactive);
     prot.implement(
         //#ifdef __WITH_ANCHORING

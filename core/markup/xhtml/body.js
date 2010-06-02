@@ -39,6 +39,7 @@ apf.XhtmlBodyElement = function(struct, tagName){
 }).call(apf.XhtmlBodyElement.prototype = new apf.AmlElement());
 
 apf.Init.addConditional(function(){
+    if (apf.isO3) return;
     var prot = apf.XhtmlBodyElement.prototype;
 
     //#ifdef __WITH_CONTENTEDITABLE

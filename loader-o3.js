@@ -215,6 +215,7 @@ apf.$loader
         "elements/rpc/yql.js",         // YQL
         
         "elements/xmpp/muc.js",
+        "elements/xmpp/rdb.js",
         "elements/xmpp/roster.js",
         
         "elements/bindingdndrule.js",
