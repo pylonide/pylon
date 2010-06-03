@@ -208,6 +208,11 @@ apf.runO3 = function(){
     apf.getHttpReq = function(){
         return new o3.http();
     };
+
+    apf.getSocket = function() {
+        var net = require("net");
+        return new net.Stream(); // 'new' not required, doesn't do anything
+    };
     
     apf.getXmlDom = function(message, noError){
         var xmlParser = o3.xml;
