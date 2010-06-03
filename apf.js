@@ -1747,7 +1747,7 @@ var apf = {
                                        + "parsing now.");
                         //#endif
 
-                        x = apf.getXml("<a:applicaton xmlns:j='"
+                        x = apf.getXml("<a:applicaton xmlns:a='"
                             + apf.ns.aml + "'>" + str + "</a:applicaton>", true);
 
                         if (apf.isIE) { //@todo generalize this
