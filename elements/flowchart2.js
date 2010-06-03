@@ -383,8 +383,8 @@ apf.flowchart = function(struct, tagName){
                 names.push("width", "height");
                 values.push(h, w);
                 //Update data in object
-                objBlock.setWidth(h);
-                objBlock.setHeight(w);
+                //objBlock.setWidth(h);
+                //objBlock.setHeight(w);
             }
         }
         
@@ -894,9 +894,13 @@ apf.flowchart = function(struct, tagName){
         
         
         //Set Image
-        /*style = ["width:" + properties.width + "px", "height:" + properties.height + "px"];*/
-        if (templateValues.picture)
+        style = [];
+        if (templateValues.picture) {
             blockNodes.elImage.setAttribute("src", properties.picture);
+            blockNodes.elImage.setAttribute("width", properties.width);
+            blockNodes.elImage.setAttribute("height", properties.height);
+        }
+            
         else 
             style.push("display:none")
         blockNodes.elImage.setAttribute("style", style.join(";"));

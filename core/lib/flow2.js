@@ -166,6 +166,11 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
     this.id             = htmlNode.getAttribute("id");
     this.draggable      = true;
     this.xmlNode        = settings.xmlNode;
+    /**
+     * elImageContainer
+     * elImage
+     * elCaption
+     */
     this.blockNodes     = settings.blockNodes;
     this.xmlConnections = settings.xmlConnections;
     this.properties     = settings.properties;
@@ -230,11 +235,13 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
     };
     
     this.setWidth = function(value) {
-        this.htmlNode.style.width = value + "px";
+        this.htmlNode.style.width                   = 
+        this.blockNodes.elImageContainer.style.width = value + "px"; 
     };
     
     this.setHeight = function(value) {
-        this.htmlNode.style.height = value + "px";
+        this.htmlNode.style.height                   =
+        this.blockNodes.elImageContainer.style.height = value + "px";
     };
     
     this.setFlipV = function(value) {
@@ -264,9 +271,9 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
     this.repaint = function(rotation, fliph, flipv) {
         var prev = [this.getRotation(), this.getFlipH(), this.getFlipV()];
 
-        this.setRotation(rotation = parseInt(rotation) % 360 || 0);
-        this.setFlipH(fliph = apf.flow.toBoolean(fliph));
-        this.setFlipV(flipv = apf.flow.toBoolean(flipv));
+        rotation = parseInt(rotation) % 360 || 0;
+        fliph = apf.flow.toBoolean(fliph);
+        flipv = apf.flow.toBoolean(flipv);
         
         //if (prev[0] !== rotation || prev[1] !== fliph || prev[2] !== flipv) {
             var graphics = new apf.flow.graphics(this.blockNodes.elImage, this);
@@ -278,7 +285,10 @@ apf.flow.block = function(htmlNode, objCanvas, settings) {
                     graphics.flip('horizontaly');
                 else if(!fliph && flipv)
                     graphics.flip('verticaly');
-                
+                else if(!fliph && !flipv) {
+                    this.setFlipH(false);
+                    this.setFlipV(false);
+                }
                 
                 graphics.save();
             
@@ -361,19 +371,16 @@ apf.flow.graphics = function(imgNode, objBlock) {
     this.objBlock = objBlock;
     this.canvas   = null;
     this.context  = null;
-    this.filters  = {rotate : null, flip : null};
+    this.filters  = {rotate : "", flip : ""};
     
     this.isIE = document.all && !window.opera;
     
     this.init = function() {
-        var width  = this.objBlock.getWidth();
-        var height = this.objBlock.getHeight();
-        
         if (this.isIE) {
             this.canvas              = document.createElement('img');
             this.canvas.src          = this.htmlNode.src;
-            this.canvas.style.height = height + "px";
-            this.canvas.style.width  = width + "px";
+            this.canvas.width        = this.htmlNode.width;
+            this.canvas.height       = this.htmlNode.height;
             this.canvas.style.filter = "";
         }
         else {
@@ -386,8 +393,8 @@ apf.flow.graphics = function(imgNode, objBlock) {
                 this.canvas.oImage = this.htmlNode.oImage;
             }
             
-            this.canvas.width  = width;
-            this.canvas.height = height;
+            this.canvas.width  = this.htmlNode.width;
+            this.canvas.height = this.htmlNode.height;
             
             this.context = this.canvas.getContext('2d');
             this.context.save();
@@ -396,13 +403,13 @@ apf.flow.graphics = function(imgNode, objBlock) {
     
     this.rotate = function(degrees) {
         var pi     = Math.PI,
-            width  = this.objBlock.getWidth(),
-            height = this.objBlock.getHeight();
+            width  = this.htmlNode.width,
+            height = this.htmlNode.height;
         
-        degrees = pi * ((degrees % 360) / 180);
+        var rotation = pi * ((degrees % 360) / 180);
         
-        var costheta = Math.cos(degrees),
-            sintheta = Math.sin(degrees);
+        var costheta = Math.cos(rotation),
+            sintheta = Math.sin(rotation);
             
         if (this.isIE) {
             this.filters.rotate = "progid:DXImageTransform.Microsoft.Matrix(M11="
@@ -412,16 +419,24 @@ apf.flow.graphics = function(imgNode, objBlock) {
                 + ",SizingMethod='auto expand')";
         }
         else {
-            if (degrees <= pi / 2)
+            if (rotation <= pi / 2)
                 this.context.translate(sintheta * height, 0);
-            else if (degrees <= pi)
+            else if (rotation <= pi)
                 this.context.translate(width, -costheta * height);
-            else if (degrees <= 1.5 * pi)
+            else if (rotation <= 1.5 * pi)
                 this.context.translate(-costheta * width, height);
             else
                 this.context.translate(0, -sintheta * width);
             
-            this.context.rotate(degrees);
+            this.context.rotate(rotation);
+        }
+        
+        if (Math.abs(degrees - this.objBlock.getRotation()) % 180 !== 0) {
+            var height = this.objBlock.getHeight();
+            var width = this.objBlock.getWidth();
+            this.objBlock.setWidth(height);
+            this.objBlock.setHeight(width);
+            this.objBlock.setRotation(degrees);
         }
     };
     
@@ -438,6 +453,7 @@ apf.flow.graphics = function(imgNode, objBlock) {
                     this.context.translate(0, height);
                     this.context.scale(1, -1);
                 }
+                this.objBlock.setFlipV(true);
                 break;
             case "horizontaly":
                 if (this.isIE) {
@@ -447,6 +463,7 @@ apf.flow.graphics = function(imgNode, objBlock) {
                     this.context.translate(height, 0);
                     this.context.scale(-1, 1);
                 }
+                this.objBlock.setFlipH(true)
                 break;
         }
     };
