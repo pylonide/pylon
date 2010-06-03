@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:script>alert('hello world!');</a:script>
+    <a:script>o3.print('hello world!');</a:script>
 </a:application>
