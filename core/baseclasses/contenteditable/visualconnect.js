@@ -42,139 +42,6 @@ apf.visualConnect = function (sel){
     var _self = this;
     var prevSelection;
     
-    var css = '.atchart_box {\
-    color       : #333333;\
-    font-family : Tahoma;\
-    font-size   : 120px;\
-    height      : 29px;\
-    min-width   : 30px;\
-    min-height  : 29px;\
-    max-height  : 29px;\
-    overflow    : hidden;\
-    cursor      : default;\
-    position    : absolute;\
-}\
-\
-.atchart_box .left {\
-    float         : left;\
-    width         : 5px;\
-    height        : 29px;\
-}\
-\
-.atchart_box .lbl {\
-    height        : 24px;\
-    padding-top   : 5px;\
-    text-align    : right;\
-    margin        : 0 5px;\
-    white-space   : nowrap;\
-    overflow      : hidden;\
-    text-overflow : ellipsis;\
-}\
-\
-.atchart_box .right {\
-    float        : right;\
-    width        : 5px;\
-    height       : 29px;\
-}\
-\
-.atchart_box .red_button {\
-    float        : right;\
-    width        : 15px;\
-    background   : url("images/delete.png") no-repeat 0 0;\
-    height       : 15px;\
-    margin       : 7px 0 0 7px;\
-}\
-\
-.atchart_box .red_button:hover {\
-    background-position:0 -15px;\
-}\
-\
-.atchart_box .left {\
-    background : url("images/backg_left.png") no-repeat 0 0;\
-}\
-\
-.atchart_box .lbl {\
-    background : url("images/backg_middle.png") repeat-x 0 0;\
-}\
-\
-.atchart_box .right {\
-    background : url("images/backg_right.png") no-repeat 0 0;\
-}\
-\
-.atchart_box span,\
-.atchart_box label,\
-.atchart_box input {\
-    padding  : 1px 0;\
-    border   : 1px solid transparent;\
-    position : relative;\
-    overflow : hidden;\
-    float:left;\
-    font-weight:bold;\
-}\
-\
-.atchart_box span.section1 {\
-    display: block;\
-}\
-\
-.atchart_box span.section2 {\
-    color:#3799ea;\
-    padding-right:12px;\
-    padding-left:2px;\
-    background : url("images/arrow_down.png") no-repeat right 7px;\
-    display:block;\
-}\
-\
-.atchart_box span.section2 A {\
-    color:#1e7ecd;\
-    text-decoration:none;\
-}\
-\
-.atchart_box span.section2:hover {\
-    cursor: pointer;\
-}\
-.atchart_box span.section2:hover A {\
-    color:#3799ea;\
-    border-bottom:1px dotted #3799ea;\
-}\
-\
-.active span.section2 {\
-    background-color:#fcfcfc;\
-}\
-\
-.active span.section2 A {\
-    color:#1e7ecd;\
-    border-bottom:1px dotted #3799ea;\
-}\
-\
-.atchart_box span.section2:hover,\
-.atchart_box label.section5:hover,\
-.atchart_box input.section5:hover {\
-    background-color:#fcfcfc;\
-}\
-\
-.atchart_box span.section3 {\
-    margin:0 2px;\
-    display:block;\
-}\
-\
-.atchart_box span.section4 {\
-    color:#aaaaaa;\
-    display:block;\
-}\
-\
-.atchart_box span.section5 {\
-    display:block;\
-}\
-\
-INPUT {\
-    border:0;\
-    width:105px;\
-    background-color:#fcfcfc;\
-    color       : #333333;\
-    font-family : Tahoma;\
-    font-size   : 12px;\
-}';
-    apf.importCssString(css);
     // init draw api
     var width = document.body.clientWidth;
     //@todo adjust height to browser window height?
@@ -218,53 +85,75 @@ INPUT {\
         var timer, lastTime;
         var isDrawing = false;
         
-        (function draw() {
-            apf.plane.show();
-            
-            div = document.body.appendChild(document.createElement("div"));
-            div.style.display = "block";
-            div.style.position = "absolute";
-            div.style.left = "0px";
-            div.style.top = "0px";
-            div.style.zIndex = 100000001;
-    /*
-            var showAllTimer = setTimeout(function(){
-                // lets show the drawing till someone clicks and then its gone
-                // lets create some random lines
-                var n = [];
-                path = [];
-                for(var i = 0;i<100;i++){
-                    var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
-                    path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
-                }
-
-                paintLine.style({p: path.join(" ")});
-                paintGroup.style({v:1});
-                paintGroup.repaint();
-            }, timeout);
-    */
-
-            switch (lineMode) {
-                case "draw":
-                    startDraw(e);
-                    break;
-                case "element":
-                    if (selection.length) {
-                        createConnections(selection);
-                        showConnections();
-                    }
-                    break;
-                case "all":
-                    var all = [];
-                    for (var el, i = 0, l = apf.all.length; i < l; i++) {
-                        if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
-                    }
-                    if (createConnections(all))
-                        selection = all;
-                        showConnections();
-                    break;
+        apf.addEventListener("vcpropchange", function(e) {
+            if (connections[e.obj.fromEl.id] && connections[e.obj.fromEl.id][e.obj.toEl.id])
+                var el1 = e.obj.fromEl.id, el2 = e.obj.toEl.id;
+            else
+                var el1 = e.obj.toEl.id, el2 = e.obj.fromEl.id;
+                
+            for (var maxBoxWidth = 0, maxLeftWidth = 0, i = 0, l = connections[el1][el2].length; i < l; i++) {
+                if ((c=connections[el1][el2][i].conn).getMaxLeftWidth() > maxLeftWidth)
+                    maxLeftWidth = c.getMaxLeftWidth();
+                if (c.getMaxBoxWidth() > maxBoxWidth)
+                    maxBoxWidth = c.getMaxBoxWidth();
             }
-        })();
+
+            
+            for (i = 0, l = connections[el1][el2].length; i < l; i++) {
+                (c=connections[el1][el2][i].conn).$lblFromEl.style.width = ((maxLeftWidth-4) - c.$lblAttMenu.offsetWidth) + "px";
+                c.$ext.style.width = maxBoxWidth + 82 + "px";
+            }
+                
+        });
+        apf.addEventListener("vcdelete", function(e) {
+            e.el.style.display = "none";
+        });
+
+        apf.plane.show();
+        
+        div = document.body.appendChild(document.createElement("div"));
+        div.style.display = "block";
+        div.style.position = "absolute";
+        div.style.left = "0px";
+        div.style.top = "0px";
+        div.style.zIndex = 100000001;
+/*
+        var showAllTimer = setTimeout(function(){
+            // lets show the drawing till someone clicks and then its gone
+            // lets create some random lines
+            var n = [];
+            path = [];
+            for(var i = 0;i<100;i++){
+                var sx = ~~(Math.random()*600), sy = ~~(Math.random()*600), ex = ~~(Math.random()*600), ey = ~~(Math.random()*600);
+                path.push(paintGroup.circlePath(sx,sy,3,3),"M",sx,sy,"L",ex,ey,paintGroup.circlePath(ex,ey,3,3));
+            }
+
+            paintLine.style({p: path.join(" ")});
+            paintGroup.style({v:1});
+            paintGroup.repaint();
+        }, timeout);
+*/
+
+        switch (lineMode) {
+            case "draw":
+                startDraw(e);
+                break;
+            case "element":
+                if (selection.length) {
+                    createConnections(selection);
+                    showConnections();
+                }
+                break;
+            case "all":
+                var all = [];
+                for (var el, i = 0, l = apf.all.length; i < l; i++) {
+                    if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
+                }
+                if (createConnections(all))
+                    selection = all;
+                    showConnections();
+                break;
+        }
         
         function createConnections(elements) {
             connections = null;
@@ -276,6 +165,7 @@ INPUT {\
                 }
 
                 // element as source element
+                //@todo use .$funcHandlers hash table to find the connections .value = "{blah.value + bli.value}"
                 for (var i = 0, l = elements.length; i < l; i++) {
                     for (var val, targetEl, targetAttr, split, j = 0, jl = elements[i].attributes.length; j < jl; j++) {
                         // @todo regex search of "{"
@@ -283,7 +173,7 @@ INPUT {\
                             // check if value is attribute of an element
                             if (targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) {
                                 targetAttr = split[1].substr(0, split[1].length-1);
-                                createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr);
+                                createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr, val);
                             }
                         }
                     }
@@ -296,7 +186,7 @@ INPUT {\
                             if ((val = all[ei].attributes[ai].value).toString().charAt(0) == "{" && val.toString().charAt(val.length-1) == "}") {
                                 if ((targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) == elements[i]) {
                                     targetAttr = split[1].substr(0, split[1].length-1);
-                                    createConnection(all[ei], targetEl, all[ei].attributes[ai].name, targetAttr);
+                                    createConnection(all[ei], targetEl, all[ei].attributes[ai].name, targetAttr, val);
                                 }
                             }
                         }
@@ -396,7 +286,7 @@ INPUT {\
                 });
 
                 setTimeout(function(e){
-                    attMenu.display(x, y);
+                    attMenu.display(x, y, true);
                 });
                 
                 attMenu.addEventListener("mousedown", function(e) {
@@ -530,7 +420,7 @@ INPUT {\
                     });
                     
                     setTimeout(function(e){
-                        attMenu.display(x, y);
+                        attMenu.display(x, y, true);
                     });
                     
                     attMenu.addEventListener("itemclick", function(e) {
@@ -573,7 +463,7 @@ INPUT {\
         }*/
         
         // create new connection
-        function createConnection(el1, el2, at1, at2) {
+        function createConnection(el1, el2, at1, at2, val) {
             if (!(el1.id && el2.id && at1 && at2)) return;
             
             var pos, x, y, w, h;
@@ -611,7 +501,8 @@ INPUT {\
                     el      : el2,
                     at      : at2,
                     pos     : to.c
-                }
+                },
+                val : val
             }
             
             var fromId, toId
@@ -634,7 +525,8 @@ INPUT {\
                                 ((c=connections[toId][fromId][i]).from.el.id == conn.from.el.id) && 
                                 (c.from.at == conn.from.at) &&
                                 (c.to.el.id == conn.to.el.id) &&
-                                (c.to.at == conn.to.at)
+                                (c.to.at == conn.to.at) &&
+                                (c.val == conn.val)
                             ) {
                                 dupFound = true;
                                 break;
@@ -653,7 +545,8 @@ INPUT {\
                                 ((c=connections[toId][fromId][i]).from.el.id == conn.from.el.id) && 
                                 (c.from.at == conn.from.at) &&
                                 (c.to.el.id == conn.to.el.id) &&
-                                (c.to.at == conn.to.at)
+                                (c.to.at == conn.to.at) &&
+                                (c.val == conn.val)
                             ) {
                                 dupFound = true;
                                 break;
@@ -673,7 +566,8 @@ INPUT {\
                             ((c=connections[fromId][toId][i]).from.el.id == conn.from.el.id) && 
                             (c.from.at == conn.from.at) &&
                             (c.to.el.id == conn.to.el.id) &&
-                            (c.to.at == conn.to.at)
+                            (c.to.at == conn.to.at) &&
+                            (c.val == conn.val)
                         ) {
                             dupFound = true;
                             break;
@@ -682,7 +576,6 @@ INPUT {\
                     if (!dupFound)
                         connections[fromId][toId].push(conn);
                 }
-                
             }
             
 /*
@@ -703,58 +596,7 @@ INPUT {\
 */
         }
 
-        function getTemplate() {
-        /*
-            var oDiv = document.createElement("div");
-            oDiv.style.position = "absolute";
-            oDiv.style.width = "320px";
-            oDiv.style.height = "20px";
-            oDiv.style.border = "1px solid black";
-            oDiv.style.background = "yellow";
-            oDiv.style.fontSize = "12px";
-            
-            var srcDiv = document.createElement("div");
-            srcDiv.style.display = "inline-block";
-            srcDiv.style.width = "100px";
-            var tgtInput = document.createElement("input");
-            tgtInput.type = "text";
-            tgtInput.style.display = "inline";
-            tgtInput.style.width = "170px";
-            tgtInput.style.fontSize = "12px";
-
-            var saveDiv = document.createElement("div");
-            saveDiv.style.width = "20px";
-            saveDiv.style.height = "20px";
-            saveDiv.style.display = "inline";
-            saveDiv.style.background = "green";
-            saveDiv.style.color = "white";
-            saveDiv.innerHTML = "Save";
-            
-            var delDiv = document.createElement("div");
-            delDiv.style.width = "20px";
-            delDiv.style.height = "20px";
-            delDiv.style.display = "inline";
-            delDiv.style.background = "red";
-            delDiv.style.color = "white";
-            delDiv.innerHTML = "Del";
-            
-            oDiv.appendChild(srcDiv);
-            oDiv.appendChild(tgtInput);
-            oDiv.appendChild(saveDiv);
-            oDiv.appendChild(delDiv);
-        */
-
-            var oDiv = document.createElement("div");
-            oDiv.setAttribute("class", "atchart_box");
-            oDiv.setAttribute("style", "width:285px;color:#000000;font-family:Tahoma;font-size:12px;height:29px;min-width:30px;min-height:29px;max-height:29px;overflow:hidden;cursor:default;position:absolute;");
-            oDiv.innerHTML = '<div class="left"> </div><div class="red_button"> </div><div class="right"> </div><div class="lbl"><span class="section1">Button.</span><span class="section2"><a href="#">caption</a></span><span class="section3">=</span><span class="section4">&quot;</span><label class="section5">{button2.value}</label><span class="section4">&quot;</span></div>';
-            
-            return oDiv;
-        }
-        
         function drawConnections() {
-            if (!cTemplate)
-                cTemplate = getTemplate();
             connectionPath = [];
             
             // reset div
@@ -777,205 +619,63 @@ INPUT {\
                 for (var id2 in connections[id]) {
                     var curConnections = connections[id][id2];
 
-                    for (var connDivs = [], maxBoxWidth = 0, maxLeftWidth = 0, aDiv, container, containerEls, lblFromEl, ddAtts, delBtn, centerPos, pos1, pos2, i = 0, l = curConnections.length; i < l; i++) {
+                    for (var connEdit, connDivs = [], maxBoxWidth = 0, maxLeftWidth = 0, centerPos, pos1, pos2, i = 0, l = curConnections.length; i < l; i++) {
                         // default positions for lines, start and end
                         pos1 = curConnections[i].from.pos;
                         pos2 = curConnections[i].to.pos;
                         // calculate center of line
                         centerPos = [Math.round((pos1[0]+pos2[0])/2), Math.round((pos1[1]+pos2[1])/2)];
                         
-                        // value divs
-                        aDiv = cTemplate.cloneNode(true);
+                        connEdit = new connectEdit(div, curConnections[i].from.el, curConnections[i].to.el, curConnections[i].from.at, curConnections[i].to.at, curConnections[i].val);
+                        div.appendChild(connEdit.$ext);
 
-                        container = aDiv.getElementsByTagName("div")[3];
-                        (lblFromEl=(containerEls = container.getElementsByTagName("span"))[0]).innerHTML = (fromEl = curConnections[i].from.el).id + ".";
-                        
-                        (ddAtts = containerEls[1]).getElementsByTagName("a")[0].innerHTML = curConnections[i].from.at;
-                        ddAtts.setAttribute("el", fromEl.id);
-                        (lblVal = container.getElementsByTagName("label")[0]).innerHTML = "{" + curConnections[i].to.el.id + "." + curConnections[i].to.at + "}";
-                        lblVal.setAttribute("el", curConnections[i].from.el.id);
-                        lblVal.setAttribute("at", curConnections[i].from.at);
-                                           
-                        // delBtn
-                        (delBtn = aDiv.getElementsByTagName("div")[1]).setAttribute("el", curConnections[i].from.el.id);
-                        delBtn.setAttribute("at", curConnections[i].from.at);
-                        ddAtts.onmousedown = function(e) {
-                            (e||event).cancelBubble = true;
-                        }
-                        ddAtts.onmouseup  = function(e) {
-                            var e = e || event;
-                            var self = this;
-                            
-                            if (!this.getAttribute("el")) return;;
-                            var fromEl = apf.document.getElementById(this.getAttribute("el"));
-                            if (!fromEl) return;
-                            for (var name, attList = [], ai = 0, al = fromEl.attributes.length; ai < al; ai++) {
-                                if (ignoreFromAtts.indexOf((name = fromEl.attributes[ai].name)) > -1) continue;
-                                attList.push(new apf.item({
-                                    caption: name
-                                }));
-                            }
+                        connections[id][id2][i].conn = connEdit;
 
-                            attMenu = new apf.menu({
-                              htmlNode   : div,
-                              id         : "attMenu",
-                              childNodes : attList
-                            });
-                            
-                            var pos = apf.getAbsolutePosition(this);
+                        if (connEdit.getMaxLeftWidth() > maxLeftWidth) {
+                            maxLeftWidth = connEdit.getMaxLeftWidth();
+                            //debugger;
+                        }
+                        if (connEdit.getMaxBoxWidth() > maxBoxWidth) {
+                            maxBoxWidth = connEdit.getMaxBoxWidth();
+                        }
 
-                            var x = pos[0]+this.offsetWidth, y = pos[1] + this.offsetHeight;
-                            setTimeout(function(){
-                                attMenu.display(x, y);
-                                
-                                //attMenu.display(x-attMenu.$ext.offsetWidth, y);
-                                attMenu.$ext.style.left = x-attMenu.$ext.offsetWidth;
-                                attMenu.$ext.style.zIndex = 100000002;
-                               
-                                // select attribute in menu
-                                apf.popup.cache[apf.popup.last].content.onmousedown = function(e) {
-                                    var oldAt = self.getElementsByTagName("a")[0].innerHTML;
-                                    var newAt = attMenu.$selected.caption;
-                                    
-                                    if (oldAt == newAt) return;
-                                    // set new attr
-                                    self.getElementsByTagName("a")[0].innerHTML = newAt;
-                                    attMenu.setProperty("visible", false);
-                                    var val = (self.parentNode.getElementsByTagName("label").length) 
-                                        ? self.parentNode.getElementsByTagName("label")[0].innerHTML
-                                        : (self.parentNode.getElementsByTagName("input").length)
-                                            ? self.parentNode.getElementsByTagName("input")[0].getAttribute("value")
-                                            : null;
+                        connDivs.push(connEdit);
 
-                                    apf.document.getElementById(self.getAttribute("el")).setAttribute(newAt, val);
-                                    apf.document.getElementById(self.getAttribute("el")).setAttribute(oldAt, "");
-                                    
-                                    // redraw connections?
-                                    if (createConnections(selection))
-                                        showConnections();
-                                    
-                                    (e||event).cancelBubble = true;
-                                    
-                                    div.onmousedown = div.onmouseup = function(e) {
-                                        this.onmousedown = this.onmouseup = null;
-                                        (e || event).cancelBubble = true;
-                                    }
-                                    //document.onmouseup = null;
-                                }
-                                
-                            });
-
-                            (e||event).cancelBubble = true;
-                        }
-                        lblVal.onmousedown = function(e) {
-                            (e||event).cancelBubble = true;
-                        }
-                        lblVal.onmouseover = function(e) {
-                            var lblVal = this;
-                            var inputVal = document.createElement("input");
-                            inputVal.setAttribute("type", "text");
-                            inputVal.setAttribute("class", "section5");
-                            inputVal.setAttribute("value", lblVal.innerHTML);
-                            inputVal.onkeydown = inputVal.onkeypress = inputVal.onmousedown = inputVal.onmouseup = function(e) {
-                                (e||event).cancelBubble = true;
-                            }
-                            inputVal.onblur = function() {
-                                this.onkeydown = this.onkeypress = this.onkeyup = null;
-                                lblVal.setAttribute("value", this.value);
-                                apf.document.getElementById(lblVal.getAttribute("el")).setAttribute(lblVal.getAttribute("at"), this.value);
-                                this.replaceNode(lblVal, this);
-                                
-                                (e||event).cancelBubble = true;
-                            }
-                            inputVal.onkeyup = function(e) {
-                                if ((e||event).keyCode == 13) {
-                                    lblVal.setAttribute("value", "x"+this.value);
-                                    apf.document.getElementById(lblVal.getAttribute("el")).setAttribute(lblVal.getAttribute("at"), this.value);
-                                    //this.replaceNode(lblVal, this);
-                                }
-                                (e||event).cancelBubble = true;
-                            }
-                            lblVal.replaceNode(inputVal, lblVal);
-                            
-                            (e||event).cancelBubble = true;
-                        }
-                        delBtn.onmousedown = function(e) {
-                            (e||event).cancelBubble = true;
-                        }
-                        delBtn.onmouseup = function(e) {
-                            apf.document.getElementById(this.getAttribute("el")).setAttribute(this.getAttribute("at"), '');
-                            if (createConnections(selection))
-                                showConnections();
-                            else {
-                                paintGroup.style({v:0});
-                                paintGroup.repaint();
-                                div.style.display = "none";
-                            }
-                            (e||event).cancelBubble = true;
-                        }
-                        
                         // even number of connections
                         var linePadding = 4;
                         if (l % 2 == 0) {
                             pos1 = [pos1[0], pos1[1] - (l/2*linePadding*i) + linePadding/2];
                             pos2 = [pos2[0], pos2[1] - (l/2*linePadding*i) + linePadding/2];
-                            centerPos = [centerPos[0] - aDiv.style.width.replace("px", "")/2, centerPos[1] - l/2*aDiv.style.height.replace("px", "")*i];
+                            centerPos = [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - l/2*connEdit.$box.offsetHeight*i];
                         }
                         // odd number of connections                    
                         else {
                             pos1 = [pos1[0], pos1[1] - (l+1)/2*linePadding*(i+0.5) + 3];
                             pos2 = [pos2[0], pos2[1] - (l+1)/2*linePadding*(i+0.5) + 3];
-                            centerPos = [centerPos[0] - aDiv.style.width.replace("px", "")/2, centerPos[1] - (l+1)/2*aDiv.style.height.replace("px", "")*(i+0.5)]
+                            centerPos = [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - (l+1)/2*connEdit.$box.offsetHeight*(i+0.5)]
                         }
                         
                         centerPos[0] = (centerPos[0] > 0) ? centerPos[0] : 0;
                         centerPos[1] = (centerPos[1] > 0) ? centerPos[1] : 0;
+                        
+                        connEdit.$ext.style.display = "none";
+                        connEdit.$ext.style.top = centerPos[1] + "px";
+                        connEdit.$ext.style.left = centerPos[0] + "px";
 
-                        // move divs out of screen to get width
-                        aDiv.style.top = "-9999px";
-                        aDiv.style.left = "-9999px";
-                        
-                        div.appendChild(aDiv);
-                        connDivs.push(aDiv);
-
-                        // calculate width
-                        /*
-                        if (lblFromEl.offsetWidth > maxLeftWidth) maxLeftWidth = lblFromEl.offsetWidth;
-                        if (ddAtts.offsetWidth > maxDdAttsWidth) maxDdAttsWidth = ddAtts.offsetWidth-10;
-                        */
-                        if (lblFromEl.offsetWidth+ddAtts.offsetWidth > maxLeftWidth) {
-                            maxLeftWidth = lblFromEl.offsetWidth+ddAtts.offsetWidth;
-                            //debugger;
-                        }
-                        if (lblFromEl.offsetWidth+ddAtts.offsetWidth+lblVal.offsetWidth > maxBoxWidth) {
-                            maxBoxWidth = lblFromEl.offsetWidth+ddAtts.offsetWidth+lblVal.offsetWidth;
-                        }
-                        
-                        aDiv.style.display = "none";
-                        aDiv.style.top = centerPos[1] + "px";
-                        aDiv.style.left = centerPos[0] + "px";
-                        
-                        
                         // draw line
                         connectionPath.push(
                             //paintGroup.circlePath(pos1[0],pos1[1],1,1),
                             "M",pos1[0],pos1[1],"L",pos2[0],pos2[1],
                             paintGroup.circlePath(pos2[0],pos2[1],1,1)
                         );
-                        
-                        /*
-                        connectionPath.push(
-                            paintGroup.circlePath(centerPos[0],centerPos[1],3,3)
-                        )
-                        */
                     }
                     
                     // loop through the divs and align children properly 
                     for (var c, container, spans, cDiv, i = 0, l = connDivs.length; i < l; i++) {
                         // make div visible
-                        (c=connDivs[i]).style.display = "block";
-                        (spans=(container=(c=connDivs[i]).getElementsByTagName("div")[3]).getElementsByTagName("span"))[0].style.width = (maxLeftWidth - spans[1].offsetWidth) + "px";
-                        c.style.width = maxBoxWidth + 68 + "px";
+                        (c=connDivs[i]).$ext.style.display = "block";
+                        //c.$lblFromEl.style.width = (maxLeftWidth - c.$lblAttMenu.offsetWidth) + "px";
+                        c.$ext.style.width = maxBoxWidth + 82 + "px";
                     }
                 }
             }
@@ -1010,11 +710,21 @@ INPUT {\
 };
 
 
-function connectEdit(){
+function connectEdit(container, fromEl, toEl, fromAt, toAt, val){
+    this.container = container;
+    this.fromEl = fromEl;
+    this.toEl   = toEl;
+    this.fromAt = fromAt;
+    this.toAt   = toAt;
+    this.value    = val;
 
+    this.draw();
 };
 
 (function(){
+    this.ignoreFromAtts = ["id"];    // attributes for from element to ignore in attMenu
+    this.ignoreToAtts = ["for"];    // attributes for to elements to ignore in attMenu
+
     this.$getInput = function(){
         apf.Rename.initEditableArea.call(this);
         
@@ -1086,19 +796,161 @@ function connectEdit(){
     }
     
     this.setPropName = function(name){
-        this.name = name;
-        
-        //
+        this.fromAt = name;
+        this.$lblAttMenu.innerHTML = this.fromAt;
     }
     
     this.setPropValue = function(value){
         this.value = value;
-        
-        //
+        this.$lblVal.innerHTML = this.value;
     }
     
     this.draw = function(name, prop, value){
+        var _self = this;
         
+        this.$ext = document.createElement("div");
+        this.$ext.setAttribute("class", "atchart_box");
+        this.$ext.setAttribute("style", "width:285px;color:#000000;font-family:Tahoma;font-size:12px;height:29px;min-width:30px;min-height:29px;max-height:29px;overflow:hidden;cursor:default;position:absolute;");
+        
+        this.$ext.innerHTML = '<div class="left"> </div><div class="red_button"> </div><div class="right"> </div><div class="lbl"><span class="section1">Button.</span><span class="section2"><a href="#">caption</a></span><span class="section3">=</span><span class="section4">&quot;</span><label class="section5">{button2.value}</label><span class="section4">&quot;</span></div>';
+        this.$ext.onmousedown = this.$ext.onmouseup = function(e) {
+            (e||event).cancelBubble = true;
+        }
+        
+        var divs,spans;
+        
+        // delBtn
+        this.$delBtn        = (divs=this.$ext.getElementsByTagName("div"))[1];
+        this.$delBtn.onmousedown = function(e) {
+            (e||event).cancelBubble = true;
+        }
+        
+        this.$delBtn.onmouseup = function(e) {
+            _self.fromEl.setAttribute(_self.fromAt, '');
+            apf.dispatchEvent("vcdelete", {el:_self.$ext});
+            
+            (e||event).cancelBubble = true;
+        }
+        
+        this.$box           = divs[3];
+        this.$lblFromEl     = (spans=this.$box.getElementsByTagName("span"))[0];
+        this.$lblFromEl.innerHTML = this.fromEl.id + ".";
+
+        this.$attMenu       = spans[1];
+        this.$lblAttMenu    = this.$attMenu.firstChild;
+        this.setPropName(this.fromAt);
+        this.$attMenu.onmousedown = function(e) {
+            (e||event).cancelBubble = true;
+        }
+        this.$attMenu.onmouseup  = function(e) {
+            var e = e || event;
+            
+            for (var name, attList = [], ai = 0, al = _self.fromEl.attributes.length; ai < al; ai++) {
+                if (_self.ignoreFromAtts.indexOf((name = _self.fromEl.attributes[ai].name)) > -1) continue;
+                attList.push(new apf.item({
+                    caption: name
+                }));
+            }
+
+            attMenu = new apf.menu({
+              htmlNode   : _self.$ext,
+              id         : "attMenu",
+              childNodes : attList
+            });
+            
+            var pos = apf.getAbsolutePosition(this);
+
+            var x = pos[0], y = pos[1] + this.offsetHeight;
+            setTimeout(function(){
+                attMenu.display(x, y, true);
+                
+                //attMenu.display(x-attMenu.$ext.offsetWidth, y);
+                attMenu.$ext.style.left = x;
+                attMenu.$ext.style.zIndex = 100000002;
+               
+                // select attribute in menu
+                apf.popup.cache[apf.popup.last].content.onmousedown = function(e) {
+                    var newAt = attMenu.$selected.caption;
+                    
+                    if (_self.fromAt == newAt) return;
+                    // set new attr
+                    attMenu.setProperty("visible", false);
+
+                    _self.fromEl.setAttribute(_self.fromAt, "");
+                    _self.setPropName(newAt);
+                    _self.fromEl.setAttribute(newAt, _self.value);
+                    
+                    
+                    (e||event).cancelBubble = true;
+                    
+                    _self.container.onmousedown = _self.container.onmouseup = function(e) {
+                        _self.container.onmousedown = _self.container.onmouseup = null;
+                        apf.dispatchEvent("vcpropchange", {obj:_self});
+                        (e || event).cancelBubble = true;
+                    }
+                    //document.onmouseup = null;
+                }
+                
+            });
+
+            (e||event).cancelBubble = true;
+        }
+        
+        
+        
+
+        this.$lblVal        = this.$box.getElementsByTagName("label")[0];
+        this.setPropValue(this.value);
+        this.$inputVal      = this.createInput();
     }
-})(connectEdit.prototype = new apf.Class());
+    
+    this.createInput = function() {
+        var inputVal = document.createElement("input");
+        inputVal.setAttribute("type", "text");
+        inputVal.setAttribute("class", "section5");
+        inputVal.setAttribute("value", this.$lblVal.innerHTML);
+        inputVal.style.width = (this.$lblVal.offsetWidth-2 > 0 ? this.$lblVal.offsetWidth-2 : 0) + "px";
+        inputVal.onkeydown = inputVal.onkeypress = inputVal.onmousedown = inputVal.onmouseup = function(e) {
+            (e||event).cancelBubble = true;
+        }
+        inputVal.onblur = function() {
+            this.hasFocus = false;
+            this.onkeydown = this.onkeypress = this.onkeyup = null;
+            _self.$lblVal.setAttribute("value", this.value);
+            _self.$lblVal.getAttribute("el").setAttribute(lblVal.getAttribute("at"), this.value);
+
+            if (createConnections(selection))
+                showConnections();
+            
+            (e||event).cancelBubble = true;
+        }
+        inputVal.onkeyup = function(e) {
+            if ((e||event).keyCode == 13) {
+                _self.$lblVal.setAttribute("value", "x"+this.value);
+                _self.$lblVal.getAttribute("el").setAttribute(lblVal.getAttribute("at"), this.value);
+                debugger;
+                if (createConnections(selection))
+                    showConnections();
+            }
+            (e||event).cancelBubble = true;
+        }
+        inputVal.onfocus = function(e) {
+            this.hasFocus = true;
+        }
+        inputVal.onmouseout = function(e) {
+            if (this.hasFocus) return;
+            $this.inputVal.replaceNode(lblVal, inputVal);
+        }
+        
+        return inputVal;
+    }
+    
+    this.getMaxLeftWidth = function() {
+        return this.$lblFromEl.offsetWidth + this.$lblAttMenu.offsetWidth;
+    }
+    this.getMaxBoxWidth = function() {
+        return this.$lblFromEl.offsetWidth + this.$lblAttMenu.offsetWidth + this.$lblVal.offsetWidth;
+    }
+    
+}).call(connectEdit.prototype = new apf.Class());
 //#endif
