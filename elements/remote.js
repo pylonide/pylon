@@ -183,7 +183,7 @@ apf.remote = function(struct, tagName){
             for (s in _self.pendingTerminations)
                 _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
             for (s in _self.pendingSessions)
-                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);}
+                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
         });
 
         this.transport.addEventListener("reconnect", function() {
