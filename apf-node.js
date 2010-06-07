@@ -24,8 +24,9 @@
 var sys = require("sys"),
     cwd = o3.cwd;
 
-self = global;
-window = global;
+self = window = global;
+
+self.sys = sys;
 
 require("./apf-o3");
 require("./loader-o3");

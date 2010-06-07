@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:script>o3.print('hello world!');</a:script>
+    <a:xmpp id="connXmpp"
+        url               = "socket://localhost:5222"
+        host              = "localhost"
+        rdb-bot           = "true"
+        type              = "socket"
+        resource          = "{'apf_'.appendRandomNumber(5)}"
+        onpriority        = "getPrio()" />
+    <a:script>connXmpp.connect("bot1", "botz1");</a:script>
 </a:application>

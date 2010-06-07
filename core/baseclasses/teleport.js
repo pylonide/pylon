@@ -192,12 +192,25 @@ apf.__TELEPORT__ = 1 << 28;
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
-        // Implement HTTP Module
-        if (!apf.http) {
-            throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", 
-                "Could not find Ajax.org Teleport HTTP Component", this.$aml));
+        var error;
+        if (this.type && this.type == "socket") {
+            // Implement Socket Module
+            if (!apf.socket)
+                error = "Socket";
+            else
+                this.implement(apf.socket);
         }
-        this.implement(apf.http);
+        else {
+            // Implement HTTP Module
+            if (!apf.http)
+                error = "HTTP";
+            else
+                this.implement(apf.http);
+        }
+        if (error) {
+            throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", 
+                    "Could not find Ajax.org Teleport " + error + " Component", this.$aml));
+        }
 
         if (this.id)
             apf.$asyncObjects[this.id] = 1;

@@ -100,7 +100,7 @@
  * @since       3.0
  */
 apf.socket = function(){
-    this.queue     = [null];
+    this.pool      = {};
     this.callbacks = {};
     this.cache     = {};
 
@@ -167,78 +167,9 @@ apf.socket = function(){
 
         var socket,
             _self = this,
-            id    = options.id,
-            data = options.data || "";
-
-        if (apf.isNot(id)) {
-            socket = apf.getSocket();
-
-            socket.addEventListener("connect", function() {
-                if (!_self.queue[id] || socket.readyState != 4)
-                    return;
-                if (arguments.callee.caller)
-                    setTimeout(function(){_self.receive(id)});
-                else
-                    _self.receive(id);
-            });
-
-            socket.addEventListener("data", function(data) {
-                if (arguments.callee.caller)
-                    setTimeout(function(){_self.receive(id)});
-                else
-                    _self.receive(id, data);
-            });
-
-            id = this.queue.push({
-                socket   : socket,
-                url      : url,
-                callback : options.callback,
-                retries  : 0,
-                options  : options
-            }) - 1;
-        }
-        else {
-            socket = this.queue[id].socket;
-        }
-
-        // @todo implement statechange for sockets like so:
-        
-        /*socket.onreadystatechange = function(){
-            if (!_self.queue[id] || socket.readyState != 4)
-                return;
-            if (async && arguments.callee.caller)
-                setTimeout(function(){_self.receive(id)});
-            else
-                _self.receive(id);
-        }*/
-
-        var errorFound = false;
-        try {
-            if (options.nocache)
-                url = apf.getNoCacheUrl(url);
-            socket.open(this.method || options.method || "GET", url);
-        }
-        catch (e) {
-            errorFound = e.message;
-        }
-
-        if (errorFound) {
-            //Routing didn't work either... Throwing error
-            var noClear = options.callback ? options.callback(null, apf.ERROR, {
-                userdata: options.userdata,
-                socket    : socket,
-                url     : url,
-                tpModule: this,
-                id      : id,
-                message : "Permission denied accessing remote resource: "
-                          + url + "\nMessage: " + errorFound
-            }) : false;
-            if (!noClear)
-                this.clearQueueItem(id);
-
-            return;
-        }
-
+            id    = options.id   || url,
+            data  = options.data || "";
+            
         function handleError(){
             var msg = "File or Resource not available " + url;
 
@@ -248,22 +179,23 @@ apf.socket = function(){
             var state = apf.ERROR;
 
             // File not found
-            var noClear = options.callback ? options.callback(null, state, {
-                userdata : options.userdata,
-                socket     : socket,
-                url      : url,
-                tpModule : _self,
-                id       : id,
-                message  : msg
-            }) : false;
-            if(!noClear) _self.clearQueueItem(id);
+            if (options.callback) {
+                options.callback(null, state, {
+                    userdata : options.userdata,
+                    socket   : socket,
+                    url      : url,
+                    tpModule : _self,
+                    id       : id,
+                    message  : msg
+                });
+            }
         }
 
         function send(isLocal){
             var hasError;
 
             try{
-                socket.send(data);
+                socket.write(data);
             }
             catch(e){
                 hasError = true;
@@ -274,8 +206,42 @@ apf.socket = function(){
                 return;
             }
         }
+        
+        if (!(socket = this.pool[id] ? this.pool[id].socket : null)) {
+            //socket = apf.getSocket();
+            var oUrl = new apf.url(url);
+            if (!oUrl.host || !oUrl.port)
+                throw new Error("no valid connection string for a socket connection: " + url);
+            
+            var net = require("net");
+            socket = net.createConnection(oUrl.port, oUrl.host);
+            socket.setEncoding("utf8");
 
-        send.call(_self);
+            socket.addListener("connect", function() {
+                send.call(_self);
+            });
+
+            socket.addListener("data", function(data) {
+                _self.receive(id, data);
+            });
+            
+            socket.addListener("end", function() {
+                //todo
+            });
+            
+            this.pool[id] = {
+                socket    : socket,
+                url       : url,
+                callbacks : [options.callback],
+                retries   : 0,
+                options   : options
+            };
+        }
+        else {
+            this.pool[id].callbacks.push(options.callback);
+            send.call(this);
+        }
+        
         return id;
     };
 
@@ -303,38 +269,13 @@ apf.socket = function(){
     /**
      * @private
      */
-    this.receive = function(id){
-        if (!this.queue[id])
+    this.receive = function(id, data){
+        if (!this.pool[id])
             return false;
 
-        var qItem    = this.queue[id],
-            socket     = qItem.socket,
-            callback = qItem.callback;
-
-        // Test if HTTP object is ready
-        if (qItem.async) {
-            try {
-                if (socket.status) {}
-            }
-            catch (e) {
-                var _self = this;
-                return $setTimeout(function(){
-                    _self.receive(id)
-                }, 10);
-            }
-        }
-
-        /* #ifdef __DEBUG
-        if (!qItem.options.hideLogMessage) {
-            apf.console.info("[HTTP] Receiving [" + id + "]"
-                + (socket.isCaching
-                    ? "[<span style='color:orange'>cached</span>]"
-                    : "")
-                + " from " + qItem.url,
-                "teleport",
-                socket.responseText);
-        }
-        #endif */
+        var qItem    = this.pool[id],
+            socket   = qItem.socket,
+            callback = qItem.callbacks.shift();
 
         //Gonna check for validity of the socket response
         var errorMessage = [],
@@ -343,7 +284,7 @@ apf.socket = function(){
                 end      : new Date(),
                 //#endif
                 tpModule : this,
-                socket     : socket,
+                socket   : socket,
                 url      : qItem.url,
                 callback : callback,
                 id       : id,
@@ -353,28 +294,10 @@ apf.socket = function(){
 
         // Check HTTP Status
         // The message didn't receive the server. We consider this a timeout (i.e. 12027)
-        if (socket.status > 600)
-            return this.$timeout(id);
+        //if (socket.status > 600)
+        //    return this.$timeout(id);
 
-        extra.data = socket.responseText; //Can this error?
-
-        if (socket.status >= 400 && socket.status < 600 || socket.status < 10 && socket.status != 0) {
-            //#ifdef __WITH_AUTH
-            //@todo This should probably have an RPC specific handler
-            if (socket.status == 401) {
-                var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
-                if (auth) {
-                    var wasDelayed = qItem.isAuthDelayed;
-                    qItem.isAuthDelayed = true;
-                    if (auth.authRequired(extra, wasDelayed) === true)
-                        return;
-                }
-            }
-            //#endif
-
-            errorMessage.push("HTTP error [" + id + "]:" + socket.status + "\n"
-                + socket.responseText);
-        }
+        extra.data = data; //Can this error?
 
         // Check for XML Errors
         if (qItem.options.useXML || this.useXML) {
@@ -384,13 +307,11 @@ apf.socket = function(){
                                            If you alter this code, please correct
                                            webdav.js appropriately.
             */
-            if ((socket.responseText || "").replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "")
+            if ((data || "").replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "")
                 errorMessage.push("Received an empty XML document (0 bytes)");
             else {
                 try {
-                    var xmlDoc = (socket.responseXML && socket.responseXML.documentElement)
-                        ? apf.xmlParseError(socket.responseXML)
-                        : apf.getXmlDom(socket.responseText);
+                    var xmlDoc = apf.getXmlDom(data);
 
                     if (!apf.supportNamespaces)
                         xmlDoc.setProperty("SelectionLanguage", "XPath");
@@ -408,24 +329,24 @@ apf.socket = function(){
             extra.message = errorMessage.join("\n");
 
             // Send callback error state
-            if (!callback || !callback(extra.data, apf.ERROR, extra))
-                this.clearQueueItem(id);
+            if (callback)
+                callback(extra.data, apf.ERROR, extra);
 
             return;
         }
 
         //Http call was successfull Success
-        if (!callback || !callback(extra.data, apf.SUCCESS, extra))
-            this.clearQueueItem(id);
+        if (callback)
+            callback(extra.data, apf.SUCCESS, extra);
 
         return extra.data;
     };
 
     this.$timeout = function(id){
-        if (!this.queue[id])
+        if (!this.pool[id])
             return false;
 
-        var qItem  = this.queue[id],
+        var qItem  = this.pool[id],
             socket = qItem.socket;
 
         // Test if HTTP object is ready
@@ -460,14 +381,6 @@ apf.socket = function(){
             message : "HTTP Call timed out",
             retries : qItem.retries || 0
         }) : false;
-
-        //#ifdef __DEBUG
-        if (qItem.log)
-            qItem.log.response(extra);
-        //#endif
-
-        if (!noClear)
-            this.clearQueueItem(id);
     };
 
     /**
@@ -509,26 +422,12 @@ apf.socket = function(){
 
     /**
      * Removes the item from the queue. This is usually done automatically.
-     * However when the callback returns true the queue isn't cleared, for instance
-     * when a request is retried. The id of the call
-     * is found on the 'extra' object. The third argument of the callback.
-     * Example:
-     * <code>
-     *  socket.clearQueueItem(extra.id);
-     * </code>
+     * For the socket component, this Function is just a stub, to be compatible with 
+     * the HTTP interface
      * @param {Number} id the id of the call that should be removed from the queue.
      */
     this.clearQueueItem = function(id){
-        if (!this.queue[id])
-            return false;
-
-        if (apf.releaseHTTP)
-            apf.releaseHTTP(this.queue[id].socket);
-
-        this.queue[id] = null;
-        delete this.queue[id];
-
-        return true;
+        return;
     };
 
     /**
@@ -546,10 +445,10 @@ apf.socket = function(){
      * @param {Number} id the id of the call that should be retried.
      */
     this.retry = function(id){
-        if (!this.queue[id])
+        if (!this.pool[id])
             return false;
 
-        var qItem = this.queue[id];
+        var qItem = this.pool[id];
 
         // #ifdef __DEBUG
         apf.console.info("[Socket] Retrying request [" + id + "]", "teleport");
@@ -567,13 +466,12 @@ apf.socket = function(){
      */
     this.cancel = function(id){
         if (id === null)
-            id = this.queue.length - 1;
+            id = this.pool.length - 1;
 
-        if (!this.queue[id])
+        if (!this.pool[id])
             return false;
 
-        //this.queue[id][0].abort();
-        this.clearQueueItem(id);
+        //this.pool[id][0].abort();
     };
 
     if (!this.$loadAml && !this.instantiate && !this.call) {
@@ -590,8 +488,7 @@ apf.socket = function(){
                 var url      = this.childNodes[i].getAttribute("url"),
                     callback = self[this.childNodes[i].getAttribute("receive") || receive],
                     options  = {
-                        useXML  : this.childNodes[i].getAttribute("type") == "XML",
-                        async   : !apf.isFalse(this.childNodes[i].getAttribute("async"))
+                        useXML  : this.childNodes[i].getAttribute("type") == "XML"
                     };
 
                 this[this.childNodes[i].getAttribute("name")] = function(data, userdata){

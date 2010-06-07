@@ -142,8 +142,9 @@ apf.xmpp = function(struct, tagName){
             muc_admin   : "http://jabber.org/protocol/muc#admin",
             commands    : "http://jabber.org/protocol/commands"
         },
-        CONN_POLL : 0x0001,
-        CONN_BOSH : 0x0002,
+        CONN_POLL   : 0x0001,
+        CONN_BOSH   : 0x0002,
+        CONN_SOCKET : 0x0004,
 
         ERROR_AUTH : 0x0004,
         ERROR_CONN : 0x0008,
@@ -287,9 +288,10 @@ apf.xmpp = function(struct, tagName){
     this.$propHandlers["type"] = function(value) {
         this.$xmppMethod = (value == "polling")
             ? constants.CONN_POLL
-            : constants.CONN_BOSH;
+            : (value == "socket") ? constants.CONN_SOCKET : constants.CONN_BOSH;
 
-        this.$isPoll = Boolean(this.$xmppMethod & constants.CONN_POLL);
+        this.$isPoll = Boolean(this.$xmppMethod & constants.CONN_POLL)
+            || Boolean(this.$xmppMethod & constants.CONN_SOCKET);
     };
 
     this.$propHandlers["auth"] = function(value) {
@@ -419,7 +421,7 @@ apf.xmpp = function(struct, tagName){
     function createStreamElement(options, content) {
         if (!options)
             options = {};
-        var aOut = [this.$serverVars[SID] || "0", ","];
+        var aOut = this.$xmppMethod & constants.CONN_SOCKET ? [] : [this.$serverVars[SID] || "0", ","];
 
         if (options.doOpen) {
             aOut.push("<stream:stream");
@@ -640,6 +642,7 @@ apf.xmpp = function(struct, tagName){
 
         var _self = this,
             req   = this.$reqStack.shift();
+        if (!req) return null;
         ++this.$reqCount;
         return this.$activeReq = this.get(this.url, {
             callback: function(data, state, extra) {
@@ -655,9 +658,13 @@ apf.xmpp = function(struct, tagName){
                         //                + "Received an empty XML document (0 bytes)";
                     }
                     else {
-                        if (data.indexOf("<stream:stream") > -1
-                          && data.indexOf("</stream:stream>") == -1)
-                            data = data + "</stream:stream>";
+                        if (data.indexOf("<stream:stream") > -1) {
+                            if (data.indexOf("</stream:stream>") == -1)
+                                data = data + "</stream:stream>";
+                        }
+                        else if (_self.$xmppMethod & constants.CONN_SOCKET) {
+                            data = "<stream:stream xmlns:stream='" + constants.NS.stream + "'>" + data + "</stream:stream>";
+                        }
                         data = apf.getXmlDom(data);
                         if (!apf.supportNamespaces)
                             data.setProperty("SelectionLanguage", "XPath");
@@ -759,8 +766,8 @@ apf.xmpp = function(struct, tagName){
         }
 
         // #ifdef __DEBUG
-        apf.console.error(extra.message + " (username: " + extra.username
-                          + ", server: " + extra.server + ")", "xmpp");
+        //apf.console.error(extra.message + " (username: " + extra.username
+        //                  + ", server: " + extra.server + ")", "xmpp");
         // #endif
 
         return this.dispatchEvent(bIsAuth
@@ -800,7 +807,7 @@ apf.xmpp = function(struct, tagName){
             this.$rdbRoster.registerAccount(username, this.host);
         // #endif
         this.$doXmlRequest(processConnect, this.$isPoll
-            ? createStreamElement.call(this, null, {
+            ? createStreamElement.call(this, {
                 doOpen         : true,
                 to             : this.host,
                 xmlns          : constants.NS.jabber,
@@ -851,7 +858,7 @@ apf.xmpp = function(struct, tagName){
             //if (this.$activeReq)
             //    this.cancel(this.$activeReq);
             this.$doXmlRequest(processDisconnect, this.$isPoll
-                ? createStreamElement.call(this, null, {
+                ? createStreamElement.call(this, {
                     doClose: true
                   }, sPresence)
                 : createBodyElement({
@@ -1009,11 +1016,12 @@ apf.xmpp = function(struct, tagName){
             this.$serverVars["VER"]        = parseFloat(oXml.getAttribute("ver"))       || 1.1;
         }
         else {
-            var aCookie = extra.http.getResponseHeader("Set-Cookie").splitSafe(";");
-            this.$serverVars[SID]       = aCookie[0].splitSafe("=")[1];
+            if (this.$xmppMethod & constants.CONN_POLL) {
+                var aCookie = extra.http.getResponseHeader("Set-Cookie").splitSafe(";");
+                this.$serverVars[SID]       = aCookie[0].splitSafe("=")[1];
+            }
             this.$serverVars["AUTH_ID"] = oXml.firstChild.getAttribute("id");
         }
-
         var oMech  = oXml.getElementsByTagName("mechanisms")[0],
             sXmlns = oMech.getAttribute("xmlns");
         // @todo apf3.0 hack for o3, remove when o3 is fixed
@@ -1088,7 +1096,7 @@ apf.xmpp = function(struct, tagName){
                     onError.call(_self, constants.ERROR_REG, null, apf.OFFLINE);
                 //#endif
             }, _self.$isPoll
-            ? createStreamElement.call(this, null, null, sIq)
+            ? createStreamElement.call(this, null, sIq)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -1124,7 +1132,7 @@ apf.xmpp = function(struct, tagName){
             this.$doXmlRequest((sType == "ANONYMOUS" || sType == "PLAIN")
                 ? reOpenStream // skip a few steps...
                 : processAuthRequest, this.$isPoll
-                ? createStreamElement.call(this, null, null, sAuth)
+                ? createStreamElement.call(this, null, sAuth)
                 : createBodyElement({
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
@@ -1142,7 +1150,7 @@ apf.xmpp = function(struct, tagName){
                     + this.$serverVars["username"] + "</username></query>"
             );
             this.$doXmlRequest(processAuthRequest, this.$isPoll
-                ? createStreamElement.call(this, null, null, sIq)
+                ? createStreamElement.call(this, null, sIq)
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
@@ -1246,7 +1254,7 @@ apf.xmpp = function(struct, tagName){
                 charset     : this.$serverVars["charset"]
             });
             this.$doXmlRequest(processFinalChallenge, this.$isPoll
-                ? createStreamElement.call(this, null, null, sAuth)
+                ? createStreamElement.call(this, null, sAuth)
                 : createBodyElement({
                       rid   : this.$getRID(),
                       sid   : this.$serverVars[SID],
@@ -1279,7 +1287,7 @@ apf.xmpp = function(struct, tagName){
                         + "</query>"
                 );
                 this.$doXmlRequest(reOpenStream, this.$isPoll
-                    ? createStreamElement.call(this, null, null, sIq)
+                    ? createStreamElement.call(this, null, sIq)
                     : createBodyElement({
                         rid   : this.$getRID(),
                         sid   : this.$serverVars[SID],
@@ -1318,7 +1326,7 @@ apf.xmpp = function(struct, tagName){
 
         var sAuth = createAuthBlock({});
         this.$doXmlRequest(reOpenStream, this.$isPoll
-            ? createStreamElement.call(this, null, null, sAuth)
+            ? createStreamElement.call(this, null, sAuth)
             : createBodyElement({
                   rid   : this.$getRID(),
                   sid   : this.$serverVars[SID],
@@ -1369,7 +1377,7 @@ apf.xmpp = function(struct, tagName){
                     _self.bind();
                 }
             }, this.$isPoll
-            ? createStreamElement.call(this, null, {
+            ? createStreamElement.call(this, {
                 doOpen         : true,
                 to             : this.host,
                 xmlns          : constants.NS.jabber,
@@ -1405,7 +1413,7 @@ apf.xmpp = function(struct, tagName){
           "</bind>"
         );
         this.$doXmlRequest(processBindingResult, this.$isPoll
-            ? createStreamElement.call(this, null, null, sIq)
+            ? createStreamElement.call(this, null, sIq)
             : createBodyElement({
                   rid   : this.$getRID(),
                   sid   : this.$serverVars[SID],
@@ -1452,7 +1460,7 @@ apf.xmpp = function(struct, tagName){
                     parseData.call(_self, oXml);
                     setInitialPresence.call(_self);
                 }, this.$isPoll
-                ? createStreamElement.call(this, null, null, sIq)
+                ? createStreamElement.call(this, null, sIq)
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
@@ -1465,6 +1473,7 @@ apf.xmpp = function(struct, tagName){
             onError.call(this, constants.ERROR_AUTH);
         }
     }
+
 
     /*
      * On connect, the presence of the user needs to be broadcasted to all the
@@ -1492,7 +1501,7 @@ apf.xmpp = function(struct, tagName){
                 connected.call(_self);
                 #endif */
             }, this.$isPoll
-            ? createStreamElement.call(this, null, null, sPresence)
+            ? createStreamElement.call(this, null, sPresence)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -1525,7 +1534,7 @@ apf.xmpp = function(struct, tagName){
                 parseData.call(_self, oXml);
                 connected.call(_self);
             }, this.$isPoll
-            ? createStreamElement.call(this, null, null, sIq)
+            ? createStreamElement.call(this, null, sIq)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2040,7 +2049,7 @@ apf.xmpp = function(struct, tagName){
         sPresence = aPresence.join("");
 
         this.$doXmlRequest(restartListener, this.$isPoll
-            ? createStreamElement.call(this, null, null, sPresence)
+            ? createStreamElement.call(this, null, sPresence)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2108,7 +2117,7 @@ apf.xmpp = function(struct, tagName){
 
                                 restartListener.call(_self, data, state, extra);
                             }, _self.$isPoll
-                                ? createStreamElement.call(this, null, null, sPresence)
+                                ? createStreamElement.call(this, null, sPresence)
                                 : createBodyElement({
                                     rid   : this.$getRID(),
                                     sid   : this.$serverVars[SID],
@@ -2119,7 +2128,7 @@ apf.xmpp = function(struct, tagName){
                         // all other events should run through the parseData()
                         // function and delegated to the Roster
                     }, _self.$isPoll
-                    ? createStreamElement.call(_self, null, null, sPresence)
+                    ? createStreamElement.call(_self, null, sPresence)
                     : createBodyElement({
                         rid   : _self.$getRID(),
                         sid   : _self.$serverVars[SID],
@@ -2127,7 +2136,7 @@ apf.xmpp = function(struct, tagName){
                     }, sPresence)
                 );
             }, this.$isPoll
-            ? createStreamElement.call(this, null, null, sIq)
+            ? createStreamElement.call(this, null, sIq)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2163,7 +2172,7 @@ apf.xmpp = function(struct, tagName){
                 to    : sJID
             });
             this.$doXmlRequest(restartListener, this.$isPoll
-                ? createStreamElement.call(this, null, null, sMsg)
+                ? createStreamElement.call(this, null, sMsg)
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
@@ -2178,7 +2187,7 @@ apf.xmpp = function(struct, tagName){
                 to    : sJID
             });
             this.$doXmlRequest(restartListener, this.$isPoll
-                ? createStreamElement.call(this, null, null, sPresence)
+                ? createStreamElement.call(this, null, sPresence)
                 : createBodyElement({
                     rid   : this.$getRID(),
                     sid   : this.$serverVars[SID],
@@ -2202,7 +2211,7 @@ apf.xmpp = function(struct, tagName){
             to    : oContact.jid
         });
         this.$doXmlRequest(restartListener, this.$isPoll
-            ? createStreamElement.call(this, null, null, sPresence)
+            ? createStreamElement.call(this, null, sPresence)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2287,6 +2296,7 @@ apf.xmpp = function(struct, tagName){
                 Apparently we're doing an XMPP call even though we're offline
                 I'm allowing it, because the developer seems to know more
                 about it than I right now
+
             */
 
             //#ifdef __DEBUG
@@ -2325,7 +2335,7 @@ apf.xmpp = function(struct, tagName){
                 _self.$serverVars["previousMsg"] = aArgs;
                 restartListener.call(_self, data, state, extra);
             }, this.$isPoll
-            ? createStreamElement.call(this, null, null, sMsg)
+            ? createStreamElement.call(this, null, sMsg)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2381,7 +2391,7 @@ apf.xmpp = function(struct, tagName){
 
                 restartListener.call(_self, data, state, extra);
             }, this.$isPoll
-            ? createStreamElement.call(this, null, null, options.message)
+            ? createStreamElement.call(this, null, options.message)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2424,7 +2434,7 @@ apf.xmpp = function(struct, tagName){
                 }
                 fCallback(false);
             }, _self.$isPoll
-            ? createStreamElement.call(this, null, null, sIq)
+            ? createStreamElement.call(this, null, sIq)
             : createBodyElement({
                 rid   : this.$getRID(),
                 sid   : this.$serverVars[SID],
@@ -2482,7 +2492,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         // retrieve cookie and check if we can simply restart the session
-        var c = apf.getcookie(COOKIE);
+        var c = apf.getcookie ? apf.getcookie(COOKIE) : null;
         if (c && (c = c.split("|")).length == 4) {
             var v   = apf.unserialize(c[0]),
                 max = v["MAXPAUSE"],

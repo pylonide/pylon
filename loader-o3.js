@@ -51,6 +51,7 @@ apf.$loader
         "core/lib/xmldb.js",
         
         "core/lib/teleport/http.js", // for simple HTTP transactions
+        "core/lib/teleport/socket.js",
         
         /*"core/lib/draw.js",
         "core/lib/draw/canvas.js",
