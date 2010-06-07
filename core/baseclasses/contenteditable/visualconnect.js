@@ -100,15 +100,24 @@ apf.visualConnect = function (sel){
 
             
             for (i = 0, l = connections[el1][el2].length; i < l; i++) {
-                (c=connections[el1][el2][i].conn).$lblFromEl.style.width = ((maxLeftWidth-4) - c.$lblAttMenu.offsetWidth) + "px";
-                c.$ext.style.width = maxBoxWidth + 82 + "px";
+                //(c=connections[el1][el2][i].conn).$lblFromEl.style.width = ((maxLeftWidth-4) - c.$lblAttMenu.offsetWidth) + "px";
+                
+                (c=connections[el1][el2][i].conn).$fromBox.style.width = maxLeftWidth + 20 + "px";
+                //c.$lblFromEl.style.width = (maxLeftWidth - c.$lblAttMenu.offsetWidth) + "px";
+
+                c.$ext.style.width = maxBoxWidth + 90 + "px";
             }
                 
         });
         apf.addEventListener("vcdelete", function(e) {
             e.el.style.display = "none";
         });
-
+        apf.addEventListener("vcmoveselection", function(e) {
+            sel.$selectList(selection = [e.target]);
+            createConnections(selection);
+            showConnections();
+        });
+        
         apf.plane.show();
         
         div = document.body.appendChild(document.createElement("div"));
@@ -166,7 +175,17 @@ apf.visualConnect = function (sel){
 
                 // element as source element
                 //@todo use .$funcHandlers hash table to find the connections .value = "{blah.value + bli.value}"
-                for (var i = 0, l = elements.length; i < l; i++) {
+                for (var al, attrs, el, i = 0, l = elements.length; i < l; i++) {
+                    for (var fromAt in (attrs=(el=elements[i]).$funcHandlers)) {
+                        for (var at, targetList = [], ai = 0, al = attrs[fromAt].length; ai < al; ai++) {
+                            targetList.push({
+                                el  : (at=attrs[fromAt][ai]).amlNode,
+                                at  : at.prop
+                            });
+                        }
+                        createConnection(el, fromAt, targetList);
+                    }
+                    /*
                     for (var val, targetEl, targetAttr, split, j = 0, jl = elements[i].attributes.length; j < jl; j++) {
                         // @todo regex search of "{"
                         if ((val = elements[i].attributes[j].value).toString().charAt(0) == "{" && val.toString().charAt(val.length-1) == "}") {
@@ -191,7 +210,9 @@ apf.visualConnect = function (sel){
                             }
                         }
                     }
+                    */
                 }
+                //debugger;
             }
             
             var found = false;
@@ -463,137 +484,74 @@ apf.visualConnect = function (sel){
         }*/
         
         // create new connection
-        function createConnection(el1, el2, at1, at2, val) {
-            if (!(el1.id && el2.id && at1 && at2)) return;
+        function createConnection(el1, at1, targetList) {
+            if (!(el1.id && at1 && targetList.length)) return;
             
             var pos, x, y, w, h;
-            var pos1, pos2;
-            var from = {
-                x : (x=(pos=apf.getAbsolutePosition((hNode=el1.$ext)))[0]),
-                y : (y=pos[1]),
-                w : (w=hNode.offsetWidth),
-                h : (h=hNode.offsetHeight),
-                t : [Math.round(x+w/2), y],
-                b : [Math.round(x+w/2), y+h],
-                l : [x, Math.round(y+h/2)],
-                r : [x+w, Math.round(y+h/2)],
-                c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
-            }
-            var to = {
-                x : (x=(pos=apf.getAbsolutePosition((hNode=el2.$ext)))[0]),
-                y : (y=pos[1]),
-                w : (w=hNode.offsetWidth),
-                h : (h=hNode.offsetHeight),
-                t : [Math.round(x+w/2), y],
-                b : [Math.round(x+w/2), y+h],
-                l : [x, Math.round(y+h/2)],
-                r : [x+w, Math.round(y+h/2)],
-                c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
-            }
-
-            var conn = {
-                from : {
-                    el      : el1,
-                    at      : at1,
-                    pos     : from.c
-                },
-                to : {
-                    el      : el2,
-                    at      : at2,
-                    pos     : to.c
-                },
-                val : val
-            }
             
-            var fromId, toId
-            if (!connections) connections = {};
-            if (!connections[(fromId=el1.id)]) {
-                // create new connection
-                if (!connections[(toId = el2.id)]) {
-                    connections[fromId] = {};
-                    connections[fromId][toId] = [conn]
+            // simple connection
+            if (targetList.length == 1) {
+                var el2 = targetList[0].el;
+                var at2 = targetList[0].at;
+                var from = {
+                    x : (x=(pos=apf.getAbsolutePosition((hNode=el1.$ext)))[0]),
+                    y : (y=pos[1]),
+                    w : (w=hNode.offsetWidth),
+                    h : (h=hNode.offsetHeight),
+                    t : [Math.round(x+w/2), y],
+                    b : [Math.round(x+w/2), y+h],
+                    l : [x, Math.round(y+h/2)],
+                    r : [x+w, Math.round(y+h/2)],
+                    c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
                 }
-                // add connection to element duo
+                var to = {
+                    x : (x=(pos=apf.getAbsolutePosition((hNode=el2.$ext)))[0]),
+                    y : (y=pos[1]),
+                    w : (w=hNode.offsetWidth),
+                    h : (h=hNode.offsetHeight),
+                    t : [Math.round(x+w/2), y],
+                    b : [Math.round(x+w/2), y+h],
+                    l : [x, Math.round(y+h/2)],
+                    r : [x+w, Math.round(y+h/2)],
+                    c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
+                }
+                
+                // check
+                var conn = {
+                    from : {
+                        el      : el1,
+                        at      : at1,
+                        pos     : from.c
+                    },
+                    to : {
+                        el      : el2,
+                        at      : at2,
+                        pos     : to.c
+                    },
+                }
+                
+                // set value
+                var val;
+                if (val = el2.getAttribute(at2)) {
+                    conn.val = val;
+                }
                 else {
-                    if (!connections[(toId = el2.id)][fromId]) {
-                        connections[toId][fromId] = [conn];
-                    }
-                    // check for duplicates
-                    else {
-                        for (var dupFound = false, c, i = 0, l = connections[toId][fromId].length; i < l; i++) {
-                            if (
-                                ((c=connections[toId][fromId][i]).from.el.id == conn.from.el.id) && 
-                                (c.from.at == conn.from.at) &&
-                                (c.to.el.id == conn.to.el.id) &&
-                                (c.to.at == conn.to.at) &&
-                                (c.val == conn.val)
-                            ) {
-                                dupFound = true;
-                                break;
-                            }
-                        }
-                        if (!dupFound)
-                            connections[toId][fromId].push(conn);
-                    }
+                    conn.val = "{"+el2.id+"."+at2+"}";
+                    conn.readonly = true;
                 }
+                
+                var fromId, toId
+                if (!connections) connections = {};
+                if (!connections[(fromId=el1.id)]) connections[fromId] = {};
+                if (!connections[fromId][toId]) 
+                    connections[fromId][toId] = [conn];
+                else
+                    connections[fromId][toId].push(conn);
             }
+            // complex connection
             else {
-                if (!connections[fromId][(toId = el2.id)]) {
-                    if (connections[toId] && connections[toId][fromId]) {
-                        for (var dupFound = false, c, i = 0, l = connections[toId][fromId].length; i < l; i++) {
-                            if (
-                                ((c=connections[toId][fromId][i]).from.el.id == conn.from.el.id) && 
-                                (c.from.at == conn.from.at) &&
-                                (c.to.el.id == conn.to.el.id) &&
-                                (c.to.at == conn.to.at) &&
-                                (c.val == conn.val)
-                            ) {
-                                dupFound = true;
-                                break;
-                            }
-                        }
-                        if (!dupFound)
-                            connections[toId][fromId].push(conn);
-                    }
-                    else {
-                        connections[fromId][toId] = [conn];
-                    }
-                }
-                // check for duplicates
-                else {
-                    for (var dupFound = false, c, i = 0, l = connections[fromId][toId].length; i < l; i++) {
-                        if (
-                            ((c=connections[fromId][toId][i]).from.el.id == conn.from.el.id) && 
-                            (c.from.at == conn.from.at) &&
-                            (c.to.el.id == conn.to.el.id) &&
-                            (c.to.at == conn.to.at) &&
-                            (c.val == conn.val)
-                        ) {
-                            dupFound = true;
-                            break;
-                        }
-                    }
-                    if (!dupFound)
-                        connections[fromId][toId].push(conn);
-                }
+                return;
             }
-            
-/*
-            if (!connections) connections = {};
-            if (!connections[el1.id]) connections[el1.id] = [];
-            connections[el1.id].push({
-                from : {
-                    el      : el1,
-                    at      : at1,
-                    pos     : from.c
-                },
-                to : {
-                    el      : el2,
-                    at      : at2,
-                    pos     : to.c
-                }
-            })
-*/
         }
 
         function drawConnections() {
@@ -619,16 +577,21 @@ apf.visualConnect = function (sel){
                 for (var id2 in connections[id]) {
                     var curConnections = connections[id][id2];
 
-                    for (var connEdit, connDivs = [], maxBoxWidth = 0, maxLeftWidth = 0, centerPos, pos1, pos2, i = 0, l = curConnections.length; i < l; i++) {
+                    for (var c, cType, connEdit, connDivs = [], maxBoxWidth = 0, maxLeftWidth = 0, centerPos, pos1, pos2, i = 0, l = curConnections.length; i < l; i++) {
                         // default positions for lines, start and end
-                        pos1 = curConnections[i].from.pos;
-                        pos2 = curConnections[i].to.pos;
+                        pos1 = (c=curConnections[i]).from.pos;
+                        pos2 = c.to.pos;
                         // calculate center of line
                         centerPos = [Math.round((pos1[0]+pos2[0])/2), Math.round((pos1[1]+pos2[1])/2)];
                         
-                        connEdit = new connectEdit(div, curConnections[i].from.el, curConnections[i].to.el, curConnections[i].from.at, curConnections[i].to.at, curConnections[i].val);
-                        div.appendChild(connEdit.$ext);
+                        // set type of connection: simple, complex or readonly
+                        if (c.readonly) 
+                            cType = "readonly";
 
+                        connEdit = new connectEdit(div, c.from.el, c.to.el, c.from.at, c.to.at, c.val, cType);
+                        div.appendChild(connEdit.$ext);
+                        
+                        
                         connections[id][id2][i].conn = connEdit;
 
                         if (connEdit.getMaxLeftWidth() > maxLeftWidth) {
@@ -643,17 +606,9 @@ apf.visualConnect = function (sel){
 
                         // even number of connections
                         var linePadding = 4;
-                        if (l % 2 == 0) {
-                            pos1 = [pos1[0], pos1[1] - (l/2*linePadding*i) + linePadding/2];
-                            pos2 = [pos2[0], pos2[1] - (l/2*linePadding*i) + linePadding/2];
-                            centerPos = [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - l/2*connEdit.$box.offsetHeight*i];
-                        }
-                        // odd number of connections                    
-                        else {
-                            pos1 = [pos1[0], pos1[1] - (l+1)/2*linePadding*(i+0.5) + 3];
-                            pos2 = [pos2[0], pos2[1] - (l+1)/2*linePadding*(i+0.5) + 3];
-                            centerPos = [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - (l+1)/2*connEdit.$box.offsetHeight*(i+0.5)]
-                        }
+                            centerPos = (l % 2 == 0) 
+                                ? [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - l/2*connEdit.$box.offsetHeight*i]
+                                : centerPos = [centerPos[0] - (connEdit.$box.offsetWidth+10)/2, centerPos[1] - (l+1)/2*connEdit.$box.offsetHeight*(i+0.5)]
                         
                         centerPos[0] = (centerPos[0] > 0) ? centerPos[0] : 0;
                         centerPos[1] = (centerPos[1] > 0) ? centerPos[1] : 0;
@@ -674,8 +629,9 @@ apf.visualConnect = function (sel){
                     for (var c, container, spans, cDiv, i = 0, l = connDivs.length; i < l; i++) {
                         // make div visible
                         (c=connDivs[i]).$ext.style.display = "block";
+                        c.$fromBox.style.width = maxLeftWidth + 20 + "px";
                         //c.$lblFromEl.style.width = (maxLeftWidth - c.$lblAttMenu.offsetWidth) + "px";
-                        c.$ext.style.width = maxBoxWidth + 82 + "px";
+                        c.$ext.style.width = maxBoxWidth + 90 + "px";
                     }
                 }
             }
@@ -710,14 +666,16 @@ apf.visualConnect = function (sel){
 };
 
 
-function connectEdit(container, fromEl, toEl, fromAt, toAt, val){
-    this.container = container;
-    this.fromEl = fromEl;
-    this.toEl   = toEl;
-    this.fromAt = fromAt;
-    this.toAt   = toAt;
-    this.value    = val;
-
+function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
+    this.container  = container;
+    this.fromEl     = fromEl;
+    this.toEl       = toEl;
+    this.fromAt     = fromAt;
+    this.toAt       = toAt;
+    this.value      = val;
+    
+    this.type       = type || "simple";
+    
     this.draw();
 };
 
@@ -812,96 +770,111 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val){
         this.$ext.setAttribute("class", "atchart_box");
         this.$ext.setAttribute("style", "width:285px;color:#000000;font-family:Tahoma;font-size:12px;height:29px;min-width:30px;min-height:29px;max-height:29px;overflow:hidden;cursor:default;position:absolute;");
         
-        this.$ext.innerHTML = '<div class="left"> </div><div class="red_button"> </div><div class="right"> </div><div class="lbl"><span class="section1">Button.</span><span class="section2"><a href="#">caption</a></span><span class="section3">=</span><span class="section4">&quot;</span><label class="section5">{button2.value}</label><span class="section4">&quot;</span></div>';
+        this.$ext.innerHTML = '<div class="left"> </div><div class="red_button"> </div><div class="right"> </div><div class="lbl"><div><span class="section1">Button.</span><span class="section2"><a href="#">caption</a></span></div><span class="section3">=</span><span class="section4">&quot;</span><label class="section5">{button2.value}</label><span class="section4">&quot;</span></div>';
         this.$ext.onmousedown = this.$ext.onmouseup = function(e) {
             (e||event).cancelBubble = true;
         }
         
-        var divs,spans;
-        
+        var divs, spans;
         // delBtn
         this.$delBtn        = (divs=this.$ext.getElementsByTagName("div"))[1];
-        this.$delBtn.onmousedown = function(e) {
-            (e||event).cancelBubble = true;
-        }
+        if (this.type == "readonly") this.$delBtn.style.display = "none";
         
-        this.$delBtn.onmouseup = function(e) {
-            _self.fromEl.setAttribute(_self.fromAt, '');
-            apf.dispatchEvent("vcdelete", {el:_self.$ext});
-            
-            (e||event).cancelBubble = true;
-        }
         
         this.$box           = divs[3];
-        this.$lblFromEl     = (spans=this.$box.getElementsByTagName("span"))[0];
+        this.$fromBox       = this.$box.getElementsByTagName("div")[0]
+        this.$lblFromEl     = (spans=this.$fromBox.getElementsByTagName("span"))[0];
         this.$lblFromEl.innerHTML = this.fromEl.id + ".";
 
         this.$attMenu       = spans[1];
         this.$lblAttMenu    = this.$attMenu.firstChild;
         this.setPropName(this.fromAt);
-        this.$attMenu.onmousedown = function(e) {
-            (e||event).cancelBubble = true;
-        }
-        this.$attMenu.onmouseup  = function(e) {
-            var e = e || event;
-            
-            for (var name, attList = [], ai = 0, al = _self.fromEl.attributes.length; ai < al; ai++) {
-                if (_self.ignoreFromAtts.indexOf((name = _self.fromEl.attributes[ai].name)) > -1) continue;
-                attList.push(new apf.item({
-                    caption: name
-                }));
+        
+        if (this.type != "readonly") {
+            this.$delBtn.onmousedown = function(e) {
+                (e||event).cancelBubble = true;
+            }
+            this.$delBtn.onmouseup = function(e) {
+                _self.fromEl.setAttribute(_self.fromAt, '');
+                apf.dispatchEvent("vcdelete", {el:_self.$ext});
+                
+                (e||event).cancelBubble = true;
             }
 
-            attMenu = new apf.menu({
-              htmlNode   : _self.$ext,
-              id         : "attMenu",
-              childNodes : attList
-            });
-            
-            var pos = apf.getAbsolutePosition(this);
-
-            var x = pos[0], y = pos[1] + this.offsetHeight;
-            setTimeout(function(){
-                attMenu.display(x, y, true);
-                
-                //attMenu.display(x-attMenu.$ext.offsetWidth, y);
-                attMenu.$ext.style.left = x;
-                attMenu.$ext.style.zIndex = 100000002;
-               
-                // select attribute in menu
-                apf.popup.cache[apf.popup.last].content.onmousedown = function(e) {
-                    var newAt = attMenu.$selected.caption;
-                    
-                    if (_self.fromAt == newAt) return;
-                    // set new attr
-                    attMenu.setProperty("visible", false);
-
-                    _self.fromEl.setAttribute(_self.fromAt, "");
-                    _self.setPropName(newAt);
-                    _self.fromEl.setAttribute(newAt, _self.value);
-                    
-                    
-                    (e||event).cancelBubble = true;
-                    
-                    _self.container.onmousedown = _self.container.onmouseup = function(e) {
-                        _self.container.onmousedown = _self.container.onmouseup = null;
-                        apf.dispatchEvent("vcpropchange", {obj:_self});
-                        (e || event).cancelBubble = true;
-                    }
-                    //document.onmouseup = null;
+            this.$attMenu.onmousedown = function(e) {
+                (e||event).cancelBubble = true;
+            }
+            this.$attMenu.onmouseup  = function(e) {
+                var e = e || event;
+                debugger;
+                for (var name, attList = [], ai = 0, al = _self.fromEl.attributes.length; ai < al; ai++) {
+                    if (_self.ignoreFromAtts.indexOf((name = _self.fromEl.attributes[ai].name)) > -1) continue;
+                    attList.push(new apf.item({
+                        caption: name
+                    }));
                 }
-                
-            });
 
-            (e||event).cancelBubble = true;
+                attMenu = new apf.menu({
+                  htmlNode   : _self.$ext,
+                  id         : "attMenu",
+                  childNodes : attList
+                });
+                
+                var pos = apf.getAbsolutePosition(this);
+
+                var x = pos[0], y = pos[1] + this.offsetHeight;
+                setTimeout(function(){
+                    attMenu.display(x, y, true);
+                    
+                    //attMenu.display(x-attMenu.$ext.offsetWidth, y);
+                    attMenu.$ext.style.left = x;
+                    attMenu.$ext.style.zIndex = 100000002;
+                   
+                    // select attribute in menu
+                    apf.popup.cache[apf.popup.last].content.onmousedown = function(e) {
+                        var newAt = attMenu.$selected.caption;
+                        
+                        if (_self.fromAt == newAt) return;
+                        // set new attr
+                        attMenu.setProperty("visible", false);
+
+                        _self.fromEl.setAttribute(_self.fromAt, "");
+                        _self.setPropName(newAt);
+                        _self.fromEl.setAttribute(newAt, _self.value);
+                        
+                        
+                        (e||event).cancelBubble = true;
+                        
+                        _self.container.onmousedown = _self.container.onmouseup = function(e) {
+                            _self.container.onmousedown = _self.container.onmouseup = null;
+                            apf.dispatchEvent("vcpropchange", {obj:_self});
+                            (e || event).cancelBubble = true;
+                        }
+                        //document.onmouseup = null;
+                    }
+                    
+                });
+
+                (e||event).cancelBubble = true;
+            }
         }
         
-        
-        
-
         this.$lblVal        = this.$box.getElementsByTagName("label")[0];
         this.setPropValue(this.value);
-        this.$inputVal      = this.createInput();
+        
+        if (this.type != "readonly")
+            this.$inputVal      = this.createInput();
+        
+        if (this.type == "readonly") {
+            this.$ext.onmousedown = function(e) {
+                apf.dispatchEvent("vcmoveselection", {target: _self.toEl});
+                (e||event).cancelBubble = true;
+            }
+            this.$ext.onmouseup = function(e) {
+                (e||event).cancelBubble = true;
+            }
+
+        }
     }
     
     this.createInput = function() {

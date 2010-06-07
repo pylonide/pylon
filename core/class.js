@@ -383,6 +383,18 @@ apf.Class.prototype = new (function(){
         if (bRecip) {
             eventName = PROP + bProp;
             var _self = this;
+
+            // add bidirectional binding to funcHandlers for visualconnect
+            //#ifdef __WITH_CONTENTEDITABLE
+            if (!this.$funcHandlers[bProp])
+                this.$funcHandlers[bProp] = [];
+                
+            this.$funcHandlers[bProp].push({
+                amlNode : bObject, 
+                prop    : bProp
+            });
+            //#endif
+
             (bObject.$eventsStack[eventName] || (bObject.$eventsStack[eventName] = [])).push(
                 eFunc.recip = function(){
                     if (isBeingCalled) //Prevent circular refs

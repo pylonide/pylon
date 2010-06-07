@@ -223,9 +223,11 @@ html.has_apf .drag#apf_outline{
     float:left;
     font-weight:bold;
 }
-
+.atchart_box div div {
+    float: left;
+    overflow: hidden;
+}
 .atchart_box span.section1 {
-    border   : none;
     display  : block;
 }
 
