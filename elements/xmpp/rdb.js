@@ -59,7 +59,7 @@ apf.xmpp_rdb = function(){
         if (fCallback)
             _self.$serverVars["rdb_callback"] = fCallback;
         _self.$doXmlRequest(_self.$restartListener, _self.$isPoll
-            ? _self.$createStreamElement(null, null, sBody)
+            ? _self.$createStreamElement(null, sBody)
             : _self.$createBodyElement({
                 rid   : _self.$getRID(),
                 sid   : _self.$serverVars[SID],
