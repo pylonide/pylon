@@ -283,7 +283,7 @@ apf.menu = function(struct, tagName){
             : apf.menu.lastFocus || apf.document.activeElement;
         
         apf.popup.last = null;
-        this.focus();
+        //this.focus();
 
         //Make the component that provides context appear to have focus
 
