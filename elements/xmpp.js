@@ -633,7 +633,7 @@ apf.xmpp = function(struct, tagName){
      * @type      {XMLHttpRequest}
      */
     this.$doXmlRequest = function(cb, s) {
-        if (cb && s)
+        if (cb && typeof s != "undefined")
             this.$reqStack.push({callback: cb, body: s});
 
         // execute this specific call AFTER the current one has finished...
@@ -643,6 +643,7 @@ apf.xmpp = function(struct, tagName){
         var _self = this,
             req   = this.$reqStack.shift();
         if (!req) return null;
+        apf.console.log("sending request: " + req.body);
         ++this.$reqCount;
         return this.$activeReq = this.get(this.url, {
             callback: function(data, state, extra) {
@@ -658,12 +659,17 @@ apf.xmpp = function(struct, tagName){
                         //                + "Received an empty XML document (0 bytes)";
                     }
                     else {
-                        if (data.indexOf("<stream:stream") > -1) {
-                            if (data.indexOf("</stream:stream>") == -1)
-                                data = data + "</stream:stream>";
+                        apf.console.log("receiving data: " + data);
+                        var start = "<stream:stream",
+                            end   = "</stream:stream>";
+                        if (data.indexOf(start) > -1) {
+                            if (data.indexOf(end) == -1)
+
+                                data = data + end;
                         }
                         else if (_self.$xmppMethod & constants.CONN_SOCKET) {
-                            data = "<stream:stream xmlns:stream='" + constants.NS.stream + "'>" + data + "</stream:stream>";
+                            data = start + " xmlns:stream='" + constants.NS.stream + "'>" + data 
+                                 + (data.indexOf(end) == -1 ? end : "");
                         }
                         data = apf.getXmlDom(data);
                         if (!apf.supportNamespaces)
@@ -1576,7 +1582,10 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.$listen = function() {
-        if (this.$listening === true || !this.$serverVars[CONN]) return;
+        if ((!(this.$xmppMethod & constants.CONN_SOCKET) && this.$listening === true)
+          || !this.$serverVars[CONN]) return;
+        clearTimeout(this.$listener);
+        this.$listener  = null;
 
         this.$listening = true;
 
@@ -2518,10 +2527,6 @@ apf.xmpp = function(struct, tagName){
             if (!this.$canRDB)
                 this.$initRDB();
             // #endif
-            var _self = this;
-            $setTimeout(function() {
-                connected.call(_self);
-            }, 200);
         }
     });
 

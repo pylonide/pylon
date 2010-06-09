@@ -226,7 +226,8 @@ apf.socket = function(){
             });
             
             socket.addListener("end", function() {
-                //todo
+                _self.pool[id] = null;
+                delete _self.pool[id];
             });
             
             this.pool[id] = {

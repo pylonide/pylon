@@ -466,7 +466,11 @@ apf.remote = function(struct, tagName){
                     apf.xmldb.removeNodeList(xmlNode, q[2]);
                     break;
             }
-            
+            this.dispatchEvent("change", {
+                model  : model,
+                xmlNode: xmlNode,
+                message: oMessage
+            });
         }
         //#ifdef __DEBUG
         else {

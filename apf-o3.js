@@ -180,13 +180,20 @@ apf = {
     console : {
         //#ifdef __DEBUG
         write : function(msg, type, subtype, data, forceWin, nodate){
-            var dt   = new Date();
-            var ms   = String(dt.getMilliseconds());
-            while (ms.length < 3) ms += "0";
-            var date = dt.getHours() + ":"
-                + dt.getMinutes()    + ":"
-                + dt.getSeconds()    + "."
-                + ms;
+            if (!Number.prototype.toPrettyDigit) {
+                Number.prototype.toPrettyDigit = function() {
+                    var n = this.toString();
+                    return (n.length == 1) ? "0" + n : n;
+                }
+            }
+
+            var dt   = new Date(),
+                ms   = String(dt.getMilliseconds());
+            while (ms.length < 3)
+                ms += "0";
+            var date = dt.getHours().toPrettyDigit()   + ":"
+                     + dt.getMinutes().toPrettyDigit() + ":"
+                     + dt.getSeconds().toPrettyDigit() + "." + ms;
             
             o3.print((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
         },
