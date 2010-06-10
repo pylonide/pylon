@@ -99,7 +99,7 @@ apf.cgi = function(){
                 for (var j = 0; j < o.length; j++)
                     recur(o[j], stack + "%5B" + j + "%5D");//" + j + "
             }
-            else if (typeof o == "object") {
+            else if (o && typeof o == "object") {
                 if (o.nodeType) {
                     try{
                         var s = o.outerHTML || o.serialize && o.serialize() 

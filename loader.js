@@ -460,7 +460,7 @@ apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];
     for (var i = 0, l = arguments.length; i < l; i++) 
         req.push(apf.getAbsolutePath(dir, arguments[i]))
-    apf.$x.script.apply(null, req).wait();
+    apf.$x.script.apply(apf.$loader, req).wait();
 };
 
 /*if(document.body)
