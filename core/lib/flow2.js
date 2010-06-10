@@ -20,6 +20,17 @@
  */
 
 //#ifdef __WITH_FLOW2
+/*
+ * @private
+ * @default_private
+ * @constructor
+ *
+ * @author      Lukasz Lipinski
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace apf
+ */
+
 apf.flow = {
     objCanvases        : {},
 

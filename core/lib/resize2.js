@@ -1,3 +1,41 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+//#ifdef __WITH_RESIZE2
+
+/**
+ * This abstraction is using for resizing block elements. Resizing is allowed
+ * with square elements in vertical, horizontal or both planes. Symmetric
+ * resizing is possible with SHIFT button.
+ *
+ * @private
+ * @default_private
+ * @constructor
+ *
+ * @author      Lukasz Lipinski
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace apf
+ */
+
 /*apf.resize = function() {
     this.scales = {
         scalex    : false,
