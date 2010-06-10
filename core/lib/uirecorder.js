@@ -555,7 +555,7 @@ TEMPORARILY DISABLED
                                 type        : check1.type,  // event
                                 name        : check1.name,  // afterload
                                 elName      : elName,
-                                detailType  : dType,
+                                detailType  : dType
                             });
                         }
                         else if (!found) {

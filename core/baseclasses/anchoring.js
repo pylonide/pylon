@@ -265,6 +265,7 @@ apf.Anchoring = function(){
     };
 
     function getRuleHeader(){
+        if (!this.$pHtmlDoc) return "";
         return "try{\
             var oHtml = " + (apf.hasHtmlIdsInJs
                 ? this.$ext.getAttribute("id")
@@ -407,7 +408,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.width = "";
             }
-            else if (hasWidth) {
+            else if (hasWidth && typeof this.maxwidth == "number" && typeof this.minwidth == "number") {
                 if (parseInt(width) != width) {
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
@@ -465,7 +466,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.height = "";
             }
-            else if (hasHeight) {
+            else if (hasHeight && typeof this.minheight == "number") {
                 if (parseInt(height) != height) {
                     height = setPercentage(height, "pHeight");
                     rules.push("oHtml.style.height = Math.max(" 

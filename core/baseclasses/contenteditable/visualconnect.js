@@ -527,7 +527,7 @@ apf.visualConnect = function (sel){
                         el      : el2,
                         at      : at2,
                         pos     : to.c
-                    },
+                    }
                 }
                 
                 // set value
