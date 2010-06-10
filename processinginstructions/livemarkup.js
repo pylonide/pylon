@@ -107,7 +107,8 @@ apf.LiveMarkupPi = function(){
                 for (var i = 0; i < nodes.length; i++)
                     nodes[i].destroy(true);
             }
-            this.$ext.innerHTML = data || "";
+            if (this.$ext)
+                this.$ext.innerHTML = data || "";
         }
     };
 }).call(apf.LiveMarkupPi.prototype = new apf.AmlProcessingInstruction(true));
