@@ -361,7 +361,7 @@ apf.Anchoring = function(){
             if ("absolute|fixed".indexOf(apf.getStyle(this.$ext, "position")) == -1)
                 this.$ext.style.position = "absolute";
         }
-        else {
+        else if (!this.center) {
             this.$ext.style.position = "relative";
             if (!this.width)
                 this.$ext.style.width    = "";
