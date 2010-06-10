@@ -933,7 +933,7 @@ apf.window = function(){
         var p,
             amlNode   = apf.findHost(e.srcElement || e.target),
             cEditable = amlNode && amlNode.$editable
-              // #ifdef __WITH_LIVEEIDT
+              // #ifdef __WITH_LIVEEDIT
               || (amlNode && amlNode.hasFeature(apf.__LIVEEDIT__))
               // #endif
             ;
