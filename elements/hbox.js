@@ -377,7 +377,7 @@ apf.vbox = function(struct, tagName){
                     apf.layout.forceResize(amlNode.$ext);
                 
                 if (hbox)
-                    oExt.style[CSSFLOAT] = "";
+                    oExt.style[CSSFLOAT] = "none";
             }
             else {
                 if (amlNode.$altExt) {
@@ -429,7 +429,7 @@ apf.vbox = function(struct, tagName){
                 if (hbox) {
                     oExt.style[CSSFLOAT] = cellInfo.align && cellInfo.align != this.pack
                         ? (cellInfo.align == "start" ? "left" : "right")
-                        : "";
+                        : "none";
                 }
             }
             

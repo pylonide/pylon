@@ -195,8 +195,10 @@ apf.addEventListener("load", function(){
         var o = apf.document.$getVisualSelect().$getOutline();
         if (!o) return;
         var lastTop = o.style.top;
-        o.style.top = 
-        document.getElementById("apf_outline").style.top = "-10000px";
+        o.style.top = "-10000px"
+        var hOutline = document.getElementById("apf_outline");
+        if (hOutline) 
+            hOutline.style.top = "-10000px";
         
         var node = apf.findHost(
             document.elementFromPoint(e.htmlEvent.clientX, e.htmlEvent.clientY));
@@ -305,10 +307,10 @@ apf.ContentEditable = function() {
                     this.$propHandlers.visible_original = this.$propHandlers.visible;
                 this.$propHandlers.visible = function(value){
                     apf.setOpacity(this.$ext, value ? 1 : 0.5);
-                    this.$ext.onmouseover = function(){
+                    this.$ext.onmouseover = value ? null : function(){
                         apf.setOpacity(this, 1);
                     }
-                    this.$ext.onmouseout = function(e){
+                    this.$ext.onmouseout = value ? null : function(e){
                         if (!e) e = event;
                         if (!e.toElement || e.toElement.host !== false)
                             apf.setOpacity(this, 0.5);

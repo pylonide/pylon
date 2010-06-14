@@ -213,7 +213,7 @@ apf.ContentEditable.commands = (function(){
             
             if (!htmlNode) {
                 if (el.getPage)
-                    this.startRename(el.getPage());
+                    this.start(el.getPage());
                 return;
             }
     

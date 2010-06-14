@@ -102,6 +102,22 @@ apf.Sort = function(xmlNode){
         else if (!settings.method) 
             settings.method = sort_methods["alpha"];
         
+        if (struct.format) {
+            settings.sort_dateFmtStr = struct.format;
+            //settings.method = sort_methods["date"];
+            var result = str.match(/(D+|Y+|M+|h+|m+|s+)/g);
+            if (result) {
+                for (var pos = {}, i = 0; i < result.length; i++) 
+                    pos[result[i].substr(0, 1)] = i + 1;
+                settings.dateFormat = new RegExp(str.replace(/([^\sDYMhms])/g, '\\$1')
+                    .replace(/YYYY/, "(\\d\\d\\d\\d)")
+                    .replace(/(DD|YY|MM|hh|mm|ss)/g, "(\\d\\d)"));
+                settings.dateReplace = "$" + pos["M"] + "/$" + pos["D"] + "/$" + pos["Y"];
+                if (pos["h"]) 
+                    settings.dateReplace += " $" + pos["h"] + ":$" + pos["m"] + ":$" + pos["s"];
+            }
+        }
+        
         if (!settings.getValue) {
             settings.getValue = function(item){
                 return apf.queryValue(item, settings.xpath);

@@ -353,8 +353,10 @@ apf.item  = function(struct, tagName){
         if (this.type == "radio")
             this.parentNode.select(this.group, this.value || this.caption);
 
-        else if (this.type == "check")
-            this.$handlePropSet("checked", !this.checked);
+        else if (this.type == "check") {
+            this.setProperty("checked", !this.checked);
+            //this.$handlePropSet("checked", !this.checked);
+        }
 
         if (this.submenu) {
             this.$over(null, true);
