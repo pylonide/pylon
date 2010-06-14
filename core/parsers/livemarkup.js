@@ -2485,6 +2485,12 @@ apf.lm_exec = new (function(){
 
     var _clut = apf.color?apf.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
 
+    function sort(set, how){
+        var s = new apf.Sort();
+        s.set(how);
+        return s.apply(apf.getArrayFromNodelist(set));
+    }
+    
     function _cthex(c){
         var t;
         if((t=typeof(c))=='string'){
