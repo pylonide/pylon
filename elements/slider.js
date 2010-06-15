@@ -424,8 +424,9 @@ apf.slider = function(struct, tagName){
                 default:
                     var inputValue = this.mask[Math.round(value - this.min) / (this.step || 1)];
                     break;
-                   
             }
+            
+            this.setProperty("valuemask", inputValue);
 
             if (this.oLabel.nodeValue !== null) {
                 this.oLabel.nodeValue = inputValue;
@@ -452,21 +453,8 @@ apf.slider = function(struct, tagName){
             }*/
         }
     };
-
-    /**** Public methods ****/
-
-    //#ifdef __WITH_CONVENIENCE_API
     
-    /**
-     * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
-     */
-    this.setValue = function(value){
-        this.setProperty("value", value, false, true);
-    };
-    
-    this.setLabelValue = function(value) {
+    this.$setLabelValue = function(value) {
         var mask = this.mask.split(".");
         
         switch(mask[0]) {
@@ -481,11 +469,24 @@ apf.slider = function(struct, tagName){
         this.$propHandlers["value"].call(this, value);
     };
 
+    /**** Public methods ****/
+
+    //#ifdef __WITH_CONVENIENCE_API
+    
+    /**
+     * Sets the value of this element. This should be one of the values
+     * specified in the values attribute.
+     * @param {String} value the new value of this element
+     */
+    this.setValue = function(value) {
+        this.setProperty("value", value, false, true);
+    };
+
     /**
      * Returns the current value of this element.
      * @return {String}
      */
-    this.getValue = function(){
+    this.getValue = function() {
         return this.step
             ? Math.round(parseInt(this.value) / this.step) * this.step
             : this.value;
@@ -496,7 +497,7 @@ apf.slider = function(struct, tagName){
     /**** Keyboard support ****/
 
     // #ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", function(e){
+    this.addEventListener("keydown", function(e) {
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
 
@@ -528,7 +529,7 @@ apf.slider = function(struct, tagName){
             case 13:
                 //ENTER
                 if (this.$hasTSlider)
-                    this.setLabelValue(this.oLabel.value);
+                    this.$setLabelValue(this.oLabel.value);
                 break;
             default:
                 return;
@@ -566,7 +567,7 @@ apf.slider = function(struct, tagName){
         var kWidth = this.oKnob.offsetWidth;
         var diff = apf.getDiff(this.oSliderContainer);
         var right = scWidth - this.$ext.offsetWidth;
-        this.setLabelValue(this.oLabel.value);
+        this.$setLabelValue(this.oLabel.value);
         this.oSliderContainer.style.display = "none";
         
         //Place grabber in the same position as button
@@ -625,7 +626,7 @@ apf.slider = function(struct, tagName){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", this.$baseCSSname + "Down"]);
         
         if (this.$hasTSlider)
-            this.setLabelValue(this.oLabel.value);
+            this.$setLabelValue(this.oLabel.value);
     };
     
     this.$focus = function(){
