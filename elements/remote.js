@@ -219,7 +219,7 @@ apf.remote = function(struct, tagName){
             if (!e.session && !e.fields["session"]) return;
             var sSession = e.session || e.fields["session"].value,
                 oSession = _self.sessions[sSession],
-                f        = function(e) {
+                f        = function(oSession) {
                     if (e.type == "submit") {
                         var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
                             sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
@@ -233,9 +233,9 @@ apf.remote = function(struct, tagName){
                     }
                 }
             if (!oSession)
-                return _self.createDynamicModel(e, f); // @todo : send failure message
+                oSession = _self.createDynamicModel(e, f);
             else
-                f();
+                f(oSession);
         });
     };
 
@@ -244,13 +244,14 @@ apf.remote = function(struct, tagName){
         if (!model.id)
             model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
         xpath  = xpath || "//";
-        var id = model.id + ":" + xpath;
+        var o,
+            id = model.id + ":" + xpath;
         this.sessions[id] = model;
         if (this.transport && this.transport.isConnected()) {
             delete this.sessions[id];
             delete this.pendingSessions[id];
             id = this.transport.normalizeEntity(id);
-            this.sessions[id] = {
+            o = this.sessions[id] = {
                 model: model,
                 xpath: xpath
             };
@@ -258,6 +259,7 @@ apf.remote = function(struct, tagName){
             this.transport.startRDB(id, function(sSession, iTime) {
                 _self.sessionStarted(sSession, iTime);
             });
+            return o;
         }
         else {
             this.pendingSessions[id] = model;
@@ -310,16 +312,19 @@ apf.remote = function(struct, tagName){
             else
                 model.id = model.name = resource;
         }
+        var o = this.startSession(model);
         // set the root node for this model
         model.addEventListener("afterload", f = function() {
             model.removeEventListener("afterload", f);
-            callback();
+            callback(o);
         });
-        delete e.type;
-        delete e.name;
-        e.model    = model;
-        e.resource = this["resource-uri"] + resource;
-        this.dispatchEvent("rdbinit", e);
+        this.dispatchEvent("rdbinit", {
+            model: model,
+            resource: this["resource-uri"] + resource,
+            session: e.session,
+            fields: e.fields,
+            annotator: e.annotator
+        });
     };
     
     this.sendChange = function(args, model){

@@ -377,9 +377,9 @@ apf.xmpp_rdb = function(){
                 // and metadata from the owner of the room
             };
         if (this["rdb-bot"]) {
-            if (rdbVars["bot_started"] || rdbVars["bot_timer"]) return;
-            clearTimeout(rdbVars["bot_timer"]);
-            rdbVars["bot_timer"] = $setTimeout(function() {
+            if (rdbVars["bot_started"] || rdbVars["bot_regtimer"]) return;
+            clearTimeout(rdbVars["bot_regtimer"]);
+            rdbVars["bot_regtimer"] = $setTimeout(function() {
                 _self.botRegister(_self["rdb-host"], f);
             });
         }
