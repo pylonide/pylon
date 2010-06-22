@@ -383,7 +383,7 @@ apf.xmpp_rdb = function(){
                 _self.botRegister(_self["rdb-host"], f);
             });
         }
-        else {
+        else if (sSession != "empty") {
             clearTimeout(rdbVars["rdb_timer"]);
             // add the doc to the queue
             // NOTE: a password may be returned from the 'rdb-password' event handler

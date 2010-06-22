@@ -179,11 +179,13 @@ apf.remote = function(struct, tagName){
         var _self = this;
 
         this.transport.addEventListener("connected", function() {
-            var s;
+            var s, t;
             for (s in _self.pendingTerminations)
                 _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
-            for (s in _self.pendingSessions)
-                _self.startSession(_self.pendingSessions[s], s.split(":")[1]);
+            for (t in _self.pendingSessions)
+                _self.startSession(_self.pendingSessions[t], t.split(":")[1]);
+            if (!t)
+                _self.startEmptySession();
         });
 
         this.transport.addEventListener("reconnect", function() {
@@ -258,6 +260,11 @@ apf.remote = function(struct, tagName){
         else {
             this.pendingSessions[id] = model;
         }
+    };
+
+    this.startEmptySession = function() {
+        if (this.transport && this.transport.isConnected())
+            this.transport.startRDB("empty");
     };
 
     this.endSession = function(model, xpath) {
