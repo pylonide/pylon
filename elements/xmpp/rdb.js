@@ -140,16 +140,25 @@ apf.xmpp_rdb = function(){
                 cb(oNode);
             }
             else if (sDoc) {
-                this.$addDoc(sJID);
-                // a new document session is started
-                oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
-                    room       : sDoc,
-                    roomJID    : sJID,
-                    affiliation: "owner",
-                    role       : "owner",
-                    status     : "",
-                    isRDB      : true
-                });
+                if (arguments[1]) { // incoming RDB change message
+                    this.dispatchEvent("datachange", {
+                        annotator: sJID,
+                        session  : sDoc,
+                        body     : arguments[1]
+                    });
+                }
+                else {
+                    // a new document session is started
+                    this.$addDoc(sJID);
+                    oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
+                        room       : sDoc,
+                        roomJID    : sJID,
+                        affiliation: "owner",
+                        role       : "owner",
+                        status     : "",
+                        isRDB      : true
+                    });
+                }
             }
         }
         // client logic...
