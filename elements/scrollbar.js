@@ -36,16 +36,17 @@ apf.scrollbar = function(struct, tagName){
     this.realtime = true;
     this.overflow = "scroll";
     
-    this.$scrollValue  = 0;
+    this.$scrollSizeValue  = 0;
     this.$stepValue    = 0.03;
     this.$bigStepValue = 0.1;
     this.$curValue     = 0;
     this.$timer        = null;
-    this.$scrollWait;
-    this.$slideMaxHeight;
+    this.$scrollSizeWait;
+    this.$slideMaxSize;
     
     this.addEventListener("focus", function(){
-        this.$host.focus();
+        if (this.$host.focus)
+            this.$host.focus();
     });
 
     this.$propHandlers["overflow"] = function(value){
@@ -53,7 +54,8 @@ apf.scrollbar = function(struct, tagName){
     }
 
     this.$propHandlers["for"] = function(value){
-        this.$attach(self[value]);
+        if (value)
+            this.$attach(typeof value == "string" ? self[value] : value);
     }
     
     this.$detach = function(){
@@ -72,8 +74,16 @@ apf.scrollbar = function(struct, tagName){
     
     //oHtml, o, scroll_func
     this.$attach = function(amlNode){
-        this.$host         = amlNode;
-        
+        if (!amlNode.nodeFunc && amlNode.style) {
+            this.$host = {
+                empty : true,
+                $int  : amlNode
+            };
+        }
+        else {
+            this.$host = amlNode;
+        }
+
         //oHtml.parentNode.appendChild(this.$ext);
         //if (this.overflow == "scroll") {
         //    this.$ext.style.display = "block";
@@ -86,30 +96,37 @@ apf.scrollbar = function(struct, tagName){
         //this.$ext.style.height  = "160px";//o.offsetHeight + "px";
         
         var oHtml            = this.$getHtmlHost();
-        this.$viewheight     = oHtml.offsetHeight;
-        this.$scrollheight   = this.$viewheight;
-        this.$scrollWait     = 0;//(this.$host.len * COLS)/2;
-        this.$stepValue      = (this.$viewheight / this.$scrollheight) / 20;
+        this.$viewheight     = oHtml[this.$offsetSize];
+        this.$scrollSizeheight   = this.$viewheight;
+        this.$scrollSizeWait     = 0;//(this.$host.len * COLS)/2;
+        this.$stepValue      = (this.$viewheight / this.$scrollSizeheight) / 20;
         this.$bigStepValue   = this.$stepValue * 3;
-        this.$slideMaxHeight = this.$caret.offsetParent.offsetHeight 
-            - (this.$btnDown ? this.$btnDown.offsetHeight : 0)
-            - (this.$btnUp ? this.$btnUp.offsetHeight : 0);
+        this.$slideMaxSize = this.$caret.parentNode[this.$offsetSize] 
+            - (this.$btnDown ? this.$btnDown[this.$offsetSize] : 0)
+            - (this.$btnUp ? this.$btnUp[this.$offsetSize] : 0);
         
-        //this.$viewheight / this.$scrollheight
+        //this.$viewheight / this.$scrollSizeheight
         //if (o.length) {
         //    this.$caret.style.height = Math.max(5, ((o.limit / o.length)
-        //        * this.$slideMaxHeight)) + "px";
-        //    if (this.$caret.offsetHeight - 4 == this.$slideMaxHeight) 
+        //        * this.$slideMaxSize)) + "px";
+        //    if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
         //        this.$ext.style.display = "none";
         //}
-        
+
         var _self = this;
-        amlNode.addEventListener("resize", function(){
-            _self.$update();
-        });
-        
-        oHtml.onscroll = function(){
+        if (!this.$host.empty) {
+            amlNode.addEventListener("resize", function(){
+                _self.$update();
+            });
             
+            amlNode.addEventListener("mousescroll", function(e){
+                oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
+            });
+        }
+
+        oHtml.onscroll = function(){
+            _self.$curValue = oHtml[_self.$scrollPos] / (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize] + 2);
+            _self.setScroll();
         }
         
         this.$update();
@@ -121,7 +138,7 @@ apf.scrollbar = function(struct, tagName){
         var oHtml = this.$getHtmlHost();
         
         //Disable scrollbar
-        if (oHtml.offsetHeight >= oHtml.scrollHeight) {
+        if (oHtml[this.$offsetSize] >= oHtml[this.$scrollSize]) {
             if (this.overflow == "scroll") {
                 this.$caret.style.display = "none";
                 this.disable();
@@ -146,16 +163,16 @@ apf.scrollbar = function(struct, tagName){
             //oHtml.style.overflowY = "scroll";
             
             //Set scroll size
-            this.$caret.style.height = (Math.max(5, (oHtml.offsetHeight / oHtml.scrollHeight
-                * this.$slideMaxHeight)) - apf[this.horizontal ? "getWidthDiff" : "getHeightDiff"](this.$caret)) + "px";
-            //if (this.$caret.offsetHeight - 4 == this.$slideMaxHeight) 
+            this.$caret.style[this.$size] = (Math.max(5, (oHtml[this.$offsetSize] / oHtml[this.$scrollSize]
+                * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
+            //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
             
-            this.$curValue = oHtml.scrollTop / (oHtml.scrollHeight - oHtml.offsetHeight);
+            this.$curValue = oHtml[this.$scrollPos] / (oHtml[this.$scrollSize] - apf[this.$getInner](oHtml));
             
-            var bUpHeight = this.$btnUp ? this.$btnUp.offsetHeight : 0;
-            this.$caret.style.top = (bUpHeight + (this.$caret.offsetParent.offsetHeight
-            - (bUpHeight * 2) - this.$caret.offsetHeight) * this.$curValue) + "px";
+            var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
+            this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
+            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
         }
     }
     
@@ -165,12 +182,12 @@ apf.scrollbar = function(struct, tagName){
         if (this.$curValue < 0) 
             this.$curValue = 0;
         
-        var bUpHeight = this.$btnUp ? this.$btnUp.offsetHeight : 0;
-        this.$caret.style.top = (bUpHeight + (this.$caret.offsetParent.offsetHeight
-            - (bUpHeight * 2) - this.$caret.offsetHeight) * this.$curValue) + "px";
+        var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
+        this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
+            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
 
         //status = this.$curValue;
-        this.pos = this.$curValue;//(this.$caret.offsetTop-this.$btnUp.offsetHeight)/(this.$slideMaxHeight-this.$caret.offsetHeight);
+        this.pos = this.$curValue;//(this.$caret.offsetTop-this.$btnUp.offsetHeight)/(this.$slideMaxSize-this.$caret.offsetHeight);
         if (!noEvent) {
             this.dispatchEvent("scroll", {
                 timed : timed, 
@@ -179,34 +196,34 @@ apf.scrollbar = function(struct, tagName){
             
             if (this.$host) {
                 var oHtml = this.$getHtmlHost();
-                oHtml.scrollTop = (oHtml.scrollHeight - oHtml.offsetHeight) * this.pos;
+                oHtml[this.$scrollPos] = (oHtml[this.$scrollSize] - apf[this.$getInner](oHtml)) * this.pos;
             }
         }
     }
     
     this.scrollUp = function (v){
-        if (v > this.$caret.offsetTop) 
+        if (v > this.$caret[this.$offsetPos]) 
             return this.$ext.onmouseup();
         this.$curValue -= this.$bigStepValue;
         this.setScroll();
         
         if (this.$slideFast) {
-            this.$slideFast.style.height = Math.max(1, this.$caret.offsetTop
-                - this.$btnUp.offsetHeight) + "px";
-            this.$slideFast.style.top    = this.$btnUp.offsetHeight + "px";
+            this.$slideFast.style[this.$size] = Math.max(1, this.$caret[this.$offsetPos]
+                - this.$btnUp[this.$offsetSize]) + "px";
+            this.$slideFast.style[this.$pos]    = this.$btnUp[this.$offsetSize] + "px";
         }
     }
     
     this.scrollDown = function (v){
-        if (v < this.$caret.offsetTop + this.$caret.offsetHeight) 
+        if (v < this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) 
             return this.$ext.onmouseup();
         this.$curValue += this.$bigStepValue;
         this.setScroll();
         
         if (this.$slideFast) {
-            this.$slideFast.style.top    = (this.$caret.offsetTop + this.$caret.offsetHeight) + "px";
-            this.$slideFast.style.height = Math.max(1, this.$caret.offsetParent.offsetHeight - this.$slideFast.offsetTop
-                - this.$btnUp.offsetHeight) + "px";
+            this.$slideFast.style[this.$pos]    = (this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) + "px";
+            this.$slideFast.style[this.$size] = Math.max(1, apf[this.$getInner](this.$caret.parentNode) - this.$slideFast[this.$offsetPos]
+                - this.$btnUp[this.$offsetSize]) + "px";
         }
     }
     
@@ -234,10 +251,10 @@ apf.scrollbar = function(struct, tagName){
             o.findNewLimit();
 
             var indHeight;
-            this.$slideMaxHeight = this.$ext.offsetHeight - this.$btnDown.offsetHeight - this.$btnUp.offsetHeight;
+            this.$slideMaxSize = this.$ext.offsetHeight - this.$btnDown.offsetHeight - this.$btnUp.offsetHeight;
             this.$caret.style.height = ((indHeight = Math.max(10, (((o.limit - 1) / o.length)
-                * this.$slideMaxHeight))) - apf.getHeightDiff(this.$caret)) + "px";
-            this.$caret.style.top = (this.$curValue * (this.$slideMaxHeight - Math.round(indHeight)) + this.$btnUp.offsetHeight) + "px";
+                * this.$slideMaxSize))) - apf.getHeightDiff(this.$caret)) + "px";
+            this.$caret.style.top = (this.$curValue * (this.$slideMaxSize - Math.round(indHeight)) + this.$btnUp.offsetHeight) + "px";
             
             this.$stepValue = (o.limit / o.length) / 20;
             this.$bigStepValue   = this.$stepValue * 3;
@@ -278,14 +295,14 @@ apf.scrollbar = function(struct, tagName){
     
     this.updatePos = function(){
         var o = this.$host;
-        var indHeight = Math.round(Math.max(10, (((o.limit - 1) / o.length) * this.$slideMaxHeight)));
-        this.$caret.style.top = (this.$curValue * (this.$slideMaxHeight - indHeight) + this.$btnUp.offsetHeight) + "px";
+        var indHeight = Math.round(Math.max(10, (((o.limit - 1) / o.length) * this.$slideMaxSize)));
+        this.$caret.style[this.$pos] = (this.$curValue * (this.$slideMaxSize - indHeight) + this.$btnUp[this.$offsetSize]) + "px";
     }
     
     this.$onscroll = function(timed, perc){
-        this.$host.scrollTop = (this.$host.scrollHeight - this.$host.offsetHeight + 4) * this.$curValue;
+        this.$host[this.$scrollPos] = (this.$host[this.$scrollSize] - this.$host[this.$offsetSize] + 4) * this.$curValue;
         /*var now = new Date().getTime();
-         if (timed && now - this.$host.last < (timed ? this.$scrollWait : 0)) return;
+         if (timed && now - this.$host.last < (timed ? this.$scrollSizeWait : 0)) return;
          this.$host.last = now;
          var value = parseInt((DATA.length - this.$host.len + 1) * this.$curValue);
          showData(value);*/
@@ -306,6 +323,19 @@ apf.scrollbar = function(struct, tagName){
             this.$getOption("main", "img"),
             this.$getOption("main", "img-scroll")
         ];
+
+        this.horizontal   = apf.isTrue(this.$getOption("main", "horizontal"));
+        
+        this.$offsetSize = this.horizontal ? "offsetWidth" : "offsetHeight";
+        this.$size       = this.horizontal ? "width" : "height";
+        this.$offsetPos  = this.horizontal ? "offsetLeft" : "offsetTop";
+        this.$pos        = this.horizontal ? "left" : "top";
+        this.$scrollSize = this.horizontal ? "scrollWidth" : "scrollHeight";
+        this.$scrollPos  = this.horizontal ? "scrollLeft" : "scrollTop";
+        this.$getDiff  = this.horizontal ? "getWidthDiff" : "getHeightDiff";
+        this.$getInner = this.horizontal ? "getHtmlInnerWidth" : "getHtmlInnerHeight"; 
+        this.$eventDir = this.horizontal ? "offsetX" : "offsetY";
+        this.$clientDir = this.horizontal ? "clientX" : "clientY";
         
         if (this.$img[0]) {
             this.$caret.innerHTML = "<img width='100%' height='100%' />";
@@ -392,8 +422,8 @@ apf.scrollbar = function(struct, tagName){
                 
             if (!e) 
                 e = event;
-            _self.$startPos = [e.offsetX, e.offsetY + 
-                (_self.$btnUp ? _self.$btnUp.offsetHeight : 0)];
+            _self.$startPos = [e.offsetX, e[_self.$eventDir] + 
+                (_self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0)];
     
             if (this.setCapture)
                 this.setCapture();
@@ -408,15 +438,15 @@ apf.scrollbar = function(struct, tagName){
                 if (!_self.$startPos) 
                     return false;
                 
-                var bUpHeight = _self.$btnUp ? _self.$btnUp.offsetHeight : 0;
+                var bUpHeight = _self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0;
                 
-                var next = bUpHeight + (e.clientY - _self.$startPos[1]
-                    - apf.getAbsolutePosition(_self.$ext)[1] - 2);
+                var next = bUpHeight + (e[_self.$clientDir] - _self.$startPos[1]
+                    - apf.getAbsolutePosition(_self.$ext)[_self.horizontal ? 0 : 1] - 2);
                 var min = bUpHeight;
                 if (next < min) 
                     next = min;
-                var max = (_self.$ext.offsetHeight 
-                    - bUpHeight - _self.$caret.offsetHeight);
+                var max = (apf[_self.$getInner](_self.$caret.parentNode)
+                    - bUpHeight - _self.$caret[_self.$offsetSize]);
                 if (next > max) 
                     next = max;
                 //_self.$caret.style.top = next + "px"
@@ -457,36 +487,36 @@ apf.scrollbar = function(struct, tagName){
             clearInterval(_self.$timer);
             var offset;
             
-            if (e.offsetY > _self.$caret.offsetTop + _self.$caret.offsetHeight) {
+            if (e[_self.$eventDir] > _self.$caret[_self.$offsetPos] + _self.$caret[_self.$offsetSize]) {
                 _self.$curValue += _self.$bigStepValue;
                 _self.setScroll(true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
-                    _self.$slideFast.style.top     = (_self.$caret.offsetTop
-                        + _self.$caret.offsetHeight) + "px";
-                    _self.$slideFast.style.height  = (_self.$ext.offsetHeight - _self.$slideFast.offsetTop
-                        - _self.$btnUp.offsetHeight) + "px";
+                    _self.$slideFast.style[_self.$pos]     = (_self.$caret[_self.$offsetPos]
+                        + _self.$caret[_self.$offsetSize]) + "px";
+                    _self.$slideFast.style[_self.$size]  = (apf[_self.$getInner](_self.$caret.parentNode) - _self.$slideFast[_self.$offsetPos]
+                        - _self.$btnUp[_self.$offsetSize]) + "px";
                 }
                 
-                offset = e.offsetY;
+                offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.scrollDown(offset);
                     }, 20);
                 }, 300);
             }
-            else if (e.offsetY < _self.$caret.offsetTop) {
+            else if (e[_self.$eventDir] < _self.$caret[_self.$offsetPos]) {
                 _self.$curValue -= _self.$bigStepValue;
                 _self.setScroll(true);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
-                    _self.$slideFast.style.top = _self.$btnUp.offsetHeight + "px";
-                    _self.$slideFast.style.height = (_self.$caret.offsetTop - _self.$btnUp.offsetHeight) + "px";
+                    _self.$slideFast.style[_self.$pos] = _self.$btnUp[_self.$offsetSize] + "px";
+                    _self.$slideFast.style[_self.$size] = (_self.$caret[_self.$offsetPos] - _self.$btnUp[_self.$offsetSize]) + "px";
                 }
                 
-                offset = e.offsetY;
+                offset = e[_self.$eventDir];
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
                         _self.scrollUp(offset);

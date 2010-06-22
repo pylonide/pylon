@@ -1142,14 +1142,16 @@ apf.window = function(){
             }
             
             var ev  = {
-              delta: delta, 
-              target   : e.target || e.srcElement, 
-              button   : e.button, 
-              ctrlKey  : e.ctrlKey, 
-              shiftKey : e.shiftKey, 
-              altKey   : e.altKey
-            },
-                res = apf.dispatchEvent("mousescroll", ev);
+                delta    : delta, 
+                target   : e.target || e.srcElement, 
+                button   : e.button, 
+                ctrlKey  : e.ctrlKey, 
+                shiftKey : e.shiftKey, 
+                altKey   : e.altKey,
+                bubbles  : true
+            };
+            var amlNode = apf.findHost(e.srcElement || e.target);
+            var res = (amlNode || apf).dispatchEvent("mousescroll", ev);
             if (res === false || ev.returnValue === false) {
                 if (e.preventDefault)
                     e.preventDefault();
