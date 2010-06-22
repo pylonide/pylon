@@ -24,7 +24,8 @@ apf.__FOCUSSABLE__ = 1 << 26;
 //#ifdef __WITH_FOCUS
 apf.Focussable = function(){
     this.$regbase = this.$regbase | apf.__FOCUSSABLE__;
-    this.disabled = false;
+    if (this.disabled == undefined)
+        this.disabled = false;
     
     /**
      * Sets the position in the list that determines the sequence

@@ -586,7 +586,7 @@ apf.GuiElement.propHandlers = {
     "disabled": function(value){
         if (!this.$drawn) {
             var _self     = this;
-            this.disabled = false;
+            //this.disabled = false;
 
             apf.queue.add("disable" + this.$uniqueId, function(e){
                 _self.disabled = value;
@@ -594,6 +594,8 @@ apf.GuiElement.propHandlers = {
             });
             return;
         }
+        else
+            apf.queue.remove("disable" + this.$uniqueId);
 
         //For child containers we only disable its children
         if (this.canHaveChildren) {

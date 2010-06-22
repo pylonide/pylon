@@ -1016,12 +1016,13 @@ apf.Class.prototype = new (function(){
         
         //@todo is this the best way?
         if (stack)
-            if (this.$eventDepth) {
-                ((useCapture ? this.$captureStack : this.$eventsStack)[eventName] = stack.slice()).remove(callback);
-                //this.$removalQueue.push([stack, callback]);
-            }
-            else
-                stack.remove(callback);
+            if (this.$eventDepth)
+                stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName] = stack.slice()
+
+            stack.remove(callback);
+            if (!stack.length)
+                delete (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
+                
     };
 
     /**
