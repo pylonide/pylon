@@ -198,6 +198,8 @@ apf.remote = function(struct, tagName){
                 delete _self.sessions[s];
                 _self.startSession(model, xpath);
             }
+            if (!s)
+                _self.startEmptySession();
         });
 
         this.transport.addEventListener("datachange", function(e){
