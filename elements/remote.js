@@ -164,7 +164,7 @@ apf.remote = function(struct, tagName){
         match : 1
     }, this.$attrExcludePropBind);
 
-    this.$supportedProperties.push("transport");
+    this.$supportedProperties.push("transport", "resource-uri");
 
     this.$propHandlers["transport"] = function(value) {
         this.transport = self[this["transport"]];
@@ -214,19 +214,24 @@ apf.remote = function(struct, tagName){
             // #endif
             if (!e.session && !e.fields["session"]) return;
             var sSession = e.session || e.fields["session"].value,
-                oSession = _self.sessions[sSession];
-            if (!oSession) return; // @todo : send failure message
-            if (e.type == "submit") {
-                var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
-                    sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
+                oSession = _self.sessions[sSession],
+                f        = function(e) {
+                    if (e.type == "submit") {
+                        var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
+                            sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
 
-                this.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
-            }
-            else if (e.type == "result") {
-                // @todo: replace the current XML with the document provided by the session owner
-                _self.sessions[sSession].model.load(e.fields["modeldata"].value);
-                _self.sessionStarted(sSession, e.fields["baseline"].value);
-            }
+                        _self.transport.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
+                    }
+                    else if (e.type == "result") {
+                        // @todo: replace the current XML with the document provided by the session owner
+                        _self.sessions[sSession].model.load(e.fields["modeldata"].value);
+                        _self.sessionStarted(sSession, e.fields["baseline"].value);
+                    }
+                }
+            if (!oSession)
+                return _self.createDynamicModel(e, f); // @todo : send failure message
+            else
+                f();
         });
     };
 
@@ -281,6 +286,31 @@ apf.remote = function(struct, tagName){
 
     this.pauseSession = function() {
         // @todo
+    };
+
+    this.createDynamicModel = function(e, callback) {
+        if (!this["resource-uri"])
+            return; //@todo implement error messaging (like '404, data not found')
+        var model, f,
+            resource = e.session || e.fields["session"].value;
+        if (!(model = apf.nameserver.get(resource))) {
+            model = apf.setReference(resource,
+                apf.nameserver.register("model", resource, new apf.model()));
+            if (model === 0)
+                model = self[resource];
+            else
+                model.id = model.name = resource;
+        }
+        // set the root node for this model
+        model.addEventListener("afterload", f = function() {
+            model.removeEventListener("afterload", f);
+            callback();
+        });
+        delete e.type;
+        delete e.name;
+        e.model    = model;
+        e.resource = this["resource-uri"] + resource;
+        this.dispatchEvent("rdbinit", e);
     };
     
     this.sendChange = function(args, model){
