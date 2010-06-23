@@ -105,22 +105,42 @@ apf.scrollbar = function(struct, tagName){
         //        this.$ext.style.display = "none";
         //}
 
-        var _self = this;
+        var _self = this, scrolling;
         if (!this.$host.empty) {
             amlNode.addEventListener("resize", function(){
                 _self.$update();
             });
+            if (amlNode.hasFeature(apf.__DATABINDING__)) {
+                amlNode.addEventListener("afterload", function(){
+                    _self.$update();
+                });
+                amlNode.addEventListener("xmlupdate", function(){
+                    _self.$update();
+                });
+            }
             amlNode.addEventListener("mousescroll", function(e){
+                scrolling = apf.isIE;
                 var oHtml = _self.$getHtmlHost();
-                oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
+                //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
+                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
+                _self.setScroll();
+                e.preventDefault();
             });
         }
 
         var oHtml = _self.$getHtmlHost();
         oHtml.onscroll = function(){
-            var oHtml = _self.$getHtmlHost();
-            _self.$curValue = oHtml[_self.$scrollPos] / (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize] + 2);
-            _self.setScroll();
+            if (!scrolling) {
+                var oHtml = _self.$getHtmlHost();
+                var m = oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize];
+                var p = oHtml[_self.$scrollPos] / m;
+                if (Math.abs(_self.$curValue - p) > 1/m) {
+                    _self.$curValue = p;
+                    _self.setScroll();
+                }
+                return false;
+            }
+            scrolling = false;
         }
         
         this.$update();
@@ -187,7 +207,7 @@ apf.scrollbar = function(struct, tagName){
             this.$curValue = 1;
         if (this.$curValue < 0) 
             this.$curValue = 0;
-        
+
         var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
         this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
@@ -434,7 +454,7 @@ apf.scrollbar = function(struct, tagName){
             if (this.setCapture)
                 this.setCapture();
     
-            if (_self.$img)
+            if (_self.$img[1])
                 _self.$caret.firstChild.src = _self.$img[1];
     
             document.onmousemove = function(e){
@@ -447,7 +467,7 @@ apf.scrollbar = function(struct, tagName){
                 var bUpHeight = _self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0;
                 var next = bUpHeight + (e[_self.$clientDir] - _self.$startPos
                     + document.documentElement[_self.$scrollPos]
-                    - apf.getAbsolutePosition(_self.$ext)[_self.horizontal ? 0 : 1] - 2);
+                    - apf.getAbsolutePosition(_self.$caret.parentNode)[_self.horizontal ? 0 : 1]); // - 2
                 var min = bUpHeight;
                 if (next < min) 
                     next = min;
