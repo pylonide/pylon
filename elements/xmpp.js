@@ -641,13 +641,17 @@ apf.xmpp = function(struct, tagName){
             return null;
 
         var _self = this,
+            sock  = this.$xmppMethod & constants.CONN_SOCKET,
             req   = this.$reqStack.shift();
         if (!req) return null;
         apf.console.log("sending request: " + req.body);
-        ++this.$reqCount;
+        
+        if (!sock)
+            ++this.$reqCount;
         return this.$activeReq = this.get(this.url, {
             callback: function(data, state, extra) {
-                --_self.$reqCount;
+                if (!sock)
+                    --_self.$reqCount;
                 _self.$activeReq = null;
                 if (_self.$reqStack.length)
                     _self.$doXmlRequest();

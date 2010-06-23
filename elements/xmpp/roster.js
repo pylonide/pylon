@@ -234,11 +234,12 @@ apf.xmpp_roster = function(model, modelContent, res) {
                     ? "account"
                     : oEnt.isRoom ? "room" : "user");
                 this.updateEntityXml(oEnt);
-                var room = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
+                var oRoom,
+                    room = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
                     node = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[0] : oEnt.node,
                     host = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[1] : oEnt.host;
                 apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
-                    ? this.getEntity(node, host, null, true).xml
+                    ? (oRoom = this.getEntity(node, host, null, true)) ? oRoom.xml : model.data
                     : model.data, oEnt.xml);
             }
         }
@@ -406,7 +407,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @type  {String}
      */
     this.sanitizeJID = function(sJID) {
-        return sJID.replace(/[\"\s\&\\\/\:<>]+/g, "").toLowerCase();
+        return sJID.replace(/[\"\s\&\\\:<>]+/g, "").replace(/\//g, "_").toLowerCase();
     };
 };
 

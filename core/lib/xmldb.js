@@ -487,10 +487,10 @@ apf.xmldb = new (function(){
         parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
 
-        this.applyChanges("replacechild", newNode, undoObj);
+        this.applyChanges("replacenode", newNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["replaceChild", oldNode, newNode, xpath], undoObj);
+        this.applyRDB(["replaceNode", oldNode, newNode, xpath], undoObj);
         // #endif
         
         return newNode;

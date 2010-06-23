@@ -195,7 +195,7 @@ apf = {
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
             
-            o3.print((nodate ? "" : date) + " " + msg + "\n" + (data ? "Extra information:\n" + data + "\n" : ""));
+            sys.puts((nodate ? "" : date) + " " + msg + (data ? "Extra information:\n" + data : ""));
         },
         //#endif
         
@@ -435,6 +435,9 @@ Function.prototype.toHTMLNode = function(highlight){
         return this.toString();
     }
 };
+
+$setTimeout  = setTimeout;
+$setInterval = setInterval;
 
 apf.stacktrace = function(){
     var list = [], seen = {}, loop, end;

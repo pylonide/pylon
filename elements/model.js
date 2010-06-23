@@ -152,8 +152,12 @@ apf.model = function(struct, tagName){
     this.$propHandlers["remote"] = function(value, prop){
         this.unshare();
 
-        if (value)
-            this.share();
+        if (value) {
+            var _self = this;
+            $setTimeout(function() {
+                _self.share();
+            });
+        }
     };
 
     this.share = function(xpath) {
@@ -709,7 +713,10 @@ apf.model = function(struct, tagName){
      *   {mixed}      []        Custom properties available in the data instruction.
      */
     this.$loadFrom = function(instruction, options){
-        var data      = instruction.split(":");
+        //#ifdef __WITH_RDB
+        if (instruction.indexOf("rdb://") === 0) return;
+        //#endif
+        var data = instruction.split(":");
 
         if (!options)
             options = {};
@@ -722,7 +729,7 @@ apf.model = function(struct, tagName){
         //Loading data in non-literal model
         this.dispatchEvent("beforeretrieve");
         
-        //Set all components on loading...        
+        //Set all components on loading...
         var uniqueId, item;
         for (uniqueId in this.$amlNodes) {
             if (!(item = this.$amlNodes[uniqueId]) || !item.amlNode)

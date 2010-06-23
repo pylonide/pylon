@@ -222,7 +222,10 @@ apf.socket = function(){
             });
 
             socket.addListener("data", function(data) {
-                _self.receive(id, data);
+                if (arguments.callee.caller)
+                    setTimeout(function(){_self.receive(id, data)});
+                else
+                    _self.receive(id, data);
             });
             
             socket.addListener("end", function() {

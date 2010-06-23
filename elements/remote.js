@@ -164,7 +164,13 @@ apf.remote = function(struct, tagName){
         match : 1
     }, this.$attrExcludePropBind);
 
-    this.$supportedProperties.push("transport", "resource-uri");
+    this.$supportedProperties.push("transport");
+    
+    function checkProtocol(resource) {
+        if (resource.indexOf("rdb__") === 0)
+            return "rdb:" + resource.substr(3).replace(/_/g, "/");
+        return resource;
+    }
 
     this.$propHandlers["transport"] = function(value) {
         this.transport = self[this["transport"]];
@@ -243,13 +249,17 @@ apf.remote = function(struct, tagName){
         if (!model) return;
         if (!model.id)
             model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
+        model.$hasResource = (model.src && model.src.indexOf("rdb://") === 0);
         xpath  = xpath || "//";
         var o,
-            id = model.id + ":" + xpath;
+            id = model.$hasResource ? model.src : model.id + ":" + xpath;
+        apf.console.log("Starting session with ID: " + id + ", " + model.src);
         this.sessions[id] = model;
         if (this.transport && this.transport.isConnected()) {
             delete this.sessions[id];
             delete this.pendingSessions[id];
+            if (model.$hasResource)
+                delete this.sessions[model.src];
             id = this.transport.normalizeEntity(id);
             o = this.sessions[id] = {
                 model: model,
@@ -273,7 +283,7 @@ apf.remote = function(struct, tagName){
 
     this.endSession = function(model, xpath) {
         xpath  = xpath || "//";
-        var id = model.id + ":" + xpath;
+        var id = model.$hasResource ? this.transport.normalizeEntity(model.src) : model.id + ":" + xpath;
         if (this.transport && this.transport.isConnected()) {
             delete this.pendingTerminations[id];
             this.transport.endRDB(this.transport.normalizeEntity(id));
@@ -300,29 +310,33 @@ apf.remote = function(struct, tagName){
     };
 
     this.createDynamicModel = function(e, callback) {
-        if (!this["resource-uri"])
-            return; //@todo implement error messaging (like '404, data not found')
+        //if (!this["resource-uri"])
+        //    return; //@todo implement error messaging (like '404, data not found')
         var model, f,
-            resource = e.session || e.fields["session"].value;
-        if (!(model = apf.nameserver.get(resource))) {
-            model = apf.setReference(resource,
-                apf.nameserver.register("model", resource, new apf.model()));
+            id       = e.session || e.fields["session"].value,
+            resource = checkProtocol(id);
+        apf.console.log("creating dynamic model " + id + ", " + resource);
+        if (!(model = apf.nameserver.get(id))) {
+            model = apf.setReference(id,
+                apf.nameserver.register("model", id, new apf.model()));
             if (model === 0)
-                model = self[resource];
+                model = self[id];
             else
-                model.id = model.name = resource;
+                model.id = model.name = id;
+            model.src = resource;
+            model.setProperty("remote", this.id);
         }
-        var o = this.startSession(model);
+        var o = this.getSessionByModel(id);
         // set the root node for this model
         model.addEventListener("afterload", f = function() {
             model.removeEventListener("afterload", f);
             callback(o);
         });
         this.dispatchEvent("rdbinit", {
-            model: model,
-            resource: this["resource-uri"] + resource,
-            session: e.session,
-            fields: e.fields,
+            model    : model,
+            resource : resource,
+            session  : id,
+            fields   : e.fields,
             annotator: e.annotator
         });
     };
@@ -383,12 +397,13 @@ apf.remote = function(struct, tagName){
         if (!qHost.rdbQueue)
             qHost.rdbQueue = {};
 
-        if (!qHost.rdbQueue[model.id]) {
-            qHost.rdbQueue[model.id] = [];
-            qHost.rdbModel           = model;
+        var id = model.$hasResource ? this.transport.normalizeEntity(model.src) : model.id;
+        if (!qHost.rdbQueue[id]) {
+            qHost.rdbQueue[id] = [];
+            qHost.rdbModel     = model;
         }
         // @todo do some more additional processing here...
-        qHost.rdbQueue[model.id].push(this.buildMessage(args, model));
+        qHost.rdbQueue[id].push(this.buildMessage(args, model));
     };
     
     this.processQueue = function(qHost){
@@ -434,6 +449,8 @@ apf.remote = function(struct, tagName){
             //#endif
             return;
         }
+        if (!model.$at)
+            model.$at = apf.window.$at; //@todo find better solution to the case of a missing ActionTracker...
 
         var oError, xmlNode,
             disableRDB       = apf.xmldb.disableRDB;
@@ -456,59 +473,47 @@ apf.remote = function(struct, tagName){
         // correct timestamp with the session baseline
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
 
-        if (oSession && model.$at) {
-            // #ifdef __DEBUG
-            apf.console.log("timestamp comparison: " + (new Date().toGMTString())
-                + ", " + (new Date(oMessage.currdelta).toGMTString()));
-            // #endif
-            var aUndos = model.$at.getDone(oMessage.currdelta),
-                i      = 0,
-                l      = aUndos.length;
-            if (l) {
-                for (; i < l; ++i)
-                    aUndos[i].$dontapply = true;
-                model.$at.undo(l);
-            }
+        // #ifdef __DEBUG
+        apf.console.log("timestamp comparison: " + (new Date().toGMTString())
+            + ", " + (new Date(oMessage.currdelta).toGMTString()));
+        // #endif
+        var aUndos = model.$at.getDone(oMessage.currdelta),
+            i      = 0,
+            l      = aUndos.length;
+        if (l) {
+            for (; i < l; ++i)
+                aUndos[i].$dontapply = true;
+            model.$at.undo(l);
         }
 
         xmlNode = this.xpathToXml(q[1], model.data);
         if (xmlNode) {
-            switch (q[0]) {
-                case "setTextNode":
-                    apf.xmldb.setTextNode(xmlNode, q[2], q[3]);
-                    break;
-                case "setAttribute":
-                    apf.xmldb.setAttribute(xmlNode, q[2], q[3], q[4]);
-                    break;
-                case "setNodeValue":
-                    apf.setNodeValue(xmlNode, q[2], true);
-                    break;
-                case "addChildNode":
-                    apf.xmldb.addChildNode(xmlNode, q[2], q[3],
-                        this.xpathToXml(q[4], model.data), q[5]);
-                    break;
-                case "appendChild":
-                    apf.xmldb.appendChild(xmlNode,
-                        //@todo check why there's cleanNode here:
-                        apf.xmldb.cleanNode(typeof q[2] == "string" ? apf.getXml(q[2]) : q[2]),
-                        (q[3] ? this.xpathToXml(q[3], model.data) : null), q[4], q[5]);
-                    break;
-                case "moveNode":
-                    apf.xmldb.appendChild(xmlNode, this.xpathToXml(q[2], model.data),
-                        (q[3] ? this.xpathToXml(q[3], model.data) : null), q[4], q[5]);
-                    break;
-                case "replaceChild":
-                    apf.xmldb.replaceChild(xmlNode, this.xpathToXml(q[2], model.data), q[3]);
-                    break;
-                case "removeNode":
-                    apf.xmldb.removeNode(xmlNode, q[2]);
-                    break;
-                case "removeAttribute":
-                    apf.xmldb.removeAttribute(xmlNode, q[2], q[3]);
-                    break;
-                case "removeNodeList":
-                    apf.xmldb.removeNodeList(xmlNode, q[2]);
-                    break;
+            var action = q.splice(0, 2)[0];
+            if (action == "setNodeValue") {
+                apf.setNodeValue(xmlNode, q[0], true);
+            }
+            else {
+                // transform xpaths to actual nodes
+                if (action == "addChildNode")
+                    q[2] = this.xpathToXml(q[2], model.data);
+                else if (action == "appendChild") {
+                    //@todo check why there's cleanNode here:
+                    q[0] = apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+                    q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
+                }
+                else if (action == "moveNode") {
+                    q[0] = this.xpathToXml(q[0], model.data);
+                    q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
+                }
+                else if (action == "replaceNode") {
+                    q[0] = this.xpathToXml(q[0], model.data);
+                }
+                q.unshift(xmlNode);
+                // pass the action to the actiontracker to execute it
+                model.$at.execute({
+                    action: action,
+                    args  : q
+                });
             }
             this.dispatchEvent("change", {
                 model  : model,
@@ -524,7 +529,7 @@ apf.remote = function(struct, tagName){
         }
         //#endif
 
-        if (oSession && model.$at && l) {
+        if (l) {
             model.$at.redo(l);
             for (i = 0; i < l; ++i)
                 aUndos[i].$dontapply = false;
