@@ -428,8 +428,8 @@ apf.scrollbar = function(struct, tagName){
                 
             if (!e) 
                 e = event;
-            _self.$startPos = [0, e[_self.$eventDir] + 
-                (_self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0)];
+            _self.$startPos = e[_self.$eventDir] + 
+                (_self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0);
 
             if (this.setCapture)
                 this.setCapture();
@@ -441,12 +441,12 @@ apf.scrollbar = function(struct, tagName){
                 if (!e) 
                     e = event;
                 //if(e.button != 1) return _self.onmouseup();
-                if (!_self.$startPos) 
+                if (_self.$startPos === false) 
                     return false;
-                
+
                 var bUpHeight = _self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0;
-                
-                var next = bUpHeight + (e[_self.$clientDir] - _self.$startPos[1]
+                var next = bUpHeight + (e[_self.$clientDir] - _self.$startPos
+                    + document.documentElement[_self.$scrollPos]
                     - apf.getAbsolutePosition(_self.$ext)[_self.horizontal ? 0 : 1] - 2);
                 var min = bUpHeight;
                 if (next < min) 
@@ -456,7 +456,7 @@ apf.scrollbar = function(struct, tagName){
                 if (next > max) 
                     next = max;
                 //_self.$caret.style.top = next + "px"
-                
+
                 _self.$curValue = (next - min) / (max - min);
                 //setTimeout(function(){
                     _self.setScroll(true);
