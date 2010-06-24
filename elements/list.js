@@ -149,6 +149,55 @@ apf.select1   = function(struct, tagName){
     };
     // #endif
     
+    //#ifdef __WITH_LISTGRID
+    this.$selectSeries = function(e) {
+        e = e || event;
+        //e.cancelBubble = true;
+        var target = e.target || e.srcElement;
+
+        if (e.type == "mouseover") {
+            var target = (target.className || "").indexOf("item") != -1 
+                ? target 
+                : target.parentNode;
+                
+            this.highlight(target);
+        }
+        else {
+            target = e.toElement 
+                ? e.toElement 
+                : (e.relatedTarget 
+                    ? e.relatedTarget 
+                    : null);
+            
+            if (!apf.isChildOf(this.$ext, target, true)) {
+                this.highlight(this.$selected);
+            }
+        }
+    };
+    
+    this.highlight = function(target) {
+        var options     = this.$ext.childNodes;
+        var options_len = options.length;
+        var deselect    = false;
+
+        for (var i = 0; i < options_len; i++) {
+            if ((options[i].className || "").indexOf("item") != -1) {
+                if (!deselect) {
+                    this.$setStyleClass(options[i], "selected");
+                }
+                else {
+                    this.$setStyleClass(options[i], "", ["selected"]);
+                }
+                
+                if (options[i] == target) {
+                    deselect = true;
+                }
+            }
+        }
+    };
+    // #endif
+    
+    
     // #ifdef __AMLSUBMITFORM || __INC_ALL
     this.addEventListener("afterselect", function(e){
         if (this.hasFeature(apf.__VALIDATION__)) 
@@ -369,8 +418,14 @@ apf.select1   = function(struct, tagName){
             });
         }
         
-        this.$ext.setAttribute("onmouseout", this.$ext.getAttribute("onmouseout") 
-            + ';var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
+        //#ifdef __WITH_LISTGRID
+        this.$gridlist = apf.isTrue(this.$getOption("main", "grid"));
+        
+        if (this.$gridlist) {
+            this.$ext.setAttribute("onmouseout", this.$ext.getAttribute("onmouseout") 
+                + ';var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
+        }
+        //#endif 
         
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
@@ -380,52 +435,6 @@ apf.select1   = function(struct, tagName){
         
         this.thumbsize  = this.$getOption("main", "thumbsize");
         this.thumbclass = this.$getOption("main", "thumbclass");
-    };
-    
-    this.$selectSeries = function(e) {
-        e = e || event;
-        //e.cancelBubble = true;
-        var target = e.target || e.srcElement;
-
-        if (e.type == "mouseover") {
-            var target = (target.className || "").indexOf("item") != -1 
-                ? target 
-                : target.parentNode;
-                
-            this.highlight(target);
-        }
-        else {
-            target = e.toElement 
-                ? e.toElement 
-                : (e.relatedTarget 
-                    ? e.relatedTarget 
-                    : null);
-            
-            if (!apf.isChildOf(this.$ext, target, true)) {
-                this.highlight(this.$selected);
-            }
-        }
-    };
-    
-    this.highlight = function(target) {
-        var options     = this.$ext.childNodes;
-        var options_len = options.length;
-        var deselect    = false;
-
-        for (var i = 0; i < options_len; i++) {
-            if ((options[i].className || "").indexOf("item") != -1) {
-                if (!deselect) {
-                    this.$setStyleClass(options[i], "selected");
-                }
-                else {
-                    this.$setStyleClass(options[i], "", ["selected"]);
-                }
-                
-                if (options[i] == target) {
-                    deselect = true;
-                }
-            }
-        }
     };
     
     this.$loadAml = function(x){
