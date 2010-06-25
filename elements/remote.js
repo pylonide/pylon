@@ -516,9 +516,10 @@ apf.remote = function(struct, tagName){
                 });
             }
             this.dispatchEvent("change", {
-                model  : model,
-                xmlNode: xmlNode,
-                message: oMessage
+                resource : model.src,
+                model    : model,
+                xmlNode  : xmlNode,
+                message  : oMessage
             });
         }
         //#ifdef __DEBUG
