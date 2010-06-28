@@ -406,6 +406,9 @@ apf.$x = apf.$loader
         "elements/rpc/cgi.js",         // CGI
         "elements/rpc/rest.js",        // REST
         "elements/rpc/yql.js",         // YQL
+
+        "elements/upload/html5.js",
+        "elements/upload/flash.js",
         
         "elements/video/type_flv.js",
         "elements/video/type_native.js",

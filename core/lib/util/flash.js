@@ -276,15 +276,15 @@ apf.flash = (function(){
                     $setTimeout(function() {
                         var fail = null;
                         if (!obj[prop].parentNode) {
-                            fail = "File Uploader error: The movie has to be enabled "
+                            fail = "The movie has to be enabled "
                                  + "manually because of Flashblock. No browser refresh is required.";
                         }
                         else if (obj[prop].style.display == "none") {
-                            fail = "File Uploader error: Adblock Plus blocks or hides the "
+                            fail = "Adblock Plus blocks or hides the "
                                  + "movie. Please enable it and refresh your browser.";
                         }
                         else if (!obj[prop].offsetWidth) {
-                            fail = "File Uploader error: The Flash movie failed to load. "
+                            fail = "The Flash movie failed to load. "
                                  + "Please check if the file exists and the path is correct.";
                         }
 

@@ -478,6 +478,19 @@ var apf = {
         this.hasGeolocation            = !!navigator.geolocation;
         this.supportHashChange         = ("onhashchange" in self) && (!apf.isIE || apf.isIE >= 8);
 
+        if (self.XMLHttpRequest) {
+            var xhr = new XMLHttpRequest();
+            this.hasXhrProgress = !!xhr.upload;
+            if (this.hasXhrBinary = !!(xhr.sendAsBinary || xhr.upload)) {
+                this.hasHtml5File      = !!(File && File.prototype.getAsDataURL);
+                this.hasHtml5FileSlice = !!(File && File.prototype.slice);
+            }
+        }
+        else {
+            this.hasXhrProgress = this.hasXhrBinary = this.hasHtml5File 
+                = this.hasHtml5FileSlice = false;
+        }
+
         this.windowHorBorder           = 
         this.windowVerBorder           = apf.isIE8 && (!self.frameElement 
             || parseInt(self.frameElement.frameBorder)) ? 4 : 0;
