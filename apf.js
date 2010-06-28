@@ -2376,9 +2376,9 @@ if (!apf.basePath) {
 apf.$loader = {
     queue : [[]],
     state : 0,
-    parallel : !(apf.isChrome && apf.isMac),
-    ignorewait : apf.isIE,
-    xhr : apf.isWebkit && !apf.isMac,
+    parallel : !(apf.isChrome && apf.isMac || apf.isIE && !location.host),
+    ignorewait : apf.isIE && !location.host,
+    xhr : apf.isWebkit && !apf.isMac || apf.isIE && location.host,
     
     setGlobalDefaults : function(options){
         this.basePath = options.BasePath;
@@ -2444,7 +2444,7 @@ apf.$loader = {
             var xhr = (self.ActiveXObject ? new self.ActiveXObject("Microsoft.XMLHTTP") : new self.XMLHttpRequest());
     		xhr.onreadystatechange = function() {
     			if (xhr.readyState === 4) {
-    				xhr.onreadystatechange = null; // fix a memory leak in IE
+    				//xhr.onreadystatechange = null; // fix a memory leak in IE
     				oScr.text = xhr.responseText + "\r\n//@sourceURL=" + oScr.src;
   				    done();
     			}

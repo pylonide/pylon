@@ -1013,16 +1013,16 @@ apf.Class.prototype = new (function(){
      */
     this.removeEventListener = function(eventName, callback, useCapture){
         var stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
-        
+
         //@todo is this the best way?
-        if (stack)
+        if (stack) {
             if (this.$eventDepth)
                 stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName] = stack.slice()
 
             stack.remove(callback);
             if (!stack.length)
                 delete (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
-                
+        }
     };
 
     /**
