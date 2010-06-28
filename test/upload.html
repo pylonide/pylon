@@ -1,0 +1,30 @@
+<!doctype html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Uploadr</title>
+        <script type="text/javascript" src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins/platform/trunk/xml/_index.xml" media-path="skins/platform/trunk/images/"
+          image-path="skins/platform/trunk/images/" icon-path="../icons/" />
+
+        <a:appsettings debug="false" debug-teleport="true" name="uploadtest" />
+
+        <a:button id="btnSelect" width="200">Select Files</a:button>
+
+        <a:upload id="uplAvatar" 
+          model  = "mdlUpload"
+          button = "btnSelect"
+          target = "http://localhost/platform/source/trunk/test/upload.php" />
+        <br /><br />
+
+        <a:progressbar
+          width    = "200"
+          min      = "0"
+          max      = "100"
+          value    = "{uplAvatar.percent}">
+        </a:progressbar>
+
+        <a:button id="btnUpload" onclick="uplAvatar.start()" width="150">Upload!</a:button>
+    </body>
+</html>
