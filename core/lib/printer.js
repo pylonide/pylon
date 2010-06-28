@@ -53,7 +53,7 @@ apf.printer = {
         }
         
         apf.importCssString("#print_content{display:none}");
-        apf.importCssString(apf.hasCSSChildOfSelector
+        apf.importCssString(apf.hasCSSChildOfSelector && !apf.isIE
           ? "body #print_content{display:block} body>*{display:none}"
           : "body #print_content, body #print_content *{display:block} body *{display:none}",
           document, "print");
@@ -139,6 +139,8 @@ apf.printer = {
     hide : function() {
         if (!this.inited) return this;
         this.panel.style.display = "none";
+        this.panel.style.height  = document.body.scrollHeight + "px";
+        this.panel.style.width   = document.body.scrollWidth  + "px";
         return this;
     }
 };
