@@ -61,9 +61,9 @@
  *
  * @inherits apf.StandardBinding
  *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%
- * @since       0.4
+ * @since       3.0
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -75,693 +75,431 @@
  *
  * @todo get server side information to update the progressbar.
  */
-
 apf.upload = function(struct, tagName){
     this.$init(tagName || "upload", apf.NODE_VISIBLE, struct);
-    // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH = (apf.config.resourcePath || apf.basePath)
-        + "elements/upload/Swiff.Uploader.swf?noCache=".appendRandomNumber(5);
-    /* #else
-    this.DEFAULT_SWF_PATH = (apf.config.resourcePath || apf.basePath)
-        + "resources/Swiff.Uploader.swf?noCache=".appendRandomNumber(5);
-    #endif */
 
-    this.$playerId     = apf.flash.addPlayer(this);
-    this.$useFlash     = apf.flash.isAvailable("9.0.0");
-    // might be overridden later by the 'model' prophandler:
-    this.$files        = new apf.upload.files();
+    var o,
+        i = 0,
+        a = ["html5", "silverlight", "flash", "html4"];
+    for (; i < 4 && !this.$method; ++i) {
+        o = apf.upload[a[i]];
+        if (typeof o != "undefined" && o.isSupported())
+            this.$method = new o(this);
+    }
+
+    if (!this.$method) {
+        throw new Error(apf.formatErrorString(0, this, "upload",
+            "No upload method found that us supported by your browser!"));
+    }
 };
 
-(function(){
+(function(constants){
     this.implement(
         //#ifdef __WITH_DATAACTION
         apf.DataAction
         //#endif
     );
 
-    this.width               = 300;
-    this.height              = 20;
-    this.method              = "post";
-    this.progress            = 0;
-    this.uploading           = false;
-    this["type-filter"]      = null;
-    this.multiple            = true;
-    this.queued              = 1;
-    this.policyfile          = null;
-    this.data                = null;
-    this["merge-data"]       = true;
-    this.fieldname           = "Filedata";
-    this["filesize-min"]     = 1;
-    this["filesize-max"]     = 0;
-    this["allow-duplicates"] = false;
-    this["time-limit"]       = apf.isLinux ? 0 : 30;
-    this.noflash             = false;
-    this.timeout             = 100000;
-    this.$player             = null;
-    this.$playerInited       = false;
-    this.$focussable         = false;
+    this.state        = constants.STOPPED;
+    this.chunksize    = 0;
+    this.maxfilesize  = 1073741824; //"1gb"
+    this.multiselect  = true;
+    this.filedataname = "Filedata";
 
-    /**** Properties and attributes ****/
+    this.$method      = null;
+    this.$filter      = [];
 
-    this.$booleanProperties["uploading"]        = true;
-    this.$booleanProperties["multiple"]         = true;
-    this.$booleanProperties["merge-data"]       = true;
-    this.$booleanProperties["allow-duplicates"] = true;
-    this.$booleanProperties["noflash"]          = true;
+    this.$booleanProperties["multiselection"] = true;
+    this.$booleanProperties["multipart"]      = true;
 
-    /**
-     * @attribute {String}  value              the path of the file to uploaded,
-     *                                         or the online path after upload.
-     * @attribute {String}  target             URL to the server-side script
-     *                                         (relative URLs are changed automatically
-     *                                         to absolute paths).
-     * @attribute {String}  [method]           if the method is ‘get’, data is
-     *                                         appended as query-string to the URL.
-     *                                         The upload will always be a POST request.
-     *                                         Defaults to 'post'.
-     * @attribute {Number}  !progress          the position of the progressbar
-     *                                         indicating the position in the
-     *                                         upload process, i.e. the realtive
-     *                                         overall loaded size of running and
-     *                                         completed files in the list in
-     *                                         % / 100 (0..1).
-     * @attribute {Boolean} !uploading         whether this upload element is
-     *                                         uploading.
-     * @attribute {Number}  !size              the overall size of all files in
-     *                                         the list in byte.
-     * @attribute {Number}  !bytes-loaded      the overall loaded size of running
-     *                                         and completed files in the list in bytes.
-     * @attribute {Number}  !bytes-total       the total size of files in the
-     *                                         uploader queue in bytes.
-     * @attribute {Number}  !rate              the overall rate of running files
-     *                                         in the list in bytes/second.
-     * @attribute {String}  [rel]              the AML element the file input should
-     *                                         retrieve its dimensions from
-     * @attribute {String}  [type-filter]      key/value pairs are used as filters
-     *                                         for the dialog.
-     *                                         Defaults to NULL.
-     * Example:
-     * <code>
-     *  <a:upload type-filter="'Images (*.jpg, *.jpeg, *.gif, *.png)': '*.jpg; *.jpeg; *.gif; *.png'" />
-     * </code>
-     * @attribute {Boolean} [multiple]         If true, the browse-dialog allows
-     *                                         multiple-file selection.
-     *                                         Defaults to TRUE.
-     * @attribute {Number}  [queued]           maximum of currently running files.
-     *                                         If this is false, all files are uploaded
-     *                                         at once. Defaults to '1'.
-     * @attribute {String}  [policyfile]       location the cross-domain policy file.
-     * {@link http://livedocs.adobe.com/flash/9.0/ActionScriptLangRefV3/flash/system/Security.html#loadPolicyFile%28%29 Flash Security.loadPolicyFile}
-     * @attribute {String}  [data]             key/data values that are sent with
-     *                                         the upload requests.
-     * @attribute {Boolean} [merge-data]       If true, the data option from uploader
-     *                                         and file is merged (prioritised file
-     *                                         data). Defaults to TRUE.
-     * @attribute {String}  [fieldname]        the key of the uploaded file on your
-     *                                         server, similar to name in a file-input.
-     *                                         Linux Flash ignores it, better avoid it.
-     *                                         Defaults to 'Filedata'.
-     * @attribute {Number}  [filesize-min]     validates the minimal size of a
-     *                                         selected file byte.
-     *                                         Defaults to '1'.
-     * @attribute {Number}  [filesize-max]     validates the maximal size of a
-     *                                         selected file
-     *                                         (official limit is 100 MB for
-     *                                         FileReference, I tested up to 2 GB)
-     *                                         Defaults to '0'.
-     * @attribute {Boolean} [allow-duplicates] validates that no duplicate files
-     *                                         are added.
-     *                                         Defaults to FALSE.
-     * @attribute {Number}  [time-limit]       timeout in seconds. If the upload
-     *                                         is without progress, it is cancelled
-     *                                         and event complete gets fired (with
-     *                                         error string timeout).
-     *                                         Occurs usually when the server sends
-     *                                         an empty response (also on redirects).
-     *                                         Defaults to '30', '0' for linux.
-     * @attribute {Boolean} [noflash]          whether to use flash, or fallback
-     *                                         immediately to the 'old-fashioned'
-     *                                         HTML uploader.
-     *
-     * Example:
-     * When the skin doesn't have a progressbar you can use property binding to
-     * update a seperate or central progressbar.
-     * <code>
-     *  <a:upload id="upExample" />
-     *  <a:progressbar value="{upExample.progress}" />
-     * </code>
-     */
-    this.$supportedProperties.push("value", "target", "method", "progress", "uploading",
-        "rel", "bgswitch", "file-type", "multiple", "queued", "policyfile",
-        "data", "merge-data", "fieldname", "filesize-min", "filesize-max",
-        "allow-duplicates", "time-limit", "model");
+    this.$supportedProperties.push("state", "total", "chunksize", "maxfilesize",
+        "multiselection", "filedataname", "target", "filter", "multipart", "size",
+        "loaded", "percent", "bitrate", "uploaded", "failed", "queued", "button",
+        "model");
 
-    this.$propHandlers["value"] = function(value){
-        if (!this.value)
-            this.old_value = value;
-        this.value = value;
+    var startTime, fileIndex;
+    this.$propHandlers["state"] = function(value) {
+        // Get start time to calculate bps
+        if (this.state & constants.STARTED)
+            startTime = (+new Date());
     };
 
-    this.$propHandlers["target"] = function(value){
-        this.target = value = this.$qualifyPath(value);
-        if (this.form)
-            this.form.setAttribute("action", value);
+    this.$propHandlers["total"] = function(value) {
+        //todo
     };
 
-    this.$propHandlers["bgswitch"] = function(value) {
-        if (!value) return;
-        
-        this.$getLayoutNode("main", "background", this.$ext)
-            .style.backgroundImage = "url(" + this.mediaPath + value + ")";
-        this.$getLayoutNode("main", "background", this.$ext)
-            .style.backgroundRepeat = "no-repeat";
+    this.$propHandlers["chunksize"] = function(value) {
+        this.chunksize = parseSize(value);
     };
 
-    this.$propHandlers["rel"] = function(value) {
-        var _self = this;
-        window.setTimeout(function() {
-            _self.rel = eval(value);
-            if (_self.rel)
-                _self.$reposition();
-        });
+    this.$propHandlers["maxfilesize"] = function(value) {
+        this.chunksize = parseSize(value);
     };
 
+    this.$propHandlers["filter"] = function(value) {
+        this.$filter = value.splitSafe(",");
+    };
 
-    var propModelHandler = this.$propHandlers["model"];
+    this.$propHandlers["button"] = function(value) {
+        this.$button = self[value];
+
+        // #ifdef __DEBUG
+        if (!this.$button || !this.$button.$ext) {
+            throw new Error(apf.formatErrorString(0, this, "upload init",
+                "No valid identifier for a Button element passed to the 'button' attribute."));
+        }
+        //#endif
+    };
+
     this.$propHandlers["model"] = function(value) {
-        if (!value) return;
-        this.$files = new apf.upload.files(value);
-        propModelHandler.call(this, value);
+        this.$files = new constants.files(this, value);
     };
 
-    this.$propHandlers["noflash"] = function(value) {
-        this.$useFlash = !value;
+    this.$mimeTypes = {
+        "doc":"application/msword",
+        "dot":"application/msword",
+        "pdf":"application/pdf",
+        "pgp":"application/pgp-signature",
+        "ps":"application/postscript",
+        "ai":"application/postscript",
+        "eps":"application/postscript",
+        "rtf":"text/rtf",
+        "xls":"application/vnd.ms-excel",
+        "xlb":"application/vnd.ms-excel",
+        "ppt":"application/vnd.ms-powerpoint",
+        "pps":"application/vnd.ms-powerpoint",
+        "pot":"application/vnd.ms-powerpoint",
+        "zip":"application/zip",
+        "swf":"application/x-shockwave-flash",
+        "swfl":"application/x-shockwave-flash",
+        "docx":"application/vnd.openxmlformats",
+        "pptx":"application/vnd.openxmlformats",
+        "xlsx":"application/vnd.openxmlformats",
+        "mpga":"audio/mpeg",
+        "mpega":"audio/mpeg",
+        "mp2":"audio/mpeg",
+        "mp3":"audio/mpeg",
+        "wav":"audio/x-wav",
+        "bmp":"image/bmp",
+        "gif":"image/gif",
+        "jpeg":"image/jpeg",
+        "jpg":"image/jpeg",
+        "jpe":"image/jpeg",
+        "png":"image/png",
+        "svg":"image/svg+xml",
+        "svgz":"image/svg+xml",
+        "tiff":"image/tiff",
+        "tif":"image/tiff",
+        "htm":"text/html",
+        "html":"text/html",
+        "xhtml":"text/html",
+        "mpeg":"video/mpeg",
+        "mpg":"video/mpeg",
+        "mpe":"video/mpeg",
+        "qt":"video/quicktime",
+        "mov":"video/quicktime",
+        "flv":"video/x-flv",
+        "rv":"video/vnd.rn-realvideo",
+        "asc":"text/plain",
+        "txt":"text/plain",
+        "text":"text/plain",
+        "diff":"text/plain",
+        "log":"text/plain",
+        "exe":"application/octet-stream"
     };
+
+    function parseSize(size) {
+        var mul;
+        if (typeof size == "string") {
+            size = /^([0-9]+)([mgk]+)$/.exec(size.toLowerCase().replace(/[^0-9mkg]/g, ""));
+            mul  = size[2];
+            size = +size[1];
+            if (mul == "g")
+                size *= 1073741824;
+            if (mul == "m")
+                size *= 1048576;
+            if (mul == "k")
+                size *= 1024;
+        }
+
+        return size;
+    }
+
+    function calc() {
+        if (!this.$files) return;
+        // Reset stats
+        var file,
+            size    = 0, loaded = 0, uploaded = 0, failed = 0, queued = 0,
+            percent = 0, bitrate = 0,
+            files   = this.$files.toArray(),
+            i       = 0,
+            l       = files.length;
+
+
+        // Check status, size, loaded etc on all files
+        for (; i < l; ++i) {
+            file = files[i];
+
+            if (typeof file.size != "undefined") {
+                size   += file.size;
+                loaded += file.loaded;
+            }/* else {
+                size = undef;
+            }*/
+
+            if (file.status & constants.DONE)
+                uploaded++;
+            else if (file.status & constants.FAILED)
+                failed++;
+            else
+                queued++;
+        }
+
+        // If we couldn't calculate a total file size then use the number of files to calc percent
+        if (size === 0) {
+            percent = files.length > 0 ? Math.ceil(uploaded / files.length * 100) : 0;
+        }
+        else {
+            bitrate = Math.ceil(loaded / ((+new Date() - startTime || 1) / 1000.0));
+            percent = Math.ceil(loaded / size * 100);
+        }
+
+        this.setProperty("size",     size);
+        this.setProperty("loaded",   loaded);
+        this.setProperty("uploaded", uploaded);
+        this.setProperty("failed",   uploaded);
+        this.setProperty("queued",   queued);
+        this.setProperty("percent",  percent);
+        this.setProperty("bitrate",  bitrate);
+    }
+
+    function nextQueue() {
+        var file,
+            files = this.$files.toArray();
+        if (this.state & constants.STARTED && fileIndex < files.length) {
+            file = files[fileIndex++];
+            if (file.status & constants.QUEUED)
+                this.$method.upload(file);
+            else
+                nextQueue.call(this);
+        }
+        else {
+            this.stop();
+        }
+    }
 
     /**** Public methods ****/
 
-    //#ifdef __WITH_CONVENIENCE_API
-
-    /**
-     * Sets the icon of the button
-     * @param {String} url the location of the image to be used as an icon
-     */
-    this.setIcon = function(url){
-        this.setProperty("icon", url, false, true);
+    this.$buildUrl = function(url, items) {
+        var query = "";
+        for (var i in items)
+            query += (query ? "&" : "") + encodeURIComponent(i) + "=" + encodeURIComponent(items[i]);
+        if (query)
+            url += (url.indexOf("?") > 0 ? "&" : "?") + query;
+        return url;
     };
 
-    /**
-     * Sets the caption of the button
-     * @param {String} value the text displayed on the button
-     */
-    this.setCaption = function(value){
-        this.setProperty("caption", value, false, true);
-    };
+    this.$queue = function(selected_files) {
+        var i, l, file, extensionsMap,
+            count = 0;
 
-    //#endif
+        // Convert extensions to map
+        if (l = this.$filter.length) {
+            extensionsMap = {};
+            for (i = 0; i < l; ++i)
+                extensionsMap[this.$filter[i].toLowerCase()] = true;
+        }
 
-    /**
-     * Returns the current value of this element.
-     * @return {String}
-     */
-    this.getValue = function(){
-        return this.value;
-    };
+        for (i = 0, l = selected_files.length; i < l; ++i) {
+            file = selected_files[i];
+            file.loaded  = 0;
+            file.percent = 0;
+            file.status  = constants.QUEUED;
 
-    /**
-     * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
-     */
-    this.setValue = function(value){
-        this.setProperty("value", value, false, true);
-    };
+            // Invalid file extension
+            if (extensionsMap && !extensionsMap[file.name.toLowerCase().split(".").slice(-1)]) {
+                this.dispatchEvent("error", {
+                    code    : constants.ERROR.FILE_EXTENSION_ERROR,
+                    message : "File extension error.",
+                    file    : file
+                });
+                continue;
+            }
 
-    /**
-     * Opens the browse window which allows the user to choose a file to upload.
-     */
-    this.browse = function(userAction){
-        // 'browse' action not available when the control is disabled, or when
-        // using Flash Uploader:
-        if (this.$useFlash || !this.$ext.parentNode.offsetHeight 
-          || userAction && this.disabled) //@todo apf3.0 
-            return;
+            // Invalid file size
+            if (typeof file.size != "undefined" && file.size > this.maxfilesize) {
+                this.dispatchEvent("error", {
+                    code    : constants.ERROR_CODES.FILE_SIZE_ERROR,
+                    message : "File size error.",
+                    file    : file
+                });
+                continue;
+            }
 
-        this.inpFile.click();
-        
-        if (this.inpFile.value != this.value) {
-            this.setProperty("value", this.inpFile.value, false, true);
-            this.dispatchEvent("afterbrowse", {value: this.value});
+            // Add valid file to list
+            this.$files.create(file);
+            count++;
+        }
+
+        // Only refresh if any files where added
+        if (count) {
+            calc.call(this);
+            if (this.$method.refresh)
+                this.$method.refresh();
         }
     };
 
-    /**
-     * Starts uploading the selected file.
-     */
-    this.upload = function(){
-        if (!this.$useFlash) {
-            if (this.value != this.inpFile.value || !this.inpFile.value)
-                return;
+    this.$progress = function(file) {
+        if (file.status & constants.QUEUED)
+            file.status = constants.UPLOADING;
 
-            this.old_value = this.value;
-            this.value = this.inpFile.value;
-            this.setValue(this.value);
+        file.percent = file.size > 0 ? Math.ceil(file.loaded / file.size * 100) : 100;
+        calc.call(this);
+    };
+
+    this.$fileDone = function(file) {
+        file.status = constants.DONE;
+        this.$progress(file);
+        nextQueue.call(this);
+    };
+
+    this.$fileRemove = function(file) {
+        this.$files.remove(file);
+        calc.call(this);
+    };
+
+    this.$draw = function(){
+        if (this.$method.draw) {
+            this.$ext = this.$getExternal("main");
+            this.$method.draw();
         }
-
-        this.$upload();
-    };
-
-    /**
-     * Cancels the upload process
-     * @param {String} msg the reason why the process was cancelled.
-     */
-    this.cancel = function(msg){
-        return this.$cancel(msg);
-    }
-
-    /**
-     * Sets the target frame to which the form is posted
-     * @param {String} target the name of the frame receiving the form post.
-     */
-    this.setTarget = function(target){
-        if (this.$useFlash) return;
-
-        this.target = target;
-        this.$initForm();
-    };
-
-    this.event = function(eventName, eventObj) {
-        switch (eventName) {
-            case "load":
-                this.$initUploader();
-                break;
-            case "fail":
-                /*
-                 * flash   - Flash is not installed or the Flash version did not
-                 *           meet the requirements.
-                 * blocked - The user has to enable the movie manually because
-                 *           of Flashblock, no refresh required.
-                 * empty   - The Flash movie failed to load, check if the file
-                 *           exists and the path is correct.
-                 * hidden  - Adblock Plus blocks hides the movie, the user has
-                 *           enable it and refresh.
-                 */
-                break;
-            case "queue":
-                //Function to execute when the queue statistics are updated.
-                this.setProperty("bytes-loaded", eventObj.bytesLoaded);
-                this.setProperty("bytes-total",  eventObj.size);
-                this.setProperty("progress",     eventObj.percentLoaded / 100);
-                this.setProperty("rate",         eventObj.rate);
-                break;
-            case "complete":
-                //Function to execute when all files are uploaded (or stopped).
-                this.setProperty("uploading", false);
-                break;
-            case "buttonEnter":
-            case "buttonLeave":
-            case "buttonDown":
-            case "buttonDisable":
-                this.$setState(eventName);
-                break;
-            case "browse":
-                //Function to execute when the browse-dialog opens.
-            case "disabledBrowse":
-                //Function to execute when the user tries to open the browse-dialog,
-                //but the uploader is disabled.
-                if (this.rel && !this.rel.disabled)
-                    this.rel.setProperty("disabled", true);
-                break;
-            case "cancel":
-                //Function to execute when the user closes the browse-dialog without a selection.
-                this.setProperty("uploading", false);
-                break;
-            //case "select": <-- deprecated
-            case "selectSuccess":
-                //Function to execute when files were selected and validated successfully.
-                //param: successFiles
-                this.$files.createMany(eventObj);
-                break;
-            case "selectFail":
-                //Function to execute when files were selected and failed validation.
-                //param: failFiles
-                //validation error values: duplicate, sizeLimitMin, sizeLimitMax
-                this.$files.removeMany(eventObj);
-                break;
-            case "fileStart":
-                //Function to execute when flash initialised the upload for a file.
-            case "fileStop":
-                //Function to execute when a file got stopped manually.
-            case "fileRequeue":
-                //Function to execute when a file got added back to the queue after
-                //being stopped or completed.
-            case "fileOpen":
-                //Function to execute when the file is accessed before for upload.
-            case "fileProgress":
-                //Function to execute when the upload reports progress.
-            case "fileComplete":
-                //Function to execute when a file is uploaded or failed with an error.
-            case "fileRemove":
-                //Function to execute when a file got removed.
-                this.$files.update(eventObj);
-                break;
-            default:
-                break;
-        }
-
-        this.setAttribute("value", this.$files.getValue());
-    };
-
-    /**** Private state handling methods ****/
-
-    this.$initUploader = function() {
-        this.$playerInited = true;
-        apf.flash.remote(this.$player, "initialize", {
-            width          : this.width,
-            height         : this.height,
-            typeFilter     : this["type-filter"],
-            multiple       : this.multiple,
-            queued         : this.queued,
-            url            : this.target,
-            method         : this.method,
-            data           : this.data,
-            mergeData      : this["merge-data"],
-            fieldName      : this["fieldname"],
-            // #ifdef __DEBUG
-            verbose        : true,
-            /* #else
-            verbose         : false,
-            #endif */
-            fileSizeMin    : this["filesize-min"],
-            fileSizeMax    : this["filesize-max"],
-            allowDuplicates: this["allow-duplicates"],
-            timeLimit      : this["time-limit"],
-            policyFile     : this["policyfile"]
-        });
     };
 
     var states = {
         "buttonEnter": "Over",
         "buttonLeave": "Out",
-        "buttonDown":  "Down"
+        "buttonDown" : "Down"
     };
 
-    this.$setState = function(state) {
-        if (!this.rel) return null; // @todo this will go when this class inherits from button
+    this.$setButtonState = function(state) {
+        if (!this.$button) return null; // @todo this will go when this class inherits from button
 
         if (state == "buttonDisabled")
-            return this.rel.setProperty("disabled", true);
-        else if (this.rel.disabled)
-            this.rel.setProperty("disabled", false);
+            return this.$button.setProperty("disabled", true);
+        else if (this.$button.disabled)
+            this.$button.setProperty("disabled", false);
 
-        return this.rel.$setState(states[state]);
+        return this.$button.$setState(states[state]);
     };
 
-    this.$reposition = function() {
-        if (!this.rel) return; // @todo this will go when this class inherits from button
-
-        var o   = this.rel.$ext,
-            pos = apf.getAbsolutePosition(o);
-        this.$ext.style.position = o.style.position || 'absolute';
-        this.$ext.style.top      = pos[1] + "px";
-        this.$ext.style.left     = pos[0] + "px";
-        this.$ext.style.width    = o.offsetWidth + "px";
-        this.$ext.style.height   = o.offsetHeight + "px";
-    };
-
-    var anchor;
-    this.$qualifyPath = function(path) {
-        (anchor || (anchor = document.createElement("a"))).href = path;
-        return anchor.href;
-    };
-
-    this.$updateProgress = function(){
-        this.setProperty("progress", Math.min(1, (this.progress || 0) + (1/800)));
-    };
-
-    this.$upload = function(){
-        this.$uploading = true;
-
-        this.setProperty("uploading", true);
-
-        if (this.$useFlash) {
-            apf.flash.remote(this.$player, "start");
-        }
-        else {
-            this.timer = setInterval('apf.lookup(' + this.$uniqueId + ').$updateProgress()', 800);
-            this.timeout_timer = $setTimeout('apf.lookup(' + this.$uniqueId + ').$timeout()', this.timeout);
-            this.form.submit();
+    this.start = function() {
+        if (!(this.state & constants.STARTED)) {
+            fileIndex = 0;
+            this.setProperty("state", constants.STARTED);
+            nextQueue.call(this);
         }
     };
 
-    /**
-     * @event uploaded Fires when the upload succeeded, was cancelled or failed.
-     *   object:
-     *   {String} data the data that was returned by the upload post.
-     */
-    this.$done = function(data){
-        window.clearInterval(this.timer);
-        window.clearInterval(this.timeout_timer);
-        window.setTimeout('apf.lookup(' + this.$uniqueId + ').$clearProgress()', 300);
-
-        //if (value)
-        //    this.setValue(value);
-        this.old_value = null;
-
-        //if(caption)
-        //this.setCaption(this.lastCaption);
-
-        this.data = data;
-
-        this.dispatchEvent("uploaded", {
-            data: data
-        });
-
-        this.$initForm();
-        this.$uploading = false;
+    this.stop = function() {
+       if (!(this.state & constants.STOPPED))
+           this.setProperty("state", constants.STOPPED);
     };
 
-    this.$cancel = function(value){
-        if (this.$useFlash) {
-            apf.flash.remote(this.$player, "stop");
+    this.addEventListener("error", function(e) {
+        // Set failed status if an error occured on a file
+        if (e.file) {
+            e.file.status = constants.FAILED;
+            calc.call(this);
+
+            // Upload next file but detach it from the error event
+            // since other custom listeners might want to stop the queue
+            var _self = this
+            $setTimeout(function() {
+                nextQueue.call(_self);
+            });
         }
-        else {
-            window.clearInterval(this.timer);
-            window.clearInterval(this.timeout_timer);
+    });
 
-            if (this.old_value)
-                this.setValue(this.old_value);
-            this.old_value = null;
-
-            this.$initForm();
+    this.addEventListener("DOMNodeInsertedIntoDocument", function() {
+        if (!this["model"])
+            this.setProperty("model", "apfupload".appendRandomNumber(5));
+        // #ifdef __DEBUG
+        if (!this.$button) {
+            throw new Error(apf.formatErrorString(0, this, "upload init",
+                "Required: 'button' attribute not set, no button element available."));
         }
-
-        this.dispatchEvent("cancel", {
-            returnValue: value
-        });
-        this.$uploading = false;
-
-        this.$clearProgress();
-    };
-
-    /**
-     * @event timeout Fires when the upload timed out.
-     */
-    this.$timeout = function(){
-        clearInterval(this.timer);
-        clearInterval(this.timeout_timer);
-
-        /*this.oCaption.nodeValue = this.$aml.firstChild
-            ? this.$aml.firstChild.nodeValue
-            : "";*/
-        this.$clearProgress();
-
-        if (this.old_value)
-            this.setValue(this.old_value);
-        this.old_value = null;
-
-        this.dispatchEvent("timeout");
-
-        this.$initForm();
-        this.$uploading = false;
-    };
-
-    this.$clearProgress = function(){
-        this.setProperty("progress", 0);
-        this.setProperty("uploading", false);
-    };
-
-    /**** Event handling ****/
-
-    this.$initForm = function(){
-        if (apf.isIE) {
-            this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = apf.insertHtmlNode(this.$getLayoutNode("form"),
-                this.oFrame.contentWindow.document.body);
+        if (!this.target) {
+            throw new Error(apf.formatErrorString(0, this, "upload init",
+                "Required: 'target' attribute not set, thus no valid uri to send files to."));
         }
+        //#endif
 
-        //this.form = this.$getLayoutNode("main", "form", this.$ext);
-        this.form.setAttribute("action", this.target);
-        this.form.setAttribute("target", "upload" + this.$uniqueId);
-        this.$getLayoutNode("form", "inp_uid", this.form)
-            .setAttribute("value", this.$uniqueId);
-        this.inpFile = this.$getLayoutNode("form", "inp_file", this.form);
-
+        if (!this.$method) return;
         var _self = this;
-        if (!apf.isIE) {
-            this.inpFile.setAttribute("size", "0");
-            this.inpFile.onchange = function(){
-                //amlNode.$startUpload();
-                _self.setProperty("value", this.value);
-            }
-        }
-
-        if (apf.debug == 2) {
-            this.oFrame.style.visibility = "visible";
-            this.oFrame.style.width      = "100px";
-            this.oFrame.style.height     = "100px";
-        }
-
-        if (apf.isIE) return;
-        
-        var timer = setInterval(function() {
-            var oNode = _self.rel ? _self.rel : null;
-
-            _self.inpFile.onchange = function() {_self.browse(true);};
-
-            if (oNode && oNode.$ext && oNode.$ext.offsetHeight) {
-                if (oNode.$ext.offsetWidth == 0 || oNode.$ext.offsetHeight == 0)
-                    return;
-                var z = parseInt(oNode.$ext.style.zIndex) || 1;
-                oNode.$ext.style.zIndex      = z;
-                _self.inpFile.style.zIndex   = ++z;
-                _self.inpFile.style.margin   = "0";
-                _self.inpFile.style.position = oNode.$ext.style.position;
-                _self.inpFile.style.width    = oNode.$ext.offsetWidth  + "px";
-                _self.inpFile.style.height   = oNode.$ext.offsetHeight + "px";
-                _self.inpFile.style.top      = (oNode.$ext.offsetTop - 20)    + "px";
-                _self.inpFile.style.left     = (oNode.$ext.offsetLeft - 8)   + "px";
-                // @todo: resize/ move on browser resize
-                
-                clearInterval(timer);
-            }
-        }, 500);
-    };
-
-    /**
-     * @event beforeuploaded Fires before data is uploaded.
-     *   cancelable: Prevents the data from being uploaded.
-     *   object:
-     *   {String} data the data that was returned by the upload post.
-     *   {HTMLFrameElement} frame the iframe serving as the target to the form post.
-     */
-    this.$draw = function(){
-        this.$name = "upload" + this.$uniqueId;
-        var _self = this;
-        // first we try the Flash method:
-        this.$useFlash = !this.getAttribute("noflash");
-        if (this.$useFlash && !this["noflash"]) {
-            this.$ext = this.$getExternal("main");//, null, function(oExt) {
-            //console.dir(oExt);
-            this.$ext.style.position = "absolute";
-            this.$ext.style.zIndex   = "9999";
-            this.$ext.style.width    = this.width;
-            this.$ext.style.height   = this.height;
-            apf.flash.embed({
-                // apf.flash#embed properties
-                context          : this,
-                htmlNode         : this.$ext,
-                // movie properties
-                src              : this.DEFAULT_SWF_PATH,
-                width            : "100%",
-                height           : "100%",
-                id               : this.$name,
-                quality          : "high",
-                //bgcolor          : "#000000",
-                //allowFullScreen  : "true",
-                name             : this.$name,
-                flashvars        : "playerID=" + this.$playerId,
-                allowScriptAccess: "always",
-                wMode            : "transparent",
-                swLiveConnect    : "true",
-                type             : "application/x-shockwave-flash",
-                pluginspage      : "http://www.adobe.com/go/getflashplayer",
-                menu             : "false"
-            });
-        }
-        else {
-            this.width  = 'auto';
-            this.height = 'auto';
-            //Build Main Skin
-            this.$ext = this.$getExternal("main", null, function(oExt){
-                oExt.appendChild(oExt.ownerDocument.createElement("iframe"))
-                    .setAttribute("name", "upload" + this.$uniqueId);
-            });
-
-            if (!apf.isIE)
-                this.form = apf.insertHtmlNode(this.$getLayoutNode("form"), this.$ext);
-
-            this.oFrame = this.$ext.getElementsByTagName("iframe")[0];
-            apf.addListener(this.oFrame, "load", function(){
-                if (!_self.uploading)
-                    return;
-
-                var data = "";
-                try {
-                    data = apf.html_entity_decode(_self.oFrame.contentWindow
-                        .document.body.innerHTML.replace(/<PRE>|<\/PRE>/ig, ""));
-                }
-                catch(e){}
-
-                var hasFailed = _self.dispatchEvent("beforeuploaded", {
-                    data  : data,
-                    frame : _self.oFrame
-                }) === false;
-
-                if (hasFailed)
-                    _self.$cancel();
-                else
-                    _self.$done(data);
-            });
-
-            apf.addListener(this.oFrame, "error", function(){
-                if (!_self.uploading)
-                    return;
-
-                _self.$cancel();
-            });
-
-            this.$initForm();
-        }
-    };
-
-    this.addEventListener("DOMNodeRemovedFromDocument", function() {
-        if (this.oFrame)
-            this.oFrame.onload = null;
+        $setTimeout(function() {
+            calc.call(_self);
+            if (_self.$method.refresh)
+                _self.$method.refresh();
+        });
     });
 // #ifdef __WITH_DATABINDING
-}).call(apf.upload.prototype = new apf.StandardBinding());
+}).call(apf.upload.prototype = new apf.StandardBinding(), apf.upload);
 /* #else
-}).call(apf.upload.prototype = new apf.Presentation());
+}).call(apf.upload.prototype = new apf.Presentation(), apf.upload);
 #endif*/
 
-apf.upload.files = function(model) {
-    if (typeof model == "string")
-        model = apf.nameserver.get("model", model);
+apf.upload.STOPPED   = 0x0001; // Inital state of the queue and also the state ones it's finished all it's uploads.
+apf.upload.STARTED   = 0x0002; // Upload process is running
+apf.upload.QUEUED    = 0x0004; // File is queued for upload
+apf.upload.UPLOADING = 0x0008; // File is being uploaded
+apf.upload.FAILED    = 0x0010; // File has failed to be uploaded
+apf.upload.DONE      = 0x0020; // File has been uploaded successfully
+// Error constants used by the Error event:
+apf.upload.ERROR_CODES = {
+    GENERIC_ERROR        : -100, // Generic error for example if an exception is thrown inside Silverlight.
+    HTTP_ERROR           : -200, // HTTP transport error. For example if the server produces a HTTP status other than 200.
+    IO_ERROR             : -300, // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    SECURITY_ERROR       : -400, // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    INIT_ERROR           : -500, // Initialization error. Will be triggered if no runtime was initialized.
+    FILE_SIZE_ERROR      : -600, // File size error. If the user selects a file that is to large it will be blocked and an error of this type will be triggered.
+    FILE_EXTENSION_ERROR : -700  // File extension error. If the user selects a file that isn't valid according to the filters setting.
+};
 
-    if (model)
-        model.load("<files/>");
+apf.upload.files = function(oUpload, model) {
+    if (typeof model == "string") {
+        var sModel = model;
+        if (!(model = apf.nameserver.get(sModel))) {
+            model = apf.setReference(sModel,
+                apf.nameserver.register("model", sModel, new apf.model()));
+            if (model === 0)
+                model = self[sModel];
+            else
+                model.id = model.name = sModel;
+        }
+        // set the root node for this model
+        model.load("<xmpp/>");
+    }
+    //#ifdef __DEBUG
+    if (!model) {
+        throw new Error(apf.formatErrorString(0, oUpload, "upload",
+            "For the upload control to work, you MUST specify a valid value for the 'model' attribute!"));
+    }
+    //#endif
 
-    var files = {},
+    model.load("<files/>");
+
+    var oFiles = {},
+        aFiles = [],
         userProps = {"addDate":1, "creationDate":1, "extension":1, "id":1,
                      "modificationDate":1, "name":1, "size":1, "status":1,
-                     "validationError":1
+                     "validationError":1, "loaded":1
         };
 
     this.create = function(file) {
-        if (!file || !file.id || files[file.id]) return null;
+        if (!file || !file.id || oFiles[file.id]) return null;
 
-        files[file.id] = file;
+        oFiles[file.id] = file;
+        aFiles.pushUnique(file);
         if (model) {
             file.xml = model.data.ownerDocument.createElement("file");
             apf.xmldb.appendChild(model.data, file.xml);
@@ -779,9 +517,7 @@ apf.upload.files = function(model) {
         }
     };
 
-    this.read = function(filename) {
-
-    };
+    this.read = function(filename) { };
 
     this.update = function(file) {
         if (!file || !file.id) return null;
@@ -789,7 +525,7 @@ apf.upload.files = function(model) {
         var i;
         if (!file.xml) {
             var t = file;
-            file = files[file.id];
+            file = oFiles[file.id];
             for (i in userProps)
                 file[i] = t[i];
         }
@@ -800,9 +536,7 @@ apf.upload.files = function(model) {
             if (i.indexOf("Date") != -1 && typeof file[i] == "number")
                 file[i] = new Date(file[i]);
 
-            file.xml.setAttribute(i, (i == "status")
-                ? apf.upload.STATUS_MAP[file[i]]
-                : file[i]);
+            file.xml.setAttribute(i, file[i]);
         }
 
         apf.xmldb.applyChanges("synchronize", file.xml);
@@ -811,12 +545,13 @@ apf.upload.files = function(model) {
     };
 
     this.remove = function(file) {
-        if (!file || !file.id || !files[file.id]) return;
+        if (!file || !file.id || !oFiles[file.id]) return;
 
-        file = files[file.id];
+        file = oFiles[file.id];
         if (model && file.xml)
             apf.xmldb.removeChild(model.data, file.xml);
-        delete files[file.id];
+        aFiles.remove(file);
+        delete oFiles[file.id];
     };
 
     this.removeMany = function(arr) {
@@ -828,22 +563,34 @@ apf.upload.files = function(model) {
         }
     };
 
+    this.get = function() {
+        var l;
+        if (l = arguments.length) {
+            if (l === 1)
+                return oFiles[arguments[0]];
+            var res = {},
+                i   = 0;
+            for (; i < l; ++i) {
+                if (oFiles[i])
+                    res[oFiles[i].id] = oFiles[i];
+            }
+            return res;
+        }
+        return oFiles;
+    };
+
+    this.toArray = function() {
+        return aFiles;
+    };
+
     this.getValue = function() {
         var i,
             a = [];
-        for (i in files)
-            a.push(files[i].name);
+        for (i in oFiles)
+            a.push(oFiles[i].name);
         return a.join("|");
     };
 };
-
-apf.upload.STATUS_QUEUED   = 0;
-apf.upload.STATUS_RUNNING  = 1;
-apf.upload.STATUS_ERROR    = 2;
-apf.upload.STATUS_COMPLETE = 3;
-apf.upload.STATUS_STOPPED  = 4;
-apf.upload.STATUS_MAP = ["queued", "running", "error", "complete", "stopped"];
-
 
 apf.aml.setElement("upload", apf.upload);
 // #endif
