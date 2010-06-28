@@ -412,6 +412,11 @@ apf.page = function(struct, tagName){
                   var page = apf.lookup(' + this.$uniqueId + ');\
                   page.canHaveChildren = true;');
 
+            var cssClass = this.getAttribute("class");
+            if (cssClass)
+                apf.setStyleClass(elBtn, cssClass);
+            
+
             var nameOrId = this.getAttribute("id") || this.getAttribute("name"),
                 closebtn = this.getAttribute("closebtn");
 
