@@ -2142,7 +2142,7 @@ var apf = {
             // event has already occurred.
             var doc = document, UNDEF = "undefined";
             if ((typeof doc.readyState != UNDEF && doc.readyState == "complete")
-              || (typeof doc.readyState == UNDEF && (doc.getElementsByTagName("body")[0] || doc.body)))
+              || (doc.getElementsByTagName("body")[0] || doc.body))
                 return apf.load_init();
 
             // for Mozilla/Opera9.
