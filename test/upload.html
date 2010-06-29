@@ -12,6 +12,11 @@
 
         <a:button id="btnSelect" width="200">Select Files</a:button>
 
+        <a:list id="lstFiles" model="mdlUpload" canrename="false" width="200">
+            <a:each match="[file]" />
+            <a:caption match="[@name]" />
+        </a:list>
+
         <a:upload id="uplAvatar" 
           model  = "mdlUpload"
           button = "btnSelect"

@@ -80,7 +80,7 @@ apf.upload = function(struct, tagName){
 
     var o,
         i = 0,
-        a = ["html5", "silverlight", "flash", "html4"];
+        a = ["html5", "flash", "html4"];
     for (; i < 4 && !this.$method; ++i) {
         o = apf.upload[a[i]];
         if (typeof o != "undefined" && o.isSupported())
@@ -104,6 +104,7 @@ apf.upload = function(struct, tagName){
     this.chunksize    = 0;
     this.maxfilesize  = 1073741824; //"1gb"
     this.multiselect  = true;
+    this.multipart    = true;
     this.filedataname = "Filedata";
 
     this.$method      = null;
@@ -354,6 +355,7 @@ apf.upload = function(struct, tagName){
             file.status = constants.UPLOADING;
 
         file.percent = file.size > 0 ? Math.ceil(file.loaded / file.size * 100) : 100;
+        this.$files.update(file);
         calc.call(this);
     };
 
@@ -364,6 +366,8 @@ apf.upload = function(struct, tagName){
     };
 
     this.$fileRemove = function(file) {
+        if (this.$method.removeFile)
+            this.$method.removeFile(file);
         this.$files.remove(file);
         calc.call(this);
     };

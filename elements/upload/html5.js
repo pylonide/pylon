@@ -80,7 +80,6 @@ apf.upload.html5.isSupported = function() {
             filter    = this.oUpload.$filter,
             i         = 0,
             l         = filter.length;
-        // Create input container and insert it at an absolute position within the browse button
         oCont = this.oUpload.$ext;
 
         // Convert extensions to mime types list
