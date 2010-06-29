@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Worknets Homepage</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+ 
+        <a:model id="mdlDirectMessages">
+            <data>
+                <message 
+                  avatar = "a_david.png"
+                  status = "active"
+                  login  = "David van Ballegooijen"
+                  date   = "June 20 at 9:38am"
+                  title  = "A couple of questions"
+                  body   = "Hey there, I have a few questions about the new project, could we sit do..." />
+                <message 
+                  avatar = "a_ruben.png"
+                  status = "unknown"
+                  login  = "Ruben Daniels"
+                  date   = "June 20 at 9:21am"
+                  title  = "Racefiets!"
+                  body   = "I got a brand new racing bike! :) Moet je echt een keer proberen!" />
+            </data>
+        </a:model>
+        
+        <!-- Comment out this code and error will dissapear -->
+        <div class="settings5" model="mdlDirectMessages"><?lm
+            foreach([message]) {
+                <a:checkbox skin="dashboard_checkbox" style="margin:18px 0 37px 0;"></a:checkbox>
+            }
+        ?></div>
+        <!-- end of code to commenting out-->
+ 
+        <a:hbox>
+            <a:button skin="agenda_silver">Mark as Read</a:button>
+            <a:button skin="agenda_silver">Mark as Unread</a:button>
+        </a:hbox>
+        
+        
+        
+    </body>
+</html>
