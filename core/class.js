@@ -933,7 +933,7 @@ apf.Class.prototype = new (function(){
         
         if (--apf.$eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
-          && !apf.isDestroying
+          && !apf.isDestroying && apf.loaded
           //#ifdef __DEBUG
           && eventName != "debug"
           //#endif
