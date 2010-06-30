@@ -206,7 +206,8 @@ apf.runO3 = function(){
 //    XMLDocument.prototype.setProperty  = function(x,y){};
 
     apf.getHttpReq = function(){
-        return new o3.http();
+        var xhr = require("./node/XMLHttpRequest").XMLHttpRequest;
+        return new xhr();
     };
 
     apf.getSocket = function() {
