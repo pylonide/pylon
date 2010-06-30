@@ -274,7 +274,7 @@ apf.Class.prototype = new (function(){
         delete this.$initStack;
         delete this.$bufferEvents;
         
-        if (struct && struct.htmlNode) {
+        if (struct && (struct.htmlNode || this.nodeFunc == apf.NODE_HIDDEN)) {
             this.$pHtmlNode = struct.htmlNode;
             
             /*#ifdef __SUPPORT_GWT

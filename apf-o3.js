@@ -79,8 +79,8 @@ apf = {
 
         this.implement(apf.Class);
 
-        if (strAml)
-            apf.window.init(strAml);
+        //if (strAml)
+        apf.window.init(strAml || "<a:application xmlns:a='http://ajax.org/2005/aml' />");
     },
     
     importClass : function(ref, strip, win){
@@ -238,7 +238,9 @@ apf = {
         
         dir : function(obj){
             this.info(apf.vardump(obj, null, true));
-        }
+        },
+        
+        teleport: function() {}
     },
 
     namespace : function(name, oNamespace){

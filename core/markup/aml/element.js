@@ -87,9 +87,9 @@ apf.AmlElement = function(struct, tagName){
             
             if (!this.ownerDocument) {
                 this.ownerDocument = apf.document;
-                this.prefix       = "";
-                this.namespaceURI = null;
-                this.tagName      = tagName;
+                this.prefix        = "";
+                this.namespaceURI  = null;
+                this.tagName       = tagName;
             }
             
             if (nodes) {
