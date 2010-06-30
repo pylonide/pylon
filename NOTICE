@@ -73,6 +73,11 @@ The Easing Equations, version 2.0, is copyrighted by 2003 Robert Penner
 (http://www.robertpenner.com/easing_terms_of_use.html) and licensed under a
 permissive, non-standard license.
 
+The node-XMLHttpRequest library is copyrighted by from Dan DeFelippi
+<dan@driverdan.com> 2010. We use the fork by Mark Hansen
+<http://github.com/chihchun/node-XMLHttpRequest>. Licensed under the MIT 
+license.
+
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the
 source code.
