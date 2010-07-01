@@ -109,10 +109,10 @@ apf.GuiElement = function(){
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = true; //default value;
     
-    this.minwidth   = 5;
+    /*this.minwidth   = 5;
     this.minheight  = 5;
     this.maxwidth   = 10000;
-    this.maxheight  = 10000;
+    this.maxheight  = 10000;*/
     
     //#ifdef __WITH_KEYBOARD
     this.$booleanProperties["disable-keyboard"] = true;
@@ -411,6 +411,29 @@ apf.GuiElement = function(){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMInsert or whatever its called
             return;
+        
+        //@todo apf3.0 set this also for skin change
+        if (this.$ext) {
+            var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
+            var type        = this.$isLeechingSkin ? this.localName : "main";
+            if (this.minwidth == undefined)
+                this.minwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 5);
+            if (this.minheight == undefined)
+                this.minheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 5);
+            if (this.maxwidth == undefined)
+                this.maxwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
+            if (this.maxheight == undefined)
+                this.maxheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
+
+            //#ifdef __WITH_CONTENTEDITABLE
+            //@todo slow??
+            var diff = apf.getDiff(this.$ext);
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+            this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
+            this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
+            //#endif
+        }
         
         this.$setLayout();
 

@@ -560,24 +560,6 @@ apf.Presentation = function(){
         if (!this.$baseCSSname)
             this.$baseCSSname = oExt.className.trim().split(" ")[0];
 
-        //@todo what about setting this dynamic in an attribute???
-        //@todo is another place for this more efficient?
-        //@todo apf3.0 set this also for skin change
-        var type        = this.$isLeechingSkin ? this.localName : "main";
-        this.minwidth   = apf.getCoord(parseInt(this.$getOption(type, "minwidth")), 5);
-        this.minheight  = apf.getCoord(parseInt(this.$getOption(type, "minheight")), 5);
-        this.maxwidth   = apf.getCoord(parseInt(this.$getOption(type, "maxwidth")), 10000);
-        this.maxheight  = apf.getCoord(parseInt(this.$getOption(type, "maxheight")), 10000);
-
-        //#ifdef __WITH_CONTENTEDITABLE
-        //@todo slow??
-        var diff = apf.getDiff(oExt);
-        oExt.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
-        oExt.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
-        oExt.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
-        oExt.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
-        //#endif
-
         return oExt;
     };
 

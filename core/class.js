@@ -638,7 +638,7 @@ apf.Class.prototype = new (function(){
         if (h && typeof h != FUN) {
             for (i = 0, l = h.length; i < l; i++) {
                 (f = h[i]).amlNode.removeEventListener(PROP + f.prop, f.handler);
-                if (f.handler.recip)
+                if (f.handler && f.handler.recip) //@todo handler shouldn't be unset - how does this happen?
                     this.removeEventListener(PROP + prop, f.handler.recip);
             }
             delete this.$funcHandlers[prop];

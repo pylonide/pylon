@@ -278,7 +278,9 @@ apf.vbox = function(struct, tagName){
         var hasWidth = this.$ext.style.width;
         var hasHeight = this.$ext.style.height;
         var hasDefinedHeight = this.height || this.top && this.bottom || this.anchors;
-
+        
+        //@todo when height isnt defined stretch should still work
+        
         var minSizeX = 0;
         var size = vbox ? "height" : "width";
         var offset = vbox ? "offsetHeight" : "offsetWidth";
