@@ -402,7 +402,10 @@ apf.page = function(struct, tagName){
                 'var page = apf.lookup(' + this.$uniqueId + ');\
                  if (page.disabled) return;\
                  page.parentNode.set(page);\
-                 page.canHaveChildren = 2;');
+                 page.canHaveChildren = 2;\
+                 page.$setStyleClass(this, "down", null, true);');
+            elBtn.setAttribute("onmouseup", 'apf.lookup('
+                + this.parentNode.$uniqueId + ').$setStyleClass(this, "", ["down"], true);');
             elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
                 + this.parentNode.$uniqueId + ');if(apf.lookup(' + this.$uniqueId
                 + ') != o.$activepage) o.$setStyleClass(this, "over", null, true);');
