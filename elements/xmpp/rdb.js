@@ -185,7 +185,7 @@ apf.xmpp_rdb = function(){
                     fields   : {
                         session  : {value: sDoc},
                         baseline : {value: aBaseline.length ? aBaseline[0].firstChild.nodeValue : ""},
-                        modeldata: {value: aData.length     ? this.$decodeCDATA(aData[0].firstChild.nodeValue) : ""}
+                        modeldata: {value: aData.length     ? this.$decodeCDATA(apf.serializeChildren(aData[0])) : ""}
                     }
                 });
             }
