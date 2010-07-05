@@ -262,7 +262,8 @@ apf.menu = function(struct, tagName){
                 y            : opener.$ext.offsetHeight, 
                 animate      : noanim || !this.anim ? false : "fade",
                 ref          : opener.$ext,
-                allowTogether: openMenuId
+                allowTogether: openMenuId,
+                noleft       : this.left !== undefined
             });
         }
         else {

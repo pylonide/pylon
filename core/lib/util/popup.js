@@ -86,7 +86,8 @@ apf.popup = {
             draggable    : false,
             resizable    : false,
             allowTogether: false,
-            autoCorrect  : true
+            autoCorrect  : true,
+            noleft       : false
         }, options);
         if (!this.popup)
            this.init();
@@ -123,7 +124,9 @@ apf.popup = {
             popup.style.top = (moveUp 
                 ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
                 : top) + "px"
-            popup.style.left = ((options.x || 0) + pos[0]) + "px";
+            
+            if (!options.noleft)
+                popup.style.left = ((options.x || 0) + pos[0]) + "px";
         }
 
         // #ifdef __WITH_STYLE
