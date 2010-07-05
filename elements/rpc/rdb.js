@@ -76,7 +76,7 @@
  *
  * @default_private
  */
-apf.cgi = function(){
+apf.rdb = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
 
@@ -91,7 +91,6 @@ apf.cgi = function(){
     // Create message to send
     this.createMessage = function(functionName, args){
         var prop,
-            reserved = "|session|command|",
             vars     = {};
 
         function recur(o, stack){
