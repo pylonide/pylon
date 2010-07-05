@@ -400,10 +400,11 @@ apf.$x = apf.$loader
         
         //RPC extensions (all need rpc.js)
         "elements/rpc/xmlrpc.js",      // XML-RPC
-        "elements/rpc/soap.js",      // SOAP
+        "elements/rpc/soap.js",        // SOAP
         "elements/rpc/jsonrpc.js",     // JSON
         //"elements/rpc/jphp.js",      // JPHP
         "elements/rpc/cgi.js",         // CGI
+        "elements/rpc/rdb.js",         // RDB-RPC
         "elements/rpc/rest.js",        // REST
         "elements/rpc/yql.js",         // YQL
 
