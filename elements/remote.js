@@ -223,19 +223,22 @@ apf.remote = function(struct, tagName){
             apf.console.log("datastatuschange msg: " + e);
             // #endif
             if (!e.session && !e.fields["session"]) return;
-            var sSession = e.session || e.fields["session"].value,
+            var iBaseline, sModel,
+                sSession = e.session || e.fields["session"].value,
                 oSession = _self.sessions[sSession],
                 f        = function(oSession) {
                     if (e.type == "submit") {
-                        var iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
-                            sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
+                        iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
+                        sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
 
                         _self.transport.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
                     }
                     else if (e.type == "result") {
-                        // @todo: replace the current XML with the document provided by the session owner
-                        _self.sessions[sSession].model.load(e.fields["modeldata"].value);
-                        _self.sessionStarted(sSession, e.fields["baseline"].value);
+                        iBaseline = e.fields["baseline"]  ? e.fields["baseline"].value  : null,
+                        sModel    = e.fields["modeldata"] ? e.fields["modeldata"].value : null;
+                        if (sModel)
+                            _self.sessions[sSession].model.load(sModel);
+                        _self.sessionStarted(sSession, iBaseline);
                     }
                 }
             if (!oSession)
@@ -298,8 +301,7 @@ apf.remote = function(struct, tagName){
         var oSession;
         if (!(oSession = this.sessions[sSession])) return;
         // check if time is provided, otherwise user created the session
-        var now = new Date().getTime();
-        oSession.baseline = iTime ? parseInt(iTime) : now;
+        oSession.baseline = iTime ? parseInt(iTime) : new Date().getTime();
         // #ifdef __DEBUG
         apf.console.log("session started: " + sSession + ", " + oSession.baseline);
         // #endif
@@ -358,6 +360,12 @@ apf.remote = function(struct, tagName){
         else {
             this.processQueue(this);
         }
+    };
+
+    this.sendRPC = function(sSession, sCommand, oParams) {
+        if (typeof oParams != "string")
+            oParams = JSON.stringify(oParams);
+        this.transport.sendRPC(sSession, sCommand, oParams);
     };
 
     this.getSessionByModel = function(sModel) {

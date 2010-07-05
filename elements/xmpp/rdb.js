@@ -158,6 +158,11 @@ apf.xmpp_rdb = function(){
                         status     : "",
                         isRDB      : true
                     });
+                    this.dispatchEvent("datastatuschange", {
+                        type   : "result",
+                        session: sDoc,
+                        fields : {}
+                    });
                 }
             }
         }
