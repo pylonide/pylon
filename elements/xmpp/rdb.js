@@ -364,7 +364,7 @@ apf.xmpp_rdb = function(){
         var data = syncQueue.join("");
         syncQueue = [];
         doRequest(data);
-    };
+    }
 
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
@@ -428,6 +428,17 @@ apf.xmpp_rdb = function(){
             message: sMsg,
             thread : "rdb"
         });
+    };
+
+    this.sendRPC = function(sSession, sCommand, sParams, fCallback) {
+        if (fCallback)
+            rdbVars["doc_cb_rpc"] = fCallback;
+        doRequest(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : sSession || this["rdb-host"],
+                type  : "rpc"
+            }, "<cmd>" + sCommand + "</cmd><data><![CDATA[" + sParams + "]]></data>")
+        );
     };
 
     this.botRegister = function(sDomain, fCallback) {

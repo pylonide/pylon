@@ -214,7 +214,7 @@ apf.remote = function(struct, tagName){
                 i        = 0,
                 l        = oData.length;//@todo error check here.. invalid message
             for (; i < l; i++)
-                _self.receiveChange(oData[i], oSession);
+                _self.receiveChange(oData[i], oSession, e.annotator);
         });
 
         this.transport.addEventListener("datastatuschange", function(e) {
@@ -362,10 +362,15 @@ apf.remote = function(struct, tagName){
         }
     };
 
-    this.sendRPC = function(sSession, sCommand, oParams) {
+    this.sendRPC = function(oParams) {
+        var oData     = oParams.data,
+            fCallback = oParams.callback,
+            sSession  = oData["session"],
+            sCommand  = oData["command"];
+        delete oData["session"], delete oData["command"];
         if (typeof oParams != "string")
             oParams = JSON.stringify(oParams);
-        this.transport.sendRPC(sSession, sCommand, oParams);
+        this.transport.sendRPC(sSession, sCommand, oParams, fCallback);
     };
 
     this.getSessionByModel = function(sModel) {
@@ -429,7 +434,7 @@ apf.remote = function(struct, tagName){
         qHost.rdbQueue = {};
     };
     
-    this.receiveChange = function(oMessage, oSession){
+    this.receiveChange = function(oMessage, oSession, sAnnotator){
         if (apf.xmldb.disableRDB)
             return;
 
@@ -519,8 +524,9 @@ apf.remote = function(struct, tagName){
                 q.unshift(xmlNode);
                 // pass the action to the actiontracker to execute it
                 model.$at.execute({
-                    action: action,
-                    args  : q
+                    action   : action,
+                    args     : q,
+                    annotator: sAnnotator
                 });
             }
             this.dispatchEvent("change", {

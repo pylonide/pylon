@@ -121,8 +121,12 @@ apf.actiontracker = function(struct, tagName){
     /**
      * @attribute {Number}  !undolength the length of the undo stack.
      * @attribute {Number}  !redolength the length of the redo stack.
-     * @attribute {Number}  !length     the length of the undo/redo stack combined. Use this attribute to bind a slider's max attribute to.
-     * @attribute {Number}  position    the position within the total length (same value as undolength). Use this attribute to bind a slider's value attribute to.
+     * @attribute {Number}  !length     the length of the undo/redo stack combined.
+     *                                  Use this attribute to bind a slider's max
+     *                                  attribute to.
+     * @attribute {Number}  position    the position within the total length (same
+     *                                  value as undolength). Use this attribute
+     *                                  to bind a slider's value attribute to.
      * @attribute {Boolean} realtime    whether changes are immediately send to
      * the datastore, or held back until purge() is called.
      */
@@ -258,6 +262,8 @@ apf.actiontracker = function(struct, tagName){
      *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
      *                              to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
+     *   {String}  [annotator]      the name or identifier of the entity that is
+     *                              responsible for the action
      */
     this.execute = function(options){
         if (this.dispatchEvent("beforechange", options) === false)
@@ -361,11 +367,12 @@ apf.actiontracker = function(struct, tagName){
      * @see element.actiontracker.method.rollback
      */
     this.begin = function(dataNode, bClear){
+        var id;
         //Currently only supports nodes inheriting from apf.Class
         //In the future this same method should be used for xml dom elements
         //that support the mutation events
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
-            var id = dataNode.$uniqueId;
+            id = dataNode.$uniqueId;
             if (this.$transtack[id] && !bClear) {
                 //throw new Error("Existing transaction found!");
                 return;
@@ -392,7 +399,7 @@ apf.actiontracker = function(struct, tagName){
             //if (dataNode) 
                 //apf.xmldb.setNodeListener();
             
-            var id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
+            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
             if (this.$transtack[id] && !bClear) {
                 //throw new Error("Existing transaction found!");
                 return;
@@ -424,6 +431,7 @@ apf.actiontracker = function(struct, tagName){
      * Rolls back a transaction
      */
     this.rollback = function(dataNode){
+        var id;
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
             id = dataNode.$uniqueId;
             var stack = this.$transtack[id];
@@ -452,9 +460,10 @@ apf.actiontracker = function(struct, tagName){
      * Commits a transaction
      */
     this.commit = function(dataNode){
+        var id, stack;
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
             id = dataNode.$uniqueId;
-            var stack = this.$transtack[id];
+            stack = this.$transtack[id];
             if (!stack) {
                 //#ifdef __DEBUG
                 apf.console.log("Commit called without transaction started");
@@ -478,7 +487,7 @@ apf.actiontracker = function(struct, tagName){
         }
         else {
             id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
-            var stack = this.$transtack[id];
+            stack = this.$transtack[id];
             
             if (stack.length)
                 this.execute({
@@ -863,7 +872,8 @@ apf.actiontracker = function(struct, tagName){
         this.$execstack.push(qItem) - 1;
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+        //We want to maintain the stack for sync
+        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
             apf.offline.transactions.addAction(this, qItem, "queue");
         //#endif
 
@@ -891,7 +901,8 @@ apf.actiontracker = function(struct, tagName){
         var lastItem = this.$execstack.shift();
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled) //We want to maintain the stack for sync
+        //We want to maintain the stack for sync
+        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
             apf.offline.transactions.removeAction(this, null, "queue");
         //#endif
 
