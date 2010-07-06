@@ -419,6 +419,8 @@ apf.select1   = function(struct, tagName){
         }
         
         //#ifdef __WITH_LISTGRID
+        this.$listGrid = this.$getOption("main", "list-mode") == "grid"; 
+        
         this.$gridlist = apf.isTrue(this.$getOption("main", "grid"));
         
         if (this.$gridlist) {

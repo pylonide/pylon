@@ -228,7 +228,7 @@ apf.button  = function(struct, tagName){
     this.$propHandlers["caption"] = function(value){
         if (!this.oCaption)
             return;
-        
+
         if (value)
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Empty"]);
         else

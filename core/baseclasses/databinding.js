@@ -194,6 +194,7 @@ apf.DataBinding = function(){
             if (!q || q.dataType != apf.ARRAY || q != this.$loadqueue)
                 this.$loadqueue = null;
         }
+        else return false;
     };
     
     //setProp
@@ -1075,8 +1076,10 @@ apf.DataBinding = function(){
 
         apf.nameserver.get(prop, value).register(this);
         
-        if (prop != "actions")
-            this.$checkLoadQueue();
+        if (prop != "actions" && 
+          this.$checkLoadQueue() === false && this.$amlLoaded)
+            1+1; //@todo add reload queue.
+            //this.reload();
     };
 
     //#ifdef __WITH_INLINE_DATABINDING

@@ -152,6 +152,7 @@ apf.BaseList = function(){
     };
     
     //@todo unsetter
+    //@deprecated
     this.$propHandlers["template"] = function(value){
         this.$template = typeof value == "object"
           ? value
@@ -651,12 +652,12 @@ apf.BaseList = function(){
                 + '); o.select(this, event.ctrlKey, event.shiftKey, -1)');
         }
         
-        this.$listGrid = this.$getOption("main", "list-mode") == "grid"; 
-        
+        //#ifdef __WITH_LISTGRID
         if (this.$listGrid) {
             oItem.setAttribute("onmouseover", 
                 oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
         }
+        //#endif
 
         //Setup Nodes Identity (Look)
         if (elIcon) {
