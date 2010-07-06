@@ -201,7 +201,7 @@ apf.lm = new (function(){
             "abs":1,"acos":1,"asin":1,"atan":1,"atan2":1,"ceil":1,
             "cos":1,"exp":1,"floor":1,"log":1,"max":1,"min":1,
             "pow":1,"random":1,"round":1,"sin":1,"sqrt":1,"tan":1,"lin":1,"linear":1,
-            "idx":1
+            "idx":1,"sort":1,"typeof":1
         },
         is_out_space = {
             " ":1, "\n":1
@@ -599,27 +599,30 @@ apf.lm = new (function(){
                         break;
                     case 3: // -------- word --------
                     case 4: // ------- number -------
-                        v = u = w = 0;// last_word used for case 'bla bla':
-                        last_dot = (last_word = tok).lastIndexOf(".");
-                        if (tok.charAt(0) != '.' // .obj shouldnt trigger block
-                          && ((v = (u = ((out_context_word[last_tok]  // check if we need to switch
-                                || o[ol - 1] == "\n")  && !new_block[last_tok]))
-                                && !s[sl - 1].indexOf("{") && ol > scope)
-                                || (w = statement_lut[tok])) && !parse_mode){ // check statement
-                            if(w == 2 && s[sl - 1].indexOf("{")) w = 0; // (function() shouldnt trigger blockmode
-                            switchToBlock(w);  // pass in statement_lut[tok] as outputflag
-                        }
-                        if (u && !s[sl - 1]) { // assign macro close
-                            o[ol-1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
-                            o[ol++] = "\n", v = 1, sl -= 2;
-                        }
-                        if (v && parse_mode && !statement_lut[tok] && !call_exclusion[tok]) // inject output
-                            o[ol++] = (nesting ? cf_str_output : cf_mode_output);
+                        if( v = xml_code_operators[tok] ){
+                            o[ol++] = tok = v, type = 2;
+                        } else {
+                            v = u = w = 0;// last_word used for case 'bla bla':
+                            last_dot = (last_word = tok).lastIndexOf(".");
+                            if (tok.charAt(0) != '.' // .obj shouldnt trigger block
+                              && ((v = (u = ((out_context_word[last_tok]  // check if we need to switch
+                                    || o[ol - 1] == "\n")  && !new_block[last_tok]))
+                                    && !s[sl - 1].indexOf("{") && ol > scope)
+                                    || (w = statement_lut[tok])) && !parse_mode){ // check statement
+                                if(w == 2 && s[sl - 1].indexOf("{")) w = 0; // (function() shouldnt trigger blockmode
+                                switchToBlock(w);  // pass in statement_lut[tok] as outputflag
+                            }
+                            if (u && !s[sl - 1]) { // assign macro close
+                                o[ol-1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
+                                o[ol++] = "\n", v = 1, sl -= 2;
+                            }
+                            if (v && parse_mode && !statement_lut[tok] && !call_exclusion[tok]) // inject output
+                                o[ol++] = (nesting ? cf_str_output : cf_mode_output);
 
-                        if (last_dot > 0 && tok.charAt(0) != ".") // store property
-                            o_props[o[ol++] = last_prop = tok] = 1;
-                        else // lookup and/or/etc
-                            o[ol++] = xml_code_operators[tok] || tok;
+                            if (last_dot > 0 && tok.charAt(0) != ".") // store property
+                                o_props[o[ol++] = last_prop = tok] = 1;
+                            else o[ol++] =  tok;
+                        }
                         break;
                     case 5: // -------- stringquotes --------
                         if ((v = (u = ((out_context_word[last_tok] || o[ol - 1]== "\n" )
@@ -2485,9 +2488,21 @@ apf.lm_exec = new (function(){
 
     var _clut = apf.color?apf.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
 
-    function sort(set, how){
+    function sort(set, xpath, st){
         var s = new apf.Sort();
-        s.set(how);
+        st = st || {};
+        if(!xpath.charAt)xpath = "";
+        if(xpath.charAt(0)=='@'){
+            xpath = xpath.slice(1);
+            st.getValue = function(n){
+                return n.getAttribute(xpath);
+            }
+        }else{
+            st.getValue = function(n){
+                return apf.queryValue(n,xpath);
+            }
+        }
+        s.set(st);
         return s.apply(apf.getArrayFromNodelist(set));
     }
     
