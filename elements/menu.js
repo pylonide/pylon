@@ -96,7 +96,8 @@ apf.menu = function(struct, tagName){
     this.zindex = 10000000;
     this.visible = false;
 
-    this.$booleanProperties["anim"] = true;
+    this.$booleanProperties["anim"]     = true;
+    this.$booleanProperties["autohide"] = true;
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
         if (value) {
             this.$ext.style.display = "block";
@@ -264,6 +265,7 @@ apf.menu = function(struct, tagName){
                 steps        : 3,
                 ref          : opener.$ext,
                 allowTogether: openMenuId,
+                autohide     : this.autohide !== false,
                 noleft       : this.left !== undefined
             });
         }
@@ -276,6 +278,7 @@ apf.menu = function(struct, tagName){
                 steps        : 3,
                 ref          : this.$ext.offsetParent,
                 allowTogether: openMenuId,
+                autohide     : this.autohide !== false,
                 autoCorrect  : false
             });
         }
@@ -481,8 +484,8 @@ apf.menu = function(struct, tagName){
     // #endif
 
     //Hide menu when it looses focus or when the popup hides itself
-    function forceHide(){
-        if (this.$showingSubMenu)
+    function forceHide(e){
+        if (this.$showingSubMenu || this.autohide === false)
             return;
 
         if (this.$hideTree != -1) {

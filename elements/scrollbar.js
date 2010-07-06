@@ -208,6 +208,13 @@ apf.scrollbar = function(struct, tagName){
         if (this.$curValue < 0) 
             this.$curValue = 0;
 
+        if (this.$curValue == NaN) {
+            //#ifdef __DEBUG
+            apf.console.warn("Scrollbar is hidden while scrolling.");
+            //#endif
+            return;
+        }
+
         var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
         this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
@@ -390,7 +397,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.setScroll();
                 e.cancelBubble = true;
                 
-                apf.window.$mousedown(e);
+                //apf.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
@@ -423,7 +430,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.setScroll();
                 e.cancelBubble = true;
                 
-                apf.window.$mousedown(e);
+                //apf.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
@@ -499,7 +506,7 @@ apf.scrollbar = function(struct, tagName){
             };
     
             e.cancelBubble = true;
-            apf.window.$mousedown(e);
+            //apf.window.$mousedown(e);
             
             return false;
         };

@@ -257,10 +257,11 @@ apf.popup = {
     
     forceHide : function(){
         if (this.last 
-            //#ifdef __WITH_PLANE
-            && !apf.plane.current
-            //#endif
-            && this.isShowing(this.last)) {
+          //#ifdef __WITH_PLANE
+          && !apf.plane.current
+          //#endif
+          && this.isShowing(this.last)
+          && this.cache[this.last].options.autohide !== false) {
             var o = apf.lookup(this.last);
             if (!o)
                 this.last = null;
