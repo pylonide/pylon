@@ -142,7 +142,7 @@ apf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : apf.tween.NORMAL,
-                    steps : apf.isIE ? 5 : 5,
+                    steps : options.steps || 5,
                     onfinish : function(){
                         if (apf.isIE)
                             popup.style.filter = "";
@@ -171,9 +171,11 @@ apf.popup = {
             }
         }
         else {
-            if (options.height || o.height)
-                popup.style.height = (options.height || o.height) + "px";
-            popup.style.top = (top) + "px";
+            if (!options.ref) {
+                if (options.height || o.height)
+                    popup.style.height = (options.height || o.height) + "px";
+                popup.style.top = (top) + "px";
+            }
             popup.style.display = "block";
             
             if (options.callback)

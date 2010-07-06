@@ -261,6 +261,7 @@ apf.menu = function(struct, tagName){
                 x            : 0, 
                 y            : opener.$ext.offsetHeight, 
                 animate      : noanim || !this.anim ? false : "fade",
+                steps        : 3,
                 ref          : opener.$ext,
                 allowTogether: openMenuId,
                 noleft       : this.left !== undefined
@@ -272,6 +273,7 @@ apf.menu = function(struct, tagName){
                 x            : x - bodyPos[0], 
                 y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
                 animate      : noanim || !this.anim ? false : "fade",
+                steps        : 3,
                 ref          : this.$ext.offsetParent,
                 allowTogether: openMenuId,
                 autoCorrect  : false
