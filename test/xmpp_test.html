@@ -108,12 +108,15 @@
                     }
                 }
             }
+            function processRegister(e) {
+                console.log("returning RPC call", e, arguments);
+            }
         //-->
         </script>
     </head>
     <body>
-        <a:skin src="skins/skins.xml" media-path="skins/images/"
-          image-path="skins/images/" icon-path="../icons/" />
+        <a:skin src="../skins.xml" media-path="../images/"
+          image-path="../images/" icon-path="../icons/" />
           
         <a:appsettings debug="false" debug-teleport="true" name="remotetest" locking="optimistic"  />
 
@@ -134,6 +137,12 @@
         <a:remote transport="myXMPP" id="rmtFs" />
 
         <a:model id="mdlFs" remote="rmtFs" src="rdb://worknets.com/filesystem" />
+
+        <a:rpc protocol="rdb" id="comm" remote="rmtFs">
+            <a:method name="register" receive="processRegister">
+                <a:param name="username" />
+            </a:method>
+        </a:rpc>
 
         <a:tree model="mdlFs" width="70%" height="200">
             <a:bindings>

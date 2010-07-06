@@ -263,7 +263,7 @@ apf.rpc = function(struct, tagName){
 
     this.$propHandlers["route-server"] = function(value){
         this.autoroute = value ? true : false;
-    }
+    };
 
     //@todo change this to use prototype
     this.$propHandlers["protocol"] = function(value){
@@ -277,7 +277,10 @@ apf.rpc = function(struct, tagName){
             //#endif
             return;
         }
-        this.implement(apf[value]);
+        var _self = this;
+        // use a timeout, so that these protocols may override default methods
+        // inherited from http.js and the like.
+        $setTimeout(function() {_self.implement(apf[value]);})
     };
 
     this.$propHandlers["type"] = function(value) {

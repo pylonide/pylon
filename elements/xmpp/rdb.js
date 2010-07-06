@@ -34,7 +34,7 @@
  */
 apf.xmpp_rdb = function(){
     var _self     = this,
-        rdbVars   = {},
+        rdbVars   = {"SID":0},
         docQueue  = [],
         syncQueue = [],
         // keep reference to access class constants in function scope chain
@@ -103,10 +103,11 @@ apf.xmpp_rdb = function(){
     };
 
     this.$rdbSignal = function(oNode) {
-        var idx, oEnt,
+        var idx, oEnt, cmd,
             sDoc  = null,
             sJoin = oNode.getAttribute("join") || null,
-            sJID  = oNode.getAttribute("from");
+            sJID  = oNode.getAttribute("from"),
+            sType = oNode.getAttribute("type");
         if ((idx = sJID.indexOf("@")) > -1)
             sDoc = sJID.substring(0, idx);
         var f     = "doc_cb_" + (sDoc || "generic"),
@@ -139,30 +140,42 @@ apf.xmpp_rdb = function(){
                 // callback, probably the result of the bot registering itself
                 cb(oNode);
             }
-            else if (sDoc) {
-                if (arguments[1]) { // incoming RDB change message
-                    this.dispatchEvent("datachange", {
-                        annotator: sJID,
-                        session  : sDoc,
-                        body     : arguments[1]
+            else {
+                if (sType && sType == "rpc") {
+                    cmd = oNode.getElementsByTagName("cmd")[0];
+                    this.dispatchEvent("rpc", {
+                        room   : sDoc,
+                        roomJID: sJID,
+                        sid    : cmd.getAttribute(sid),
+                        command: cmd.firstChild.nodeValue,
+                        data   : apf.serializeChildren(oNode.getElementsByTagName("data")[0])
                     });
                 }
-                else {
-                    // a new document session is started
-                    this.$addDoc(sJID);
-                    oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
-                        room       : sDoc,
-                        roomJID    : sJID,
-                        affiliation: "owner",
-                        role       : "owner",
-                        status     : "",
-                        isRDB      : true
-                    });
-                    this.dispatchEvent("datastatuschange", {
-                        type   : "result",
-                        session: sDoc,
-                        fields : {}
-                    });
+                if (sDoc) {
+                    if (arguments[1]) { // incoming RDB change message
+                        this.dispatchEvent("datachange", {
+                            annotator: sJID,
+                            session  : sDoc,
+                            body     : arguments[1]
+                        });
+                    }
+                    else {
+                        // a new document session is started
+                        this.$addDoc(sJID);
+                        oEnt = this.$rdbRoster.getEntityByJID(this.$serverVars[JID], {
+                            room       : sDoc,
+                            roomJID    : sJID,
+                            affiliation: "owner",
+                            role       : "owner",
+                            status     : "",
+                            isRDB      : true
+                        });
+                        this.dispatchEvent("datastatuschange", {
+                            type   : "result",
+                            session: sDoc,
+                            fields : {}
+                        });
+                    }
                 }
             }
         }
@@ -200,6 +213,15 @@ apf.xmpp_rdb = function(){
                     session  : sDoc,
                     body     : arguments[1]
                 });
+            }
+            else if (sType && sType == "result") {
+                cmd = oNode.getElementsByTagName("cmd")[0];
+                var sid = cmd.getAttribute("sid") || "";
+                cb = rdbVars["doc_cb_rpc_" + sid];
+                if (cb) {
+                    cb(apf.serializeChildren(oNode.getElementsByTagName("data")[0]), 
+                        cmd.firstChild.nodeValue, oNode);
+                }
             }
         }
     };
@@ -431,14 +453,20 @@ apf.xmpp_rdb = function(){
     };
 
     this.sendRPC = function(sSession, sCommand, sParams, fCallback) {
+        var sid = ++rdbVars[SID];
         if (fCallback)
-            rdbVars["doc_cb_rpc"] = fCallback;
+            rdbVars["doc_cb_rpc_" + sid] = fCallback;
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sSession || this["rdb-host"],
                 type  : "rpc"
-            }, "<cmd>" + sCommand + "</cmd><data><![CDATA[" + sParams + "]]></data>")
+            }, "<cmd sid=\"" + sid + "\">" + sCommand + "</cmd><data><![CDATA["
+                + sParams + "]]></data>")
         );
+    };
+
+    this.sendRPCResult = function(sid) {
+        //todo
     };
 
     this.botRegister = function(sDomain, fCallback) {

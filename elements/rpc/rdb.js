@@ -144,6 +144,7 @@ apf.rdb = function(){
                 recur(args[prop], prop);
             }
         }
+        vars["command"] = functionName;
 
         return vars;
     };

@@ -246,6 +246,15 @@ apf.remote = function(struct, tagName){
             else
                 f(oSession);
         });
+
+        this.transport.addEventListener("rpc", function(e) {
+            _self.dispatchEvent("rpc", {
+                sid     : e.sid,
+                resource: e.room,
+                command : e.command,
+                data    : e.data ? JSON.parse(e.data) : null
+            });
+        });
     };
 
     this.startSession = function(model, xpath) {
@@ -329,6 +338,8 @@ apf.remote = function(struct, tagName){
             model.setProperty("remote", this.id);
         }
         var o = this.getSessionByModel(id);
+        if (!o)
+            o = this.startSession(model);
         // set the root node for this model
         model.addEventListener("afterload", f = function() {
             model.removeEventListener("afterload", f);
