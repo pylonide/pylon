@@ -80,6 +80,8 @@ apf.rdb = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
 
+    this.queue = [];
+
     this.unserialize = function(str){
         return str;
     };
@@ -108,7 +110,7 @@ apf.rdb = function(){
                     catch(e){
                         s = "Could not serialize object";
                     }
-                    vars[stack] = encodeURIComponent(s)
+                    vars[stack] = s;
                 }
                 else {
                     for (prop in o) {
@@ -125,7 +127,7 @@ apf.rdb = function(){
             }
             else {
                 if (typeof o != "undefined" && o !== null)
-                    vars[stack] = encodeURIComponent(o)
+                    vars[stack] = o;
             }
         }
 
@@ -149,7 +151,7 @@ apf.rdb = function(){
         return vars;
     };
 
-    this.$get = function(url, params) {
+    this.$get = function(url, options) {
         // url, ignored.
         //#ifdef __DEBUG
         if (!this["remote"]) {
@@ -158,9 +160,48 @@ apf.rdb = function(){
         }
         //#endif
 
-        if (!this.$remote)
+        if (!this.$remote) {
             this.$remote = apf.nameserver.get(this.remote) || self[this.remote];
-        this.$remote.sendRPC(params);
+            // #ifdef __DEBUG
+            var _self = this;
+            this.$remote.transport.addEventListener("rpcresult", function(e) {
+                if (!e.sid) return;
+                var t   = _self.queue[parseInt(e.sid)],
+                    log = t ? t.log : null;
+                if (!log) return;
+                log.response({
+                    http: {
+                        getAllResponseHeaders: apf.K,
+                        status: e.status,
+                        statusText: "",
+                        responseText: JSON.stringify(e.data)
+                    }
+                });
+            });
+            //#endif
+        }
+
+        var id = this.queue.push({options: options}) - 1;
+
+        // #ifdef __DEBUG
+        if (!options.hideLogMessage) {
+            var data = options.data || "";
+            this.queue[id] = {options: options};
+            
+            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
+                id      : id,
+                tp      : this,
+                type    : "rpc",
+                method  : "GET",
+                url     : data.command,
+                data    : JSON.stringify(data),
+                start   : new Date()
+            }));
+            this.queue[id].log.request([]);
+        }
+        //#endif
+
+        this.$remote.sendRPC(id, options);
     };
 
     /**
@@ -189,13 +230,13 @@ apf.rdb = function(){
                     if (form.elements[i].options[j].selected)
                         args.push(form.elements[i].name
                             + "="
-                            + encodeURIComponent(form.elements[i].options[j].value));
+                            + form.elements[i].options[j].value);
                 }
             }
             else {
                 args.push(form.elements[i].name
                     + "="
-                    + encodeURIComponent(form.elements[i].value));
+                    + form.elements[i].value);
             }
         }
 

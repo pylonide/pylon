@@ -1845,15 +1845,16 @@ apf.xmpp = function(struct, tagName){
         apf.console.info("parsePresencePackets: " + aPresence.length, "xmpp");
         //#endif
         // #ifdef __TP_XMPP_ROSTER
-        var oP, sJID, aX, bMuc, bRDB, o, k, l2, sRoom,
+        var oP, sType, sJID, aX, bMuc, bRDB, o, k, l2, sRoom,
             i = 0,
             l = aPresence.length
         for (; i < l; i++) {
-            oP   = aPresence[i],
-            sJID = oP.getAttribute("from"),
-            aX   = oP.getElementsByTagName("x"),
-            bMuc = (sJID.indexOf(this["muc-host"]) > -1),
-            bRDB = (sJID.indexOf(this["rdb-host"]) > -1);
+            oP    = aPresence[i],
+            sType = oP.getAttribute("type"),
+            sJID  = oP.getAttribute("from"),
+            aX    = oP.getElementsByTagName("x"),
+            bMuc  = (sJID.indexOf(this["muc-host"]) > -1),
+            bRDB  = (sJID.indexOf(this["rdb-host"]) > -1 || sType == "rpc" || sType == "result");
             // #ifdef __TP_XMPP_MUC
             if (aX.length) {
                 for (k = 0, l2 = aX.length; k < l2; k++) {
@@ -1887,8 +1888,7 @@ apf.xmpp = function(struct, tagName){
             // #endif
             if (sJID && !bMuc && !bRDB) {
                 var oRoster = this.$serverVars[ROSTER],
-                    oUser   = oRoster.getEntityByJID(sJID),
-                    sType   = oP.getAttribute("type");
+                    oUser   = oRoster.getEntityByJID(sJID);
 
                 if (sType == constants.TYPE_SUBSCRIBE) {
                     // incoming subscription request, deal with it!

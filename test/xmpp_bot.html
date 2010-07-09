@@ -195,14 +195,19 @@
                     model    = e.model;
                 (new apf.http()).get("filesystem.xml", {
                     callback: function(data) {
-                        console.log(data, arguments);
                         model.load(data);
                     }
                 });
             });
 
             rmtFs.addEventListener("rpc", function(e) {
-            	console.log(e);
+            	rmtFs.sendRPCResult({
+                    sid    : e.sid,
+                    status : 200,
+                    to     : e.from,
+                    command: e.command,
+                    data   : e.data
+                });
             });
         ]]></a:script>
     </body>

@@ -880,9 +880,8 @@ apf.xmldb = new (function(){
         if (!model) {
             if (!apf.nameserver.getAll("remote").length)
                 return;
-
             //#ifdef __DEBUG
-            apf.console.warn("Could not find model for Remote DataBinding connection, not sending change");
+            apf.console.log("Could not find model for Remote DataBinding connection, not sending change");
             //#endif
             return;
         }

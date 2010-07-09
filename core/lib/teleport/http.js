@@ -367,7 +367,7 @@ apf.http = function(){
                 route   : autoroute ? httpUrl : "",
                 data    : new String(data && data.xml ? data.xml : data),
                 start   : new Date()
-            }))
+            }));
         }
         
         var headers = [];
@@ -1007,45 +1007,6 @@ apf.http = function(){
         };
     }
 };
-
-//#ifdef __DEBUG
-apf.teleportLog = function(extra){
-    var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
-    
-    this.setXml = function(pNode){
-        if (!xml) {
-            var doc = pNode.ownerDocument;
-            xml = doc.createElement(extra.tp.localName || extra.type || "http");
-            xml.appendChild(doc.createElement("request")).appendChild(doc.createTextNode(request || "-"));
-            xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
-        }
-        
-        apf.xmldb.appendChild(pNode, xml);
-    }
-    
-    this.request = function(headers){
-        request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
-
-        if (xml)
-            apf.setQueryValue(xml, "request/text()", request);
-        
-        this.request = function(){}
-    }
-    
-    var response = "";
-    this.response = function(extra){
-        try {
-            var headers = extra.http.getAllResponseHeaders();
-            response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
-                + (headers ? headers + "\n" : "\n")
-                + extra.http.responseText;
-
-            if (xml)
-                apf.setQueryValue(xml, "response/text()", response);
-        } catch(ex) {}
-    }
-}
-//#endif
 
 // #endif
 

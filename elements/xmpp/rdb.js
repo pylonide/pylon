@@ -144,14 +144,14 @@ apf.xmpp_rdb = function(){
                 if (sType && sType == "rpc") {
                     cmd = oNode.getElementsByTagName("cmd")[0];
                     this.dispatchEvent("rpc", {
-                        room   : sDoc,
-                        roomJID: sJID,
-                        sid    : cmd.getAttribute(sid),
-                        command: cmd.firstChild.nodeValue,
-                        data   : apf.serializeChildren(oNode.getElementsByTagName("data")[0])
+                        annotator: sDoc,
+                        from     : sJID,
+                        sid      : cmd.getAttribute("sid"),
+                        command  : cmd.firstChild.nodeValue,
+                        data     : apf.serializeChildren(oNode.getElementsByTagName("data")[0])
                     });
                 }
-                if (sDoc) {
+                else if (sDoc) {
                     if (arguments[1]) { // incoming RDB change message
                         this.dispatchEvent("datachange", {
                             annotator: sJID,
@@ -216,11 +216,41 @@ apf.xmpp_rdb = function(){
             }
             else if (sType && sType == "result") {
                 cmd = oNode.getElementsByTagName("cmd")[0];
-                var sid = cmd.getAttribute("sid") || "";
+                var sid    = cmd.getAttribute("sid") || "",
+                    status = parseInt(oNode.getElementsByTagName("status")[0].firstChild.nodeValue) || 500;
                 cb = rdbVars["doc_cb_rpc_" + sid];
                 if (cb) {
-                    cb(apf.serializeChildren(oNode.getElementsByTagName("data")[0]), 
-                        cmd.firstChild.nodeValue, oNode);
+                    var state = apf.SUCCESS,
+                        oData = JSON.parse(apf.serializeChildren(oNode.getElementsByTagName("data")[0]) || "{}");
+                    // RDB-RPC works with HTTP status codes:
+                    if (status >= 400 && status < 600 || status < 10 && status != 0) {
+                        //#ifdef __WITH_AUTH
+                        /*@todo This should probably have an RPC specific handler
+                        if (status == 401) {
+                            var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+                            if (auth) {
+                                var wasDelayed = qItem.isAuthDelayed;
+                                qItem.isAuthDelayed = true;
+                                if (auth.authRequired(extra, wasDelayed) === true)
+                                    return;
+                            }
+                        }
+                        //#endif*/
+                        state = apf.ERROR;
+                        //#ifdef __DEBUG
+                        apf.console.error("We received the following from the server: "
+                            + status + (oData.message ? ", with message '" + oData.message + "'" : ""), "rdb");
+                        //#endif
+                    }
+                    var o = {
+                        sid    : sid,
+                        status : status,
+                        command: cmd.firstChild.nodeValue,
+                        data   : oData,
+                        node   : oNode
+                    };
+                    this.dispatchEvent("rpcresult", o);
+                    cb(o, state, {});
                 }
             }
         }
@@ -299,7 +329,7 @@ apf.xmpp_rdb = function(){
             }, o[1] ? "<status>" + o[1] + "</status>" : ""));
         }
         doRequest(doc.join(""));
-    };
+    }
 
     this.leaveAllDocs = function(sMsg, sNick) {
         if (!this.$canRDB || !this.$serverVars[CONN] || this["is-bot"]) return;
@@ -452,21 +482,27 @@ apf.xmpp_rdb = function(){
         });
     };
 
-    this.sendRPC = function(sSession, sCommand, sParams, fCallback) {
-        var sid = ++rdbVars[SID];
+    this.sendRPC = function(sid, sSession, sCommand, sParams, fCallback) {
         if (fCallback)
             rdbVars["doc_cb_rpc_" + sid] = fCallback;
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
-                to    : sSession || this["rdb-host"],
+                to    : (sSession ? sSession + "@" : "") + this["rdb-host"],
                 type  : "rpc"
             }, "<cmd sid=\"" + sid + "\">" + sCommand + "</cmd><data><![CDATA["
                 + sParams + "]]></data>")
         );
     };
 
-    this.sendRPCResult = function(sid) {
-        //todo
+    this.sendRPCResult = function(sid, iStatus, sTo, sCommand, sParams) {
+        doRequest(this.$createPresenceBlock({
+                from  : this.$serverVars[JID],
+                to    : sTo,
+                type  : "result"
+            }, "<cmd sid=\"" + sid + "\">" + sCommand + "</cmd><status>"
+                + (iStatus || 500) + "</status><data><![CDATA["
+                + sParams + "]]></data>")
+        );
     };
 
     this.botRegister = function(sDomain, fCallback) {

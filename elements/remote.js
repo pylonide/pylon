@@ -126,15 +126,14 @@
  *  </a:model>
  *
  *  <a:remote transport="myXMPP" id="rmtPersons" />
- *  </a:remote>
  * </code>
  * @attribute {String} transport   ID of a Teleport element that is able to serve
  *                                 as a transport for RDB message like {@link element.xmpp xmpp}
  */
 /**
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%
- * @since       0.983
+ * @since       3.0
  *
  * @default_private
  * @constructor
@@ -248,12 +247,12 @@ apf.remote = function(struct, tagName){
         });
 
         this.transport.addEventListener("rpc", function(e) {
-            _self.dispatchEvent("rpc", {
+            _self.dispatchEvent("rpc", apf.extend({
                 sid     : e.sid,
-                resource: e.room,
-                command : e.command,
-                data    : e.data ? JSON.parse(e.data) : null
-            });
+                resource: e.annotator,
+                from    : e.from,
+                command : e.command
+            }, e.data ? JSON.parse(e.data) : {}));
         });
     };
 
@@ -373,15 +372,23 @@ apf.remote = function(struct, tagName){
         }
     };
 
-    this.sendRPC = function(oParams) {
+    this.sendRPC = function(iId, oParams) {
         var oData     = oParams.data,
             fCallback = oParams.callback,
-            sSession  = oData["session"],
+            sSession  = oData["session"] ? this.transport.normalizeEntity(oData["session"]) : null,
             sCommand  = oData["command"];
         delete oData["session"], delete oData["command"];
         if (typeof oParams != "string")
             oParams = JSON.stringify(oParams);
-        this.transport.sendRPC(sSession, sCommand, oParams, fCallback);
+        this.transport.sendRPC(iId, sSession, sCommand, oParams, fCallback);
+    };
+
+    this.sendRPCResult = function(oParams) {
+        var oData    = oParams.data;
+        if (typeof oData != "string")
+            oData = JSON.stringify(oData);
+        this.transport.sendRPCResult(oParams.sid, oParams.status || 500,
+            oParams.to, oParams.command, oData);
     };
 
     this.getSessionByModel = function(sModel) {
