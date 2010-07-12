@@ -110,11 +110,11 @@ apf.upload = function(struct, tagName){
     this.$method      = null;
     this.$filter      = [];
 
-    this.$booleanProperties["multiselection"] = true;
-    this.$booleanProperties["multipart"]      = true;
+    this.$booleanProperties["multiselect"] = true;
+    this.$booleanProperties["multipart"]   = true;
 
     this.$supportedProperties.push("state", "total", "chunksize", "maxfilesize",
-        "multiselection", "filedataname", "target", "filter", "multipart", "size",
+        "multiselect", "filedataname", "target", "filter", "multipart", "size",
         "loaded", "percent", "bitrate", "uploaded", "failed", "queued", "button",
         "model");
 
@@ -157,56 +157,56 @@ apf.upload = function(struct, tagName){
     };
 
     this.$mimeTypes = {
-        "doc":"application/msword",
-        "dot":"application/msword",
-        "pdf":"application/pdf",
-        "pgp":"application/pgp-signature",
-        "ps":"application/postscript",
-        "ai":"application/postscript",
-        "eps":"application/postscript",
-        "rtf":"text/rtf",
-        "xls":"application/vnd.ms-excel",
-        "xlb":"application/vnd.ms-excel",
-        "ppt":"application/vnd.ms-powerpoint",
-        "pps":"application/vnd.ms-powerpoint",
-        "pot":"application/vnd.ms-powerpoint",
-        "zip":"application/zip",
-        "swf":"application/x-shockwave-flash",
-        "swfl":"application/x-shockwave-flash",
-        "docx":"application/vnd.openxmlformats",
-        "pptx":"application/vnd.openxmlformats",
-        "xlsx":"application/vnd.openxmlformats",
-        "mpga":"audio/mpeg",
-        "mpega":"audio/mpeg",
-        "mp2":"audio/mpeg",
-        "mp3":"audio/mpeg",
-        "wav":"audio/x-wav",
-        "bmp":"image/bmp",
-        "gif":"image/gif",
-        "jpeg":"image/jpeg",
-        "jpg":"image/jpeg",
-        "jpe":"image/jpeg",
-        "png":"image/png",
-        "svg":"image/svg+xml",
-        "svgz":"image/svg+xml",
-        "tiff":"image/tiff",
-        "tif":"image/tiff",
-        "htm":"text/html",
-        "html":"text/html",
-        "xhtml":"text/html",
-        "mpeg":"video/mpeg",
-        "mpg":"video/mpeg",
-        "mpe":"video/mpeg",
-        "qt":"video/quicktime",
-        "mov":"video/quicktime",
-        "flv":"video/x-flv",
-        "rv":"video/vnd.rn-realvideo",
-        "asc":"text/plain",
-        "txt":"text/plain",
-        "text":"text/plain",
-        "diff":"text/plain",
-        "log":"text/plain",
-        "exe":"application/octet-stream"
+        "doc"  : "application/msword",
+        "dot"  : "application/msword",
+        "pdf"  : "application/pdf",
+        "pgp"  : "application/pgp-signature",
+        "ps"   : "application/postscript",
+        "ai"   : "application/postscript",
+        "eps"  : "application/postscript",
+        "rtf"  : "text/rtf",
+        "xls"  : "application/vnd.ms-excel",
+        "xlb"  : "application/vnd.ms-excel",
+        "ppt"  : "application/vnd.ms-powerpoint",
+        "pps"  : "application/vnd.ms-powerpoint",
+        "pot"  : "application/vnd.ms-powerpoint",
+        "zip"  : "application/zip",
+        "swf"  : "application/x-shockwave-flash",
+        "swfl" : "application/x-shockwave-flash",
+        "docx" : "application/vnd.openxmlformats",
+        "pptx" : "application/vnd.openxmlformats",
+        "xlsx" : "application/vnd.openxmlformats",
+        "mpga" : "audio/mpeg",
+        "mpega": "audio/mpeg",
+        "mp2"  : "audio/mpeg",
+        "mp3"  : "audio/mpeg",
+        "wav"  : "audio/x-wav",
+        "bmp"  : "image/bmp",
+        "gif"  : "image/gif",
+        "jpeg" : "image/jpeg",
+        "jpg"  : "image/jpeg",
+        "jpe"  : "image/jpeg",
+        "png"  : "image/png",
+        "svg"  : "image/svg+xml",
+        "svgz" : "image/svg+xml",
+        "tiff" : "image/tiff",
+        "tif"  : "image/tiff",
+        "htm"  : "text/html",
+        "html" : "text/html",
+        "xhtml": "text/html",
+        "mpeg" : "video/mpeg",
+        "mpg"  : "video/mpeg",
+        "mpe"  : "video/mpeg",
+        "qt"   : "video/quicktime",
+        "mov"  : "video/quicktime",
+        "flv"  : "video/x-flv",
+        "rv"   : "video/vnd.rn-realvideo",
+        "asc"  : "text/plain",
+        "txt"  : "text/plain",
+        "text" : "text/plain",
+        "diff" : "text/plain",
+        "log"  : "text/plain",
+        "exe"  : "application/octet-stream"
     };
 
     function parseSize(size) {
@@ -311,7 +311,10 @@ apf.upload = function(struct, tagName){
                 extensionsMap[this.$filter[i].toLowerCase()] = true;
         }
 
-        for (i = 0, l = selected_files.length; i < l; ++i) {
+        if ((l = selected_files.length) > 1 && !this.multiple)
+            selected_files = [selected_files[0]], l = 1;
+
+        for (i = 0; i < l; ++i) {
             file = selected_files[i];
             file.loaded  = 0;
             file.percent = 0;
@@ -460,13 +463,22 @@ apf.upload.FAILED    = 0x0010; // File has failed to be uploaded
 apf.upload.DONE      = 0x0020; // File has been uploaded successfully
 // Error constants used by the Error event:
 apf.upload.ERROR_CODES = {
-    GENERIC_ERROR        : -100, // Generic error for example if an exception is thrown inside Silverlight.
-    HTTP_ERROR           : -200, // HTTP transport error. For example if the server produces a HTTP status other than 200.
-    IO_ERROR             : -300, // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
-    SECURITY_ERROR       : -400, // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
-    INIT_ERROR           : -500, // Initialization error. Will be triggered if no runtime was initialized.
-    FILE_SIZE_ERROR      : -600, // File size error. If the user selects a file that is to large it will be blocked and an error of this type will be triggered.
-    FILE_EXTENSION_ERROR : -700  // File extension error. If the user selects a file that isn't valid according to the filters setting.
+    // Generic error for example if an exception is thrown inside Silverlight.
+    GENERIC_ERROR        : -100,
+    // HTTP transport error. For example if the server produces a HTTP status other than 200.
+    HTTP_ERROR           : -200,
+    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    IO_ERROR             : -300,
+    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    SECURITY_ERROR       : -400,
+    // Initialization error. Will be triggered if no runtime was initialized.
+    INIT_ERROR           : -500,
+    // File size error. If the user selects a file that is to large it will be
+    // blocked and an error of this type will be triggered.
+    FILE_SIZE_ERROR      : -600,
+    // File extension error. If the user selects a file that isn't valid according
+    // to the filters setting.
+    FILE_EXTENSION_ERROR : -700
 };
 
 apf.upload.files = function(oUpload, model) {
