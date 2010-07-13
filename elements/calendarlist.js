@@ -142,8 +142,6 @@ apf.calendarlist      = function(struct, tagName){
         
     }
     
-    //#endif
-    
     /**** Keyboard support ****/
     
     //#ifdef __WITH_KEYBOARD
