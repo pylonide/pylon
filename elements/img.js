@@ -176,6 +176,17 @@ apf.preview = function(struct, tagName){
                 this.onclick = null;
             };
         }
+        
+        var _self = this;
+        apf.addListener(this.$ext, "mouseover", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseover", {htmlEvent: e});
+        });
+        
+        apf.addListener(this.$ext, "mouseout", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseout", {htmlEvent: e});
+        });
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
