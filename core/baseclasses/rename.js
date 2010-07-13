@@ -64,12 +64,12 @@ apf.__RENAME__ = 1 << 10;
  * @since       0.5
  */
 apf.Rename = function(){
-    this.$regbase      = this.$regbase|apf.__RENAME__;
+    this.$regbase       = this.$regbase|apf.__RENAME__;
 
-    this.canrename     = true;
+    this.canrename      = false;
     this.$renameSubject =
-    this.renameTimer   =
-    this.lastCursor    = null;
+    this.renameTimer    =
+    this.lastCursor     = null;
     
     /**
      * @attribute  {Boolean}  rename  whether the user can start renaming rendered nodes in this element.
@@ -168,7 +168,7 @@ apf.Rename = function(){
         if (!elCaption) 
             return this.stopRename();
         
-        this.renaming      = true;
+        this.renaming       = true;
         this.$renameSubject = this.caret || this.selected;
 
         var wdt = elCaption.offsetWidth;
