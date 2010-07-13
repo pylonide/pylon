@@ -175,7 +175,8 @@ apf.socket = function(){
 
             //#ifdef __DEBUG
             apf.console.warn(msg, "teleport");
-
+            // #endif
+            
             var state = apf.ERROR;
 
             // File not found
