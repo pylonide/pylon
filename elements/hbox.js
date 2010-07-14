@@ -439,7 +439,7 @@ apf.vbox = function(struct, tagName){
     });*/
     
     this.addEventListener("prop.visible", function(e){
-        if (e.value)
+        if (apf.hasFlexibleBox && e.value)
             this.$int.style.display = CSSPREFIX2 + "-box";
     });
     
