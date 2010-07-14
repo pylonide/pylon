@@ -152,11 +152,11 @@ apf.GuiElement = function(){
                 this.parentNode.register(this);
                 this.$disableCurrentLayout = null;
                 return type == this.parentNode.localName;
-            }else
+            } //else
             // #endif
             
             // #ifdef __WITH_ALIGNMENT
-            if (this.align) {
+            /*if (this.align) {
                 if (!this.$alignmentEnabled) {
                     if (this.$disableCurrentLayout)
                         this.$disableCurrentLayout();
@@ -164,7 +164,7 @@ apf.GuiElement = function(){
                     this.$disableCurrentLayout = this.$disableAlignment;
                 }
                 return type == "alignment";
-            }
+            }*/
             // #endif
         }
         

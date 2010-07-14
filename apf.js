@@ -401,6 +401,7 @@ var apf = {
         this.cannotSizeIframe          = apf.isIE;
         this.hasConditionCompilation   = apf.isIE;
         this.supportOverflowComponent  = apf.isIE;
+        this.hasFlexibleBox            = apf.versionGecko > 2 || apf.webkitRev > 2; //@todo check this
         this.hasEventSrcElement        = apf.isIE;
         this.canHaveHtmlOverSelects    = !apf.isIE6 && !apf.isIE5;
         this.hasInnerText              = apf.isIE;

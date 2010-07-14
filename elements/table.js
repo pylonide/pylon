@@ -430,12 +430,7 @@ apf.table = function(struct, tagName){
         if (this.getAttribute("class")) 
             apf.setStyleClass(this.$ext, this.getAttribute("class"));
         
-        //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$ext, "table",
-            "apf.all[" + this.$uniqueId + "].$resize()", true);
-        apf.layout.queue(this.$ext);
-        //#endif
-        
+        this.addEventListener("resize", this.$resize);
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
