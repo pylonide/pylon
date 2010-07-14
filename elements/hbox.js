@@ -179,8 +179,10 @@ apf.vbox = function(struct, tagName){
                     if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
 
-                    node.$ext.style.display   = value == "stretch" ? "block" : INLINE;
-                    node.$br.style.display    = value == "stretch" ? "none" : "";
+                    if (node.visible !== false) {
+                        node.$ext.style.display   = value == "stretch" ? "block" : INLINE;
+                        node.$br.style.display    = value == "stretch" ? "none" : "";
+                    }
                     node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
                 }
                 
@@ -321,7 +323,8 @@ apf.vbox = function(struct, tagName){
                     amlNode.$br.style.lineHeight = "0";
                 }
                 else {
-                    amlNode.$ext.style.display = INLINE;
+                    if (amlNode.visible !== false)
+                        amlNode.$ext.style.display = INLINE;
                     this.$int.style.whiteSpace = "";
                     amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
