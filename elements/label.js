@@ -128,6 +128,12 @@ apf.label = function(struct, tagName){
             if (forElement && forElement.$focussable && forElement.focussable)
                 forElement.focus();
         }
+        
+        var _self = this;
+        apf.addListener(this.$ext, "click", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("click", {htmlEvent: e});
+        });
     };
     
     this.$childProperty = "caption";
