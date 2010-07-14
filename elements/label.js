@@ -134,6 +134,16 @@ apf.label = function(struct, tagName){
             if (!_self.disabled)
                 _self.dispatchEvent("click", {htmlEvent: e});
         });
+        
+        apf.addListener(this.$ext, "mouseover", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseover", {htmlEvent: e});
+        });
+        
+        apf.addListener(this.$ext, "mouseout", function(e) {
+            if (!_self.disabled)
+                _self.dispatchEvent("mouseout", {htmlEvent: e});
+        });
     };
     
     this.$childProperty = "caption";
