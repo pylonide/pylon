@@ -63,6 +63,7 @@ apf.vbox = function(struct, tagName){
     this.$focussable = false;
     this.$update     = false;
     this.$useLateDom = true; 
+    this.$box        = true;
 
     var CSSFLOAT    = apf.isIE ? "styleFloat" : "cssFloat";
     var CSSPREFIX   = apf.isGecko ? "Moz" : (apf.isWebkit ? "webkit" : "");
@@ -196,8 +197,17 @@ apf.vbox = function(struct, tagName){
     };
     
     function visibleHandler(e){
+        if (apf.hasFlexibleBox) {
+            if (this.$altExt)
+                this.$altExt.style.display = e.value 
+                    ? (apf.isGecko ? "-moz-stack" : CSSPREFIX2 + "-box") 
+                    : "none";
+            return;
+        }
+        
         if (e.value) {
-            this.$ext.style.display    = this.parentNode.align == "stretch" ? "block" : INLINE;
+            this.$ext.style.display    = this.parentNode.$vbox 
+                && this.parentNode.align == "stretch" ? "block" : INLINE;
             if (this.$br)
                 this.$br.style.display = this.parentNode.align == "stretch" ? "none" : "";
         }
@@ -205,6 +215,8 @@ apf.vbox = function(struct, tagName){
             if (this.$br)
                 this.$br.style.display = "none";
         }
+
+        this.parentNode.$resize();
     }
     
     var handlers = {
@@ -215,7 +227,9 @@ apf.vbox = function(struct, tagName){
                     return;
                 
                 this.$ext.style.width = value 
-                    ? value + "px"
+                    ? (parseInt(value) == value 
+                        ? value + "px"
+                        : value)
                     : "";
             },
             
@@ -224,7 +238,9 @@ apf.vbox = function(struct, tagName){
                     return;
 
                 this.$ext.style.height = value 
-                    ? value + "px"
+                    ? (parseInt(value) == value 
+                        ? value + "px"
+                        : value)
                     : "";
             },
             
@@ -271,8 +287,10 @@ apf.vbox = function(struct, tagName){
                 if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
               
-                this.$ext.style.width = value 
-                    ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
+                this.$ext.style.width = value
+                    ? (parseInt(value) == value 
+                        ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
+                        : value)
                     : "";
             },
             
@@ -281,7 +299,9 @@ apf.vbox = function(struct, tagName){
                     return;
       
                 this.$ext.style.height = value 
-                    ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
+                    ? (parseInt(value) == value 
+                        ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
+                        : value)
                     : "";
             },
             
@@ -325,7 +345,6 @@ apf.vbox = function(struct, tagName){
                 amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "border-box";
             }
             else {
-                amlNode.addEventListener("prop.visible", visibleHandler);
                 if (this.$vbox) {
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
                     amlNode.$br.style.lineHeight = "0";
@@ -338,6 +357,8 @@ apf.vbox = function(struct, tagName){
                     this.$int.style.whiteSpace = "nowrap";
                 }
             }
+            
+            amlNode.addEventListener("prop.visible", visibleHandler);
     
             this.$noResize = true;
             
@@ -383,8 +404,6 @@ apf.vbox = function(struct, tagName){
                 amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "";
             }
             else {
-                amlNode.removeEventListener("prop.visible", visibleHandler);
-                
                 amlNode.$ext.style.verticalAlign = "";
                 amlNode.$ext.style.textAlign = "";
                 amlNode.$ext.style[CSSFLOAT] = "";
@@ -394,6 +413,8 @@ apf.vbox = function(struct, tagName){
                     delete amlNode.$br;
                 }
             }
+            
+            amlNode.removeEventListener("prop.visible", visibleHandler);
             
             amlNode.$ext.style.display = amlNode.visible ? "block" : "none";
             
@@ -449,12 +470,12 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko || !apf.hasFlexibleBox && this.$vbox 
+        this.$int = apf.isGecko && !this.parentNode.$box || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko) {
+        if (apf.isGecko && !this.parentNode.$box) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }
@@ -535,7 +556,7 @@ apf.vbox = function(struct, tagName){
             if (!parseInt(node.flex)) {
                 var m = node.margin && apf.getBox(node.margin);
                 if (m && !this.$vbox) m.shift();
-                fW += node.$ext[ooffset] + this.padding + (m ? m[0] + m[2] : 0);
+                fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
             }
         }
         
@@ -558,8 +579,8 @@ apf.vbox = function(struct, tagName){
             if (this.$vbox)
                 this.$int.style.height = "100%";
             
-            var rW = this.$int[ooffset] - apf[getDiff](this.$int) - fW - this.padding;
-              //- ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
+            var rW = this.$int[ooffset] - apf[getDiff](this.$int) - fW 
+              - ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {

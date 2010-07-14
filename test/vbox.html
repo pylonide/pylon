@@ -21,43 +21,45 @@
     <body>
         <a:skin src="../skins.xml" />
         
-        <a:vbox class="redborder" top="0" left="0" bottom="0" width="15%" align="start" pack="left">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
-
-        <a:vbox id="test2" class="redborder" top="0" left="15%" bottom="0" width="15%" align="center" pack="center">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar skin="basic" class="boxtest" height="100">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
-        
-        <a:vbox class="redborder" top="0" left="30%" bottom="0" width="15%" align="end" pack="end">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
-        
-        <a:vbox class="redborder" top="0" left="45%" bottom="0" width="15%" align="stretch" pack="center">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar id="test1" skin="basic" class="boxtest">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
-        
-        <a:vbox class="redborder" top="0" left="60%" bottom="0" width="15%" edge="1">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
-            <a:bar id="test" skin="basic" class="boxtest" flex="1" margin="10">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
-        
-        <a:vbox class="redborder" top="0" left="75%" bottom="0" width="15%" align="end" edge="1" padding="10">
-            <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
-            <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
-            <a:bar id="test" skin="basic" class="boxtest" flex="2" margin="10">Mark as Unread</a:bar>
-            <a:bar skin="basic" class="boxtest">Right</a:bar>
-        </a:vbox>
+        <a:hbox left="0" top="0" right="100" bottom="0" padding="2">
+            <a:vbox class="redborder" flex="1" align="start" pack="left">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+    
+            <a:vbox id="test2" class="redborder" flex="1" align="center" pack="center">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest" height="100">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder" flex="1" align="end" pack="end">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder" flex="1" align="stretch" pack="center">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar id="test1" skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder" flex="1" edge="1">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
+                <a:bar id="test" skin="basic" class="boxtest" flex="1" margin="10">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder" flex="1" align="end" edge="1" padding="10">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
+                <a:bar id="test" skin="basic" class="boxtest" flex="2" margin="10">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:vbox>
+        </a:hbox>
         
         <a:button onclick="test1.setProperty('visible', !test1.visible)" right="10" top="10">toggle</a:button>
         <a:button onclick="test2.setProperty('visible', !test2.visible)" right="10" top="30">toggle</a:button>
