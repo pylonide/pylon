@@ -92,6 +92,8 @@ apf.vbox = function(struct, tagName){
     this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align");
     
     this.$propHandlers["padding"] = function(value){
+        this.padding = parseInt(value);
+        
         var nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
             if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded)
@@ -101,6 +103,8 @@ apf.vbox = function(struct, tagName){
         for (var i = 0, l = elms.length - 1; i < l; i++) {
             var b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
             b[this.$vbox ? 2 : 1] += this.padding;
+            if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
+                b[0] += this.padding;
             el.$ext.style.margin = b.join("px ") + "px";
         }
         
@@ -283,7 +287,11 @@ apf.vbox = function(struct, tagName){
             
             "margin" : function(value){
                 var b = apf.getBox(value);
-                b[this.parentNode.$vbox ? 2 : 1] += this.padding;
+                if (this.padding) {
+                    b[this.parentNode.$vbox ? 2 : 1] += this.padding;
+                    if (this != this.parentNode.firstChild && this.parentNode.align == "stretch" && this.parentNode.$vbox) //@todo
+                        b[0] += this.padding;
+                }
                 this.$ext.style.margin = b.join("px ") + "px";
             },
             
@@ -550,7 +558,7 @@ apf.vbox = function(struct, tagName){
             if (this.$vbox)
                 this.$int.style.height = "100%";
             
-            var rW = apf[oinner](this.$int) - apf[getDiff](this.$int) - fW;
+            var rW = this.$int[ooffset] - apf[getDiff](this.$int) - fW - this.padding;
               //- ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
@@ -558,7 +566,7 @@ apf.vbox = function(struct, tagName){
                     var v = Math.round((rW / total) * parseInt(node.flex));
                     done += parseInt(node.flex);
                     var m = node.margin && apf.getBox(node.margin);
-                    if (m && this.localName == "hbox") m.shift();
+                    if (m && !this.$vbox) m.shift();
                     node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - apf[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px"; //this.padding - 
                     lW -= v;
                 }
