@@ -60,12 +60,12 @@ apf.XhtmlElement = function(struct, tagName){
     }
     
     this.$handlePropSet = function(name, value, force){
-        if (!this.$amlLoaded) return; //@todo optimize by namespacing attributes
-        
         if (this.$booleanProperties[name])
             value = apf.isTrue(value);
 
         this[name] = value;
+        
+        if (!this.$amlLoaded) return; //@todo optimize by namespacing attributes
         
         var handler = this.$propHandlers && this.$propHandlers[name]
           || apf.GuiElement.propHandlers[name];
