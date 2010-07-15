@@ -187,6 +187,7 @@ apf.xmpp = function(struct, tagName){
     this.useHTTP     = true;
     this.method      = "POST";
     this.auth        = "DIGEST-MD5";
+    this.connected   = false;
 
     this.$xmppMethod      = constants.CONN_BOSH;
     this.$isPoll          = false;
@@ -268,12 +269,13 @@ apf.xmpp = function(struct, tagName){
     this.$booleanProperties["auto-register"] = true;
     this.$booleanProperties["auto-confirm"]  = true;
     this.$booleanProperties["auto-deny"]     = true;
+    this.$booleanProperties[CONN]            = true;
     // #ifdef __TP_XMPP_RDB
     this.$booleanProperties["rdb-bot"]       = true;
     // #endif
 
     this.$supportedProperties.push("type", "auth", "poll-timeout", "resource",
-        "host", "auto-register", "auto-confirm", "auto-deny"
+        "host", "auto-register", "auto-confirm", "auto-deny", CONN
         // #ifdef __TP_XMPP_ROSTER
         , "model", "model-contents"
         // #endif
@@ -696,7 +698,7 @@ apf.xmpp = function(struct, tagName){
                         return true;
                     
                     //@TBD:Mike please talk to me about how to integrate onError() properly
-                    onError.call(_self, !this.$serverVars[CONN]
+                    onError.call(_self, !this.connected
                         ? constants.ERROR_AUTH
                         : constants.ERROR_CONN, extra.message, state);
                     throw oError;
@@ -734,7 +736,7 @@ apf.xmpp = function(struct, tagName){
                 this.$retryCount = 0;
                 clearTimeout(this.$listener);
                 this.$listener = null;
-                this.$serverVars[CONN] = false;
+                this.setProperty(CONN, false);
                 this.dispatchEvent("reconnect", {
                     username: this.$serverVars["username"],
                     server  : this.url
@@ -851,7 +853,7 @@ apf.xmpp = function(struct, tagName){
      * @type {void}
      */
     this.disconnect = function(callback) {
-        if (this.$serverVars[CONN]) {
+        if (this.connected) {
             if (callback)
                 this.$serverVars["logout_callback"] = callback;
             // #ifdef __TP_XMPP_MUC
@@ -898,7 +900,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.pause = function(secs) {
         var max, v = this.$serverVars;
-        if (!v[CONN] || this.$isPoll || !(max = v["MAXPAUSE"])) return;
+        if (!this.connected || this.$isPoll || !(max = v["MAXPAUSE"])) return;
 
         secs = parseInt(secs) || max;
         this.$doXmlRequest(processBindingResult, createBodyElement({
@@ -936,7 +938,7 @@ apf.xmpp = function(struct, tagName){
     }
 
     this.isConnected = function() {
-        return Boolean(this.$serverVars[CONN]);
+        return this.connected;
     };
 
     /**
@@ -965,7 +967,7 @@ apf.xmpp = function(struct, tagName){
         this.$RID = null;
         this.$serverVars["cnonce"] = generateCnonce(14);
         this.$serverVars["nc"]     = "00000001";
-        this.$serverVars[CONN]     = false;
+        this.setProperty(CONN, false);
         // #ifdef __TP_XMPP_ROSTER
         this.$serverVars[ROSTER]   = new apf.xmpp_roster(this.model,
            this.$modelContent, this.resource);
@@ -1573,7 +1575,7 @@ apf.xmpp = function(struct, tagName){
         }
 
         // flag as 'connected'
-        v[CONN] = true;
+        this.setProperty(CONN, true);
         this.dispatchEvent(CONN, {username: v["username"]});
         // poll the server again for messages
         this.$listen();
@@ -1655,7 +1657,7 @@ apf.xmpp = function(struct, tagName){
         this.$listening = false;
 
         // start listening again...
-        if (this.$serverVars[CONN] && !bNoListener) {
+        if (this.connected && !bNoListener) {
             var _self = this;
             this.$listener = $setTimeout(function() {
                 _self.$listen();
@@ -2012,7 +2014,7 @@ apf.xmpp = function(struct, tagName){
      * @type  {void}
      */
     this.setPresence = function(type, status, custom) {
-        if (!this.$serverVars[CONN]) return false;
+        if (!this.connected) return false;
 
         this.$doXmlRequest(restartlistener, createBodyElement({
                 rid   : this.$getRID(),
@@ -2035,7 +2037,7 @@ apf.xmpp = function(struct, tagName){
      * @type  {void}
      */
     this.requestPresence = function(from) {
-        if (!this.$serverVars[CONN]) return false;
+        if (!this.connected) return false;
         // #ifdef __TP_XMPP_ROSTER
         var oRoster = this.$serverVars[ROSTER];
         if (typeof from == "string")
@@ -2319,7 +2321,7 @@ apf.xmpp = function(struct, tagName){
         }
         //#endif
 
-        if (!this.$serverVars[CONN]) return false;
+        if (!this.connected) return false;
 
         var bRoom = (this.$canMuc && options.type == constants.MSG_GROUPCHAT),
             aArgs = Array.prototype.slice.call(arguments),
@@ -2396,7 +2398,7 @@ apf.xmpp = function(struct, tagName){
         }
         //#endif
 
-        if (!this.$serverVars[CONN]) return false;
+        if (!this.connected) return false;
 
         this.$doXmlRequest(function(data, state, extra){
                 if (options.callback)
@@ -2484,7 +2486,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
         var v = this.$serverVars;
-        if (v["MAXPAUSE"] && v[CONN] && this.auth.toLowerCase() != "anonymous") {
+        if (v["MAXPAUSE"] && this.connected && this.auth.toLowerCase() != "anonymous") {
             delete v[ROSTER];
             apf.setcookie(COOKIE, apf.serialize(v) + "|" + (new Date()).valueOf()
                 + "|" + this.resource + "|" + this.$RID);
@@ -2512,10 +2514,10 @@ apf.xmpp = function(struct, tagName){
                 t   = parseInt(c[1]),
                 now = (new Date()).valueOf();
 
-            if (!v[CONN] || !max || Math.abs(now - t) >= max)
+            if (!this.connected || !max || Math.abs(now - t) >= max)
                 return;
             this.setAttribute("resource", c[2]);
-            v[CONN] = false;
+            this.setProperty(CONN, false);
             this.$serverVars = v;
             this.$RID        = parseInt(c[3]);
             // #ifdef __TP_XMPP_ROSTER
