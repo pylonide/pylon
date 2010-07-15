@@ -429,7 +429,7 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     var xmlNode, foundpath = "", paths = xPath.replace(/('.*?')|(".*?")|\|/g, function(m, m1, m2){
         if (m1 || m2) return m1 || m2;
         return "-%-|-%-";
-    }).split("-%-|-%-")[0].split("/");
+    }).split("-%-|-%-")[0].split(/\/(?!\/)/);//.split("/");
     if (!forceNew && (xmlNode = contextNode.selectSingleNode(xPath)))
         return xmlNode;
     

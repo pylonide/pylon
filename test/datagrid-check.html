@@ -8,31 +8,53 @@
         
         <a:appsettings debug="0" />
         
-        <a:datagrid  id="dg" 
+        <!-- Option 1 -->
+        <a:datagrid id="dg" skin="dgnoscroll"
           model  = "mdlDG" 
           left   = "100"
           top    = "100"
           width  = "400" 
           height = "160"> 
             <a:each match="[element]"> 
-                <a:column width="40%" caption="Full name"> 
-                    <a:checkbox value="[@check]" /> [@name]
-                </a:column>
+                <a:column width="40%" caption="Full name"><?lm
+                    <a:checkbox value="[@check]" label="[@name]" />
+                ?></a:column>
                 <a:column width="30%" value="[@user]" caption="Username" /> 
                 <a:column width="30%" value="[@org]" caption="Organisation" /> 
             </a:each>
         </a:datagrid>
         
-        <a:scrollbar for="dg" left="505" top="100" height="160" /> 
+        <a:scrollbar for="dg" left="478" top="105" height="150" /> 
+            
+        <a:button left="100" top="265" onclick="alert(#[mdlDG::element[@check=1]])">Count Selected Items</a:button>
+        
+        <!-- Option 2 -->
+        
+        <a:datagrid id="dg2" skin="dgcheck" mode="check"
+          model  = "mdlDG" 
+          left   = "600"
+          top    = "100"
+          width  = "400" 
+          height = "160"> 
+            <a:each match="[element]"> 
+                <a:column width="40%" caption="Full name" value="[@name]" check="true" />
+                <a:column width="30%" value="[@user]" caption="Username" /> 
+                <a:column width="30%" value="[@org]" caption="Organisation" /> 
+            </a:each>
+        </a:datagrid>
+        
+        <a:scrollbar for="dg2" left="978" top="105" height="150" /> 
+            
+        <a:button left="600" top="265" onclick="alert(dg2.getChecked().length)">Count Selected Items</a:button>
         
         <a:model id="mdlDG"> 
             <data> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
-                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
-                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
-                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
                 <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 

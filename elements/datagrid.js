@@ -108,6 +108,39 @@ apf.datagrid = function(struct, tagName){
      */
     this.$booleanProperties["iframe"]     = true;
 
+     // #ifdef __WITH_MULTICHECK
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    //#endif
+
     /**
      * This method imports a stylesheet defined in a multidimensional array 
      * @param {Array}    def Required Multidimensional array specifying 
@@ -541,10 +574,12 @@ apf.datagrid = function(struct, tagName){
         }
         
         //Build the Cells
-        for (var cell, h, i = 0; i < this.$headings.length; i++) {
+        for (var cellType, cell, h, i = 0; i < this.$headings.length; i++) {
             h = this.$headings[i];
             
             if (h.tree) {
+                cellType = "treecell";
+                
                 this.$getNewContext("treecell");
                 cell = this.$getLayoutNode("treecell");
                 var oc = this.$getLayoutNode("treecell", "openclose");
@@ -561,9 +596,54 @@ apf.datagrid = function(struct, tagName){
                     + ((((depth||0)+1) * 15) - 10) + "px 50%");*/
             }
             else {
-                this.$getNewContext("cell");
-                cell = this.$getLayoutNode("cell");
+                // #ifdef __WITH_MULTICHECK
+                cellType = h.check ? "checkcell" : "cell";
+                /* #else
+                cellType = "cell";
+                #endif */
+                
+                this.$getNewContext(cellType);
+                cell = this.$getLayoutNode(cellType);
             }
+            
+            // #ifdef __WITH_MULTICHECK
+            if (this.$mode && h.check) {
+                var elCheck = this.$getLayoutNode(cellType, "check");
+                if (elCheck) {
+                    elCheck.setAttribute("onmousedown",
+                        "var o = apf.lookup(" + this.$uniqueId + ");\
+                        o.checkToggle(this, true);\o.$skipSelect = true;");
+    
+                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                        this.$checkedList.push(xmlNode);
+                        this.$setStyleClass(oRow, "checked");
+                    }
+                    else if (this.isChecked(xmlNode))
+                        this.$setStyleClass(oRow, "checked");
+                }
+                else {
+                    //#ifdef __DEBUG
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Could not find check attribute",
+                        'Maybe the attribute check is missing from your skin file:\
+                            <a:item\
+                              class        = "."\
+                              caption      = "label/u/text()"\
+                              icon         = "label"\
+                              openclose    = "span"\
+                              select       = "label"\
+                              check        = "label/b"\
+                              container    = "following-sibling::blockquote"\
+                            >\
+                                <div><span> </span><label><b> </b><u>-</u></label></div>\
+                                <blockquote> </blockquote>\
+                            </a:item>\
+                        '));
+                    //#endif
+                    return false;
+                }
+            }
+            //#endif
             
             apf.setStyleClass(cell, h.$className);
             
@@ -571,7 +651,7 @@ apf.datagrid = function(struct, tagName){
                 apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
             
             if (h.icon) {
-                var node = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", oRow.appendChild(cell));
+                var node = this.$getLayoutNode(cellType, "caption", oRow.appendChild(cell));
                     node = (node.nodeType == 1 && node || node.parentNode);
                     node.setAttribute("style", "background-image:url(" 
                         + apf.getAbsolutePath(this.iconPath, 
@@ -581,8 +661,32 @@ apf.datagrid = function(struct, tagName){
             }
             
             if (h.value) {
-                apf.setNodeValue(this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", oRow.appendChild(cell)),
-                    (h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || "");
+                if (!h.cvalue2) {
+                    h.$compile("value", {nostring: true});
+                    
+                    //#ifdef __WITH_AML_BINDINGS
+                    if (h.value)
+                        h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
+                    //#endif
+                }
+                
+                //#ifdef __WITH_AML_BINDINGS
+                if (h.cvalue2.hasAml){
+                    var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                    
+                    var htmlEl = this.$getLayoutNode(cellType, 
+                        "caption", oRow.appendChild(cell));
+                    htmlEl.setAttribute("id", "placeholder_" + this.$uniqueId 
+                        + "_" + ((q.column || (q.column = [])).push(xmlNode) - 1));
+                    apf.setNodeValue(htmlEl, "");
+                }
+                else
+                //#endif
+                {
+                    apf.setNodeValue(this.$getLayoutNode(cellType, 
+                        "caption", oRow.appendChild(cell)),
+                        h.cvalue2(xmlNode) || "");
+                }
             }
         }
         
@@ -645,6 +749,10 @@ apf.datagrid = function(struct, tagName){
                 apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
 
             if (h.tree) {
+                // #ifdef __WITH_MULTICHECK
+                //@todo
+                // #endif
+                
                 /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
                 oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
                 oc.setAttribute("onmousedown",
@@ -652,8 +760,21 @@ apf.datagrid = function(struct, tagName){
                     o.slideToggle(this, null, null, true);");*/
             }
             
-            if (h.value)
-                cell.innerHTML = (h.cvalue2 || h.$compile("value", {nostring: true}))(xmlNode) || "";
+            if (h.value) {
+                if (!h.cvalue2) {
+                    h.$compile("value", {nostring: true});
+                    
+                    //#ifdef __WITH_AML_BINDINGS
+                    if (h.value)
+                        h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
+                    //#endif
+                }
+                
+                //#ifdef __WITH_AML_BINDINGS
+                if (!h.cvalue2.hasAml)
+                //#endif
+                    cell.innerHTML = h.cvalue2(xmlNode) || "";
+            }
             
             if (h.icon) {
                 (cell.nodeType == 1 && cell || cell.parentNode).style.backgroundImage = 

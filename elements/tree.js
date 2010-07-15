@@ -130,6 +130,8 @@ apf.tree = function(struct, tagName){
     
     /**** Properties and Attributes ****/
     
+    // #ifdef __WITH_MULTICHECK
+    
     /**
      * @attribute {String} mode Sets the way this element interacts with the user.
      *   Possible values:
@@ -139,7 +141,8 @@ apf.tree = function(struct, tagName){
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
         if ("check|radio".indexOf(value) > -1) {
-            this.implement(apf.MultiCheck);
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
             
             this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
@@ -158,7 +161,8 @@ apf.tree = function(struct, tagName){
     function $afterRenameMode(){
     }
     
-    //@todo please upgrade all the event calls to the 21st century, it hurts my eyes.
+    //#endif
+    
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
@@ -373,6 +377,10 @@ apf.tree = function(struct, tagName){
                 elIcon.style.backgroundImage = "url(" 
                     + apf.getAbsolutePath(this.iconPath, iconURL) + ")";
         }
+        
+        // #ifdef __WITH_MULTICHECK
+        //@todo
+        // #endif
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {

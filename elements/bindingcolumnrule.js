@@ -55,9 +55,10 @@ apf.BindingColumnRule = function(struct, tagName){
     }, this.$attrExcludePropBind);
     
     this.$supportedProperties.push("tree", "icon", "caption", "width", "options", 
-        "editor", "colspan", "align", "css");
+        "check", "editor", "colspan", "align", "css");
     
-    this.$booleanProperties["tree"] = true;
+    this.$booleanProperties["tree"]  = true;
+    this.$booleanProperties["check"] = true;
     
     this.$propHandlers["icon"]  = function(value, prop){
         

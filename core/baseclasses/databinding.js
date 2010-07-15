@@ -254,8 +254,8 @@ apf.DataBinding = function(){
     var afterloadUpdate
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;
-        if (!this.$cbindings.queue || !this.$cbindings.queue.caption
-          || !(queue = this.$cbindings.queue.caption))
+        if (!this.$cbindings.queue || !(queue = this.$cbindings.queue.caption 
+          || this.$cbindings.queue.column))
             return;
         
         var div, doc = this.ownerDocument;
@@ -263,7 +263,8 @@ apf.DataBinding = function(){
             div = document.getElementById("placeholder_" 
                 + this.$uniqueId + "_" + i);
             
-            lm = doc.createProcessingInstruction("lm", this.$cbindings.caption);
+            lm = doc.createProcessingInstruction("lm", this.$cbindings.caption 
+              || this.$cbindings.column);
             lm.$model  = this.$model;
             lm.xmlRoot = queue[i]; //xmlNode
             lm.$noInitModel = true;
@@ -277,6 +278,8 @@ apf.DataBinding = function(){
             delete queue[i];
             queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
         }
+        
+        queue.length = 0;
     });
     
     //Add and remove handler
