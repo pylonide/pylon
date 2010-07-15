@@ -448,6 +448,7 @@ apf.GuiElement = function(){
             if (o) o.dispatchEvent('resize');", true);
 
         apf.layout.queue(this.$ext);
+        //apf.layout.activateRules(this.$ext);
         this.removeEventListener("$event.resize", f);
     });
     //#endif

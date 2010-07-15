@@ -21,7 +21,7 @@
     <body>
         <a:skin src="../skins.xml" />
         
-        <a:hbox left="0" top="0" right="100" bottom="0" padding="2">
+        <a:hbox left="0" top="0" right="100" bottom="0" padding="2" class="redborder">
             <a:vbox class="redborder" flex="1" align="start" pack="left">
                 <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
                 <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
@@ -54,7 +54,7 @@
             </a:vbox>
             
             <a:vbox class="redborder" flex="1" align="end" edge="1" padding="10">
-                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar id="test3" skin="basic" class="boxtest">Mark as Read</a:bar>
                 <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
                 <a:bar id="test" skin="basic" class="boxtest" flex="2" margin="10">Mark as Unread</a:bar>
                 <a:bar skin="basic" class="boxtest">Right</a:bar>
@@ -62,6 +62,8 @@
         </a:hbox>
         
         <a:button onclick="test1.setProperty('visible', !test1.visible)" right="10" top="10">toggle</a:button>
-        <a:button onclick="test2.setProperty('visible', !test2.visible)" right="10" top="30">toggle</a:button>
+        <a:button onclick="test2.setProperty('visible', !test2.visible)" right="10" top="40">toggle</a:button>
+        <a:button onclick="test3.setProperty('visible', !test3.visible)" right="10" top="70">toggle</a:button>
+        <a:button onclick="test3.setProperty('height', test3.height == 50 ? '' : 50)" right="10" top="100">toggle</a:button>
     </body>
 </html>

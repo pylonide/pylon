@@ -134,13 +134,6 @@ apf.vbox = function(struct, tagName){
             this.$int.style[CSSPREFIX + "BoxPack"] = value || "start";
         else if (this.$amlLoaded) {
             if (this.$vbox) {
-                /*var nodes = this.childNodes;
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
-                        continue;
-                        
-                    node.$ext.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
-                }*/
                 this.$int.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
             }    
             else {
@@ -219,6 +212,11 @@ apf.vbox = function(struct, tagName){
         this.parentNode.$resize();
     }
     
+    function resizeHandler(){
+        if (!this.flex)
+            this.parentNode.$resize();
+    }
+    
     var handlers = {
         //Handlers for flexible box layout
         "true" : {
@@ -251,6 +249,7 @@ apf.vbox = function(struct, tagName){
             },
             
             "flex" : function(value){
+                this.flex = value = parseInt(value);
                 if (value) {
                     if (!this.$altExt) {
                         var doc = this.$ext.ownerDocument;
@@ -316,6 +315,7 @@ apf.vbox = function(struct, tagName){
             },
             
             "flex" : function(value){
+                this.flex = parseInt(value);
                 if (this.$amlLoaded)
                     this.parentNode.$resize();
             }
@@ -356,6 +356,8 @@ apf.vbox = function(struct, tagName){
                     amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
                 }
+                
+                amlNode.addEventListener("resize", resizeHandler);
             }
             
             amlNode.addEventListener("prop.visible", visibleHandler);
@@ -412,6 +414,8 @@ apf.vbox = function(struct, tagName){
                     amlNode.$br.parentNode.removeChild(amlNode.$br);
                     delete amlNode.$br;
                 }
+                
+                amlNode.removeEventListener("resize", resizeHandler);
             }
             
             amlNode.removeEventListener("prop.visible", visibleHandler);
@@ -502,7 +506,6 @@ apf.vbox = function(struct, tagName){
             //spacer.style.marginLeft    = "-4px";
             spacer.style.verticalAlign = "middle";
             
-            //@todo make conditional based on stretch/flex
             this.addEventListener("resize", this.$resize);
         }
 
@@ -531,6 +534,8 @@ apf.vbox = function(struct, tagName){
             this.$ext.style.minHeight = "";
             this.minheight = this.$originalMin[1];
         }*/
+        
+        //if (!this.$vbox) alert("here");
         
         var total    = 0;
         var size     = this.$vbox ? "width" : "height";
@@ -578,28 +583,28 @@ apf.vbox = function(struct, tagName){
         if (total > 0) {
             if (this.$vbox)
                 this.$int.style.height = "100%";
+            this.$int.style.overflow = "hidden";
             
             var rW = this.$int[ooffset] - apf[getDiff](this.$int) - fW 
               - ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {
-                    var v = Math.round((rW / total) * parseInt(node.flex));
+                    var v = (i % 2 == 0 ? Math.floor : Math.ceil)((rW / total) * parseInt(node.flex));
                     done += parseInt(node.flex);
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && !this.$vbox) m.shift();
+                    //if (total == 6 && i < 5 && v > node.$ext.offsetWidth + (m ? m[0] + m[2] : 0)) debugger;
                     node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - apf[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px"; //this.padding - 
                     lW -= v;
                 }
             }
         }
-        else if (this.$vbox)
-            this.$int.style.height = "";
-
-        //@todo all non-flex elements should have resize
-        /*cdi.childNodes[2].onresize = function(){
-            cdi.onresize();
-        }*/
+        else {
+            if (this.$vbox)
+                this.$int.style.height = "";
+            this.$int.style.overflow = "";
+        }
     }
     
     this.$loadAml = function(x){

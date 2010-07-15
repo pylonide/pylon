@@ -304,7 +304,7 @@ apf.Anchoring = function(){
     this.$updateLayout = function(){
         if (!this.$anchoringEnabled)
             return;
-        
+
         //@todo review if this can be improved
         //#ifdef __WITH_PROPERTY_WATCH
         if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
@@ -497,6 +497,8 @@ apf.Anchoring = function(){
         }
 
         this.$updateQueue = 0;
+        
+        if (this.$box) this.$ext.onresize();
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
