@@ -221,6 +221,16 @@ apf.xmpp = function(struct, tagName){
      *   Possible values:
      *   poll
      *   binding
+     * @attribute {String}   [host]           Name of the Virtual Host of the Jabber
+     *                                        network of which the user should be a
+     *                                        member of
+     * @attribute {String}   [auth]           Type of SASL/ Non-SASL authentication
+     *                                        to use. Defaults to 'DIGEST-MD5'.
+     *                                        Case insensitive.
+     *   Possible values:
+     *   PLAIN
+     *   DIGEST-MD5
+     *   ANONYMOUS
      * @attribute {Number}   [poll-timeout]   The number of milliseconds between
      *                                        each poll-request
      * @attribute {String}   [resource]       Name that will identify this client as it
@@ -247,22 +257,22 @@ apf.xmpp = function(struct, tagName){
      *   roster|typing
      *   roster|chat
      *   chat|typing
-     * @attribute {String}   [muc-host]       Domain name of the Multi User Chat
-     *                                        service of an XMPP server. Defaults
-     *                                        to the domain that is parsed from
+     * @attribute {String}   [muc-host]       Name of the Virtual Host of the Multi
+     *                                        User Chat service of a Jabber server.
+     *                                        Defaults to the domain that is parsed from
      *                                        {@link element.xmpp.url}.
      * @attribute {String}   [muc-model]      Name of the model where chat messages
      *                                        sent and received from Multi User
      *                                        Chats will be synchronized to.
-     * @attribute {String}   [rdb-host]       Domain name of the Remote
-     *                                        DataBinding service of an XMPP server.
+     * @attribute {String}   [rdb-host]       Name of the Virtual Host of the Remote
+     *                                        DataBinding service of a Jabber server.
      *                                        Defaults to the domain that is parsed
      *                                        from {@link element.xmpp.url}.
      * @attribute {String}   [rdb-model]      Name of the model where Remote
      *                                        DataBinding messages will be
      *                                        synchronized to.
      * @attribute {Boolean}  [rdb-bot]        Specifies if the this client will
-     *                                        connect to the XMPP server as a bot
+     *                                        connect to the Jabber server as a bot
      * @attribute {Number}   [priority]       Specifies the load - as in 'workload'
      *                                        of the client - connected as a bot.
      */
