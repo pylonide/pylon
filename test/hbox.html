@@ -19,11 +19,14 @@
         </style>
     </head>
     <body>
-        <a:skin src="../skins.xml" />
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
         
-        <a:vbox left="0" top="0" right="0" bottom="100" padding="2">
-            <a:hbox class="redborder" flex="1" align="start" pack="start">
-                <a:bar visible="false" skin="basic" class="boxtest">Mark as Read</a:bar>
+        <a:vbox left="0" top="0" right="0" bottom="100" padding="2" edge="20">
+            <a:hbox class="redborder" flex="0" align="end" pack="end">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
                 <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
                 <a:bar skin="basic" class="boxtest">Right</a:bar>
             </a:hbox>
