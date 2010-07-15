@@ -60,6 +60,8 @@ apf.XhtmlElement = function(struct, tagName){
     }
     
     this.$handlePropSet = function(name, value, force){
+        if (!this.$amlLoaded) return; //@todo optimize by namespacing attributes
+        
         if (this.$booleanProperties[name])
             value = apf.isTrue(value);
 

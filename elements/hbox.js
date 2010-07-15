@@ -341,7 +341,7 @@ apf.vbox = function(struct, tagName){
             if (apf.hasFlexibleBox) {
                 //if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "block")
                     //amlNode.$ext.style.display = "-moz-stack"; //@todo visible toggle
-                
+
                 amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "border-box";
                 
                 if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
