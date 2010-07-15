@@ -3293,7 +3293,7 @@
             text-decoration : none;
             border-left : 1px solid white;
         }
-
+        
         .datagrid .headings div.hover{
             background-color: #DDD;
         }
@@ -3517,6 +3517,11 @@
             display : inline-block;
             padding : 1px 2px 3px 2px;
             border : 0;
+        }
+        
+        .datagrid .records span.treecell u.iconCell {
+            background-repeat : no-repeat;
+            padding-left      : 18px;
         }
         
         .datagrid .treecell strong{
