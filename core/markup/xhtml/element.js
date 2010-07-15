@@ -93,12 +93,14 @@ apf.XhtmlElement = function(struct, tagName){
             this.$ext = this.$int = 
               pHtmlNode.appendChild(document.createElement(this.localName));
         }
-        
-        //#ifdef __WITH_GUIELEMENT
+    }, true);
+    
+    //#ifdef __WITH_GUIELEMENT
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$amlLoaded = true;
         this.$setLayout();
-        //#endif
-    }, true);
+    });
+    //#endif
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
 
 apf.Init.addConditional(function(){
