@@ -95,6 +95,7 @@ apf.XhtmlElement = function(struct, tagName){
         }
         
         //#ifdef __WITH_GUIELEMENT
+        this.$amlLoaded = true;
         this.$setLayout();
         //#endif
     }, true);

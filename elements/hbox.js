@@ -95,7 +95,7 @@ apf.vbox = function(struct, tagName){
     this.$propHandlers["padding"] = function(value){
         this.padding = parseInt(value);
         
-        var nodes = this.childNodes, elms = [];
+        var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
             if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded)
                 elms.push(node);
@@ -331,7 +331,7 @@ apf.vbox = function(struct, tagName){
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
         amlNode.$propHandlers["bottom"] = apf.K;
-        
+
         var propHandlers = handlers[apf.hasFlexibleBox];
         for (var prop in propHandlers) {
             amlNode.$propHandlers[prop] = propHandlers[prop];
