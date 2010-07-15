@@ -498,7 +498,7 @@ apf.Anchoring = function(){
 
         this.$updateQueue = 0;
         
-        if (this.$box) this.$ext.onresize();
+        //if (this.$box) this.$ext.onresize();
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
