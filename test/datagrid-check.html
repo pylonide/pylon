@@ -6,24 +6,40 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="1" />
+        <a:appsettings debug="0" />
         
-        <a:datagrid 
-          id = "dg" 
-          model = "mdlDG" 
-          width = "400" 
-          height = "100"> 
-            <a:model id="mdlDG"> 
-                <data> 
-                    <element name="Element 1" /> 
-                    <element name="Element 2" /> 
-                </data> 
-            </a:model> 
+        <a:datagrid  id="dg" 
+          model  = "mdlDG" 
+          left   = "100"
+          top    = "100"
+          width  = "400" 
+          height = "160"> 
             <a:each match="[element]"> 
-                <a:column width="100%" value="[@name]" caption="Column name" /> 
-            </a:each> 
-        </a:datagrid> 
-        <a:label id="lbl" 
-          value="Name of selected element: [{dg.selected}::@name]" /> 
+                <a:column width="40%" value="[@name]" caption="Full name" /> 
+                <a:column width="30%" value="[@user]" caption="Username" /> 
+                <a:column width="30%" value="[@org]" caption="Organisation" /> 
+            </a:each>
+        </a:datagrid>
+        
+        <a:scrollbar for="dg" left="505" top="100" height="160" /> 
+        
+        <a:model id="mdlDG"> 
+            <data> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+            </data> 
+        </a:model> 
     </body>
 </html>

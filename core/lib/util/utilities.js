@@ -464,7 +464,7 @@ apf.getBox = function(value, base){
     if (value == null || (!parseInt(value) && parseInt(value) != 0))
         return [0, 0, 0, 0];
 
-    var x = String(value).split(" ");
+    var x = String(value).splitSafe(" ");
     for (var i = 0; i < x.length; i++)
         x[i] = parseInt(x[i]) || 0;
     switch (x.length) {

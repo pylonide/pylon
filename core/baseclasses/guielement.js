@@ -156,7 +156,7 @@ apf.GuiElement = function(){
             // #endif
             
             // #ifdef __WITH_ALIGNMENT
-            /*if (this.align) {
+            if (this.align && !this.$box) {
                 if (!this.$alignmentEnabled) {
                     if (this.$disableCurrentLayout)
                         this.$disableCurrentLayout();
@@ -164,7 +164,7 @@ apf.GuiElement = function(){
                     this.$disableCurrentLayout = this.$disableAlignment;
                 }
                 return type == "alignment";
-            }*/
+            }
             // #endif
         }
         
