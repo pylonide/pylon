@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX with SPAN</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <a:hbox class="redborder" flex="1" align="start" pack="start">
+            <a:bar skin="basic" class="boxtest">Me</a:bar>
+            <span>or</span>
+            <a:bar skin="basic" class="boxtest">We</a:bar>
+        </a:hbox>
+        
+        <a:button onclick="test1.setProperty('visible', !test1.visible)" left="10" bottom="10">toggle</a:button>
+        <a:button onclick="test2.setProperty('visible', !test2.visible)" left="60" bottom="10">toggle</a:button>
+    </body>
+</html>

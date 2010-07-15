@@ -343,6 +343,9 @@ apf.vbox = function(struct, tagName){
                     //amlNode.$ext.style.display = "-moz-stack"; //@todo visible toggle
                 
                 amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "border-box";
+                
+                if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
+                    amlNode.$ext.style.display = "block";
             }
             else {
                 if (this.$vbox) {
@@ -404,6 +407,9 @@ apf.vbox = function(struct, tagName){
             
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "";
+                
+                if (apf.isGecko && amlNode.$ext.style.display == "block")
+                    amlNode.$ext.style.display = "";
             }
             else {
                 amlNode.$ext.style.verticalAlign = "";
