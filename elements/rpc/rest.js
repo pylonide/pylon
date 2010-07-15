@@ -98,15 +98,21 @@ apf.rest = function(){
         this.method = options["http-method"];
         if (options["content-type"])
             this.contentType = options["content-type"];
+            
+        var i     = 0,
+            l     = args.length;
+        for (; i < l; ++i)
+            args[i] = encodeURIComponent(args[i]);
 
-        this.url    = (url = this.urls[functionName]
-            ? this.urls[functionName]
-            : this.baseUrl) + (args.length 
+        this.url    = (url = options.url
+            ? options.url
+            : this.baseUrl) + (l 
                 ? (url.charAt(url.length - 1) == "/" 
                     ? ""
                     : "/") + args.join("/")
                 : "");
 
+        this.contentType = body ? "application/x-www-form-urlencoded" : null;
         return body;
     };
 };
