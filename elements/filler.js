@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __AMLDIVIDER || __INC_ALL
+// #ifdef __AMLFILLER || __INC_ALL
 
 apf.filler = function(struct, tagName){
     this.$init(tagName || "filler", apf.NODE_VISIBLE, struct);
