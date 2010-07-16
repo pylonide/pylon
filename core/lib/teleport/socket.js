@@ -229,6 +229,12 @@ apf.socket = function(){
                     _self.receive(id, data);
             });
             
+            //#ifdef __DEBUG
+            socket.addListener("close", function(data) {
+                apf.console.log("[socket] connection closed");
+            });
+            //#endif
+            
             socket.addListener("end", function() {
                 _self.pool[id] = null;
                 delete _self.pool[id];
