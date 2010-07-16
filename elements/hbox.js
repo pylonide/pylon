@@ -65,11 +65,6 @@ apf.vbox = function(struct, tagName){
     this.$useLateDom = true; 
     this.$box        = true;
 
-    var CSSFLOAT    = apf.isIE ? "styleFloat" : "cssFloat";
-    var CSSPREFIX   = apf.isGecko ? "Moz" : (apf.isWebkit ? "webkit" : "");
-    var CSSPREFIX2  = apf.isGecko ? "-moz" : (apf.isWebkit ? "-webkit" : "");
-    var INLINE      = apf.isIE && apf.isIE < 8 ? "inline" : "inline-block";
-
     /**
      * @attribute {String}  padding      the space between each element. Defaults to 2.
      * @attribute {Boolean} reverse      whether the sequence of the elements is in reverse order.
@@ -115,7 +110,7 @@ apf.vbox = function(struct, tagName){
     
     this.$propHandlers["reverse"]  = function(value){
         if (apf.hasFlexibleBox)
-            this.$int.style[CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
+            this.$int.style[apf.CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
         else {
             //@todo
         }
@@ -131,7 +126,7 @@ apf.vbox = function(struct, tagName){
     
     this.$propHandlers["pack"]  = function(value){
         if (apf.hasFlexibleBox)
-            this.$int.style[CSSPREFIX + "BoxPack"] = value || "start";
+            this.$int.style[apf.CSSPREFIX + "BoxPack"] = value || "start";
         else if (this.$amlLoaded) {
             if (this.$vbox) {
                 this.$int.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
@@ -154,7 +149,7 @@ apf.vbox = function(struct, tagName){
     
     this.$propHandlers["align"] = function(value){
         if (apf.hasFlexibleBox) {
-            this.$int.style[CSSPREFIX + "BoxAlign"] = value || "stretch";
+            this.$int.style[apf.CSSPREFIX + "BoxAlign"] = value || "stretch";
             
             //@todo loop through nodes and reset width/height
         }
@@ -178,7 +173,7 @@ apf.vbox = function(struct, tagName){
                         continue;
 
                     if (node.visible !== false) {
-                        node.$ext.style.display   = value == "stretch" ? "block" : INLINE;
+                        node.$ext.style.display   = value == "stretch" ? "block" : apf.INLINE;
                         node.$br.style.display    = value == "stretch" ? "none" : "";
                     }
                     node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
@@ -193,14 +188,14 @@ apf.vbox = function(struct, tagName){
         if (apf.hasFlexibleBox) {
             if (this.$altExt)
                 this.$altExt.style.display = e.value 
-                    ? (apf.isGecko ? "-moz-stack" : CSSPREFIX2 + "-box") 
+                    ? (apf.isGecko ? "-moz-stack" : apf.CSSPREFIX2 + "-box") 
                     : "none";
             return;
         }
         
         if (e.value) {
             this.$ext.style.display    = this.parentNode.$vbox 
-                && this.parentNode.align == "stretch" ? "block" : INLINE;
+                && this.parentNode.align == "stretch" ? "block" : apf.INLINE;
             if (this.$br)
                 this.$br.style.display = this.parentNode.align == "stretch" ? "none" : "";
         }
@@ -257,24 +252,24 @@ apf.vbox = function(struct, tagName){
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
                         sp.appendChild(this.$ext);
                         
-                        this.$altExt.style.display = CSSPREFIX2 + "-box";
-                        sp.style.display  = apf.isGecko ? "-moz-stack" : CSSPREFIX2 + "-box";
+                        this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
+                        sp.style.display  = apf.isGecko ? "-moz-stack" : apf.CSSPREFIX2 + "-box";
                         sp.style.position = "relative";
                         if (!this.parentNode.$vbox)
                             sp.style["width"] = "43px";
                         else if (!apf.isWebkit) //stupid webkit isnt 90 degrees symmetrical
                             sp.style["height"] = "0px";
                         sp.style[this.parentNode.$vbox ? "minHeight" : "minWidth"] = "100%";
-                        sp.style[CSSPREFIX + "BoxOrient"] = "horizontal";
-                        sp.style[CSSPREFIX + "BoxFlex"]   = 1;
+                        sp.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
+                        sp.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
                         
-                        this.$ext.style[CSSPREFIX + "BoxFlex"] = 1;
+                        this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
                     }
-                    this.$altExt.style[CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
+                    this.$altExt.style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {
                     this.parentNode.$int.replaceChild(this.$ext, this.$altExt);
-                    this.$ext.style[CSSPREFIX + "BoxFlex"] = "";
+                    this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = "";
                     delete this.$altExt;
                 }
             }
@@ -342,7 +337,7 @@ apf.vbox = function(struct, tagName){
                 //if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "block")
                     //amlNode.$ext.style.display = "-moz-stack"; //@todo visible toggle
 
-                amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "border-box";
+                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
                 
                 if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
                     amlNode.$ext.style.display = "block";
@@ -354,7 +349,7 @@ apf.vbox = function(struct, tagName){
                 }
                 else {
                     if (amlNode.visible !== false)
-                        amlNode.$ext.style.display = INLINE;
+                        amlNode.$ext.style.display = apf.INLINE;
                     this.$int.style.whiteSpace = "";
                     amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
@@ -406,7 +401,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.flex.call(amlNode, 0);
             
             if (apf.hasFlexibleBox) {
-                amlNode.$ext.style[CSSPREFIX + "BoxSizing"] = "";
+                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
                 
                 if (apf.isGecko && amlNode.$ext.style.display == "block")
                     amlNode.$ext.style.display = "";
@@ -414,7 +409,7 @@ apf.vbox = function(struct, tagName){
             else {
                 amlNode.$ext.style.verticalAlign = "";
                 amlNode.$ext.style.textAlign = "";
-                amlNode.$ext.style[CSSFLOAT] = "";
+                //amlNode.$ext.style[apf.CSSFLOAT] = "";
                 
                 if (amlNode.$br) {
                     amlNode.$br.parentNode.removeChild(amlNode.$br);
@@ -471,7 +466,7 @@ apf.vbox = function(struct, tagName){
     
     this.addEventListener("prop.visible", function(e){
         if (apf.hasFlexibleBox && e.value)
-            this.$int.style.display = CSSPREFIX2 + "-box";
+            this.$int.style.display = apf.CSSPREFIX2 + "-box";
     });
     
     this.$draw = function(){
@@ -490,16 +485,16 @@ apf.vbox = function(struct, tagName){
             this.$int.style.height = "100%";
         }
         else if (!apf.hasFlexibleBox && this.$vbox) {
-            this.$int.style.display = INLINE;
+            this.$int.style.display = apf.INLINE;
             this.$int.style.width   = "100%";
         }
         
         if (apf.hasFlexibleBox) {
-            this.$int.style.display = CSSPREFIX2 + "-box";
-            this.$int.style[CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
+            this.$int.style.display = apf.CSSPREFIX2 + "-box";
+            this.$int.style[apf.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
             if (apf.isGecko) //!webkit
-                this.$int.style[CSSPREFIX + "BoxSizing"] = "border-box";
-            this.$int.style[CSSPREFIX + "BoxAlign"]  = "stretch";
+                this.$int.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+            this.$int.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
         }
         else {
             if (!this.$vbox)
@@ -508,7 +503,7 @@ apf.vbox = function(struct, tagName){
             var spacer = (!apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int)
                             .appendChild(doc.createElement("strong"));
             spacer.style.height        = "100%";
-            spacer.style.display       = INLINE;
+            spacer.style.display       = apf.INLINE;
             //spacer.style.marginLeft    = "-4px";
             spacer.style.verticalAlign = "middle";
             

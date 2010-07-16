@@ -516,6 +516,11 @@ var apf = {
         delete t;
         //#endif
 
+        this.CSSFLOAT    = apf.isIE ? "styleFloat" : "cssFloat";
+        this.CSSPREFIX   = apf.isGecko ? "Moz" : (apf.isWebkit ? "webkit" : "");
+        this.CSSPREFIX2  = apf.isGecko ? "-moz" : (apf.isWebkit ? "-webkit" : "");
+        this.INLINE      = apf.isIE && apf.isIE < 8 ? "inline" : "inline-block";
+
         //Other settings
         this.maxHttpRetries = apf.isOpera ? 0 : 3;
 

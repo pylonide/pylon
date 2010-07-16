@@ -412,6 +412,8 @@ apf.GuiElement = function(){
         if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMInsert or whatever its called
             return;
         
+        this.$setLayout(); //@todo apf3.0 moving an element minwidth/height should be recalced
+        
         //@todo apf3.0 set this also for skin change
         if (this.$ext) {
             var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
@@ -435,8 +437,6 @@ apf.GuiElement = function(){
             //#endif
         }
         
-        this.$setLayout();
-
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
     });

@@ -380,6 +380,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     return [wt, ht];
 };
 
+//@todo its much faster to move these to browser specific files and eliminate apf.getStyle()
 apf.getHorBorders = function(oHtml){
     return Math.max(0,
           (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
@@ -407,6 +408,10 @@ apf.getHeightDiff = function(oHtml){
 };
 
 apf.getDiff = function(oHtml){
+    if (apf.hasFlexibleBox 
+      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+        return [0,0];
+    
     return [Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
         + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
