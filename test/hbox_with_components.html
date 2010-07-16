@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX with SPAN</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <h3>Separate components</h3>
+        <a:dropdown value="1" width="100">
+            <a:item value="1">Peoples</a:item>
+            <a:item value="2">Worknets</a:item>
+            <a:item value="3">Organizations</a:item>
+        </a:dropdown>
+        
+        <a:textbox initial-message="David van Ballegooijen"></a:textbox>
+        <h3>Components in HBOX</h3>
+        <a:hbox edge="0" padding="0">
+            <a:dropdown value="1" width="100">
+                <a:item value="1">Peoples</a:item>
+                <a:item value="2">Worknets</a:item>
+                <a:item value="3">Organizations</a:item>
+            </a:dropdown>
+            <a:textbox initial-message="David van Ballegooijen"></a:textbox>
+        </a:hbox>
+    </body>
+</html>
