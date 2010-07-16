@@ -372,6 +372,13 @@ apf.BaseTab = function(){
         });
     }
     
+    this.$cube = {
+        "left"   : [-1, "offsetWidth", "left"],
+        "right"  : [1, "offsetWidth", "left"],
+        "top"    : [-1, "offsetHeight", "top"],
+        "bottom" : [1, "offsetHeight", "top"]
+    }
+    
     this.$createAnim = function(page, animType, out, pageOut){
         var _self = this;
         
@@ -402,6 +409,7 @@ apf.BaseTab = function(){
         switch (animType[0]) {
             case "fade":
                 anim.anim = apf.tween.NORMAL;
+                if (out) h.style.zIndex = 30;
                 anim.tweens.push(
                     out 
                         ? {type: "fade", from: 1, to: 0}
@@ -409,43 +417,39 @@ apf.BaseTab = function(){
                 );
                 break;
             case "slide":
-                if (animType[1] == "left") {
-                    if (out) {
-                        from = 0;
-                        to   = -1 * h.offsetWidth;
-                    }
-                    else {
-                        from = -1 * h.offsetWidth; 
-                        to   = 0;
-
-                        h.style.left = from + "px";
-                    }
-                    anim.tweens.push({type: "left", from: from, to: to});
-                }
+                var info = this.$cube[animType[1]]
+                from     = 0;
+                to       = info[0] * h[info[1]];
+                if (!out)
+                    h.style[info[2]] = from + "px";
+                
+                anim.tweens.push({type: info[2], from: out ? from : to, to: out ? to : from});
                 //else etc
                 break;
             case "push":
-                if (animType[1] == "right") {
-                    var h2 = pageOut.$ext;
-                    
-                    if (out) {
-                        if (this.$transInfo["in"])
-                            this.$transInfo["in"].tweens = []; //prevent in animation
-                        
-                        h2.style.left = (-1 * h2.offsetWidth) + "px";
-                        
-                        anim.tweens.push({oHtml: h,  type: "left", from: 0, to: h.offsetWidth});
-                        anim.tweens.push({oHtml: h2, type: "left", from: -1 * h2.offsetWidth, to: 0});
-                    }
-                    else {
-                        this.$createAnim(pageOut, "normal", true);
-                        
-                        h.style.left = h.offsetWidth + "px";
-                        
-                        anim.tweens.push({oHtml: h,  type: "left", from: h.offsetWidth, to: 0});
-                        anim.tweens.push({oHtml: h2, type: "left", from: 0, to: -1 * h2.offsetWidth});
-                    }
+                var info = this.$cube[animType[1]]
+                var h2   = pageOut.$ext;
+                
+                if (out) {
+                    if (this.$transInfo["in"])
+                        this.$transInfo["in"].tweens = []; //prevent in animation
                 }
+                else
+                    this.$createAnim(pageOut, "normal", true);
+
+                from1 = info[0] * h[info[1]];
+                to1   = 0;
+                
+                from2 = 0;
+                to2   = -1 * info[0] * h2[info[1]];
+                
+                if (out)
+                    h2.style[info[2]] = to2 + "px";
+                else
+                    h.style[info[2]] = from1 + "px";
+
+                anim.tweens.push({oHtml: h,  type: [info[2]], from: out ? to1 : from1, to: out ? from1 : to1});
+                anim.tweens.push({oHtml: h2, type: [info[2]], from: out ? to2 : from2, to: out ? from2 : to2});
                 return false;
             case "normal":
                 break;
