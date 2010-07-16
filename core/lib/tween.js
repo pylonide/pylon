@@ -103,7 +103,7 @@ var modules = {
     },
     fade: function(oHtml, value){
         if (!apf.supportOpacity && apf.hasStyleFilters)
-            oHtml.style.filter  = "alpha(opacity=" + parseInt(value * 100) + ")";
+            oHtml.style.filter  = value == 1 ? "" : "alpha(opacity=" + parseInt(value * 100) + ")";
         else
             oHtml.style.opacity = value;
     },
@@ -115,7 +115,7 @@ var modules = {
     },
     htmlcss : function(oHtml, value, obj){
         if (apf.hasStyleFilters && obj.type == "filter")
-            oHtml.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
+            oHtml.style.filter = value == 1 ? "" : "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
         else
             oHtml.style[obj.type] = value + (obj.needsPx ? PX : "");
     },
@@ -328,8 +328,8 @@ var ID        = "id",
      *   {Function} [onfinish]  a function that is called at the end of the animation
      *   {Function} [oneach]    a function that is called at each step of the animation
      *   {Object}   [control]   an object that can stop the animation at any point
-     *     Properties:
-     *     {Boolean} stop       whether the animation should stop.
+     *     Methods:
+     *     stop                 set on the object passed .
      */
     single = function(oHtml, info){
         info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);

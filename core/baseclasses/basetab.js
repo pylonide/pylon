@@ -250,6 +250,12 @@ apf.BaseTab = function(){
 
         page.$activate();
 
+        //#ifdef __ENABLE_PAGE_TRANSITIONS
+        if (page["trans-in"] || this.$activepage && this.$activepage["trans-out"])
+            this.transition(page, page["trans-in"] || "normal",
+                this.$activepage, this.$activepage && this.$activepage["trans-out"] || "normal");
+        //#endif
+
         this.$activepage = page;
         //#ifdef __ENABLE_TABSCROLL
         this.scrollIntoView(page);
@@ -286,6 +292,168 @@ apf.BaseTab = function(){
     };
 
     /**** Public methods ****/
+
+    //#ifdef __ENABLE_PAGE_TRANSITIONS
+    this.transition = function(pageIn, animIn, pageOut, animOut){
+        var _self = this;
+        
+        if (!this.$transInfo) {
+            this.$int.style.overflow = "hidden";
+            
+            this.$transInfo = {
+                start : function(){
+                    var h = _self.$ext;
+                    this.size = [h.style.width, h.style.height];
+                    var d = apf.getDiff(h);
+                    h.style.width  = (h.offsetWidth - d[0]) + "px";
+                    h.style.height = (h.offsetHeight - d[1]) + "px";
+                    
+                    //@todo start anims
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["in"]);
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["out"]);
+                    }
+                },
+                
+                stop : function(){
+                    if (this["in"] && this["in"].control.stop) 
+                        this["in"].control.stop();
+                    if (this["out"] && this["out"].control.stop) 
+                        this["out"].control.stop();
+                },
+                
+                finish : function(){
+                    //@todo buffer calls with timeout
+                    var h = _self.$ext;
+                    h.style.width  = this.size[0]; //@todo possibly anim to new size
+                    h.style.height = this.size[1];
+
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        h.style.width  = this["in"].size[0];
+                        h.style.height = this["in"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        delete this["in"];
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        h.style.width  = this["out"].size[0];
+                        h.style.height = this["out"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        delete this["out"];
+                    }
+                }
+            };
+        }
+        
+        //stop
+        this.$transInfo.stop();
+        
+        var preventNext = this.$createAnim(pageIn, animIn, false, pageOut);
+        if (preventNext !== false && pageOut)
+            this.$createAnim(pageOut, animOut, true, pageIn);
+        
+        setTimeout(function(){
+            _self.$transInfo.start();
+        });
+    }
+    
+    this.$createAnim = function(page, animType, out, pageOut){
+        var _self = this;
+        
+        //create new anim
+        var anim = {
+            steps    : 15,
+            control  : {},
+            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEIN,
+            interval : 10,
+            tweens   : [],
+            oHtml    : page,
+            size     : [page.$ext.style.width, page.$ext.style.height],
+            onfinish : function(){
+                _self.$transInfo.finish(out);
+            }
+        };
+        this.$transInfo[out ? "out" : "in"] = anim;
+        
+        var from, to, h = page.$ext;
+        h.style.zIndex   = out ? 10 : 20;
+        h.style.position = "absolute";
+        h.style.left     = 0;
+        h.style.top      = 0;
+        h.style.display  = "block";
+        apf.setOpacity(h, 1);
+
+        animType = animType.split("-");
+        switch (animType[0]) {
+            case "fade":
+                anim.anim = apf.tween.NORMAL;
+                anim.tweens.push(
+                    out 
+                        ? {type: "fade", from: 1, to: 0}
+                        : {type: "fade", from: 0, to: 1}
+                );
+                break;
+            case "slide":
+                if (animType[1] == "left") {
+                    if (out) {
+                        from = 0;
+                        to   = -1 * h.offsetWidth;
+                    }
+                    else {
+                        from = -1 * h.offsetWidth; 
+                        to   = 0;
+
+                        h.style.left = from + "px";
+                    }
+                    anim.tweens.push({type: "left", from: from, to: to});
+                }
+                //else etc
+                break;
+            case "push":
+                if (animType[1] == "right") {
+                    var h2 = pageOut.$ext;
+                    
+                    if (out) {
+                        if (this.$transInfo["in"])
+                            this.$transInfo["in"].tweens = []; //prevent in animation
+                        
+                        h2.style.left = (-1 * h2.offsetWidth) + "px";
+                        
+                        anim.tweens.push({oHtml: h,  type: "left", from: 0, to: h.offsetWidth});
+                        anim.tweens.push({oHtml: h2, type: "left", from: -1 * h2.offsetWidth, to: 0});
+                    }
+                    else {
+                        this.$createAnim(pageOut, "normal", true);
+                        
+                        h.style.left = h.offsetWidth + "px";
+                        
+                        anim.tweens.push({oHtml: h,  type: "left", from: h.offsetWidth, to: 0});
+                        anim.tweens.push({oHtml: h2, type: "left", from: 0, to: -1 * h2.offsetWidth});
+                    }
+                }
+                return false;
+            case "normal":
+                break;
+            default:
+                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
+        }
+    }
+    //#endif
 
     /**
      * Retrieves an array of all the page elements of this element.

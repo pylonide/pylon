@@ -96,7 +96,7 @@ apf.page = function(struct, tagName){
     this.$booleanProperties["fake"]     = true;
     this.$booleanProperties["closebtn"] = true;
     this.$supportedProperties.push("fake", "caption", "icon", 
-        "type", "buttons", "closebtn");
+        "type", "buttons", "closebtn", "trans-in", "trans-out");
 
     this.$propHandlers["buttons"] = function(value){
         this.buttons = value;
@@ -105,6 +105,14 @@ apf.page = function(struct, tagName){
     this.$propHandlers["closebtn"] = function(value){
         this.closebtn = value;
     };
+    
+    /*this.$propHandlers["trans-in"] = function(value){
+        
+    };
+    
+    this.$propHandlers["trans-out"] = function(value){
+    
+    };*/
 
     /**
      * @attribute {String} caption the text displayed on the button of this element.
@@ -285,14 +293,10 @@ apf.page = function(struct, tagName){
                 if (!this.relPage.visible)
                     this.relPage.$ext.style.display = "none";
                     
-                //#ifdef __WITH_PROPERTY_WATCH
                 this.relPage.dispatchEvent("prop.visible", {value:false});
-                //#endif
             }
             
-            //#ifdef __WITH_PROPERTY_WATCH
             this.dispatchEvent("prop.visible", {value:false});
-            //#endif
         }
     };
 
@@ -330,9 +334,7 @@ apf.page = function(struct, tagName){
                     this.relPage.$render();
                 // #endif
                 
-                //#ifdef __WITH_PROPERTY_WATCH
                 this.relPage.dispatchEvent("prop.visible", {value:true});
-                //#endif
             }
             else {
                 this.parentNode.$setStyleClass(this.$ext, "curpage");
@@ -356,9 +358,7 @@ apf.page = function(struct, tagName){
                 this.$ext.className = cls;
             }
             
-            //#ifdef __WITH_PROPERTY_WATCH
             this.dispatchEvent("prop.visible", {value:true});
-            //#endif
         }
     };
 
