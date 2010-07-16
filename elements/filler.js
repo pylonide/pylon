@@ -26,6 +26,7 @@ apf.filler = function(struct, tagName){
 
 (function() {
     this.$focussable = false;
+    this.flex = 1;
 
     this.$draw = function() {
         this.$ext = this.$pHtmlNode.appendChild(this.$pHtmlNode.ownerDocument.createElement("div"));
