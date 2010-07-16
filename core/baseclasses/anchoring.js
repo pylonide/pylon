@@ -498,7 +498,7 @@ apf.Anchoring = function(){
 
         this.$updateQueue = 0;
         
-        if (this.$box && !apf.hasFlexibleBox) //temporary fix
+        if (this.$box && !apf.hasFlexibleBox && this.$ext.onresize) //temporary fix
             this.$ext.onresize();
     };
 
