@@ -320,6 +320,7 @@ apf.$x = apf.$loader
         "elements/editor.js",
         "elements/errorbox.js",
         "elements/event.js",
+        "elements/filler.js",
         "elements/flashplayer.js",
         "elements/flowchart.js",
         "elements/frame.js",
