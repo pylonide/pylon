@@ -110,7 +110,7 @@ apf.vbox = function(struct, tagName){
         }
         
         if (!apf.hasFlexibleBox)
-            this.$resize();
+            this.$resize(true);
     }
     
     this.$propHandlers["reverse"]  = function(value){
@@ -126,7 +126,7 @@ apf.vbox = function(struct, tagName){
         el.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
         
         if (!apf.hasFlexibleBox)
-            this.$resize();
+            this.$resize(true);
     };
     
     this.$propHandlers["pack"]  = function(value){
@@ -209,7 +209,7 @@ apf.vbox = function(struct, tagName){
                 this.$br.style.display = "none";
         }
 
-        this.parentNode.$resize();
+        this.parentNode.$resize(true);
     }
     
     function resizeHandler(){
@@ -317,7 +317,7 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = parseInt(value);
                 if (this.$amlLoaded)
-                    this.parentNode.$resize();
+                    this.parentNode.$resize(true);
             }
         }
     }
@@ -521,10 +521,20 @@ apf.vbox = function(struct, tagName){
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
-    this.$resize = function(){
+    this.$resize = function(force){
         if (!this.$amlLoaded || this.$noResize)
             return;
-
+        
+        //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
+        
+        //Protection for stretch re-resizing
+        if (force !== true && this.$lastSize && 
+          this.$lastSize[0] == this.$int.offsetWidth && 
+          this.$lastSize[1] == this.$int.offsetHeight)
+            return;
+        
+        this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
+        
         /*if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
                 - apf.getWidthDiff(this.$ext))) + "px";
@@ -560,7 +570,7 @@ apf.vbox = function(struct, tagName){
 
             hNodes.push(node);
             if (!node[size]) 
-                node.$ext.style[size] = "";
+                node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
             if (parseInt(node.flex))
                 total += parseFloat(node.flex);
             
@@ -579,7 +589,6 @@ apf.vbox = function(struct, tagName){
                 
                 if (!node[size]) {
                     var m = node.margin && apf.getBox(node.margin);
-                    if (m && this.$vbox) m.shift();
                     node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }
             }

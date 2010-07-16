@@ -6,8 +6,14 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="1" />
+        <a:appsettings debug="0" />
         
         <a:include src="include.xml" />
+            
+        <a:pages 
+          id         = "pgSite" 
+          src        = "include.xml" 
+          activepage = "home"
+          style      = "border:1px solid red;" />
     </body>
 </html>
