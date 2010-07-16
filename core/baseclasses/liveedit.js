@@ -527,6 +527,10 @@ apf.LiveEdit = function() {
         o.keyupTimer = window.setTimeout(keyupHandler, 200);
     }, true);
 
+    function blurHandler(){
+        alert(1);
+    }
+
     function createEditor(oNode) {
         var o = this.$edVars;
         if (!oNode || oNode.nodeType != 1 || o.activeNode == oNode)

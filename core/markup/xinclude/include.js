@@ -173,7 +173,7 @@ apf.aml.setElement("include", apf.XiInclude);
                 // #ifdef __DEBUG
                 apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
-            
+            if (path.indexOf("widgetpanel") > -1) debugger;
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
             },
             async         : true,
