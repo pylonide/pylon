@@ -59,7 +59,7 @@ apf.aml.setElement("include", apf.XiInclude);
             domParser.$shouldWait++;
             this.$parseContext = domParser.$parseContext || [this.parentNode];
         }
-        
+
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
         loadIncludeFile.call(this, this.$path);
     };
@@ -89,7 +89,7 @@ apf.aml.setElement("include", apf.XiInclude);
                 beforeNode : this,
                 include    : true
             });
-            
+
             if (!this.defer && this.$parseContext) {
                 var o     = (this.$parseContext[1] || (this.$parseContext[1] = {})),
                     cb    = o.callback,
@@ -173,7 +173,7 @@ apf.aml.setElement("include", apf.XiInclude);
                 // #ifdef __DEBUG
                 apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
-            if (path.indexOf("widgetpanel") > -1) debugger;
+
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
             },
             async         : true,

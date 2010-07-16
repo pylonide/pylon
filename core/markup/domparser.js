@@ -223,7 +223,7 @@ apf.DOMParser.prototype = new (function(){
     this.$callCount = 0;
     this.$continueParsing = function(amlNode, options){
         if (this.$shouldWait && --this.$shouldWait != 0)
-            return;
+            return false;
 
         if (!options)
             options = {};
