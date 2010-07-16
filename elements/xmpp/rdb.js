@@ -257,7 +257,7 @@ apf.xmpp_rdb = function(){
     };
 
     this.joinDoc = function(sDoc, sPassword, fCallback) {
-        if (!sDoc || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!sDoc || !this.$canRDB || !this.connected) return;
         var parts = sDoc.split("@");
         this.$rdbRoster.registerAccount(parts[0], parts[1], this.$serverVars["username"]);
         doRequest(this.$createPresenceBlock({
@@ -271,7 +271,7 @@ apf.xmpp_rdb = function(){
     };
 
     function joinDocs() {
-        if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!docQueue.length || !this.$canRDB || !this.connected) return;
         var o, sDoc, sPassword,
             _self         = this,
             doc           = [],
@@ -306,7 +306,7 @@ apf.xmpp_rdb = function(){
     }
 
     this.leaveDoc = function(sDoc, sMsg, fCallback) {
-        if (!sDoc || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!sDoc || !this.$canRDB || !this.connected) return;
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sDoc,
@@ -316,7 +316,7 @@ apf.xmpp_rdb = function(){
     };
 
     function leaveDocs() {
-        if (!docQueue.length || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!docQueue.length || !this.$canRDB || !this.connected) return;
         var o,
             doc           = [],
             queueProgress = docQueue;
@@ -332,7 +332,7 @@ apf.xmpp_rdb = function(){
     }
 
     this.leaveAllDocs = function(sMsg, sNick) {
-        if (!this.$canRDB || !this.$serverVars[CONN] || this["is-bot"]) return;
+        if (!this.$canRDB || !this.connected || this["is-bot"]) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         var aDocs = this.$rdbRoster.getRooms(),
@@ -506,7 +506,7 @@ apf.xmpp_rdb = function(){
     };
 
     this.botRegister = function(sDomain, fCallback) {
-        if (!sDomain || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!sDomain || !this.$canRDB || !this.connected) return;
         this.$rdbRoster.registerAccount(this.$serverVars["username"], sDomain);
         var _self = this;
         rdbVars["doc_cb_generic"] = function(oNode) {
@@ -525,7 +525,7 @@ apf.xmpp_rdb = function(){
     };
 
     this.botUnregister = function(sDomain, fCallback) {
-        if (!sDomain || !this.$canRDB || !this.$serverVars[CONN]) return;
+        if (!sDomain || !this.$canRDB || !this.connected) return;
         this.$rdbRoster.reset();
         rdbVars["doc_cb_generic"] = function(oXml) {
             // success if the server returned us a presence message

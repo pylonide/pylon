@@ -96,7 +96,7 @@ apf.xmpp_muc = function(){
      * @type {void}
      */
     this.queryRooms = function() {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!this.$canMuc || !this.connected) return;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
                 to    : this["muc-host"],
@@ -151,7 +151,7 @@ apf.xmpp_muc = function(){
     };
 
     this.getRoom = function(sRoom, callback) {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!this.$canMuc || !this.connected) return;
         mucVars["room_cb_" + sRoom] = callback;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
@@ -227,7 +227,7 @@ apf.xmpp_muc = function(){
     this.joinRoom = function(sRoom, sPassword, sNick, fCallback) {
         // @todo check for reserved nickname as described in
         //       http://xmpp.org/extensions/xep-0045.html#reservednick
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         var parts = sRoom.split("@");
@@ -244,7 +244,7 @@ apf.xmpp_muc = function(){
     };
 
     this.leaveRoom = function(sRoom, sMsg, sNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         doRequest(this.$createPresenceBlock({
@@ -256,7 +256,7 @@ apf.xmpp_muc = function(){
     };
 
     this.leaveAllRooms = function(sMsg, sNick) {
-        if (!this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!this.$canMuc || !this.connected) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         var i, l, aRooms = this.$mucRoster.getRooms();
@@ -265,7 +265,7 @@ apf.xmpp_muc = function(){
     };
 
     this.changeNick = function(sRoom, sNewNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         if (!sNewNick)
             sNewNick = this.username;
         var parts = sRoom.split("@");
@@ -315,7 +315,7 @@ apf.xmpp_muc = function(){
 
     this.createRoom = function(sRoom, sNick, fCallback) {
         // @todo implement/ support Reserved Rooms
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         sRoom = this.$mucRoster.sanitizeJID(sRoom);
@@ -356,7 +356,7 @@ apf.xmpp_muc = function(){
     };
 
     this.joinOrCreateRoom = function(sRoom, sNick, fCallback) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         if (!sNick)
             sNick = this.$serverVars["username"];
         var parts = sRoom.split("@");
@@ -398,7 +398,7 @@ apf.xmpp_muc = function(){
     };
 
     this.destroyRoom = function(sRoom, sReason) {
-        if (!sRoom || !this.$canMuc || !this.$serverVars[CONN]) return;
+        if (!sRoom || !this.$canMuc || !this.connected) return;
         doRequest(this.$createIqBlock({
                 from  : this.$serverVars[JID],
                 to    : sRoom,
