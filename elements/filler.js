@@ -27,25 +27,6 @@ apf.filler = function(struct, tagName){
 (function() {
     this.$focussable = false;
 
-    this.$supportedProperties.push("flex");
-
-    /**
-     * @ref amlNode#show
-     */
-    this.show = function(){
-        this.setProperty("visible", true);
-    };
-    
-    /**
-     * @ref amlNode#hide
-     */
-    this.hide = function(){
-        this.setProperty("visible", false);
-    };
-
-    /**
-     * @private
-     */
     this.$draw = function() {
         this.$ext = this.$pHtmlNode.appendChild(this.$pHtmlNode.ownerDocument.createElement("div"));
     };
