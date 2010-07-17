@@ -656,8 +656,10 @@ apf.xmpp = function(struct, tagName){
             sock  = this.$xmppMethod & constants.CONN_SOCKET,
             req   = this.$reqStack.shift();
         if (!req) return null;
+        //#ifdef __DEBUG
         apf.console.log("sending request: " + req.body);
-        
+        //#endif
+
         if (!sock)
             ++this.$reqCount;
         return this.$activeReq = this.get(this.url, {
@@ -668,6 +670,10 @@ apf.xmpp = function(struct, tagName){
                 if (_self.$reqStack.length)
                     _self.$doXmlRequest();
 
+                //#ifdef __DEBUG
+                apf.console.log("receiving data: " + data);
+                //#endif
+
                 if (_self.$isPoll) {
                     if (!data || data.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") {
                         //state = apf.ERROR;
@@ -675,7 +681,6 @@ apf.xmpp = function(struct, tagName){
                         //                + "Received an empty XML document (0 bytes)";
                     }
                     else {
-                        apf.console.log("receiving data: " + data);
                         var start = "<stream:stream",
                             end   = "</stream:stream>";
                         if (data.indexOf(start) > -1) {
@@ -1599,7 +1604,7 @@ apf.xmpp = function(struct, tagName){
      */
     this.$listen = function() {
         if ((!(this.$xmppMethod & constants.CONN_SOCKET) && this.$listening === true)
-          || !this.$serverVars[CONN]) return;
+          || !this.connected) return;
         clearTimeout(this.$listener);
         this.$listener  = null;
 
@@ -2503,6 +2508,7 @@ apf.xmpp = function(struct, tagName){
             this.pause();
         }
         else {
+
             apf.delcookie(COOKIE);
         }
 

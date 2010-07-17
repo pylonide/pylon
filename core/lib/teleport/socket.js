@@ -230,12 +230,19 @@ apf.socket = function(){
             });
             
             //#ifdef __DEBUG
-            socket.addListener("close", function(data) {
+            socket.addListener("close", function() {
                 apf.console.log("[socket] connection closed");
+            });
+            
+            socket.addListener("error", function(e) {
+                apf.console.log("[socket] connection error: " + e);
             });
             //#endif
             
             socket.addListener("end", function() {
+                //#ifdef __DEBUG
+                apf.console.log("[socket] connection ended");
+                //#endif
                 _self.pool[id] = null;
                 delete _self.pool[id];
             });
