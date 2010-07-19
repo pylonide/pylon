@@ -363,7 +363,7 @@ apf.vbox = function(struct, tagName){
                     }
                 }
                 else {
-                    if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
+                    if (apf.getStyle(amlNode.$ext, "display") == "inline")
                         amlNode.$ext.style.display = "block";
                 }
                 
