@@ -55,5 +55,25 @@
         
         <a:button onclick="test1.setProperty('visible', !test1.visible)" left="10" bottom="10">toggle</a:button>
         <a:button onclick="test2.setProperty('visible', !test2.visible)" left="60" bottom="10">toggle</a:button>
+        
+        <h3>Another problem with SPAN</h3>
+        <div style="width:400px;overflow:hidden;background-color:red;">
+            <a:vbox padding="3" edge="8 0 0 0"> 
+                <a:hbox>
+                    <h4>Password</h4>
+                    <a:filler />
+                    <span class="link" margin="4 6 0 0">forgot your password?</span>
+                </a:hbox>
+                <a:secret type="password" class="padlock"
+                  required="true" invalidmsg="A Password is required to sign in"></a:secret>
+                <a:hbox edge="10 0 0 0" class="hblue">
+                    <a:filler />
+                    <a:button 
+                      skin    = "hp_button" 
+                      width   = "108" 
+                      >Sign in</a:button>
+                </a:hbox>
+            </a:vbox>
+        </div>
     </body>
 </html>
