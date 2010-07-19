@@ -239,42 +239,6 @@ apf.select1   = function(struct, tagName){
         
     };
     
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from the list. The selected item is indicated.
-     *   radio  the user can select multiple items from a list. Each selected item is indicated.
-     */
-    this.mode = "normal";
-    this.$propHandlers["mode"] = function(value){
-        this.mode = value || "normal";
-        
-        if ("check|radio".indexOf(this.mode) > -1) {
-            this.allowdeselect = false;
-            
-            this.addEventListener("afterrename", $afterRenameMode);
-            
-            if (this.mode == "check") {
-                this.autoselect = false;
-                this.ctrlselect    = true;
-            }
-            else if (this.mode == "radio")
-                this.multiselect = false;
-            
-            //if (!this.actionRules) //default disabled
-                //this.actionRules = {}
-        }
-        else {
-            //@todo undo actionRules setting
-            this.ctrlselect = false;
-            this.removeEventListener("afterrename", $afterRenameMode);
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-    }
-    
     //#ifdef __WITH_RENAME
     /**
      * @attribute {String} more Adds a new item to the list and lets the users 
@@ -380,30 +344,7 @@ apf.select1   = function(struct, tagName){
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";
-        var mode = this.getAttribute("mode");
 
-        //@todo apf3.0 checkmode, radiomode
-        /*if (this.localName == "select" && (this.appearance == "full" 
-          || this.appearance == "minimal") || mode == "check") {
-            this.$aml.setAttribute("mode", "check");
-            if (!this.getAttribute("skin")) {
-                this.skinName = null;
-                this.skin = "checklist"
-                this.$loadSkin();
-            }
-        }
-        else if (this.localName == "select1" && this.appearance == "full"
-          || mode == "radio") {
-            this.$aml.setAttribute("mode", "radio");
-            if (!this.getAttribute("skin")) {
-                this.skinName = null;
-                this.skin = "radiolist";
-                this.$loadSkin();
-            }
-        }
-        else if (this.localName == "select1" && this.appearance == "compact") 
-            this.multiselect = false;*/
-        
         //Build Main Skin
         this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);

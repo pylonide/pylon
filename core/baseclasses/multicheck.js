@@ -415,11 +415,12 @@ apf.MultiCheck = function(){
     };
     
     this.addEventListener("beforeload", function(){
-        this.clearChecked(true);
+        if (!this.$hasBindRule("checked")) //only reset state when check state isnt recorded
+            this.clearChecked(true);
     });
     
     this.addEventListener("afterload", function(){
-        if (this.$checkedList.length)
+        if (!this.$hasBindRule("checked") && this.$checkedList.length) //only reset state when check state isnt recorded
             this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
     });
     

@@ -979,12 +979,8 @@ apf.BaseTree = function(){
                         if (v && v.substr(0, this.lookup.str.length)
                           .toUpperCase() == this.lookup.str) {
                             
-                            if (!this.isSelected(nodes[i])) {
-                                if (this.mode == "check")
-                                    this.setCaret(nodes[i]);
-                                else
-                                    this.select(nodes[i]);
-                            }
+                            if (!this.isSelected(nodes[i]))
+                                this.select(nodes[i]);
                             
                             if (selHtml)
                                 this.$container.scrollTop = selHtml.offsetTop

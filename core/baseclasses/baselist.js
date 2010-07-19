@@ -129,7 +129,6 @@ apf.BaseList = function(){
     this.$isWindowContainer = -1;
     
     this.multiselect = true; // Initially Disable MultiSelect
-    this.mode        = "normal";
 
     /**
      * @attribute {String} fill the set of items that should be loaded into this
@@ -150,6 +149,39 @@ apf.BaseList = function(){
         else
             this.clear();
     };
+    
+    // #ifdef __WITH_MULTICHECK
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    //#endif
 
     /**** Keyboard support ****/
 
@@ -181,7 +213,7 @@ apf.BaseList = function(){
                 this.choose(this.selected);
                 break;
             case 32:
-                if (ctrlKey || this.mode != "normal" || !this.isSelected(this.caret))
+                if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, ctrlKey);
                 break;
             case 109:
@@ -193,7 +225,7 @@ apf.BaseList = function(){
                 if (this.$tempsel)
                     this.$selectTemp();
 
-                this.remove(this.mode != "normal" ? this.caret : null); //this.mode != "check"
+                this.remove();
                 break;
             case 36:
                 //HOME
@@ -423,10 +455,7 @@ apf.BaseList = function(){
                           .toUpperCase() == this.lookup.str) {
 
                             if (!this.isSelected(nodes[i])) {
-                                if (this.mode == "check")
-                                    this.setCaret(nodes[i]);
-                                else
-                                    this.select(nodes[i]);
+                                this.select(nodes[i]);
                             }
 
                             if (selHtml) {
@@ -499,6 +528,10 @@ apf.BaseList = function(){
             else
                 elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
         }
+        
+        // #ifdef __WITH_MULTICHECK
+        //@todo
+        // #endif
 
         htmlNode.title = this.$applyBindRule("title", xmlNode) || "";
 
@@ -564,18 +597,18 @@ apf.BaseList = function(){
                  this.hasPassedDown = true;\
                  if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || o.mode != "normal" || !isSelected && !event.ctrlKey)\
+                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
                 var o = apf.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
-                'if (o.hasFeature(apf.__RENAME__) && this.dorename && o.mode == "normal")\
+                'if (o.hasFeature(apf.__RENAME__) && this.dorename)\
                     o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\
                  var xmlNode = apf.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.mode == "normal" && o.hasFeature(apf.__DRAGDROP__))\
+                 if (o.hasFeature(apf.__DRAGDROP__))\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
         } //@todo add DRAGDROP ifdefs
         else {
@@ -591,6 +624,45 @@ apf.BaseList = function(){
         if (this.$listGrid) {
             oItem.setAttribute("onmouseover", 
                 oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
+        }
+        //#endif
+        
+        // #ifdef __WITH_MULTICHECK
+        if (this.$mode) {
+            var elCheck = this.$getLayoutNode("item", "check");
+            if (elCheck) {
+                elCheck.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.checkToggle(this, true);\o.$skipSelect = true;");
+
+                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    this.$checkedList.push(xmlNode);
+                    this.$setStyleClass(oItem, "checked");
+                }
+                else if (this.isChecked(xmlNode))
+                    this.$setStyleClass(oItem, "checked");
+            }
+            else {
+                //#ifdef __DEBUG
+                throw new Error(apf.formatErrorString(0, this,
+                        "Could not find check attribute",
+                        'Maybe the attribute check is missing from your skin file:\
+                            <a:item\
+                              class        = "."\
+                              caption      = "label/u/text()"\
+                              icon         = "label"\
+                              openclose    = "span"\
+                              select       = "label"\
+                              check        = "label/b"\
+                              container    = "following-sibling::blockquote"\
+                            >\
+                                <div><span> </span><label><b> </b><u>-</u></label></div>\
+                                <blockquote> </blockquote>\
+                            </a:item>\
+                        '));
+                //#endif
+                return false;
+            }
         }
         //#endif
 
@@ -773,20 +845,6 @@ apf.BaseList = function(){
             this.addEventListener("beforerename", removeSetRenameEvent);
             this.addEventListener("afterrename",  afterRename);
     
-            /*if (this.mode == "radio") {
-                this.moreItem.style.display = "none";
-                if (lastAddedMore)
-                    this.removeEventListener("xmlupdate", lastAddedMore);
-    
-                lastAddedMore = function(){
-                    this.moreItem.style.display = addedNode.parentNode
-                        ? "none"
-                        : "block";
-                };
-                this.addEventListener("xmlupdate", lastAddedMore);
-            }*/
-    
-          
             // #ifdef __WITH_RENAME
             this.startDelayedRename({}, 1);
             // #endif

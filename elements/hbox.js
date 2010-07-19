@@ -588,7 +588,7 @@ apf.vbox = function(struct, tagName){
         var osize    = this.$vbox ? "height" : "width";
         var offset   = this.$vbox ? "offsetWidth" : "offsetHeight";
         var ooffset  = this.$vbox ? "offsetHeight" : "offsetWidth";
-        var getDiff  = this.$vbox ? "getHeightDiff" : "getWidthDiff";
+        var getDiff  = this.$vbox ? "getWidthDiff" : "getHeightDiff";
         var ogetDiff = this.$vbox ? "getHeightDiff" : "getWidthDiff";
         var inner    = this.$vbox ? "getHtmlInnerWidth" : "getHtmlInnerHeight";
         var oinner   = this.$vbox ? "getHtmlInnerHeight" : "getHtmlInnerWidth";
@@ -617,9 +617,9 @@ apf.vbox = function(struct, tagName){
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 node = hNodes[i];
                 
-                if (!node[size] || this.$vbox && input[node.$ext.tagName]) {
+                if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
-                    if (m && this.$vbox) m.shift();
+                    if (m && this.$vbox) m.unshift();
                     node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }
             }
