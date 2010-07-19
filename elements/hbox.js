@@ -210,8 +210,16 @@ apf.vbox = function(struct, tagName){
     }
     
     function resizeHandler(){
-        if (!this.flex)
-            this.parentNode.$resize();
+        if (!this.flex) {
+            if (this.$lastSize && 
+              this.$lastSize[0] == this.$ext.offsetWidth && 
+              this.$lastSize[1] == this.$ext.offsetHeight)
+                return;
+            
+            this.parentNode.$resize(true);
+            
+            this.$lastSize = [this.$ext.offsetWidth, this.$ext.offsetHeight];
+        }
     }
     
     var handlers = {
@@ -555,8 +563,6 @@ apf.vbox = function(struct, tagName){
         if (!this.$amlLoaded || this.$noResize)
             return;
         
-        //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
-        
         //Protection for stretch re-resizing
         if (force !== true && this.$lastSize && 
           this.$lastSize[0] == this.$int.offsetWidth && 
@@ -564,6 +570,8 @@ apf.vbox = function(struct, tagName){
             return;
         
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
+        
+        //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
         
         /*if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
@@ -631,7 +639,7 @@ apf.vbox = function(struct, tagName){
                 this.$int.style.height = "100%";
             this.$int.style.overflow = "hidden";
             
-            var rW = this.$int[ooffset] - apf[getDiff](this.$int) - fW 
+            var rW = this.$int[ooffset] - apf[ogetDiff](this.$int) - fW 
               - ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
@@ -640,8 +648,7 @@ apf.vbox = function(struct, tagName){
                     done += parseInt(node.flex);
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && !this.$vbox) m.shift();
-                    //if (total == 6 && i < 5 && v > node.$ext.offsetWidth + (m ? m[0] + m[2] : 0)) debugger;
-                    node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - apf[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px"; //this.padding - 
+                    node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - apf[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                     lW -= v;
                 }
             }
