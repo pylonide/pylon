@@ -625,7 +625,7 @@ apf.vbox = function(struct, tagName){
         if (this.pack == undefined)
             this.$propHandlers.pack.call(this, this.edge = "start");
         if (this.align == undefined)
-            this.$propHandlers.align.call(this, this.align = "stretch");
+            this.$propHandlers.align.call(this, this.align = "start");
     };
 }).call(apf.vbox.prototype = new apf.GuiElement());
 

@@ -6,7 +6,17 @@
         
         <script src="../apf.js"></script>
         
-        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
     </head>
     <body style="margin:0;">
         <a:skin 
@@ -14,7 +24,7 @@
           media-path = "../../../skins/platform/trunk/images/" 
           icon-path  = "../../../skins/platform/trunk/icons/" />
         
-        <h3>Separate components</h3>
+        <!--h3>Separate components</h3>
         <a:dropdown value="1" width="100">
             <a:item value="1">Peoples</a:item>
             <a:item value="2">Worknets</a:item>
@@ -41,12 +51,17 @@
         <a:hbox edge="15 0 0 0" padding="0">
             <a:filler />
             <a:button width="108">Sign in</a:button>
-        </a:hbox>
+        </a:hbox-->
         
         <h3>Components with fixed width</h3>
-        <a:vbox edge="0" padding="0">
+        <a:vbox edge="0" padding="0" class="redborder" align="start">
             <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
             <a:textbox width="387" height="121"></a:textbox>
+        </a:vbox>
+        
+        <a:vbox edge="0" padding="0" class="redborder">
+            <a:bar class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+            <a:bar class="boxtest" width="387" height="121"></a:bar>
         </a:vbox>
     </body>
 </html>
