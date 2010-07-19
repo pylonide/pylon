@@ -64,6 +64,8 @@ apf.vbox = function(struct, tagName){
     this.$update     = false;
     this.$useLateDom = true; 
     this.$box        = true;
+    
+    var input = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
      * @attribute {String}  padding      the space between each element. Defaults to 2.
@@ -219,7 +221,7 @@ apf.vbox = function(struct, tagName){
                 if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
                 
-                this.$ext.style.width = value 
+                (this.$altExt || this.$ext).style.width = value 
                     ? (parseInt(value) == value 
                         ? value + "px"
                         : value)
@@ -230,7 +232,7 @@ apf.vbox = function(struct, tagName){
                 if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
 
-                this.$ext.style.height = value 
+                (this.$altExt || this.$ext).style.height = value 
                     ? (parseInt(value) == value 
                         ? value + "px"
                         : value)
@@ -336,11 +338,36 @@ apf.vbox = function(struct, tagName){
             if (apf.hasFlexibleBox) {
                 //if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "block")
                     //amlNode.$ext.style.display = "-moz-stack"; //@todo visible toggle
-
-                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
                 
-                if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
-                    amlNode.$ext.style.display = "block";
+                //input elements are not handled correctly by firefox and webkit
+                if (input[amlNode.$ext.tagName]) {
+                    var doc = amlNode.$ext.ownerDocument;
+                    amlNode.$altExt = doc.createElement("div");
+                    amlNode.parentNode.$int.replaceChild(amlNode.$altExt, amlNode.$ext);
+                    amlNode.$altExt.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+                    amlNode.$altExt.appendChild(amlNode.$ext);
+                    
+                    if (apf.isWebkit) {
+                        var d = apf.getDiff(amlNode.$ext);
+                        //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
+                        amlNode.$altExt.style.height = "100%";
+                        amlNode.$altExt.style.lineHeight = 0;
+                        amlNode.$ext.style.width  = "100%";
+                        amlNode.$ext.style.height  = "100%";
+                    }
+                    else {
+                        amlNode.$altExt.style.display = apf.CSSPREFIX2 + "-box";
+                        amlNode.$altExt.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
+                        amlNode.$altExt.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
+                        amlNode.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+                    }
+                }
+                else {
+                    if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "inline")
+                        amlNode.$ext.style.display = "block";
+                }
+                
+                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
             }
             else {
                 if (this.$vbox) {
@@ -384,6 +411,9 @@ apf.vbox = function(struct, tagName){
             }
         
             delete this.$noResize;
+            
+            if (!apf.hasFlexibleBox && this.lastChild == amlNode)
+                this.$resize(true);
         }
     }
     
@@ -571,10 +601,10 @@ apf.vbox = function(struct, tagName){
             hNodes.push(node);
             if (!node[size]) 
                 node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
+
             if (parseInt(node.flex))
                 total += parseFloat(node.flex);
-            
-            if (!parseInt(node.flex)) {
+            else {
                 var m = node.margin && apf.getBox(node.margin);
                 if (m && !this.$vbox) m.shift();
                 fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
@@ -587,7 +617,7 @@ apf.vbox = function(struct, tagName){
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 node = hNodes[i];
                 
-                if (!node[size] || this.$vbox && node.$ext.tagName == "INPUT") {
+                if (!node[size] || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.shift();
                     node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";

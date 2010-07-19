@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>HBOX with SPAN</title>
+        <title>HBOX with Components</title>
         
         <script src="../apf.js"></script>
         
@@ -85,6 +85,18 @@
                 <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
                 <a:bar skin="basic" class="boxtest" flex="1"></a:bar>
                 <a:bar skin="basic" class="boxtest" width="387" height="30">test</a:bar>
+            </a:hbox>
+            
+            <a:hbox id="test" class="redborder" align="stretch" height="30">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox flex="1"></a:textbox>
+                <a:textbox width="387"></a:textbox>
+            </a:hbox>
+            
+            <a:hbox class="redborder" align="stretch" height="30">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387"></a:bar>
             </a:hbox>
         </a:vbox>
     </body>
