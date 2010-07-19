@@ -345,7 +345,10 @@ apf.vbox = function(struct, tagName){
             else {
                 if (this.$vbox) {
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
-                    amlNode.$br.style.lineHeight = "0";
+                    //amlNode.$br.style.lineHeight = "0";
+                    this.$int.style.fontSize = "";
+                    amlNode.$ext.style.fontSize = apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                    this.$int.style.fontSize = "0";
                 }
                 else {
                     if (amlNode.visible !== false)
@@ -409,11 +412,13 @@ apf.vbox = function(struct, tagName){
             else {
                 amlNode.$ext.style.verticalAlign = "";
                 amlNode.$ext.style.textAlign = "";
+                amlNode.$ext.style.whiteSpace = "";
                 //amlNode.$ext.style[apf.CSSFLOAT] = "";
                 
                 if (amlNode.$br) {
                     amlNode.$br.parentNode.removeChild(amlNode.$br);
                     delete amlNode.$br;
+                    amlNode.$ext.style.fontSize = "";
                 }
                 
                 amlNode.removeEventListener("resize", resizeHandler);
@@ -577,13 +582,14 @@ apf.vbox = function(struct, tagName){
         }
         
         //Stretching - for IE8 this could be done using box-sizing and height:100%
-        if (!this.$vbox && this.align == "stretch") {
+        if (this.align == "stretch") {
             var pH = this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 node = hNodes[i];
                 
-                if (!node[size]) {
+                if (!node[size] || this.$vbox && node.$ext.tagName == "INPUT") {
                     var m = node.margin && apf.getBox(node.margin);
+                    if (m && this.$vbox) m.shift();
                     node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }
             }
@@ -619,9 +625,9 @@ apf.vbox = function(struct, tagName){
     
     this.$loadAml = function(x){
         if (this.padding == undefined)
-            this.$propHandlers.padding.call(this, this.padding = 2);
+            this.$propHandlers.padding.call(this, this.padding = 0);
         if (this.edge == undefined)
-            this.$propHandlers.edge.call(this, this.edge = 5);
+            this.$propHandlers.edge.call(this, this.edge = 0);
         if (this.pack == undefined)
             this.$propHandlers.pack.call(this, this.edge = "start");
         if (this.align == undefined)

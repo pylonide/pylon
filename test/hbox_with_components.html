@@ -43,7 +43,7 @@
         </a:hbox>
         
         <h3>Filler</h3>
-        <a:hbox edge="0" padding="0" width="500">
+        <a:hbox width="500">
             <a:filler />
             <a:button>dsdsd</a:button>
         </a:hbox>
@@ -53,15 +53,39 @@
             <a:button width="108">Sign in</a:button>
         </a:hbox-->
         
-        <h3>Components with fixed width</h3>
-        <a:vbox edge="0" padding="0" class="redborder" align="start">
-            <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
-            <a:textbox width="387" height="121"></a:textbox>
-        </a:vbox>
-        
-        <a:vbox edge="0" padding="0" class="redborder">
-            <a:bar class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
-            <a:bar class="boxtest" width="387" height="121"></a:bar>
+        <h3>INPUT elements</h3>
+        <a:vbox padding="10" edge="10" align="stretch">
+            <a:vbox class="redborder" align="stretch">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox width="387" height="30"></a:textbox>
+            </a:vbox>
+            
+            <a:vbox class="redborder" align="stretch">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387" height="30">test</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox width="387" height="30"></a:textbox>
+            </a:vbox>
+            
+            <a:vbox class="redborder">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387" height="30">test</a:bar>
+            </a:vbox>
+            
+            <a:hbox class="redborder">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox flex="1"></a:textbox>
+                <a:textbox width="387" height="30"></a:textbox>
+            </a:hbox>
+            
+            <a:hbox class="redborder">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387" height="30">test</a:bar>
+            </a:hbox>
         </a:vbox>
     </body>
 </html>
