@@ -133,6 +133,16 @@ apf.Presentation = function(){
         else
             this.$ext.style.borderWidth = apf.getBox(value).join("px ") + "px";
     }
+    
+    /**
+     * @attribute {String} margin turns margins on and off. Set sizes in the seq top, right, bottom, left.
+     */
+    this.$propHandlers["margin"] = function(value){
+        if (!value)
+            this.$ext.style.margin = "";
+        else
+            this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
+    }
 
     var oldClass;
     /**
