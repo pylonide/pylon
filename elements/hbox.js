@@ -107,7 +107,7 @@ apf.vbox = function(struct, tagName){
         }
         
         if (!apf.hasFlexibleBox)
-            this.$resize(true);
+            this.$resize();
     }
     
     this.$propHandlers["reverse"]  = function(value){
@@ -123,7 +123,7 @@ apf.vbox = function(struct, tagName){
         el.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
         
         if (!apf.hasFlexibleBox)
-            this.$resize(true);
+            this.$resize();
     };
     
     this.$propHandlers["pack"]  = function(value){
@@ -206,22 +206,22 @@ apf.vbox = function(struct, tagName){
                 this.$br.style.display = "none";
         }
 
-        this.parentNode.$resize(true);
+        this.parentNode.$resize();
     }
     
     function resizeHandler(){
         if (!this.flex) {
-            /*if (this.$lastSize && 
-              this.$lastSize[0] == this.$ext.offsetWidth && 
-              this.$lastSize[1] == this.$ext.offsetHeight)
-                return;*/
+            if (this.$lastSizeChild && 
+              this.$lastSizeChild[0] == this.$ext.offsetWidth && 
+              this.$lastSizeChild[1] == this.$ext.offsetHeight)
+                return;
             
-            if (this.$skipResizeOnce)
+            /*if (this.$skipResizeOnce)
                 delete this.$skipResizeOnce;
-            else
+            else*/
                 this.parentNode.$resize(true);
             
-            //this.$lastSize = [this.$ext.offsetWidth, this.$ext.offsetHeight];
+            this.$lastSizeChild = [this.$ext.offsetWidth, this.$ext.offsetHeight];
         }
     }
     
@@ -327,7 +327,7 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = parseInt(value);
                 if (this.$amlLoaded)
-                    this.parentNode.$resize(true);
+                    this.parentNode.$resize();
             }
         }
     }
@@ -426,7 +426,7 @@ apf.vbox = function(struct, tagName){
             delete this.$noResize;
             
             if (!apf.hasFlexibleBox && this.lastChild == amlNode)
-                this.$resize(true);
+                this.$resize();
         }
     }
     
@@ -564,17 +564,51 @@ apf.vbox = function(struct, tagName){
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
-    this.$resize = function(force){
-        if (!this.$amlLoaded || this.$noResize)
+    this.$isWaitingOnDisplay = false;
+    this.$waitForVisibility = function(){
+        if (this.$isWaitingOnDisplay)
             return;
         
+        var _self = this;
+        this.$listenToDisplay = function (e){
+            if (apf.isTrue(e.value) 
+              && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
+                _self.$resize();
+                
+                //Cleanup
+                var p = _self;
+                while (p) {
+                    p.removeEventListener("prop.visible", _self.listenToDisplay);
+                    p = p.parentNode;
+                }
+                
+                _self.$isWaitingOnDisplay = false;
+            }
+        }
+        
+        var p = this;
+        while(p) {
+            p.addEventListener("prop.visible", this.$listenToDisplay);
+            p = p.parentNode;
+        }
+        
+        this.$isWaitingOnDisplay = true;
+    }
+    
+    this.$resize = function(force){
+        if (!this.$amlLoaded || this.$noResize) //force !== true && 
+            return;
+
         //Protection for stretch re-resizing
-        /*if (force !== true && this.$lastSize && 
+        if (force !== true && this.$lastSize && 
           this.$lastSize[0] == this.$int.offsetWidth && 
           this.$lastSize[1] == this.$int.offsetHeight)
             return;
         
-        this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];*/
+        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth)
+            return this.$waitForVisibility();
+        
+        this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
         
         //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
         
@@ -598,7 +632,7 @@ apf.vbox = function(struct, tagName){
         
         var total    = 0;
         var size     = this.$vbox ? "width" : "height";
-        var minsize  = this.$vbox ? "minwidth" : "minheight";
+        var minsize  = this.$vbox ? "min-width" : "min-height";
         var osize    = this.$vbox ? "height" : "width";
         var offset   = this.$vbox ? "offsetWidth" : "offsetHeight";
         var ooffset  = this.$vbox ? "offsetHeight" : "offsetWidth";
@@ -614,8 +648,10 @@ apf.vbox = function(struct, tagName){
 
             hNodes.push(node);
             if (!node[size]) {
-                node.$skipResizeOnce = true;
-                node.$ext.style[minsize] = ""; //@todo this is a sucky way of measuring
+                //if (!node.$skipResizeOnce) node.$skipResizeOnce = 1;
+                //else node.$skipResizeOnce++;
+                //node.$skipResizeOnce = 1
+                node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
             }
 
             if (parseInt(node.flex))
@@ -636,7 +672,8 @@ apf.vbox = function(struct, tagName){
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
-                    node.$ext.style[minsize] = Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
+                    node.$ext.style[size] = 
+                        Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }
             }
         }
@@ -666,6 +703,12 @@ apf.vbox = function(struct, tagName){
                 this.$int.style.height = "";
             this.$int.style.overflow = "";
         }
+        
+        /*this.$noResize = true;
+        var _self = this;
+        setTimeout(function(){
+            _self.$noResize = false;
+        });*/
     }
     
     this.$loadAml = function(x){
