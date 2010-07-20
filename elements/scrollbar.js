@@ -122,9 +122,12 @@ apf.scrollbar = function(struct, tagName){
                 scrolling = apf.isIE;
                 var oHtml = _self.$getHtmlHost();
                 //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
-                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
-                _self.setScroll();
-                e.preventDefault();
+                var div = (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
+                if (div) {
+                    _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / div;
+                    _self.setScroll();
+                    e.preventDefault();
+                }
             });
         }
 

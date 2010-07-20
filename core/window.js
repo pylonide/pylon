@@ -1120,7 +1120,7 @@ apf.window = function(){
                 
                 if (el.nodeType == 9)
                     el = el.documentElement;
-                
+
                 if (el && el.tagName == "BODY" && "auto|scroll".indexOf(apf.getStyle(el, "overflowY")) == -1)
                     el = document.documentElement;
 
