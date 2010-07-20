@@ -120,6 +120,8 @@ apf.popup = {
                 > (p == document.documentElement
                   ? (apf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
                   : p.offsetHeight + p.scrollTop);
+            
+            popup.style.position = "absolute";
 
             popup.style.top = (moveUp 
                 ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
