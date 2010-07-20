@@ -249,7 +249,8 @@ apf.vbox = function(struct, tagName){
             
             "margin" : function(value){
                 var b = apf.getBox(value);
-                b[this.parentNode.$vbox ? 2 : 1] += this.parentNode.padding;
+                if (this.parentNode.lastChild != this)
+                    b[this.parentNode.$vbox ? 2 : 1] += this.parentNode.padding;
                 this.$ext.style.margin = b.join("px ") + "px";
             },
             
@@ -312,7 +313,8 @@ apf.vbox = function(struct, tagName){
             "margin" : function(value){
                 var b = apf.getBox(value);
                 if (this.padding) {
-                    b[this.parentNode.$vbox ? 2 : 1] += this.padding;
+                    if (this.parentNode.lastChild != this)
+                        b[this.parentNode.$vbox ? 2 : 1] += this.padding;
                     if (this != this.parentNode.firstChild && this.parentNode.align == "stretch" && this.parentNode.$vbox) //@todo
                         b[0] += this.padding;
                 }
