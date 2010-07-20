@@ -149,19 +149,32 @@ apf.vbox = function(struct, tagName){
         }
     };
     
+    //@todo change overflow when height/width changes depending on $vbox
+    
     this.$propHandlers["align"] = function(value){
         if (apf.hasFlexibleBox) {
             this.$int.style[apf.CSSPREFIX + "BoxAlign"] = value || "stretch";
             
-            //@todo loop through nodes and reset width/height
+            var stretch = !value || value == "stretch";
+            var nodes = this.childNodes;
+            var size  = this.$vbox ? "width" : "height";
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!(node = nodes[i]).$ext)
+                    continue;
+
+                //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
+                node.$ext.style[size] = stretch ? "auto" : "";
+            }
         }
         else if (this.$amlLoaded) {
+            var stretch = !value || value == "stretch";
+            
             if (!this.$vbox) {
                 var nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
-                        
+                    
                     node.$ext.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
                 }
             }
@@ -416,11 +429,10 @@ apf.vbox = function(struct, tagName){
             
             if (this.lastChild == amlNode) {
                 this.$propHandlers["padding"].call(this, this.padding);
+                this.$propHandlers["align"].call(this, this.align);
                 
-                if (!apf.hasFlexibleBox) {
-                    this.$propHandlers["align"].call(this, this.align);
+                if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
-                }
             }
         
             delete this.$noResize;
@@ -512,10 +524,30 @@ apf.vbox = function(struct, tagName){
         }
     });*/
     
-    this.addEventListener("prop.visible", function(e){
-        if (apf.hasFlexibleBox && e.value)
+    function myVisibleHandler(e){
+        if (e.value)
             this.$int.style.display = apf.CSSPREFIX2 + "-box";
-    });
+    }
+    
+    function myHeightHandler(e){
+        if (e.value || this.align != "stretch") {
+            $clearInterval(this.$heighttimer);
+            delete this.$heighttimer;
+        }
+        else if (!this.$heighttimer) {
+            var _self = this;
+            this.$heighttimer = $setInterval(function(){
+                var nodes = _self.childNodes;
+                for (var int, i = 0, l = nodes.length; i < l; i++) {
+                    if (!(int = (node = nodes[i]).$int || node.$container))
+                        continue;
+
+                    if (int.scrollHeight > int.offsetHeight)
+                        return _self.$resize(true);
+                }
+            }, 500);
+        }
+    }
     
     this.$draw = function(){
         var doc = this.$pHtmlNode.ownerDocument;
@@ -543,10 +575,14 @@ apf.vbox = function(struct, tagName){
             if (apf.isGecko) //!webkit
                 this.$int.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
             this.$int.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
+            
+            this.addEventListener("prop.visible", myVisibleHandler);
         }
         else {
-            if (!this.$vbox)
+            if (!this.$vbox) {
                 this.$int.style.whiteSpace = "nowrap";
+                this.addEventListener("prop.height", myHeightHandler);
+            }
 
             var spacer = (!apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int)
                             .appendChild(doc.createElement("strong"));
@@ -713,13 +749,17 @@ apf.vbox = function(struct, tagName){
     
     this.$loadAml = function(x){
         if (this.padding == undefined)
-            this.$propHandlers.padding.call(this, this.padding = 0);
+            this.padding = 0;
+            //this.$propHandlers.padding.call(this, this.padding = 0);
         if (this.edge == undefined)
             this.$propHandlers.edge.call(this, this.edge = 0);
         if (this.pack == undefined)
             this.$propHandlers.pack.call(this, this.edge = "start");
         if (this.align == undefined)
-            this.$propHandlers.align.call(this, this.align = "stretch");
+            this.align = "stretch";
+            //this.$propHandlers.align.call(this, this.align = "stretch");
+        if (!apf.hasFlexibleBox && !this.$vbox && !this.height && this.align == "stretch")
+            myHeightHandler.call(this, {});
     };
 }).call(apf.vbox.prototype = new apf.GuiElement());
 
