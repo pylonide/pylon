@@ -32,11 +32,15 @@
           icon        = "clock.png">
             <a:toolbar>
                 <a:menubar>
-                    <a:button submenu="menu6">File</a:button>
+                    <a:button id="testButton" submenu="menu6">File</a:button>
                     <a:button submenu="menu5">Edit</a:button>
                 </a:menubar>
             </a:toolbar>
         </a:window>
+        
+        <a:button right="10" top="10" onclick="testButton.showMenu()">
+            Show Menu
+        </a:button>
         
         <a:bar height="2000" />
     </body>

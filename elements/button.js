@@ -338,7 +338,8 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.hasMoved = false;
 
-        e.htmlEvent.cancelBubble = true;
+        if (e)
+            e.htmlEvent.cancelBubble = true;
 
         return false;
     }
@@ -418,6 +419,11 @@ apf.button  = function(struct, tagName){
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
     };
+    
+    this.showMenu = function(){
+        if (this.submenu)
+            menuDown.call(this);
+    }
 
     /**
      * Sets the text displayed as caption of this element.

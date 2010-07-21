@@ -37,10 +37,6 @@
  *      <a:bar width="100" caption="Right bar"/>
  *  </a:hbox>
  * </code>
- * Remarks:
- * The layouting engine of Ajax.org Platform lets you store layouts and set them
- * dynamically. It's very easy to make a layout manager this way. For more 
- * information see {@link object.layout}
  * @addnode elements
  * @constructor
  *
@@ -56,8 +52,6 @@ apf.vbox = function(struct, tagName){
 };
 
 (function(){
-     var l = apf.layout;
-
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
