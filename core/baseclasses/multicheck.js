@@ -208,7 +208,7 @@ apf.MultiCheck = function(){
             
             var changes = [];
             for (var c, i = 0; i < xmlNodeList.length; i++) {
-                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], "false", true)
+                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], uncheck ? "false" : "true", true)
                 if (c === false) break;
                 changes.push(c);
             }

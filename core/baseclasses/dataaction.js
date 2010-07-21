@@ -535,8 +535,8 @@ apf.DataAction = function(){
         
         if (getArgList) {
             return {
-                func : atAction,
-                args : args
+                action : atAction,
+                args   : args
             };
         }
 
