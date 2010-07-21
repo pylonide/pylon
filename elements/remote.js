@@ -529,7 +529,7 @@ apf.remote = function(struct, tagName){
                     q[2] = this.xpathToXml(q[2], model.data);
                 else if (action == "appendChild") {
                     //@todo check why there's cleanNode here:
-                    q[0] = apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+                    q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
                     q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
                 }
                 else if (action == "moveNode") {
@@ -538,6 +538,7 @@ apf.remote = function(struct, tagName){
                 }
                 else if (action == "replaceNode") {
                     q[0] = this.xpathToXml(q[0], model.data);
+                    q[1] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
                 }
                 q.unshift(xmlNode);
                 // pass the action to the actiontracker to execute it

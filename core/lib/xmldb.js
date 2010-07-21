@@ -406,7 +406,7 @@ apf.xmldb = new (function(){
         this.applyChanges("text", tNode.parentNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj); //@todo apf3.0 for range support
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj || {xmlNode: pNode}); //@todo apf3.0 for range support
         // #endif
     };
 
@@ -432,7 +432,7 @@ apf.xmldb = new (function(){
         
         this.applyChanges("attribute", xmlNode, undoObj);
         // #ifdef __WITH_RDB
-        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj);  //@todo apf3.0 for range support
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj || {xmlNode: xmlNode});  //@todo apf3.0 for range support
         // #endif
     };
 
@@ -457,7 +457,7 @@ apf.xmldb = new (function(){
         this.applyChanges("attribute", xmlNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["removeAttribute", xmlNode, name, xpath], undoObj);
+        this.applyRDB(["removeAttribute", xmlNode, name, xpath], undoObj || {xmlNode: xmlNode});
         // #endif
     };
 
@@ -490,7 +490,7 @@ apf.xmldb = new (function(){
         this.applyChanges("replacenode", newNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["replaceNode", oldNode, newNode, xpath], undoObj);
+        this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: newNode});
         // #endif
         
         return newNode;
@@ -524,7 +524,7 @@ apf.xmldb = new (function(){
         this.applyChanges("add", xmlNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj);
+        this.applyRDB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj || {xmlNode: pNode});
         // #endif
 
         return xmlNode;
@@ -576,7 +576,7 @@ apf.xmldb = new (function(){
         this.applyChanges("add", xmlNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj);
+        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: xmlNode});
         // #endif
 
         return xmlNode;
@@ -604,10 +604,6 @@ apf.xmldb = new (function(){
 
         this.applyChanges("move-away", xmlNode, undoObj);
 
-        // #ifdef __WITH_RDB
-        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj); //note: important that transport of rdb is async
-        // #endif
-
         //Set new id if the node change document (for safari this should be fixed)
         if (!apf.isWebkit
           && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
@@ -620,6 +616,10 @@ apf.xmldb = new (function(){
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, undoObj);
+        
+        // #ifdef __WITH_RDB
+        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
+        // #endif
     };
 
     /**
@@ -642,10 +642,6 @@ apf.xmldb = new (function(){
             undoObj.extra.beforeNode  = xmlNode.nextSibling;
         }
 
-        // #ifdef __WITH_RDB
-        this.applyRDB(["removeNode", xmlNode, xpath], undoObj); //note: important that transport of rdb is async
-        // #endif
-
         //Apply Changes
         this.applyChanges("remove", xmlNode, undoObj);
         var p = xmlNode.parentNode;
@@ -653,6 +649,10 @@ apf.xmldb = new (function(){
         this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
         
         //@todo clean xmlNode after removal??
+        
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeNode", xmlNode, xpath], undoObj || {xmlNode: xmlNode}); //note: important that transport of rdb is async
+        // #endif
     };
 
     /**
@@ -686,7 +686,7 @@ apf.xmldb = new (function(){
             undoObj.extra.removeList = rData;
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj);
+        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
         // #endif
     };
 
@@ -868,7 +868,7 @@ apf.xmldb = new (function(){
         if (apf.xmldb.disableRDB)
             return;
 
-        var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
+        var xmlNode = undoObj.xmlNode;//args[1] && args[1].length && args[1][0] || args[1];
         
         if (xmlNode.nodeType == 2)
             xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
