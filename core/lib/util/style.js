@@ -293,8 +293,8 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         }
         
         if (!(apf.isIE && o == document.documentElement)) {
-            left += document.body.scrollLeft || document.documentElement.scrollLeft || 0;
-            top  += document.body.scrollTop  || document.documentElement.scrollTop  || 0;
+            left += (refParent || document.body).scrollLeft || document.documentElement.scrollLeft || 0;
+            top  += (refParent || document.body).scrollTop  || document.documentElement.scrollTop  || 0;
         }
         
         if (inclSelf && !refParent) {

@@ -744,7 +744,7 @@ apf.BaseTree = function(){
             return;
 
         var selXml = this.caret || this.selected,
-            oExt   = this.$ext;
+            oExt   = this.$container;
 
         switch (key) {
             case 13:
@@ -863,7 +863,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                     - (selHtml.offsetHeight/2);
+                     - (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 
@@ -901,13 +901,12 @@ apf.BaseTree = function(){
                    this.$setTempSelected(sNode, ctrlKey, shiftKey);
                 else
                     return false;
-                
+
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                    + (selHtml.offsetHeight/2);
+                    + (selHtml.offsetHeight);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = top - oExt.offsetHeight;
-                
                 return false;
             case 33: //@todo
                 //PGUP
@@ -925,7 +924,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                     - (selHtml.offsetHeight / 2);
+                     - (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 break;
@@ -945,7 +944,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.findHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                    + (selHtml.offsetHeight/2);
+                    + (selHtml.offsetHeight);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = top - oExt.offsetHeight;
                 break;
