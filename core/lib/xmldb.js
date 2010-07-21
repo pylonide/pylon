@@ -478,6 +478,14 @@ apf.xmldb = new (function(){
         if (xpath)
             oldNode = oldNode.selectSingleNode(xpath);
 
+        // @todo: only do this once! - should store on the undo object
+        if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument)
+            newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
+
+        // #ifdef __WITH_RDB
+        this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: oldNode});
+        // #endif
+
         //Action Tracker Support
         if (undoObj) {
             undoObj.oldNode = oldNode;
@@ -488,10 +496,6 @@ apf.xmldb = new (function(){
         this.copyConnections(oldNode, newNode);
 
         this.applyChanges("replacenode", newNode, undoObj);
-
-        // #ifdef __WITH_RDB
-        this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: newNode});
-        // #endif
         
         return newNode;
     };
@@ -610,16 +614,16 @@ apf.xmldb = new (function(){
             xmlNode.removeAttributeNode(xmlNode.getAttributeNode(this.xmlIdTag));
             this.nodeConnect(apf.xmldb.getXmlDocId(pNode), xmlNode);
         }
+        
+        // #ifdef __WITH_RDB
+        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
+        // #endif
 
         if (apf.isWebkit && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, undoObj);
-        
-        // #ifdef __WITH_RDB
-        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
-        // #endif
     };
 
     /**
@@ -641,6 +645,10 @@ apf.xmldb = new (function(){
             undoObj.extra.removedNode = xmlNode;
             undoObj.extra.beforeNode  = xmlNode.nextSibling;
         }
+        
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeNode", xmlNode, xpath], undoObj || {xmlNode: xmlNode}); //note: important that transport of rdb is async
+        // #endif
 
         //Apply Changes
         this.applyChanges("remove", xmlNode, undoObj);
@@ -649,10 +657,6 @@ apf.xmldb = new (function(){
         this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
         
         //@todo clean xmlNode after removal??
-        
-        // #ifdef __WITH_RDB
-        this.applyRDB(["removeNode", xmlNode, xpath], undoObj || {xmlNode: xmlNode}); //note: important that transport of rdb is async
-        // #endif
     };
 
     /**
@@ -881,7 +885,7 @@ apf.xmldb = new (function(){
             if (!apf.nameserver.getAll("remote").length)
                 return;
             //#ifdef __DEBUG
-            apf.console.log("Could not find model for Remote DataBinding connection, not sending change");
+            apf.console.log("Could not find model '" + mdlId + "' for Remote DataBinding connection, not sending change");
             //#endif
             return;
         }
@@ -889,7 +893,7 @@ apf.xmldb = new (function(){
         if (!model.rdb) return;
 
         // Add the messages to the undo object
-        if (undoObj)
+        if (undoObj.localName)
             model.rdb.queueMessage(args, model, undoObj);
         // Or send message now
         else

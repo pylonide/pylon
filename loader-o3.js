@@ -225,7 +225,10 @@ apf.$loader
         //"bindingcolorrule.js",
         "elements/bindingseriesrule.js",
         "elements/bindingeachrule.js",
-        "processinginstructions/livemarkup.js"
+        "processinginstructions/livemarkup.js",
+        
+        "elements/actiontracker/undodata.js",
+        "elements/actiontracker/xmlactions.js"
     )
     
     //Let's start APF

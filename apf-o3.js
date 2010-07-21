@@ -230,10 +230,7 @@ apf = {
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write("Fatal error: " + msg + "\nStacktrace:\n" + apf.stacktrace(), "error", subtype, data);
-            o3.print("Execution stopped");
             //#endif
-            throw new Error();
-            //this.write(apf.stacktrace());
         },
         
         dir : function(obj){
@@ -254,9 +251,6 @@ apf = {
             var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
                 .replace(/xmlns:a="[^"]*"\s*/g, "");
-            
-            //Set file and line number
-            str.push("aml file: [line: " + linenr + "] " + file);
         }
         if (control)
             str.push("Control: '" 
