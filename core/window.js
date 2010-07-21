@@ -1209,7 +1209,7 @@ apf.window = function(){
             apf.contextMenuKeyboard = true;
         // #endif
 
-        var amlNode           = apf.findHost(e.srcElement || e.target),
+        var amlNode           = apf.document.activeElement, //apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
             isLiveEdit = (ta[htmlNode.tagName]
               || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
@@ -1290,7 +1290,7 @@ apf.window = function(){
         delete eInfo.currentTarget;
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        var aEl = isLiveEdit ? amlNode : apf.document.activeElement;
+        var aEl = amlNode; //isLiveEdit ? amlNode : 
         if ((aEl && !aEl.disableKeyboard && !aEl.editable
           ? aEl.dispatchEvent("keydown", eInfo) 
           : apf.dispatchEvent("keydown", eInfo)) === false) {
