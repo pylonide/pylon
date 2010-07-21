@@ -990,12 +990,12 @@ apf.window = function(){
     
             //#ifdef __WITH_WINDOW_FOCUS
             if (apf.hasFocusBug) {
-                var isLiveEdit = (ta[e.srcElement.tagName]
-                    || e.srcElement.isLiveEdit) && !e.srcElement.disabled
-                    || amlNode.$isLiveEdit
-                    && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
+                var isTextInput = (ta[e.srcElement.tagName]
+                    || e.srcElement.isContentEditable) && !e.srcElement.disabled
+                    || amlNode.$isTextInput
+                    && amlNode.$isTextInput(e) && amlNode.disabled < 1;
     
-                if (!amlNode || !isLiveEdit)
+                if (!amlNode || !isTextInput)
                     apf.window.$focusfix();
             }
             else if (!last) {
@@ -1024,13 +1024,13 @@ apf.window = function(){
         if (canSelect && amlNode) {
             if (!e.target && e.srcElement)
                 e.target = {};
-            var isLiveEdit = (ta[e.target.tagName]
+            var isTextInput = (ta[e.target.tagName]
                 || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
-                || amlNode.$isLiveEdit
-                && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
+                || amlNode.$isTextInput
+                && amlNode.$isTextInput(e) && amlNode.disabled < 1;
         
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (!isLiveEdit
+            if (!isTextInput
               && !apf.config.allowSelect
               && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.$allowSelect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
@@ -1211,17 +1211,17 @@ apf.window = function(){
 
         var amlNode           = apf.document.activeElement, //apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
-            isLiveEdit = (ta[htmlNode.tagName]
+            isTextInput = (ta[htmlNode.tagName]
               || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
               && !htmlNode.disabled
-              || amlNode && amlNode.$isLiveEdit
-              && amlNode.$isLiveEdit(e) && amlNode.disabled < 1;
+              || amlNode && amlNode.$isTextInput
+              && amlNode.$isTextInput(e) && amlNode.disabled < 1;
 
         //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
         //@todo move this to appsettings and use with_hotkey
         var o,
             ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
-        if (!isLiveEdit && apf.config.undokeys && ctrlKey) {
+        if (!isTextInput && apf.config.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
                 o = apf.document.activeElement;
@@ -1253,7 +1253,7 @@ apf.window = function(){
         
         //#ifdef __WITH_HOTKEY
         //Hotkey
-        if (!isLiveEdit && apf && apf.dispatchEvent("hotkey", eInfo) === false
+        if (!isTextInput && apf && apf.dispatchEvent("hotkey", eInfo) === false
           || eInfo.returnValue === false) {
             apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {
@@ -1290,7 +1290,7 @@ apf.window = function(){
         delete eInfo.currentTarget;
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        var aEl = amlNode; //isLiveEdit ? amlNode : 
+        var aEl = amlNode; //isTextInput ? amlNode : 
         if ((aEl && !aEl.disableKeyboard && !aEl.editable
           ? aEl.dispatchEvent("keydown", eInfo) 
           : apf.dispatchEvent("keydown", eInfo)) === false) {
@@ -1337,7 +1337,7 @@ apf.window = function(){
         var altKey = apf.isMac ? e.metaKey : e.altKey;
         if (apf.config.disableBackspace
           && e.keyCode == 8// || (altKey && (e.keyCode == 37 || e.keyCode == 39)))
-          && !isLiveEdit) {
+          && !isTextInput) {
             if (apf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
@@ -1378,7 +1378,7 @@ apf.window = function(){
 
         if (!apf.config.allowSelect
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41)
-          && !isLiveEdit) {
+          && !isTextInput) {
             e.returnValue = false;
         }
 

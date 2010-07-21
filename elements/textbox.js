@@ -117,7 +117,7 @@ apf.textbox  = function(struct, tagName){
 
     //this.realtime          = false;
     this.value             = "";
-    this.$isLiveEdit       = true;
+    this.$isTextInput       = true;
     this.multiline         = false;
 
     /**
@@ -300,7 +300,7 @@ apf.textbox  = function(struct, tagName){
         }
     };
 
-    this.$isLiveEdit = function(e){
+    this.$isTextInput = function(e){
         return true;
     };
 

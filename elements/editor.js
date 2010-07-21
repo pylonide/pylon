@@ -84,7 +84,7 @@ apf.editor = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.$isLiveEdit = true;
+    this.$isTextInput = true;
 
     this.$supportedProperties.push("value", "characterset");
 
@@ -281,7 +281,7 @@ apf.editor = function(struct, tagName){
      * @param {Event} e
      * @type  {Boolean}
      */
-    this.$isLiveEdit = function(e){
+    this.$isTextInput = function(e){
         return apf.isChildOf(this.$activeDocument, e.srcElement, true);
     };
 
