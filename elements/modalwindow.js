@@ -429,9 +429,9 @@ apf.AmlWindow = function(struct, tagName){
                 //this.$ext.offsetWidth
                 //this.$ext.offsetHeight
                 this.$ext.style.left = (Math.max(0, ((
-                    size[0] - parseInt(this.width))/2)) + size[2]) + "px";
+                    size[0] - parseInt(this.width || 0))/2)) + size[2]) + "px";
                 this.$ext.style.top  = (Math.max(0, ((
-                    size[1] - parseInt(this.height))/3)) + size[3]) + "px";
+                    size[1] - parseInt(this.height || 0))/3)) + size[3]) + "px";
             }
 
             if (!apf.canHaveHtmlOverSelects && this.hideselects) {

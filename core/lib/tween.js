@@ -90,7 +90,8 @@ var modules = {
             oInt = info.$int || oHtml;
 
         oHtml.style.height = Math.max((value + (info.diff || 0)), 0) + PX;
-        oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff + (info.diff || 0);
+        oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff 
+            + (info.diff || 0) - (apf.isGecko ? 16 : 0); //@todo where does this 16 come from??
     },
     scrolltop: function(oHtml, value){
         oHtml.style.height = value + PX;
@@ -251,6 +252,7 @@ var ID        = "id",
         for (i = 0; i < l; ++i)
             steps.push(func(i / nrOfSteps, fromValue, toValue - fromValue));
         steps.push(toValue);
+        
         return steps;
     },
 

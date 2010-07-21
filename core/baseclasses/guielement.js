@@ -419,9 +419,9 @@ apf.GuiElement = function(){
             var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
             var type        = this.$isLeechingSkin ? this.localName : "main";
             if (this.minwidth == undefined)
-                this.minwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 5);
+                this.minwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0);
             if (this.minheight == undefined)
-                this.minheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 5);
+                this.minheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0);
             if (this.maxwidth == undefined)
                 this.maxwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
             if (this.maxheight == undefined)
