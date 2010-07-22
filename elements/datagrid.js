@@ -140,6 +140,12 @@ apf.datagrid = function(struct, tagName){
     }
     
     //#endif
+    
+    this.$propHandlers["options"] = function(value){
+        for (var i = 0, l = this.$headings.length; i < l; i++) {
+            this.$headings[i].setAttribute("options", value);
+        }
+    };
 
     /**
      * This method imports a stylesheet defined in a multidimensional array 

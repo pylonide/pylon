@@ -219,6 +219,8 @@ apf.BindingColumnRule = function(struct, tagName){
 
         (function _recur(nodes){
             for (var node, i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType != 1)
+                    continue;
                 //if (pNode.$withContainer && ((i+1) % 2) == 0)
                     //continue;
     
@@ -228,7 +230,7 @@ apf.BindingColumnRule = function(struct, tagName){
                 }
                 else {
                     node.insertBefore(node.childNodes[childNrFrom], 
-                    typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
+                        childNrTo != undefined && node.childNodes[childNrTo] || null);
                 }
             }
         })(pNode.$container.childNodes);
@@ -302,6 +304,8 @@ apf.BindingColumnRule = function(struct, tagName){
             if (!e) e = event;
             
             if (pNode.disabled) return;
+            
+            clearTimeout(this.$timer);
 
             apf.setStyleClass(this, "hover", ["down"]);
         };
@@ -462,11 +466,15 @@ apf.BindingColumnRule = function(struct, tagName){
         
         this.$int.onmouseout = function(e){
             if (!e) e = event;
+
+            if (pNode.disabled) 
+                return;
             
-            if (pNode.disabled) return;
-            
-            pNode.$ext.style.cursor = "";
-            apf.setStyleClass(this, "", ["hover", "down"]);
+            var _self = this;
+            this.$timer = setTimeout(function(){
+                pNode.$ext.style.cursor = "";
+                apf.setStyleClass(_self, "", ["hover", "down"]);
+            }, 10);
         };
         
         this.$int.onmousemove = function(e){
@@ -490,6 +498,10 @@ apf.BindingColumnRule = function(struct, tagName){
                 pNode.$ext.style.cursor = "default";
             }
         };
+
+        if (!this.options && pNode.options)
+            this.$propHandlers["options"].call(this, 
+                this.options = pNode.options);
         
         return this;
     }

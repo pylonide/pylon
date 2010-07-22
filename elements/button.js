@@ -421,7 +421,12 @@ apf.button  = function(struct, tagName){
     };
     
     this.showMenu = function(){
-        if (this.submenu)
+        if (this.submenu && !this.value)
+            menuDown.call(this);
+    }
+    
+    this.hideMenu = function(){
+        if (this.submenu && this.value)
             menuDown.call(this);
     }
 
