@@ -306,17 +306,16 @@ apf.Anchoring = function(){
             return;
 
         //@todo review if this can be improved
-        //#ifdef __WITH_PROPERTY_WATCH
         if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
             var _self      = this;
-            var propChange = function (name, old, value){
-                if (_self.$updateQueue && apf.isTrue(value) && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
+            var propChange = function (e){
+                if (_self.$updateQueue && apf.isTrue(e.value) && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
                     _self.$updateLayout();
                     apf.layout.activateRules(_self.$ext.parentNode);
                     
                     var p = _self;
                     while (p) {
-                        p.unwatch("visible", propChange);
+                        p.removeEventListener("prop.visible", propChange);
                         p = p.parentNode;
                     }
                     
@@ -325,17 +324,16 @@ apf.Anchoring = function(){
             }
 
             this.$isWaitingOnDisplay = true;
-            this.watch("visible", propChange);
+            this.addEventListener("prop.visible", propChange);
             
             var p = this.parentNode;
             while(p) {
-                p.watch("visible", propChange);
+                p.addEventListener("prop.visible", propChange);
                 p = p.parentNode;
             }
             
             return;
         }
-        //#endif
 
         if (!this.$parsed) {
             if (!this.$ext.getAttribute("id"))
