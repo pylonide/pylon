@@ -70,7 +70,7 @@ function addPlaylist(numItems) {
                 playlistIdx = parseInt(caption.substr(8));
         }
         playlistIdx++;
-        if (!playlistIdx) debugger;
+        //if (!playlistIdx) debugger;
     }
     
     
@@ -177,7 +177,7 @@ function recordMacro() {
     btnPlay.setProperty("disabled", true);
     
     // IE
-    debugger;
+    //debugger;
     if (document.parentWindow)
         apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
     
@@ -286,10 +286,10 @@ function onTestFailed(e) {
 }
 
 function playPlaylist(id) {
-    if (!id) debugger;
+    //if (!id) debugger;
     //var xml = apf.xmldb.getElementById(id); 
     var xml = mdlPlaylist.data.selectSingleNode("playlist[@id='" + id + "']");
-    if (!xml) debugger;
+    //if (!xml) debugger;
     trPlaylist.select(xml);
     if (!trPlaylist.selected) {
         alert("no playlist selected"); 

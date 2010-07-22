@@ -806,7 +806,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
             }
             this.$attMenu.onmouseup  = function(e) {
                 var e = e || event;
-                debugger;
+                //debugger;
                 for (var name, attList = [], ai = 0, al = _self.fromEl.attributes.length; ai < al; ai++) {
                     if (_self.ignoreFromAtts.indexOf((name = _self.fromEl.attributes[ai].name)) > -1) continue;
                     attList.push(new apf.item({
@@ -901,7 +901,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
             if ((e||event).keyCode == 13) {
                 _self.$lblVal.setAttribute("value", "x"+this.value);
                 _self.$lblVal.getAttribute("el").setAttribute(lblVal.getAttribute("at"), this.value);
-                debugger;
+                //debugger;
                 if (createConnections(selection))
                     showConnections();
             }

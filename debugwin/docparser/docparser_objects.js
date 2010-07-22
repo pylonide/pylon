@@ -488,11 +488,11 @@ function Base() {
                                 o.attrinfo["editor"] = values[1];
                             }
                             else {
-                                debugger;
+                                //debugger;
                             }
                         }
                         else {
-                            debugger;
+                            //debugger;
                         }
                     }
                     
@@ -502,7 +502,7 @@ function Base() {
                             o["default"] = line;
                         }
                         else {
-                            debugger;
+                            //debugger;
                         }                    
                     }
                     
@@ -948,11 +948,11 @@ function Base() {
                                 o.attrinfo["editor"] = values[1];
                             }
                             else {
-                                debugger;
+                                //debugger;
                             }
                         }
                         else {
-                            debugger;
+                            //debugger;
                         }
                     }
                     
@@ -968,7 +968,7 @@ function Base() {
                             o["default"] = line;
                         }
                         else {
-                            debugger;
+                            //debugger;
                         }
                     }
                     
@@ -1251,7 +1251,7 @@ function Base() {
                 
                 // context changes to object up the tree
                 else if (curInd < prevInd) {
-                    if (!parents[curInd]) debugger;
+                    //if (!parents[curInd]) debugger;
                     
                     context = parents[curInd].description;
 
@@ -1268,7 +1268,7 @@ function Base() {
                 }
                 
                 else {
-                    debugger;
+                    //debugger;
                     throw new Error("problem reading indentation");
                 }
                 
@@ -1305,7 +1305,7 @@ function Base() {
                 }
                 
                 else {
-                    if (!parents[curInd]) debugger;
+                    //if (!parents[curInd]) debugger;
                     
                     context = parents[curInd].description;
                 }
@@ -1337,7 +1337,7 @@ function Base() {
                     }
                     else {
                         var words = splitCommentLine(line.trim(), 2);
-                        if (context.push == undefined) debugger;
+                        //if (context.push == undefined) debugger;
                         
                         var o = {
                             name: words[0],

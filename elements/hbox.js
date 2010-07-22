@@ -534,11 +534,11 @@ apf.vbox = function(struct, tagName){
             var _self = this;
             this.$heighttimer = $setInterval(function(){
                 var nodes = _self.childNodes;
-                for (var int, i = 0, l = nodes.length; i < l; i++) {
-                    if (!(int = (node = nodes[i]).$int || node.$container))
+                for (var $int, i = 0, l = nodes.length; i < l; i++) {
+                    if (!($int = (node = nodes[i]).$int || node.$container))
                         continue;
 
-                    if (int.scrollHeight > int.offsetHeight)
+                    if ($int.scrollHeight > $int.offsetHeight)
                         return _self.$resize(true);
                 }
             }, 500);

@@ -314,8 +314,8 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
                 /*
                  * generate for property editor
                  */
-                if (!attribute.attrinfo)
-                    debugger;
+                //if (!attribute.attrinfo)
+                    //debugger;
 
                 attContext = attribute.attrinfo["context"];
                 attEditor  = (attribute.attrinfo["editor"]) ? attribute.attrinfo["editor"] : "textbox";
