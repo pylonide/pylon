@@ -151,11 +151,13 @@ apf.model = function(struct, tagName){
     //Connect to a remote databinding
     this.$propHandlers["remote"] = function(value, prop){
         if (value) {
-            var _self = this;
-            apf.queue.add("rdb_load_" + this.$uniqueId, function(){
-                _self.unshare();
-                _self.share();
-            });
+            if (this.src && this.src.indexOf("rdb://") === 0) {
+                var _self = this;
+                apf.queue.add("rdb_load_" + this.$uniqueId, function(){
+                    _self.unshare();
+                    _self.share();
+                });
+            }
         }
         else
             _self.unshare();
