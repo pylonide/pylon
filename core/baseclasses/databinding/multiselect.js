@@ -583,7 +583,7 @@ apf.MultiselectBinding = function(){
                     action = "update";
 
                 if (xmlNode == listenNode && !this.renderRoot) {
-                    if (xmlNode == this.xmlRoot && action != "insert") {
+                    if (xmlNode == this.xmlRoot && action != "insert" && action != "replacenode") {
                         //@todo apf3.0 - fix this for binding on properties
                         this.dispatchEvent("xmlupdate", {
                             action : action,
@@ -639,9 +639,13 @@ apf.MultiselectBinding = function(){
         if (xmlNode && xmlNode.nodeType == 9)
             xmlNode = startNode;
 
-        if (action == "replacechild"
-          && (UndoObj ? UndoObj.args[0] == this.xmlRoot : !this.xmlRoot.parentNode)) {
-            return this.load(UndoObj ? UndoObj.args[1] : listenNode); //Highly doubtfull this is exactly right...
+        if (action == "replacenode") {
+            var tmpNode;
+            //Case for replacing the xmlroot or its direct
+            if ((UndoObj ? UndoObj.args[0] == this.xmlRoot : !this.xmlRoot.parentNode)
+            //Case for replacing a node between the xmlroot and the traverse nodes
+            || (tmpNode = this.getFirstTraverseNode()) && apf.isChildOf(startNode, tmpNode))
+                return this.load(UndoObj ? UndoObj.args[1] : listenNode, {force: true}); //Highly doubtfull this is exactly right...
         }
 
         //Action Tracker Support - && xmlNode correct here??? - UndoObj.xmlNode works but fishy....
@@ -764,7 +768,7 @@ apf.MultiselectBinding = function(){
             this.$updateNode(xmlNode, htmlNode);
 
             //Transaction 'niceties'
-            if (action == "replacechild" && this.hasFeature(apf.__MULTISELECT__)
+            if (action == "replacenode" && this.hasFeature(apf.__MULTISELECT__)
               && this.selected && xmlNode.getAttribute(apf.xmldb.xmlIdTag)
               == this.selected.getAttribute(apf.xmldb.xmlIdTag)) {
                 this.selected = xmlNode;
