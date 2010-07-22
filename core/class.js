@@ -475,7 +475,7 @@ apf.Class.prototype = new (function(){
         //if it's only text return setProperty()
         if (fParsed.type == 2) {
             this[prop] = !pValue; //@todo apf3.0 is this needed?
-            return this.setProperty(prop, fParsed.str);
+            return this.setProperty(prop, fParsed.str, null, null, 10); //@todo is 10 here right?
         }
 
         //if there's xpath: Add apf.DataBinding if not inherited. 
@@ -580,7 +580,7 @@ apf.Class.prototype = new (function(){
         else {
             //@todo optimize this
             if (exclNr)
-                return this.setProperty(prop, pValue);
+                return this.setProperty(prop, pValue, null, null, 10); //@todo is 10 here right?
             
             //#ifdef __WITH_LANG_SUPPORT
             apf.$lm_has_lang = false;
@@ -589,7 +589,7 @@ apf.Class.prototype = new (function(){
             try {
                 if (fParsed.asyncs) { //if async
                     return fParsed.call(this, this.xmlRoot, function(value){
-                        _self.setProperty(prop, value, true);
+                        _self.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
     
                         //#ifdef __WITH_LANG_SUPPORT
                         //@todo apf3.0
@@ -609,7 +609,7 @@ apf.Class.prototype = new (function(){
             }
             
             this[prop] = !value; //@todo isnt this slow and unneccesary?
-            this.setProperty(prop, value, true);
+            this.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
 
             //#ifdef __WITH_LANG_SUPPORT
             //@todo apf3.0
