@@ -398,7 +398,7 @@ apf.scrollbar = function(struct, tagName){
                 _self.$curValue -= _self.$stepValue;
                 
                 _self.setScroll();
-                e.cancelBubble = true;
+                apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
                 
@@ -431,7 +431,7 @@ apf.scrollbar = function(struct, tagName){
                 
                 _self.$curValue += _self.$stepValue;
                 _self.setScroll();
-                e.cancelBubble = true;
+                apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
                 
@@ -455,7 +455,7 @@ apf.scrollbar = function(struct, tagName){
         this.$caret.onmousedown = function(e){
             if (_self.disabled)
                 return;
-                
+
             if (!e) 
                 e = event;
             _self.$startPos = e[_self.$eventDir] + 
@@ -508,7 +508,7 @@ apf.scrollbar = function(struct, tagName){
                 document.onmousemove = null;
             };
     
-            e.cancelBubble = true;
+            apf.stopPropagation(e);
             //apf.window.$mousedown(e);
             
             return false;
@@ -517,12 +517,11 @@ apf.scrollbar = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (_self.disabled)
                 return;
-                
+                debugger;
             if (!e) 
                 e = event;
             clearInterval(_self.$timer);
             var offset;
-            
             if (e[_self.$eventDir] > _self.$caret[_self.$offsetPos] + _self.$caret[_self.$offsetSize]) {
                 _self.$curValue += _self.$bigStepValue;
                 _self.setScroll(true);
