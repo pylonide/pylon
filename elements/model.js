@@ -715,9 +715,7 @@ apf.model = function(struct, tagName){
     this.$loadFrom = function(instruction, options){
         //#ifdef __WITH_RDB
         if (instruction.indexOf("rdb://") === 0) {
-            if (this.remote)
-                this.$propHandlers["remote"].call(this, this.remote);
-            return;
+            return this.$propHandlers["remote"].call(this, this.remote);
         }
         //#endif
         var data = instruction.split(":");
