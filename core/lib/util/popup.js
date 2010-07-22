@@ -105,27 +105,38 @@ apf.popup = {
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
 
+        var fixed = false;
         if (options.ref) {
-            var pos    = apf.getAbsolutePosition(options.ref, 
-                            o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
-                top    = (options.y || 0) + pos[1],
-                    //+ (apf.isWebkit ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
-                p      = apf.getOverflowParent(o.content);
-        
-            if (options.width || o.width)
-                popup.style.width = ((options.width || o.width) - 3) + "px";
-
-            moveUp = options.autoCorrect && (top
-                + (options.height || o.height || o.content.offsetHeight))
-                > (p == document.documentElement
-                  ? (apf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
-                  : p.offsetHeight + p.scrollTop);
+            var p = options.ref;
+            while(p && p.nodeType == 1) {
+                if (fixed = apf.getStyle(p, "position") == "fixed")
+                    break;
+                p = p.parentNode;
+            }
             
-            popup.style.position = "absolute";
-
-            popup.style.top = (moveUp 
-                ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
-                : top) + "px"
+            if (!fixed) {
+                var pos    = apf.getAbsolutePosition(options.ref, 
+                                o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
+                    top    = (options.y || 0) + pos[1],
+                        //+ (apf.isWebkit ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
+                    p      = apf.getOverflowParent(o.content);
+    
+                if (options.width || o.width)
+                    popup.style.width = ((options.width || o.width) - 3) + "px";
+    
+                moveUp = options.autoCorrect && (top
+                    + (options.height || o.height || o.content.offsetHeight))
+                    > (p == document.documentElement
+                      ? (apf.isIE ? p.offsetHeight : (window.innerHeight + window.pageYOffset))  + p.scrollTop
+                      : p.offsetHeight + p.scrollTop);
+                
+                popup.style.position = "absolute";
+    
+                popup.style.top = (moveUp 
+                    ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
+                    : top) + "px"
+            }
+            else popup.style.position = "fixed";
             
             if (!options.noleft)
                 popup.style.left = ((options.x || 0) + pos[0]) + "px";
