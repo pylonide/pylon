@@ -527,7 +527,7 @@ apf.vbox = function(struct, tagName){
     
     function myHeightHandler(e){
         if (e.value || this.align != "stretch") {
-            $clearInterval(this.$heighttimer);
+            clearInterval(this.$heighttimer);
             delete this.$heighttimer;
         }
         else if (!this.$heighttimer) {
