@@ -190,6 +190,7 @@ apf.dropdown = function(struct, tagName){
             x       : 0,
             y       : this.$ext.offsetHeight,
             animate : true,
+            container : this.$getLayoutNode("container", "contents", this.oSlider),
             ref     : this.$ext,
             width   : this.$ext.offsetWidth - this.widthdiff,
             height  : this.containerHeight,
