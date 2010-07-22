@@ -160,7 +160,7 @@ apf.model = function(struct, tagName){
             }
         }
         else
-            _self.unshare();
+            this.unshare();
     };
 
     this.share = function(xpath) {
