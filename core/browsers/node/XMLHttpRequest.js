@@ -1,3 +1,4 @@
+// #ifdef __SUPPORT_NODE
 var sys = require('sys');
 /**
  * Wrapper for built-in http.js to emulate the browser XMLHttpRequest object.
@@ -212,3 +213,5 @@ exports.XMLHttpRequest = function() {
 		self.onreadystatechange();
 	}
 };
+
+//#endif
