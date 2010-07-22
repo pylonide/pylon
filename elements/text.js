@@ -51,7 +51,7 @@ apf.text = function(struct, tagName){
 
     this.$focussable       = true; // This object can't get the focus
     this.focussable        = false;
-    this.$allowSelect      = true;
+    this.textselect      = true;
     this.$hasStateMessages = true;
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;

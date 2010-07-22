@@ -931,12 +931,12 @@ apf.window = function(){
     apf.addListener(document, "mousedown", this.$mousedown = function(e){
         if (!e) e = event;
         var p,
-            amlNode   = apf.findHost(e.srcElement || e.target),
-            cEditable = amlNode && amlNode.$editable
+            amlNode   = apf.findHost(e.srcElement || e.target);
+            /*cEditable = amlNode && amlNode.liveedit
               // #ifdef __WITH_LIVEEDIT
               || (amlNode && amlNode.hasFeature(apf.__LIVEEDIT__))
               // #endif
-            ;
+            ;*/
 
         // #ifdef __WITH_POPUP
         if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
@@ -1016,10 +1016,7 @@ apf.window = function(){
 
         var canSelect = !((!apf.document
           && (!apf.isParsingPartial || amlNode)
-          // #ifdef __WITH_DRAGMODE
-          || apf.dragMode
-          // #endif
-          ) && !ta[e.target.tagName]);
+          || apf.dragMode) && !ta[e.target.tagName]);
 
         if (canSelect && amlNode) {
             if (!e.target && e.srcElement)
@@ -1028,16 +1025,15 @@ apf.window = function(){
                 || e.target.contentEditable == "true") && !e.target.disabled  //@todo apf3.0 need to loop here?
                 || amlNode.$isTextInput
                 && amlNode.$isTextInput(e) && amlNode.disabled < 1;
-        
+
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (!isTextInput
-              && !apf.config.allowSelect
+            if (!apf.config.allowSelect || !isTextInput
               && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-              && !amlNode.$allowSelect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
+              && !amlNode.textselect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
         }
-       
-        if (!canSelect && !cEditable) {
+        
+        if (!canSelect) { // && !cEditable
             e.preventDefault();
             
             if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
@@ -1050,17 +1046,15 @@ apf.window = function(){
         if (!e) e = event;
 
         var canSelect = !(!apf.document
-          // #ifdef __WITH_DRAGMODE
-          || apf.dragMode
-          // #endif
-        );
-
+          && (!apf.isParsingPartial || amlNode)
+          || apf.dragMode);
+        
         var amlNode = apf.findHost(e.srcElement);
         if (canSelect) {
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
             if (!apf.config.allowSelect 
-              && amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
-              && !amlNode.$allowSelect) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
+              || amlNode && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
+              && !amlNode.textselect) //&& !amlNode.$int // getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
         }
 
