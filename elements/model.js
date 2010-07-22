@@ -154,7 +154,7 @@ apf.model = function(struct, tagName){
 
         if (value) {
             var _self = this;
-            $setTimeout(function() {
+            apf.queue.add("rdb_load_" + this.$uniqueId, function(){
                 _self.share();
             });
         }
@@ -714,7 +714,11 @@ apf.model = function(struct, tagName){
      */
     this.$loadFrom = function(instruction, options){
         //#ifdef __WITH_RDB
-        if (instruction.indexOf("rdb://") === 0) return;
+        if (instruction.indexOf("rdb://") === 0) {
+            if (this.remote)
+                this.$propHandlers["remote"].call(this, this.remote);
+            return;
+        }
         //#endif
         var data = instruction.split(":");
 
