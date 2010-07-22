@@ -88,7 +88,7 @@ apf.Sort = function(xmlNode){
         
         apf.extend(settings, struct);
 
-        if (!settings.ascending)
+        if (settings.ascending == undefined)
             settings.ascending = struct.order 
                 ? struct.order.indexOf("desc") == -1
                 : true;

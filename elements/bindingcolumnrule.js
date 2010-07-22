@@ -55,18 +55,11 @@ apf.BindingColumnRule = function(struct, tagName){
     }, this.$attrExcludePropBind);
     
     this.$supportedProperties.push("tree", "icon", "caption", "width", "options", 
-        "check", "editor", "colspan", "align", "css");
+        "check", "editor", "colspan", "align", "css", "sorted");
     
     this.$booleanProperties["tree"]  = true;
     this.$booleanProperties["check"] = true;
-    
-    this.$propHandlers["icon"]  = function(value, prop){
-        
-    }
-    
-    this.$propHandlers["caption"]  = function(value, prop){
-        
-    }
+    this.$booleanProperties["sorted"]  = true;
     
     this.$propHandlers["width"]  = function(value, prop){
         if (!value)
@@ -80,22 +73,6 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$sortable  = value.indexOf("sort") > -1;
         this.$resizable = value.indexOf("size") > -1;
         this.$movable   = value.indexOf("move") > -1;
-    }
-    
-    this.$propHandlers["editor"]  = function(value, prop){
-        
-    }
-    
-    this.$propHandlers["colspan"]  = function(value, prop){
-        
-    }
-    
-    this.$propHandlers["align"]  = function(value, prop){
-        
-    }
-    
-    this.$propHandlers["css"]  = function(value, prop){
-        
     }
     
     this.resize = function(newsize, pNode){
@@ -189,7 +166,7 @@ apf.BindingColumnRule = function(struct, tagName){
      * Sorts a column.
      * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
      */
-    this.sort = function(pNode){
+    this.sort = function(pNode, initial){
         if (pNode.$lastSorted == this) {
             apf.setStyleClass(this.$int,
                 pNode.toggleSortOrder()
@@ -207,14 +184,17 @@ apf.BindingColumnRule = function(struct, tagName){
         apf.setStyleRule("." + this.$className, "background", "#f3f3f3");
         apf.setStyleClass(this.$int, "ascending", ["descending", "ascending"]);
         
-        if (!pNode.length)
-            return;
-        
         pNode.resort({
             order : "ascending",
-            xpath : this.cvalue2.xpaths[1]
+            xpath : (this.cvalue || this.compile("value")).xpaths[1]
             //type : 
-        });
+        }, false, initial || !pNode.length);
+        
+        
+        //@todo needs more thought
+        /*if (pNode.$lastSorted)
+            pNode.$lastSorted.setProperty("sorted", false);
+        this.setProperty("sorted", true);*/
         
         pNode.$lastSorted = this;
     };
@@ -314,6 +294,9 @@ apf.BindingColumnRule = function(struct, tagName){
         
         var dragging = false;
         var _self    = this;
+        
+        if (this.sorted)
+            this.sort(pNode, true);
         
         this.$int.onmouseover = function(e){
             if (!e) e = event;
