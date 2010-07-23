@@ -346,6 +346,10 @@ apf.BaseTab = function(){
                         h.style.height = this["in"].size[1];
                         h.style.display = "";
                         h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
                         delete this["in"];
                     }
                     if (this["out"]) {
@@ -354,6 +358,10 @@ apf.BaseTab = function(){
                         h.style.height = this["out"].size[1];
                         h.style.display = "";
                         h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
                         delete this["out"];
                     }
                 }
@@ -386,7 +394,7 @@ apf.BaseTab = function(){
         var anim = {
             steps    : 15,
             control  : {},
-            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEIN,
+            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
             interval : 10,
             tweens   : [],
             oHtml    : page,
@@ -403,7 +411,6 @@ apf.BaseTab = function(){
         h.style.left     = 0;
         h.style.top      = 0;
         h.style.display  = "block";
-        apf.setOpacity(h, 1);
 
         animType = animType.split("-");
         switch (animType[0]) {
