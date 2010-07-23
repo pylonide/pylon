@@ -2566,7 +2566,7 @@ apf.xmpp = function(struct, tagName){
                 this.connect(args[0], args[1], callback);
                 break;
             case "logout":
-                //@todo
+                this.disconnect();
                 break;
             case "notify":
                 this.sendMessage({
