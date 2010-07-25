@@ -518,7 +518,7 @@ apf.http = function(){
         // #endif
 
         function handleError(){
-            var msg = self.navigator.onLine
+            var msg = self.navigator && self.navigator.onLine
                 ? "File or Resource not available " + url
                 : "Browser is currently working offline";
 
