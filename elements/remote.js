@@ -377,7 +377,7 @@ apf.remote = function(struct, tagName){
             fCallback = oParams.callback,
             sSession  = oData["session"] ? this.transport.normalizeEntity(oData["session"]) : null,
             sCommand  = oData["command"];
-        delete oData["session"], delete oData["command"];
+        delete oData["command"];
         if (typeof oParams != "string")
             oParams = JSON.stringify(oParams);
         this.transport.sendRPC(iId, sSession, sCommand, oParams, fCallback);
