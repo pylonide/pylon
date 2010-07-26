@@ -307,7 +307,7 @@ apf.aml.setElement("auth", apf.auth);
      *   {Array} services   a list of names of services to be logged in to
      *   {String} service   the name of a single service to log in to
      */
-    this.loginFn = function(username, password, callback, options){
+    this.logIn = function(username, password, callback, options){
         if (!options) options = {};
 
         options.username = username;
@@ -340,9 +340,11 @@ apf.aml.setElement("auth", apf.auth);
             len                = 1;
             doneCallback();
             this.dispatchEvent("loginsuccess", {
-                state   : 1,
-                data    : null,
-                bubbles : true
+                state    : 1,
+                data     : null,
+                bubbles  : true,
+                username : username,
+                password : password
             });
             if (!this.remember)
                 this.$credentials = null;
@@ -440,11 +442,13 @@ apf.aml.setElement("auth", apf.auth);
                     "Logging " + type, "Error logging in: " + extra.message));
 
                 if (_self.dispatchEvent("log" + type + "fail", apf.extend({
-                    error   : commError,
-                    service : service,
-                    state   : state,
-                    data    : data,
-                    bubbles : true
+                    error    : commError,
+                    service  : service,
+                    state    : state,
+                    data     : data,
+                    bubbles  : true,
+                    username : options.username,
+                    password : options.password
                 }, extra)) !== false)
                     throw commError; //@todo ouch, too harsh?
 
@@ -479,7 +483,9 @@ apf.aml.setElement("auth", apf.auth);
                 state   : state,
                 service : service,
                 data    : data,
-                bubbles : true
+                bubbles : true,
+                username : options.username,
+                password : options.password
             }, extra));
 
             //#ifdef __DEBUG
@@ -536,7 +542,7 @@ apf.aml.setElement("auth", apf.auth);
      *   {Array} services   a list of names of services to be logged out of
      *   {String} service   the name of a single service to log out of
      */
-    this.logoutFn = function(callback, options){
+    this.logOut = function(callback, options){
         if (!options) options = {};
 
         if (this.dispatchEvent("beforelogout", options) === false)

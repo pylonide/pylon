@@ -392,7 +392,7 @@ apf.BaseTab = function(){
         
         //create new anim
         var anim = {
-            steps    : 15,
+            steps    : apf.isIE ? 15 : 25,
             control  : {},
             anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
             interval : 10,

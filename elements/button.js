@@ -780,7 +780,7 @@ apf.button.actions  = {
         if (!auth)
             return;
        
-        auth.loginFn(vars.username, vars.password);
+        auth.logIn(vars.username, vars.password);
         //apf.auth.login(vars.username, vars.password);
     },
 
@@ -789,7 +789,7 @@ apf.button.actions  = {
         if (!auth)
             return;
 
-        auth.logoutFn();
+        auth.logOut();
     },
     //#endif
 
