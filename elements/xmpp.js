@@ -533,6 +533,8 @@ apf.xmpp = function(struct, tagName){
             aOut.push(" from='", options.from, "'");
         if (options.join)
             aOut.push(" join='", options.join, "'");
+        if (options.prio)
+	        aOut.push(" prio='", options.prio, "'");
         aOut.push(">");
 
         // show An XMPP complient status indicator. See the class constants

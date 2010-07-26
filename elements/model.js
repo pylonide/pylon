@@ -643,7 +643,7 @@ apf.model = function(struct, tagName){
         //Load literal model
         if (!this.src) {
             var strXml, xmlNode = x;
-            if (xmlNode.childNodes.length) {
+            if (xmlNode && xmlNode.childNodes.length) {
                 if (apf.getNode(xmlNode, [0])) {
                     if ((strXml = xmlNode.xml || xmlNode.serialize()).match(/^[\s\S]*?>([\s\S]*)<[\s\S]*?$/)) {
                         strXml = RegExp.$1; //@todo apf3.0 test this with json

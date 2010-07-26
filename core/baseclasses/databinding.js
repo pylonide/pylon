@@ -1143,7 +1143,7 @@ apf.DataBinding = function(){
                     if (model)
                         xpath = m.xpath;
                     else if (m.model) {
-                        model = apf.xmldb.findModel(m.model);
+                        model = typeof m.model == "string" ? apf.xmldb.findModel(m.model) : m.model;
                         xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
                     }
                     else {

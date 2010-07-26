@@ -519,7 +519,7 @@ apf.xmpp_rdb = function(){
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sDomain,
-                prio  : this.dispatchEvent("priority") || this.priority || null
+                prio  : String(this.priority || 0)
             })
         );
     };
