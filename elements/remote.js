@@ -143,9 +143,7 @@
  */
 apf.remote = function(struct, tagName){
     this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
-};
-
-(function(){
+    
     this.lookup              = {};
     this.select              = [];
     this.sessions            = {};
@@ -153,7 +151,9 @@ apf.remote = function(struct, tagName){
     this.queueTimer          = null;
     this.pendingSessions     = {};
     this.pendingTerminations = {};
-    
+};
+
+(function(){
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;
     //#endif
