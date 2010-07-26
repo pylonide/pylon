@@ -381,10 +381,10 @@ apf.BaseTab = function(){
     }
     
     this.$cube = {
-        "left"   : [-1, "offsetWidth", "left"],
-        "right"  : [1, "offsetWidth", "left"],
-        "top"    : [-1, "offsetHeight", "top"],
-        "bottom" : [1, "offsetHeight", "top"]
+        "left"   : [-1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "right"  : [1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "top"    : [-1, "offsetHeight", "top", "getHtmlInnerHeight"],
+        "bottom" : [1, "offsetHeight", "top", "getHtmlInnerHeight"]
     }
     
     this.$createAnim = function(page, animType, out, pageOut){
@@ -444,11 +444,13 @@ apf.BaseTab = function(){
                 else
                     this.$createAnim(pageOut, "normal", true);
 
-                from1 = info[0] * h[info[1]];
+                var hInt = apf[info[3]](this.$int);
+
+                from1 = info[0] * hInt;//h[info[1]];
                 to1   = 0;
                 
                 from2 = 0;
-                to2   = -1 * info[0] * h2[info[1]];
+                to2   = -1 * info[0] * hInt;//h2[info[1]];
                 
                 if (out)
                     h2.style[info[2]] = to2 + "px";
@@ -457,6 +459,7 @@ apf.BaseTab = function(){
 
                 anim.tweens.push({oHtml: h,  type: [info[2]], from: out ? to1 : from1, to: out ? from1 : to1});
                 anim.tweens.push({oHtml: h2, type: [info[2]], from: out ? to2 : from2, to: out ? from2 : to2});
+                
                 return false;
             case "normal":
                 break;
