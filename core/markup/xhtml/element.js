@@ -98,7 +98,9 @@ apf.XhtmlElement = function(struct, tagName){
     //#ifdef __WITH_GUIELEMENT
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$amlLoaded = true;
-        this.$setLayout();
+        
+        if (this.$setLayout)
+            this.$setLayout();
     });
     //#endif
 }).call(apf.XhtmlElement.prototype = new apf.AmlElement());
