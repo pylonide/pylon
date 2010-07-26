@@ -70,15 +70,21 @@ apf.button  = function(struct, tagName){
             if (!this.focussable && value || forceFocus)
                 this.setAttribute("focussable", forceFocus = value);
 
-            this.parentNode.removeEventListener("focus", setDefault);
-            this.parentNode.removeEventListener("blur", removeDefault);
+            var pNode = this.parentNode;
+            while (pNode && !pNode.focussable)
+                pNode = pNode.parentNode;
+                
+            if (!pNode) return;
+
+            pNode.removeEventListener("focus", setDefault);
+            pNode.removeEventListener("blur", removeDefault);
     
             if (!value)
                 return;
     
             //Currrently only support for parentNode, this might need to be expanded
-            this.parentNode.addEventListener("focus", setDefault);
-            this.parentNode.addEventListener("blur", removeDefault);
+            pNode.addEventListener("focus", setDefault);
+            pNode.addEventListener("blur", removeDefault);
         };
     
         function setDefault(e){

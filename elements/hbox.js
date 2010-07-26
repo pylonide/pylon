@@ -55,9 +55,9 @@ apf.vbox = function(struct, tagName){
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
-    this.$update     = false;
     this.$useLateDom = true; 
     this.$box        = true;
+    this.$layout     = true;
     
     var input = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
