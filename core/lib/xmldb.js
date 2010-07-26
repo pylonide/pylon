@@ -872,7 +872,9 @@ apf.xmldb = new (function(){
         if (apf.xmldb.disableRDB)
             return;
 
-        var xmlNode = undoObj.xmlNode;//args[1] && args[1].length && args[1][0] || args[1];
+        var xmlNode = undoObj.localName
+            ? args[1] && args[1].length && args[1][0] || args[1]
+            : undoObj.xmlNode;
         
         if (xmlNode.nodeType == 2)
             xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");

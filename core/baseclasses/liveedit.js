@@ -71,6 +71,11 @@ apf.LiveEdit = function() {
             this.implement(apf.DataAction);
         //#endif
         if (apf.isTrue(value)) {
+            if (!this.$focussable) {
+                this.$unFocussable = false;
+                apf.GuiElement.propHandlers.focussable.call(this, true);
+            }
+            
             var _self = this;
             apf.addListener(this.$ext, "mouseover", o.mouseOver = function(e) {
                 var el = e.srcElement || e.target;
@@ -146,6 +151,13 @@ apf.LiveEdit = function() {
             this.setProperty("focussable", true);
         }
         else {
+            if (!this.$unFocussable) {
+                apf.GuiElement.propHandlers.focussable.call(this, false);
+                delete this.$unFocussable;
+                delete this.$focussable;
+                delete this.focussable;
+            }
+            
             apf.removeListener(this.$ext, "mouseover", o.mouseOver);
             apf.removeListener(this.$ext, "mouseout",  o.mouseOut);
             apf.removeListener(this.$ext, "mousedown", o.mouseDown);

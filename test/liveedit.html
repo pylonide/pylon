@@ -6,7 +6,7 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="1" />
+        <a:appsettings debug="0" />
         
         <a:model id="mdlTest" />
         
@@ -18,10 +18,14 @@
             </data>
         </a:model>
         
-        <div model="mdlBlah" liveedit="true"><?lm
+        <div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
             foreach([person]) {
                 <div>[@name]</div>
             }
         ?></div>
+        
+        <a:button state="true" width="100" onclick="
+            test.setAttribute('liveedit', this.value);
+        ">Toggle {this.value}</a:button>
     </body>
 </html>

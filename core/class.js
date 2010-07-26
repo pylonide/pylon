@@ -815,7 +815,7 @@ apf.Class.prototype = new (function(){
                     var i, l, node, n;
                     for (i = 0, l = nodes.length; i < l; i++) {
                         node = nodes[i];
-                        if (node.nodeType != 1)
+                        if (node.nodeType != 1 && node.nodeType != 7)
                             continue;
                         
                         //Pass through

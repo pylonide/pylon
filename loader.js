@@ -168,7 +168,6 @@ apf.$x = apf.$loader
         "core/markup/aml/documentfragment.js",
         "core/markup/aml/event.js",
         "core/markup/aml/textrectangle.js",
-        "core/markup/aml/processinginstruction.js",
         "core/markup/aml/range.js",
         "core/markup/aml/selection.js",
         
@@ -179,6 +178,8 @@ apf.$x = apf.$loader
     )
     .wait()
     .script(
+        "core/markup/aml/processinginstruction.js",
+    
         "core/baseclasses/contenteditable/clipboard.js",
         "core/baseclasses/contenteditable/commands.js",
         "core/baseclasses/contenteditable/interactive.js",

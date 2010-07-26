@@ -22,7 +22,7 @@
         </a:appsettings>
 
     <a:xmpp id="myXMPPBot"
-        url        = "{apf.host ? apf.host : 'http://localhost'}:5280/http-bind"
+        url        = "{apf.host ? apf.host : 'http://10.2.1.104'}:5280/http-bind"
         host       = "worknets.com"
         rdb-bot    = "true"
         type       = "binding"
@@ -31,7 +31,7 @@
     <a:remote transport="myXMPPBot" id="rmtFsBot" />
 
     <a:xmpp id="myXMPPClient"
-      url               = "{apf.host ? apf.host : 'http://localhost'}:5280/http-bind"
+      url               = "{apf.host ? apf.host : 'http://10.2.1.104'}:5280/http-bind"
       host              = "worknets.com"
       type              = "binding"
       resource          = "{'apf_'.appendRandomNumber(5)}" />

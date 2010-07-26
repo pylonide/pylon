@@ -86,9 +86,12 @@ function hookErrors(xmpp){
 	xmpp.addEventListener("authfailure", func);
 	xmpp.addEventListener("connectionerror", func);
 	xmpp.addEventListener("registererror", func);
+	//unknownstanza
 }
 
 function test0() {
+    var testName = "Test1";
+    
 	// Create a bot
     var bot1	= createBot("bot1", "bot1", 1);
 
@@ -103,25 +106,27 @@ function test0() {
 	bot1.remote.addEventListener("rdbinit", function (e) {
 		//Set initial document
 		console.log("### RDBINIT called: " + e.resource + ", " + e.model);
-		e.model.load("<data><caption>" + user + ": 1</caption></data>");
+		e.model.load("<data><caption>" + testName + ": 1</caption></data>");
 		model = e.model;
 		
 		//Set priority
-		cMyXmpp.setAttribute("priority", cMyXmpp.priority + 10);
-		cMyXmpp.botRegister("worknets.com");
+		bot1.xmpp.setAttribute("priority", bot1.xmpp.priority + 10);
+		bot1.xmpp.botRegister("worknets.com");
 	});
 	
+	var count = 0;
 	client1.label.addEventListener("prop.caption", function(){
-		alert("test complete");
+		if (++count == 2)
+		    console.log("TEST complete");
 	});
 	
 	client1.model.addEventListener("change", function(){
 		console.log("Model CHANGE");
-		this.setQueryValue("/data/caption", user + ": " + i++);
     });
 
     client1.xmpp.addEventListener("datastatuschange", function(e){
-		console.log("DATA STATUS CHANGE")
+		console.log("DATA STATUS CHANGE");
+		client1.model.setQueryValue("/data/caption", testName + ": " + i++);
     })
 }
 

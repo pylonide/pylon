@@ -57,6 +57,10 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.$booleanProperties   = {};
     this.$inheritProperties   = {};
     
+    //#ifdef __WITH_LIVEEDIT
+    this.implement(apf.LiveEdit);
+    //#endif
+    
     this.$setValue = function(value){
         this.setProperty("data", value);
     };
@@ -95,7 +99,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
         // #ifdef __WITH_LIVEEDIT
         this.liveedit = apf.isTrue(apf.getInheritedAttribute(this, "liveedit"));
         if (this.liveedit) {
-            this.implement(apf.LiveEdit);
+            //this.implement(apf.LiveEdit);
             this.$inheritProperties["liveedit"] = 2;
             this.$propHandlers["liveedit"].call(this, this.liveedit);
         }
