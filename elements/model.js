@@ -349,7 +349,7 @@ apf.model = function(struct, tagName){
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + id + "|" + prop + "|" + this.$uniqueId);
                 
-                delete this.$proplisteners[id];
+                delete this.$proplisteners[id + prop];
                 amlNode.$execProperty(prop, node);
             }
             else
@@ -959,10 +959,11 @@ apf.model = function(struct, tagName){
             p = this.$proplisteners[id];
             b = this.$propBinds[p.id][p.prop];
             if (xmlNode = b.listen ? this.data.selectSingleNode(b.listen) : this.data) {
+                delete this.$proplisteners[id];
+                
                 apf.xmldb.addNodeListener(xmlNode, p.amlNode, 
                   "p|" + p.id + "|" + p.prop + "|" + this.$uniqueId);
                 
-                delete this.$proplisteners[id];
                 p.amlNode.$execProperty(p.prop, b.root 
                   ? this.data.selectSingleNode(b.root) 
                   : this.data);

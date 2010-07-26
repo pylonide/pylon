@@ -12,6 +12,7 @@ function createBot(user, pass, prio){
 	apf.document.body.appendChild(cMyXmpp);
 	
 	var cRmtFs = rmtFsBot.cloneNode(true);
+	cRmtFs.setAttribute("id", "cRmtFs" + uniqueid);
 	cRmtFs.setAttribute("transport", "cMyXmpp" + uniqueid);
 	apf.document.body.appendChild(cRmtFs);
 
@@ -94,36 +95,46 @@ function test0() {
 
 	// Create a client
     var client1	= createClient("client1", "client1", 1);
-
+        
 	var inited;
 	bot1.remote.addEventListener("change", function (e) {
-		console.log("BOT STATUS CHANGE")
+		console.log("BOT STATUS CHANGE");
+		
+		if (bot1.model.queryValue("/data/caption") == testName + ": 2")
+		    console.log("TEST complete: " + bot1.model.queryValue("/data/caption"));
 	});
 	
 	bot1.remote.addEventListener("rdbinit", function (e) {
 		//Set initial document
 		console.log("### RDBINIT called: " + e.resource + ", " + e.model);
 		e.model.load("<data><caption>" + user + ": 1</caption></data>");
-		model = e.model;
+		bot1.model = e.model;
 		
 		//Set priority
 		cMyXmpp.setAttribute("priority", cMyXmpp.priority + 10);
 		cMyXmpp.botRegister("worknets.com");
 	});
 	
-	client1.label.addEventListener("prop.caption", function(){
-		alert("test complete");
+	client1.label.addEventListener("prop.caption", function(e){
+	    count++;
+		//if (client1.label.caption == testName + ": 2")
+		    //console.log("TEST complete: " + client1.label.caption + "\nCount: " + count);
 	});
 		
-	client1.model.addEventListener("change", function(){
-		console.log("Model CHANGE");
+	var c = 0;
+	client1.model.addEventListener("update", function(){
+	    //BUG: Third time the change should only be acknowledged
+		console.log("Model CHANGE:" + this.data.xml);
 		this.setQueryValue("/data/caption", user + ": " + i++);
     });
 
     client1.xmpp.addEventListener("datastatuschange", function(e){
-		console.log("DATA STATUS CHANGE")
-			this.setQueryValue("/data/caption", user + ": " + i++);
-    })
+		console.log("DATA STATUS CHANGE");
+		setTimeout(function(){
+		    console.log("Changed data");
+		    client1.model.setQueryValue("/data/caption", testName + ": 2");
+		});
+    });
 }
 
 // test1: logging in (accepted)

@@ -5,9 +5,8 @@
         <script type="text/javascript" src="../apf.js"></script>
     </head>
     <body>
-        <a:skin 
-          src        = "../skins.xml" 
-        />
+        <a:skin src="../skins.xml" />
+            
         <a:appsettings name   = "worknets" debug="false"
           disable-right-click = "false"
           disable-space       = "true"
@@ -21,24 +20,23 @@
           baseurl             = "{apf.host ? apf.host + '/' : 'http://dev.worknets.com/'}">
         </a:appsettings>
 
-    <a:xmpp id="myXMPPBot"
-        url        = "{apf.host ? apf.host : 'http://10.2.1.104'}:5280/http-bind"
-        host       = "worknets.com"
-        rdb-bot    = "true"
-        type       = "binding"
-        resource   = "{'apf_'.appendRandomNumber(5)}" />    
-
-    <a:remote transport="myXMPPBot" id="rmtFsBot" />
-
-    <a:xmpp id="myXMPPClient"
-      url               = "{apf.host ? apf.host : 'http://10.2.1.104'}:5280/http-bind"
-      host              = "worknets.com"
-      type              = "binding"
-      resource          = "{'apf_'.appendRandomNumber(5)}" />
-
-    <a:remote transport="myXMPPClient" id="rmtFsClient" />
-
-	<a:script src="xmpptest.js"/>
-
+        <a:xmpp id="myXMPPBot"
+            url        = "{apf.host ? apf.host : 'http://dev2.worknets.com'}:5280/http-bind"
+            host       = "worknets.com"
+            rdb-bot    = "true"
+            type       = "binding"
+            resource   = "{'apf_'.appendRandomNumber(5)}" />    
+    
+        <a:remote transport="myXMPPBot" id="rmtFsBot" />
+    
+        <a:xmpp id="myXMPPClient"
+          url               = "{apf.host ? apf.host : 'http://dev2.worknets.com'}:5280/http-bind"
+          host              = "worknets.com"
+          type              = "binding"
+          resource          = "{'apf_'.appendRandomNumber(5)}" />
+    
+        <a:remote transport="myXMPPClient" id="rmtFsClient" />
+    
+    	<a:script src="xmpptest.js"/>
     </body>
 </html>
