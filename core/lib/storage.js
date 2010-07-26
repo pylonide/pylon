@@ -55,7 +55,7 @@ apf.storage = {
      *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
      */
     init : function(name){
-        if(!name) name = this.autodetect();
+        if (!name || name == "autodetect") name = this.autodetect();
         var provider = this.getProvider(name);
 
         //Install the provider
