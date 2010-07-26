@@ -96,7 +96,7 @@ function test0() {
 	// Create a client
     var client1	= createClient("client1", "client1", 1);
         
-	var inited;
+	var testName = "Test1";
 	bot1.remote.addEventListener("change", function (e) {
 		console.log("BOT STATUS CHANGE");
 		
@@ -107,16 +107,17 @@ function test0() {
 	bot1.remote.addEventListener("rdbinit", function (e) {
 		//Set initial document
 		console.log("### RDBINIT called: " + e.resource + ", " + e.model);
-		e.model.load("<data><caption>" + user + ": 1</caption></data>");
+		e.model.load("<data><caption>" + testName + ": 1</caption></data>");
 		bot1.model = e.model;
 		
 		//Set priority
-		cMyXmpp.setAttribute("priority", cMyXmpp.priority + 10);
-		cMyXmpp.botRegister("worknets.com");
+		//bot1.xmpp.setAttribute("priority", cMyXmpp.priority + 10);
+		//bot1.xmpp.botRegister("worknets.com");
 	});
 	
 	client1.label.addEventListener("prop.caption", function(e){
-	    count++;
+	    console.log("Property trigger for label");
+	    //count++;
 		//if (client1.label.caption == testName + ": 2")
 		    //console.log("TEST complete: " + client1.label.caption + "\nCount: " + count);
 	});
@@ -125,7 +126,6 @@ function test0() {
 	client1.model.addEventListener("update", function(){
 	    //BUG: Third time the change should only be acknowledged
 		console.log("Model CHANGE:" + this.data.xml);
-		this.setQueryValue("/data/caption", user + ": " + i++);
     });
 
     client1.xmpp.addEventListener("datastatuschange", function(e){
@@ -285,7 +285,7 @@ function test4() {
 	
 		clearTimeout();
 		if (++nChanges == 4)
-			finishTest(true;)
+			finishTest(true);
 	}
 	
 	bot1.xmpp.addEventListener("datachange", handleChange);
@@ -349,7 +349,7 @@ function test5() {
 	
 		clearTimeout();
 		if (++nChanges == 4)
-			finishTest(true;)
+			finishTest(true);
 	}
 	
 	bot1.xmpp.addEventListener("datachange", handleChange);
@@ -478,6 +478,8 @@ function test7() {
 		finishTest(true);
 	})	
 }
+
+test0();
 
 // test8: bot priorities
 // test9: rpc calls
