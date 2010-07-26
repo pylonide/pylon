@@ -288,6 +288,7 @@ apf.socket = function(){
      * @private
      */
     this.receive = function(id, data){
+	
         if (!this.pool[id])
             return false;
 
@@ -316,7 +317,15 @@ apf.socket = function(){
         //    return this.$timeout(id);
 
         extra.data = data; //Can this error?
-
+		
+		qItem.total += data;
+		var t = qItem.total.split('</message>');
+		if(t.length<=1){
+			return;
+		}
+		data = t[0]+'</message>';
+		qItem.total = t[1];
+		
         // Check for XML Errors
         if (qItem.options.useXML || this.useXML) {
             /* Note (Mike, Oct 14th 2008): for WebDAV, I had to copy the lines below,
