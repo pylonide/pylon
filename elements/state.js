@@ -203,10 +203,12 @@ apf.state = function(struct, tagName){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     //#ifdef __DEBUG
-                    throw new Error(apf.formatErrorString(1013, this,
+                    /*throw new Error(apf.formatErrorString(1013, this,
                         "Setting State",
                         "Could not find object to give state: '"
-                        + q[i][0] + "' on property '" + q[i][1] + "'"));
+                        + q[i][0] + "' on property '" + q[i][1] + "'"));*/
+                    apf.console.warn("Could not find object to give state: " 
+                        + q[i][0] + "' on property '" + q[i][1] + "'");
                     //#endif
                     
                     continue;
