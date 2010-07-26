@@ -71,8 +71,10 @@ apf.LiveEdit = function() {
             this.implement(apf.DataAction);
         //#endif
         if (apf.isTrue(value)) {
-            if (!this.$focussable) {
-                this.$unFocussable = false;
+            if (!this.$focussable || !this.focussable) {
+                this.$focussable   = true;
+                this.$unFocussable = [this.$focussable,
+                    typeof this.focussable == "undefined" ? true : this.focussable];
                 apf.GuiElement.propHandlers.focussable.call(this, true);
             }
             
@@ -144,18 +146,12 @@ apf.LiveEdit = function() {
                     });
                 }
             });
-
-            o.wasFocussable = [this.$focussable,
-                typeof this.focussable == "undefined" ? true : this.focussable];
-            this.$focussable = true;
-            this.setProperty("focussable", true);
         }
         else {
-            if (!this.$unFocussable) {
-                apf.GuiElement.propHandlers.focussable.call(this, false);
+            if (this.$unFocussable) {
+                this.$focussable = this.$unFocussable[0];
+                apf.GuiElement.propHandlers.focussable.call(this, this.$unFocussable[1]);
                 delete this.$unFocussable;
-                delete this.$focussable;
-                delete this.focussable;
             }
             
             apf.removeListener(this.$ext, "mouseover", o.mouseOver);
@@ -170,11 +166,6 @@ apf.LiveEdit = function() {
                 o.docklet.hide();
             o.activeNode = null;
             o.lastActiveNode = null;
-
-            if (o.wasFocussable) {
-                this.$focussable = o.wasFocussable[0];
-                this.setProperty("focussable", o.wasFocussable[1]);
-            }
         }
 
         o.tabStack = null; // redraw of editable region, invalidate cache
