@@ -208,7 +208,7 @@ apf.remote = function(struct, tagName){
         });
 
         this.transport.addEventListener("datachange", function(e){
-            var oData    = apf.unserialize(e.body),
+            var oData    = typeof e.body == "string" ? apf.unserialize(e.body) : e.body,
                 oSession = _self.sessions[e.session],
                 i        = 0,
                 l        = oData.length;//@todo error check here.. invalid message
@@ -240,6 +240,7 @@ apf.remote = function(struct, tagName){
                         _self.sessionStarted(sSession, iBaseline);
                     }
                 }
+
             if (!oSession)
                 oSession = _self.createDynamicModel(e, f);
             else
