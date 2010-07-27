@@ -26,7 +26,7 @@
 
         <a:appsettings debug="false" debug-teleport="true" name="remotetest" locking="optimistic"  />
 
-        <a:persist id="myPersist" host="localhost" />
+        <a:persist id="myPersist" host="http://worknets:8124" />
         <a:remote transport="myPersist" id="rmtFs" />
 
         <a:model id="mdlFs" remote="rmtFs" src="rdb://worknets.com/101" />
