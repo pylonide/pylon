@@ -58,7 +58,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.$inheritProperties   = {};
     
     //#ifdef __WITH_LIVEEDIT
-    this.implement(apf.LiveEdit);
+    apf.LiveEdit && this.implement(apf.LiveEdit);
     //#endif
     
     this.$setValue = function(value){
