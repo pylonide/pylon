@@ -267,6 +267,11 @@ apf.textbox  = function(struct, tagName){
         
         if (!this.value)
             this.clear();
+            
+        if (this.type == "password" && this.$inputInitFix) {
+            this.$inputInitFix.innerHTML = value;
+            apf.setStyleClass(this.$inputInitFix, "initFxEnabled");
+        } 
     };
 
     /**
@@ -568,8 +573,9 @@ apf.textbox  = function(struct, tagName){
             oExt.setAttribute("onclick",     "if (!this.host.disabled) \
                 this.host.dispatchEvent('click', {htmlEvent : event});");
         });
-        this.$input    = this.$getLayoutNode("main", "input", this.$ext);
-        this.$button = this.$getLayoutNode("main", "button", this.$ext);
+        this.$input        = this.$getLayoutNode("main", "input", this.$ext);
+        this.$button       = this.$getLayoutNode("main", "button", this.$ext);
+        this.$inputInitFix = this.$getLayoutNode("main", "initialfix", this.$ext);
         
         if (this.type == "password")
             this.$propHandlers["type"].call(this, "password");
