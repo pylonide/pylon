@@ -87,12 +87,27 @@ apf.persist = function(struct, tagName){
     };
     
     function handleError(state, extra){
-        //if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
-        console.dir(extra);
-        /*return this.dispatchEvent(bIsAuth
+        var oError, amlNode = extra.tpModule;
+
+        oError = new Error(apf.formatErrorString(1032, amlNode,
+            "Polling in persist protocol",
+            "Connection dissapeared " + amlNode.name
+            + "[" + amlNode.tagName + "] \nUrl: " + extra.url
+            + "\nInfo: " + extra.message));
+
+        if (extra.tpModule.retryTimeout(extra, state, amlNode, oError) === true)
+            return true;
+
+        throw oError;
+
+        /*bIsAuth
             ? "authfailure"
             : bIsConn ? "connectionerror" : "registererror", extra);*/
     }
+    
+    this.addEventListener("error", function(e){
+        this.dispatchEvent("connectionerror", e);
+    });
     
     this.normalizeEntity = function(id){
         return id;
@@ -119,7 +134,7 @@ apf.persist = function(struct, tagName){
             method        : "GET",
             callback      : function(message, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    handleError(state, extra);
                 else {
                     _self.$poll(); //continue polling
                     
@@ -136,10 +151,12 @@ apf.persist = function(struct, tagName){
                             }
                             else if (data[i].type == "join") {
                                 _self.dispatchEvent("datastatuschange", {
-                                    session     : data[i].uri,
+                                    type      : "result",
+                                    session   : data[i].uri,
                                     baseline  : null, //@todo what is this?
                                     modeldata : data[i].document,
-                                    annotator : data[i].uId
+                                    annotator : data[i].uId,
+                                    fields    : [] //what is this?
                                 });
                             }
                             else if (data[i].type == "leave") {
@@ -155,12 +172,15 @@ apf.persist = function(struct, tagName){
     this.$stopListen = function(){
         this.listening = false;
         delete this.$sessionId;
-        
+
         this.cancel(this.$lastpoll);
     }
     
     //add a listener to a document
     this.startRDB = function(sSession, callback){
+        if (sSession == "empty")
+            return;
+        
         var _self = this;
         this.get(this.host + new apf.url(sSession).path + "?sid=" + this.$sessionId, {
             nocache       : true,
@@ -231,27 +251,13 @@ apf.persist = function(struct, tagName){
      * @type  {void}
      */
     this.connect = function(username, password, redirect_url, callback) {
-        /**
-         * Makes an http request.
-         * @param {String}   url       the url that is accessed.
-         * @param {Object}   options   the options for the http request
-         *   Properties:
-         *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-         *   {mixed}   userdata       custom data that is available to the callback function.
-         *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-         *   {Boolean} nocache        whether browser caching is prevented.
-         *   {String}  data           the data sent in the body of the message.
-         *   {Boolean} useXML         whether the result should be interpreted as xml.
-         *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-         *   {Boolean} caching        whether the request should use internal caching.
-         *   {Boolean} ignoreOffline  whether to ignore offline catching.
-         *   {Function} callback      the handler that gets called whenever the
-         *                            request completes succesfully or with an error,
-         *                            or when the request times out.
-         */
-         
-         var _self = this;
-         this.get(this.host + this.PATHS.login, {
+        var _self = this;
+        if (this.listening)
+            return this.disconnect(function(){
+                _self.connect(username, password, redirect_url, callback);
+            })
+        
+        this.get(this.host + this.PATHS.login, {
             nocache       : true,
             ignoreOffline : true,
             method        : "POST",
@@ -293,6 +299,10 @@ apf.persist = function(struct, tagName){
      * @type {void}
      */
     this.disconnect = function(callback) {
+        if (!this.listening)
+            return;
+        
+        var _self = this;
         this.get(this.host + this.PATHS.logout + "?sid=" + this.$sessionId, {
             nocache       : true,
             ignoreOffline : true,

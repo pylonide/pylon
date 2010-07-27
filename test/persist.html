@@ -26,12 +26,18 @@
 
         <a:appsettings debug="false" debug-teleport="true" name="remotetest" locking="optimistic"  />
 
-        <a:persist id="myPersist" host="http://worknets:8124" />
+        <a:persist id="myPersist" host="http://dev2.worknets.com:8124" />
         <a:remote transport="myPersist" id="rmtFs" />
 
         <a:model id="mdlFs" remote="rmtFs" src="rdb://worknets.com/101" />
+            
+        <a:label caption="[mdlFs::status]" />
 
-        <a:button onclick="myPersist.connect('101', '101')" width="80">Login</a:button>
-        <a:button onclick="myPersist.disconnect()" width="80">Logout</a:button>
+        <!--a:button onclick="myPersist.connect('jane@campell.com', 'geheim')" width="80">Login</a:button>
+        <a:button onclick="myPersist.disconnect()" width="80">Logout</a:button-->
+        
+        <a:script>
+            myPersist.connect('jane@campell.com', 'geheim');
+        </a:script>
     </body>
 </html>

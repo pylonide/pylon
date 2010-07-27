@@ -227,6 +227,7 @@ var apf = {
             return;
         
         http.onreadystatechange = function(){};
+        
         http.abort();
         this.availHTTP.push(http);
     },
@@ -1085,6 +1086,9 @@ var apf = {
             //    return;
 
             this.debugInfo.push(msg);
+
+            if (self.console)
+                console.log(apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
 
             if (apf.dispatchEvent)
                 apf.dispatchEvent("debug", {message: msg, type: type});

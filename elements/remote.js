@@ -221,6 +221,7 @@ apf.remote = function(struct, tagName){
             // #ifdef __DEBUG
             apf.console.log("datastatuschange msg: " + e);
             // #endif
+
             if (!e.session && !e.fields["session"]) return;
             var iBaseline, sModel,
                 sSession = e.session || e.fields["session"].value,
@@ -233,8 +234,8 @@ apf.remote = function(struct, tagName){
                         _self.transport.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
                     }
                     else if (e.type == "result") {
-                        iBaseline = e.fields["baseline"]  ? e.fields["baseline"].value  : null,
-                        sModel    = e.fields["modeldata"] ? e.fields["modeldata"].value : null;
+                        iBaseline = e.baseline  || (e.fields["baseline"]  ? e.fields["baseline"].value  : null),
+                        sModel    = e.modeldata || (e.fields["modeldata"] ? e.fields["modeldata"].value : null);
                         if (sModel)
                             _self.sessions[sSession].model.load(sModel);
                         _self.sessionStarted(sSession, iBaseline);

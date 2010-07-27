@@ -701,7 +701,8 @@ apf.http = function(){
 
         extra.data = http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600 || http.status < 10 && http.status != 0) {
+        if (http.status >= 400 && http.status < 600 || http.status < 10 
+          && (http.status != 0 || !apf.isIE && qItem.url.substr(0, 6) != "file:/")) {
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
@@ -892,7 +893,7 @@ apf.http = function(){
         clearInterval(this.queue[id].timer);
         //#endif
 
-        if (apf.releaseHTTP)
+        if (apf.releaseHTTP && !apf.isGecko)
             apf.releaseHTTP(this.queue[id].http);
 
         this.queue[id] = null;
@@ -946,7 +947,9 @@ apf.http = function(){
         if (!this.queue[id])
             return false;
 
-        //this.queue[id][0].abort();
+        if (apf.isGecko)
+            this.queue[id].http.abort();
+
         this.clearQueueItem(id);
     };
 
