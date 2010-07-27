@@ -799,7 +799,7 @@ Date.prototype.fromISO8601 = function(formattedString) {
 			zoneSign = match[7] && match[7].charAt(0);
 		if(zoneSign != 'Z'){
 			offset = ((match[8] || 0) * 60) + (Number(match[9]) || 0);
-			if(zoneSign != '-'){ offset *= -1; }
+			if(zoneSign != '-'){offset *= -1;}
 		}
 		if(zoneSign){
 			offset -= result.getTimezoneOffset();
@@ -810,6 +810,25 @@ Date.prototype.fromISO8601 = function(formattedString) {
 	}
 	return result; // Date or null
 }
+
+Date.prototype.toISO8601 = function(date) {
+    var pad = function (amount, width) {
+        var padding = "";
+        while (padding.length < width - 1 && amount < Math.pow(10, width - padding.length - 1))
+            padding += "0";
+        return padding + amount.toString();
+    }
+    date = date ? date : new Date();
+    var offset = date.getTimezoneOffset();
+    return pad(date.getFullYear(), 4)
+    + "-" + pad(date.getMonth() + 1, 2)
+    + "-" + pad(date.getDate(), 2)
+    + "T" + pad(date.getHours(), 2)
+    + ":" + pad(date.getMinutes(), 2)
+    + (offset > 0 ? "-" : "+")
+    + pad(Math.floor(Math.abs(offset) / 60), 2)
+    + ":" + pad(Math.abs(offset) % 60, 2);
+};
 // #endif
 
 // #endif
