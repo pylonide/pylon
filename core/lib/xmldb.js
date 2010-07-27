@@ -806,10 +806,10 @@ apf.xmldb = new (function(){
             clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             this.$hasQueue = true;
-            //notifyTimer = apf.setZeroTimeout(function(){
+            notifyTimer = apf.setZeroTimeout(function(){
                 //this.$hasQueue = true;
                 apf.xmldb.notifyQueued();
-            //});
+            });
         }
     };
 

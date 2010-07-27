@@ -172,7 +172,7 @@ apf.remote = function(struct, tagName){
     }
 
     this.$propHandlers["transport"] = function(value) {
-        this.transport = self[this["transport"]];
+        this.transport = typeof value == "object" ? value : self[this["transport"]];
 
         //#ifdef __DEBUG
         if (!this.transport) {
@@ -544,7 +544,8 @@ apf.remote = function(struct, tagName){
                 model.$at.execute({
                     action   : action,
                     args     : q,
-                    annotator: sAnnotator
+                    annotator: sAnnotator,
+                    message  : oMessage
                 });
             }
             this.dispatchEvent("change", {
