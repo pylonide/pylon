@@ -257,7 +257,9 @@ apf.persist = function(struct, tagName){
             method        : "POST",
             data          : "username=" + encodeURIComponent(username) 
                             + "&password=" + encodeURIComponent(password)
-                            + "&redirect_url=" + encodeURIComponent(redirect_url),
+                            + (redirect_url 
+                                ? "&redirect_url=" + encodeURIComponent(redirect_url)
+                                : ""),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
                     handleError(state, extra, callback);
@@ -271,6 +273,7 @@ apf.persist = function(struct, tagName){
                     }
                     else {
                         _self.$startListen();
+                        _self.dispatchEvent("connected"); //@todo reconnect
                         
                         if (callback) 
                             callback(data, state, {session: _self.$sessionId});
