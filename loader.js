@@ -341,6 +341,7 @@ apf.$x = apf.$loader
         "elements/page.js",
         "elements/pager.js",
         "elements/palette.js",
+        "elements/persist.js",
         "elements/portal.js",
         "elements/progressbar.js",
         "elements/propedit.js",

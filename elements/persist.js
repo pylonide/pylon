@@ -78,9 +78,9 @@ apf.persist = function(struct, tagName){
         login  : "/login",
         logout : "/logout",
         pipe   : "/pipe"
-    }
+    };
     
-    this.$supportedProperties.push("host);
+    this.$supportedProperties.push("host");
 
     this.$propHandlers["host"] = function(value) {
         
@@ -88,10 +88,10 @@ apf.persist = function(struct, tagName){
     
     function handleError(state, extra){
         //if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
-        
-        return this.dispatchEvent(bIsAuth
+        console.dir(extra);
+        /*return this.dispatchEvent(bIsAuth
             ? "authfailure"
-            : bIsConn ? "connectionerror" : "registererror", extra);
+            : bIsConn ? "connectionerror" : "registererror", extra);*/
     }
     
     this.normalizeEntity = function(id){
@@ -132,14 +132,14 @@ apf.persist = function(struct, tagName){
                                     body      : [data[i].message], //@todo remote.js is not generic enough
                                     session   : data[i].model,
                                     annotator : data[i].uId
-                                }
+                                });
                             }
                             else if (data[i].type == "join") {
                                 _self.dispatchEvent("datastatuschange", {
                                     session     : data[i].uri,
-                                    e.baseline  : null, //@todo what is this?
-                                    e.modeldata : data[i].document,
-                                    e.annotator : data[i].uId
+                                    baseline  : null, //@todo what is this?
+                                    modeldata : data[i].document,
+                                    annotator : data[i].uId
                                 });
                             }
                             else if (data[i].type == "leave") {
@@ -149,8 +149,8 @@ apf.persist = function(struct, tagName){
                     }
                 }
             }
-        }
-    }
+        });
+    };
     
     this.$stopListen = function(){
         this.listening = false;
@@ -174,7 +174,7 @@ apf.persist = function(struct, tagName){
                         callback(data, state);
                 }
             }
-        }
+        });
     }
     
     //remove a listener to a document
@@ -192,7 +192,7 @@ apf.persist = function(struct, tagName){
                         callback(data, state);
                 }
             }
-        }
+        });
     }
     
     //send change
@@ -211,7 +211,7 @@ apf.persist = function(struct, tagName){
                         callback(data, state);
                 }
             }
-        }
+        });
     }
     
     //what should this do??
@@ -257,7 +257,7 @@ apf.persist = function(struct, tagName){
             method        : "POST",
             data          : "username=" + encodeURIComponent(username) 
                             + "&password=" + encodeURIComponent(password)
-                            + "&redirect_url=" + encodeURIComponent(redirect_url);
+                            + "&redirect_url=" + encodeURIComponent(redirect_url),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
                     handleError(state, extra, callback);
@@ -277,7 +277,7 @@ apf.persist = function(struct, tagName){
                     }
                 }
             }
-        }
+        });
     };
 
     /**
@@ -304,7 +304,7 @@ apf.persist = function(struct, tagName){
                         callback(data, state, {session: this.$sessionId});
                 }
             }
-        }
+        });
     };
 
     /**

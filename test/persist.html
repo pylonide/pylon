@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>MASTER CLIENT</title>
+        <script src="../apf.js"></script>
+        <style type="text/css">
+            #message_log {
+                border: 1px solid silver;
+                font-family: "Lucida Console", Sans Serif;
+                padding: 8px;
+                color: green;
+                background: #333;
+                height: 250px;
+                width: 250px;
+            }
+
+            .loginform {
+                width: 250px;
+                border: 1px solid silver;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../../../skins/platform/trunk/images/"
+          image-path="../../../skins/platform/trunk/images/" icon-path="../icons/" />
+
+        <a:appsettings debug="false" debug-teleport="true" name="remotetest" locking="optimistic"  />
+
+        <a:persist id="myPersist" host="localhost" />
+        <a:remote transport="myPersist" id="rmtFs" />
+
+        <a:model id="mdlFs" remote="rmtFs" src="rdb://worknets.com/101" />
+
+        <a:button onclick="myPersist.connect('101', '101')" width="80">Login</a:button>
+        <a:button onclick="myPersist.disconnect()" width="80">Logout</a:button>
+    </body>
+</html>
