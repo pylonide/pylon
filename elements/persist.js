@@ -121,7 +121,7 @@ apf.persist = function(struct, tagName){
                 if (state != apf.SUCCESS)
                     handleError(state, extra, callback);
                 else {
-                    this.$poll(); //continue polling
+                    _self.$poll(); //continue polling
                     
                     if (message) {
                         var data = apf.unserialize(message);
@@ -162,7 +162,7 @@ apf.persist = function(struct, tagName){
     //add a listener to a document
     this.startRDB = function(sSession, callback){
         var _self = this;
-        this.get(this.host + apf.getDirname(sSession), {
+        this.get(this.host + new apf.url(sSession).path, {
             nocache       : true,
             ignoreOffline : true,
             method        : "LOCK",
@@ -180,7 +180,7 @@ apf.persist = function(struct, tagName){
     //remove a listener to a document
     this.endRDB = function(sSession){
         var _self = this;
-        this.get(this.host + apf.getDirname(sSession), {
+        this.get(this.host + new apf.url(sSession).path, {
             nocache       : true,
             ignoreOffline : true,
             method        : "UNLOCK",
@@ -198,7 +198,7 @@ apf.persist = function(struct, tagName){
     //send change
     this.sendRDB = function(model, message){
         var _self = this;
-        this.get(this.host + apf.getDirname(sSession), {
+        this.get(this.host + new apf.url(sSession).path, {
             nocache       : true,
             ignoreOffline : true,
             method        : "PUT",
