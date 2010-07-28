@@ -1406,6 +1406,10 @@ apf.DataBinding = function(){
             
             this.$modelParsed = null;
         }
+        
+        //#ifdef __DEBUG
+        if (!value) debugger;
+        //#endif
 
         //Analyze the data
         var model;

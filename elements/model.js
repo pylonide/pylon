@@ -720,6 +720,7 @@ apf.model = function(struct, tagName){
     this.$loadFrom = function(instruction, options){
         //#ifdef __WITH_RDB
         if (instruction.indexOf("rdb://") === 0) {
+            this.src = instruction; //@todo
             return this.$propHandlers["remote"].call(this, this.remote);
         }
         //#endif

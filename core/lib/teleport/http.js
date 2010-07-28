@@ -746,7 +746,7 @@ apf.http = function(){
                 }
             }
         }
-        
+
         //Process errors if there are any
         if (errorMessage.length) {
             extra.message = errorMessage.join("\n");

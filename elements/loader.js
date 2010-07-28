@@ -44,9 +44,9 @@ apf.loader = function(){
         if (!(pHtmlNode = this.parentNode.$int)) 
             return;
 
-        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, this.$aml 
+        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, (this.$aml 
             ? (this.$aml.serialize ? this.$aml.serialize() : this.$aml.xml)
-            : this.serialize());
+            : this.serialize()).replace(/^<[^>]*>\s*|\s*<[^>]*>$/g, ""));
         
         if (!apf.loaded) {
             var _self = this;

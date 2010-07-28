@@ -177,9 +177,10 @@ apf.BaseTab = function(){
                         else {
                             //for success
                             _self.setProperty("activepage", next);
-    
+                            
+                            //Needs to be after set
                             if (callback)
-                                callback();
+                                callback(options.amlNode);
     
                             _self.setProperty("loading", false);
                         }

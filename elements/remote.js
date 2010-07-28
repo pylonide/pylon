@@ -438,7 +438,7 @@ apf.remote = function(struct, tagName){
 
     this.getSessionByModel = function(sModel) {
         if (typeof sModel != "string")
-            sModel = sModel.id;
+            sModel = sModel.$hasResource ? sModel.src : sModel.id; //sModel.id;
         for (var i in this.sessions) {
             if (this.sessions[i].model && this.sessions[i].model.id == sModel)
                 return this.sessions[i];
@@ -447,11 +447,13 @@ apf.remote = function(struct, tagName){
     };
     
     this.buildMessage = function(args, model){
-        var oSession = this.getSessionByModel(model.id),
+        var resource = model.$hasResource ? model.src : model.id,
+            oSession = this.getSessionByModel(resource),
             i        = 0,
             l        = args.length;
         // #ifdef __DEBUG
         if (!oSession) {
+            debugger;
             throw new Error(apf.formatErrorString(0, this, "RDB: sending message",
                 "No session initiated yet, please login first!"));
         }

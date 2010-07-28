@@ -427,7 +427,7 @@ apf.persist = function(struct, tagName){
                 this.connect(args[0], args[1], args[2], callback);
                 break;
             case "logout":
-                this.disconnect();
+                this.disconnect(callback);
                 break;
             default:
                 if (typeof this[method] == "function") {
