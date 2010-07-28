@@ -383,7 +383,7 @@ apf.scrollbar = function(struct, tagName){
         this.$caret.ondragstart = function(){
             return false
         };
-        
+
         var _self = this;
         if (this.$btnUp) {
             this.$btnUp.onmousedown = function(e){
@@ -452,6 +452,10 @@ apf.scrollbar = function(struct, tagName){
             };
         }
         
+        this.$caret.onmouseup = function() {
+            _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
+        };
+        
         this.$caret.onmousedown = function(e){
             if (_self.disabled)
                 return;
@@ -466,6 +470,8 @@ apf.scrollbar = function(struct, tagName){
     
             if (_self.$img[1])
                 _self.$caret.firstChild.src = _self.$img[1];
+            
+            _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
     
             document.onmousemove = function(e){
                 if (!e) 
