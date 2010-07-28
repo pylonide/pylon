@@ -309,7 +309,10 @@ apf.remote = function(struct, tagName){
 
     this.sessionStarted = function(sSession, iTime) {
         var oSession;
-        if (!(oSession = this.sessions[sSession])) return;
+        if (!(oSession = this.sessions[sSession])) {
+	    apf.console.warn("Could not find session: " + sSession);
+	    return;
+	}
         // check if time is provided, otherwise user created the session
         oSession.baseline = iTime ? parseInt(iTime) : new Date().getTime();
         // #ifdef __DEBUG
@@ -469,7 +472,7 @@ apf.remote = function(struct, tagName){
         //this.lastTime = new Date().getTime();
         if (oMessage.timestamp < this.discardBefore)
             return;
-        
+
         var model = oSession ? oSession.model : apf.nameserver.get("model", oMessage.model),
             q     = oMessage.args;
         
@@ -507,7 +510,8 @@ apf.remote = function(struct, tagName){
         oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
 
         // #ifdef __DEBUG
-        apf.console.log("timestamp comparison: " + (new Date().toGMTString())
+        apf.console.log("timestamp comparison (base: " + oSession.baseline + ") : " 
+            + (new Date().toGMTString())
             + ", " + (new Date(oMessage.currdelta).toGMTString()));
         // #endif
         var aUndos = model.$at.getDone(oMessage.currdelta),

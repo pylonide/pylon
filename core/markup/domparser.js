@@ -296,7 +296,7 @@ apf.DOMParser.prototype = new (function(){
                 else {
                     prefix = doc.$prefixes[namespaceURI] || "";
                 }
-                
+
                 //#ifdef __DEBUG
                 if (!namespaceURI) {
                     throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error

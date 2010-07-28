@@ -217,7 +217,7 @@ apf.socket = function(){
             var net = require("net");
             socket = net.createConnection(oUrl.port, oUrl.host);
             socket.setEncoding("utf8");
-
+            
             socket.addListener("connect", function() {
                 send.call(_self);
             });
@@ -252,7 +252,8 @@ apf.socket = function(){
                 url       : url,
                 callbacks : [options.callback],
                 retries   : 0,
-                options   : options
+                options   : options,
+                received  : ""
             };
         }
         else {
@@ -288,7 +289,6 @@ apf.socket = function(){
      * @private
      */
     this.receive = function(id, data){
-	
         if (!this.pool[id])
             return false;
 
@@ -318,14 +318,15 @@ apf.socket = function(){
 
         extra.data = data; //Can this error?
 		
-		qItem.total += data;
-		var t = qItem.total.split('</message>');
+		qItem.received += data;
+		var t = qItem.received.split(/(<\/(?:message|stream:features|challenge)>)/);
+sys.p(t);
 		if(t.length<=1){
 			return;
 		}
-		data = t[0]+'</message>';
-		qItem.total = t[1];
-		
+		data = t[0]+t[1];
+		qItem.received = t[2];
+	
         // Check for XML Errors
         if (qItem.options.useXML || this.useXML) {
             /* Note (Mike, Oct 14th 2008): for WebDAV, I had to copy the lines below,

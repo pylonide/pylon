@@ -164,7 +164,9 @@ apf.model = function(struct, tagName){
     };
 
     this.share = function(xpath) {
-        this.rdb = apf.nameserver.get("remote", this.remote);
+        this.rdb = typeof this.remote == "string"
+            ? apf.nameserver.get("remote", this.remote)
+            : this.remote;
 
         //#ifdef __DEBUG
         if (!this.rdb || !this.rdb.sessions) {
@@ -970,7 +972,7 @@ apf.model = function(struct, tagName){
             }
         }
         
-        this.dispatchEvent("update", {xmlNode: xmlNode, action: action});
+        this.dispatchEvent("update", {xmlNode: xmlNode, action: action, undoObj: UndoObj});
     };
 
     /**** INSERT ****/
