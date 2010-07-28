@@ -153,7 +153,7 @@ apf.persist = function(struct, tagName){
                                 _self.dispatchEvent("datastatuschange", {
                                     type      : "result",
                                     session   : data[i].uri,
-                                    baseline  : null, //@todo what is this?
+                                    baseline  : data[i].baseline, //@todo what is this?
                                     modeldata : data[i].document,
                                     annotator : data[i].uId,
                                     fields    : [] //what is this?
@@ -270,7 +270,8 @@ apf.persist = function(struct, tagName){
                 if (state != apf.SUCCESS)
                     handleError(state, extra, callback);
                 else {
-                    _self.$sessionId = parseInt(data);
+                    data = apf.unserialize(data);
+                    _self.$sessionId = data.sId;
                     
                     if (!_self.$sessionId) {
                         handleError(apf.ERROR, {
@@ -282,7 +283,7 @@ apf.persist = function(struct, tagName){
                         _self.dispatchEvent("connected"); //@todo reconnect
                         
                         if (callback) 
-                            callback(data, state, {session: _self.$sessionId});
+                            callback(data, state, extra);
                     }
                 }
             }
@@ -314,7 +315,7 @@ apf.persist = function(struct, tagName){
                     _self.$stopListen();
     
                     if (callback) 
-                        callback(data, state, {session: this.$sessionId});
+                        callback(data, state, extra);
                 }
             }
         });

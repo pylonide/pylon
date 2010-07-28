@@ -478,10 +478,8 @@ apf.remote = function(struct, tagName){
         
         if (!model) {
             //#ifdef __DEBUG
-            //Maybe make this a warning?
-            throw new Error(apf.formatErrorString(0, this, 
-                "Remote Databinding Received", "Could not find model when \
-                 receiving data for it with name '" + oMessage.model + "'"));
+            apf.console.warn("Remote Databinding Received: Could not find model when \
+                 receiving data for it with name '" + oMessage.model + "'");
             //#endif
             return;
         }
