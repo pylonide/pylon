@@ -213,7 +213,7 @@ apf.remote = function(struct, tagName){
                 i        = 0,
                 l        = oData.length;//@todo error check here.. invalid message
             for (; i < l; i++)
-                _self.receiveChange(oData[i], oSession, e.annotator);
+                _self.receiveChange(oData[i], oSession, e.annotator, e.callback);
         });
 
         this.transport.addEventListener("datastatuschange", function(e) {
@@ -457,7 +457,7 @@ apf.remote = function(struct, tagName){
         qHost.rdbQueue = {};
     };
     
-    this.receiveChange = function(oMessage, oSession, sAnnotator){
+    this.receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
         if (apf.xmldb.disableRDB)
             return;
 
@@ -468,6 +468,9 @@ apf.remote = function(struct, tagName){
             return;
         }
         //#endif
+
+	var originalMessage = apf.extend({}, oMessage);
+	originalMessage.args = oMessage.args.slice();
         
         //this.lastTime = new Date().getTime();
         if (oMessage.timestamp < this.discardBefore)
@@ -548,7 +551,8 @@ apf.remote = function(struct, tagName){
                 action   : action,
                 args     : q,
                 annotator: sAnnotator,
-                message  : oMessage
+                message  : originalMessage,
+		callback : fCallback
             });
 
             this.dispatchEvent("change", {

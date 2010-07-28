@@ -26,8 +26,8 @@
  *
  * @param {mixed} obj the object to investigate
  */
-apf.dump2 =
-apf.vardump2 = function(obj, depth, norecur, stack){
+apf.dump =
+apf.vardump = function(obj, depth, norecur, stack){
     if (apf.isWebkit) //@todo RIK please fix this issue.
         return "";
     
@@ -140,8 +140,8 @@ if (apf.isOpera) {
  *
  * @param {mixed} obj the object to investigate
  */
-apf.dump =
-apf.vardump = function (obj, depth, recur, stack){
+apf.dump2 =
+apf.vardump2 = function (obj, depth, recur, stack){
     if(!obj) return obj + "";
     if(!depth) depth = 0;
 
