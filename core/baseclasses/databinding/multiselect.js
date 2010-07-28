@@ -536,6 +536,7 @@ apf.MultiselectBinding = function(){
      *   {String}     action   the action that was executed on the xml.
      *      Possible values:
      *      text        a text node is set.
+     *      attribute   an attribute is set.
      *      update      an xml node is updated.
      *      insert      xml nodes are inserted.
      *      add         an xml node is added.

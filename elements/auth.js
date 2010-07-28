@@ -239,8 +239,10 @@ apf.aml.setElement("auth", apf.auth);
         
         if (self[this["authreq-state"]]) {
             this.state = self[this["authreq-state"]];
-            if (this.state)
+            if (this.state) {
                 this.state.activate();
+                return false;
+            }
         }
     });
 

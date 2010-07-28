@@ -185,7 +185,18 @@ apf.remote = function(struct, tagName){
         var _self = this;
 
         this.transport.addEventListener("connected", function() {
-            var s, t;
+            var s, t, o, model, xpath;
+            for (s in _self.sessions) {
+                o = _self.sessions[s],
+                model = o.model,
+                xpath = o.xpath,
+                o     = null;
+                delete _self.sessions[s];
+                _self.startSession(model, xpath);
+            }
+            if (!s)
+                _self.startEmptySession();
+            
             for (s in _self.pendingTerminations)
                 _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
             for (t in _self.pendingSessions)
@@ -194,7 +205,7 @@ apf.remote = function(struct, tagName){
                 _self.startEmptySession();
         });
 
-        this.transport.addEventListener("reconnect", function() {
+        /*this.transport.addEventListener("reconnect", function() {
             var s, o, model, xpath;
             for (s in _self.sessions) {
                 o = _self.sessions[s],
@@ -206,7 +217,7 @@ apf.remote = function(struct, tagName){
             }
             if (!s)
                 _self.startEmptySession();
-        });
+        });*/
 
         this.transport.addEventListener("datachange", function(e){
             var oData    = typeof e.body == "string" ? apf.unserialize(e.body) : e.body,
@@ -582,7 +593,7 @@ apf.remote = function(struct, tagName){
                 args     : q,
                 annotator: sAnnotator,
                 message  : originalMessage,
-		callback : fCallback
+                callback : fCallback
             });
 
             this.dispatchEvent("change", {

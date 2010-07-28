@@ -80,32 +80,35 @@ apf.persist = function(struct, tagName){
 };
 
 (function() {
+    this.retryinterval = 1000;
+    this.retry         = apf.maxHttpRetries;
+    
     this.PATHS = {
         login  : "/login",
         logout : "/logout",
         pipe   : "/pipe"
     };
     
-    this.$supportedProperties.push("host");
+    this.$supportedProperties.push("host", "retry", "retryinterval");
 
-    this.$propHandlers["host"] = function(value) {
+    /*this.$propHandlers["host"] = function(value) {
         
-    };
+    };*/
     
     this.$handleError = function(data, state, extra, callback){
         var oError, amlNode = this;
         
-        if (extra.http.status == 401 
+        if (extra.http.readyState && (extra.http.status == 401 
          || extra.http.status == 403 
-         || extra.http.status == 500) {
-            oError = new Error(apf.formatErrorString(1032, amlNode,
+         || extra.http.status == 500)) {
+            oError = new Error(apf.formatErrorString(10000, amlNode,
                 "Persist protocol",
                 extra.http.statusText + " in " + amlNode.name
                 + "[" + amlNode.tagName + "] \nUrl: " + extra.url
                 + "\nInfo: " + extra.message));
         }
         else {
-            oError = new Error(apf.formatErrorString(1032, amlNode,
+            oError = new Error(apf.formatErrorString(10001, amlNode,
                 "Polling in persist protocol",
                 "Connection dissapeared " + amlNode.name
                 + "[" + amlNode.tagName + "] \nUrl: " + extra.url
@@ -113,8 +116,7 @@ apf.persist = function(struct, tagName){
         }
         
         if (typeof callback == "function") {
-            callback.call(amlNode, data, state, extra);
-            return true;
+            return callback.call(amlNode, data, state, extra, oError);
         }
         else if (amlNode.retryTimeout(extra, state, amlNode, oError) === true)
             return true;
@@ -144,6 +146,13 @@ apf.persist = function(struct, tagName){
         this.$poll();
     }
     
+    this.$stopListen = function(){
+        this.listening = false;
+        delete this.sessionId;
+
+        this.cancel(this.$lastpoll);
+    }
+    
     this.$poll = function(){
         if (!this.sessionId || !this.listening)
             return;
@@ -154,8 +163,24 @@ apf.persist = function(struct, tagName){
             ignoreOffline : true,
             method        : "GET",
             callback      : function(message, state, extra){
-                if (state != apf.SUCCESS)
-                    _self.$handleError(message, state, extra);
+                if (state != apf.SUCCESS) {
+                    var knownError = extra.http.readyState 
+                      && (extra.http.status == 401 
+                      || extra.http.status == 403 
+                      || extra.http.status == 500);
+
+                    if (state == apf.TIMEOUT || !knownError
+                      && extra.retries < _self.retry) {
+                        setTimeout(function(){
+                            extra.tpModule.retry(extra.id);
+                        }, _self.retryinterval);
+                        return true;
+                    }
+                    
+                    _self.$stopListen();
+                    
+                    return _self.$handleError(message, state, extra);
+                }
                 else {
                     _self.$poll(); //continue polling
                     
@@ -190,13 +215,6 @@ apf.persist = function(struct, tagName){
         });
     };
     
-    this.$stopListen = function(){
-        this.listening = false;
-        delete this.sessionId;
-
-        this.cancel(this.$lastpoll);
-    }
-    
     //add a listener to a document
     this.join     = 
     this.startRDB = function(sSession, callback){
@@ -209,7 +227,7 @@ apf.persist = function(struct, tagName){
             method        : "LOCK",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
                         callback(sSession);
@@ -228,7 +246,7 @@ apf.persist = function(struct, tagName){
             method        : "UNLOCK",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra, callback);
             }
         });
     }
@@ -243,7 +261,7 @@ apf.persist = function(struct, tagName){
             data          : message,
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    _self.$handleError(data, state, extra);
+                    return _self.$handleError(data, state, extra);
             }
         });
     }
@@ -283,13 +301,13 @@ apf.persist = function(struct, tagName){
                                 : ""),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra, callback);
                 else {
                     data = apf.unserialize(data);
                     _self.sessionId = data.sId;
                     
                     if (!_self.sessionId) {
-                        _self.$handleError(data, apf.ERROR, {
+                        return _self.$handleError(data, apf.ERROR, {
                             message: "Did not get a session id from the server"
                         }, callback);
                     }
@@ -333,7 +351,7 @@ apf.persist = function(struct, tagName){
                 if (state != apf.SUCCESS) {
                     //@todo startlisten here?
                     
-                    _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra, callback);
                 }
                 else {
                     if (callback) 
@@ -368,7 +386,7 @@ apf.persist = function(struct, tagName){
             method        : "POST",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
                         callback(data);
@@ -387,7 +405,7 @@ apf.persist = function(struct, tagName){
                 data          : body,
                 callback      : function(data, state, extra){
                     if (state != apf.SUCCESS)
-                        _self.$handleError(data, state, extra, callback);
+                        return _self.$handleError(data, state, extra, callback);
                     else {
                         if (callback)
                             callback(data);
