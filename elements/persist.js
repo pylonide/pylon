@@ -229,10 +229,6 @@ apf.persist = function(struct, tagName){
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
                     _self.$handleError(data, state, extra, callback);
-                else {
-                    if (callback)
-                        callback(data, state);
-                }
             }
         });
     }
