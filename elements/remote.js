@@ -609,7 +609,7 @@ apf.remote = function(struct, tagName){
         apf.xmldb.disableRDB = disableRDB;
 
         if (oError)
-            throw oError;
+            apf.console.error(oError.message)
     };
     
     this.xmlToXpath = apf.xmlToXpath;
