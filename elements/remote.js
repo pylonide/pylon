@@ -342,7 +342,7 @@ apf.remote = function(struct, tagName){
         apf.console.log("creating dynamic model " + id + ", " + resource);
         
         if (!(model = apf.nameserver.get(id))) {
-            model = this.dispatchEvent("model-find", {resource: resource});
+            model = this.dispatchEvent("modelfind", {resource: resource});
             if (model) {
                 delete model.src;
                 model.setProperty("remote", this.id);

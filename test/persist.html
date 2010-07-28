@@ -40,7 +40,7 @@
         <a:button onclick="myPersist.disconnect()" width="80">Logout</a:button-->
         
         <a:script>
-            rmtFs.addEventListener("model-find", function(e){
+            rmtFs.addEventListener("modelfind", function(e){
                 if (e.resource.indexOf("dashboard") > -1)
                     return mdlDashboard;
                 else if (e.resource.indexOf("101") > -1) 

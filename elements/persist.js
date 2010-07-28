@@ -92,16 +92,31 @@ apf.persist = function(struct, tagName){
         
     };
     
-    function handleError(state, extra){
-        var oError, amlNode = extra.tpModule;
-
-        oError = new Error(apf.formatErrorString(1032, amlNode,
-            "Polling in persist protocol",
-            "Connection dissapeared " + amlNode.name
-            + "[" + amlNode.tagName + "] \nUrl: " + extra.url
-            + "\nInfo: " + extra.message));
-
-        if (extra.tpModule.retryTimeout(extra, state, amlNode, oError) === true)
+    this.$handleError = function(data, state, extra, callback){
+        var oError, amlNode = this;
+        
+        if (extra.http.status == 401 
+         || extra.http.status == 403 
+         || extra.http.status == 500) {
+            oError = new Error(apf.formatErrorString(1032, amlNode,
+                "Persist protocol",
+                extra.http.statusText + " in " + amlNode.name
+                + "[" + amlNode.tagName + "] \nUrl: " + extra.url
+                + "\nInfo: " + extra.message));
+        }
+        else {
+            oError = new Error(apf.formatErrorString(1032, amlNode,
+                "Polling in persist protocol",
+                "Connection dissapeared " + amlNode.name
+                + "[" + amlNode.tagName + "] \nUrl: " + extra.url
+                + "\nInfo: " + extra.message));
+        }
+        
+        if (typeof callback == "function") {
+            callback.call(amlNode, data, state, extra);
+            return true;
+        }
+        else if (amlNode.retryTimeout(extra, state, amlNode, oError) === true)
             return true;
 
         throw oError;
@@ -112,7 +127,7 @@ apf.persist = function(struct, tagName){
     }
     
     this.addEventListener("error", function(e){
-        this.dispatchEvent("connectionerror", e);
+        return this.dispatchEvent("connectionerror", e);
     });
     
     this.normalizeEntity = function(id){
@@ -140,7 +155,7 @@ apf.persist = function(struct, tagName){
             method        : "GET",
             callback      : function(message, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra);
+                    _self.$handleError(message, state, extra);
                 else {
                     _self.$poll(); //continue polling
                     
@@ -194,7 +209,7 @@ apf.persist = function(struct, tagName){
             method        : "LOCK",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
                         callback(sSession);
@@ -213,7 +228,7 @@ apf.persist = function(struct, tagName){
             method        : "UNLOCK",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
                         callback(data, state);
@@ -232,7 +247,7 @@ apf.persist = function(struct, tagName){
             data          : message,
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra);
+                    _self.$handleError(data, state, extra);
             }
         });
     }
@@ -253,13 +268,14 @@ apf.persist = function(struct, tagName){
      *                              login request
      * @type  {void}
      */
+    this.login   = 
     this.connect = function(username, password, redirect, callback) {
         var _self = this;
         if (this.listening)
             return this.disconnect(function(){
                 _self.connect(username, password, redirect, callback);
             })
-        
+
         this.get(this.host + this.PATHS.login, {
             nocache       : true,
             ignoreOffline : true,
@@ -271,13 +287,13 @@ apf.persist = function(struct, tagName){
                                 : ""),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    _self.$handleError(data, state, extra, callback);
                 else {
                     data = apf.unserialize(data);
                     _self.sessionId = data.sId;
                     
                     if (!_self.sessionId) {
-                        handleError(apf.ERROR, {
+                        _self.$handleError(data, apf.ERROR, {
                             message: "Did not get a session id from the server"
                         }, callback);
                     }
@@ -307,6 +323,7 @@ apf.persist = function(struct, tagName){
      *                            after the Async request
      * @type {void}
      */
+    this.logout     = 
     this.disconnect = function(callback) {
         if (!this.listening)
             return;
@@ -320,7 +337,7 @@ apf.persist = function(struct, tagName){
                 if (state != apf.SUCCESS) {
                     //@todo startlisten here?
                     
-                    handleError(state, extra, callback);
+                    _self.$handleError(data, state, extra, callback);
                 }
                 else {
                     if (callback) 
@@ -355,7 +372,7 @@ apf.persist = function(struct, tagName){
             method        : "POST",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
                         callback(data);
@@ -374,7 +391,7 @@ apf.persist = function(struct, tagName){
                 data          : body,
                 callback      : function(data, state, extra){
                     if (state != apf.SUCCESS)
-                        handleError(state, extra, callback);
+                        _self.$handleError(data, state, extra, callback);
                     else {
                         if (callback)
                             callback(data);
@@ -383,7 +400,34 @@ apf.persist = function(struct, tagName){
             });
         }
     }
-    // #endif
+    
+    /**
+     * Instruction handler for XMPP protocols. It supports the following directives:
+     * - xmpp:name.login(username, password)
+     * - xmpp:name.logout()
+     * - xmpp:name.notify(message, to_address, thread, type)
+     */
+    this.exec = function(method, args, callback){
+        switch(method){
+            case "login":
+                this.connect(args[0], args[1], args[2], callback);
+                break;
+            case "logout":
+                this.disconnect();
+                break;
+            default:
+                if (typeof this[method] == "function") {
+                    this[method](args[0], callback);
+                }
+                else {
+                    //#ifdef __DEBUG
+                    throw new Error(apf.formatErrorString(0, null, "Saving/Loading data", 
+                        "Invalid XMPP method '" + method + "'"));
+                    //#endif
+                }
+            break;
+        }
+    };
 }).call(apf.persist.prototype = new apf.Teleport());
 
 apf.aml.setElement("persist", apf.persist);

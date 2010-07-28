@@ -166,7 +166,7 @@ apf.aml.setElement("auth", apf.auth);
 
 (function(){
     this.$retry      = true;
-    this.$loggedIn   = false;
+    this.loggedIn   = false;
     this.$needsLogin = false;
     this.$autoStart  = true;
     this.$hasHost    = false;
@@ -326,7 +326,7 @@ apf.aml.setElement("auth", apf.auth);
                     return;
 
                 _self.inProcess = 0; //Idle
-                _self.$loggedIn  = true;
+                _self.loggedIn  = true;
                 _self.clearQueue();
 
                 if (callback)
@@ -379,7 +379,7 @@ apf.aml.setElement("auth", apf.auth);
                     return;
 
                 _self.inProcess = 0; //Idle
-                _self.$loggedIn  = true;
+                _self.loggedIn  = true;
                 _self.clearQueue();
             };
 
@@ -479,14 +479,14 @@ apf.aml.setElement("auth", apf.auth);
             if (callback)
                 callback();
 
-            _self.dispatchEvent("log" + type + "success", apf.extend({
+            _self.dispatchEvent("log" + type + "success", apf.extend({}, extra, {
                 state   : state,
                 service : service,
                 data    : data,
                 bubbles : true,
                 username : options.username,
                 password : options.password
-            }, extra));
+            }));
 
             //#ifdef __DEBUG
             apf.console.info("Log " + type + " success for service '"
@@ -497,7 +497,7 @@ apf.aml.setElement("auth", apf.auth);
     };
 
     this.clearQueue = function(){
-        if (!this.$loggedIn) //Queue should only be cleared when we're logged in
+        if (!this.loggedIn) //Queue should only be cleared when we're logged in
             return;
 
         var queue = this.$queue.slice();
@@ -507,7 +507,7 @@ apf.aml.setElement("auth", apf.auth);
             var qItem = queue[i];
 
             //We might be logged out somewhere in this process (think sync)
-            if (!this.$loggedIn) {
+            if (!this.loggedIn) {
                 this.$queue.push(qItem);
                 continue;
             }
@@ -548,7 +548,7 @@ apf.aml.setElement("auth", apf.auth);
         if (this.dispatchEvent("beforelogout", options) === false)
             return;
 
-        this.$loggedIn = false;
+        this.loggedIn = false;
 
         if (!options.service) {
             for (var name in this.$services)
@@ -569,7 +569,7 @@ apf.aml.setElement("auth", apf.auth);
             return;
 
         // If we're supposed to be logged in we'll try to log in automatically
-        if (this.$loggedIn && !forceNoRetry && this.$retry && this.relogin()) {
+        if (this.loggedIn && !forceNoRetry && this.$retry && this.relogin()) {
             var result = false;
         }
         else if (this.inProcess != 1) { //If we're not already logging in
@@ -589,7 +589,7 @@ apf.aml.setElement("auth", apf.auth);
             }, options));
         }
 
-        this.$loggedIn = false;
+        this.loggedIn = false;
 
         if (result === false) {
             if (options) //Add communication to queue for later processing
