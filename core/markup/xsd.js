@@ -306,7 +306,7 @@ apf.xsd.typeHandlers = {
             return true;
         },
         "wechars": function(value){
-            return /^[0-9A-Za-z\xC0-\xCF\xD1-\xD6\xD8-\xDD\xDF-\xF6\xF8-\xFF\xF2-\xF3\x104-\x107\x118-\x119\x141-\x144\x15A-\x15B\x179-\x17C -\.',]+$/
+            return /^[0-9A-Za-z\xC0-\xCF\xD1-\xD6\xD8-\xDD\xDF-\xF6\xF8-\xFF -\.',]+$/
               .test(value)
         },
         "phonenumber": function(value){
