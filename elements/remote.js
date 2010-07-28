@@ -421,9 +421,9 @@ apf.remote = function(struct, tagName){
             if (args[i] && args[i].nodeType)
                 args[i] = this.xmlToXpath(args[i], model.data);
         }
-        
+
         return {
-            model     : model.id,
+            model     : model.$hasResource ? model.src : model.id,
             args      : args,
             currdelta : new Date().getTime() - oSession.baseline
         };

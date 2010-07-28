@@ -1087,8 +1087,11 @@ var apf = {
 
             this.debugInfo.push(msg);
 
-            if (self.console)
-                console.log(apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
+            if (self.console) {
+                console[type == "warn" ? "warn" : 
+                    (type == "error" ? "error" : "log")]
+                        (apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
+            }
 
             if (apf.dispatchEvent)
                 apf.dispatchEvent("debug", {message: msg, type: type});

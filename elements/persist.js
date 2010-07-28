@@ -216,7 +216,7 @@ apf.persist = function(struct, tagName){
     }
     
     //send change
-    this.sendRDB = function(model, message){
+    this.sendRDB = function(sSession, message){
         var _self = this;
         this.get(this.host + new apf.url(sSession).path + "?sid=" + this.$sessionId, {
             nocache       : true,
@@ -225,7 +225,7 @@ apf.persist = function(struct, tagName){
             data          : message,
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    handleError(state, extra, callback);
+                    handleError(state, extra);
                 else {
                     if (callback)
                         callback(data, state);
