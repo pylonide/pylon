@@ -71,6 +71,12 @@
 
 apf.persist = function(struct, tagName){
     this.$init(tagName || "persist", apf.NODE_HIDDEN, struct);
+    
+    var _self = this;
+    apf.addEventListener("exit", function(e){
+        if (_self.listening)
+            _self.disconnect();
+    });
 };
 
 (function() {
@@ -124,11 +130,11 @@ apf.persist = function(struct, tagName){
     }
     
     this.$poll = function(){
-        if (!this.$sessionId || !this.listening)
+        if (!this.sessionId || !this.listening)
             return;
         
         var _self = this;
-        this.$lastpoll = this.get(this.host + this.PATHS.pipe + "?sid=" + this.$sessionId, {
+        this.$lastpoll = this.get(this.host + this.PATHS.pipe + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "GET",
@@ -145,7 +151,7 @@ apf.persist = function(struct, tagName){
                             if (data[i].type == "update") {
                                 _self.dispatchEvent("datachange", {
                                     body      : [data[i].message], //@todo remote.js is not generic enough
-                                    session   : data[i].model,
+                                    session   : data[i].uri,
                                     annotator : data[i].uId
                                 });
                             }
@@ -171,18 +177,18 @@ apf.persist = function(struct, tagName){
     
     this.$stopListen = function(){
         this.listening = false;
-        delete this.$sessionId;
+        delete this.sessionId;
 
         this.cancel(this.$lastpoll);
     }
     
     //add a listener to a document
+    this.join     = 
     this.startRDB = function(sSession, callback){
         if (sSession == "empty")
             return;
-        
         var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.$sessionId, {
+        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "LOCK",
@@ -191,16 +197,17 @@ apf.persist = function(struct, tagName){
                     handleError(state, extra, callback);
                 else {
                     if (callback)
-                        callback(data, state);
+                        callback(sSession);
                 }
             }
         });
     }
     
     //remove a listener to a document
+    this.leave  = 
     this.endRDB = function(sSession){
         var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.$sessionId, {
+        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "UNLOCK",
@@ -218,7 +225,7 @@ apf.persist = function(struct, tagName){
     //send change
     this.sendRDB = function(sSession, message){
         var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.$sessionId, {
+        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "PUT",
@@ -226,10 +233,6 @@ apf.persist = function(struct, tagName){
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
                     handleError(state, extra);
-                else {
-                    if (callback)
-                        callback(data, state);
-                }
             }
         });
     }
@@ -250,11 +253,11 @@ apf.persist = function(struct, tagName){
      *                              login request
      * @type  {void}
      */
-    this.connect = function(username, password, redirect_url, callback) {
+    this.connect = function(username, password, redirect, callback) {
         var _self = this;
         if (this.listening)
             return this.disconnect(function(){
-                _self.connect(username, password, redirect_url, callback);
+                _self.connect(username, password, redirect, callback);
             })
         
         this.get(this.host + this.PATHS.login, {
@@ -263,22 +266,27 @@ apf.persist = function(struct, tagName){
             method        : "POST",
             data          : "username=" + encodeURIComponent(username) 
                             + "&password=" + encodeURIComponent(password)
-                            + (redirect_url 
-                                ? "&redirect_url=" + encodeURIComponent(redirect_url)
+                            + (redirect
+                                ? "&redirect=" + encodeURIComponent(redirect)
                                 : ""),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
                     handleError(state, extra, callback);
                 else {
                     data = apf.unserialize(data);
-                    _self.$sessionId = data.sId;
+                    _self.sessionId = data.sId;
                     
-                    if (!_self.$sessionId) {
+                    if (!_self.sessionId) {
                         handleError(apf.ERROR, {
                             message: "Did not get a session id from the server"
                         }, callback);
                     }
                     else {
+                        var m = data.availableMethods;
+                        for (var i = 0; i < m.length; i++) {
+                            this[m[i]] = _self.$addMethod(m[i]);
+                        }
+                        
                         _self.$startListen();
                         _self.dispatchEvent("connected"); //@todo reconnect
                         
@@ -304,21 +312,24 @@ apf.persist = function(struct, tagName){
             return;
         
         var _self = this;
-        this.get(this.host + this.PATHS.logout + "?sid=" + this.$sessionId, {
+        this.get(this.host + this.PATHS.logout + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "POST",
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
+                if (state != apf.SUCCESS) {
+                    //@todo startlisten here?
+                    
                     handleError(state, extra, callback);
+                }
                 else {
-                    _self.$stopListen();
-    
                     if (callback) 
                         callback(data, state, extra);
                 }
             }
         });
+        
+        this.$stopListen();
     };
 
     /**
@@ -334,6 +345,44 @@ apf.persist = function(struct, tagName){
     this.pause = function(secs) {
         
     };
+    
+    //add a listener to a document
+    this.create = function(sSession, callback){
+        var _self = this;
+        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
+            nocache       : true,
+            ignoreOffline : true,
+            method        : "POST",
+            callback      : function(data, state, extra){
+                if (state != apf.SUCCESS)
+                    handleError(state, extra, callback);
+                else {
+                    if (callback)
+                        callback(data);
+                }
+            }
+        });
+    }
+    
+    this.$addMethod = function(name){
+        this[name] = function(body, callback){
+            var _self = this;
+            this.get(this.host + "/" + name + "?sid=" + this.sessionId, {
+                nocache       : true,
+                ignoreOffline : true,
+                method        : "POST",
+                data          : body,
+                callback      : function(data, state, extra){
+                    if (state != apf.SUCCESS)
+                        handleError(state, extra, callback);
+                    else {
+                        if (callback)
+                            callback(data);
+                    }
+                }
+            });
+        }
+    }
     // #endif
 }).call(apf.persist.prototype = new apf.Teleport());
 

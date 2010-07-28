@@ -91,14 +91,20 @@ apf.rest = function(){
         if (!this.baseUrl)
             this.baseUrl = this.url;
 
-        var options = this.$methods[functionName],
-            body    = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1 ? args.pop() : "",
+        var options = this.$methods[functionName];
+
+        //#ifdef __DEBUG
+        if ("NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1)
+            apf.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
+        //#endif
+        
+        var body    = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1 ? args.pop() : "",
             url;
 
         this.method = options["http-method"];
         if (options["content-type"])
             this.contentType = options["content-type"];
-            
+
         var i     = 0,
             l     = args.length;
         for (; i < l; ++i)

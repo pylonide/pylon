@@ -29,17 +29,42 @@
         <a:persist id="myPersist" host="http://dev2.worknets.com:8124" />
         <a:remote transport="myPersist" id="rmtFs" />
 
-        <a:model id="mdlFs" remote="rmtFs" src="rdb://worknets.com/101" />
+        <a:model id="mdlFs" remote="rmtFs" />
             
-        <a:textbox value="[mdlFs::status]" />
-            
-        <a:textbox value="[mdlFs::status]" />
+        <a:textbox value="[mdlFs::status]" realtime="true" />
+        <a:textbox value="[mdlFs::status]" realtime="true" />
+
+        <a:model id="mdlDashboard" remote="rmtFs" />
 
         <!--a:button onclick="myPersist.connect('jane@campell.com', 'geheim')" width="80">Login</a:button>
         <a:button onclick="myPersist.disconnect()" width="80">Logout</a:button-->
         
         <a:script>
-            myPersist.connect('jane@campell.com', 'geheim');
+            rmtFs.addEventListener("model-find", function(e){
+                if (e.resource.indexOf("dashboard") > -1)
+                    return mdlDashboard;
+                else if (e.resource.indexOf("101") > -1) 
+                    return mdlFs;
+            });
+            
+            if (apf.isIE)
+                myPersist.connect('jane@campell.com', 'geheim');//, 'rdb://worknets.com/101');
+            else
+                myPersist.connect('jharrison@bi.nl', '101', 'rdb://worknets.com/101');
+            
+            setTimeout(function(){
+                //Test change
+                //mdlFs.setQueryValue("status", "Working hard " + new Date().getTime());
+                
+                //Test create
+                myPersist.create("rdb://worknets.com/worknet", function(data){
+                    apf.console.log("RECEIVED: " + data);
+                    myPersist.join(data);
+                });
+                
+                //Test logout
+                //myPersist.disconnect();
+            }, 1000);
         </a:script>
     </body>
 </html>

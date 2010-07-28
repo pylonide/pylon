@@ -153,6 +153,7 @@ apf.remote = function(struct, tagName){
     this.pendingTerminations = {};
 };
 
+//@todo this needs serious refactor
 (function(){
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;
@@ -258,7 +259,7 @@ apf.remote = function(struct, tagName){
         });
     };
 
-    this.startSession = function(model, xpath) {
+    this.startSession = function(model, xpath, fake) {
         if (!model) return;
         if (!model.id)
             model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
@@ -278,10 +279,14 @@ apf.remote = function(struct, tagName){
                 model: model,
                 xpath: xpath
             };
+
             var _self = this;
-            this.transport.startRDB(id, function(sSession, iTime) {
-                _self.sessionStarted(sSession, iTime);
-            });
+            if (!fake) {
+                this.transport.startRDB(id, function(sSession, iTime) {
+                    _self.sessionStarted(sSession, iTime);
+                });
+            }
+
             return o;
         }
         else {
@@ -310,11 +315,14 @@ apf.remote = function(struct, tagName){
     this.sessionStarted = function(sSession, iTime) {
         var oSession;
         if (!(oSession = this.sessions[sSession])) {
-	    apf.console.warn("Could not find session: " + sSession);
-	    return;
-	}
+    	    apf.console.warn("Could not find session: " + sSession);
+    	    return;
+    	}
+    	
         // check if time is provided, otherwise user created the session
-        oSession.baseline = iTime ? parseInt(iTime) : new Date().getTime();
+        if (iTime || !oSession.baseline)
+            oSession.baseline = iTime ? parseInt(iTime) : new Date().getTime();
+
         // #ifdef __DEBUG
         apf.console.log("session started: " + sSession + ", " + oSession.baseline);
         // #endif
@@ -327,28 +335,49 @@ apf.remote = function(struct, tagName){
     this.createDynamicModel = function(e, callback) {
         //if (!this["resource-uri"])
         //    return; //@todo implement error messaging (like '404, data not found')
-        var model, f,
+        var model, f, noEvent,
             id       = e.session || e.fields["session"].value,
             resource = checkProtocol(id);
+        
         apf.console.log("creating dynamic model " + id + ", " + resource);
+        
         if (!(model = apf.nameserver.get(id))) {
-            model = apf.setReference(id,
-                apf.nameserver.register("model", id, new apf.model()));
-            if (model === 0)
-                model = self[id];
-            else
-                model.id = model.name = id;
-            model.src = resource;
-            model.setProperty("remote", this.id);
+            model = this.dispatchEvent("model-find", {resource: resource});
+            if (model) {
+                delete model.src;
+                model.setProperty("remote", this.id);
+                model.rdb = this;
+                model.src = resource;
+                model.load(e.modeldata);
+                noEvent = true;
+            }
+            else {
+                model = apf.setReference(id,
+                    apf.nameserver.register("model", id, new apf.model()));
+
+                if (model === 0)
+                    model = self[id];
+                else
+                    model.id = model.name = id;
+                model.setProperty("remote", this.id);
+                model.src = resource;
+            }
         }
+
         var o = this.getSessionByModel(id);
-        if (!o)
-            o = this.startSession(model);
+        if (!o) {
+            o = this.startSession(model, null, true);
+            this.sessionStarted(e.session, e.baseline);
+        }
+            
         // set the root node for this model
-        model.addEventListener("afterload", f = function() {
-            model.removeEventListener("afterload", f);
-            callback(o);
-        });
+        if (!noEvent) {
+            model.addEventListener("afterload", f = function() {
+                model.removeEventListener("afterload", f);
+                callback(o);
+            });
+        }
+        
         this.dispatchEvent("rdbinit", {
             model    : model,
             resource : resource,
@@ -469,8 +498,9 @@ apf.remote = function(struct, tagName){
         }
         //#endif
 
-	var originalMessage = apf.extend({}, oMessage);
-	originalMessage.args = oMessage.args.slice();
+        //Only for bot
+    	var originalMessage = apf.extend({}, oMessage);
+    	originalMessage.args = oMessage.args.slice();
         
         //this.lastTime = new Date().getTime();
         if (oMessage.timestamp < this.discardBefore)
@@ -481,8 +511,8 @@ apf.remote = function(struct, tagName){
         
         if (!model) {
             //#ifdef __DEBUG
-            apf.console.warn("Remote Databinding Received: Could not find model when \
-                 receiving data for it with name '" + oMessage.model + "'");
+            apf.console.warn("Remote Databinding Received: Could not find model while" 
+                 + " receiving data for it with identifier '" + oMessage.model + "'");
             //#endif
             return;
         }
