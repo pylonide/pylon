@@ -524,34 +524,33 @@ apf.remote = function(struct, tagName){
         xmlNode = this.xpathToXml(q[1], model.data);
         if (xmlNode) {
             var action = q.splice(0, 2)[0];
-            if (action == "setNodeValue") {
-                apf.setNodeValue(xmlNode, q[0], true);
+
+            // transform xpaths to actual nodes
+            if (action == "addChildNode")
+                q[2] = this.xpathToXml(q[2], model.data);
+            else if (action == "appendChild") {
+                //@todo check why there's cleanNode here:
+                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+                q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
             }
-            else {
-                // transform xpaths to actual nodes
-                if (action == "addChildNode")
-                    q[2] = this.xpathToXml(q[2], model.data);
-                else if (action == "appendChild") {
-                    //@todo check why there's cleanNode here:
-                    q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
-                    q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
-                }
-                else if (action == "moveNode") {
-                    q[0] = this.xpathToXml(q[0], model.data);
-                    q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
-                }
-                else if (action == "replaceNode") {
-                    q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
-                }
-                q.unshift(xmlNode);
-                // pass the action to the actiontracker to execute it
-                model.$at.execute({
-                    action   : action,
-                    args     : q,
-                    annotator: sAnnotator,
-                    message  : oMessage
-                });
+            else if (action == "moveNode") {
+                q[0] = this.xpathToXml(q[0], model.data);
+                q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
             }
+            else if (action == "replaceNode") {
+                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+            }
+	    else if (action == "setValueByXpath") {}
+
+            q.unshift(xmlNode);
+            // pass the action to the actiontracker to execute it
+            model.$at.execute({
+                action   : action,
+                args     : q,
+                annotator: sAnnotator,
+                message  : oMessage
+            });
+
             this.dispatchEvent("change", {
                 resource : model.src,
                 model    : model,

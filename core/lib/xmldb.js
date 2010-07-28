@@ -757,7 +757,7 @@ apf.xmldb = new (function(){
                         notifyQueue[uId] = hash = [];
 
                     // Filtering
-                    if ("|update|attribute|text|".indexOf("|" + action + "|") > -1) {
+                    if (!apf.isO3 && "|update|attribute|text|".indexOf("|" + action + "|") > -1) {
                         found = false;
                         for (j = 0; j < hash.length; j++) {
                             if (hash[j] && xmlNode == hash[j][1]
@@ -775,7 +775,7 @@ apf.xmldb = new (function(){
                     }
 
                     //!this.delayUpdate && <- that doesnt work because of information that is destroyed
-                    if ("|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
+                    if (apf.isO3 || "|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
                         if (this.$listeners[uId]) {
                             this.$listeners[uId]([action, xmlNode,
                                 loopNode, undoObj, oParent]);
