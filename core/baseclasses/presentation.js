@@ -144,12 +144,12 @@ apf.Presentation = function(){
             this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
     }
 
-    var oldClass;
     /**
      * @attribute {String} class the name of the css style class applied to the this element.
      */
     this.$propHandlers["class"] = function(value){
-        this.$setStyleClass(this.$ext, value, [oldClass || ""])
+        this.$setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
+        this.$lastClassValue = value;
     }
 
     //#ifdef __WITH_SKIN_CHANGE
@@ -555,8 +555,8 @@ apf.Presentation = function(){
         if (node = (aml || this).getAttributeNode("style"))
             oExt.setAttribute("style", node.nodeValue);
 
-        if (node = (aml || this).getAttributeNode("class"))
-            this.$setStyleClass(oExt, (oldClass = node.nodeValue));
+        //if (node = (aml || this).getAttributeNode("class"))
+            //this.$setStyleClass(oExt, (oldClass = node.nodeValue));
 
         if (func)
             func.call(this, oExt);

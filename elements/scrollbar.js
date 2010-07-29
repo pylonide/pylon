@@ -73,6 +73,10 @@ apf.scrollbar = function(struct, tagName){
         return h && h.tagName == "BODY" ? h.parentNode : h;
     }
     
+    this.$getViewPort = function(oHtml){
+        return oHtml.tagName == "HTML" ? apf[this.$windowSize]() : oHtml[this.$offsetSize];
+    }
+    
     //oHtml, o, scroll_func
     this.$attach = function(amlNode){
         if (!amlNode)
@@ -117,7 +121,7 @@ apf.scrollbar = function(struct, tagName){
             var oHtml = _self.$getHtmlHost();
 
             //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
-            var div = (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
+            var div = (oHtml[_self.$scrollSize] - _self.$getViewPort(oHtml));
             if (div) {
                 _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / div;
                 _self.setScroll();
@@ -151,7 +155,7 @@ apf.scrollbar = function(struct, tagName){
         oHtml.onscroll = function(){
             if (!scrolling) {
                 var oHtml = _self.$getHtmlHost();
-                var m = oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize];
+                var m = oHtml[_self.$scrollSize] - _self.$getViewPort(oHtml);
                 var p = oHtml[_self.$scrollPos] / m;
                 if (Math.abs(_self.$curValue - p) > 1/m) {
                     _self.$curValue = p;
@@ -171,7 +175,7 @@ apf.scrollbar = function(struct, tagName){
         var oHtml            = this.$getHtmlHost();
         if (!oHtml) return;
         
-        this.$viewheight     = oHtml[this.$offsetSize];
+        this.$viewheight     = this.$getViewPort(oHtml);
         this.$scrollSizeheight   = this.$viewheight;
         this.$scrollSizeWait     = 0;//(this.$host.len * COLS)/2;
         this.$stepValue      = (this.$viewheight / this.$scrollSizeheight) / 20;
@@ -185,7 +189,7 @@ apf.scrollbar = function(struct, tagName){
         var oHtml = this.$getHtmlHost();
         
         //Disable scrollbar
-        if (oHtml[this.$offsetSize] >= oHtml[this.$scrollSize]) {
+        if (this.$getViewPort(oHtml) >= oHtml[this.$scrollSize]) {
             if (this.overflow == "scroll") {
                 this.$caret.style.display = "none";
                 this.disable();
@@ -210,7 +214,7 @@ apf.scrollbar = function(struct, tagName){
             //oHtml.style.overflowY = "scroll";
             
             //Set scroll size
-            this.$caret.style[this.$size] = (Math.max(5, (oHtml[this.$offsetSize] / oHtml[this.$scrollSize]
+            this.$caret.style[this.$size] = (Math.max(5, (this.$getViewPort(oHtml) / oHtml[this.$scrollSize]
                 * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
@@ -250,7 +254,7 @@ apf.scrollbar = function(struct, tagName){
             
             if (this.$host) {
                 var oHtml = this.$getHtmlHost();
-                oHtml[this.$scrollPos] = (oHtml[this.$scrollSize] - apf[this.$getInner](oHtml)) * this.pos;
+                oHtml[this.$scrollPos] = (oHtml[this.$scrollSize] - this.$getViewPort(oHtml)) * this.pos;
             }
         }
     }
@@ -380,6 +384,7 @@ apf.scrollbar = function(struct, tagName){
 
         this.horizontal   = apf.isTrue(this.$getOption("main", "horizontal"));
         
+        this.$windowSize = this.horizontal ? "getWindowWidth" : "getWindowHeight";
         this.$offsetSize = this.horizontal ? "offsetWidth" : "offsetHeight";
         this.$size       = this.horizontal ? "width" : "height";
         this.$offsetPos  = this.horizontal ? "offsetLeft" : "offsetTop";
