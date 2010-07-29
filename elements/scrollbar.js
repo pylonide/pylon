@@ -69,7 +69,8 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.$getHtmlHost = function(){
-        return this.$host && (this.$host.$int || this.$host.$container);
+        var h = this.$host && (this.$host.$int || this.$host.$container);
+        return h && h.tagName == "BODY" ? h.parentNode : h;
     }
     
     //oHtml, o, scroll_func
@@ -77,6 +78,9 @@ apf.scrollbar = function(struct, tagName){
         if (!amlNode)
             return apf.console.warn("Scrollbar could not connect to amlNode");
         
+        if (amlNode.host)
+            amlNode = amlNode.host;
+
         if (!amlNode.nodeFunc && amlNode.style) {
             this.$host = {
                 empty : true,
@@ -108,6 +112,19 @@ apf.scrollbar = function(struct, tagName){
         //        this.$ext.style.display = "none";
         //}
 
+        var scrollFunc = function(e){
+            scrolling = apf.isIE;
+            var oHtml = _self.$getHtmlHost();
+
+            //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
+            var div = (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
+            if (div) {
+                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / div;
+                _self.setScroll();
+                e.preventDefault();
+            }
+        };
+
         var _self = this, scrolling;
         if (!this.$host.empty) {
             amlNode.addEventListener("resize", function(){
@@ -121,20 +138,13 @@ apf.scrollbar = function(struct, tagName){
                     _self.$update();
                 });
             }
-            amlNode.addEventListener("mousescroll", function(e){
-                scrolling = apf.isIE;
-                var oHtml = _self.$getHtmlHost();
-                //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
-                var div = (oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize]);
-                if (div) {
-                    _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / div;
-                    _self.setScroll();
-                    e.preventDefault();
-                }
-            });
+            amlNode.addEventListener("mousescroll", scrollFunc);
         }
         else {
-            
+            apf.dispatchEvent("mousescroll", function(e){
+                if (amlNode == e.target)
+                    scrollFunc();
+            })
         }
 
         var oHtml = _self.$getHtmlHost();

@@ -400,7 +400,7 @@ apf.persist = function(struct, tagName){
                     return _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
-                        callback(data);
+                        callback(data, state, extra);
                 }
             }
         });
