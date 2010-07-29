@@ -285,7 +285,7 @@ apf.upload = function(struct, tagName){
                 nextQueue.call(this);
         }
         else {
-			apf.dispatchEvent("uploaded");
+			this.dispatchEvent("uploaded");
             this.stop();
         }
     }
