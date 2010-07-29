@@ -188,6 +188,11 @@ apf.persist = function(struct, tagName){
                         var data = apf.unserialize(message);
                         var body = [];
                         for (var i = 0, l = data.length; i < l; i++) {
+                            if (!data[i]) {
+                                apf.console.warn("empty message received!");
+                                continue;
+                            }
+                            
                             if (data[i].type == "update") {
                                 _self.dispatchEvent("datachange", {
                                     body      : [data[i].message], //@todo remote.js is not generic enough
