@@ -774,7 +774,7 @@ apf.model = function(struct, tagName){
                 var oError;
 
                 oError = new Error(apf.formatErrorString(1032,
-                    _self, "Inserting xml data", "Could not load data\n"
+                    _self, "Loading xml data", "Could not load data\n"
                   + "Instruction: " + instruction + "\n"
                   + "Url: " + extra.url + "\n"
                   + "Info: " + extra.message + "\n\n" + data));

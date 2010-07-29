@@ -425,7 +425,7 @@ apf.persist = function(struct, tagName){
                         return _self.$handleError(data, state, extra, callback);
                     else {
                         if (typeof callback == "function")
-                            callback(data);
+                            callback(data, state, extra);
                     }
                 }
             });
