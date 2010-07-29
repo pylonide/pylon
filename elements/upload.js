@@ -285,6 +285,7 @@ apf.upload = function(struct, tagName){
                 nextQueue.call(this);
         }
         else {
+			apf.dispatchEvent("uploaded");
             this.stop();
         }
     }
@@ -345,7 +346,7 @@ apf.upload = function(struct, tagName){
             count++;
         }
 
-	this.dispatchEvent("queue", {files: selected_files});
+		this.dispatchEvent("queue", {files: selected_files});
 
         // Only refresh if any files where added
         if (count) {
