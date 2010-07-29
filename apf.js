@@ -1237,6 +1237,7 @@ var apf = {
         //#endif
     },
 
+    html_entity_decode : function(s){return s},
     htmlentities : function(s){return s},
 
     /**
