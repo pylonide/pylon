@@ -133,6 +133,9 @@ apf.scrollbar = function(struct, tagName){
                 }
             });
         }
+        else {
+            
+        }
 
         var oHtml = _self.$getHtmlHost();
         oHtml.onscroll = function(){

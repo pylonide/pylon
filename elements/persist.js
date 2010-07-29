@@ -410,7 +410,7 @@ apf.persist = function(struct, tagName){
         this[def.name] = function(){
             var args = def.args, out = [];
             for (var i = 0; i < args.length; i++) {
-                out.push(args[i] + " = " + encodeURIComponent(arguments[i]));
+                out.push(args[i] + "=" + encodeURIComponent(arguments[i]));
             }
             var callback = arguments[arguments.length - 1];
             
@@ -424,7 +424,7 @@ apf.persist = function(struct, tagName){
                     if (state != apf.SUCCESS)
                         return _self.$handleError(data, state, extra, callback);
                     else {
-                        if (callback)
+                        if (typeof callback == "function")
                             callback(data);
                     }
                 }

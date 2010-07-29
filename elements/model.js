@@ -827,7 +827,7 @@ apf.model = function(struct, tagName){
     /**
      * Loads data in this model
      *
-     * @param  {XMLElement} [xmlNode]  the data to load in this model. null will clear the data from this model.
+     * @param  {mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
