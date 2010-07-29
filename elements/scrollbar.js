@@ -69,11 +69,14 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.$getHtmlHost = function(){
-        return this.$host.$int || this.$host.$container;
+        return this.$host && (this.$host.$int || this.$host.$container);
     }
     
     //oHtml, o, scroll_func
     this.$attach = function(amlNode){
+        if (!amlNode)
+            return apf.console.warn("Scrollbar could not connect to amlNode");
+        
         if (!amlNode.nodeFunc && amlNode.style) {
             this.$host = {
                 empty : true,
@@ -153,6 +156,8 @@ apf.scrollbar = function(struct, tagName){
     
     this.$recalc = function(){
         var oHtml            = this.$getHtmlHost();
+        if (!oHtml) return;
+        
         this.$viewheight     = oHtml[this.$offsetSize];
         this.$scrollSizeheight   = this.$viewheight;
         this.$scrollSizeWait     = 0;//(this.$host.len * COLS)/2;
@@ -523,7 +528,6 @@ apf.scrollbar = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (_self.disabled)
                 return;
-                debugger;
             if (!e) 
                 e = event;
             clearInterval(_self.$timer);

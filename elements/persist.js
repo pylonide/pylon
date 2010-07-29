@@ -225,6 +225,12 @@ apf.persist = function(struct, tagName){
     this.startRDB = function(sSession, callback){
         if (sSession == "empty")
             return;
+        
+        if (!this.sessionId) {
+            apf.console.warn("Could not start RDB session, missing session id.");
+            return false;
+        }
+        
         var _self = this;
         this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
             nocache       : true,

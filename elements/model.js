@@ -828,7 +828,12 @@ apf.model = function(struct, tagName){
      * Loads data in this model
      *
      * @param  {XMLElement} [xmlNode]  the data to load in this model. null will clear the data from this model.
-     * @param  {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
+     * @param {Object}     options
+     *   Properties:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
+     *   {Function}   callback  the code executed when the data request returns.
+     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
         if (typeof xmlNode == "string") {
