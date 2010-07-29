@@ -45,7 +45,7 @@ apf.scrollbar = function(struct, tagName){
     this.$slideMaxSize;
     
     this.addEventListener("focus", function(){
-        if (this.$host.focus)
+        if (this.$host.focus && this.$host.$isWindowContainer !== true)
             this.$host.focus();
     });
 

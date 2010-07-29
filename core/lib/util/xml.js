@@ -854,7 +854,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
             + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.tagName)) + 1))
+                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
              + "]");
         lNode = lNode.parentNode;
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);

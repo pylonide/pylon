@@ -971,7 +971,8 @@ apf.window = function(){
                 else
                     apf.window.$focus(amlNode);
             }
-            else if (amlNode.disabled < 1 && amlNode.focussable !== false) {
+            else if ((amlNode.disabled == undefined || amlNode.disabled < 1) 
+              && amlNode.focussable !== false) {
                 if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
