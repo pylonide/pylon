@@ -395,10 +395,15 @@ apf.persist = function(struct, tagName){
         });
     }
     
-    this.$addMethod = function(name){
-        this[name] = function(body, callback){
+    this.$addMethod = function(def){
+        this[def.name] = function(){
+            var args = def.args, out = [];
+            for (var i = 0; i < args.length; i++) {
+                out.push(args[i] + " = " + encodeURIComponent(arguments[i]));
+            }
+            
             var _self = this;
-            this.get(this.host + "/" + name + "?sid=" + this.sessionId, {
+            this.get(this.host + "/" + def.name + "?sid=" + this.sessionId + "&" + out.join("&"), {
                 nocache       : true,
                 ignoreOffline : true,
                 method        : "POST",
