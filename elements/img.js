@@ -149,6 +149,11 @@ apf.preview = function(struct, tagName){
                 //this.$resize();
         }
     };
+
+    this.refetch = function(){
+	this.$propHandlers["value"].call(this, "test");
+	this.$propHandlers["value"].call(this, this.value);
+    }
     
     this.addEventListener("$clear", function(){
         this.value = "";

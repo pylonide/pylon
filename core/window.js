@@ -1035,9 +1035,11 @@ apf.window = function(){
         
         if (!canSelect) { // && !cEditable
             e.preventDefault();
-            
-            if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
-                document.activeElement.blur();
+           
+	    try{  
+                if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
+                    document.activeElement.blur();
+	    }catch(e){}
         }
     });
 

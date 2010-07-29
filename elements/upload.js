@@ -345,6 +345,8 @@ apf.upload = function(struct, tagName){
             count++;
         }
 
+	this.dispatchEvent("queue", {files: selected_files});
+
         // Only refresh if any files where added
         if (count) {
             calc.call(this);
