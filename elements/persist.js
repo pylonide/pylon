@@ -407,7 +407,6 @@ apf.persist = function(struct, tagName){
                 nocache       : true,
                 ignoreOffline : true,
                 method        : "POST",
-                data          : body,
                 callback      : function(data, state, extra){
                     if (state != apf.SUCCESS)
                         return _self.$handleError(data, state, extra, callback);
