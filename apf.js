@@ -2416,6 +2416,10 @@ apf.$loader = {
     script : function(){
         if (this.parallel) {
             var item = this.queue[this.queue.length - 1];
+	    if (!item) {
+		item = this.wait();
+		item = this.queue[this.queue.length - 1];
+	    }
             for (var i = 0, l = arguments.length; i < l; i++) {
                 item.push({src: arguments[i]});
             }
@@ -2499,6 +2503,8 @@ apf.$loader = {
                 this.include(item[i], item);
             }
         }
+	else
+	    this.state = 0;
         
         if (!this.queue.length)
             this.wait();

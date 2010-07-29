@@ -27,7 +27,6 @@
  */
 
 // #ifndef __PACKAGED
-
 if (location.protocol != "file:") {
     apf.console.warn("You are serving multiple files from a (local) "
            + "webserver - please consider\nusing the file:// protocol to "
