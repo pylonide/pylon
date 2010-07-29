@@ -401,12 +401,14 @@ apf.persist = function(struct, tagName){
             for (var i = 0; i < args.length; i++) {
                 out.push(args[i] + " = " + encodeURIComponent(arguments[i]));
             }
+            var callback = arguments[arguments.length - 1];
             
             var _self = this;
-            this.get(this.host + "/" + def.name + "?sid=" + this.sessionId + "&" + out.join("&"), {
+            this.get(this.host + "/" + def.name + "?sid=" + this.sessionId, {
                 nocache       : true,
                 ignoreOffline : true,
                 method        : "POST",
+                data          : out.join("&"),
                 callback      : function(data, state, extra){
                     if (state != apf.SUCCESS)
                         return _self.$handleError(data, state, extra, callback);
@@ -435,7 +437,8 @@ apf.persist = function(struct, tagName){
                 break;
             default:
                 if (typeof this[method] == "function") {
-                    this[method](args[0], callback);
+                    args.push(callback);
+                    this[method].apply(this, args);
                 }
                 else {
                     //#ifdef __DEBUG
