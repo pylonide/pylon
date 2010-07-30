@@ -824,7 +824,7 @@ Date.prototype.toISO8601 = function(date) {
     + "-" + pad(date.getDate(), 2)
     + "T" + pad(date.getHours(), 2)
     + ":" + pad(date.getMinutes(), 2)
-    + ":" + pad(date.getUTCSeconds())
+    + ":" + pad(date.getUTCSeconds(), 2)
     + (offset > 0 ? "-" : "+")
     + pad(Math.floor(Math.abs(offset) / 60), 2)
     + ":" + pad(Math.abs(offset) % 60, 2);
