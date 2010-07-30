@@ -27,199 +27,202 @@
  * @private
  */
 apf.actiontracker.actions = {
-    "setTextNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "setTextNode" : function(undoObj, undo){
+        var q = undoObj.args;
 
         // Set Text Node
         if (!undo)
-            apf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.setTextNode(q[0], q[1], q[2], undoObj);
         else //Undo Text Node Setting
-            apf.xmldb.setTextNode(q[0], UndoObj.extra.oldValue, q[2]);
+            apf.xmldb.setTextNode(q[0], undoObj.extra.oldValue, q[2], undoObj);
     },
 
-    "setAttribute" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "setAttribute" : function(undoObj, undo){
+        var q = undoObj.args;
 
         // Set Attribute
         if (!undo) {
             //Set undo info
-            UndoObj.extra.name = q[1];
-            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
+            undoObj.extra.name = q[1];
+            undoObj.extra.oldValue = q[0].getAttribute(q[1]);
 
-            apf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.setAttribute(q[0], q[1], q[2], q[3], undoObj);
         }
         // Undo Attribute Setting
         else {
-            if (!UndoObj.extra.oldValue)
-                apf.xmldb.removeAttribute(q[0], q[1]);
+            if (!undoObj.extra.oldValue)
+                apf.xmldb.removeAttribute(q[0], q[1], null, undoObj);
             else
-                apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[3]);
+                apf.xmldb.setAttribute(q[0], q[1], undoObj.extra.oldValue, q[3], undoObj);
         }
     },
 
-    "removeAttribute" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "removeAttribute" : function(undoObj, undo){
+        var q = undoObj.args;
 
         // Remove Attribute
         if (!undo) {
             // Set undo info
-            UndoObj.extra.name = q[1];
-            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
+            undoObj.extra.name = q[1];
+            undoObj.extra.oldValue = q[0].getAttribute(q[1]);
 
-            apf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.removeAttribute(q[0], q[1], q[2], undoObj);
         }
         //Undo Attribute Removal
         else
-            apf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[2]);
+            apf.xmldb.setAttribute(q[0], q[1], undoObj.extra.oldValue, q[2], undoObj);
     },
 
-    "replaceNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "replaceNode" : function(undoObj, undo){
+        var q = undoObj.args;
 
         //Set Attribute
         if (!undo)
-            apf.xmldb.replaceNode(q[1], q[0], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[1], q[0], q[2], undoObj);
         //Undo Attribute Setting
         else
-            apf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
+            apf.xmldb.replaceNode(q[0], q[1], q[2], undoObj);
     },
 
-    "addChildNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "addChildNode" : function(undoObj, undo){
+        var q = undoObj.args;
 
         //Add Child Node
         if (!undo)
-            apf.xmldb.addChildNode(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.addChildNode(q[0], q[1], q[2], q[3], undoObj);
         //Remove Child Node
         else
-            apf.xmldb.removeNode(UndoObj.extra.addedNode);
+            apf.xmldb.removeNode(undoObj.extra.addedNode, null, undoObj);
     },
 
-    "appendChild" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "appendChild" : function(undoObj, undo){
+        var q = undoObj.args;
 
         //Append Child Node
         if (!undo)
-            apf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
+            apf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], undoObj);
         //Remove Child Node
         else
-            apf.xmldb.removeNode(UndoObj.xmlNode);//q[1]
+            apf.xmldb.removeNode(undoObj.xmlNode, null, undoObj);//q[1]
     },
 
-    "moveNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "moveNode" : function(undoObj, undo){
+        var q = undoObj.args;
 
         //Move Node
         if (!undo)
-            apf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
+            apf.xmldb.moveNode(q[0], q[1], q[2], q[3], undoObj);
         //Move Node to previous position
         else
-            apf.xmldb.moveNode(UndoObj.extra.oldParent, q[1],
-                UndoObj.extra.beforeNode, q[3]);
+            apf.xmldb.moveNode(undoObj.extra.oldParent, q[1],
+                undoObj.extra.beforeNode, q[3], undoObj);
     },
 
-    "removeNode" : function(UndoObj, undo){
-        var q = UndoObj.args;
+    "removeNode" : function(undoObj, undo){
+        var q = undoObj.args;
 
         //Remove Node
         if (!undo)
-            apf.xmldb.removeNode(q[0], q[1], UndoObj);
+            apf.xmldb.removeNode(q[0], q[1], undoObj);
         //Append Child Node
         else
-            apf.xmldb.appendChild(UndoObj.extra.parent,
-                UndoObj.extra.removedNode, UndoObj.extra.beforeNode);
+            apf.xmldb.appendChild(undoObj.extra.parent,
+                undoObj.extra.removedNode, undoObj.extra.beforeNode,
+                null, null, undoObj);
     },
 
     /**
      * @deprecated Use "multicall" from now on
      */
-    "removeNodeList" : function(UndoObj, undo){
+    "removeNodeList" : function(undoObj, undo){
         if (undo) {
-            var d = UndoObj.extra.removeList;
+            var d = undoObj.extra.removeList;
             for (var i = d.length - 1; i >= 0; i--) {
                 apf.xmldb.appendChild(d[i].pNode,
-                    d[i].removedNode, d[i].beforeNode);
+                    d[i].removedNode, d[i].beforeNode, null, null, undoObj);
             }
         }
         else
-            apf.xmldb.removeNodeList(UndoObj.args, UndoObj);
+            apf.xmldb.removeNodeList(undoObj.args, undoObj);
     },
 
-    "group" : function(UndoObj, undo, at){
-        if (!UndoObj.$undostack) {
-            var done = UndoObj.args[0];
-            UndoObj.$undostack = done;
-            UndoObj.$redostack = [];
+    "group" : function(undoObj, undo, at){
+        if (!undoObj.$undostack) {
+            var done = undoObj.args[0];
+            undoObj.$undostack = done;
+            undoObj.$redostack = [];
         }
 
-        at[undo ? "undo" : "redo"](UndoObj.$undostack.length, false,
-            UndoObj.$undostack, UndoObj.$redostack);
+        at[undo ? "undo" : "redo"](undoObj.$undostack.length, false,
+            undoObj.$undostack, undoObj.$redostack);
     },
     
-    /*"setProperty" : function(UndoObj, undo){
-        var q = UndoObj.args;//amlNode, name, value
+    /*"setProperty" : function(undoObj, undo){
+        var q = undoObj.args;//amlNode, name, value
 
         if (!undo) {
-            UndoObj.extra.oldValue = q[0][q[1]];
+            undoObj.extra.oldValue = q[0][q[1]];
             q[0].setProperty(q[1], q[2], q[3], q[4]);
         }
         // Undo 
         else {
-            q[0].setProperty(q[1], UndoObj.extra.oldValue);
+            q[0].setProperty(q[1], undoObj.extra.oldValue);
         }
     },*/
     
-    "setValueByXpath" : function(UndoObj, undo){
-        var newNode, q = UndoObj.args;//xmlNode, value, xpath
+    "setValueByXpath" : function(undoObj, undo){
+        var newNode, q = undoObj.args;//xmlNode, value, xpath
         
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            if (newNode = UndoObj.extra.newNode) {
+            if (newNode = undoObj.extra.newNode) {
                 if (newNode.nodeType == 2) {
-                    apf.xmldb.setAttribute(UndoObj.extra.ownerElement, 
+                    apf.xmldb.setAttribute(undoObj.extra.ownerElement, 
                       newNode.nodeName, newNode.nodeValue);
-                    UndoObj.extra.newNode = UndoObj.extra.ownerElement
+                    undoObj.extra.newNode = undoObj.extra.ownerElement
                       .getAttributeNode(newNode.nodeName);
                 }
                 else
-                    apf.xmldb.appendChild(UndoObj.extra.parentNode, UndoObj.extra.newNode);
+                    apf.xmldb.appendChild(undoObj.extra.parentNode, 
+                        undoObj.extra.newNode, null, null, null, undoObj);
             }
             else {
                 var newNodes = [];
                 apf.setNodeValue(q[0], q[1], true, {
-                    undoObj  : UndoObj,
+                    undoObj  : undoObj,
                     xpath    : q[2],
                     newNodes : newNodes,
                     forceNew : q[3]
                 });
     
-                newNode = UndoObj.extra.newNode = newNodes[0];
+                newNode = undoObj.extra.newNode = newNodes[0];
                 if (newNode) {
                     if (newNode.nodeType == 2)
-                        UndoObj.extra.ownerElement = newNode.ownerElement 
+                        undoObj.extra.ownerElement = newNode.ownerElement 
                           || newNode.selectSingleNode("..");
                     else
-                        UndoObj.extra.parentNode = UndoObj.extra.newNode.parentNode;
+                        undoObj.extra.parentNode = undoObj.extra.newNode.parentNode;
                 }
             }
         }
         // Undo Setting NodeValue
         else {
-            if (newNode = UndoObj.extra.newNode) {
+            if (newNode = undoObj.extra.newNode) {
                 if (newNode.nodeType == 2)
-                    apf.xmldb.removeAttribute(UndoObj.extra.ownerElement, 
-                      newNode.nodeName);
+                    apf.xmldb.removeAttribute(undoObj.extra.ownerElement, 
+                      newNode.nodeName, null, undoObj);
                 else
-                    apf.xmldb.removeNode(UndoObj.extra.newNode);
+                    apf.xmldb.removeNode(undoObj.extra.newNode, null, undoObj);
             }
             else
-                apf.setNodeValue(UndoObj.extra.appliedNode, UndoObj.extra.oldValue, true);
+                apf.setNodeValue(undoObj.extra.appliedNode, 
+                    undoObj.extra.oldValue, true, {undoObj: undoObj});
         }
     },
 
     //@todo please change .func to .action for constency reasons
-    "multicall" : function(UndoObj, undo, at){
-        var q = UndoObj.args;
+    "multicall" : function(undoObj, undo, at){
+        var q = undoObj.args;
 
         var dUpdate = apf.xmldb.delayUpdate;
         apf.xmldb.delayUpdate = true;
@@ -237,8 +240,8 @@ apf.actiontracker.actions = {
             }
             //#ifdef __WITH_RDB
             if (q[0].rdbModel) {
-                UndoObj.rdbModel = q[0].rdbModel;
-                UndoObj.rdbQueue = q[0].rdbQueue;
+                undoObj.rdbModel = q[0].rdbModel;
+                undoObj.rdbQueue = q[0].rdbQueue;
             }
             //#endif
         }

@@ -388,8 +388,10 @@ apf.xmldb = new (function(){
         }
 
         //Action Tracker Support
-        if (undoObj)
+        if (undoObj && !undoObj.$filled) {
             undoObj.extra.oldValue = tNode.nodeValue;
+            undoObj.$filled = true;
+        }
 
         //Apply Changes
         if (range) { //@todo apf3.0 range
@@ -450,7 +452,10 @@ apf.xmldb = new (function(){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Action Tracker Support
-        if (undoObj) undoObj.name = name;
+        if (undoObj && !undoObj.$filled) {
+            undoObj.name = name;
+            undoObj.$filled = true;
+        }
 
         //Apply Changes
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
@@ -487,7 +492,8 @@ apf.xmldb = new (function(){
         // #endif
 
         //Action Tracker Support
-        if (undoObj) {
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
             undoObj.oldNode = oldNode;
             undoObj.xmlNode = newNode;
         }
@@ -522,8 +528,10 @@ apf.xmldb = new (function(){
             xmlNode.setAttribute(attr[i][0], attr[i][1]);
 
         //Action Tracker Support
-        if (undoObj)
+        if (undoObj && !undoObj.$filled) {
             undoObj.extra.addedNode = xmlNode;
+            undoObj.$filled = true;
+        }
 
         this.applyChanges("add", xmlNode, undoObj);
 
@@ -550,8 +558,10 @@ apf.xmldb = new (function(){
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
 
-        if (undoObj)
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled = true;
             this.cleanNode(xmlNode);
+        }
 
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
@@ -640,7 +650,8 @@ apf.xmldb = new (function(){
             xmlNode = xmlNode.selectSingleNode(xpath);
 
         //ActionTracker Support
-        if (undoObj) {
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled           = true;
             undoObj.extra.parent      = xmlNode.parentNode;
             undoObj.extra.removedNode = xmlNode;
             undoObj.extra.beforeNode  = xmlNode.nextSibling;
@@ -686,8 +697,10 @@ apf.xmldb = new (function(){
             this.applyChanges("redo-remove", xmlNodeList[i], null, p);//undoObj
         }
 
-        if (undoObj)
+        if (undoObj && !undoObj.$filled) {
+            undoObj.$filled          = true;
             undoObj.extra.removeList = rData;
+        }
 
         // #ifdef __WITH_RDB
         this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});

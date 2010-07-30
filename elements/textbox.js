@@ -134,7 +134,7 @@ apf.textbox  = function(struct, tagName){
      * @attribute {String} value the text of this element
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
-    this.$propHandlers["value"] = function(value, prop, initial){
+    this.$propHandlers["value"] = function(value, prop, force, initial){
         if (!this.$input || !initial && this.getValue() == value)
             return;
 
@@ -325,11 +325,11 @@ apf.textbox  = function(struct, tagName){
     //@todo cleanup and put initial-message behaviour in one location
     this.clear = function(){
         if (this["initial-message"]) {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
         else {
-            this.$propHandlers["value"].call(this, "", null, true);
+            this.$propHandlers["value"].call(this, "", null, null, true);
         }
         
         this.dispatchEvent("clear");//@todo this should work via value change
@@ -395,7 +395,7 @@ apf.textbox  = function(struct, tagName){
         this.value = "";//@todo what about property binding?
         
         if (this["initial-message"] && apf.document.activeElement != this) {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
         else {
@@ -466,7 +466,7 @@ apf.textbox  = function(struct, tagName){
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
         if (this["initial-message"] && this.$input.value == this["initial-message"]) {
-            this.$propHandlers["value"].call(this, "", null, true);
+            this.$propHandlers["value"].call(this, "", null, null, true);
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
         
@@ -508,7 +508,7 @@ apf.textbox  = function(struct, tagName){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
         if (this["initial-message"] && this.$input.value == "") {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, true);
+            this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
 

@@ -134,6 +134,9 @@ apf.actiontracker = function(struct, tagName){
     this.$booleanProperties["realtime"] = true;
     this.$supportedProperties = ["realtime", "undolength", "redolength", "alias", "length", "position"];
     this.$handlePropSet = function(prop, value, force){
+        if (this.$booleanProperties[prop])
+            value = apf.isTrue(value);
+        
         //Read only properties
         switch (prop) {
             case "undolength":
