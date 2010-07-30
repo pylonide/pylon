@@ -782,18 +782,19 @@ Date.prototype.getCalendarYear = function() {
     return apf.date.getCalendarYear(this.getFullYear());
 };
 Date.prototype.fromISO8601 = function(formattedString) {
-	var match = formattedString.match(/^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(.\d+)?)?((?:[+-](\d{2}):(\d{2}))|Z)?)?$/),
-	result = null;
+	var match  = formattedString.match(/^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(.\d+)?)?((?:[+-](\d{2}):(\d{2}))|Z)?)?$/),
+        result = null;
 
 	if(match){
 		match.shift();
-		if(match[1]){match[1]--;} // Javascript Date months are 0-based
-		if(match[6]){match[6] *= 1000;} // Javascript Date expects fractional seconds as milliseconds
+		if(match[1])
+            match[1]--; // Javascript Date months are 0-based
+		if(match[6])
+            match[6] *= 1000; // Javascript Date expects fractional seconds as milliseconds
 
 		result = new Date(match[0]||1970, match[1]||0, match[2]||1, match[3]||0, match[4]||0, match[5]||0, match[6]||0); //TODO: UTC defaults
-		if(match[0] < 100){
+		if(match[0] < 100)
 			result.setFullYear(match[0] || 1970);
-		}
 
 		var offset = 0,
 			zoneSign = match[7] && match[7].charAt(0);
@@ -801,12 +802,10 @@ Date.prototype.fromISO8601 = function(formattedString) {
 			offset = ((match[8] || 0) * 60) + (Number(match[9]) || 0);
 			if(zoneSign != '-'){offset *= -1;}
 		}
-		if(zoneSign){
+		if(zoneSign)
 			offset -= result.getTimezoneOffset();
-		}
-		if(offset){
+		if(offset)
 			result.setTime(result.getTime() + offset * 60000);
-		}
 	}
 	return result; // Date or null
 }
@@ -825,6 +824,7 @@ Date.prototype.toISO8601 = function(date) {
     + "-" + pad(date.getDate(), 2)
     + "T" + pad(date.getHours(), 2)
     + ":" + pad(date.getMinutes(), 2)
+    + ":" + pad(date.getUTCSeconds())
     + (offset > 0 ? "-" : "+")
     + pad(Math.floor(Math.abs(offset) / 60), 2)
     + ":" + pad(Math.abs(offset) % 60, 2);
