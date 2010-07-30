@@ -2418,7 +2418,7 @@ apf.lm_exec = new (function(){
 
     function _valed(n, m, x){   // wrap a value with editable div
         return '<span class="liveEdit" xpath="' + (n ? apf.xmlToXpath(n, null, 2) + "/" + m : "") + '">' +
-                    (n?__val(n,m):__valm(m,x))+
+                    ((n?__val(n,m):__valm(m,x)) || "&nbsp;") +
                 '</span>';
     }
     

@@ -588,7 +588,9 @@ apf.LiveEdit = function() {
         }
         else 
         //#endif
+        {
             o.lastValue = oNode.innerHTML;
+        }
 
         /**
          * @todo for template

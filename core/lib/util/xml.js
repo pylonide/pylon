@@ -487,11 +487,11 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     do {
         if (lastpath.match(/^\@(.*)$/)) {
             (newNode || contextNode.selectSingleNode(foundpath))
-                .setAttributeNode(newNode = contextNode.ownerDocument.createAttribute(RegExp.$1));
+                .setAttributeNode(newNode = doc.createAttribute(RegExp.$1));
         }
         else if (lastpath.trim() == "text()") {
             newNode = (newNode || contextNode.selectSingleNode(foundpath))
-                .appendChild(contextNode.ownerDocument.createTextNode(""));
+                .appendChild(doc.createTextNode(""));
         }
         else {
             var hasId = lastpath.match(/(\w+)\[@([\w-]+)=(\w+)\]/);
