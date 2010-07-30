@@ -567,6 +567,10 @@ apf.xmldb = new (function(){
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
             xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
+        // #ifdef __WITH_RDB
+        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: pNode});
+        // #endif
+
         //Add xmlNode to parent pNode or one selected by xpath statement
         if (xpath) {
             var addedNodes = [];
@@ -588,10 +592,6 @@ apf.xmldb = new (function(){
         //- [17-2-2004] changed pNode (2nd arg applychange) into xmlNode
 
         this.applyChanges("add", xmlNode, undoObj);
-
-        // #ifdef __WITH_RDB
-        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: xmlNode});
-        // #endif
 
         return xmlNode;
     };
