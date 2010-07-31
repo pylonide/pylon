@@ -94,6 +94,7 @@ apf.upload.html5.isSupported = function() {
         oCont.style.height     = "100px",
         oCont.style.overflow   = "hidden",
         oCont.style.zIndex     = 99999,
+	oCont.style.cursor     = "default",
         oCont.style.opacity    = "0"; // Force transparent
 
         // Insert the input inide the input container
@@ -122,7 +123,7 @@ apf.upload.html5.isSupported = function() {
 
     this.refresh = function() {
         var oBtn = this.oUpload.$button.$ext,
-            pos  = apf.getAbsolutePosition(oBtn);
+            pos  = apf.getAbsolutePosition(oBtn, oCont.offsetParent);
 
         oCont.style.left   = pos[0] + "px",
         oCont.style.top    = pos[1] + "px",

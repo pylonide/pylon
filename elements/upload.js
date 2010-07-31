@@ -145,7 +145,7 @@ apf.upload = function(struct, tagName){
         this.$button = self[value];
 
         // #ifdef __DEBUG
-        if (!this.$button || !this.$button.$ext) {
+        if (!this.$button) {
             throw new Error(apf.formatErrorString(0, this, "upload init",
                 "No valid identifier for a Button element passed to the 'button' attribute."));
         }
@@ -285,7 +285,7 @@ apf.upload = function(struct, tagName){
                 nextQueue.call(this);
         }
         else {
-			this.dispatchEvent("uploaded");
+	    this.dispatchEvent("uploaded");
             this.stop();
         }
     }
@@ -443,6 +443,12 @@ apf.upload = function(struct, tagName){
                 "Required: 'target' attribute not set, thus no valid uri to send files to."));
         }
         //#endif
+
+	//#ifdef __DEBUG
+	if (this.parentNode.$layout) {
+	    apf.console.warn("Found upload element inside hbox/vbox/table element. This causes problems in the functionality of the upload widget.");
+	}
+	//#endif
 
         if (!this.$method) return;
         var _self = this;
