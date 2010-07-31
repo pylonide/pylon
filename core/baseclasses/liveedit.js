@@ -727,7 +727,7 @@ apf.LiveEdit = function() {
             this.$executeAction("setValueByXpath", [this.xmlRoot.ownerDocument,
                 rule && apf.isTrue(rule.richtext)
                     ? apf.htmlCleaner.parse(oNode.innerHTML)
-                    : oNode.innerHTML, xpath], "setValueByXpath", xmlNode);
+                    : apf.html_entity_decode(oNode.innerHTML), xpath], "setValueByXpath", xmlNode);
 
             //this.edit(xmlNode, );
 

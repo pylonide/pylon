@@ -251,8 +251,9 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             : apf.queryValue(xmlNode, xpath);
 
         undoObj.xmlNode        = xmlNode;
-        if (xpath)
+        if (xpath) {
             xmlNode = apf.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
+        }
 
         undoObj.extra.appliedNode = xmlNode;
     }
@@ -279,9 +280,23 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
                 || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                 undoObj);
     }
+    
     // #ifdef __WITH_RDB
-    if (applyChanges)
-        apf.xmldb.applyRDB(["setValueByXpath", xmlNode, nodeValue], options.undoObj || {xmlNode: xmlNode});
+    if (applyChanges) {
+        var node;
+        if (xpath) {
+            var node = undoObj.xmlNode;//.selectSingleNode(newNodes.foundpath);
+            if (node.nodeType == 9) {
+                node = node.documentElement;
+                xpath = xpath.replace(/^[^\/]*\//, "");//xpath.substr(newNodes.foundpath.length);
+            }
+        }
+        else
+            node = xmlNode;
+        
+        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath, 
+            options && options.forceNew], options.undoObj || {xmlNode: xmlNode});
+    }
     // #endif
 };
 
@@ -481,6 +496,8 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
 
     if (!foundpath)
         foundpath = ".";
+    if (addedNodes)
+        addedNodes.foundpath = foundpath;
 
     var newNode, lastpath = paths[len], 
         doc = contextNode.nodeType == 9 ? contextNode : contextNode.ownerDocument;

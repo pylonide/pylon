@@ -593,7 +593,10 @@ apf.GuiElement.propHandlers = {
             this.visible = false;
         }
         else { //if (apf.isTrue(value)) default
-            this.$ext.style.display = "block"; //Some form of inheritance detection
+            this.$ext.style.display = ""; //Some form of inheritance detection
+            if (!this.$ext.offsetHeight)
+                this.$ext.style.display = "block";
+            
             //#ifdef __WITH_LAYOUT
             if (apf.layout && this.$int) //apf.hasSingleRszEvent)
                 apf.layout.forceResize(this.$int);//this.$int

@@ -267,7 +267,8 @@ apf.model = function(struct, tagName){
                     list[prop].xpath, list[prop].optimize);
             
             if (this.data) {
-                if (node = p.root || p.listen ? this.data.selectSingleNode(p.root || p.listen) : this.data) {
+                //if (node = p.root || p.listen ? this.data.selectSingleNode(p.root || p.listen) : this.data) {
+                if (node = p.listen ? this.data.selectSingleNode(p.listen) : this.data) {
                     amlNode.$execProperty(prop, node);
                 }
                 else
@@ -347,7 +348,7 @@ apf.model = function(struct, tagName){
         //#endif
                  
         for (prop in p) {
-            if (node = p[prop].root ? xmlNode.selectSingleNode(p[prop].root) : xmlNode) {
+            if (node = p[prop].listen ? xmlNode.selectSingleNode(p[prop].listen) : xmlNode) {
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + id + "|" + prop + "|" + this.$uniqueId);
                 
