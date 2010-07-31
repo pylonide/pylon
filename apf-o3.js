@@ -229,7 +229,7 @@ apf = {
         
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write("Fatal error: " + msg + "\nStacktrace:\n" + apf.stacktrace(), "error", subtype, data);
+            this.write("Error: " + msg + "\nStacktrace:\n" + new Error().stack, "error", subtype, data);
             //#endif
         },
         

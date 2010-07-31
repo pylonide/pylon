@@ -151,8 +151,8 @@ apf.preview = function(struct, tagName){
     };
 
     this.refetch = function(){
-	$setTimeout(this.$propHandlers["value"].call(this, "test"));
-	$setTimeout(this.$propHandlers["value"].call(this, this.value));
+	this.$propHandlers["value"].call(this, "")
+	this.$propHandlers["value"].call(this, this.value || this.src)
     }
     
     this.addEventListener("$clear", function(){
