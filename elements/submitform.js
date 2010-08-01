@@ -113,7 +113,7 @@ apf.submitform = function(struct, tagName){
 
             var message = this.getPage().getAttribute("loadmessage");
             if (message)
-                (apf.queryNode("div[@class='msg']", this.loadState)
+                (apf.queryNode(this.loadState, "div[@class='msg']")
                   || this.loadState).innerHTML = message;
         }
     };

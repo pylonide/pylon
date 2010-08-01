@@ -522,7 +522,7 @@ apf.Presentation = function(){
             return null;
 
         return (htmlNode
-            ? apf.queryNode(textNode.nodeValue, htmlNode)
+            ? apf.queryNode(htmlNode, textNode.nodeValue)
             : apf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     };
 

@@ -366,11 +366,11 @@ apf.queryValues = function(xmlNode, xpath){
  * for dom nodes that don't have a good native xpath processor such as html
  * in some versions of internet explorer and xml in webkit.
  *
- * @param {String}  sExpr        the xpath expression.
  * @param {DOMNode} contextNode  the xml node that is subject to the query.
+ * @param {String}  sExpr        the xpath expression.
  * @returns {Array} list of xml nodes found. The list can be empty.
  */
-apf.queryNodes = function(sExpr, contextNode){
+apf.queryNodes = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
         return contextNode.selectNodes(sExpr); //IE55
     //if (contextNode.ownerDocument != document)
@@ -385,11 +385,11 @@ apf.queryNodes = function(sExpr, contextNode){
  * in some versions of internet explorer and xml in webkit. This function
  * Only returns the first node found.
  *
- * @param {String}  sExpr        the xpath expression.
  * @param {DOMNode} contextNode  the dom node that is subject to the query.
+ * @param {String}  sExpr        the xpath expression.
  * @returns {XMLNode} the dom node found or null if none was found.
  */
-apf.queryNode = function(sExpr, contextNode){
+apf.queryNode = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
         return contextNode.selectSingleNode(sExpr); //IE55
     //if (contextNode.ownerDocument != document)
