@@ -6,15 +6,18 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="0" />
+        <a:appsettings debug="0"
+          allow-select        = "true"
+          allow-blur          = "true"
+          initdelay           = "false" />
         
         <a:model id="mdlTest" />
         
         <a:model id="mdlBlah">
             <data>
-                <person name="Ruben" />
-                <person name="Hans" />
-                <person name="Bas" />
+                <person name="Ruben Daniels" />
+                <person name="Hans van Ballen ende Gooijen" />
+                <person name="Bas van Lippen Bisterveld" />
             </data>
         </a:model>
         
@@ -23,9 +26,25 @@
                 <div>[@name]</div>
             }
         ?></div>
-        
+
         <a:button state="true" width="100" onclick="
             test.setAttribute('liveedit', this.value);
         ">Toggle {this.value}</a:button>
+
+        <a:script><![CDATA[
+            function insertEl() {
+                var o = document.body.appendChild(document.createElement("div"));
+                o.innerHTML = "blahblah test";
+                o.contentEditable = true;
+                window.testEl = o;
+            }
+            function selectEl() {
+                var sel = new apf.selection();
+                sel.selectNode(window.testEl);
+                $setTimeout(function() {
+                    window.testEl.focus();
+                }, 20);
+            }
+        ]]></a:script>
     </body>
 </html>
