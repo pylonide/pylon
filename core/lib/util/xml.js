@@ -395,8 +395,8 @@ apf.queryNode = function(contextNode, sExpr){
     //if (contextNode.ownerDocument != document)
     //    return contextNode.selectSingleNode(sExpr);
 
-    var nodeList = apf.queryNodes(sExpr + (apf.isIE ? "" : "[1]"),
-        contextNode ? contextNode : null);
+    var nodeList = apf.queryNodes(contextNode ? contextNode : null,
+        sExpr + (apf.isIE ? "" : "[1]"));
     return nodeList.length > 0 ? nodeList[0] : null;
 };
 

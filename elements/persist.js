@@ -56,9 +56,9 @@
  * @define persist
  * @addnode teleport
  * 
- * @author      Mike de Boer
+ * @author      Ruben Daniels
  * @version     %I%, %G%
- * @since       1.0
+ * @since       3.0
  * @constructor
  *
  * @inherits apf.Class
@@ -194,7 +194,7 @@ apf.persist = function(struct, tagName){
                             }
                             if (data[i].type == "update") {
                                 _self.dispatchEvent("datachange", {
-                                    body      : [data[i].message], //@todo remote.js is not generic enough
+                                    body      : data[i].message.args ? [data[i].message] : data[i].message, //@todo remote.js is not generic enough
                                     session   : data[i].uri,
                                     annotator : data[i].uId
                                 });

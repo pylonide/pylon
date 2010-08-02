@@ -536,8 +536,9 @@ apf.Class.prototype = new (function(){
 
             if (!node) {
                 if (arguments[2]) {
-                    apf.console.warn("[287] Could not execute binding test : "
-                        + pValue.replace(/</g, "&lt;") + "\n\n" + o[0] + " does not exist");
+                    apf.console.warn("[287] Could not create binding with " + o[0] 
+                        + ". Could not find element.\n"
+                        + pValue.replace(/</g, "&lt;"));
                 }
                 else {
                     //@todo this is sloppy and not efficient - shouldn't clear 
