@@ -1035,7 +1035,8 @@ apf.window = function(){
         }
         
         if (!canSelect) { // && !cEditable
-            e.preventDefault();
+            if (e.preventDefault)
+                e.preventDefault();
            
 	    try{  
                 if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?

@@ -254,10 +254,11 @@ apf.LiveEdit = function() {
             o.lastTemplate.childNodes[0].focus();
         }
         else if (o.activeNode) {
-            var node = o.activeNode;
+            var _self = this,
+                node  = o.activeNode;
             $setTimeout(function(){
                 //this.$selection.selectNode(node);
-                this.$selection.set();
+                _self.$selection.set();
                 if (node.parentNode) //@todo why?
                     node.focus();
             }, 10);
@@ -409,7 +410,7 @@ apf.LiveEdit = function() {
                 }
                 if (found) {
                     apf.stopEvent(e.htmlEvent || e);
-                    if (this.realtime)
+                    if (this.realtime && this.$edVars.bStandalone)
                         // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
                         /* #else
@@ -466,9 +467,8 @@ apf.LiveEdit = function() {
                     }
                     else if (oNode.parentNode) { //lastTemplate
                         oNode.focus();
-                        this.$selection.selectNode(oNode);
-                        this.$selection.collapse();
                         try {
+                            //this.$selection.selectNode(oNode.firstChild);
                             this.$activeDocument.execCommand("SelectAll", false, true);
                         }
                         catch(e) {}
@@ -489,6 +489,10 @@ apf.LiveEdit = function() {
         if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
           && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
             resumeChangeTimer();
+            // remove the content of a selection manually when it's ranging
+            // multiple DOM nodes
+            if (apf.w3cRange && !o.bStandalone && !this.$selection.isCollapsed())
+                this.$selection.remove();
         }
 
         if (found)
@@ -536,7 +540,7 @@ apf.LiveEdit = function() {
 
     function createEditor(oNode) {
         var o = this.$edVars;
-        if (!oNode || oNode.nodeType != 1 || o.activeNode == oNode)
+        if (!oNode || oNode.nodeType != 1 || o.activeNode == oNode || !this.xmlRoot)
             return;
 
         if (!this.$selection)
@@ -654,12 +658,15 @@ apf.LiveEdit = function() {
             document.designMode = "on";
         }
         if (apf.isGecko) {
-            // On each return, insert a BR element
-            document.execCommand("insertBrOnReturn", false, true);
-            // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-            document.execCommand("enableObjectResizing", false, o.objectHandles);
-            // Disable the standard table editing features of Firefox.
-            document.execCommand("enableInlineTableEditing", false, o.tableHandles);
+            try {
+                // On each return, insert a BR element
+                document.execCommand("insertBrOnReturn", false, true);
+                // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
+                document.execCommand("enableObjectResizing", false, o.objectHandles);
+                // Disable the standard table editing features of Firefox.
+                document.execCommand("enableInlineTableEditing", false, o.tableHandles);
+            }
+            catch(ex){}
         }
 
         //#ifdef __WITH_WINDOW_FOCUS
@@ -871,11 +878,13 @@ apf.LiveEdit = function() {
         o.changeTimer = $setTimeout(function() {
             clearTimeout(o.changeTimer);
             console.log("resuming change....");
-            // #ifdef __WITH_DATAACTION
-            this.change(this.getValue());
-            /* #else
-            this.setProperty("value", this.getValue())
-            #endif*/
+            if (this.$edVars.bStandalone) {
+                // #ifdef __WITH_DATAACTION
+                this.change(this.getValue());
+                /* #else
+                this.setProperty("value", this.getValue())
+                #endif*/
+            }
             o.changeTimer = null;
         }, 200);
     }
@@ -994,11 +1003,13 @@ apf.LiveEdit = function() {
 
         this.$notifyAllButtons();
         
-        // #ifdef __WITH_DATAACTION
-        this.change(this.getValue());
-        /* #else
-        this.setProperty("value", this.getValue())
-        #endif*/
+        if (this.$edVars.bStandalone) {
+            // #ifdef __WITH_DATAACTION
+            this.change(this.getValue());
+            /* #else
+            this.setProperty("value", this.getValue())
+            #endif*/
+        }
 
         var _self = this;
         $setTimeout(function() {
@@ -1595,12 +1606,14 @@ apf.LiveEdit = function() {
         html = bNoParse ? html : apf.htmlCleaner.prepare(html);
         // #endif
         this.$selection.setContent(html, true);
-        // notify SmartBindings that we changed stuff...
-        // #ifdef __WITH_DATAACTION
-        this.change(this.getValue());
-        /* #else
-        this.setProperty("value", this.getValue())
-        #endif*/
+        if (this.$edVars.bStandalone) {
+            // notify SmartBindings that we changed stuff...
+            // #ifdef __WITH_DATAACTION
+            this.change(this.getValue());
+            /* #else
+            this.setProperty("value", this.getValue())
+            #endif*/
+        }
 
         if (!bNoFocus)
             this.$restoreFocus();
