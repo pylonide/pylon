@@ -486,12 +486,12 @@ apf.LiveEdit = function() {
             listBehavior.call(this, e.htmlEvent || e, true); //correct lists, if any
         }
 
-        if (!e.ctrlKey && !e.altKey && (code < 112 || code > 122)
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && (code < 112 || code > 122)
           && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
             resumeChangeTimer();
             // remove the content of a selection manually when it's ranging
             // multiple DOM nodes
-            if (apf.w3cRange && !o.bStandalone && !this.$selection.isCollapsed())
+            if (apf.w3cRange && !o.bStandalone && !this.$selection.isCollapsed() && apf.isCharacter(code))
                 this.$selection.remove();
         }
 
