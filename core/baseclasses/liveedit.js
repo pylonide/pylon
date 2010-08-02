@@ -102,7 +102,7 @@ apf.LiveEdit = function() {
                 var el = e.srcElement || e.target;
                 if (!el) return;
                 if (o.activeNode && _self.$selection && apf.isChildOf(o.activeNode, el, true))
-                    _self.$selection.cache();
+                    $setTimeout(function(){_self.$selection.cache();});
 
                 while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
                     el = el.parentNode;

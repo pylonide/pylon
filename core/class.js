@@ -962,8 +962,14 @@ apf.Class.prototype = new (function(){
         }
         //#endif
         
-        if (options)
-            delete options.currentTarget;
+        if (options) {
+            try {
+                delete options.currentTarget;
+            }
+            catch(ex) {
+                options.currentTarget = null;
+            }
+        }
         
         return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
     };
