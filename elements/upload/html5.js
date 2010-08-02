@@ -198,10 +198,12 @@ apf.upload.html5.isSupported = function() {
                 });
 
                 // Is error status
-                if (httpStatus >= 400) {
+                if (httpStatus >= 400 || httpStatus == 0) {
+		    apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
+
                     _self.oUpload.dispatchEvent("error", {
                         code    : apf.upload.ERROR_CODES.HTTP_ERROR,
-                        message : "HTTP Error.",
+                        message : "HTTP Error: " + xhr.responseText,
                         file    : file,
                         status  : httpStatus
                     });
