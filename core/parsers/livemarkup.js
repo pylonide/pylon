@@ -233,6 +233,8 @@ apf.lm = new (function(){
             8 : "_valattr(_n,",
             "foreach"   : "_nods(_n,",
             "each"      : "_nods(_n,",
+           // "edit"      : "_argwrap(_n,", 
+           // "edit"      : "_val(_n,", // toggled by liveedit
             "local"     : "_nod(_n,",
             "tagName"   : "_nod(_n,",
             "localName" : "_nod(_n,",
@@ -245,6 +247,7 @@ apf.lm = new (function(){
             "_nod(_n,"      : "_nodm(",
             "_nodcr(_n,_cr,": "_nodcr(0,_cr,",
             "_nods(_n,"     : "_nodsm(",
+            "_argwrap(_n,"  : "_argwrapm(",
             "_xml(_n,"      : "_xml(0,",
             "_xmls(_n,"     : "_xmls(0,",
             "_cnt(_n,"      : "_cntm(",
@@ -303,6 +306,7 @@ apf.lm = new (function(){
             "http" :1,
             "apf.ajax" :1
         },
+        c_process_async,
         c_xpathmode,    // guess 'node' as the type for {} o_xpathpairs, 1 = node, 2 = nodes
         c_elemxpath,    // which xpath macro to use inside an element
         c_statexpath,   // which xpath to use for the stateful value
@@ -354,17 +358,19 @@ apf.lm = new (function(){
     macro_c["function"] = ")  ";
 
     macro_o.foreach     =
-    macro_o.each        = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,("
+    macro_o.each        = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,(",
     macro_c.foreach     =
-    macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)"
-    macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local("
-    macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)"
+    macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)",
+    macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local(",
+    macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)",
+    macro_o.edit        = "_valedx(", // only serves to switch default xpath in edit([xpath])
+    macro_c.edit        = ")",
     macro_o.localName   = "_localName(_n",
-    macro_c.localName   = ")"
+    macro_c.localName   = ")",
     macro_o.output      = "_o.join(''",
-    macro_c.output      = ")"
+    macro_c.output      = ")",
     macro_o.reset       = "(_o=[],l=0",
-    macro_c.reset       = ")"
+    macro_c.reset       = ")",
     macro_o.index       = "apf.getChildNumber(_n",
     macro_c.index       = ")",
     macro_o.item        = "(_t[_t.length-1][_t[_t.length-2]-1]",
@@ -379,11 +385,11 @@ apf.lm = new (function(){
     macro_c.pos         = ")",
 
     macro_o.tagName     = "_tagName(_n",
-    macro_c.tagName     = ")"
+    macro_c.tagName     = ")",
     macro_o._nodeValue  = "_nodeValue(_n",
-    macro_c._nodeValue  = ")"
-    macro_c.async       = "])";
-    macro_c.precall     = "])";
+    macro_c._nodeValue  = ")",
+    macro_c.async       = "])",
+    macro_c.precall     = "])",
     macro_c._call       = ")";
 
     var call_args_lut = {
@@ -837,7 +843,7 @@ apf.lm = new (function(){
                                     }
                                 }
                                 else {
-                                    if (last_dot > 1 && (c_async_lut[v = last_tok.substring(0,last_dot)] || c_async_lut[v = last_tok])) {// its an async call
+                                    if (last_dot > 1 && c_process_async && (c_async_lut[v = last_tok.substring(0,last_dot)] || c_async_lut[v = last_tok])) {// its an async call
                                     if (o[--ol] == " ")
                                         ol--;
                                     o[ol++] = cf_async_o, o[ol++] = v, o[ol++] = ",'";
@@ -1618,13 +1624,17 @@ apf.lm = new (function(){
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
-
+                
         if (c = cache[key])
             return c;
 
+            
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.liveedit ? 7:0;
         c_funcglobal = cfg.funcglobal;
+        c_process_async = !cfg.event;
+
+        xpath_macro.edit = cfg.liveedit?"_argwrap(_n,":"_val(_n,";
         
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
@@ -2415,7 +2425,31 @@ apf.lm_exec = new (function(){
         return "$["+x+"]"; 
 #endif*/        
     }
+    
+    function _(n, m, x){   // wrap a value with editable div
+        return '<span class="liveEdit" xpath="' + (n 
+            ? (m.substr(0,1) != "/" 
+                ? apf.xmlToXpath(n, null, false) 
+                : "") + "/" + m 
+            : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
+    }
 
+//    function _edit(n, opts){
+//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';        
+//    }
+    
+    function _argwrap(n,x){
+        return [n,x];
+    }
+    
+    function _argwrapm(m,x){
+        return [0,m,x];
+    }
+    
+    function _valedx(args, opt){   // wrap a value with editable div
+        return _valed.apply(this,args);
+    }
+    
     function _valed(n, m, x){   // wrap a value with editable div
         return '<span class="liveEdit" xpath="' + (n 
             ? (m.substr(0,1) != "/" 
