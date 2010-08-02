@@ -463,8 +463,12 @@ apf.remote = function(struct, tagName){
         // #endif
 
         for (; i < l; ++i) {
-            if (args[i] && args[i].nodeType)
+            if (args[i] && args[i].nodeType) {
+                //@todo this should be handled with settings on remote
+                if (args[i].parentNode.nodeType != 1) //Change to the doc root are prohibited
+                    return false
                 args[i] = this.xmlToXpath(args[i], model.data);
+            }
         }
 
         return {
@@ -484,7 +488,9 @@ apf.remote = function(struct, tagName){
             qHost.rdbModel     = model;
         }
         // @todo do some more additional processing here...
-        qHost.rdbQueue[id].push(this.buildMessage(args, model));
+        var msg = this.buildMessage(args, model);
+        if (msg)
+            qHost.rdbQueue[id].push(msg);
     };
     
     this.processQueue = function(qHost){
