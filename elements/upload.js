@@ -285,7 +285,9 @@ apf.upload = function(struct, tagName){
                 nextQueue.call(this);
         }
         else {
-	    this.dispatchEvent("uploaded");
+			this.dispatchEvent("uploaded", {
+			    files : files
+			});
             this.stop();
         }
     }
@@ -365,8 +367,9 @@ apf.upload = function(struct, tagName){
         calc.call(this);
     };
 
-    this.$fileDone = function(file) {
-        file.status = constants.DONE;
+    this.$fileDone = function(file, e) {
+        file.status   = constants.DONE;
+        file.response = e.response;
         this.$progress(file);
         nextQueue.call(this);
     };
