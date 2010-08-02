@@ -183,7 +183,7 @@ apf.BindingColumnRule = function(struct, tagName){
         
         apf.setStyleRule("." + this.$className, "background", "#f3f3f3");
         apf.setStyleClass(this.$int, "ascending", ["descending", "ascending"]);
-        
+
         pNode.resort({
             order : "ascending",
             xpath : (this.cvalue || this.compile("value")).xpaths[1]

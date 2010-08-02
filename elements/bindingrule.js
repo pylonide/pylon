@@ -191,7 +191,7 @@ apf.BindingRule = function(struct, tagName){
         //#endif
 
         var first;
-        if (!this.value && (first = this.$aml 
+        if (!this.value && this.localName != "each" && (first = this.$aml 
           && this.$aml.firstChild || this.firstChild)) {
             if (first.nodeType == this.NODE_PROCESSING_INSTRUCTION) {
                 if (first.target == "lm")
