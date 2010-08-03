@@ -73,6 +73,7 @@ apf.$x = apf.$loader
         "core/lib/data.js",
         "core/lib/flow.js",
         
+        "core/lib/geolocation.js",
         "core/lib/history.js",
         "core/lib/html.js",
         "core/lib/layout.js",

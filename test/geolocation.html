@@ -14,15 +14,22 @@
         <div id="status">Initializing...</div>
         <div id="map_canvas" style="width:320px; height:350px"></div>
         
-        <a:button onclick="testGeo()">Get Location!</a:button>
+        <a:button id="btnTest" onclick="testGeo()">Get Location!</a:button>
         <a:script><![CDATA[
-            var map, last_position = null;
+            var map, testing, last_position = null;
 
             function testGeo() {
+                if (testing) {
+                    clearInterval(testing);
+                    btnTest.setCaption("Get Location!");
+                    return;
+                }
                 if (!apf.hasGeoLocation()) {
                     document.getElementById("status").innerHTML = "Functionality not available";
                     return;
                 }
+
+                btnTest.setCaption("Stop");
 
                 map = new google.maps.Map(document.getElementById("map_canvas"), {
                     zoom                    : 15,
@@ -33,7 +40,7 @@
                     mapTypeId               : google.maps.MapTypeId.HYBRID
                 });
 
-                setInterval(retrieve, 10000);
+                retrieve();
             }
 
             function retrieve() {
@@ -41,6 +48,7 @@
                 apf.geolocation.getCurrentPosition(show_position, function(){
                     document.getElementById("status").innerHTML = "Couldn't get location";
                 });
+                testing = setInterval(retrieve, 10000);
             }
 
             function show_position(p) {
