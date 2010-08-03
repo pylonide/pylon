@@ -477,7 +477,6 @@ var apf = {
 
         this.hasVideo                  = !!document.createElement("video")["canPlayType"];
         this.hasAudio                  = !!document.createElement("audio")["canPlayType"];
-        this.hasGeolocation            = !!navigator.geolocation;
         this.supportHashChange         = ("onhashchange" in self) && (!apf.isIE || apf.isIE >= 8);
 
         if (self.XMLHttpRequest) {
@@ -536,6 +535,14 @@ var apf = {
         //#ifdef __SUPPORT_GEARS
         apf.isGears      = !!apf.initGears() || 0;
         //#endif
+    },
+
+    hasGeoLocation: function() {
+        //#ifdef __WITH_GEOLOCATION
+        return typeof apf.geolocation != "undefined" && apf.geolocation.init();
+        /*#else
+        return false;
+        #endif*/
     },
 
     //#ifdef __DEBUG
