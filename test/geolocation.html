@@ -21,6 +21,7 @@
             function testGeo() {
                 if (testing) {
                     clearInterval(testing);
+                    document.getElementById("status").innerHTML = "On hold.";
                     btnTest.setCaption("Get Location!");
                     return;
                 }
@@ -44,6 +45,7 @@
             }
 
             function retrieve() {
+                clearInterval(testing);
                 document.getElementById("status").innerHTML = "Retrieving location...";
                 apf.geolocation.getCurrentPosition(show_position, function(){
                     document.getElementById("status").innerHTML = "Couldn't get location";
