@@ -228,7 +228,7 @@ apf.caldropdown = function(struct, tagName){
             return;
         }
 
-        var date = Date.parse(value, this.outputFormat);
+        var date = apf.date.getDateTime(value, this.outputFormat);
 
         //#ifdef __DEBUG
         if (!date || isNaN(date)) {
@@ -946,7 +946,7 @@ apf.caldropdown = function(struct, tagName){
             }
         }
         else {
-            date = Date.parse(this.value, this.outputFormat);
+            date = apf.date.getDateTime(this.value, this.outputFormat);
             c.day   = date.getDate();
             c.month = date.getMonth();
             c.year  = date.getFullYear();

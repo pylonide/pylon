@@ -103,7 +103,7 @@ apf.calendarlist      = function(struct, tagName){
     
     this.$propHandlers["day"] = function(value) {
         this.strDate = value;
-        this.date    = this.getStartDate(Date.parse(value, this.dateFormat), this.range);
+        this.date    = this.getStartDate(apf.date.getDateTime(value, this.dateFormat), this.range);
         this.$updateHours();
     };
     
@@ -130,7 +130,7 @@ apf.calendarlist      = function(struct, tagName){
     this.getStartDate = function(objDate, range) {
         switch(range) {
             case "day":
-                return Date.parse(this.strDate, this.dateFormat);
+                return apf.date.getDateTime(this.strDate, this.dateFormat);
             case "week":
                 return new Date(objDate.getFullYear(), objDate.getMonth(), objDate.getDate() - objDate.getDay(), 0, 0, 0);
             case "month":
@@ -291,7 +291,7 @@ apf.calendarlist      = function(struct, tagName){
     };
     
     this.updateCalendarEvent = function(xmlNode, htmlNode) {
-        var date1          = Date.parse(this.$applyBindRule("date", xmlNode), this.dateFormat),
+        var date1          = apf.date.getDateTime(this.$applyBindRule("date", xmlNode), this.dateFormat),
             date2          = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0),
             duration       = parseInt(this.$applyBindRule("duration", xmlNode)),
             interval       = this.getInterval("minutes"),

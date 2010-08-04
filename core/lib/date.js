@@ -430,7 +430,7 @@ apf.date.dateFormat = (function () {
             date = undefined;
         }
 
-        // Passing date through Date applies Date.parse, if necessary
+        // Passing date through Date applies apf.date.getDateTime, if necessary
         date = date ? new Date(date) : new Date();
 
         if (isNaN(date)) return "NaN";//throw new SyntaxError("invalid date");
@@ -608,10 +608,6 @@ apf.date.getDateTime = function(datetime, format) {
 // For convenience...
 Date.prototype.format = function (mask, utc) {
     return apf.date.dateFormat(this, mask, utc);
-};
-
-Date.parse = function (datetime, format) {
-    return apf.date.getDateTime(datetime, format);
 };
 
 // #ifdef __WITH_DATE_EXT

@@ -168,7 +168,7 @@ apf.calendar = function(struct, tagName){
             return;
         }
 
-        var date = Date.parse(value, this.outputFormat);
+        var date = apf.date.getDateTime(value, this.outputFormat);
 
         //#ifdef __DEBUG
         if (!date || isNaN(date)) {
@@ -692,7 +692,7 @@ apf.calendar = function(struct, tagName){
         }
         else {
             var c    = this.$calVars,
-                date = Date.parse(c.temp || this.value, this.outputFormat);
+                date = apf.date.getDateTime(c.temp || this.value, this.outputFormat);
             c.day   = date.getDate();
             c.month = date.getMonth();
             c.year  = date.getFullYear();

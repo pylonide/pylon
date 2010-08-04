@@ -165,7 +165,7 @@ apf.Sort = function(xmlNode){
                 d = new Date(t);
             }
             else if (sort_dateFmtStr == '*') 
-                d = Date.parse(t);
+                d = apf.date.getDateTime(t);
             else 
                 d = (new Date(t.replace(sort_dateFormat, sort_dateReplace))).getTime();
             t = "" + d.getTime();//parseInt(d);
