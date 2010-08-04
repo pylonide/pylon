@@ -19,18 +19,23 @@
         <a:upload id="uplAvatar" 
           model  = "mdlUpload"
           button = "btnSelect"
-          target = "http://localhost/platform/source/trunk/test/upload.php" />
+          target = "http://localhost/platform/source/trunk/test/upload.php" 
+          onerror = "apf.console.log('ERROR EVENT RECEIVED')" 
+          onqueue = "apf.console.log('QUEUE EVENT RECEIVED')"
+          onuploaded = "apf.console.log('UPLOADED EVENT RECEIVED')" />
         <br /><br />
 
         <a:progressbar
           width    = "200"
           min      = "0"
           max      = "100"
-          value    = "{uplAvatar.percent}">
+          value    = "{uplAvatar.percent}"
+          visible  = "{uplAvatar.state == apf.upload.STARTED}">
         </a:progressbar>
 
         <?lm
             <div>
+                Upload state: {uplAvatar.state}<br />
                 Total Size: {uplAvatar.size}<br />
                 Total Number of files: {uplAvatar.loaded}<br />
                 Total Number of uploaded files: {uplAvatar.uploaded}<br />

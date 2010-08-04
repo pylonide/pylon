@@ -94,7 +94,7 @@ apf.upload.html5.isSupported = function() {
         oCont.style.height     = "100px",
         oCont.style.overflow   = "hidden",
         oCont.style.zIndex     = 99999,
-	oCont.style.cursor     = "default",
+        oCont.style.cursor     = "default",
         oCont.style.opacity    = "0"; // Force transparent
 
         // Insert the input inide the input container
@@ -199,7 +199,7 @@ apf.upload.html5.isSupported = function() {
 
                 // Is error status
                 if (httpStatus >= 400 || httpStatus == 0) {
-		    apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
+		            apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
 
                     _self.oUpload.dispatchEvent("error", {
                         code    : apf.upload.ERROR_CODES.HTTP_ERROR,

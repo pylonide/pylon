@@ -55,10 +55,6 @@
  *   Possible values:
  *   apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
  *   apf.upload.STARTED   Upload process is running
- *   apf.upload.QUEUED    File is queued for upload
- *   apf.upload.UPLOADING File is being uploaded
- *   apf.upload.FAILED    File has failed to be uploaded
- *   apf.upload.DONE      File has been uploaded successfully
  * @attribute {Number}  chunksize    the size of each chunk of data that is uploaded via the html5 upload control.
  * @attribute {Number}  maxfilesize  the maximum file size of a single file.
  * @attribute {Boolean} multiselect  whether the user can select multiple files from the browse dialog.
@@ -171,7 +167,7 @@
  * @todo get server side information to update the progressbar.
  */
 apf.upload = function(struct, tagName){
-    this.$init(tagName || "upload", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "upload", apf.NODE_HIDDEN, struct);
 
     var o,
         i = 0,
@@ -186,6 +182,32 @@ apf.upload = function(struct, tagName){
         throw new Error(apf.formatErrorString(0, this, "upload",
             "No upload method found that us supported by your browser!"));
     }
+};
+
+apf.upload.STOPPED   = 0x0001; // Inital state of the queue and also the state ones it's finished all it's uploads.
+apf.upload.STARTED   = 0x0002; // Upload process is running
+apf.upload.QUEUED    = 0x0004; // File is queued for upload
+apf.upload.UPLOADING = 0x0008; // File is being uploaded
+apf.upload.FAILED    = 0x0010; // File has failed to be uploaded
+apf.upload.DONE      = 0x0020; // File has been uploaded successfully
+// Error constants used by the Error event:
+apf.upload.ERROR_CODES = {
+    // Generic error for example if an exception is thrown inside Silverlight.
+    GENERIC_ERROR        : -100,
+    // HTTP transport error. For example if the server produces a HTTP status other than 200.
+    HTTP_ERROR           : -200,
+    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    IO_ERROR             : -300,
+    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+    SECURITY_ERROR       : -400,
+    // Initialization error. Will be triggered if no runtime was initialized.
+    INIT_ERROR           : -500,
+    // File size error. If the user selects a file that is to large it will be
+    // blocked and an error of this type will be triggered.
+    FILE_SIZE_ERROR      : -600,
+    // File extension error. If the user selects a file that isn't valid according
+    // to the filters setting.
+    FILE_EXTENSION_ERROR : -700
 };
 
 (function(constants){
@@ -477,10 +499,17 @@ apf.upload = function(struct, tagName){
     };
 
     this.$draw = function(){
-        if (this.$method.draw) {
-            this.$ext = this.$getExternal("main");
-            this.$method.draw();
+        if (!this.$method.draw)
+            return;
+        
+        var p = this.parentNode;
+        while (p.$layout) {
+            p = p.parentNode;
         }
+        
+        this.$pHtmlNode = p;
+        this.$ext = p.$int.appendChild(p.$int.ownerDocument.createElement("div"));
+        this.$method.draw();
     };
 
     var states = {
@@ -531,6 +560,7 @@ apf.upload = function(struct, tagName){
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         if (!this["model"])
             this.setProperty("model", "apfupload".appendRandomNumber(5));
+
         // #ifdef __DEBUG
         if (!this.$button) {
             throw new Error(apf.formatErrorString(0, this, "upload init",
@@ -542,13 +572,9 @@ apf.upload = function(struct, tagName){
         }
         //#endif
 
-	//#ifdef __DEBUG
-	if (this.parentNode.$layout) {
-	    apf.console.warn("Found upload element inside hbox/vbox/table element. This causes problems in the functionality of the upload widget.");
-	}
-	//#endif
-
-        if (!this.$method) return;
+        if (!this.$method) 
+            return;
+        
         var _self = this;
         $setTimeout(function() {
             calc.call(_self);
@@ -556,37 +582,7 @@ apf.upload = function(struct, tagName){
                 _self.$method.refresh();
         });
     });
-// #ifdef __WITH_DATABINDING
-}).call(apf.upload.prototype = new apf.StandardBinding(), apf.upload);
-/* #else
-}).call(apf.upload.prototype = new apf.Presentation(), apf.upload);
-#endif*/
-
-apf.upload.STOPPED   = 0x0001; // Inital state of the queue and also the state ones it's finished all it's uploads.
-apf.upload.STARTED   = 0x0002; // Upload process is running
-apf.upload.QUEUED    = 0x0004; // File is queued for upload
-apf.upload.UPLOADING = 0x0008; // File is being uploaded
-apf.upload.FAILED    = 0x0010; // File has failed to be uploaded
-apf.upload.DONE      = 0x0020; // File has been uploaded successfully
-// Error constants used by the Error event:
-apf.upload.ERROR_CODES = {
-    // Generic error for example if an exception is thrown inside Silverlight.
-    GENERIC_ERROR        : -100,
-    // HTTP transport error. For example if the server produces a HTTP status other than 200.
-    HTTP_ERROR           : -200,
-    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
-    IO_ERROR             : -300,
-    // Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
-    SECURITY_ERROR       : -400,
-    // Initialization error. Will be triggered if no runtime was initialized.
-    INIT_ERROR           : -500,
-    // File size error. If the user selects a file that is to large it will be
-    // blocked and an error of this type will be triggered.
-    FILE_SIZE_ERROR      : -600,
-    // File extension error. If the user selects a file that isn't valid according
-    // to the filters setting.
-    FILE_EXTENSION_ERROR : -700
-};
+}).call(apf.upload.prototype = new apf.GuiElement(), apf.upload);
 
 apf.upload.files = function(oUpload, model) {
     if (typeof model == "string") {
