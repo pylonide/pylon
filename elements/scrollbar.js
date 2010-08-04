@@ -70,7 +70,7 @@ apf.scrollbar = function(struct, tagName){
     
     this.$getHtmlHost = function(){
         var h = this.$host && (this.$host.$int || this.$host.$container);
-        return h && h.tagName == "BODY" ? h.parentNode : h;
+        return (apf.isSafari || apf.isChrome ? document.body : (h && h.tagName == "BODY" ? h.parentNode : h));
     }
     
     this.$getViewPort = function(oHtml){
