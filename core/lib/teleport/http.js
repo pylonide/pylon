@@ -687,6 +687,7 @@ apf.http = function(){
                 //#endif
                 tpModule : this,
                 http     : http,
+                status   : http.status,
                 url      : qItem.url,
                 callback : callback,
                 id       : id,

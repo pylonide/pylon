@@ -427,7 +427,7 @@ apf.aml.setElement("auth", apf.auth);
 
                 loginFailed = typeof result == "boolean"
                     ? !result
-                    : !(state == apf.SUCCESS || type == "out" && extra.http.status == 401);
+                    : !(state == apf.SUCCESS || type == "out" && extra.status == 401);
 
             if (loginFailed) {
                 _self.inProcess = 0; //Idle

@@ -215,7 +215,7 @@ apf.webdav = function(struct, tagName){
                     throw oError;
                 }
 
-                var iStatus = parseInt(extra.http.status);
+                var iStatus = parseInt(extra.status);
                 if (iStatus == 401) //authentication requested
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
@@ -389,7 +389,7 @@ apf.webdav = function(struct, tagName){
             return;
         
         this.doRequest(function(data, state, extra) {
-            if (extra.http.status == 401)
+            if (extra.status == 401)
                 return auth.authRequired();
             this.$regVar("authenticated", true);
             var cb = this.$getVar("auth-callback");
@@ -425,7 +425,7 @@ apf.webdav = function(struct, tagName){
     this.read = function(sPath, callback) {
         this.method = "GET";
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 403) { //Forbidden
                 var oError = WebDAVError.call(this, "Unable to read file. Server says: "
                              + apf.webdav.STATUS_CODES["403"]);
@@ -472,7 +472,7 @@ apf.webdav = function(struct, tagName){
 
         this.method = "MKCOL";
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 201) { //Created
                 // TODO: refresh parent node...
             }
@@ -521,7 +521,7 @@ apf.webdav = function(struct, tagName){
 
         this.method = "PUT";
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
                 var oError = WebDAVError.call(this, "Unable to write to file. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -569,7 +569,7 @@ apf.webdav = function(struct, tagName){
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
             unregisterLock.call(this, sFrom);
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412 
               || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
@@ -619,7 +619,7 @@ apf.webdav = function(struct, tagName){
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
             unregisterLock.call(this, sFrom);
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
@@ -653,7 +653,7 @@ apf.webdav = function(struct, tagName){
         this.method = "DELETE";
         this.doRequest(function(data, state, extra) {
             unregisterLock.call(this, sPath);
-            var iStatus = parseInt(extra.http.status);
+            var iStatus = parseInt(extra.status);
             if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
                              + "'. Server says: "
@@ -763,7 +763,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function registerLock(data, state, extra) {
-        var iStatus = parseInt(extra.http.status),
+        var iStatus = parseInt(extra.status),
             sPath   = extra.url.replace(this.$server, ''),
             oLock   = this.$locks[sPath] || newLock.call(this, sPath);
         if (iStatus == 409 || iStatus == 423 || iStatus == 412) {
@@ -946,7 +946,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
-        if (parseInt(extra.http.status) == 403) {
+        if (parseInt(extra.status) == 403) {
             // TODO: dispatch onerror event
             return;
         }

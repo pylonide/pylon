@@ -34,6 +34,7 @@ apf.scrollbar = function(struct, tagName){
 
 (function(){
     this.realtime = true;
+    this.visible  = false;
     this.overflow = "scroll";
     
     this.$scrollSizeValue  = 0;
@@ -142,7 +143,9 @@ apf.scrollbar = function(struct, tagName){
                     _self.$update();
                 });
             }
-            amlNode.addEventListener("mousescroll", scrollFunc);
+            
+            if (!this.horizontal)
+                amlNode.addEventListener("mousescroll", scrollFunc);
         }
         else {
             apf.dispatchEvent("mousescroll", function(e){
@@ -187,15 +190,15 @@ apf.scrollbar = function(struct, tagName){
     
     this.$update = function(){
         var oHtml = this.$getHtmlHost();
-        
         //Disable scrollbar
         if (this.$getViewPort(oHtml) >= oHtml[this.$scrollSize]) {
             if (this.overflow == "scroll") {
                 this.$caret.style.display = "none";
                 this.disable();
             }
-            else {
-                this.$ext.style.display = "none";
+            else if (this.visible) {
+                this.hide();
+                //this.$ext.style.display = "none";
             }
             
             //oHtml.style.overflowY = "visible";
@@ -206,9 +209,10 @@ apf.scrollbar = function(struct, tagName){
                 this.$caret.style.display = "block";
                 this.enable();
             }
-            else {
-                this.$ext.style.display = "block";
-                this.$caret.style.display = "block";
+            else if (!this.visible) {
+                this.show();
+                //this.$ext.style.display = "block";
+                //this.$caret.style.display = "block";
             }
             
             //oHtml.style.overflowY = "scroll";
@@ -369,9 +373,8 @@ apf.scrollbar = function(struct, tagName){
     this.$draw = function(){
         //Build Skin
         this.$getNewContext("main");
-        this.$ext               = this.$getExternal();
+        this.$ext         = this.$getExternal();
         //this.$ext.style.display = "none";
-        this.disable();
 
         this.$caret       = this.$getLayoutNode("main", "indicator", this.$ext);
         this.$slideFast   = this.$getLayoutNode("main", "slidefast", this.$ext);
@@ -601,6 +604,11 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.$loadAml = function(){
+        if (this.overflow == "scroll")
+            this.disable();
+        else
+            this.$caret.style.display = "block";
+        
         this.addEventListener("resize", function(){
             this.$recalc();
             this.$update();

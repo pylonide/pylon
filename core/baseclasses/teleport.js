@@ -245,7 +245,7 @@ apf.teleportLog = function(extra){
     this.response = function(extra){
         try {
             var headers = extra.http.getAllResponseHeaders();
-            response = "HTTP/1.1 " + extra.http.status + " " + extra.http.statusText + "\n"
+            response = "HTTP/1.1 " + extra.status + " " + extra.statusText + "\n"
                 + (headers ? headers + "\n" : "\n")
                 + extra.http.responseText;
 

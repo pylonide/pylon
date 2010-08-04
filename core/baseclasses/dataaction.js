@@ -218,7 +218,7 @@ apf.DataAction = function(){
     
                     if (state == apf.SUCCESS) {
                         _self.dispatchEvent("locksuccess", apf.extend({
-                            state   : extra.http.status,
+                            state   : extra.status,
                             bubbles : true
                         }, extra));
     
@@ -238,7 +238,7 @@ apf.DataAction = function(){
                         fRollback.call(_self, xmlContext);
                         
                         _self.dispatchEvent("lockfailed", apf.extend({
-                            state   : extra.http.status,
+                            state   : extra.status,
                             bubbles : true
                         }, extra));
                     }
@@ -294,7 +294,7 @@ apf.DataAction = function(){
                                 ? "unlocksuccess"
                                 : "unlockfailed"),
                             apf.extend({
-                                state   : extra.http.status,
+                                state   : extra.status,
                                 bubbles : true
                             }, extra));
                     }

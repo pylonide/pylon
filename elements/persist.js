@@ -98,12 +98,12 @@ apf.persist = function(struct, tagName){
     this.$handleError = function(data, state, extra, callback){
         var oError, amlNode = this;
         
-        if (extra.http.readyState && (extra.http.status == 401 
-         || extra.http.status == 403 
-         || extra.http.status == 500)) {
+        if (extra.http.readyState && (extra.status == 401 
+         || extra.status == 403 
+         || extra.status == 500)) {
             oError = new Error(apf.formatErrorString(10000, amlNode,
                 "Persist protocol",
-                extra.http.statusText + " in " + amlNode.name
+                extra.statusText + " in " + amlNode.name
                 + "[" + amlNode.tagName + "] \nUrl: " + extra.url
                 + "\nInfo: " + extra.message));
         }
@@ -165,9 +165,9 @@ apf.persist = function(struct, tagName){
             callback      : function(message, state, extra){
                 if (state != apf.SUCCESS) {
                     var knownError = extra.http.readyState 
-                      && (extra.http.status == 401 
-                      || extra.http.status == 403 
-                      || extra.http.status == 500);
+                      && (extra.status == 401 
+                      || extra.status == 403 
+                      || extra.status == 500);
 
                     if (state == apf.TIMEOUT || !knownError
                       && extra.retries < _self.retry) {
