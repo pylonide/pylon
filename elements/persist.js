@@ -264,6 +264,7 @@ apf.persist = function(struct, tagName){
     //send change
     this.sendRDB = function(sSession, message){
         var _self = this;
+        this.contentType = "application/json";
         this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
@@ -300,6 +301,7 @@ apf.persist = function(struct, tagName){
                 _self.connect(username, password, redirect, callback);
             })
 
+        this.contentType = "application/x-www-form-urlencoded";
         this.get(this.host + this.PATHS.login, {
             nocache       : true,
             ignoreOffline : true,
@@ -353,6 +355,7 @@ apf.persist = function(struct, tagName){
             return;
         
         var _self = this;
+        this.contentType = "application/x-www-form-urlencoded";
         this.get(this.host + this.PATHS.logout + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
@@ -387,24 +390,6 @@ apf.persist = function(struct, tagName){
         
     };
     
-    //add a listener to a document
-    this.create = function(sSession, callback){
-        var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
-            nocache       : true,
-            ignoreOffline : true,
-            method        : "POST",
-            callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
-                    return _self.$handleError(data, state, extra, callback);
-                else {
-                    if (callback)
-                        callback(data, state, extra);
-                }
-            }
-        });
-    }
-    
     this.$addMethod = function(def){
         this[def.name] = function(){
             var args = def.args, out = [];
@@ -414,6 +399,7 @@ apf.persist = function(struct, tagName){
             var callback = arguments[arguments.length - 1];
             
             var _self = this;
+            this.contentType = "application/x-www-form-urlencoded";
             this.get(this.host + "/" + def.name + "?sid=" + this.sessionId, {
                 nocache       : true,
                 ignoreOffline : true,
