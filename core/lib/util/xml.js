@@ -295,7 +295,9 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             node = xmlNode;
         
         apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath, 
-            options && options.forceNew], options.undoObj || {xmlNode: xmlNode});
+            options && options.forceNew],
+            undoObj || {xmlNode: xmlNode}
+        );
     }
     // #endif
 };
