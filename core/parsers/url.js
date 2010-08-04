@@ -44,7 +44,8 @@
  */
 apf.url = function(str) {
     var base;
-    if (str.indexOf(":") == -1 && (base = location.toString()).indexOf(":") != -1) {
+    var location = (window.location && window.location.toString()) || "";
+    if (str.indexOf(":") == -1 && (base = location).indexOf(":") != -1) {
         base = new apf.url(base);
         str = apf.getAbsolutePath(base.protocol + "://" + base.host + "/"
             + (base.directory.charAt(base.directory.length - 1) == "/"
