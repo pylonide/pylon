@@ -462,11 +462,13 @@ apf.remote = function(struct, tagName){
         }
         // #endif
 
+        var node;
         for (; i < l; ++i) {
-            if (args[i] && args[i].nodeType) {
-                //@todo this should be handled with settings on remote
-                if (args[i].parentNode.nodeType != 1) //Change to the doc root are prohibited
-                    return false
+            if ((node = args[i]) && node.nodeType) {
+                //@todo setting level shouldnt be send
+                if (args[0] == "setAttribute" && args[2] == "level")
+                    return false; //@todo refactor and make configurable
+
                 args[i] = this.xmlToXpath(args[i], model.data);
             }
         }
