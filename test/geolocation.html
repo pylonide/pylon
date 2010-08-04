@@ -12,7 +12,7 @@
         <a:appsettings debug="0" />
         
         <div id="status">Click the button...</div>
-        <div id="map_canvas" style="width:320px; height:350px"></div>
+        <a:map id="mapTest" width="320" height="350" type="roadmap" maptypecontrol="style:dropdown" />
         
         <a:button id="btnTest" onclick="testGeo()">Get Location!</a:button>
         <a:script><![CDATA[
@@ -31,15 +31,6 @@
                 }
 
                 btnTest.setCaption("Stop");
-
-                map = new google.maps.Map(document.getElementById("map_canvas"), {
-                    zoom                    : 15,
-                    mapTypeControl          : true,
-                    mapTypeControlOptions   : {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
-                    navigationControl       : true,
-                    navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
-                    mapTypeId               : google.maps.MapTypeId.HYBRID
-                });
 
                 retrieve();
             }
@@ -63,22 +54,11 @@
                 last_position = p;
                 document.getElementById("status").innerHTML = "latitude=" + p.coords.latitude.toFixed(2)
                     + " longitude=" + p.coords.longitude.toFixed(2);
-                var pos = new google.maps.LatLng(p.coords.latitude, p.coords.longitude);
-                map.setCenter(pos);
 
-                var infowindow = new google.maps.InfoWindow({
-                    content: "<strong>yes</strong>"
-                });
+                mapTest.setAttribute("latitude", p.coords.latitude);
+                mapTest.setAttribute("longitude", p.coords.longitude);
 
-                var marker = new google.maps.Marker({
-                    position: pos,
-                    map     : map,
-                    title   : "You are here"
-                });
-
-                google.maps.event.addListener(marker, 'click', function() {
-                    infowindow.open(map,marker);
-                });
+                mapTest.addMarker("You are here", "<strong>yes</strong>");
             }
         ]]></a:script>
     </body>
