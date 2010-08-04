@@ -5,8 +5,7 @@
         <script type="text/javascript" src="../apf.js"></script>
     </head>
     <body>
-        <a:skin src="skins/platform/trunk/xml/_index.xml" media-path="skins/platform/trunk/images/"
-          image-path="skins/platform/trunk/images/" icon-path="../icons/" />
+        <a:skin src="../skins.xml" />
 
         <a:appsettings debug="false" debug-teleport="true" name="uploadtest" />
 
@@ -29,6 +28,18 @@
           max      = "100"
           value    = "{uplAvatar.percent}">
         </a:progressbar>
+
+        <?lm
+            <div>
+                Total Size: {uplAvatar.size}<br />
+                Total Number of files: {uplAvatar.loaded}<br />
+                Total Number of uploaded files: {uplAvatar.uploaded}<br />
+                Total Number of failed uploads: {uplAvatar.failed}<br />
+                Total Number of queued files: {uplAvatar.queued}<br />
+                Percentage of total upload: {uplAvatar.percent}<br />
+                Bitrate of current upload: {uplAvatar.bitrate}<br />
+            </div>
+        ?>
 
         <a:button id="btnUpload" onclick="uplAvatar.start()" width="150">Upload!</a:button>
     </body>

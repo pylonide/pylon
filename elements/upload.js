@@ -51,9 +51,104 @@
  *    " />
  * </code>
  *
- * @event afterbrowse Fires after the user has made a selection.
+ * @attribute {Number}  state        the current state of the element.
+ *   Possible values:
+ *   apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *   apf.upload.STARTED   Upload process is running
+ *   apf.upload.QUEUED    File is queued for upload
+ *   apf.upload.UPLOADING File is being uploaded
+ *   apf.upload.FAILED    File has failed to be uploaded
+ *   apf.upload.DONE      File has been uploaded successfully
+ * @attribute {Number}  chunksize    the size of each chunk of data that is uploaded via the html5 upload control.
+ * @attribute {Number}  maxfilesize  the maximum file size of a single file.
+ * @attribute {Boolean} multiselect  whether the user can select multiple files from the browse dialog.
+ * @attribute {String}  filedataname the name of the POST variable in the upload request which is send to the server.
+ * @attribute {String}  target       the url that the POST request is sent to.
+ * @attribute {String}  filter       the file filter used in the browse dialog using wildcards. Default is *.*.
+ * @attribute {Boolean} multipart    whether to use a multipart POST request. This is only required if you send additional variabled as part of the request. Currently sending additional variables is not supported.
+ * @attribute {String}  button       the reference to the button that will trigger the display of the browse dialog.
+ * @attribute {String}  model        the model that gets the data loaded representing the queue of files. If the model doesn't exist yet it will be created automatically.
+ * @attribute {Number}  [total]      the total number of files in the queue.
+ * @attribute {String}  [size]       the total size of the files in the queue.
+ * @attribute {String}  [loaded]     the total number of bytes uploaded.
+ * @attribute {String}  [uploaded]   the total number of uploaded files.
+ * @attribute {String}  [failed]     the total number of failed uploads
+ * @attribute {String}  [queued]     the total number of queued files
+ * @attribute {String}  [percent]    the percentage of total upload
+ * @attribute {String}  [bitrate]    the bitrate of current upload
+ *
+ * @event error Fires after an error occurred during upload.
  *   object:
- *   {String} value the path of the file selected
+ *   {Number} code      the type of error.
+ *     Possible values:
+ *     apf.upload.ERROR_CODES.GENERIC_ERROR        Generic error for example if an exception is thrown inside Silverlight.
+ *     apf.upload.ERROR_CODES.HTTP_ERROR           HTTP transport error. For example if the server produces a HTTP status other than 200.
+ *     apf.upload.ERROR_CODES.IO_ERROR             Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+ *     apf.upload.ERROR_CODES.SECURITY_ERROR       Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+ *     apf.upload.ERROR_CODES.INIT_ERROR           Initialization error. Will be triggered if no runtime was initialized.
+ *     apf.upload.ERROR_CODES.FILE_SIZE_ERROR      File size error. If the user selects a file that is to large it will be blocked and an error of this type will be triggered.
+ *     apf.upload.ERROR_CODES.FILE_EXTENSION_ERROR File extension error. If the user selects a file that isn't valid according to the filters setting.
+ *   {String} message   the description of the error.
+ *   {Object}  file     the file that was being uploaded when the error occurred.
+ *     Properties:
+ *     {Date}    addDate          the date this file was added to the queue.
+ *     {Date}    creationDate     the date this file was created on the filesystem.
+ *     {String}  extension        the last letters after the last dot in the filename.
+ *     {Number}  id               the sequence id in the queue of this file.
+ *     {Date}    modificationDate the date this file was last modified on the filesystem.
+ *     {String}  name             the filename.
+ *     {Number}  size             the size of this file in bytes.
+ *     {String}  status           the upload status of this file.
+ *       Possible values:
+ *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       apf.upload.STARTED   Upload process is running
+ *       apf.upload.QUEUED    File is queued for upload
+ *       apf.upload.UPLOADING File is being uploaded
+ *       apf.upload.FAILED    File has failed to be uploaded
+ *       apf.upload.DONE      File has been uploaded successfully
+ *     {Number} loaded           the number of bytes uploaded.
+ *
+ * @event uploaded Fires after the entire queue is uploaded.
+ *   object:
+ *   {Array} files the full queue of files.
+ *     object:
+ *     {Date}    addDate          the date this file was added to the queue.
+ *     {Date}    creationDate     the date this file was created on the filesystem.
+ *     {String}  extension        the last letters after the last dot in the filename.
+ *     {Number}  id               the sequence id in the queue of this file.
+ *     {Date}    modificationDate the date this file was last modified on the filesystem.
+ *     {String}  name             the filename.
+ *     {Number}  size             the size of this file in bytes.
+ *     {String}  status           the upload status of this file.
+ *       Possible values:
+ *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       apf.upload.STARTED   Upload process is running
+ *       apf.upload.QUEUED    File is queued for upload
+ *       apf.upload.UPLOADING File is being uploaded
+ *       apf.upload.FAILED    File has failed to be uploaded
+ *       apf.upload.DONE      File has been uploaded successfully
+ *     {Number} loaded           the number of bytes uploaded.
+ *
+ * @event queue Fires after the user selected files, put in the queue and are ready for upload.
+ *   object:
+ *   {Array} files the files that were added to the queue.
+ *     object:
+ *     {Date}    addDate          the date this file was added to the queue.
+ *     {Date}    creationDate     the date this file was created on the filesystem.
+ *     {String}  extension        the last letters after the last dot in the filename.
+ *     {Number}  id               the sequence id in the queue of this file.
+ *     {Date}    modificationDate the date this file was last modified on the filesystem.
+ *     {String}  name             the filename.
+ *     {Number}  size             the size of this file in bytes.
+ *     {String}  status           the upload status of this file.
+ *       Possible values:
+ *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       apf.upload.STARTED   Upload process is running
+ *       apf.upload.QUEUED    File is queued for upload
+ *       apf.upload.UPLOADING File is being uploaded
+ *       apf.upload.FAILED    File has failed to be uploaded
+ *       apf.upload.DONE      File has been uploaded successfully
+ *     {Number} loaded           the number of bytes uploaded.
  *
  * @constructor
  * @alias upload
