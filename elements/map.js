@@ -65,7 +65,7 @@ apf.map = function(struct, tagName){
     // for property specs, see: http://code.google.com/apis/maps/documentation/javascript/reference.html#MapOptions
     this.$booleanProperties["draggable"]         = true;
     this.$supportedProperties.push("latitude", "longitude", "bgcolor", "draggable",
-        "maptypecontrol", "navigationcontrol", "scalecontrol", "type", "zoom");
+        "maptypecontrol", "navigationcontrol", "scalecontrol", "type", "zoom", "marker");
     // default values:
     this.latitude              = 0;
     this.longitude             = 0;
@@ -81,10 +81,14 @@ apf.map = function(struct, tagName){
         delegates = [],
         _slice    = Array.prototype.slice,
         loaddone  = false;
+    /**
+     * @attribute {Number} latitude   geographical coordinate
+     * @attribute {Number} longitude  geographical coordinate
+     */
     this.$propHandlers["latitude"]  =
     this.$propHandlers["longitude"] = function(value, prop) {
         clearTimeout(timer);
-        this[prop] = parseFloat(value).toFixed(2);
+        this[prop] = parseFloat(value);
         var _self = this;
         timer = setTimeout(function() {
             _self.setValue(this.latitude, this.longitude);
@@ -130,6 +134,12 @@ apf.map = function(struct, tagName){
         return oOpts
     }
 
+    /**
+     * @attribute {mixed} maptypecontrol defines the if a MapType control should be visible and what its position and style should be.
+     *                                   The value may be either 'false' (no control) or of the following form:
+     *                                   'position:bottom-left,style:dropdown'
+     *                                   Style options: 'dropdown', 'bar'
+     */
     this.$propHandlers["maptypecontrol"] = function(value) {
         this.maptypecontrol  = !apf.isFalse(value);
         this.$mapTypeControl = {};
@@ -160,6 +170,12 @@ apf.map = function(struct, tagName){
         });
     };
 
+    /**
+     * @attribute {mixed} navigationcontrol defines the if a Navigation control should be visible and what its position and style should be.
+     *                                      The value may be either 'false' (no control) or of the following form:
+     *                                      'position:bottom-left,style:zoompan'
+     *                                      Style options: 'android', 'small' or 'zoompan'
+     */
     this.$propHandlers["navigationcontrol"] = function(value) {
         this.navigationcontrol  = !apf.isFalse(value);
         this.$navigationControl = {};
@@ -193,6 +209,12 @@ apf.map = function(struct, tagName){
         });
     };
 
+    /**
+     * @attribute {mixed} scalecontrol defines the if a Navigation control should be visible and what its position and style should be.
+     *                                 The value may be either 'false' (no control) or of the following form:
+     *                                 'position:bottom-left,style:default'
+     *                                 Style options: 'default' only.
+     */
     this.$propHandlers["scalecontrol"] = function(value) {
         this.scalecontrol  = !apf.isFalse(value);
         this.$scaleControl = {};
@@ -212,11 +234,15 @@ apf.map = function(struct, tagName){
         if (!this.$map)
             return delegate.call(this, arguments.callee, arguments);
         this.$map.setOptions({
-            scaleControl       : this.scalcontrol,
+            scaleControl       : this.scalecontrol,
             scaleControlOptions: this.$scaleControl
         });
     };
 
+    /**
+     * @attribute {String} type the type of map that should be rendered.
+     *                          Possible values: 'hybrid', 'roadmap', 'satellite', 'terrain'
+     */
     this.$propHandlers["type"] = function(value) {
         if (loaddone)
             this.type = google.maps.MapTypeId[value.toUpperCase()];
@@ -225,6 +251,10 @@ apf.map = function(struct, tagName){
         this.$map.setMapTypeId(this.type);
     };
 
+    /**
+     * @attribute {Number} zoom The zoomlevel of the map.
+     *                          Value may vary between 1..100
+     */
     this.$propHandlers["zoom"] = function(value) {
         this.zoom = parseInt(value);
         if (!this.$map)
@@ -232,15 +262,48 @@ apf.map = function(struct, tagName){
         this.$map.setZoom(this.zoom);
     };
 
+    /**
+     * @attribute {String} marker The zoomlevel of the map.
+     *                            Value may vary between 1..100
+     */
+    this.$propHandlers["marker"] = function(value) {
+        this.addMarker(value);
+    };
+
     // PUBLIC METHODS
-    this.setValue = function(lon, lat){
+    /**
+     * Sets the geographical coordinates and centers the map on it.
+     * If no coordinates are passed as arguments, the current values of the
+     * latitude and longitude attributes are used.
+     *
+     * @param {Number} lat geographical coordinate latitude
+     * @param {Number} lon geographical coordinate longitude
+     * @type  {void}
+     */
+    this.setValue = function(lat, lon){
         if (!loaddone || !this.$map)
             return delegate.call(this, arguments.callee, arguments);
+        if (lat)
+            this.latitude  = parseFloat(lat);
+        if (lon)
+            this.longitude = parseFloat(lon);
         lastpos = new google.maps.LatLng(this.latitude, this.longitude);
         this.$map.setCenter(lastpos);
         callDelegates.call(this);
     };
 
+    /**
+     * Retrieves the current geographical coordinates as displayed by the map.
+     * The returned object has the following structure: 
+     * <code>
+     * {
+     *     latitude:  [number between -90 and 90 degrees],
+     *     longitude: [number between -180 and 180 degrees]
+     * }
+     * </code>
+     * 
+     * @type {Object}
+     */
     this.getValue = function(){
         return {
             latitude : this.latitude,
@@ -248,6 +311,17 @@ apf.map = function(struct, tagName){
         };
     };
 
+    /**
+     * Adds a marker on a specific geographical location, optionally with an 
+     * information window attached to it with arbitrary HTML as its content.
+     * 
+     * @param {String} [title]   title of the marker. Defaults to 'Marker'
+     * @param {String} [content] content of the information window. If not set, 
+     *                           no information window is created and attached to 
+     *                           the marker.
+     * @param {Object} [coords]  geographical coordinates to drop the marker at.
+     *                           Format: {latitude: x, longitude: y}
+     */
     this.addMarker = function(title, content, coords) {
         if (!this.$map)
             return delegate.call(this, arguments.callee, arguments);
@@ -314,7 +388,6 @@ apf.map = function(struct, tagName){
         function loaded() {
             if (++loadcnt !== 2) return;
             loaddone = true;
-            apf.console.log("delegates calling??");
             callDelegates.call(_self);
         }
         if (typeof google == "undefined" && typeof google.maps == "undefined") {
