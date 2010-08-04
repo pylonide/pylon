@@ -906,13 +906,28 @@ apf.xmldb = new (function(){
         }
 
         if (!model.rdb) return;
+        var rdb = model.rdb;
 
         // Add the messages to the undo object
         if (undoObj.localName)
-            model.rdb.queueMessage(args, model, undoObj);
+            rdb.$queueMessage(args, model, undoObj);
         // Or send message now
-        else
-            model.rdb.sendChange(args, model);
+        else {
+            clearTimeout(rdb.queueTimer);
+            
+            rdb.$queueMessage(args, model, rdb);
+            //#ifdef __WITH_O3
+            if (apf.isO3)
+                rdb.$processQueue(rdb);
+            else 
+            //#endif
+            {
+                // use a timeout to batch consecutive calls into one RDB call
+                rdb.queueTimer = $setTimeout(function() {
+                    rdb.$processQueue(rdb);
+                });
+            }
+        }
     };
     //#endif
 

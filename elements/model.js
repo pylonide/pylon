@@ -169,20 +169,20 @@ apf.model = function(struct, tagName){
             : this.remote;
 
         //#ifdef __DEBUG
-        if (!this.rdb || !this.rdb.sessions) {
+        if (!this.rdb || !this.rdb.$sessions) {
             throw new Error(apf.formatErrorString(0, null,
                 "Loading AML into model",
                 "Could not find reference to remote databinding: '"
-                + this.getAttribute("remote") + "'", this))
+                + this.remote + "'", this))
         }
         //#endif
 
-        this.rdb.startSession(this, xpath || "//");
+        this.rdb.createSession(this.src, this, xpath);
     };
 
     this.unshare = function(xpath) {
         if (!this.rdb) return;
-        this.rdb.endSession(this, xpath || "//");
+        this.rdb.endSession(this.src);
         this.rdb = null;
     };
     //#endif

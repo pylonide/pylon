@@ -146,14 +146,16 @@ apf.remote = function(struct, tagName){
     
     this.lookup              = {};
     this.select              = [];
-    this.sessions            = {};
+    this.$sessions            = {};
     this.rdbQueue            = {};
     this.queueTimer          = null;
-    this.pendingSessions     = {};
     this.pendingTerminations = {};
 };
 
-//@todo this needs serious refactor
+apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
+apf.remote.SESSION_STARTED    = 0x0002; //Session is started
+apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
+
 (function(){
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;
@@ -166,11 +168,12 @@ apf.remote = function(struct, tagName){
 
     this.$supportedProperties.push("transport");
     
-    function checkProtocol(resource) {
-        if (resource.indexOf("rdb__") === 0)
-            return "rdb:" + resource.substr(3).replace(/_/g, "/");
-        return resource;
-    }
+    /* @todo move this to the rdb-xmpp transport layer
+    function checkProtocol(uri) {
+        if (uri.indexOf("rdb__") === 0)
+            return "rdb:" + uri.substr(3).replace(/_/g, "/");
+        return uri;
+    } */
 
     this.$propHandlers["transport"] = function(value) {
         this.transport = typeof value == "object" ? value : self[this["transport"]];
@@ -183,289 +186,175 @@ apf.remote = function(struct, tagName){
         //#endif
 
         var _self = this;
-
-        this.transport.addEventListener("connected", function() {
-            var s, t, o, model, xpath;
-            for (s in _self.sessions) {
-                o = _self.sessions[s],
-                model = o.model,
-                xpath = o.xpath,
-                o     = null;
-                delete _self.sessions[s];
-                _self.startSession(model, xpath);
-            }
-            if (!s)
-                _self.startEmptySession();
-            
-            for (s in _self.pendingTerminations)
-                _self.endSession(_self.pendingTerminations[s], s.split(":")[1]);
-            for (t in _self.pendingSessions)
-                _self.startSession(_self.pendingSessions[t], t.split(":")[1]);
-            if (!t)
-                _self.startEmptySession();
-        });
-
-        /*this.transport.addEventListener("reconnect", function() {
-            var s, o, model, xpath;
-            for (s in _self.sessions) {
-                o = _self.sessions[s],
-                model = o.model,
-                xpath = o.xpath,
-                o     = null;
-                delete _self.sessions[s];
-                _self.startSession(model, xpath);
-            }
-            if (!s)
-                _self.startEmptySession();
-        });*/
-
-        this.transport.addEventListener("datachange", function(e){
-            var oData    = typeof e.body == "string" ? apf.unserialize(e.body) : e.body,
-                oSession = _self.sessions[e.session],
-                i        = 0,
-                l        = oData.length;//@todo error check here.. invalid message
-            for (; i < l; i++)
-                _self.receiveChange(oData[i], oSession, e.annotator, e.callback);
-        });
-
-        this.transport.addEventListener("datastatuschange", function(e) {
-            // e looks like { type: "submit", annotator: "benvolio@shakespeare.lit", fields: [] }
-            // #ifdef __DEBUG
-            apf.console.log("datastatuschange msg: " + e);
-            // #endif
-
-            if (!e.session && !e.fields["session"]) return;
-            var iBaseline, sModel,
-                sSession = e.session || e.fields["session"].value,
-                oSession = _self.sessions[sSession],
-                f        = function(oSession) {
-                    if (e.type == "submit") {
-                        iBaseline = e.baseline  || e.fields["baseline"]  ? oSession.baseline : 0,
-                        sModel    = e.modeldata || e.fields["modeldata"] ? oSession.model.getXml().xml : "";
-
-                        _self.transport.sendSyncRDB(e.annotator, sSession, iBaseline, sModel);
-                    }
-                    else if (e.type == "result") {
-                        iBaseline = e.baseline  || (e.fields["baseline"]  ? e.fields["baseline"].value  : null),
-                        sModel    = e.modeldata || (e.fields["modeldata"] ? e.fields["modeldata"].value : null);
-                        if (sModel)
-                            _self.sessions[sSession].model.load(sModel);
-                        _self.sessionStarted(sSession, iBaseline);
-                    }
-                }
-
-            if (!oSession)
-                oSession = _self.createDynamicModel(e, f);
-            else
-                f(oSession);
-        });
-
-        this.transport.addEventListener("rpc", function(e) {
-            _self.dispatchEvent("rpc", apf.extend({
-                sid     : e.sid,
-                resource: e.annotator,
-                from    : e.from,
-                command : e.command
-            }, e.data ? JSON.parse(e.data) : {}));
-        });
-    };
-
-    this.startSession = function(model, xpath, fake) {
-        if (!model) return;
-        if (!model.id)
-            model.setAttribute("id", "rmtRsbGen".appendRandomNumber(5));
-        model.$hasResource = (model.src && model.src.indexOf("rdb://") === 0);
-        xpath  = xpath || "//";
-        var o,
-            id = model.$hasResource ? model.src : model.id + ":" + xpath;
-        apf.console.log("Starting session with ID: " + id + ", " + model.src);
-        this.sessions[id] = model;
-        if (this.transport && this.transport.isConnected()) {
-            delete this.sessions[id];
-            delete this.pendingSessions[id];
-            if (model.$hasResource)
-                delete this.sessions[model.src];
-            id = this.transport.normalizeEntity(id);
-            o = this.sessions[id] = {
-                model: model,
-                xpath: xpath
-            };
-
-            var _self = this;
-            if (!fake) {
-                this.transport.startRDB(id, function(sSession, iTime) {
-                    _self.sessionStarted(sSession, iTime);
+        this.transport.addEventListener("connect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession = _self.$sessions[uri];
+                if (oSession.state != apf.remote.SESSION_STARTED)
+                    continue;
+                
+                this.join(uri, function(uri, iTime) {
+                    _self.$startSession(uri, iTime);
                 });
             }
-
-            return o;
-        }
-        else {
-            this.pendingSessions[id] = model;
-        }
-    };
-
-    this.startEmptySession = function() {
-        if (this.transport && this.transport.isConnected())
-            this.transport.startRDB("empty");
-    };
-
-    this.endSession = function(model, xpath) {
-        xpath  = xpath || "//";
-        var id = model.$hasResource ? this.transport.normalizeEntity(model.src) : model.id + ":" + xpath;
-        if (this.transport && this.transport.isConnected()) {
-            delete this.pendingTerminations[id];
-            this.transport.endRDB(this.transport.normalizeEntity(id));
-        }
-        else {
-            this.pendingTerminations[id] = model;
-        }
-        delete this.sessions[id];
-    };
-
-    this.sessionStarted = function(sSession, iTime) {
-        var oSession;
-        if (!(oSession = this.sessions[sSession])) {
-    	    apf.console.warn("Could not find session: " + sSession);
-    	    return;
-    	}
-    	
-        // check if time is provided, otherwise user created the session
-        if (iTime || !oSession.baseline)
-            oSession.baseline = iTime ? parseInt(iTime) : new Date().getTime();
-
-        // #ifdef __DEBUG
-        apf.console.log("session started: " + sSession + ", " + oSession.baseline);
-        // #endif
-    };
-
-    this.pauseSession = function() {
-        // @todo
-    };
-
-    this.createDynamicModel = function(e, callback) {
-        //if (!this["resource-uri"])
-        //    return; //@todo implement error messaging (like '404, data not found')
-        var model, f, noEvent,
-            id       = e.session || e.fields["session"].value,
-            resource = checkProtocol(id);
+        });
         
-        apf.console.log("creating dynamic model " + id + ", " + resource);
-        
-        if (!(model = apf.nameserver.get(id))) {
-            model = this.dispatchEvent("modelfind", {resource: resource});
-            if (model) {
-                delete model.src;
-                model.setProperty("remote", this.id);
-                model.rdb = this;
-                model.src = resource;
-                model.load(e.modeldata);
-                noEvent = true;
+        this.transport.addEventListener("disconnect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession       = _self.$sessions[uri];
+                oSession.state = apf.remote.SESSION_TERMINATED;
             }
-            else {
-                model = apf.setReference(id,
-                    apf.nameserver.register("model", id, new apf.model()));
+        });
 
-                if (model === 0)
-                    model = self[id];
-                else
-                    model.id = model.name = id;
-                model.setProperty("remote", this.id);
-                model.src = resource;
-            }
-        }
-
-        var o = this.getSessionByModel(id);
-        if (!o) {
-            o = this.startSession(model, null, true);
-            this.sessionStarted(e.session, e.baseline);
-        }
+        this.transport.addEventListener("update", function(e){
+            var sData = e.message.args ? [e.message] : e.message;
+            var oData = typeof sData == "string" 
+              ? apf.unserialize(sData) 
+              : sData;
+            var oSession = _self.$sessions[e.uri], i = 0, l = oData.length;
             
-        // set the root node for this model
-        if (!noEvent) {
-            model.addEventListener("afterload", f = function() {
-                model.removeEventListener("afterload", f);
-                callback(o);
-            });
-        }
+            for (; i < l; i++)
+                _self.$receiveChange(oData[i], oSession, e.annotator, e.callback);
+        });
+
+        this.transport.addEventListener("join", function(e) {
+            if (!e.uri)
+                return;
+            
+            var model, uri = e.uri, oSession = _self.$sessions[e.uri];
+            //if document isn't passed this must be a join request from a peer
+            if (!e.document) {
+                //#ifdef __DEBUG
+                apf.console.warn("Did not receive a document with the join message. \
+                                  Assuming a join request from a peer. If this \
+                                  message originated from the server something \
+                                  has gone wrong.");
+                //#endif
+                
+                return _self.dispatchEvent("joinrequest", e);
+            }
+            
+            //Create sesssion if it doesn't exist
+            if (!oSession)
+                oSession = _self.createSession(uri, null, null, e.document, e.basetime);
+        });
         
-        this.dispatchEvent("rdbinit", {
-            model    : model,
-            resource : resource,
-            session  : id,
-            fields   : e.fields,
-            annotator: e.annotator
+        this.transport.addEventListener("leave", function(e) {
+            _self.endSession(e.uri);
         });
     };
     
-    this.sendChange = function(args, model){
-        if (apf.xmldb.disableRDB)
-            return;
-
-        clearTimeout(this.queueTimer);
-        //return this.transport.sendRDB(apf.serialize(args));
-        this.queueMessage(args, model, this);
-        if (!apf.isO3) {
-            // use a timeout to batch consecutive calls into one RDB call
-            var _self = this;
-            this.queueTimer = $setTimeout(function() {
-                _self.processQueue(_self);
-            });
+    /**
+     * Create a new RDB session based on a URI.
+     * @param uri
+     * @param model
+     * @param xpath
+     */
+    this.createSession = function(uri, model, xpath, doc, iTime){
+        apf.console.log("Creating session for " + uri);
+        
+        if (!model)
+            model = this.dispatchEvent("modelfind", {uri: uri});
+        if (model) {
+            delete model.src;
+            
+            //@todo if this model is in a session stop that session
         }
+        else
+            model = new apf.model(); //apf.nameserver.register("model", id, );
+        
+        model.setProperty("remote", this);
+        model.rdb = this;
+        model.src = uri;
+        
+        var oSession = this.$addSession(uri, model, xpath);
+        
+        //We received the document and load it
+        if (doc) {
+            model.load(doc);
+            this.$startSession(uri, iTime);
+        }
+        //We did not receive a document and will issue a join request to the server
         else {
-            this.processQueue(this);
+            //If the transport is already connected, let
+            if (this.transport && this.transport.isConnected()) {
+                var _self = this;
+                this.transport.join(uri, function(uri, iTime) {
+                    _self.$startSession(uri, iTime);
+                });
+            }
         }
-    };
 
-    this.sendRPC = function(iId, oParams) {
-        var oData     = oParams.data,
-            fCallback = oParams.callback,
-            sSession  = oData["session"] ? this.transport.normalizeEntity(oData["session"]) : null,
-            sCommand  = oData["command"];
-        delete oData["command"];
-        if (typeof oParams != "string")
-            oParams = JSON.stringify(oParams);
-        this.transport.sendRPC(iId, sSession, sCommand, oParams, fCallback);
-    };
+        return oSession;
+    }
 
-    this.sendRPCResult = function(oParams) {
-        var oData    = oParams.data;
-        if (typeof oData != "string")
-            oData = JSON.stringify(oData);
-        this.transport.sendRPCResult(oParams.sid, oParams.status || 500,
-            oParams.to, oParams.command, oData);
-    };
-
-    this.getSessionByModel = function(sModel) {
-        if (typeof sModel != "string")
-            sModel = sModel.$hasResource ? sModel.src : sModel.id; //sModel.id;
-
-        if (this.sessions[sModel])
-            return this.sessions[sModel];
-
-        for (var i in this.sessions) {
-            if (this.sessions[i].model && this.sessions[i].model.id == sModel)
-                return this.sessions[i];
-        }
-        return null;
+    /**
+     * Terminate an RDB session based on a URI.
+     * @param uri
+     */
+    this.endSession = function(uri) {
+        if (this.transport && this.transport.isConnected())
+            this.transport.leave(uri);
+        
+        this.$sessions[uri].state = apf.remote.SESSION_TERMINATED;
+        
+        delete this.$sessions[uri];
     };
     
-    this.buildMessage = function(args, model){
-        var resource = model.$hasResource ? model.src : model.id,
-            oSession = this.getSessionByModel(resource),
-            i        = 0,
-            l        = args.length;
+    this.$addSession = function(uri, model, xpath){
+        delete this.$sessions[uri];
+        
+        return this.$sessions[uri] = {
+            uri   : uri,
+            model : model,
+            xpath : xpath,
+            state : apf.remote.SESSION_INITED
+        }
+    }
+    
+    this.$startSession = function(uri, basetime){
+        var oSession = this.$sessions[uri];
+        
+        if (!oSession) {
+            //#ifdef __DEBUG
+            apf.console.warn("Could not find RDB session to start " + uri);
+            //#endif
+            return false;
+        }
+        
+        oSession.state    = apf.remote.SESSION_STARTED;
+        if (basetime && !oSession.basetime)
+            oSession.basetime = basetime;
+        
+        // #ifdef __DEBUG
+        apf.console.log("session started: " + uri + ", " + oSession.basetime);
+        // #endif
+    }
+
+    this.$queueMessage = function(args, model, qHost){
+        if (!qHost.rdbQueue)
+            qHost.rdbQueue = {};
+
+        var uri = model.src, oSession = this.$sessions[uri];
+        
         // #ifdef __DEBUG
         if (!oSession) {
-            throw new Error(apf.formatErrorString(0, this, "RDB: sending message",
-                "No session initiated yet, please login first!"));
+            apf.console.error(apf.formatErrorString(0, this, "RDB: sending message",
+                "No RDB session found. Please make sure a session is created for this model: " 
+                + model.serialize()));
+            return false;
         }
         // #endif
-
-        var node;
-        for (; i < l; ++i) {
+        
+        if (!qHost.rdbQueue[uri]) {
+            qHost.rdbQueue[uri] = [];
+            qHost.rdbModel      = model;
+        }
+        
+        for (var node, i = 0, l = args.length; i < l; ++i) {
             if ((node = args[i]) && node.nodeType) {
-                //@todo setting level shouldnt be send
+                //@todo some changes should not be sent to the server
                 if (args[0] == "setAttribute" && args[2] == "level")
                     return false; //@todo refactor and make configurable
 
@@ -473,44 +362,35 @@ apf.remote = function(struct, tagName){
             }
         }
 
-        return {
-            model     : model.$hasResource ? model.src : model.id,
+        qHost.rdbQueue[uri].push({
+            uri       : uri,
             args      : args,
-            currdelta : new Date().getTime() - oSession.baseline
-        };
+            currdelta : new Date().getTime() - oSession.basetime
+        });
     };
     
-    this.queueMessage = function(args, model, qHost){
-        if (!qHost.rdbQueue)
-            qHost.rdbQueue = {};
-
-        var id = model.$hasResource ? this.transport.normalizeEntity(model.src) : model.id;
-        if (!qHost.rdbQueue[id]) {
-            qHost.rdbQueue[id] = [];
-            qHost.rdbModel     = model;
-        }
-        // @todo do some more additional processing here...
-        var msg = this.buildMessage(args, model);
-        if (msg)
-            qHost.rdbQueue[id].push(msg);
-    };
-    
-    this.processQueue = function(qHost){
+    this.$processQueue = function(qHost){
         if (qHost === this)
             clearTimeout(this.queueTimer);
-        if (apf.xmldb.disableRDB) return;
+        if (apf.xmldb.disableRDB) 
+            return;
 
-        for (var model in qHost.rdbQueue) {
-            if (!qHost.rdbQueue[model].length) continue;
+        var list;
+        for (var uri in qHost.rdbQueue) {
+            if (!(list = qHost.rdbQueue[uri]).length) 
+                continue;
+
             //#ifdef __DEBUG
-            apf.console.info("Sending RDB message\n" + apf.serialize(qHost.rdbQueue[model]));
+            apf.console.info("Sending " + list.length + " RDB messages to " + uri);
             //#endif
-            this.transport.sendRDB(model, apf.serialize(qHost.rdbQueue[model]));
+
+            this.transport.sendUpdate(uri, apf.serialize(list));
         }
+
         qHost.rdbQueue = {};
     };
     
-    this.receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
+    this.$receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
         if (apf.xmldb.disableRDB)
             return;
 
@@ -520,19 +400,23 @@ apf.remote = function(struct, tagName){
             queue.push(oMessage);
             return;
         }
+        
+        if (!oSession && oMessage.uri)
+            oSession = this.$sessions[oMessage.uri];
         //#endif
 
-        //Only for bot
-    	var originalMessage = apf.extend({}, oMessage);
-    	originalMessage.args = oMessage.args.slice();
-        
-        //this.lastTime = new Date().getTime();
-        if (oMessage.timestamp < this.discardBefore)
+        if (!oSession) {
+            // #ifdef __DEBUG
+            apf.console.warn("Could not find session while receiving data for \
+                a session with id '" + oMessage.uri + "'");
+            // #endif
             return;
+        }
 
-        var model = oSession ? oSession.model : apf.nameserver.get("model", oMessage.model),
-            q     = oMessage.args;
-        
+        if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
+            return;
+            
+        var model = oSession.model;
         if (!model) {
             //#ifdef __DEBUG
             apf.console.warn("Remote Databinding Received: Could not find model while" 
@@ -543,32 +427,19 @@ apf.remote = function(struct, tagName){
         if (!model.$at)
             model.$at = apf.window.$at; //@todo find better solution to the case of a missing ActionTracker...
 
-        var oError, xmlNode,
-            disableRDB       = apf.xmldb.disableRDB;
+        var oError, xmlNode, disableRDB = apf.xmldb.disableRDB;
         apf.xmldb.disableRDB = 2; //Feedback prevention
 
-        if (!oSession && oMessage.model)
-            oSession = this.sessions[this.transport.normalizeEntity(oMessage.model)];
-        if (!oSession) {
-            // #ifdef __DEBUG
-            //Maybe make this a warning?
-            throw new Error(apf.formatErrorString(0, this,
-                "Remote Databinding Received", "Could not find session when \
-                 receiving data for it with name '"
-               + this.transport.normalizeEntity(oMessage.model) + "'"));
-            // #endif
-            apf.xmldb.disableRDB = disableRDB;
-            return;
-        }
-
-        // correct timestamp with the session baseline
-        oMessage.currdelta = oSession.baseline + parseInt(oMessage.currdelta);
+        // Correct timestamp with the session basetime
+        oMessage.currdelta = oSession.basetime + parseInt(oMessage.currdelta);
 
         // #ifdef __DEBUG
-        apf.console.log("timestamp comparison (base: " + oSession.baseline + ") : " 
+        apf.console.log("timestamp comparison (base: " + oSession.basetime + ") : " 
             + (new Date().toGMTString())
             + ", " + (new Date(oMessage.currdelta).toGMTString()));
         // #endif
+
+        // Undo all items until state is equal to when message was executed on original client.
         var aUndos = model.$at.getDone(oMessage.currdelta),
             i      = 0,
             l      = aUndos.length;
@@ -578,16 +449,16 @@ apf.remote = function(struct, tagName){
             model.$at.undo(l);
         }
 
+        //Fetch node based on their xpath
+	var q   = oMessage.args.slice();
         xmlNode = this.xpathToXml(q[1], model.data);
         if (xmlNode) {
             var action = q.splice(0, 2)[0];
 
-            // transform xpaths to actual nodes
             if (action == "addChildNode")
                 q[2] = this.xpathToXml(q[2], model.data);
             else if (action == "appendChild") {
-                //@todo check why there's cleanNode here:
-                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
                 q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
             }
             else if (action == "moveNode") {
@@ -595,22 +466,23 @@ apf.remote = function(struct, tagName){
                 q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
             }
             else if (action == "replaceNode") {
-                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];//apf.xmldb.cleanNode(typeof q[0] == "string" ? apf.getXml(q[0]) : q[0]);
+                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
             }
-	    else if (action == "setValueByXpath") {}
+	        else if (action == "setValueByXpath") {}
 
             q.unshift(xmlNode);
+            
             // pass the action to the actiontracker to execute it
             model.$at.execute({
                 action   : action,
                 args     : q,
                 annotator: sAnnotator,
-                message  : originalMessage,
+                message  : oMessage,
                 callback : fCallback
             });
 
             this.dispatchEvent("change", {
-                resource : model.src,
+                uri      : oMessage.uri,
                 model    : model,
                 xmlNode  : xmlNode,
                 message  : oMessage
@@ -627,7 +499,7 @@ apf.remote = function(struct, tagName){
         if (l) {
             model.$at.redo(l);
             for (i = 0; i < l; ++i)
-                aUndos[i].$dontapply = false;
+                delete aUndos[i].$dontapply;
         }
 
         apf.xmldb.disableRDB = disableRDB;
@@ -651,7 +523,7 @@ apf.remote = function(struct, tagName){
             var queue = [];
             apf.offline.addEventListener("afteronline", function(){
                 for (var i = 0, l = queue.length; i < l; i++)
-                    _self.receiveChange(queue[i]);
+                    _self.$receiveChange(queue[i]);
 
                 queue.length = 0;
             });
@@ -660,8 +532,8 @@ apf.remote = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        for (var i = 0, l = this.sessions.length; i < l; ++i)
-            this.endSession(this.sessions[i].model, this.sessions[i].xpath);
+        for (var i = 0, l = this.$sessions.length; i < l; ++i)
+            this.endSession(this.$sessions[i].uri);
     });
 }).call(apf.remote.prototype = new apf.AmlElement());
 

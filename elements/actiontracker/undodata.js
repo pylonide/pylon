@@ -250,7 +250,7 @@ apf.UndoData = function(settings, at){
     //Send RDB Message..
     this.processRsbQueue = function(){
         if (this.rdbModel)
-            this.rdbModel.rdb.processQueue(this);
+            this.rdbModel.rdb.$processQueue(this);
     };
 
     this.clearRsbQueue = function(){

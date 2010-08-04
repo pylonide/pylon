@@ -192,25 +192,28 @@ apf.persist = function(struct, tagName){
                                 apf.console.warn("empty message received!");
                                 continue;
                             }
-                            if (data[i].type == "update") {
-                                _self.dispatchEvent("datachange", {
-                                    body      : data[i].message.args ? [data[i].message] : data[i].message, //@todo remote.js is not generic enough
-                                    session   : data[i].uri,
-                                    annotator : data[i].uId
+                            
+                            var d = data[i];
+                            if (d.type == "update") {
+                                _self.dispatchEvent("update", {
+                                    message   : d.message, //@todo remote.js is not generic enough
+                                    uri       : d.uri,
+                                    annotator : d.uId
                                 });
                             }
-                            else if (data[i].type == "join") {
-                                _self.dispatchEvent("datastatuschange", {
-                                    type      : "result",
-                                    session   : data[i].uri,
-                                    baseline  : data[i].baseline, //@todo what is this?
-                                    modeldata : data[i].document,
-                                    annotator : data[i].uId,
-                                    fields    : [] //what is this?
+                            else if (d.type == "join") {
+                                _self.dispatchEvent("join", {
+                                    uri       : d.uri,
+                                    basetime  : d.baseline, //@todo what is this?
+                                    document  : d.document,
+                                    annotator : d.uId
                                 });
                             }
-                            else if (data[i].type == "leave") {
+                            else if (d.type == "leave") {
                                 //@todo what to do here?
+                                _self.dispatchEvent("leave", {
+                                    uri : d.uri
+                                });
                             }
                         }
                     }
@@ -220,18 +223,14 @@ apf.persist = function(struct, tagName){
     };
     
     //add a listener to a document
-    this.join     = 
-    this.startRDB = function(sSession, callback){
-        if (sSession == "empty")
-            return;
-        
+    this.join     = function(uri, callback){
         if (!this.sessionId) {
             apf.console.warn("Could not start RDB session, missing session id.");
             return false;
         }
         
         var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "LOCK",
@@ -240,17 +239,16 @@ apf.persist = function(struct, tagName){
                     return _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
-                        callback(sSession);
+                        callback(uri);
                 }
             }
         });
     }
     
     //remove a listener to a document
-    this.leave  = 
-    this.endRDB = function(sSession){
+    this.leave  = function(uri){
         var _self = this;
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "UNLOCK",
@@ -262,10 +260,10 @@ apf.persist = function(struct, tagName){
     }
     
     //send change
-    this.sendRDB = function(sSession, message){
+    this.sendUpdate = function(uri, message){
         var _self = this;
         this.contentType = "application/json";
-        this.get(this.host + new apf.url(sSession).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "PUT",
@@ -277,11 +275,6 @@ apf.persist = function(struct, tagName){
         });
     }
     
-    //what should this do??
-    this.sendSyncRDB = function(annotator, sSession, iBaseline, sModel) {
-        
-    }
-
     /**
      * Connect to the PERSIST server with a username and password combination
      * provided.
@@ -330,7 +323,7 @@ apf.persist = function(struct, tagName){
                         }
                         
                         _self.$startListen();
-                        _self.dispatchEvent("connected"); //@todo reconnect
+                        _self.dispatchEvent("connect", data);
                         
                         if (callback) 
                             callback(data, state, extra);
@@ -367,6 +360,8 @@ apf.persist = function(struct, tagName){
                     return _self.$handleError(data, state, extra, callback);
                 }
                 else {
+                    _self.dispatchEvent("disconnect");
+                    
                     if (callback) 
                         callback(data, state, extra);
                 }
