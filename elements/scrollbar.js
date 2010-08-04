@@ -118,13 +118,26 @@ apf.scrollbar = function(struct, tagName){
         //}
 
         var scrollFunc = function(e){
+            if (e.returnValue === false)
+                return;
+            
             scrolling = apf.isIE;
             var oHtml = _self.$getHtmlHost();
 
-            //oHtml[_self.$scrollPos] += e.delta * -1 * apf[_self.$getInner](oHtml)/5;
             var div = (oHtml[_self.$scrollSize] - _self.$getViewPort(oHtml));
             if (div) {
-                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/5) / div;
+                if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
+                    if (_self.$lastScrollState === 0)
+                        return;
+                    setTimeout(function(){_self.$lastScrollState = 0;}, 300);
+                }
+                else if (oHtml[_self.$scrollPos] == oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize] && e.delta < 0) {
+                    if (_self.$lastScrollState === 1)
+                        return;
+                    setTimeout(function(){_self.$lastScrollState = 1;}, 300);
+                }
+                delete _self.$lastScrollState;
+                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/10) / div;
                 _self.setScroll();
                 e.preventDefault();
             }
