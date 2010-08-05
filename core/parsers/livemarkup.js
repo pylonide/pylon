@@ -363,7 +363,8 @@ apf.lm = new (function(){
     macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)",
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local(",
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)",
-    macro_o.edit        = "_valedx(", // only serves to switch default xpath in edit([xpath])
+    macro_o._editlm     = "_valedx(true, ", // only serves to switch default xpath in edit([xpath])
+    macro_o._editnormal = "_valedx(false, ", // only serves to switch default xpath in edit([xpath])
     macro_c.edit        = ")",
     macro_o.localName   = "_localName(_n",
     macro_c.localName   = ")",
@@ -1634,7 +1635,8 @@ apf.lm = new (function(){
         c_funcglobal = cfg.funcglobal;
         c_process_async = !cfg.event;
 
-        xpath_macro.edit = cfg.liveedit?"_argwrap(_n,":"_val(_n,";
+        xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
+        macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
         
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
@@ -2446,16 +2448,32 @@ apf.lm_exec = new (function(){
         return [0,m,x];
     }
     
-    function _valedx(args, opt){   // wrap a value with editable div
-        return _valed.apply(this,args);
+    function _valedx(editMode, args, opt){   // wrap a value with editable div
+        args[3] = opt;
+        args[4] = editMode;
+        return _valed.apply(this, args);
     }
     
-    function _valed(n, m, x){   // wrap a value with editable div
-        return '<span class="liveEdit" xpath="' + (n 
-            ? (m.substr(0,1) != "/" 
-                ? apf.xmlToXpath(n, null, false) 
-                : "") + "/" + m 
-            : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
+    function _valed(n, m, x, options, editMode){   // wrap a value with editable div
+        var res = (n?__val(n,m):__valm(m,x));
+        if (options && options.multiline)
+            res = res.replace(/\n/g, "<br />");
+        
+        if (editMode) {
+            return '<' + (options && options.multiline ? 'div style="display:inline-block"' : 'span') 
+              + ' class="liveEdit" xpath="' + (n 
+                ? (m.substr(0,1) != "/" 
+                    ? apf.xmlToXpath(n, null, false) 
+                    : "") + "/" + m 
+                : "") + '"' 
+              + (options
+                ? ' options="' + apf.serialize(options).replace(/"/g, "&quot;").escapeHTML() + '"'
+                : "") + '>' + (res || "&nbsp;") 
+              + '</' + (options && options.multiline ? 'div' : 'span') + '>';
+        }
+        else {
+            return res;
+        }
     }
     
     function _injself(s){           // self inject helper func

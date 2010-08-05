@@ -15,13 +15,14 @@
         
         <a:model id="mdlBlah">
             <data>
+                <person id="test" name="1" />
                 <person name="Ruben Daniels" />
                 <person name="Hans van Ballen ende Gooijen" />
                 <person name="Bas van Lippen Bisterveld" />
             </data>
         </a:model>
         
-        <div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
+        <!--div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
             foreach([person]) {
                 <div>[@name]</div>
             }
@@ -29,7 +30,28 @@
 
         <a:button state="true" width="100" onclick="
             test.setAttribute('liveedit', this.value);
-        ">Toggle {this.value}</a:button>
+        ">Toggle {this.value}</a:button-->
+        
+        <div id="test2" model="mdlBlah" liveedit="{btn.value}"><?lm
+            var arr = [];
+            foreach([person]) {
+                if ([@name] == 1)
+                    continue;
+
+                ^arr.push(edit([@name], {
+                    required   : true,
+                    invalidmsg : "Your name can only be 10 characters long",
+                    richtext   : true,
+                    maxlength  : 10,
+                    multiline  : [@name].indexOf("Ruben") > -1,
+                    //editor    : "ddId",
+                    "initial-message": "Type your name here"
+                }));
+            }
+            arr.join(", <br />");
+        ?></div>
+        
+        <a:button width="80" id="btn" value="true" state="true">toggle</a:button>
 
         <a:script><![CDATA[
             function insertEl() {

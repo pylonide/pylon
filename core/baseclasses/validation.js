@@ -369,7 +369,7 @@ apf.Validation = function(){
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
-        pattern : 1,
+        pattern   : 1,
         validtest : 3
     }, this.$attrExcludePropBind);
 

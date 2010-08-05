@@ -821,19 +821,6 @@ apf.GuiElement.propHandlers = {
         this.$propHandlers["editable"].apply(this, arguments);
     },*/
     // #endif
-    //#ifdef __WITH_LIVEEDIT
-    /**
-     * @attribute {String} sets this aml element to be liveedit
-     * that loads new aml as children of this element.
-     */
-    ,"liveedit": function(value) {
-        this.implement(apf.LiveEdit);
-        if (!this.hasFeature(apf.__VALIDATION__))
-            this.implement(apf.Validation);
-        this.$propHandlers["liveedit"].apply(this, arguments);
-    }
-    //#endif
-    
    
     //#ifdef __WITH_ALIAS
     /**

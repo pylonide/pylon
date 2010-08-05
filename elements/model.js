@@ -143,10 +143,6 @@ apf.model = function(struct, tagName){
             this.$loadFrom(value);
     };
 
-    this.$propHandlers["validation"] = function(value, prop){
-        apf.nameserver.get("validation", value).register(this); //@todo error handling
-    };
-    
     //#ifdef __WITH_RDB
     //Connect to a remote databinding
     this.$propHandlers["remote"] = function(value, prop){
@@ -185,32 +181,6 @@ apf.model = function(struct, tagName){
         this.rdb.endSession(this.src);
         this.rdb = null;
     };
-    //#endif
-
-    //#ifdef __WITH_MODEL_VALIDATION
-    this.validate = function(xmlNode, checkRequired, validityState, amlNode){
-        if (!this.$validation) //@todo warn
-            return;
-
-        if (!xmlNode) {
-            //Validate entire model.. not implemented yet...
-        }
-        else {
-            validityState = this.$validation.validate(xmlNode, checkRequired, validityState);
-            if (validityState.valid) {
-                amlNode.clearError();
-                return true;
-            }
-            else {
-                amlNode.setError();
-                return false;
-            }
-            
-            //@todo detect amlNode based xmlNode this.$listeners
-        }
-    }
-    //@todo add xmlupdate hook here
-    
     //#endif
 
     /**
