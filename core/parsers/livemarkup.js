@@ -2461,14 +2461,14 @@ apf.lm_exec = new (function(){
         
         if (editMode) {
             return '<' + (options && options.multiline ? 'div style="display:inline-block"' : 'span') 
-              + ' class="liveEdit" xpath="' + (n 
+              + ' class="liveEdit' + (!res && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? (m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m 
                 : "") + '"' 
               + (options
                 ? ' options="' + apf.serialize(options).replace(/"/g, "&quot;").escapeHTML() + '"'
-                : "") + '>' + (res || "&nbsp;") 
+                : "") + '>' + (res || options.initial || "&nbsp;") 
               + '</' + (options && options.multiline ? 'div' : 'span') + '>';
         }
         else {

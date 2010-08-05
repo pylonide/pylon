@@ -2,6 +2,11 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <script src="../apf.js"></script>
+        <style>
+            .liveEditInitial{
+                color : gray;
+            }
+        </style>
     </head>
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
@@ -15,7 +20,7 @@
         
         <a:model id="mdlBlah">
             <data>
-                <person id="test" name="1" />
+                <person id="test" name="" />
                 <person name="Ruben Daniels" />
                 <person name="Hans van Ballen ende Gooijen" />
                 <person name="Bas van Lippen Bisterveld" />
@@ -40,11 +45,11 @@
 
                 ^arr.push(edit([@name], {
                     required   : true,
-                    invalidmsg : "Your name can only be 10 characters long",
+                    invalidmsg : "Mr [@name], Your name can only be 10 characters long",
                     maxlength  : 10,
                     multiline  : [@name].indexOf("Ruben") > -1,
-                    editor    : "richtext",
-                    "initial-message": "Type your name here"
+                    editor     : [@name].indexOf("Bas") > -1 ? "richtext" : null,
+                    initial    : "Type your name here"
                 }));
             }
             arr.join(", <br />");

@@ -862,13 +862,13 @@ apf.LiveEdit.richtext = function(){
         }
     };
     
-    /*this.addEventListener("$createEditor", function(e) {
-        if (!e.richtext && this.$docklet)
+    this.addEventListener("$createEditor", function(e) {
+        if (e.editor != "richtext" && this.$docklet)
             this.$docklet.hide();
-    });*/
+    });
     
     this.addEventListener("$removeEditor", function(e) {
-        if (!e.richtext && this.$docklet)
+        if (this.$docklet && this.$docklet.visible)
             this.$docklet.hide();
     });
     

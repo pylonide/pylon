@@ -393,6 +393,11 @@ apf.LiveEdit = function() {
             };
         }
         //#endif
+        
+        if (oHtml.innerHTML == rule.initial) {
+            oHtml.innerHTML = "";
+            oHtml.className = "liveEdit";
+        }
 
         this.$lastValue = oHtml.innerHTML;
         
@@ -555,6 +560,10 @@ apf.LiveEdit = function() {
                   [this.xmlRoot.ownerDocument, res, xpath], 
                   "setValueByXpath", xmlNode);
             }
+        }
+        else if (!oHtml.innerHTML && rule.initial) {
+             oHtml.innerHTML = rule.initial;
+             oHtml.className = "liveEdit liveEditInitial";
         }
         
         if (callback)
