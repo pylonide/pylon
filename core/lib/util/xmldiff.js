@@ -714,13 +714,15 @@ apf.xmlDiff = function (doc1, doc2){
     }
     
     //@todo apf3.0 optimize this
-    var list;
+    var list, newNode;
     for (var id in q) {
         list = q[id].$amlList;
         for (var item, i = 0; i < list.length; i++) {
             item = list[i];
             if (!item) continue;
-            item[1].insertBefore(doc.importNode(item[2], true), item[1].childNodes[i]);
+            newNode = doc.importNode(item[2], true);
+            if (newNode)
+                item[1].insertBefore(newNode, item[1].childNodes[i]);
         }
     }
 
