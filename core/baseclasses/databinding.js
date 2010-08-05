@@ -467,8 +467,13 @@ apf.DataBinding = function(){
           && (!this.hasFeature(apf.__MULTISELECT__) || !this.each) 
           || this.$canLoadData && !this.$canLoadData()) {
             
-            if (!this.caching || !this.hasFeature(apf.__CACHE__))
+            if (!this.caching || !this.hasFeature(apf.__CACHE__)) {
                 this.xmlRoot = xmlNode;
+                
+                //#ifdef __WITH_PROPERTY_BINDING
+                this.setProperty("root", this.xmlRoot);
+                //#endif
+            }
             
             //#ifdef __DEBUG
             if (this.$amlLoaded && !this.$attrBindings) {

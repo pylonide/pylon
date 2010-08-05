@@ -2095,7 +2095,7 @@ apf.lm_exec = new (function(){
 
     function _xptm(m, x){       // return the query with model wrapped in an object
         return {
-            model:    m,
+            model:    (m && m.$isModel ? m : (m && apf.xmldb.findModel(m) || m)),
             xpath:    x,
             toString: function(){
                 return "LM Xpath object with model: " + this.x
@@ -2468,6 +2468,7 @@ apf.lm_exec = new (function(){
                 : "") + '"' 
               + (options
                 ? ' options="' + apf.serialize(options).replace(/"/g, "&quot;").escapeHTML() + '"'
+                    + (options.editor ? ' editor="' + options.editor + '"' : "")
                 : "") + '>' + (res || options.initial || "&nbsp;") 
               + '</' + (options && options.multiline ? 'div' : 'span') + '>';
         }
@@ -2617,7 +2618,9 @@ apf.lm_exec = new (function(){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
+
         eval(code);
+        
         return _f;
     }
 

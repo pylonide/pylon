@@ -133,6 +133,7 @@ apf.xmldb = new (function(){
      *
      */
     this.findModel = function(xmlNode){
+        if (!xmlNode) debugger;
         return apf.nameserver.get("model", xmlNode.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag));
     };

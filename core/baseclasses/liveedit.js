@@ -106,7 +106,7 @@ apf.LiveEdit = function() {
     };
     
     this.$setMouseEvents = function(){
-        var _self = this;
+        var _self = this, moEditor;
         this.$mouseOver = function(e) {
             var el = e.srcElement || e.target;
             if (!el) return;
@@ -114,7 +114,26 @@ apf.LiveEdit = function() {
                 el = el.parentNode;
             if (!el || el == _self.$ext || el == _self.$activeNode)
                 return;
-            apf.setStyleClass(el, "liveEdit_over");
+            
+            if (moEditor) {
+                _self.$lastEditor[0].$ext.onmouseout = null;
+                removeEditor.call(_self, _self.$activeNode, true);
+                moEditor = null;
+            }
+            
+            var editor = el.getAttribute("editor");
+            if (editor && "richtext|default".indexOf(editor) == -1 && !_self.$activeNode) {
+                createEditor.call(_self, el);
+                _self.$lastEditor[0].$ext.onmouseout = function(){
+                    if (!_self.$lastEditor[0].hasFocus()) {
+                        removeEditor.call(_self, _self.$activeNode, true);
+                        moEditor = null;
+                    }
+                }
+                moEditor = true;
+            }
+            else
+                apf.setStyleClass(el, "liveEditOver");
         };
         this.$mouseOut = function(e) {
             var el = e.srcElement || e.target;
@@ -123,7 +142,8 @@ apf.LiveEdit = function() {
                 el = el.parentNode;
             if (!el || el == _self.$ext || el == _self.$activeNode)
                 return;
-            apf.setStyleClass(el, null, ["liveEdit_over"]);
+
+            apf.setStyleClass(el, null, ["liveEditOver"]);
         };
         this.$mouseDown = function(e) {
             apf.cancelBubble(e);
@@ -142,7 +162,7 @@ apf.LiveEdit = function() {
             }
 
             createEditor.call(_self, el);
-            if (!_self.$lastTemplate) {
+            if (!_self.$lastEditor) {
                 e.cancelBubble = true;
                 apf.window.$mousedown({srcElement: _self.$activeNode});
                 $setTimeout(function(){
@@ -154,9 +174,9 @@ apf.LiveEdit = function() {
             }
             else {
                 $setTimeout(function(){
-                    _self.$lastTemplate.childNodes[0].focus();
+                    _self.$lastEditor[0].focus();
                 }, 100);
-                _self.$lastTemplate.childNodes[0].slideDown();
+                //_self.$lastEditor.childNodes[0].slideDown();
             }
 
             return false;
@@ -183,13 +203,13 @@ apf.LiveEdit = function() {
             createEditor.call(this, this.$lastActiveNode || (this.$tabStack
                 || initTabStack.call(this))[e.shiftKey ? this.$tabStack.length - 1 : 0]);
 
-            if (this.$lastActiveNode && !this.$lastTemplate)
+            if (this.$lastActiveNode && !this.$lastEditor)
                 this.$lastActiveNode.focus();
         }
         this.$lastActiveNode = null;
         
-        if (this.$lastTemplate) {
-            this.$lastTemplate.childNodes[0].focus();
+        if (this.$lastEditor) {
+            this.$lastEditor[0].focus();
         }
         else if (this.$activeNode) {
             var _self = this,
@@ -207,7 +227,7 @@ apf.LiveEdit = function() {
         this.$lastActiveNode = this.$activeNode || this.$lastActiveNode;
         //@todo should be recursive in refactor 
         if (e.toElement && (e.toElement == this.$docklet
-          || e.toElement.parentNode == this.$lastTemplate))
+          || e.toElement.parentNode == this.$lastEditor))
             return;
 
         var pParent = apf.popup.last && apf.lookup(apf.popup.last);
@@ -227,6 +247,7 @@ apf.LiveEdit = function() {
 
     function xmlupdateHandler(){
         initTabStack.call(this);
+        this.$activeNode = null;
     }
     //@todo skin change
 
@@ -298,10 +319,10 @@ apf.LiveEdit = function() {
 
             if (oNode) {
                 createEditor.call(this, oNode);
-                if (this.$lastTemplate) {
-                    this.$lastTemplate.childNodes[0].focus();
+                if (this.$lastEditor) {
+                    this.$lastEditor[0].focus();
                 }
-                else if (oNode.parentNode) { //this.$lastTemplate
+                else if (oNode.parentNode) { //this.$lastEditor
                     oNode.focus();
                     try {
                         //this.$selection.selectNode(oNode.firstChild);
@@ -378,14 +399,19 @@ apf.LiveEdit = function() {
             this.$skipFocusOnce = true;
 
         this.$activeNode = oHtml;
-        apf.setStyleClass(oHtml, "liveEdit_active", ["liveEdit_over"]);
+        apf.setStyleClass(oHtml, "liveEditActive", ["liveEditOver", "liveEditInitial"]);
+
+        if (oHtml.innerHTML == rule.initial)
+            oHtml.innerHTML = "";
+
+        this.$lastValue = oHtml.innerHTML;
 
         var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
-        handler.create.call(this, oHtml, rule);
+        handler.create.call(this, oHtml, rule, oHtml.getAttribute("xpath"));
         
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
-            //@todo this leaks like a ..
+            //@todo this leaks like a -> use apf.addListener
             apf.sanitizeTextbox(oHtml);
             oHtml.onselectstart = function(e) {
                 e = e || window.event;
@@ -393,13 +419,6 @@ apf.LiveEdit = function() {
             };
         }
         //#endif
-        
-        if (oHtml.innerHTML == rule.initial) {
-            oHtml.innerHTML = "";
-            oHtml.className = "liveEdit";
-        }
-
-        this.$lastValue = oHtml.innerHTML;
         
         this.dispatchEvent("$createEditor", rule);
     }
@@ -444,53 +463,163 @@ apf.LiveEdit = function() {
          *  - Attach code / Detach code
          */
         "custom" : {
-            create : function(oHtml, rule){
-                return;
-
-                if (!rule.$template) {
-                    var nodes = rule.node.childNodes;
-                    // @todo fix this
-                    rule.$template = apf.document.appendChild(apf.document.createElement("template"));
-                    for (var i = 0, l = nodes.length; i < l; i++) {
-                        if (nodes[i].nodeType != 1)
-                            continue;
-                        rule.$template.appendChild(apf.document.createElement(nodes[i]));
-                    }
+            create : function(oHtml, rule, xpath){
+                //Set window container to notify that this element will contain sub aml element.
+                if (this.$isWindowContainer != -1) {
+                    this.$isWindowContainer = -1; 
+                    apf.window.$removeFocus(this);
+                    apf.window.$addFocus(this, this.tabindex);
                 }
-                rule.$lastHeight = oHtml.style.height;
-                rule.$template.attach(oHtml, null, true);
-                oHtml.style.height = (oHtml.scrollHeight - apf.getHeightDiff(oHtml) + 2) + "px";
+                
+                //@todo cache it
+                oHtml.innerHTML = "";
+                
+                var editParent = oHtml;
+                var oEditor, editor = rule.editor;
+                if (editor.charAt(0) == "<") {
+                    //template from aml
+                }
+                //Lookup
+                else if (self[editor]) {
+                    oEditor = self[editor];
+                    oHtml.appendChild(oEditor.$ext);
+                }
+                //Reference to class
+                else if (apf.namespaces[apf.ns.aml].elements[editor]) {
+                    var cacheId = apf.serialize(rule); //Using full element definition as cache id. @todo when should I clear this cache? - at least at destroy - same for propedit/datagrid
+                    if (!this.$editorCache)
+                        this.$editorCache = {};
+                    
+                    if (!this.$editorCache[cacheId]) {
+                        if (!this.id)
+                            apf.setReference(this.id = (this.localName || "liveedit") + String(this.$uniqueId), this);
+                        
+                        var constr    = apf.namespaces[apf.ns.aml].elements[editor];
+                        var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
+                        var info      = apf.extend({
+                            htmlNode   : editParent,
+                            //width      : "100%+2",
+                            //height     : 19,
+                            style      : "display:inline-block;position:relative;", //z-index:10000
+                            value      : "[{" + this.id + ".root}::" + xpath + "]",
+                            focussable : false,
+                            realtime   : "{" + this.id + ".realtime}"
+                        }, rule);
+                        if (info.initial) {
+                            info["initial-message"] = info.initial;
+                            delete info.initial;
+                        }
 
-                rule.$template.childNodes[0].onblur = function(e){
-                    if (e.toElement && e.toElement != _self) {
-                        _self.dispatchEvent("blur");
+                        if (isTextbox) {
+                            info.focusselect = true;
+                            info.onkeydown   = function(e){
+                                if (e.keyCode == 13)
+                                    this.change(this.getValue());
+                            }
+                        }
+                        else if (editor == "checkbox" && !info.values)
+                            info.values = "true|false";
+                        
+                        //@todo copy all non-known properties of the prop element
+        
+                        /*if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                            info.caption   = "[text()]";
+                            info.eachvalue = "[@value]";
+                            info.each      = "item";
+                            info.model     = "{apf.xmldb.getElementById('" 
+                                + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
+                        }*/
+        
+                        oEditor = this.$editorCache[cacheId] = new constr(info);
+                        
+                        /*var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
+                        if (box[1] || box[3]) {
+                            oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
+                        }
+                        else if (!box[3])
+                            oEditor.$ext.style.marginLeft = "-1px";*/
+        
+                        //oEditor.$focussable = false;
+                        /*oEditor.addEventListener("focus", function(){
+                            _self.focus();
+                            this.$focus();
+                        });*/
+                        /*oEditor.addEventListener("blur", function(){
+                            hideEditor.call(_self);
+                        });*/
+                        oEditor.parentNode   = this;
+                        oEditor.$focusParent = this;
+                        oEditor.setAttribute("focussable", "true");
+                        //delete oEditor.parentNode;
+                        
+                        //@todo set actiontracker
+                        oEditor.$parentId = editParent.getAttribute("id");
+                        oEditor.$parentRsz = editParent.onresize;
+                        
+                        //Patch oEditor to forward change
+                        oEditor.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
+                            if (atAction == "setAttribute" && !args[2])
+                                atAction = "removeAttribute";
+                            
+                            this.parentNode.$executeAction.call(this.parentNode, 
+                                atAction, args, action, xmlNode, noevent, contextNode, multiple);
+                        }
                     }
                     else {
-                        if (e.toElement)
-                            this.$skipFocusOnce = true;
-                        else
-                            _self.dispatchEvent("blur");
-                        _self.focus(null, null, true);
+                        oEditor = this.$editorCache[cacheId];
+        
+                        /*if (oEditor.hasFeature(apf.__MULTISELECT__)) {
+                            oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
+                                + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                        }*/
+        
+                        oEditor.setAttribute("value", 
+                            "[{" + this.id + ".root}::" + xpath + "]");
+        
+                        oEditor.setProperty("visible", true);
+                        if (oEditor.$ext.parentNode 
+                          && oEditor.$ext.parentNode.nodeType == 1
+                          && !apf.hasSingleResizeEvent) {
+                            if (!oEditor.$parentRsz) 
+                                oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
+                            oEditor.$ext.parentNode.removeAttribute("id");
+                            delete oEditor.$ext.parentNode.onresize;
+                        }
+        
+                        editParent.appendChild(oEditor.$ext);
+                        editParent.setAttribute("id", editParent.$parentId);
+                        if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
+                            editParent.onresize = oEditor.$parentRsz;
+                            editParent.onresize();
+                        }
                     }
-                };
-                //@todo buggy should be no events in refactor apf3.0
-                rule.$template.childNodes[0].onafterchange = function(){
-                    //this.$skipFocusOnce = true;
-                    //_self.focus();
-                };
-                rule.$template.childNodes[0].onkeydown = function(e){
+                    
+                    /*setTimeout(function(){
+                        oEditor.focus();
+                    });*/
+                }
+                else {
+                    throw new Error("Unkown editor: " + editor);
+                }
+                
+                this.$lastEditor = [oEditor]
+
+                /*onkeydown = function(e){
                     if (e.keyCode == 9) {
                         e.currentTarget = null;
                         _self.dispatchEvent("keydown", e, true);
                         return false;
                     }
-                };
-                rule.$template.childNodes[0].setValue(apf.queryValue(xmlNode));
-                //rule.$template.childNodes[0].focus(); //@todo general focus problem for subchildren
-                this.$lastTemplate = rule.$template;
+                };*/
             },
-            remove : function(oHtml, rule){
+            remove : function(oHtml, rule, xpath){
+                var el = this.$lastEditor[0].$ext;
+                if (el.parentNode)
+                    el.parentNode.removeChild(el);
+
+                oHtml.innerHTML = apf.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
                 
+                this.focus();
             }
         }
     };
@@ -509,11 +638,11 @@ apf.LiveEdit = function() {
             rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
 
         this.$activeNode = null;
-        apf.setStyleClass(oHtml, null, ["liveEdit_over", "liveEdit_active"]);
+        apf.setStyleClass(oHtml, null, ["liveEditOver", "liveEditActive"]);
         this.$selection.collapse(true);
 
         var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
-        handler.remove.call(this, oHtml, rule);
+        handler.remove.call(this, oHtml, rule, xpath);
 
         if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
           == (this.$lastValue.dataType == apf.ARRAY
@@ -561,7 +690,7 @@ apf.LiveEdit = function() {
         }
         else if (!oHtml.innerHTML && rule.initial) {
              oHtml.innerHTML = rule.initial;
-             oHtml.className = "liveEdit liveEditInitial";
+             apf.setStyleClass(oHtml, "liveEditInitial");
         }
         
         if (callback)

@@ -863,11 +863,11 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
         str.push("@" + lNode.nodeName);
         lNode = lNode.ownerElement || xmlNode.selectSingleNode("..");
     }
-    
-    var id, pfx = "";
-    do {
+
+    var id;//, pfx = "";
+    while(lNode && lNode.nodeType == 1) {
         if (lNode == xmlContext) {
-            pfx = "//";
+            str.unshift("/");//pfx = "//";
             break;
         }
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
@@ -876,9 +876,9 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
                 : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
              + "]");
         lNode = lNode.parentNode;
-    } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
+    };
 
-    return pfx + str.join("/");
+    return (str[0] == "/" ? "" : "/") + str.join("/"); //pfx + 
 };
     
 //for RDB: Xpath statement --> xmlNode

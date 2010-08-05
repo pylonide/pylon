@@ -3,8 +3,24 @@
     <head>
         <script src="../apf.js"></script>
         <style>
+            .example{
+                font-family : Arial;
+                font-size : 13px;
+                line-height : 2em;
+                padding : 10px;
+                border : 1px solid gray;
+            }
+            
             .liveEditInitial{
                 color : gray;
+            }
+            
+            .liveEditOver{
+                outline: 1px dotted #c3c3c3;
+            }
+            
+            .liveEditActive{
+                outline: 1px dotted #333;
             }
         </style>
     </head>
@@ -22,7 +38,7 @@
             <data>
                 <person id="test" name="" />
                 <person name="Ruben Daniels" />
-                <person name="Hans van Ballen ende Gooijen" />
+                <person name="USA" datatype="country"/>
                 <person name="Bas van Lippen Bisterveld" />
             </data>
         </a:model>
@@ -37,7 +53,13 @@
             test.setAttribute('liveedit', this.value);
         ">Toggle {this.value}</a:button-->
         
-        <div id="test2" model="mdlBlah" liveedit="{btn.value}"><?lm
+        <a:dropdown id="ddCountries">
+            <a:item>Test 1</a:item>
+            <a:item>Test 2</a:item>
+            <a:item>Test 3</a:item>
+        </a:dropdown>
+        
+        <div id="test2" model="mdlBlah" liveedit="{btn.value}" class="example"><?lm
             var arr = [];
             foreach([person]) {
                 if ([@name] == 1)
@@ -45,10 +67,14 @@
 
                 ^arr.push(edit([@name], {
                     required   : true,
-                    invalidmsg : "Mr [@name], Your name can only be 10 characters long",
-                    maxlength  : 10,
-                    multiline  : [@name].indexOf("Ruben") > -1,
-                    editor     : [@name].indexOf("Bas") > -1 ? "richtext" : null,
+                    invalidmsg : "Your name can only be 10 characters long",
+                    /*maxlength  : 10,
+                    multiline  : [@name].indexOf("Ruben") > -1,*/
+                    editor     : [@name].indexOf("Bas") > -1 
+                        ? "richtext" 
+                        : ([@datatype] == 'country' ? "dropdown" : "default"), //ddCountries
+                    skin       : "ddinline",
+                    fill       : "The Netherlands, United Kingdom, USA",
                     initial    : "Type your name here"
                 }));
             }

@@ -78,27 +78,27 @@ apf.datagrid = function(struct, tagName){
         IS_LAST   = 1 << 3,
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
-    
+
     //#ifdef __WITH_DATAACTION
     this.implement(
         apf.DataAction
     );
     //#endif
-    
+
     /*this.$init(function() {
         this.addEventListener("keydown", keyHandler, true);
     });*/
-    
+
     this.bufferselect       = false;
     this.$useTable          = false;
     this.$focussable        = true;
     this.$isWindowContainer = -1;
-    
+
     this.$widthdiff      = 0;
     this.$defaultwidth   = 0;
     this.$useiframe      = 0;
     this.$needsDepth     = true;
-    
+
     //#ifdef __WITH_RENAME
     this.canrename = false; //@todo remove rename from basetree and move to tree.js
     //#endif

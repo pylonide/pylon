@@ -538,7 +538,7 @@ apf.window = function(){
 
         this.$lastFocussed = e.srcElement;
 
-        if (this.localName.indexOf("window") > -1)
+        if (this.localName && this.localName.indexOf("window") > -1)
             e.trackedChild = true;
     }
 
