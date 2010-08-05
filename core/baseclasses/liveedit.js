@@ -331,7 +331,7 @@ apf.LiveEdit = function() {
             return apf.stopEvent(e);
         else if (this.$activeNode)
             e.returnValue = -1; //@todo what is this for?
-    };
+    }
     
     function createEditor(oHtml) {
         if (!oHtml || oHtml.nodeType != 1 || this.$activeNode == oHtml || !this.xmlRoot)
@@ -370,8 +370,8 @@ apf.LiveEdit = function() {
         }*/
 
         //@todo this fucks undo state - elements created here are not undone
-        var xmlNode = apf.createNodeFromXpath(this.xmlRoot.ownerDocument,
-            oHtml.getAttribute("xpath"));
+        //var xmlNode = apf.createNodeFromXpath(this.xmlRoot.ownerDocument,
+        //    oHtml.getAttribute("xpath"));
 
         //@todo dirty hack, how to solve this properly
         if (this.hasFocus && !this.hasFocus())
@@ -409,7 +409,7 @@ apf.LiveEdit = function() {
             create : function(oHtml, rule){
                 this.getValue = function(){
                     return apf.html_entity_decode(oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n"));
-                }
+                };
                 
                 if (apf.hasContentEditable)
                     oHtml.contentEditable = true;
@@ -422,7 +422,8 @@ apf.LiveEdit = function() {
                     try {
                         // On each return, insert a BR element
                         document.execCommand("insertBrOnReturn", false, true);
-                    }catch(e){}
+                    }
+                    catch(e){}
                 }
             },
             remove : function(oHtml, rule){
@@ -444,61 +445,55 @@ apf.LiveEdit = function() {
          */
         "custom" : {
             create : function(oHtml, rule){
-                this.$custom(rule, oHtml);
+                return;
+
+                if (!rule.$template) {
+                    var nodes = rule.node.childNodes;
+                    // @todo fix this
+                    rule.$template = apf.document.appendChild(apf.document.createElement("template"));
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        if (nodes[i].nodeType != 1)
+                            continue;
+                        rule.$template.appendChild(apf.document.createElement(nodes[i]));
+                    }
+                }
+                rule.$lastHeight = oHtml.style.height;
+                rule.$template.attach(oHtml, null, true);
+                oHtml.style.height = (oHtml.scrollHeight - apf.getHeightDiff(oHtml) + 2) + "px";
+
+                rule.$template.childNodes[0].onblur = function(e){
+                    if (e.toElement && e.toElement != _self) {
+                        _self.dispatchEvent("blur");
+                    }
+                    else {
+                        if (e.toElement)
+                            this.$skipFocusOnce = true;
+                        else
+                            _self.dispatchEvent("blur");
+                        _self.focus(null, null, true);
+                    }
+                };
+                //@todo buggy should be no events in refactor apf3.0
+                rule.$template.childNodes[0].onafterchange = function(){
+                    //this.$skipFocusOnce = true;
+                    //_self.focus();
+                };
+                rule.$template.childNodes[0].onkeydown = function(e){
+                    if (e.keyCode == 9) {
+                        e.currentTarget = null;
+                        _self.dispatchEvent("keydown", e, true);
+                        return false;
+                    }
+                };
+                rule.$template.childNodes[0].setValue(apf.queryValue(xmlNode));
+                //rule.$template.childNodes[0].focus(); //@todo general focus problem for subchildren
+                this.$lastTemplate = rule.$template;
             },
             remove : function(oHtml, rule){
                 
             }
         }
     };
-    
-    //@todo
-    this.$custom = function(rule, oHtml){
-        return;
-        
-        if (!rule.$template) {
-            var nodes = rule.node.childNodes;
-            // @todo fix this
-            rule.$template = apf.document.appendChild(apf.document.createElement("template"));
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                if (nodes[i].nodeType != 1)
-                    continue;
-                rule.$template.appendChild(apf.document.createElement(nodes[i]));
-            }
-        }
-        rule.$lastHeight = oHtml.style.height;
-        rule.$template.attach(oHtml, null, true);
-        oHtml.style.height = (oHtml.scrollHeight - apf.getHeightDiff(oHtml) + 2) + "px";
-
-        rule.$template.childNodes[0].onblur = function(e){
-            if (e.toElement && e.toElement != _self) {
-                _self.dispatchEvent("blur");
-            }
-            else {
-                if (e.toElement)
-                    this.$skipFocusOnce = true;
-                else
-                    _self.dispatchEvent("blur");
-                _self.focus(null, null, true);
-            }
-        };
-        //@todo buggy should be no events in refactor apf3.0
-        rule.$template.childNodes[0].onafterchange = function(){
-            //this.$skipFocusOnce = true;
-            //_self.focus();
-        };
-        rule.$template.childNodes[0].onkeydown = function(e){
-            if (e.keyCode == 9) {
-                e.currentTarget = null;
-                _self.dispatchEvent("keydown", e, true);
-                return false;
-            }
-        };
-        rule.$template.childNodes[0].setValue(apf.queryValue(xmlNode));
-        //rule.$template.childNodes[0].focus(); //@todo general focus problem for subchildren
-        this.$lastTemplate = rule.$template;
-        return;
-    }
     
     this.isValid = function(checkRequired){
         //@todo only place for checkRequired
@@ -521,14 +516,18 @@ apf.LiveEdit = function() {
         handler.remove.call(this, oHtml, rule);
 
         if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
-          == (this.$lastValue.dataType == apf.ARRAY ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
-            oHtml.innerHTML = this.$lastValue.dataType == apf.ARRAY ? this.$lastValue[1] : this.$lastValue;
+          == (this.$lastValue.dataType == apf.ARRAY
+          ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
+            oHtml.innerHTML = this.$lastValue.dataType == apf.ARRAY 
+                ? this.$lastValue[1]
+                : this.$lastValue;
             return false;
         }
         
         // do additional handling, first we check for a change in the data...
         // @todo this will not always work in IE
-        if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) { //@todo this is bullshit
+        // @todo this is bullshit, because it tests on unparsed data --> incorrect
+        if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) {
             rule.htmlNode = oHtml;
             var res = this.getValue(oHtml);
             
@@ -544,7 +543,7 @@ apf.LiveEdit = function() {
 
                 this.invalidmsg = valid ? "" : rule.invalidmsg || "";
                 
-                var valid = this.validityState.valid;
+                valid = this.validityState.valid;
                 if (!valid) {
                     this.validityState.$errorHtml = oHtml;
                     this.dispatchEvent("invalid", this.validityState);
@@ -552,13 +551,12 @@ apf.LiveEdit = function() {
                 }
                 else
                     this.clearError();
-            };
+            }
             //#endif
             
             if (valid !== false) {
                 this.$executeAction("setValueByXpath", 
-                  [this.xmlRoot.ownerDocument, res, xpath], 
-                  "setValueByXpath", xmlNode);
+                  [this.xmlRoot.ownerDocument, res, xpath], "setValueByXpath", xmlNode);
             }
         }
         else if (!oHtml.innerHTML && rule.initial) {

@@ -116,7 +116,9 @@ apf.LiveEdit.richtext = function(){
         
         //@todo check the current field to see if it supports richtext
         
-        var oNode, isDone, found,
+        var found,
+            hEvt = e.htmlEvent,
+            oHtml = (e.explicitOriginalTarget || e.srcElement || e.target),
             code = e.which || e.keyCode;
         
         if (apf.isIE) {
@@ -819,7 +821,8 @@ apf.LiveEdit.richtext = function(){
         create : function(oHtml, rule){
             this.getValue = function(){
                 return apf.htmlCleaner.parse(oHtml.innerHTML);
-            }
+            };
+            oHtml.setAttribute("richtext", "true");
             
             // #ifdef __WITH_HTML_CLEANER
             this.$lastValue = [];
@@ -859,6 +862,7 @@ apf.LiveEdit.richtext = function(){
                 oHtml.contentEditable = false;
             else
                 document.designMode = "off";
+            oHtml.setAttribute("richtext", "false");
         }
     };
     
@@ -914,24 +918,22 @@ apf.LiveEdit.richtext = function(){
             this.$docklet.$loadSkin();
 
             this.$docklet.$draw();
-            this.$docklet.setProperty("buttons", "");
-            this.$docklet.setProperty("title", "Formatting");
-            this.$docklet.setProperty("icon", "application.png");
-            this.$docklet.setProperty("resizable", "horizontal");
-            this.$docklet.setProperty("draggable", true);
+            this.$docklet.setProperty("buttons",    "");
+            this.$docklet.setProperty("title",      "Formatting");
+            this.$docklet.setProperty("icon",       "application.png");
+            this.$docklet.setProperty("resizable",  "horizontal");
+            this.$docklet.setProperty("draggable",  true);
             this.$docklet.setProperty("focussable", true);
-            //docklet.setProperty("resizeoutline", true);
+            //docklet.setProperty("resizeoutline",    true);
 
             var _self = this;
             this.$docklet.onfocus = function(){
                 _self.focus();
-            }
+            };
 
-            //apf.AmlParser.parseLastPass();
-
-            this.$docklet.setProperty("left", 500);
-            this.$docklet.setProperty("top", 100);
-            this.$docklet.setProperty("width", 400);
+            this.$docklet.setProperty("left",   500);
+            this.$docklet.setProperty("top",    100);
+            this.$docklet.setProperty("width",  400);
             this.$docklet.setProperty("zindex", 100000);
             
             var content, aNodes = this.$docklet.$ext.getElementsByTagName("div");
@@ -950,8 +952,10 @@ apf.LiveEdit.richtext = function(){
         if (this.$toolbar) {
             // fetch the DOM references of all toolbar buttons and let the
             // respective plugins finish initialization
-            var btns = this.$toolbar.getElementsByTagName("div");
-            for (var item, plugin, i = btns.length - 1; i >= 0; i--) {
+            var item, plugin,
+                btns = this.$toolbar.getElementsByTagName("div"),
+                i    = btns.length - 1;
+            for (; i >= 0; i--) {
                 item = btns[i].getAttribute("type");
                 if (!item) continue;
 

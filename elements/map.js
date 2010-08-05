@@ -35,6 +35,34 @@
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * @inherits apf.XForms
+ *
+ * @attribute {Number} latitude          geographical coordinate
+ * @attribute {Number} longitude         geographical coordinate
+ * @attribute {mixed}  maptypecontrol    defines the if a MapType control should
+ *                                       be visible and what its position and style should be.
+ *                                       The value may be either 'false' (no control)
+ *                                       or of the following form:
+ *                                       'position:bottom-left,style:dropdown'
+ *                                       Style options: 'dropdown', 'bar'
+ * @attribute {mixed}  navigationcontrol defines the if a Navigation control should
+ *                                       be visible and what its position and style should be.
+ *                                       The value may be either 'false' (no control)
+ *                                       or of the following form:
+ *                                       'position:bottom-left,style:zoompan'
+ *                                       Style options: 'android', 'small' or 'zoompan'
+ * @attribute {mixed}  scalecontrol      defines the if a Navigation control should
+ *                                       be visible and what its position and style should be.
+ *                                       The value may be either 'false' (no control)
+ *                                       or of the following form:
+ *                                       'position:bottom-left,style:default'
+ *                                       Style options: 'default' only.
+ * @attribute {String} type              the type of map that should be rendered.
+ *                                       Possible values: 'hybrid', 'roadmap', 'satellite', 'terrain'
+ * @attribute {Number} zoom              The zoomlevel of the map.
+ *                                       Value may vary between 1..100
+ * @attribute {String} marker            if set, a marker will be placed on the map
+ *                                       at the current location (or once a location
+ *                                       is specified) with the value as its title.
  */
 apf.map = function(struct, tagName){
     this.$init(tagName || "map", apf.NODE_VISIBLE, struct);
@@ -81,45 +109,62 @@ apf.map = function(struct, tagName){
         delegates = [],
         _slice    = Array.prototype.slice,
         loaddone  = false;
-    /**
-     * @attribute {Number} latitude   geographical coordinate
-     * @attribute {Number} longitude  geographical coordinate
-     */
+
     this.$propHandlers["latitude"]  =
     this.$propHandlers["longitude"] = function(value, prop) {
+        if (!value) return;
         clearTimeout(timer);
         this[prop] = parseFloat(value);
         var _self = this;
         timer = setTimeout(function() {
-            _self.setValue(this.latitude, this.longitude);
+            _self.setValue(_self.latitude, _self.longitude);
         });
     };
 
+    function delegate2(func, args) {
+        var _self = this;
+        $setTimeout(function() {
+            delegate.call(_self, func, args);
+        });
+    }
+
     function delegate(func, args) {
         clearTimeout(deltimer);
-        func.$__args = _slice.call(args);
-        delegates.pushUnique(func);
-        callDelegates.call(this);
+        args = _slice.call(args);
+        var i = delegates.indexOf(func),
+            l = args.length;
+        if (i > -1) {
+            if (l && args[0])
+                delegates[i].$__args = args;
+            return;
+        }
+        if (!l || !args[0]) return;
+        func.$__args = args;
+        if (i === -1)
+            delegates.push(func);
     }
 
     function callDelegates() {
         clearTimeout(deltimer);
         if (!loaddone) {
             var _self = this;
-            deltimer = setTimeout(function() {callDelegates.call(_self)}, 1000);
+            deltimer = $setTimeout(function() {callDelegates.call(_self)}, 1000);
             return;
         }
-        var i = 0,
+        var d,
+            i = 0,
             l = delegates.length;
         if (!l) return;
         for (; i < l; ++i) {
-            if (typeof delegates[i] != "function") continue;
-            delegates[i].apply(this, delegates[i].$__args);
+            if (typeof (d = delegates[i]) != "function") continue;
+            d.apply(this, d.$__args);
+            delete d.$__args;
         }
         delegates = [];
     }
 
     function parseOptions(sOpts) {
+        sOpts = sOpts || "";
         var t,
             aOpts = sOpts.splitSafe(",|;"),
             oOpts = {},
@@ -131,15 +176,9 @@ apf.map = function(struct, tagName){
             if (t.length != 2) continue;
             oOpts[t[0]] = typeof t[1] == "string" ? t[1].toLowerCase() : t[1];
         }
-        return oOpts
+        return oOpts;
     }
 
-    /**
-     * @attribute {mixed} maptypecontrol defines the if a MapType control should be visible and what its position and style should be.
-     *                                   The value may be either 'false' (no control) or of the following form:
-     *                                   'position:bottom-left,style:dropdown'
-     *                                   Style options: 'dropdown', 'bar'
-     */
     this.$propHandlers["maptypecontrol"] = function(value) {
         this.maptypecontrol  = !apf.isFalse(value);
         this.$mapTypeControl = {};
@@ -163,19 +202,13 @@ apf.map = function(struct, tagName){
             }
         }
         if (!this.$map)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
         this.$map.setOptions({
             mapTypeControl       : this.maptypecontrol,
             mapTypeControlOptions: this.$mapTypeControl
         });
     };
 
-    /**
-     * @attribute {mixed} navigationcontrol defines the if a Navigation control should be visible and what its position and style should be.
-     *                                      The value may be either 'false' (no control) or of the following form:
-     *                                      'position:bottom-left,style:zoompan'
-     *                                      Style options: 'android', 'small' or 'zoompan'
-     */
     this.$propHandlers["navigationcontrol"] = function(value) {
         this.navigationcontrol  = !apf.isFalse(value);
         this.$navigationControl = {};
@@ -202,19 +235,13 @@ apf.map = function(struct, tagName){
             }
         }
         if (!this.$map)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
         this.$map.setOptions({
             navigationControl       : this.navigationcontrol,
             navigationControlOptions: this.$navigationControl
         });
     };
 
-    /**
-     * @attribute {mixed} scalecontrol defines the if a Navigation control should be visible and what its position and style should be.
-     *                                 The value may be either 'false' (no control) or of the following form:
-     *                                 'position:bottom-left,style:default'
-     *                                 Style options: 'default' only.
-     */
     this.$propHandlers["scalecontrol"] = function(value) {
         this.scalecontrol  = !apf.isFalse(value);
         this.$scaleControl = {};
@@ -232,29 +259,22 @@ apf.map = function(struct, tagName){
             }
         }
         if (!this.$map)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
         this.$map.setOptions({
             scaleControl       : this.scalecontrol,
             scaleControlOptions: this.$scaleControl
         });
     };
 
-    /**
-     * @attribute {String} type the type of map that should be rendered.
-     *                          Possible values: 'hybrid', 'roadmap', 'satellite', 'terrain'
-     */
     this.$propHandlers["type"] = function(value) {
+        if (!value) return;
         if (loaddone)
             this.type = google.maps.MapTypeId[value.toUpperCase()];
         if (!this.$map)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
         this.$map.setMapTypeId(this.type);
     };
 
-    /**
-     * @attribute {Number} zoom The zoomlevel of the map.
-     *                          Value may vary between 1..100
-     */
     this.$propHandlers["zoom"] = function(value) {
         this.zoom = parseInt(value);
         if (!this.$map)
@@ -262,10 +282,6 @@ apf.map = function(struct, tagName){
         this.$map.setZoom(this.zoom);
     };
 
-    /**
-     * @attribute {String} marker The zoomlevel of the map.
-     *                            Value may vary between 1..100
-     */
     this.$propHandlers["marker"] = function(value) {
         this.addMarker(value);
     };
@@ -281,15 +297,21 @@ apf.map = function(struct, tagName){
      * @type  {void}
      */
     this.setValue = function(lat, lon){
-        if (!loaddone || !this.$map)
+        if (!lat || !lon) return;
+        if (!loaddone)
             return delegate.call(this, arguments.callee, arguments);
         if (lat)
             this.latitude  = parseFloat(lat);
         if (lon)
             this.longitude = parseFloat(lon);
+        if (!this.$map)
+            return delegate2.call(this, arguments.callee, arguments);
         lastpos = new google.maps.LatLng(this.latitude, this.longitude);
         this.$map.setCenter(lastpos);
-        callDelegates.call(this);
+        var _self = this;
+        $setTimeout(function() {
+            callDelegates.call(_self);
+        });
     };
 
     /**
@@ -324,12 +346,12 @@ apf.map = function(struct, tagName){
      */
     this.addMarker = function(title, content, coords) {
         if (!this.$map)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
         var pos = lastpos;
         if (coords && coords.latitude && coords.longitude)
             pos = new google.maps.LatLng(coords.latitude, coords.longitude);
         if (!pos)
-            return delegate.call(this, arguments.callee, arguments);
+            return delegate2.call(this, arguments.callee, arguments);
 
         var marker = new google.maps.Marker({
             position: pos,
@@ -348,11 +370,15 @@ apf.map = function(struct, tagName){
     };
 
     this.$draw = function(){
-        if (!this.$ext)
-            this.$ext = this.$getExternal();
+        if (!this.$ext) {
+            var doc = this.$pHtmlNode.ownerDocument;
+            this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
+            this.$ext.className = this.localName;
+        }
 
-        if (!loaddone)
-            return delegate.call(this, arguments.callee, arguments);
+        if (!loaddone) return;
+
+        callDelegates.call(this);
 
         this.$map = new google.maps.Map(this.$ext, {
             zoom                    : this.zoom,
@@ -383,23 +409,29 @@ apf.map = function(struct, tagName){
         // include Map scripts:
         //<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
         //<script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script>
-        var loadcnt = 0,
-            _self   = this;
+        var _self   = this;
         function loaded() {
-            if (++loadcnt !== 2) return;
             loaddone = true;
-            callDelegates.call(_self);
+            _self.$draw();
+            delete self.google_maps_initialize;
         }
-        if (typeof google == "undefined" && typeof google.maps == "undefined") {
-            apf.include("http://maps.google.com/maps/api/js?sensor=true",  false, null, null, loaded);
-            apf.include("http://code.google.com/apis/gears/gears_init.js", false, null, null, loaded);
+        if (typeof google == "undefined" || typeof google.maps == "undefined") {
+            self.google_maps_initialize = function() {
+                loaded();
+            };
+            var head   = document.getElementsByTagName("head")[0],
+                script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src  = "http://maps.google.com/maps/api/js?sensor=true&callback=google_maps_initialize";
+
+            document.body.appendChild(script);
+            //apf.include("http://code.google.com/apis/gears/gears_init.js", false, null, null, loaded);
         }
         else {
-            loadcnt = 1;
             loaded();
         }
     });
-}).call(apf.map.prototype = new apf.Presentation());
+}).call(apf.map.prototype = new apf.GuiElement());
 
 apf.aml.setElement("map", apf.map);
 
