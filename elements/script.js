@@ -69,24 +69,24 @@ apf.script = function(){
                 }
                 
                 _self.$execute(data);
-            });
+            }});
         }
     }
     
-    this.$execute = function(code){
+    this.$execute = function(code, e){
         if (!this.type || this.type == "text/javascript") {
             apf.jsexec(code);
         }
         else if (this.type == "application/livemarkup"
           || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
-            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
-            func(window.event);
+            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true, nostring: true});
+            func(e || {});
         }
     }
     
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget.nodeType == 3 || e.currentTarget.nodeType == 4) {
-            this.$execute(e.currentTarget.nodeValue);
+            this.$execute(e.currentTarget.nodeValue, apf.isIE && window.event);
         }
     });
     

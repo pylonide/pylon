@@ -703,7 +703,7 @@ apf.http = function(){
         extra.data = http.responseText; //Can this error?
 
         if (http.status >= 400 && http.status < 600 || http.status < 10 
-          && (http.status != 0 || !apf.isIE && qItem.url.substr(0, 6) != "file:/")) {
+          && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
