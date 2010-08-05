@@ -39,15 +39,18 @@
  * @param {Function} callback function of the form function(error), which is
  *      called after all items have been processed
  */
-apf.asyncForEach = function(list, async, callback) {
-    if (!list.length) return callback(null, []);
-    var copy = list.concat();
+exports.forEach = function(list, async, callback) {
+    var i = 0;
+    var len = list.length;
 
-    async(copy.shift(), function handler(err) {
+    if (!len) return callback(null, []);
+
+    async(list[i], function handler(err) {
         if (err) return callback(err);
+        i++;
 
-        if (copy.length) {
-            async(copy.shift(), handler);
+        if (i < len) {
+            async(list[i], handler);
         } else {
             callback(null);
         }
@@ -67,16 +70,21 @@ apf.asyncForEach = function(list, async, callback) {
  * @param {Function} mapper function of the form function(item, next)
  * @param {Function} callback function of the form function(error, result)
  */
-apf.asyncMap = function(list, mapper, callback) {
-    if (!list.length) return callback(null, []);
+exports.map = function(list, mapper, callback) {
+    var i = 0;
+    var len = list.length;
 
-    var copy = list.concat();
+    if (!len) return callback(null, []);
     var map = [];
 
-    mapper(copy.shift(), function handler(err, value) {
-        map.push(value);
-        if (copy.length) {
-            mapper(copy.shift(), handler);
+    async(list[i], function handler(err, value) {
+        if (err) return callback(err);
+        
+        map[i] = value;
+        i++;
+
+        if (i < len) {
+            async(list[i], handler);
         } else {
             callback(null, map);
         }
@@ -92,11 +100,15 @@ apf.asyncMap = function(list, mapper, callback) {
  * 
  * @param {Array} funcs
  */
-apf.asyncChain = function(funcs) {
-    var copy = funcs.concat();
+exports.chain = function(funcs) {
+    var i = 0;
+    var len = funcs.length;
+    
     function next() {
-        var f = copy.shift();
-        if (f)
+        var f = funcs[i++];
+        if (i == len)
+            f()
+        else
             f(next)
     }
     
