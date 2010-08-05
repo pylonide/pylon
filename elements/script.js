@@ -49,30 +49,44 @@ apf.script = function(){
 
 (function(){
     this.$propHandlers["src"] = function(value){
-        if (apf.isOpera) {
-            $setTimeout(function(){
-                apf.window.loadCodeFile(apf.hostPath
-                    + value);
-            }, 1000);
+        if (!this.type || this.type == "text/javascript") {
+            if (apf.isOpera) {
+                $setTimeout(function(){
+                    apf.window.loadCodeFile(apf.hostPath
+                        + value);
+                }, 1000);
+            }
+            else {
+                apf.window.loadCodeFile(apf.getAbsolutePath(apf.hostPath,
+                    value));
+            }
         }
         else {
-            apf.window.loadCodeFile(apf.getAbsolutePath(apf.hostPath,
-                value));
+            var _self = this;
+            apf.ajax(value, {callback: function(data, state, extra){
+                if (state != apf.SUCCESS) {
+                    return apf.console.warn("Could not load script " + value);
+                }
+                
+                _self.$execute(data);
+            });
+        }
+    }
+    
+    this.$execute = function(code){
+        if (!this.type || this.type == "text/javascript") {
+            apf.jsexec(code);
+        }
+        else if (this.type == "application/livemarkup"
+          || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
+            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
+            func(window.event);
         }
     }
     
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget.nodeType == 3 || e.currentTarget.nodeType == 4) {
-            var code = e.currentTarget.nodeValue;
-            
-            if (!this.type || this.type == "text/javascript") {
-                apf.jsexec(code);
-            }
-            else if (this.type == "application/livemarkup"
-              || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
-                var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
-                func(window.event);
-            }
+            this.$execute(e.currentTarget.nodeValue);
         }
     });
     
@@ -85,14 +99,7 @@ apf.script = function(){
         
         var code = s.join("\n");
         
-        if (!this.type || this.type == "text/javascript") {
-            apf.jsexec(code);
-        }
-        else if (this.type == "application/livemarkup"
-          || this.type == "application/lm") {
-            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true});
-            func(window.event);
-        }
+        this.$execute(code);
     });
 }).call(apf.script.prototype = new apf.AmlElement());
 
