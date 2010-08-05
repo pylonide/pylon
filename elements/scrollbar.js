@@ -393,10 +393,6 @@ apf.scrollbar = function(struct, tagName){
         this.$slideFast   = this.$getLayoutNode("main", "slidefast", this.$ext);
         this.$btnUp       = this.$getLayoutNode("main", "btnup",     this.$ext)
         this.$btnDown     = this.$getLayoutNode("main", "btndown",   this.$ext);
-        this.$img         = [
-            this.$getOption("main", "img"),
-            this.$getOption("main", "img-scroll")
-        ];
 
         this.horizontal   = apf.isTrue(this.$getOption("main", "horizontal"));
         
@@ -412,11 +408,6 @@ apf.scrollbar = function(struct, tagName){
         this.$eventDir   = this.horizontal ? (apf.isIE ? "offsetX" : "layerX") : (apf.isIE ? "offsetY" : "layerY");
         this.$clientDir  = this.horizontal ? "clientX" : "clientY";
         
-        if (this.$img[0]) {
-            this.$caret.innerHTML = "<img width='100%' height='100%' />";
-            this.$caret.firstChild.src = this.$img[0];
-        }
-
         this.$startPos    = false;
         
         this.$caret.ondragstart = function(){
@@ -507,9 +498,6 @@ apf.scrollbar = function(struct, tagName){
             if (this.setCapture)
                 this.setCapture();
     
-            if (_self.$img[1])
-                _self.$caret.firstChild.src = _self.$img[1];
-            
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Down");
     
             document.onmousemove = function(e){
@@ -543,8 +531,6 @@ apf.scrollbar = function(struct, tagName){
                 if (!_self.realtime)
                     _self.setScroll();
                 
-                if (_self.$img)
-                    _self.$caret.firstChild.src = _self.$img[0];
                 
                 if (this.releaseCapture)
                     this.releaseCapture();
