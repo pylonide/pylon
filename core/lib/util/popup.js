@@ -139,7 +139,7 @@ apf.popup = {
             else popup.style.position = "fixed";
             
             if (!options.noleft)
-                popup.style.left = ((options.x || 0) + pos[0]) + "px";
+                popup.style.left = ((options.x || 0) + (pos ? pos[0] : 0)) + "px";
         }
 
         // #ifdef __WITH_STYLE

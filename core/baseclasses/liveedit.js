@@ -371,8 +371,7 @@ apf.LiveEdit = function() {
 
         //@todo this fucks undo state - elements created here are not undone
         var xmlNode = apf.createNodeFromXpath(this.xmlRoot.ownerDocument,
-            oHtml.getAttribute("xpath")),
-            v;
+            oHtml.getAttribute("xpath"));
 
         //@todo dirty hack, how to solve this properly
         if (this.hasFocus && !this.hasFocus())
@@ -381,33 +380,8 @@ apf.LiveEdit = function() {
         this.$activeNode = oHtml;
         apf.setStyleClass(oHtml, "liveEdit_active", ["liveEdit_over"]);
 
-        /**
-         * @todo for template
-         *  - Focus handling enters at the first and leaves at the last both entry/leave
-         *    are from/to parent element
-         *  - Parent focus/blur events aren't called ($focus / $blur should use event system)
-         *  - Keyboard events for leave (both ends) are forwarded to parent
-         *  - Attach manages height of container
-         *  - Attach code / Detach code
-         */
-        if (rule.editor) {
-            this.$custom(rule, oHtml);
-        }
-        else {
-            if (apf.hasContentEditable)
-                oHtml.contentEditable = true;
-            else {
-                document.body.setAttribute("spellcheck", "false");
-                document.designMode = "on";
-            }
-            
-            if (apf.isGecko) {
-                try {
-                    // On each return, insert a BR element
-                    document.execCommand("insertBrOnReturn", false, true);
-                }catch(e){}
-            }
-        }
+        var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
+        handler.create.call(this, oHtml, rule);
         
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
@@ -421,10 +395,57 @@ apf.LiveEdit = function() {
         //#endif
 
         this.$lastValue = oHtml.innerHTML;
-    
-        rule.htmlNode = oHtml;
+        
         this.dispatchEvent("$createEditor", rule);
     }
+    
+    this.$editors = {
+        "default" : {
+            create : function(oHtml, rule){
+                this.getValue = function(){
+                    return apf.html_entity_decode(oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n"));
+                }
+                
+                if (apf.hasContentEditable)
+                    oHtml.contentEditable = true;
+                else {
+                    document.body.setAttribute("spellcheck", "false");
+                    document.designMode = "on";
+                }
+                
+                if (apf.isGecko) {
+                    try {
+                        // On each return, insert a BR element
+                        document.execCommand("insertBrOnReturn", false, true);
+                    }catch(e){}
+                }
+            },
+            remove : function(oHtml, rule){
+                if (apf.hasContentEditable)
+                    oHtml.contentEditable = false;
+                else
+                    document.designMode = "off";
+            }
+        },
+        
+        /**
+         * @todo for template
+         *  - Focus handling enters at the first and leaves at the last both entry/leave
+         *    are from/to parent element
+         *  - Parent focus/blur events aren't called ($focus / $blur should use event system)
+         *  - Keyboard events for leave (both ends) are forwarded to parent
+         *  - Attach manages height of container
+         *  - Attach code / Detach code
+         */
+        "custom" : {
+            create : function(oHtml, rule){
+                this.$custom(rule, oHtml);
+            },
+            remove : function(oHtml, rule){
+                
+            }
+        }
+    };
     
     //@todo
     this.$custom = function(rule, oHtml){
@@ -491,13 +512,8 @@ apf.LiveEdit = function() {
         apf.setStyleClass(oHtml, null, ["liveEdit_over", "liveEdit_active"]);
         this.$selection.collapse(true);
 
-        if (rule.editor) {
-            
-        }
-        else if (apf.hasContentEditable)
-            oHtml.contentEditable = false;
-        else
-            document.designMode = "off";
+        var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
+        handler.remove.call(this, oHtml, rule);
 
         if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
           == (this.$lastValue.dataType == apf.ARRAY ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
@@ -509,9 +525,7 @@ apf.LiveEdit = function() {
         // @todo this will not always work in IE
         if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) { //@todo this is bullshit
             rule.htmlNode = oHtml;
-            var res = this.dispatchEvent("$removeEditor", rule);
-            if (!res)
-                res = apf.html_entity_decode(oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n"));
+            var res = this.getValue(oHtml);
             
             var valid;
             //#ifdef __WITH_VALIDATION
@@ -542,9 +556,11 @@ apf.LiveEdit = function() {
                   "setValueByXpath", xmlNode);
             }
         }
-
+        
         if (callback)
             $setTimeout(callback);
+        
+        this.dispatchEvent("$removeEditor", rule);
     }
 
     function initTabStack() {
@@ -612,7 +628,7 @@ apf.LiveEdit = function() {
     }
 
     // #ifdef __ENABLE_LIVEEDIT_RICHTEXT || __INC_ALL
-    //apf.LiveEdit.richtext.call(this);
+    apf.LiveEdit.richtext.call(this);
     // #endif
 };
 

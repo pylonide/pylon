@@ -41,10 +41,9 @@
                 ^arr.push(edit([@name], {
                     required   : true,
                     invalidmsg : "Your name can only be 10 characters long",
-                    richtext   : true,
                     maxlength  : 10,
                     multiline  : [@name].indexOf("Ruben") > -1,
-                    //editor    : "ddId",
+                    editor    : "richtext",
                     "initial-message": "Type your name here"
                 }));
             }

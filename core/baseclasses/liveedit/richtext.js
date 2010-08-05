@@ -23,7 +23,7 @@
 
 apf.LiveEdit.richtext = function(){
     this.$state          = apf.ON;
-    this.$buttons        = ["Bold", "Italic", "Underline"];
+    this.$buttons        = {};
     this.$classToolbar   = "editor_Toolbar";
     this.$plugins        = {};
     this.$pluginsHooks   = {};
@@ -36,7 +36,6 @@ apf.LiveEdit.richtext = function(){
                             "justifyfull", "removeformat", "cut", "copy",
                             "paste", "outdent", "indent", "undo", "redo"];
     this.$changeTimer    = null;
-    this.$buttons        = null;
     this.$toolbar        = null;
     
     this.$supportedProperties.push("state", "plugins", "language");
@@ -627,7 +626,7 @@ apf.LiveEdit.richtext = function(){
             this.$notifyButton(item, state);
     };
     
-        this.$restoreFocus = function(bWithSel) {
+    this.$restoreFocus = function(bWithSel) {
         // for now, only IE needs this workaround to return the focus to the
         // liveEdit area - whilst preserving the correct state.
         if (apf.isIE) {
@@ -798,9 +797,9 @@ apf.LiveEdit.richtext = function(){
                     oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
                         + this.$uniqueId + "].$buttonClick(event, this, true);");
                     oButton.setAttribute("onmouseover", 
-                        "apf.all[" + this.$uniqueId + "].$setStyleClass(this, 'hover', null, true);");
+                        "apf.setStyleClass(this, 'hover', null, true);");
                     oButton.setAttribute("onmouseout", 
-                        "apf.all[" + this.$uniqueId + "].$setStyleClass(this, '', ['hover'], true);");
+                        "apf.setStyleClass(this, '', ['hover'], true);");
 
                     oButton.setAttribute("type", item);
                 }
@@ -816,48 +815,63 @@ apf.LiveEdit.richtext = function(){
         }
     };
     
-    this.addEventListener("$createEditor", function(e) {
-        if (!e.richtext) {
-            if (this.$docklet)
-                this.$docklet.hide();
-            return;
-        }
-
-        // #ifdef __WITH_HTML_CLEANER
-        this.$lastValue = [];
-        e.htmlNode.innerHTML = this.$lastValue[0] = apf.htmlCleaner.prepare((this.$lastValue[1] = e.htmlNode.innerHTML)
-            .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-            "<br _apf_marker='1' /><br _apf_marker='1' />"));
-        this.$controlAgentBehavior(e.htmlNode);
-        //#endif
-        
-        if (apf.isGecko) {
-            try {
-                // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                document.execCommand("enableObjectResizing", false, false);
-                // Disable the standard table editing features of Firefox.
-                document.execCommand("enableInlineTableEditing", false, false);
+     this.$editors["richtext"] = {
+        create : function(oHtml, rule){
+            this.getValue = function(){
+                return apf.htmlCleaner.parse(oHtml.innerHTML);
             }
-            catch(ex){}
+            
+            // #ifdef __WITH_HTML_CLEANER
+            this.$lastValue = [];
+            oHtml.innerHTML = this.$lastValue[0] = apf.htmlCleaner.prepare((this.$lastValue[1] = oHtml.innerHTML)
+                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
+                "<br _apf_marker='1' /><br _apf_marker='1' />"));
+            this.$controlAgentBehavior(oHtml);
+            //#endif
+            
+            if (apf.isGecko) {
+                try {
+                    // On each return, insert a BR element
+                    document.execCommand("insertBrOnReturn", false, true);
+                    // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
+                    document.execCommand("enableObjectResizing", false, false);
+                    // Disable the standard table editing features of Firefox.
+                    document.execCommand("enableInlineTableEditing", false, false);
+                }
+                catch(ex){}
+            }
+            
+            if (!this.$docklet)
+                this.$editable();
+            if (this.$docklet)
+                this.$docklet.show();
+            this.setProperty("state", apf.OFF);
+            
+            if (apf.hasContentEditable)
+                oHtml.contentEditable = true;
+            else {
+                document.body.setAttribute("spellcheck", "false");
+                document.designMode = "on";
+            }
+        },
+        remove : function(oHtml, rule){
+            if (apf.hasContentEditable)
+                oHtml.contentEditable = false;
+            else
+                document.designMode = "off";
         }
-        
-        if (!this.$docklet)
-            this.$editable();
-        if (this.$docklet)
-            this.$docklet.show();
-        this.setProperty("state", apf.OFF);
-    });
+    };
+    
+    /*this.addEventListener("$createEditor", function(e) {
+        if (!e.richtext && this.$docklet)
+            this.$docklet.hide();
+    });*/
     
     this.addEventListener("$removeEditor", function(e) {
-        if (!e.richtext)
-            return;
-        
-        if (this.$docklet)
+        if (!e.richtext && this.$docklet)
             this.$docklet.hide();
-        
-        return apf.htmlCleaner.parse(e.htmlNode.innerHTML);
     });
-
+    
     this.$editable = function(callback) {
         if (this.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
@@ -882,9 +896,12 @@ apf.LiveEdit.richtext = function(){
         //@todo apf3.0 get this from portal.js
         else if (!this.$docklet && !(apf.LiveEdit.toolwin = this.$docklet)) {
             this.$docklet = apf.LiveEdit.toolwin =
-                new apf.modalwindow("toolwindow", document.body, null, true);
+                new apf.modalwindow({
+                    htmlNode: document.body,
+                    skinset: apf.getInheritedAttribute(this.parentNode, "skinset")
+                }, "toolwindow");
 
-            this.$docklet.parentNode = apf.document.documentElement;
+            //this.$docklet.parentNode = apf.document.documentElement;
             this.$docklet.implement(apf.AmlNode);
             
             //Load docklet
@@ -910,7 +927,7 @@ apf.LiveEdit.richtext = function(){
                 _self.focus();
             }
 
-            apf.AmlParser.parseLastPass();
+            //apf.AmlParser.parseLastPass();
 
             this.$docklet.setProperty("left", 500);
             this.$docklet.setProperty("top", 100);
