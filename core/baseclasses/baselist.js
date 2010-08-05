@@ -708,10 +708,18 @@ apf.BaseList = function(){
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
                 var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
-                
-                elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
-                    + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                apf.setNodeValue(elCaption, "");
+
+                if (elCaption == oItem) {
+                    apf.setNodeValue(elCaption, "");
+                    var span = elCaption.appendChild(elCaption.ownerDocument.createElement("span"));
+                    span.setAttribute("id", "placeholder_" + this.$uniqueId
+                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                }
+                else {
+                    elCaption.setAttribute("id", "placeholder_" + this.$uniqueId
+                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
+                    apf.setNodeValue(elCaption, "");
+                }
             }
             else
             //#endif
