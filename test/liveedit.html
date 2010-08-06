@@ -8,6 +8,7 @@
                 font-size : 13px;
                 padding : 10px;
                 border : 1px solid gray;
+                width : 300px;
             }
             .row{
                 margin : 0 10px 10px 0;
@@ -64,22 +65,6 @@
             </data>
         </a:model>
         
-        <!--div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
-            foreach([person]) {
-                <div>[@name]</div>
-            }
-        ?></div>
-
-        <a:button state="true" width="100" onclick="
-            test.setAttribute('liveedit', this.value);
-        ">Toggle {this.value}</a:button-->
-        
-        <a:dropdown id="ddCountries">
-            <a:item>Test 1</a:item>
-            <a:item>Test 2</a:item>
-            <a:item>Test 3</a:item>
-        </a:dropdown>
-        
         <div id="test2" model="mdlBlah" liveedit="{btn.value}" realtime="true" class="example"><?lm
             var arr = [];
             foreach([person]) {
@@ -101,7 +86,23 @@
             }
         ?></div>
         
-        <a:button width="80" id="btn" value="true" state="true">toggle</a:button>
+        <a:button width="80" id="btn" state="true" caption="{this.value ? 'Done' : 'Edit'}" />
+
+        <!--div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
+            foreach([person]) {
+                <div>[@name]</div>
+            }
+        ?></div>
+
+        <a:button state="true" width="100" onclick="
+            test.setAttribute('liveedit', this.value);
+        ">Toggle {this.value}</a:button-->
+        
+        <!--a:dropdown id="ddCountries">
+            <a:item>Test 1</a:item>
+            <a:item>Test 2</a:item>
+            <a:item>Test 3</a:item>
+        </a:dropdown-->
 
         <a:script><![CDATA[
             function insertEl() {
