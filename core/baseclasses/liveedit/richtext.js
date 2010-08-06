@@ -90,24 +90,23 @@ apf.LiveEdit.richtext = function(){
      */
     function keyupHandler(e) {
         var _self = this;
-        if (!this.$bStandalone)
-            return;
-
+        //if (!this.$bStandalone)
+        //    return;
         if (this.$selection)
             this.$selection.cache();
-        if (this.$keyupTimer != null)
+        if (this.$keyupTimer)
             return;
 
         function keyupHandler() {
-            clearTimeout(this.$keyupTimer);
+            clearTimeout(_self.$keyupTimer);
+            _self.$keyupTimer = null;
             if (_self.state == apf.DISABLED) return;
             _self.$notifyAllButtons();
             _self.dispatchEvent("typing", {editor: _self, event: e});
             _self.$notifyAllPlugins("typing", e.keyCode);
-            this.$keyupTimer = null;
         }
 
-        this.$keyupTimer = window.setTimeout(keyupHandler, 200);
+        this.$keyupTimer = window.setTimeout(keyupHandler, 100);
     }
     
     function keydownHandler(e) {
