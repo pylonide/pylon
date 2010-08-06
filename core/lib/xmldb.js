@@ -549,7 +549,7 @@ apf.xmldb = new (function(){
      *
      * @param {XMLElement} pNode       the parent xml node to add the element to.
      * @param {XMLElement} xmlNode     the xml node to insert.
-     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {XMLElement} beforeNode  Node  the xml node which indicates the insertion point.
      * @param {Boolean}    unique      whether the parent can only contain one element with a certain tagName.
      * @param {String}     [xpath]     the xpath statement to select the parent node.
      * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
