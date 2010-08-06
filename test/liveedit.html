@@ -14,6 +14,14 @@
             }
             
             .liveEdit{
+                outline: 1px dotted #ddd;
+            }
+            
+            .liveEdit p{
+                margin : 0;
+            }
+            
+            .liveEdit{
                 min-height : 1.2em;
                 min-width : 10px;
             }
@@ -26,7 +34,7 @@
             }
             
             .liveEditOver{
-                outline: 1px dotted #c3c3c3;
+                outline: 1px dotted gray;
             }
             
             .liveEditActive{
@@ -50,6 +58,9 @@
                 <person name="Ruben Daniels" />
                 <person name="USA" datatype="country"/>
                 <person name="Bas van Lippen Bisterveld" />
+                <person name="Bas van Lippen Bisterveld
+                    asdasdasd
+                    asdasdasdasdasd" />
             </data>
         </a:model>
         
@@ -69,7 +80,7 @@
             <a:item>Test 3</a:item>
         </a:dropdown>
         
-        <div id="test2" model="mdlBlah" liveedit="{btn.value}" class="example"><?lm
+        <div id="test2" model="mdlBlah" liveedit="{btn.value}" realtime="true" class="example"><?lm
             var arr = [];
             foreach([person]) {
                 if ([@name] == 1)
@@ -78,8 +89,8 @@
                 <div class='row'>{edit([@name], {
                     required   : true,
                     invalidmsg : "Your name can only be 10 characters long",
-                    /*maxlength  : 10,
-                    multiline  : [@name].indexOf("Ruben") > -1,*/
+                    /*maxlength  : 10, */
+                    multiline  : [@name].indexOf("Bas") > -1 || [@name].indexOf("Ruben") > -1,
                     editor     : [@name].indexOf("Bas") > -1 
                         ? "richtext" 
                         : ([@datatype] == 'country' ? "dropdown" : "default"), //ddCountries

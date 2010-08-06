@@ -1534,7 +1534,6 @@ apf.window = function(){
         document.onmousedown   =
         document.onmousemove   =
         document.onmouseup     =
-        document.onselectstart =
         document.onmousewheel  =
         document.onkeyup       =
         document.onkeydown     = null

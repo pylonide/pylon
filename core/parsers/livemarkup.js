@@ -2456,7 +2456,7 @@ apf.lm_exec = new (function(){
     
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
-        if (options && options.multiline)
+        if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
         
         if (editMode) {

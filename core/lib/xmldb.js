@@ -354,7 +354,7 @@ apf.xmldb = new (function(){
                 newnodes.push(nodes[i]);
         }
 
-        xmlNode.setAttribute(this.xmlListenTag, newnodes.join(";") + ";");
+        xmlNode.setAttribute(this.xmlListenTag, newnodes.join(";"));// + ";"
 
         return xmlNode;
     };

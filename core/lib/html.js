@@ -335,6 +335,7 @@ apf.htmlCleaner = (function() {
                         capture = false;
                     }
                   });
+
                 if (strP.length) {
                     str.push("<p>" + strP.join("")
                         .replace(/<br \/>[\s\r\n]*$/, "") + "</p>");

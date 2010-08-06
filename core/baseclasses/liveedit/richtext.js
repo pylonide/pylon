@@ -67,16 +67,10 @@ apf.LiveEdit.richtext = function(){
         if (e.value) {
             if (this.plugins == undefined && this.$propHandlers["plugins"])
                 this.$propHandlers["plugins"].call(this, this.$pluginsOn.join(","));
-            
-            this.addEventListener("keydown", keydownHandler, true);
-            this.addEventListener("keyup",   keyupHandler, true);
         }
         else {
             if (this.$docklet)
                 this.$docklet.hide();
-            
-            this.removeEventListener("keydown", keydownHandler, true);
-            this.removeEventListener("keyup",   keyupHandler, true);
         }
     });
     
@@ -112,9 +106,8 @@ apf.LiveEdit.richtext = function(){
     function keydownHandler(e) {
         //if (!this.$bStandalone)
             //return;
-        
+
         //@todo check the current field to see if it supports richtext
-        
         var found,
             hEvt = e.htmlEvent,
             oHtml = (e.explicitOriginalTarget || e.srcElement || e.target),
@@ -183,9 +176,9 @@ apf.LiveEdit.richtext = function(){
                             this.$paste();
                         //found = true;
                         break;
-                    case 37: // left
+                    /*case 37: // left
                     case 39: // right
-                        found = true;
+                        found = true;*/
                 }
                 if (found) {
                     apf.stopEvent(e.htmlEvent || e);
@@ -816,6 +809,7 @@ apf.LiveEdit.richtext = function(){
         }
     };
     
+    var wasVisible;
      this.$editors["richtext"] = {
         create : function(oHtml, rule){
             this.getValue = function(){
@@ -837,8 +831,61 @@ apf.LiveEdit.richtext = function(){
             
             if (!this.$docklet)
                 this.$editable();
-            if (this.$docklet)
+            if (this.$docklet) {
                 this.$docklet.show();
+                
+                //Docklet animation
+                var pos = apf.getAbsolutePosition(oHtml);
+                var w   = this.$docklet.$ext.offsetWidth;
+                var h   = this.$docklet.$ext.offsetHeight;
+                if (pos[0] + oHtml.offsetWidth + w + 5 > apf.getWindowWidth())
+                    pos[0] = apf.getWindowWidth() - w - 5;
+                else 
+                    pos[0] += oHtml.offsetWidth + 5;
+
+                if (pos[1] - h - 5 < 0) {
+                    if (pos[1] + oHtml.offsetHeight + 5 + h < apf.getWindowHeight())
+                        pos[1] = pos[1] + oHtml.offsetHeight + 5;
+                    else
+                        pos[1] = 0;
+                }
+                else 
+                    pos[1] -= h + 5;
+                
+                var dPos = apf.getAbsolutePosition(this.$docklet.$ext);
+                if (this.$control)
+                    this.$control.stop();
+                this.$control = {};
+
+                var tweens = [{
+                    from    : dPos[0],
+                    to      : pos[0],
+                    type    : "left"
+                },{
+                    from    : dPos[1],
+                    to      : pos[1],
+                    type    : "top"
+                }];
+                if (!wasVisible)
+                    tweens.push({
+                        from    : 0, //apf.getOpacity(this.$docklet.$ext),
+                        to      : 1,
+                        type    : "fade"
+                    });
+                else
+                    apf.setOpacity(this.$docklet.$ext, 1);
+
+                apf.tween.multi(this.$docklet, {
+                    steps   : 30,
+                    interval: 10,
+                    control : this.$control,
+                    anim    : apf.tween.easeInOutCubic,
+                    tweens  : tweens
+                });
+                
+                setTimeout(function(){wasVisible = true;});
+            }
+            
             this.setProperty("state", apf.OFF);
             
             if (apf.hasContentEditable)
@@ -850,9 +897,11 @@ apf.LiveEdit.richtext = function(){
             
             // #ifdef __WITH_HTML_CLEANER
             this.$lastValue = [];
-            this.$lastValue[0] = apf.htmlCleaner.prepare((this.$lastValue[1] = oHtml.innerHTML)
-                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-                "<br _apf_marker='1' /><br _apf_marker='1' />"));
+            this.$lastValue[0] = apf.htmlCleaner.prepare(
+                (this.$lastValue[1] = oHtml.innerHTML)
+                  .replace(/<p[^>]*>/gi, "").replace(/<\/P>/g, "").replace(/<\/p>/g, 
+                    "<br _apf_marker='1' /><br _apf_marker='1' />"));
+
             if (this.$lastValue[1] != this.$lastValue[0]) {
                 //Set bookmark for cursor position
                 var obm = this.$selection.getBookmark();
@@ -862,6 +911,9 @@ apf.LiveEdit.richtext = function(){
                 this.$selection.moveToBookmark(obm);
             }
             //#endif
+            
+            this.addEventListener("keydown", keydownHandler, true);
+            this.addEventListener("keyup",   keyupHandler, true);
         },
         remove : function(oHtml, rule){
             oHtml.blur();
@@ -870,17 +922,24 @@ apf.LiveEdit.richtext = function(){
             else
                 document.designMode = "off";
             oHtml.setAttribute("richtext", "false");
+            
+            this.removeEventListener("keydown", keydownHandler, true);
+            this.removeEventListener("keyup",   keyupHandler, true);
         }
     };
     
     this.addEventListener("$createEditor", function(e) {
-        if (e.editor != "richtext" && this.$docklet)
+        if (e.editor != "richtext" && this.$docklet) {
+            setTimeout(function(){wasVisible = false;});
             this.$docklet.hide();
+        }
     });
     
     this.addEventListener("$removeEditor", function(e) {
-        if (this.$docklet && this.$docklet.visible)
+        if (e.editor == "richtext" && this.$docklet) {
+            setTimeout(function(){wasVisible = false;});
             this.$docklet.hide();
+        }
     });
     
     this.$editable = function(callback) {
@@ -906,51 +965,38 @@ apf.LiveEdit.richtext = function(){
         }
         //@todo apf3.0 get this from portal.js
         else if (!this.$docklet && !(apf.LiveEdit.toolwin = this.$docklet)) {
+            var _self     = this;
             this.$docklet = apf.LiveEdit.toolwin =
                 new apf.modalwindow({
-                    htmlNode: document.body,
-                    skinset: apf.getInheritedAttribute(this.parentNode, "skinset")
+                    htmlNode   : document.body,
+                    skinset    : apf.getInheritedAttribute(this.parentNode, "skinset"),
+                    buttons    : "",
+                    title      : "Format",
+                    icon       : "application.png",
+                    resizable  : false, //"horizontal",
+                    draggable  : true,
+                    focussable : true,
+                    left       : 500,
+                    top        : 100,
+                    width      : 275,
+                    zindex     : 100000,
+                    //resizeoutline : true,
+                    onfocus    : function(){
+                        _self.focus();
+                    }
                 }, "toolwindow");
 
-            //this.$docklet.parentNode = apf.document.documentElement;
-            this.$docklet.implement(apf.AmlNode);
-            
-            //Load docklet
-            this.$docklet.$aml        = apf.getXml("<toolwindow />");
-            //@todo use skinset here. Has to be set in presentation
-            //docklet.skinset   = apf.getInheritedAttribute(this.$aml.parentNode, "skinset");
-            //xmlNode.setAttribute("skinset", docklet.skinset);
-            //docklet.skin      = "docklet";
-            //docklet.skinName  = null;
-            this.$docklet.$loadSkin();
-
-            this.$docklet.$draw();
-            this.$docklet.setProperty("buttons",    "");
-            this.$docklet.setProperty("title",      "Formatting");
-            this.$docklet.setProperty("icon",       "application.png");
-            this.$docklet.setProperty("resizable",  "horizontal");
-            this.$docklet.setProperty("draggable",  true);
-            this.$docklet.setProperty("focussable", true);
-            //docklet.setProperty("resizeoutline",    true);
-
-            var _self = this;
-            this.$docklet.onfocus = function(){
-                _self.focus();
-            };
-
-            this.$docklet.setProperty("left",   500);
-            this.$docklet.setProperty("top",    100);
-            this.$docklet.setProperty("width",  400);
-            this.$docklet.setProperty("zindex", 100000);
-            
-            var content, aNodes = this.$docklet.$ext.getElementsByTagName("div");
-            for (var j = 0, l = aNodes.length; j < l && !content; j++) {
-                if (aNodes[j].className.indexOf("content") != -1)
-                    content = aNodes[j];
+            var aNodes = this.$docklet.$ext.getElementsByTagName("div");
+            for (var j = 0, l = aNodes.length; j < l; j++) {
+                if (aNodes[j].className.indexOf("content") != -1) {
+                    this.$toolbar = aNodes[j];
+                    break;
+                }
             }
-            this.$drawToolbars(this.$toolbar = content, "toolbar", null, true);
+            this.$drawToolbars(this.$toolbar, "toolbar", null, true);
+            
             // @todo make this hack disappear...
-            this.$toolbar.innerHTML = this.$toolbar.innerHTML;
+            //this.$toolbar.innerHTML = this.$toolbar.innerHTML; //Why is this here?
         }
 
         if (callback)

@@ -78,6 +78,7 @@ apf.LiveEdit = function() {
             this.addEventListener("blur",      blurHandler);
             this.addEventListener("focus",     focusHandler);
             this.addEventListener("load",      loadHandler);
+
             if (this.nodeType == 7)
                 this.addEventListener("prop.calcdata", xmlupdateHandler);
             else
@@ -102,6 +103,7 @@ apf.LiveEdit = function() {
             this.removeEventListener("blur",      blurHandler);
             this.removeEventListener("focus",     focusHandler);
             this.removeEventListener("load",      loadHandler);
+
             if (this.nodeType == 7)
                 this.removeEventListener("prop.calcdata", xmlupdateHandler);
             else
@@ -116,13 +118,13 @@ apf.LiveEdit = function() {
         
         function focusHandler(){
             moEditor.removeEventListener("focus", focusHandler);
-            apf.removeListener(moEditor.$ext, "onmouseout");
+            apf.removeListener(moEditor.$ext, "mouseout");
             moEditor = null;
         }
         
         function removeHandler(){
             if (moEditor)
-                apf.removeListener(moEditor.$ext, "onmouseout");
+                apf.removeListener(moEditor.$ext, "mouseout");
             if (_self.$lastEditor && _self.$lastEditor[0] == moEditor)
                 removeEditor.call(_self, _self.$activeNode, true);
             moEditor.removeEventListener("focus", focusHandler);
@@ -131,7 +133,7 @@ apf.LiveEdit = function() {
         
         function extOutHandler(){
             if (!_self.$lastEditor) {
-                apf.removeListener(moEditor.$ext, "onmouseout");
+                apf.removeListener(moEditor.$ext, "mouseout");
                 return;
             }
                 
@@ -155,7 +157,7 @@ apf.LiveEdit = function() {
                 createEditor.call(_self, el);
                 moEditor = _self.$lastEditor[0];
                 moEditor.addEventListener("focus", focusHandler);
-                apf.addListener(moEditor.$ext, "onmouseout", extOutHandler);
+                apf.addListener(moEditor.$ext, "mouseout", extOutHandler);
             }
             else
                 apf.setStyleClass(el, "liveEditOver");
@@ -191,7 +193,7 @@ apf.LiveEdit = function() {
                 e.cancelBubble = true;
                 apf.window.$mousedown({srcElement: _self.$activeNode});
                 $setTimeout(function(){
-                    _self.$selection.set();
+                    //_self.$selection.set();
                     if (_self.$activeNode)
                         _self.$activeNode.focus();
                 }, 10);
@@ -222,14 +224,14 @@ apf.LiveEdit = function() {
             ? apf.DISABLED
             : apf.OFF);
 
-        /*if (this.$lastActiveNode && this.$lastActiveNode.parentNode
+        if (this.$lastActiveNode && this.$lastActiveNode.parentNode
           || typeof e.shiftKey == "boolean") {
             createEditor.call(this, this.$lastActiveNode || (this.$tabStack
                 || initTabStack.call(this))[e.shiftKey ? this.$tabStack.length - 1 : 0]);
 
             if (this.$lastActiveNode && !this.$lastEditor)
                 this.$lastActiveNode.focus();
-        }*/
+        }
         this.$lastActiveNode = null;
         
         if (this.$lastEditor) {
@@ -260,7 +262,7 @@ apf.LiveEdit = function() {
 
         if (this.$selection)
             this.$selection.cache();
-        //removeEditor.call(this, this.$activeNode, true);
+        removeEditor.call(this, this.$activeNode, true);
 
         this.setProperty("state", apf.DISABLED);
     }
@@ -277,6 +279,15 @@ apf.LiveEdit = function() {
     }
     //@todo skin change
 
+    var commandKeys = {
+        66  : 1,  // B
+        98  : 1,  // b
+        105 : 1, // i
+        73  : 1,  // I
+        117 : 1, // u
+        85  : 1  // U
+    };
+     
     /**
      * Event handler; fired when the user pressed a key inside the editor IFRAME.
      * For IE, we apply some necessary behavior correction and for other browsers, like
@@ -337,11 +348,7 @@ apf.LiveEdit = function() {
                 lastPos = (this.$tabStack || initTabStack.call(this)).indexOf(this.$activeNode);
             oNode = this.$activeNode;
             removeEditor.call(this, this.$activeNode, true) || initTabStack.call(this)[lastPos];
-            oNode = this.$tabStack[
-                (idx = this.$tabStack.indexOf(oNode) + (bShift ? -1 : 1)) < this.$tabStack.length 
-                    ? idx < 0 ? this.$tabStack.length -1 : idx
-                    : 0
-            ];
+            oNode = this.$tabStack[this.$tabStack.indexOf(oNode) + (bShift ? -1 : 1)];
 
             if (oNode) {
                 createEditor.call(this, oNode);
@@ -364,10 +371,27 @@ apf.LiveEdit = function() {
             removeEditor.call(this);
             found = true;
         }
+        else if (apf.isIE && e.ctrlKey && commandKeys[code]) {
+            found = true;
+        }
         
         if (!e.ctrlKey && !e.altKey && !e.metaKey && (code < 112 || code > 122)
           && (code < 33  && code > 31 || code > 42 || code == 8 || code == 13)) {
-            resumeChangeTimer();
+            if (this.realtime && this.$changeTimer === null && this.$bStandalone) { //@todo realtime not supported for liveedit inline
+                var _self = this;
+                this.$changeTimer = $setTimeout(function() {
+                    clearTimeout(_self.$changeTimer);
+                    
+                    // #ifdef __WITH_DATAACTION
+                    _self.change(_self.getValue());
+                    /* #else
+                    _self.setProperty("value", _self.getValue())
+                    #endif*/
+                    
+                    _self.$changeTimer = null;
+                }, 200);
+            }
+            
             // remove the content of a selection manually when it's ranging
             // multiple DOM nodes
             if (apf.w3cRange && !this.$selection.isCollapsed() && apf.isCharacter(code))
@@ -439,10 +463,6 @@ apf.LiveEdit = function() {
         if (apf.hasFocusBug) {
             //@todo this leaks like a -> use apf.addListener
             apf.sanitizeTextbox(oHtml);
-            oHtml.onselectstart = function(e) {
-                e = e || window.event;
-                e.cancelBubble = true;
-            };
         }
         //#endif
         
@@ -509,10 +529,11 @@ apf.LiveEdit = function() {
                           [this.xmlRoot, res, xpath], "setValueByXpath", xmlNode);
                     }
                 }
-                else if (!oHtml.innerHTML && rule.initial) {
-                     oHtml.innerHTML = rule.initial;
-                     apf.setStyleClass(oHtml, "liveEditInitial");
-                }
+            }
+            
+            if (!oHtml.innerHTML && rule.initial) {
+                 oHtml.innerHTML = rule.initial;
+                 apf.setStyleClass(oHtml, "liveEditInitial");
             }
         }
 
@@ -526,7 +547,14 @@ apf.LiveEdit = function() {
         "default" : {
             create : function(oHtml, rule){
                 this.getValue = function(){
-                    return apf.html_entity_decode(oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n"));
+                    var html = oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n");
+                    if (apf.isIE) {
+                        html = html.replace(/<p[^>]*>/gi, "")
+                                   .replace(/<\/P>/g, "")
+                                   .replace(/<\/p>/g, "\n");
+                    }
+                        
+                    return apf.html_entity_decode(html);
                 };
                 
                 if (apf.hasContentEditable)
@@ -756,7 +784,7 @@ apf.LiveEdit = function() {
         }
         return this.$tabStack;
     }
-
+    
     /**
      * Give or return the focus to the editable area, hence 'visual' focus.
      *
@@ -784,31 +812,6 @@ apf.LiveEdit = function() {
             this.$notifyAllButtons();
     };
     
-    /**
-     * Firing change(), when the editor is databound, subsequently after each
-     * keystroke, can have a VERY large impact on editor performance. That's why
-     * we delay the change() call.
-     *
-     * @type {void}
-     */
-    function resumeChangeTimer() {
-        if (!this.realtime || this.$changeTimer !== null) 
-            return;
-
-        this.$changeTimer = $setTimeout(function() {
-            clearTimeout(this.$changeTimer);
-            console.log("resuming change....");
-            if (this.$bStandalone) {
-                // #ifdef __WITH_DATAACTION
-                this.change(this.getValue());
-                /* #else
-                this.setProperty("value", this.getValue())
-                #endif*/
-            }
-            this.$changeTimer = null;
-        }, 200);
-    }
-
     // #ifdef __ENABLE_LIVEEDIT_RICHTEXT || __INC_ALL
     apf.LiveEdit.richtext.call(this);
     // #endif

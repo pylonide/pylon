@@ -196,8 +196,9 @@ apf.AmlWindow = function(struct, tagName){
         this.setProperty("visible", true, false, true);
         return this;
     }
-    
     //#endif
+    
+    //#ifdef __WITH_WINDOW_ANIMATIONS
     
     this.slideIn = function(sFrom, bSticky) {
         if (!sFrom)
@@ -297,6 +298,8 @@ apf.AmlWindow = function(struct, tagName){
         });
         return this;
     };
+    
+    //#endif
 
     this.bringToFront = function(){
         apf.WinServer.setTop(this);
