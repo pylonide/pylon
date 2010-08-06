@@ -49,6 +49,9 @@ apf.script = function(){
 
 (function(){
     this.$propHandlers["src"] = function(value){
+        if (!this.type)
+            this.type = this.getAttribute("type");
+
         if (!this.type || this.type == "text/javascript") {
             if (apf.isOpera) {
                 $setTimeout(function(){
