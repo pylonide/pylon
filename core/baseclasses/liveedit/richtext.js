@@ -109,8 +109,6 @@ apf.LiveEdit.richtext = function(){
 
         //@todo check the current field to see if it supports richtext
         var found,
-            hEvt = e.htmlEvent,
-            oHtml = (e.explicitOriginalTarget || e.srcElement || e.target),
             code = e.which || e.keyCode;
         
         if (apf.isIE) {
@@ -176,9 +174,6 @@ apf.LiveEdit.richtext = function(){
                             this.$paste();
                         //found = true;
                         break;
-                    /*case 37: // left
-                    case 39: // right
-                        found = true;*/
                 }
                 if (found) {
                     apf.stopEvent(e.htmlEvent || e);
@@ -188,6 +183,40 @@ apf.LiveEdit.richtext = function(){
                         /* #else
                         this.setProperty("value", this.getValue())
                         #endif*/
+                }
+            }
+            var sel, r, r2, m;
+            // in webkit, first word cannot be reached by ctrl+left
+            if (apf.isWebkit && code == 37 && (e.ctrlKey || (apf.isMac && e.altKey)) && !e.shiftKey) {
+                // get current range
+                sel = this.$selection.get();
+                r   = this.$selection.getRange();
+                // get first word from node:
+                r2  = r.cloneRange();
+                r2.setStart(r2.commonAncestorContainer, 0);
+                m   = r2.toString().match(/[\w]*(:?\W)?/g);
+                if (m && m.length == 2 && !m[1]) { //only one word left
+                    r2.setEnd(r2.commonAncestorContainer, 0);
+                    sel.removeAllRanges();
+                    sel.addRange(r2);
+                }
+            }
+            // in gecko, the last word cannot be reached by ctrl+right (strangely 
+            // enough this does not occur on mac - prolly 'cause it uses the alt-key)
+            else if (apf.isGecko && code == 39 && !apf.isMac && e.ctrlKey && !e.shiftKey && !e.altKey) {
+                // get current range
+                sel = this.$selection.get();
+                r   = this.$selection.getRange();
+                // get first word from node:
+                r2  = r.cloneRange();
+                var l;
+                // set the end of the range to match the end of the string inside the active node.
+                r2.setEnd(r2.commonAncestorContainer, l = this.$activeNode.innerHTML.stripTags().length);
+                m   = r2.toString().match(/[\w]*(:?\W)?/g);
+                if (m && m.length == 2 && !m[1]) { //only one word left
+                    r2.setStart(r2.commonAncestorContainer, l);
+                    sel.removeAllRanges();
+                    sel.addRange(r2);
                 }
             }
         }
