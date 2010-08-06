@@ -66,6 +66,9 @@ apf.LiveMarkupPi = function(){
     };
 
     this.$propHandlers["calcdata"] = function(data){
+        if (this.$skipChange) //Used by liveedit.js
+            return;
+        
         if (this.$data) {
             // #ifdef __WITH_XMLDIFF
             if (this.$useXmlDiff) {
@@ -88,7 +91,7 @@ apf.LiveMarkupPi = function(){
         //if (!this.xmlRoot)
             //return this.$ext.innerHTML = "loading...";
 
-        if (typeof data == "string" && data.indexOf("<a:") > -1) {
+        if (typeof data == "string" && data.indexOf("<a:") > -1) { //@todo use the .hasAml attribute
             this.$ext.innerHTML = "";//data;
 
             this.$data = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 

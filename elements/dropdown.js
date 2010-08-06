@@ -296,6 +296,9 @@ apf.dropdown = function(struct, tagName){
         var node;
         
         switch (key) {
+            case 32:
+                this.slideToggle(e.htmlEvent);
+            break;
             case 38:
                 //UP
                 if (e.altKey) {
@@ -311,7 +314,7 @@ apf.dropdown = function(struct, tagName){
 
                 if (node)
                     this.select(node);
-                break;
+            break;
             case 40:
                 //DOWN
                 if (e.altKey) {
@@ -330,7 +333,7 @@ apf.dropdown = function(struct, tagName){
                 if (node)
                     this.select(node);
                 
-                break;
+            break;
             default:
                 if (key == 9 || !this.xmlRoot) return;	
             

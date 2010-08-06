@@ -338,7 +338,7 @@ apf.selection = function(oWin, oDoc, editor) {
             sc     = range.startContainer,
             an     = sel.anchorNode,
             custom = callback ? callback(an) : null;
-        if (sel.isCollapsed) {
+        if (sel.isCollapsed && an) {
             o.collapse = 1;
             p = getParent(an, _block) || c;
             if (an.nodeType == 3) {

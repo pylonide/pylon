@@ -6,9 +6,19 @@
             .example{
                 font-family : Arial;
                 font-size : 13px;
-                line-height : 2em;
                 padding : 10px;
                 border : 1px solid gray;
+            }
+            .row{
+                margin : 0 10px 10px 0;
+            }
+            
+            .liveEdit{
+                min-height : 1.2em;
+                min-width : 10px;
+            }
+            span.liveEdit{
+                display : inline-block;
             }
             
             .liveEditInitial{
@@ -65,7 +75,7 @@
                 if ([@name] == 1)
                     continue;
 
-                ^arr.push(edit([@name], {
+                <div class='row'>{edit([@name], {
                     required   : true,
                     invalidmsg : "Your name can only be 10 characters long",
                     /*maxlength  : 10,
@@ -76,9 +86,8 @@
                     skin       : "ddinline",
                     fill       : "The Netherlands, United Kingdom, USA",
                     initial    : "Type your name here"
-                }));
+                })}</div>
             }
-            arr.join(", <br />");
         ?></div>
         
         <a:button width="80" id="btn" value="true" state="true">toggle</a:button>

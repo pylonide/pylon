@@ -78,7 +78,10 @@ apf.LiveEdit = function() {
             this.addEventListener("blur",      blurHandler);
             this.addEventListener("focus",     focusHandler);
             this.addEventListener("load",      loadHandler);
-            this.addEventListener("xmlupdate", xmlupdateHandler);
+            if (this.nodeType == 7)
+                this.addEventListener("prop.calcdata", xmlupdateHandler);
+            else
+                this.addEventListener("xmlupdate", xmlupdateHandler);
         }
         else {
             if (this.$unFocussable) {
@@ -99,7 +102,10 @@ apf.LiveEdit = function() {
             this.removeEventListener("blur",      blurHandler);
             this.removeEventListener("focus",     focusHandler);
             this.removeEventListener("load",      loadHandler);
-            this.removeEventListener("xmlupdate", xmlupdateHandler);
+            if (this.nodeType == 7)
+                this.removeEventListener("prop.calcdata", xmlupdateHandler);
+            else
+                this.removeEventListener("xmlupdate", xmlupdateHandler);
         }
 
         this.$tabStack = null; // redraw of editable region, invalidate cache
@@ -107,6 +113,32 @@ apf.LiveEdit = function() {
     
     this.$setMouseEvents = function(){
         var _self = this, moEditor;
+        
+        function focusHandler(){
+            moEditor.removeEventListener("focus", focusHandler);
+            apf.removeListener(moEditor.$ext, "onmouseout");
+            moEditor = null;
+        }
+        
+        function removeHandler(){
+            if (moEditor)
+                apf.removeListener(moEditor.$ext, "onmouseout");
+            if (_self.$lastEditor && _self.$lastEditor[0] == moEditor)
+                removeEditor.call(_self, _self.$activeNode, true);
+            moEditor.removeEventListener("focus", focusHandler);
+            moEditor = null;
+        }
+        
+        function extOutHandler(){
+            if (!_self.$lastEditor) {
+                apf.removeListener(moEditor.$ext, "onmouseout");
+                return;
+            }
+                
+            if (!moEditor.hasFocus())
+                removeHandler.call(moEditor);
+        }
+        
         this.$mouseOver = function(e) {
             var el = e.srcElement || e.target;
             if (!el) return;
@@ -115,22 +147,15 @@ apf.LiveEdit = function() {
             if (!el || el == _self.$ext || el == _self.$activeNode)
                 return;
             
-            if (moEditor) {
-                _self.$lastEditor[0].$ext.onmouseout = null;
-                removeEditor.call(_self, _self.$activeNode, true);
-                moEditor = null;
-            }
+            if (moEditor)
+                removeHandler.call(moEditor);
             
             var editor = el.getAttribute("editor");
             if (editor && "richtext|default".indexOf(editor) == -1 && !_self.$activeNode) {
                 createEditor.call(_self, el);
-                _self.$lastEditor[0].$ext.onmouseout = function(){
-                    if (!_self.$lastEditor[0].hasFocus()) {
-                        removeEditor.call(_self, _self.$activeNode, true);
-                        moEditor = null;
-                    }
-                }
-                moEditor = true;
+                moEditor = _self.$lastEditor[0];
+                moEditor.addEventListener("focus", focusHandler);
+                apf.addListener(moEditor.$ext, "onmouseout", extOutHandler);
             }
             else
                 apf.setStyleClass(el, "liveEditOver");
@@ -166,16 +191,15 @@ apf.LiveEdit = function() {
                 e.cancelBubble = true;
                 apf.window.$mousedown({srcElement: _self.$activeNode});
                 $setTimeout(function(){
-                    //@todo Mike. The cursor position is lost!!! Please help me!
                     _self.$selection.set();
                     if (_self.$activeNode)
                         _self.$activeNode.focus();
                 }, 10);
             }
             else {
-                $setTimeout(function(){
+                /*$setTimeout(function(){
                     _self.$lastEditor[0].focus();
-                }, 100);
+                }, 100);*/
                 //_self.$lastEditor.childNodes[0].slideDown();
             }
 
@@ -198,18 +222,18 @@ apf.LiveEdit = function() {
             ? apf.DISABLED
             : apf.OFF);
 
-        if (this.$lastActiveNode && this.$lastActiveNode.parentNode
+        /*if (this.$lastActiveNode && this.$lastActiveNode.parentNode
           || typeof e.shiftKey == "boolean") {
             createEditor.call(this, this.$lastActiveNode || (this.$tabStack
                 || initTabStack.call(this))[e.shiftKey ? this.$tabStack.length - 1 : 0]);
 
             if (this.$lastActiveNode && !this.$lastEditor)
                 this.$lastActiveNode.focus();
-        }
+        }*/
         this.$lastActiveNode = null;
         
         if (this.$lastEditor) {
-            this.$lastEditor[0].focus();
+            //this.$lastEditor[0].focus();
         }
         else if (this.$activeNode) {
             var _self = this,
@@ -236,7 +260,7 @@ apf.LiveEdit = function() {
 
         if (this.$selection)
             this.$selection.cache();
-        removeEditor.call(this, this.$activeNode, true);
+        //removeEditor.call(this, this.$activeNode, true);
 
         this.setProperty("state", apf.DISABLED);
     }
@@ -246,8 +270,10 @@ apf.LiveEdit = function() {
     }
 
     function xmlupdateHandler(){
-        initTabStack.call(this);
-        this.$activeNode = null;
+        if (!this.$skipChange) {
+            initTabStack.call(this);
+            this.$activeNode = null;
+        }
     }
     //@todo skin change
 
@@ -335,7 +361,7 @@ apf.LiveEdit = function() {
         }
         // Esc key handling
         else if (code == 27) {
-            removeEditor.call(this, this.$activeNode);
+            removeEditor.call(this);
             found = true;
         }
         
@@ -423,6 +449,79 @@ apf.LiveEdit = function() {
         this.dispatchEvent("$createEditor", rule);
     }
     
+    function removeEditor(oHtml, bProcess, callback) {
+        if (!oHtml) oHtml = this.$activeNode;
+        if (!oHtml || oHtml.nodeType != 1) return false;
+
+        var xpath   = oHtml.getAttribute("xpath"),
+            xmlNode = this.xmlRoot.ownerDocument.selectSingleNode(xpath),
+            hasRule = oHtml.getAttribute("options"),
+            rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
+
+        this.$activeNode = null;
+        apf.setStyleClass(oHtml, null, ["liveEditOver", "liveEditActive"]);
+        this.$selection.collapse(true);
+
+        var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
+        var execChange = handler.remove.call(this, oHtml, rule, xpath);
+
+        if (execChange !== false) {
+            if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
+              == (this.$lastValue.dataType == apf.ARRAY
+              ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
+                oHtml.innerHTML = this.$lastValue.dataType == apf.ARRAY 
+                    ? this.$lastValue[1]
+                    : this.$lastValue;
+            }
+            else {
+                // do additional handling, first we check for a change in the data...
+                // @todo this will not always work in IE
+                // @todo this is bullshit, because it tests on unparsed data --> incorrect
+                if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) {
+                    rule.htmlNode = oHtml;
+                    var res = this.getValue(oHtml);
+                    
+                    var valid;
+                    //#ifdef __WITH_VALIDATION
+                    if (this.validityState)
+                        this.validityState.$reset();
+                    
+                    if (hasRule) {
+                        apf.validator.compile(rule).call(this, 
+                            res, false, this.validityState || 
+                            (this.validityState = new apf.validator.validityState()));
+        
+                        this.invalidmsg = valid ? "" : rule.invalidmsg || "";
+                        
+                        valid = this.validityState.valid;
+                        if (!valid) {
+                            this.validityState.$errorHtml = oHtml;
+                            this.dispatchEvent("invalid", this.validityState);
+                            this.setError();
+                        }
+                        else
+                            this.clearError();
+                    }
+                    //#endif
+                    
+                    if (valid !== false) {
+                        this.$executeAction("setValueByXpath", 
+                          [this.xmlRoot, res, xpath], "setValueByXpath", xmlNode);
+                    }
+                }
+                else if (!oHtml.innerHTML && rule.initial) {
+                     oHtml.innerHTML = rule.initial;
+                     apf.setStyleClass(oHtml, "liveEditInitial");
+                }
+            }
+        }
+
+        if (callback)
+            $setTimeout(callback);
+        
+        this.dispatchEvent("$removeEditor", rule);
+    }
+    
     this.$editors = {
         "default" : {
             create : function(oHtml, rule){
@@ -446,6 +545,7 @@ apf.LiveEdit = function() {
                 }
             },
             remove : function(oHtml, rule){
+                oHtml.blur();
                 if (apf.hasContentEditable)
                     oHtml.contentEditable = false;
                 else
@@ -471,6 +571,8 @@ apf.LiveEdit = function() {
                     apf.window.$addFocus(this, this.tabindex);
                 }
                 
+                delete this.getValue;
+                
                 //@todo cache it
                 oHtml.innerHTML = "";
                 
@@ -494,6 +596,7 @@ apf.LiveEdit = function() {
                         if (!this.id)
                             apf.setReference(this.id = (this.localName || "liveedit") + String(this.$uniqueId), this);
                         
+                        var _self     = this;
                         var constr    = apf.namespaces[apf.ns.aml].elements[editor];
                         var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
                         var info      = apf.extend({
@@ -503,7 +606,16 @@ apf.LiveEdit = function() {
                             style      : "display:inline-block;position:relative;", //z-index:10000
                             value      : "[{" + this.id + ".root}::" + xpath + "]",
                             focussable : false,
-                            realtime   : "{" + this.id + ".realtime}"
+                            realtime   : "{" + this.id + ".realtime}",
+                            onbeforeselect : function(){
+                                _self.$skipChange = true;
+                            },
+                            onafterselect  : function(){
+                                delete _self.$skipChange;
+                            },
+                            onkeydown      : function(e){
+                                keydownHandler.call(_self, e);
+                            }
                         }, rule);
                         if (info.initial) {
                             info["initial-message"] = info.initial;
@@ -540,7 +652,8 @@ apf.LiveEdit = function() {
                             oEditor.$ext.style.marginLeft = "-1px";*/
         
                         //oEditor.$focussable = false;
-                        /*oEditor.addEventListener("focus", function(){
+                        /*
+                        oEditor.addEventListener("focus", function(){
                             _self.focus();
                             this.$focus();
                         });*/
@@ -587,7 +700,8 @@ apf.LiveEdit = function() {
                         }
         
                         editParent.appendChild(oEditor.$ext);
-                        editParent.setAttribute("id", editParent.$parentId);
+                        if (editParent.$parentId)
+                            editParent.setAttribute("id", editParent.$parentId);
                         if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
                             editParent.onresize = oEditor.$parentRsz;
                             editParent.onresize();
@@ -617,9 +731,12 @@ apf.LiveEdit = function() {
                 if (el.parentNode)
                     el.parentNode.removeChild(el);
 
+                delete this.$lastEditor;
                 oHtml.innerHTML = apf.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
                 
                 this.focus();
+                
+                return false;
             }
         }
     };
@@ -628,77 +745,6 @@ apf.LiveEdit = function() {
         //@todo only place for checkRequired
     };
     
-    function removeEditor(oHtml, bProcess, callback) {
-        if (!oHtml) oHtml = this.$activeNode;
-        if (!oHtml || oHtml.nodeType != 1) return false;
-
-        var xpath   = oHtml.getAttribute("xpath"),
-            xmlNode = this.xmlRoot.ownerDocument.selectSingleNode(xpath),
-            hasRule = oHtml.getAttribute("options"),
-            rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
-
-        this.$activeNode = null;
-        apf.setStyleClass(oHtml, null, ["liveEditOver", "liveEditActive"]);
-        this.$selection.collapse(true);
-
-        var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
-        handler.remove.call(this, oHtml, rule, xpath);
-
-        if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
-          == (this.$lastValue.dataType == apf.ARRAY
-          ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
-            oHtml.innerHTML = this.$lastValue.dataType == apf.ARRAY 
-                ? this.$lastValue[1]
-                : this.$lastValue;
-            return false;
-        }
-        
-        // do additional handling, first we check for a change in the data...
-        // @todo this will not always work in IE
-        // @todo this is bullshit, because it tests on unparsed data --> incorrect
-        if (apf.queryValue(this.xmlRoot.ownerDocument, xpath) != oHtml.innerHTML) {
-            rule.htmlNode = oHtml;
-            var res = this.getValue(oHtml);
-            
-            var valid;
-            //#ifdef __WITH_VALIDATION
-            if (this.validityState)
-                this.validityState.$reset();
-            
-            if (hasRule) {
-                apf.validator.compile(rule).call(this, 
-                    res, false, this.validityState || 
-                    (this.validityState = new apf.validator.validityState()));
-
-                this.invalidmsg = valid ? "" : rule.invalidmsg || "";
-                
-                valid = this.validityState.valid;
-                if (!valid) {
-                    this.validityState.$errorHtml = oHtml;
-                    this.dispatchEvent("invalid", this.validityState);
-                    this.setError();
-                }
-                else
-                    this.clearError();
-            }
-            //#endif
-            
-            if (valid !== false) {
-                this.$executeAction("setValueByXpath", 
-                  [this.xmlRoot.ownerDocument, res, xpath], "setValueByXpath", xmlNode);
-            }
-        }
-        else if (!oHtml.innerHTML && rule.initial) {
-             oHtml.innerHTML = rule.initial;
-             apf.setStyleClass(oHtml, "liveEditInitial");
-        }
-        
-        if (callback)
-            $setTimeout(callback);
-        
-        this.dispatchEvent("$removeEditor", rule);
-    }
-
     function initTabStack() {
         this.$tabStack = [];
         var aNodes = this.$ext.getElementsByTagName("*");

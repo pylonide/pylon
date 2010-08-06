@@ -822,15 +822,7 @@ apf.LiveEdit.richtext = function(){
                 return apf.htmlCleaner.parse(oHtml.innerHTML);
             };
             oHtml.setAttribute("richtext", "true");
-            
-            // #ifdef __WITH_HTML_CLEANER
-            this.$lastValue = [];
-            oHtml.innerHTML = this.$lastValue[0] = apf.htmlCleaner.prepare((this.$lastValue[1] = oHtml.innerHTML)
-                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-                "<br _apf_marker='1' /><br _apf_marker='1' />"));
-            this.$controlAgentBehavior(oHtml);
-            //#endif
-            
+
             if (apf.isGecko) {
                 try {
                     // On each return, insert a BR element
@@ -855,8 +847,24 @@ apf.LiveEdit.richtext = function(){
                 document.body.setAttribute("spellcheck", "false");
                 document.designMode = "on";
             }
+            
+            // #ifdef __WITH_HTML_CLEANER
+            this.$lastValue = [];
+            this.$lastValue[0] = apf.htmlCleaner.prepare((this.$lastValue[1] = oHtml.innerHTML)
+                .replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
+                "<br _apf_marker='1' /><br _apf_marker='1' />"));
+            if (this.$lastValue[1] != this.$lastValue[0]) {
+                //Set bookmark for cursor position
+                var obm = this.$selection.getBookmark();
+                oHtml.innerHTML = this.$lastValue[0]; 
+                this.$controlAgentBehavior(oHtml);
+                // restore selection to bookmark
+                this.$selection.moveToBookmark(obm);
+            }
+            //#endif
         },
         remove : function(oHtml, rule){
+            oHtml.blur();
             if (apf.hasContentEditable)
                 oHtml.contentEditable = false;
             else
