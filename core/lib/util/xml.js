@@ -1008,7 +1008,7 @@ apf.xmlset = function(xml, xpath, local){
         }
     }
     
-    this.this.$xml = function(){
+    this.xml = function(){
         var str = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             str.push(this.$nodes[i].this.$xml);
