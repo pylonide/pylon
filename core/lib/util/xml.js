@@ -997,6 +997,8 @@ apf.xmlset = function(xml, xpath, local){
                     apf.xmldb.setAttribute(this.$nodes[i], attrName, value);
             }
         }
+        
+        return this;
     }
     
     this.removeAttr = function(attrName){
@@ -1006,6 +1008,8 @@ apf.xmlset = function(xml, xpath, local){
             else
                 apf.xmldb.removeAttribute(this.$nodes[i], attrName);
         }
+        
+        return this;
     }
     
     this.xml = function(){
@@ -1124,8 +1128,13 @@ apf.xmlset = function(xml, xpath, local){
         return apf.queryValues(this.$xml, this.$xpath);
     }
     
-    this.clone = function(){
+    this.clone = function(deep){
+        var nodes = [];
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            nodes.push(this.$nodes[i].cloneNode(deep == undefined ? true : deep));
+        }
         
+        return new apf.xmlset(nodes);
     }
     
     this.context = function(){
