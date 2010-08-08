@@ -927,12 +927,13 @@ apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
 }
 
-apf.xmlset = function(xml, xpath, local){
+apf.xmlset = function(xml, xpath, local, previous){
     this.$xml = xml;
     if (xml)
         this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
     this.$xpath = xpath || "."
     this.$local = local;
+    this.$previous = previous;
 };
 
 (function(){
@@ -1035,26 +1036,26 @@ apf.xmlset = function(xml, xpath, local){
     }
     
     this.next = function(selector){
-        return new apf.xmlset(this.$xml, "((following-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "((following-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.nextAll = function(selector){
-        return new apf.xmlset(this.$xml, "(following-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(following-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.nextUntil = function(){}
     
     this.prev = function(selector){
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     this.prevAll = function(selector){
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.not = function(){}
 
     this.parent = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/..[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/..[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.parents = function(selector){}
@@ -1095,7 +1096,7 @@ apf.xmlset = function(xml, xpath, local){
             items.push(node);
         }
         
-        return new apf.xmlset(items);
+        return new apf.xmlset(items, "", this.$local, this);
     }
     
     this.remove = function(selector){
@@ -1114,16 +1115,19 @@ apf.xmlset = function(xml, xpath, local){
     }
     
     this.children = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.has  = 
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//node()[self::" + selector.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//node()[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.filter = function(filter){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("self::") + "]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("self::") + "]", this.$local, this);
+    }
+    this.end = function(){
+        return this.$previous;
     }
     
     this.is = function(selector) {
@@ -1148,14 +1152,14 @@ apf.xmlset = function(xml, xpath, local){
     
     this.clone = function(deep){
         if (this.$nodes.length == 1)
-            return new apf.xmlset(this.$nodes[0].cloneNode(true));
+            return new apf.xmlset(this.$nodes[0].cloneNode(true), "", this.$local, this);
         
         var nodes = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             nodes.push(this.$nodes[i].cloneNode(deep == undefined ? true : deep));
         }
         
-        return new apf.xmlset(nodes);
+        return new apf.xmlset(nodes, "", this.$local, this);
     }
     
     this.context = function(){
@@ -1181,7 +1185,7 @@ apf.xmlset = function(xml, xpath, local){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             values.push(callback(this.$nodes[i]));
         }
-        return new apf.xmlset(values); //blrghhh
+        return new apf.xmlset(values, "", this.$local, this); //blrghhh
     }
     
     this.empty  = function(){
@@ -1190,11 +1194,11 @@ apf.xmlset = function(xml, xpath, local){
     }
     
     this.first = function(){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
     }
     
     this.last = function(){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]");
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
     }
 }).call(apf.xmlset.prototype);
 
