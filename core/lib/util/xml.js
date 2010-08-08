@@ -920,14 +920,12 @@ apf.xpathToXml = function(xpath, xmlNode){
 };
 
 // #ifdef __WITH_XML_JQUERY_API
-function $n(xml, xpath){
+apf.n = function(xml, xpath){
     return new apf.xmlset(xml, xpath, true);
 }
-apf.$n = $n;
-function $b(xml, xpath){
+apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
 }
-apf.$b = $b;
 
 apf.xmlset = function(xml, xpath, local){
     this.$xml = xml;
@@ -1169,7 +1167,7 @@ apf.xmlset = function(xml, xpath, local){
     this.last = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]");
     }
-})(apf.xmlset.prototype = {});
+}).call(apf.xmlset.prototype);
 
 // #endif
 
