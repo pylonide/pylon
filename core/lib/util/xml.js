@@ -1079,11 +1079,14 @@ apf.xmlset = function(xml, xpath, local){
         return arr;
     }
     
-    this.detach = function(){
+    this.detach = function(selector){
         var items = [];
         
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
+            if (!node.selectSingleNode("self::node()[" + selector + "]"))
+                continue;
+                
             if (this.$local)
                 node.parentNode.removeChild(node);
             else
@@ -1095,8 +1098,11 @@ apf.xmlset = function(xml, xpath, local){
         return new apf.xmlset(items);
     }
     
-    this.remove = function(){
+    this.remove = function(selector){
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            if (!node.selectSingleNode("self::node()[" + selector + "]"))
+                continue;
+            
             node = this.$nodes[i];
             if (this.$local)
                 node.parentNode.removeChild(node);
@@ -1141,6 +1147,9 @@ apf.xmlset = function(xml, xpath, local){
     }
     
     this.clone = function(deep){
+        if (this.$nodes.length == 1)
+            return new apf.xmlset(this.$nodes[0].cloneNode(true));
+        
         var nodes = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             nodes.push(this.$nodes[i].cloneNode(deep == undefined ? true : deep));
