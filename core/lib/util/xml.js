@@ -1095,6 +1095,18 @@ apf.xmlset = function(xml, xpath, local){
         return new apf.xmlset(items);
     }
     
+    this.remove = function(){
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            if (this.$local)
+                node.parentNode.removeChild(node);
+            else
+                apf.xmldb.removeNode(node);
+        }
+        
+        return this;
+    }
+    
     this.children = function(selector){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]");
     }
@@ -1163,7 +1175,6 @@ apf.xmlset = function(xml, xpath, local){
         return new apf.xmlset(values); //blrghhh
     }
     
-    this.remove = 
     this.empty  = function(){
         this.children().detach();
         return this;
