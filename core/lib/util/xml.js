@@ -1100,11 +1100,11 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.remove = function(selector){
-        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+        for (var node, n = this.$nodes, i = n.length - 1; i >= 0; i--) {
+            node = n[i];
             if (!node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
             
-            node = this.$nodes[i];
             if (this.$local)
                 node.parentNode.removeChild(node);
             else
