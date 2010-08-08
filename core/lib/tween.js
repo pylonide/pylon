@@ -166,9 +166,6 @@ var ID        = "id",
     },
     __pow   = Math.pow,
     __round = Math.round,
-    RUNNING  = 0,
-    STOPPING = 1,
-    STOPPED  = 2,
 
     queue = {},
 
@@ -403,7 +400,7 @@ var ID        = "id",
 
         if (info.control)
             info.control.stop = function(){
-                info.control.state = STOPPING;
+                info.control.state = apf.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
@@ -414,7 +411,7 @@ var ID        = "id",
                 : calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
             stepFunction = function(step){
                 if (info.control && info.control.state) {
-                    info.control.state = STOPPED;
+                    info.control.state = apf.tween.STOPPED;
                     return;
                 }
                 
@@ -437,7 +434,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.state = STOPPED;
+                    info.control.state = apf.tween.STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -591,7 +588,7 @@ var ID        = "id",
         
         if (info.control)
             info.control.stop = function(){
-                info.control.state = STOPPING;
+                info.control.state = apf.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
@@ -600,7 +597,7 @@ var ID        = "id",
         var tweens       = info.tweens,
             stepFunction = function(step){
                 if (info.control && info.control.state) {
-                    info.control.state = STOPPED;
+                    info.control.state = apf.tween.STOPPED;
                     return;
                 }
                 
@@ -621,7 +618,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.state = STOPPED;
+                    info.control.state = apf.tween.STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -795,6 +792,10 @@ return {
     EASEIN: 1,
     /** Ease-out tweening method */
     EASEOUT: 2,
+    
+    RUNNING: 0,
+    STOPPING: 1,
+    STOPPED: 2,
 
     linear: function(t, x_min, dx) {
         return dx * t + x_min;
