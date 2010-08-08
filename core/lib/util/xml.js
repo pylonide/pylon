@@ -1126,8 +1126,9 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.filter = function(filter){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("self::") + "]", this.$local, this);
     }
+    
     this.end = function(){
-        return this.$previous;
+        return this.$previous || this;
     }
     
     this.is = function(selector) {
