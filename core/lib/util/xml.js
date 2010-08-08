@@ -926,7 +926,9 @@ apf.n = function(xml, xpath){
 apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
 }
-
+/**
+ * Naive jQuery like set implementation
+ */
 apf.xmlset = function(xml, xpath, local, previous){
     this.$xml = xml;
     if (xml)
@@ -1102,7 +1104,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.remove = function(selector){
         for (var node, n = this.$nodes, i = n.length - 1; i >= 0; i--) {
             node = n[i];
-            if (!node.selectSingleNode("self::node()[" + selector + "]"))
+            if (selector && !node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
             
             if (this.$local)
