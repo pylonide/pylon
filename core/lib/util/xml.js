@@ -928,6 +928,9 @@ apf.b = function(xml, xpath){
 }
 /**
  * Naive jQuery like set implementation
+ * @todo add dirty flags
+ * @todo add query queue
+ * @todo rewrite to use arrays
  */
 apf.xmlset = function(xml, xpath, local, previous){
     this.$xml = xml;

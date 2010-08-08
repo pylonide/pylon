@@ -13,13 +13,13 @@
             <a:page caption="Page 2" />
             <a:page caption="Page 3" /> 
             <a:page caption="Page 2" />
-            <a:page caption="Page 3" /> 
+            <!--a:page caption="Page 3" /> 
             <a:page caption="Page 2" />
             <a:page caption="Page 3" /> 
             <a:page caption="Page 2" />
-            <a:page caption="Page 3" /> 
+            <a:page caption="Page 3" /--> 
         </a:tab>
         
-        <a:button onclick="tab.add('New Page')" bottom="10" left="10" width="80">Add</a:button>
+        <a:button onclick="var pg = tab.add('New Page');tab.set(pg);" bottom="10" left="10" width="80">Add</a:button>
     </body>
 </html>

@@ -36,9 +36,10 @@ apf.runGecko = function(){
     //XMLDocument.selectNodes
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
         try {
+            //FIRST_ORDERED_NODE_TYPE -> 9 to implement selectSingleNode
             var oResult = this.evaluate(sExpr, (contextNode || this),
                 this.createNSResolver(this.documentElement),
-                7, null);//XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+                7, null); //XpathResult.ORDERED_NODE_ITERATOR_TYPE
         }
         catch(ex) {
             var msg = ex.message;
@@ -46,7 +47,7 @@ apf.runGecko = function(){
                 msg = msg.replace(/the expression/i, "'" + sExpr + "'");
             throw new Error(ex.lineNumber, "XPath error: " + msg);
         }
-        
+
         var nodeList = new Array(oResult.snapshotLength);
         nodeList.expr = sExpr;
         for (var i = nodeList.length - 1; i >= 0; i--) 

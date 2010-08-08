@@ -325,33 +325,228 @@ apf.BaseTab = function(){
     };
     
     //#ifdef __ENABLE_TAB_SCALE
-    this.$scaleinit = function(){
-        var l = this.getPages().length;
+    this.$scaleinit = function(node, type, callback){
+        var pg = this.getPages();
+        var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10;
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
         
-        scalersz.call(this);
+        if (type == "add") {
+            var htmlNode = node.$button;
+            htmlNode.style.width = this.$minBtnWidth + "px";
+            scalersz.call(this, null, node);
+            
+            if (this.$control)
+                this.$control.stop();
+            
+            var anim = {
+                steps    : apf.isIE ? 10 : 20,
+                control  : this.$control = {},
+                anim     : apf.tween.EASEOUT,
+                interval : 10,
+                tweens   : [],
+                oHtml    : node,
+                onfinish : function(){
+                }
+            };
+            this.$scaleSync(anim, pg);
+            /*var cw = this.$ext.offsetWidth - 1;//apf.getHtmlInnerWidth(this.$ext);
+            var l  = pg.length;
+            var less = this.$minBtnWidth / l;
+            var bw = Math.min(cw/l, this.$maxBtnWidth);
+            var re = Math.round((bw % 1) * 10);
+            for (var wd, html, s, i = 0; i < l - 1; i++) {
+                s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
+                cw -= s;
+                html = pg[i].$button, wd = apf.getWidthDiff(html);
+                anim.tweens.push({
+                    oHtml : html, 
+                    type  : "width", 
+                    from  : html.offsetWidth - wd,
+                    to    : s - wd - this.$btnMargin
+                });
+            }
+            html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
+            anim.tweens.push({
+                oHtml : html, 
+                type  : "width", 
+                from  : html.offsetWidth - wd - less,
+                to    : Math.max(this.$minBtnWidth, 
+                    Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+            });*/
+            
+            apf.tween.multi(this, anim);
+        }
+        else if (type == "sync") {
+            if (this.$control)
+                this.$control.stop();
+            
+            var anim = {
+                steps    : apf.isIE ? 10 : 20,
+                control  : this.$control = {},
+                anim     : apf.tween.EASEOUT,
+                interval : 10,
+                tweens   : [],
+                oHtml    : node
+                //onfinish : callback
+            };
+            
+            this.$scaleSync(anim, pg);
+            
+            apf.tween.multi(this, anim);
+        }
+        else if (type == "remove") {
+            if (this.$control)
+                this.$control.stop();
+            
+            var _self = this;
+            var html = node.$button, wd = apf.getWidthDiff(html);
+            var anim = {
+                steps    : apf.isIE ? 10 : 20,
+                //control  : this.$control = {},
+                anim     : apf.tween.EASEOUT,
+                interval : 10,
+                tweens   : [],
+                oHtml    : html,
+                onfinish : function(){
+                    callback();
+                    
+                    if (_self.$waitForMouseOut == 2) {
+                        apf.removeListener(_self.$buttons, "mouseout", f);
+                        delete _self.$waitForMouseOut;
+                        _self.$scaleinit(null, "sync");
+                    }
+                    else if (!isLast) {
+                        var f;
+                        //@todo remove this when scaleinit for sync has been called
+                        apf.addListener(_self.$buttons, "mouseout", f = function(e){
+                            var pos = apf.getAbsolutePosition(this);
+                            if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+                              || e.clientX >= pos[0] + this.offsetWidth 
+                              || e.clientY >= pos[1] + this.offsetHeight) {
+                                apf.removeListener(_self.$buttons, "mouseout", f);
+                                delete _self.$waitForMouseOut;
+                                _self.$scaleinit(null, "sync");
+                            }
+                        });
+                    }
+                    else
+                        delete _self.$waitForMouseOut;
+                },
+                onstop : function(){
+                    apf.setOpacity(html, 1);
+                }
+            };
+            
+            anim.tweens.push({
+                oHtml : html,
+                type  : "width", 
+                from  : html.offsetWidth - wd,
+                to    : 0
+            });
+            anim.tweens.push({
+                oHtml : html,
+                type  : "fade", 
+                from  : 1,
+                to    : 0
+            });
+            
+            var isLast = pg[pg.length - 1] == node;
+            if (isLast)
+                this.$scaleSync(anim, pg, node);
+            
+            //Set activetab if the current one is lost
+            if (this.$activepage == node) {
+                var ln = node.nextSibling;
+                while (ln && !ln.$first)
+                    ln = ln.nextSibling;
+                var rn = node.previousSibling;
+                while (rn && !rn.$last)
+                    rn = rn.previousSibling;
+        
+                if (ln || rn)
+                    this.set(ln || rn);
+            }
+            
+            apf.tween.multi(this, anim);
+            
+            this.$waitForMouseOut = true;
+            if (!isLast) {
+                var f;
+                apf.addListener(_self.$buttons, "mouseout", f = function(e){
+                    var pos = apf.getAbsolutePosition(this);
+                    console.log(e.clientX + ":" + e.clientY + ":" + pos + ":" + this.offsetWidth + ":" + this.offsetHeight);
+                    if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+                      || e.clientX >= pos[0] + this.offsetWidth 
+                      || e.clientY >= pos[1] + this.offsetHeight) {
+                        apf.removeListener(_self.$buttons, "mouseout", f);
+                        if (_self.$waitForMouseOut)
+                            _self.$waitForMouseOut = 2;
+                    }
+                });
+            }
+        }
+        else
+            scalersz.call(this);
     }
     
-    var round = [Math.floor, Math.ceil];
-    function scalersz(){
-        if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
-        
-        var pg = this.getPages();
+    this.$scaleSync = function(anim, pg, excl){
+        if (excl) {
+            pg = pg.slice();
+            pg.remove(excl);
+        }
         var cw = this.$ext.offsetWidth - 1;//apf.getHtmlInnerWidth(this.$ext);
         var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
         var re = Math.round((bw % 1) * 10);
+        for (var wd, html, s, i = 0; i < l - 1; i++) {
+            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
+            cw -= s;
+            html = pg[i].$button, wd = apf.getWidthDiff(html);
+            anim.tweens.push({
+                oHtml : html, 
+                type  : "width", 
+                from  : html.offsetWidth - wd,
+                to    : s - wd - this.$btnMargin
+            });
+        }
+        html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
+        anim.tweens.push({
+            oHtml : html, 
+            type  : "width", 
+            from  : html.offsetWidth - wd,
+            to    : Math.max(this.$minBtnWidth, 
+                Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
+        });
+    }
+    
+    var round = [Math.floor, Math.ceil];
+    function scalersz(e, excl){
+        if (this.$waitForMouseOut)
+            return;
+        
+        if (this.$btnMargin == undefined)
+            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+        
+        var pg = this.getPages();
+        var cw = this.$ext.offsetWidth - 1 - (excl ? this.$minBtnWidth : 0);//apf.getHtmlInnerWidth(this.$ext);
+        var l  = pg.length - (excl ? 1 : 0);
+        var bw = Math.min(cw/l, this.$maxBtnWidth);
+        var re = Math.round((bw % 1) * 10);
         for (var s, i = 0; i < l - 1; i++) {
+            if (pg[i] == excl) 
+                continue;
+
             s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
             cw -= s;
             pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
         }
-        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
-            Math.min(cw, this.$maxBtnWidth)) 
-              - this.$btnMargin 
-              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+        if (pg[l - 1] != excl) {
+            pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
+                Math.min(cw, this.$maxBtnWidth)) 
+                  - this.$btnMargin 
+                  - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+        }
     }
     //#endif
 
@@ -585,16 +780,27 @@ apf.BaseTab = function(){
      * @return {Page} the removed page element.
      */
     this.remove = function(nameOrId){
-        var page = this.$findPage(nameOrId);
+        var page = typeof nameOrId == "object" 
+            ? nameOrId 
+            : this.$findPage(nameOrId);
         if (!page)
             return false;
         
-        page.removeNode();
+        //#ifdef __ENABLE_TAB_SCALE
+        if (this.$scale) {
+            this.$scaleinit(page, "remove", function(){
+                page.removeNode();
+            });
+        }
+        else  {
+            page.removeNode();
 
-        // #ifdef __ENABLE_TABSCROLL
-        //@todo this is wrong, we can also use removeChild
-        //this.setScrollerState();
-        // #endif
+            // #ifdef __ENABLE_TABSCROLL
+            //@todo this is wrong, we can also use removeChild
+            //this.setScrollerState();
+            // #endif
+        }
+        
         return page;
     };
 
@@ -974,14 +1180,21 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
+        var ln = amlNode.nextSibling;
+        while (ln && !ln.$first)
+            ln = ln.nextSibling;
+        var rn = amlNode.previousSibling;
+        while (rn && !rn.$last)
+            rn = rn.previousSibling;
+
         if (this.firstChild == amlNode && amlNode.nextSibling)
-            amlNode.nextSibling.$first();
+            ln && ln.$first();
         if (this.lastChild == amlNode && amlNode.previousSibling)
-            amlNode.previousSibling.$last();
+            rn && rn.$last();
 
         if (this.$activepage == amlNode) {
-            if (amlNode.nextSibling || amlNode.previousSibling)
-                this.set(amlNode.nextSibling || amlNode.previousSibling);
+            if (ln || rn)
+                this.set(ln || rn);
             else {
                 // #ifdef __ENABLE_TABSCROLL
                 //this.setScrollerState();

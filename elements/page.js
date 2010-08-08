@@ -424,7 +424,7 @@ apf.page = function(struct, tagName){
                         "apf.stopEvent(event);");
                     elBtnClose.setAttribute("onclick",
                         'var page = apf.lookup(' + this.$uniqueId + ');\
-                         page.parentNode.removeChild(page);');
+                         page.parentNode.remove(page);');
                          
                     btncontainer.appendChild(elBtnClose);
                 }
