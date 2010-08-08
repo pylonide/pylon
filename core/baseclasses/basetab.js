@@ -60,6 +60,7 @@ apf.BaseTab = function(){
     this.isLoading   = {};
     this.inited      =
     this.ready       = false;
+    this.$scroll     = true;
 
     /**
      * Sets the current page of this element.
@@ -259,7 +260,7 @@ apf.BaseTab = function(){
 
         this.$activepage = page;
         //#ifdef __ENABLE_TABSCROLL
-        this.scrollIntoView(page);
+        //this.scrollIntoView(page);
         //#endif
 
         //Loader support
@@ -291,6 +292,68 @@ apf.BaseTab = function(){
 
         return true;
     };
+    
+    /**
+     * @attribute {String} buttons the modifier for tab page buttons, seperated by a | character
+     *   Possible values:
+     *   close   the button has a close button inside it.
+     *   scale   the buttons are scaled to make room for more buttons.
+     *   scroll  when the buttons take too much space scroll buttons are displayed.
+     */
+    this.$propHandlers["buttons"] = function(value){
+        //this.buttons = value;
+        this.$scale = value.indexOf("scale") > -1;
+        this.$scroll = !this.$scale;
+        
+        //#ifdef __ENABLE_TAB_SCALE
+        //@todo skin change
+        //@todo buttons on the side
+        if (this.$scale) {
+            this.$maxBtnWidth = parseInt(this.$getOption("button", "maxwidth")) || 150;
+            this.$minBtnWidth = parseInt(this.$getOption("button", "minwidth")) || 10;
+            this.$setStyleClass(this.$buttons, "scale");
+            this.addEventListener("resize", scalersz);
+            
+            this.minwidth = this.$minBtnWidth * this.getPages().length + 10;
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        }
+        else {
+            this.$setStyleClass(this.$buttons, "", ["scale"]);
+            this.removeEventListener("resize", scalersz);
+        }
+        //#endif
+    };
+    
+    //#ifdef __ENABLE_TAB_SCALE
+    this.$scaleinit = function(){
+        var l = this.getPages().length;
+        this.minwidth = this.$minBtnWidth * l + 10;
+        this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        scalersz.call(this);
+    }
+    
+    var round = [Math.floor, Math.ceil];
+    function scalersz(){
+        if (this.$btnMargin == undefined)
+            this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
+        
+        var pg = this.getPages();
+        var cw = this.$ext.offsetWidth - 1;//apf.getHtmlInnerWidth(this.$ext);
+        var l  = pg.length;
+        var bw = Math.min(cw/l, this.$maxBtnWidth);
+        var re = Math.round((bw % 1) * 10);
+        for (var s, i = 0; i < l - 1; i++) {
+            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
+            cw -= s;
+            pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
+        }
+        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
+            Math.min(cw, this.$maxBtnWidth)) 
+              - this.$btnMargin 
+              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+    }
+    //#endif
 
     /**** Public methods ****/
 
@@ -511,7 +574,7 @@ apf.BaseTab = function(){
         this.appendChild(page);
         
         // #ifdef __ENABLE_TABSCROLL
-        this.scrollIntoView(page);
+        //this.scrollIntoView(page);
         // #endif
         return page;
     };
@@ -529,13 +592,14 @@ apf.BaseTab = function(){
         page.removeNode();
 
         // #ifdef __ENABLE_TABSCROLL
-        this.setScrollerState();
+        //@todo this is wrong, we can also use removeChild
+        //this.setScrollerState();
         // #endif
         return page;
     };
 
     // #ifdef __ENABLE_TABSCROLL
-    
+    /*
     var SCROLLANIM = {
             scrollOn  : false,
             steps     : 15,
@@ -562,7 +626,7 @@ apf.BaseTab = function(){
         scrollTimer    = null,
         keepScrolling  = false,
         globalDir      = SCROLL_LEFT;
-
+*/
     function getButtonsWidth() {
         var cId = "cache_" + this.$buttons.childNodes.length;
         if (SCROLLANIM[cId])
@@ -920,17 +984,23 @@ apf.BaseTab = function(){
                 this.set(amlNode.nextSibling || amlNode.previousSibling);
             else {
                 // #ifdef __ENABLE_TABSCROLL
-                this.setScrollerState();
+                //this.setScrollerState();
                 // #endif
                 this.$activepage  =
                 this.activepage   =
                 this.activepagenr = null;
             }
         }
-        // #ifdef __ENABLE_TABSCROLL
-        else
-            this.setScrollerState();
-        // #endif
+        else {
+            // #ifdef __ENABLE_TABSCROLL
+            //if (this.$scroll) 
+                //this.setScrollerState();
+            // #endif
+            //#ifdef __ENABLE_TAB_SCALE
+            if (this.$scale) 
+                this.$scaleinit();
+            //#endif
+        }
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
@@ -975,6 +1045,11 @@ apf.BaseTab = function(){
         }
         else if (!this.$activepage)
             this.set(amlNode);
+        
+        //#ifdef __ENABLE_TAB_SCALE
+        if (this.$scale) 
+            this.$scaleinit(amlNode, "add");
+        //#endif
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
@@ -1078,7 +1153,7 @@ apf.BaseTab = function(){
         
         // #ifdef __ENABLE_TABSCROLL
         // add scroller node(s)
-        this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
+        /*this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
         if (this.oScroller) {
             function startTimer(e, dir) {
                 clearTimeout(scrollTimer);
@@ -1109,7 +1184,7 @@ apf.BaseTab = function(){
                 var dir = e.delta > 0 ? SCROLL_LEFT : SCROLL_RIGHT;
                 e.delta = Math.abs(e.delta);
                 _self.scroll(e, dir);
-            });*/
+            });* /
             //#endif
 
             this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
@@ -1159,7 +1234,7 @@ apf.BaseTab = function(){
         //#ifdef __WITH_LAYOUT
         apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
             "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
-        apf.layout.queue(this.$ext);
+        apf.layout.queue(this.$ext);*/
         //#endif
         // #endif
 
@@ -1216,11 +1291,10 @@ apf.BaseTab = function(){
 
         this.ready = true;
         // #ifdef __ENABLE_TABSCROLL
-        window.setTimeout(function() {
+        /*window.setTimeout(function() {
             _self.setScrollerState();
-        }, 0);
+        }, 0);*/
         // #endif
-
 
         if (!this.activepage && this.getAttribute("src")) {
             this.src = this.getAttribute("src");
@@ -1233,12 +1307,12 @@ apf.BaseTab = function(){
             return;
         // #ifdef __ENABLE_TABSCROLL
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
+        /*apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
         //#endif
         [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
             oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
             oBtn.onmouseout  = oBtn.onmouseup  = null;
-        });
+        });*/
         // #endif
     };
 }).call(apf.BaseTab.prototype = new apf.Presentation());

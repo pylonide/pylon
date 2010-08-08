@@ -123,8 +123,7 @@ apf.LiveEdit = function() {
         }
         
         function removeHandler(){
-            if (moEditor)
-                apf.removeListener(moEditor.$ext, "mouseout");
+            apf.removeListener(moEditor.$ext, "mouseout");
             if (_self.$lastEditor && _self.$lastEditor[0] == moEditor)
                 removeEditor.call(_self, _self.$activeNode, true);
             moEditor.removeEventListener("focus", focusHandler);
@@ -137,7 +136,7 @@ apf.LiveEdit = function() {
                 return;
             }
                 
-            if (!moEditor.hasFocus())
+            if (moEditor && !moEditor.hasFocus())
                 removeHandler.call(moEditor);
         }
         

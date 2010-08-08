@@ -2459,7 +2459,7 @@ apf.lm_exec = new (function(){
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
         
-        if (editMode) {
+        if (editMode !== false) {
             return '<' + (options && options.multiline ? 'div style="display:inline-block"' : 'span') 
               + ' class="liveEdit' + (!res && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? (m.substr(0,1) != "/" 

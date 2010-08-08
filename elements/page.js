@@ -43,7 +43,6 @@ apf.page = function(struct, tagName){
     //this.$canEdit        = false;
     //#endif
     this.$focussable     = false;
-    this.buttons         = false;
     this.closebtn        = false;
 
     //#ifdef __WITH_CONTENTEDITABLE
@@ -98,22 +97,13 @@ apf.page = function(struct, tagName){
     this.$supportedProperties.push("fake", "caption", "icon", 
         "type", "buttons", "closebtn", "trans-in", "trans-out");
 
-    this.$propHandlers["buttons"] = function(value){
-        this.buttons = value;
-    };
-    
+    /**
+     * @attribute {Boolean} closebtn whether this page's button shows a close button inside it.
+     */
     this.$propHandlers["closebtn"] = function(value){
         this.closebtn = value;
     };
     
-    /*this.$propHandlers["trans-in"] = function(value){
-        
-    };
-    
-    this.$propHandlers["trans-out"] = function(value){
-    
-    };*/
-
     /**
      * @attribute {String} caption the text displayed on the button of this element.
      */
@@ -222,7 +212,7 @@ apf.page = function(struct, tagName){
             if (this.$button)
                 this.$button.parentNode.removeChild(this.$button);
 
-            if (this.parentNode.$activepage == this) {
+            if (this.parentNode && this.parentNode.$activepage == this) {
                 if (this.$button)
                     this.parentNode.$setStyleClass(this.$button, "", ["curbtn"]);
                 this.parentNode.$setStyleClass(this.$ext, "", ["curpage"]);
@@ -419,27 +409,42 @@ apf.page = function(struct, tagName){
             if (cssClass)
                 apf.setStyleClass(elBtn, cssClass);
             
-
-            var nameOrId = this.getAttribute("id") || this.getAttribute("name"),
-                closebtn = this.getAttribute("closebtn");
-
-            if ((closebtn == "true" || (this.parentNode.buttons == "close" && closebtn == null)) && nameOrId) {
-                var btncontainer = this.parentNode.$getLayoutNode("button", "btncontainer");
+            //#ifdef __ENABLE_TAB_CLOSEBTN
+            var closebtn = this.getAttribute("closebtn");
+            if ((apf.isTrue(closebtn) || (this.parentNode.buttons.indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
+                var btncontainer = this.parentNode.$getLayoutNode("button", "container");
 
                 this.parentNode.$getNewContext("btnclose");
                 var elBtnClose = this.parentNode.$getLayoutNode("btnclose");
                 
-                if (!elBtnClose)
-                    return;
-                    
-                elBtnClose.setAttribute("onclick",
-                    'var page = apf.lookup(' + this.$uniqueId + ');\
-                     page.parentNode.remove(' + nameOrId + ');');
-                     
-                btncontainer.appendChild(elBtnClose);
+                if (elBtnClose) {
+                    apf.setStyleClass(elBtn, "btnclose");
+
+                    elBtnClose.setAttribute("onmousedown", 
+                        "apf.stopEvent(event);");
+                    elBtnClose.setAttribute("onclick",
+                        'var page = apf.lookup(' + this.$uniqueId + ');\
+                         page.parentNode.removeChild(page);');
+                         
+                    btncontainer.appendChild(elBtnClose);
+                }
+                //#ifdef __DEBUG
+                else {
+                    apf.console.warn("Missing close button in tab skin");
+                }
+                //#endif
             }
+            //#endif
 
             this.$button = apf.insertHtmlNode(elBtn, this.parentNode.$buttons);
+            
+            //#ifdef __ENABLE_TAB_SCALE
+            if (this.parentNode.$scale) {
+                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
+                var l = this.parentNode.getPages().length;
+                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
+            }
+            //#endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.$button)
                 this.$button.parentNode.insertBefore(this.$button, this.nextSibling.$button);
@@ -456,7 +461,7 @@ apf.page = function(struct, tagName){
         this.$ext = this.parentNode.$getExternal("page",
             this.parentNode.oPages, null, this);
         this.$ext.host = this;
-        
+
         this.$int = this.parentNode
             .$getLayoutNode("page", "container", this.$ext);
         //if (this.$int)
@@ -464,7 +469,12 @@ apf.page = function(struct, tagName){
     };
 
     this.$loadAml = function(x){
-        
+        //#ifdef __ENABLE_TAB_SCALE
+        //We're not parsing so the button is being added dynamically
+        if (!this.ownerDocument.$domParser.$parseContext) {
+            
+        }
+        //#endif
     };
 
     this.$destroy = function(){

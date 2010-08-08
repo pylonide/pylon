@@ -303,19 +303,41 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 };
 
 /**
- * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
+ * Sets a value of an XMLNode based on an xpath statement executed on a reference XMLNode.
  *
+ * @param  {XMLNode}  xmlNode  the reference xml node.
  * @param  {String}  xpath  the xpath used to select a XMLNode.
  * @param  {String}  value  the value to set.
+ * @param  {Boolean}  local  whether the call updates databound UI.
  * @return  {XMLNode}  the changed XMLNode
  */
-apf.setQueryValue = function(xmlNode, xpath, value){
+apf.setQueryValue = function(xmlNode, xpath, value, local){
     var node = apf.createNodeFromXpath(xmlNode, xpath);
     if (!node)
         return null;
 
     apf.setNodeValue(node, value, true);
     //apf.xmldb.setTextNode(node, value);
+    return node;
+};
+
+/**
+ * Removed an XMLNode based on an xpath statement executed on a reference XMLNode.
+ *
+ * @param  {XMLNode}  xmlNode  the reference xml node.
+ * @param  {String}  xpath  the xpath used to select a XMLNode.
+ * @return  {XMLNode}  the changed XMLNode
+ */
+apf.removeQueryNode = function(xmlNode, xpath, local){
+    var node = apf.queryNode(xmlNode, xpath);
+    if (!node)
+        return false;
+
+    if (local)
+        node.parentNode.removeChild(node);
+    else
+        apf.xmldb.removeNode(node);
+    
     return node;
 };
 
