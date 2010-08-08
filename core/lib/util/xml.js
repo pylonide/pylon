@@ -316,7 +316,7 @@ apf.setQueryValue = function(xmlNode, xpath, value, local){
     if (!node)
         return null;
 
-    apf.setNodeValue(node, value, true);
+    apf.setNodeValue(node, value, !local);
     //apf.xmldb.setTextNode(node, value);
     return node;
 };
@@ -918,5 +918,257 @@ apf.xpathToXml = function(xpath, xmlNode){
     
     return xmlNode.selectSingleNode(xpath);
 };
+
+// #ifdef __WITH_XML_JQUERY_API
+function $n(xml, xpath){
+    return new apf.xmlset(xml, xpath, true);
+}
+function $b(xml, xpath){
+    return new apf.xmlset(xml, xpath);
+}
+
+apf.xmlset = function(xml, xpath, local){
+    this.$xml = xml;
+    if (xml)
+        this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
+    this.$xpath = xpath || "."
+    this.$local = local;
+};
+
+(function(){
+    this.add = function(){} //@todo not implemented
+    
+    this.before = function(){
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            node.parentNode.insertBefore(typeof el == "function" ? el(i) : el, node);
+        }
+        return this;
+    }
+    
+    this.after = function(el){
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            node.parentNode.insertBefore(typeof el == "function" ? el(i) : el, node.nextSibling);
+        }
+        
+        return this;
+    }
+    
+    this.andSelf = function(){}
+    
+    this.append = function(el){
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            node.appendChild(typeof el == "function" ? el(i, node) : el);
+        }
+        
+        return this;
+    }
+    this.appendTo = function(target){
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            target.appendChild(this.$nodes[i]);
+        }
+        return this;
+    }
+    this.prepend = function(content){
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            node.insertBefore(typeof el == "function" ? el(i, node) : el, node.firstChild);
+        }
+        
+        return this;
+    }
+    this.prependTo = function(content){
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            target.insertBefore(this.$nodes[i], target.firstChild);
+        }
+        return this;
+    }
+    
+    this.attr = function(attrName, value){
+        if (!value)
+            return this.$nodes[0].getAttribute(attr);
+        else {
+            for (var i = 0, l = this.$nodes.length; i < l; i++) {
+                if (this.$local)
+                    this.$nodes[i].setAttribute(attrName, value);
+                else
+                    apf.xmldb.setAttribute(this.$nodes[i], attrName, value);
+            }
+        }
+    }
+    
+    this.removeAttr = function(attrName){
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            if (this.$local)
+                this.$nodes[i].removeAttribute(attrName);
+            else
+                apf.xmldb.removeAttribute(this.$nodes[i], attrName);
+        }
+    }
+    
+    this.this.$xml = function(){
+        var str = [];
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            str.push(this.$nodes[i].this.$xml);
+        }
+        return str.join("\n");
+    }
+    
+    this.get   = 
+    this.index = 
+    this.eq    = function(index){
+        return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
+    }
+    
+    this.size   = 
+    this.length = function(){
+        return this.$nodes.length;
+    }
+    this.load = function(url){
+        
+    }
+    
+    this.next = function(selector){
+        return new apf.xmlset(this.$xml, "((following-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.nextAll = function(selector){
+        return new apf.xmlset(this.$xml, "(following-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.nextUntil = function(){}
+    
+    this.prev = function(selector){
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]");
+    }
+    this.prevAll = function(selector){
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.not = function(){}
+
+    this.parent = function(selector){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/..[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.parents = function(selector){}
+    this.pushStack = function(){}
+    this.replaceAll = function(){}
+    this.replaceWith = function(){}
+    
+    this.siblings = function(selector){
+        //preceding-sibling::
+        //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]");
+    }
+
+    this.text = function(){
+        
+    }
+    
+    this.toArray = function(){
+        var arr = [];
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            arr.push(this.$nodes[i]);
+        }
+        return arr;
+    }
+    
+    this.detach = function(){
+        var items = [];
+        
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            if (this.$local)
+                node.parentNode.removeChild(node);
+            else
+                apf.xmldb.removeNode(node);
+                
+            items.push(node);
+        }
+        
+        return new apf.xmlset(items);
+    }
+    
+    this.children = function(selector){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.has  = 
+    this.find = function(path){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//node()[self::" + selector.split("|").join("self::") + "]");
+    }
+    
+    this.filter = function(filter){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("self::") + "]");
+    }
+    
+    this.is = function(selector) {
+        return this.filter(selector) ? true : false;
+    }
+    
+    this.contents = function(){
+        return this.children("node()");
+    }
+    
+    this.has = function(){
+        //return this.children(
+    }
+    
+    this.val = function(){
+        return apf.queryValue(this.$xml, this.$xpath);
+    }
+    
+    this.vals = function(){
+        return apf.queryValues(this.$xml, this.$xpath);
+    }
+    
+    this.clone = function(){
+        
+    }
+    
+    this.context = function(){
+        return this.$xml;
+    }
+    
+    this.data = function(data){
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            apf.setQueryValue(this.$nodes[i], ".", value);
+        }
+        return this;
+    }
+    
+    this.each = function(func){
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            func(this.$nodes[i]);
+        }
+        return this;
+    }
+    
+    this.map = function(callback){
+        var values = [];
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            values.push(callback(this.$nodes[i]));
+        }
+        return new apf.xmlset(values); //blrghhh
+    }
+    
+    this.remove = 
+    this.empty  = function(){
+        this.children().detach();
+        return this;
+    }
+    
+    this.first = function(){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]");
+    }
+    
+    this.last = function(){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]");
+    }
+})(apf.xmlset.prototype);
+
+// #endif
 
 // #endif
