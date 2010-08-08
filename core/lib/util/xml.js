@@ -923,9 +923,11 @@ apf.xpathToXml = function(xpath, xmlNode){
 function $n(xml, xpath){
     return new apf.xmlset(xml, xpath, true);
 }
+apf.$n = $n;
 function $b(xml, xpath){
     return new apf.xmlset(xml, xpath);
 }
+apf.$b = $b;
 
 apf.xmlset = function(xml, xpath, local){
     this.$xml = xml;
@@ -1011,7 +1013,7 @@ apf.xmlset = function(xml, xpath, local){
     this.xml = function(){
         var str = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            str.push(this.$nodes[i].this.$xml);
+            str.push(this.$nodes[i].xml);
         }
         return str.join("\n");
     }
@@ -1167,7 +1169,7 @@ apf.xmlset = function(xml, xpath, local){
     this.last = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]");
     }
-})(apf.xmlset.prototype);
+})(apf.xmlset.prototype = {});
 
 // #endif
 
