@@ -988,7 +988,7 @@ apf.xmlset = function(xml, xpath, local){
     
     this.attr = function(attrName, value){
         if (!value)
-            return this.$nodes[0].getAttribute(attr);
+            return this.$nodes[0].getAttribute(attrName);
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
                 if (this.$local)
