@@ -21,5 +21,6 @@
         </a:tab>
         
         <a:button onclick="var pg = tab.add('New Page');tab.set(pg);" bottom="10" left="10" width="80">Add</a:button>
+        <a:button onclick="var pg = tab.add(new Date().getTime(), null, null, tab.getPages()[4]);tab.set(pg);" bottom="10" left="100" width="80">Before</a:button>
     </body>
 </html>

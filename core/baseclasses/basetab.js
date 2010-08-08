@@ -352,7 +352,6 @@ apf.BaseTab = function(){
             var htmlNode = node.$button;
             htmlNode.style.width = this.$minBtnWidth + "px";
             scalersz.call(this, null, node);
-            
             this.$buildScaleAnim(anim, pg, null, true);
         }
         else if (type == "sync") {
@@ -364,7 +363,7 @@ apf.BaseTab = function(){
                 callback();
                 
                 if (_self.$waitForMouseOut == 2) {
-                    apf.removeListener(_self.$buttons, "mouseout", f);
+                    apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
                     _self.$scaleinit(null, "sync");
                 }
@@ -420,7 +419,7 @@ apf.BaseTab = function(){
                                 delete _self.$waitForMouseOut;
                                 _self.$scaleinit(null, "sync");
                             }
-                            else
+                            else if (_self.$waitForMouseOut)
                                 _self.$waitForMouseOut = 2;
                         }
                     }
@@ -473,24 +472,22 @@ apf.BaseTab = function(){
             this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
         
         var pg = this.getPages();
+        if (excl)
+            pg.remove(excl);
+        
         var cw = this.$ext.offsetWidth - 1 - (excl ? this.$minBtnWidth : 0);//apf.getHtmlInnerWidth(this.$ext);
-        var l  = pg.length - (excl ? 1 : 0);
+        var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
         var re = Math.round((bw % 1) * 10);
         for (var s, i = 0; i < l - 1; i++) {
-            if (pg[i] == excl) 
-                continue;
-
             s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
             cw -= s;
             pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
         }
-        if (pg[l - 1] != excl) {
-            pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) 
-                  - this.$btnMargin 
-                  - apf.getWidthDiff(pg[l - 1].$button)) + "px";
-        }
+        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
+            Math.min(cw, this.$maxBtnWidth)) 
+              - this.$btnMargin 
+              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
     }
     //#endif
 
@@ -702,7 +699,7 @@ apf.BaseTab = function(){
      * @param {String} [name]    the name of the page which is can be referenced by.
      * @return {page} the created page element.
      */
-    this.add = function(caption, name, type){
+    this.add = function(caption, name, type, before){
         var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
         if (name)
             page.setAttribute("id", name);
@@ -710,7 +707,7 @@ apf.BaseTab = function(){
             page.setAttribute("type", type);
         if (caption)
             page.setAttribute("caption", caption);
-        this.appendChild(page);
+        this.insertBefore(page, before);
         
         // #ifdef __ENABLE_TABSCROLL
         //this.scrollIntoView(page);
