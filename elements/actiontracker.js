@@ -815,7 +815,7 @@ apf.actiontracker = function(struct, tagName){
 
             //#ifdef __WITH_RDB
             //Send out the RDB message, letting friends know of our change
-            UndoObj.processRsbQueue();
+            this.$processRdbQueue(UndoObj);
             //#endif
 
             if (callback)
@@ -842,7 +842,7 @@ apf.actiontracker = function(struct, tagName){
             //#endif
 
             //#ifdef __WITH_RDB
-            UndoObj.clearRsbQueue();
+            this.$clearRdbQueue(UndoObj);
             //#endif
 
             return;
@@ -966,6 +966,38 @@ apf.actiontracker = function(struct, tagName){
 
         //Execute action next in queue
         this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this, callback);
+    };
+    //#endif
+
+    //#ifdef __WITH_RDB
+    this.$processRdbQueue = function(UndoObj){
+        if (!this.rdbQueue)
+            this.rdbQueue = {};
+        clearTimeout(this.$queueTimer);
+
+        // try to batch RDB calls
+        var i,
+            _self = this;
+        if (UndoObj.rdbModel)
+            this.rdbModel = UndoObj.rdbModel;
+        // merge queues
+        for (i in UndoObj.rdbQueue) {
+            if (!this.rdbQueue[i])
+                this.rdbQueue[i] = [];
+            this.rdbQueue[i] = this.rdbQueue[i].concat(UndoObj.rdbQueue[i]);
+        }
+        // after the merge, the local queue of the undo object can be cleared
+        UndoObj.rdbQueue = {}
+        this.$queueTimer = $setTimeout(function() {
+            _self.rdbModel.rdb.$processQueue(_self);
+        }, apf.remote.TIMEOUT);
+    };
+
+    this.$clearRdbQueue = function(UndoObj){
+        if (UndoObj)
+            UndoObj.rdbQueue = {};
+        this.rdbQueue = {};
+        this.rdbModel = null;
     };
     //#endif
 }).call(apf.actiontracker.prototype = new apf.AmlElement());

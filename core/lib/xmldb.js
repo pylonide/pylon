@@ -909,26 +909,8 @@ apf.xmldb = new (function(){
         if (!model.rdb) return;
         var rdb = model.rdb;
 
-        // Add the messages to the undo object
-        if (undoObj.localName)
-            rdb.$queueMessage(args, model, undoObj);
-        // Or send message now
-        else {
-            clearTimeout(rdb.queueTimer);
-            
-            rdb.$queueMessage(args, model, rdb);
-            //#ifdef __WITH_O3
-            if (apf.isO3)
-                rdb.$processQueue(rdb);
-            else 
-            //#endif
-            {
-                // use a timeout to batch consecutive calls into one RDB call
-                rdb.queueTimer = $setTimeout(function() {
-                    rdb.$processQueue(rdb);
-                });
-            }
-        }
+        // Attempt to add the messages to the undo object, otherwise send it directly.
+        rdb.$queueMessage(args, model, undoObj.localName ? undoObj : rdb);
     };
     //#endif
 

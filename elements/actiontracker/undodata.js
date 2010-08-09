@@ -246,19 +246,6 @@ apf.UndoData = function(settings, at){
     };
     //#endif
 
-    //#ifdef __WITH_RDB
-    //Send RDB Message..
-    this.processRsbQueue = function(){
-        if (this.rdbModel)
-            this.rdbModel.rdb.$processQueue(this);
-    };
-
-    this.clearRsbQueue = function(){
-        this.rdbQueue =
-        this.rdbModel = null;
-    };
-    //#endif
-
     /**
      * Save the change to a data source.
      * @param {Boolean} undo whether the change is undone.
@@ -280,7 +267,7 @@ apf.UndoData = function(settings, at){
 
         if (!dataInstruction) {
             //#ifdef __WITH_RDB
-            this.processRsbQueue();
+            at.$processRdbQueue(this);
             //#endif
             return at.$queueNext(this);
         }

@@ -220,16 +220,16 @@ apf.actiontracker.actions = {
         }
     },
 
-    //@todo please change .func to .action for constency reasons
+    //@todo please change .func to .action for consistency reasons
     "multicall" : function(undoObj, undo, at){
-        var q = undoObj.args;
-
-        var dUpdate = apf.xmldb.delayUpdate;
+        var i, l,
+            q       = undoObj.args,
+            dUpdate = apf.xmldb.delayUpdate;
         apf.xmldb.delayUpdate = true;
 
         // Set Calls
         if (!undo) {
-            for(var i = 0; i < q.length; i++) {
+            for (i = 0, l = q.length; i < l; i++) {
                 if (!q[i].extra)
                     q[i].extra = {};
                 //#ifdef __WITH_RDB
@@ -247,7 +247,7 @@ apf.actiontracker.actions = {
         }
         // Undo Calls
         else {
-            for (var i = q.length - 1; i >= 0; i--)
+            for (i = q.length - 1; i >= 0; i--)
                 apf.actiontracker.actions[q[i].action](q[i], true, at);
         }
 

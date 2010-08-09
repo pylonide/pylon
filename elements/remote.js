@@ -144,17 +144,17 @@
 apf.remote = function(struct, tagName){
     this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
     
-    this.lookup              = {};
-    this.select              = [];
-    this.$sessions            = {};
-    this.rdbQueue            = {};
-    this.queueTimer          = null;
-    this.pendingTerminations = {};
+    this.lookup     = {};
+    this.select     = [];
+    this.$sessions  = {};
+    this.rdbQueue   = {};
+    this.$queueTimer = null;
 };
 
 apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
 apf.remote.SESSION_STARTED    = 0x0002; //Session is started
 apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
+apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch processing
 
 (function(){
     //#ifdef __WITH_OFFLINE
@@ -202,8 +202,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         this.transport.addEventListener("disconnect", function() {
             var uri, oSession;
             for (uri in _self.$sessions) {
-                oSession       = _self.$sessions[uri];
-                oSession.state = apf.remote.SESSION_TERMINATED;
+                if (oSession = _self.$sessions[uri])
+                    oSession.state = apf.remote.SESSION_TERMINATED;
             }
         });
 
@@ -212,7 +212,9 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             var oData = typeof sData == "string" 
               ? apf.unserialize(sData) 
               : sData;
-            var oSession = _self.$sessions[e.uri], i = 0, l = oData.length;
+            var oSession = _self.$sessions[e.uri],
+                i        = 0,
+                l        = oData.length;
             
             for (; i < l; i++)
                 _self.$receiveChange(oData[i], oSession, e.annotator, e.callback);
@@ -222,7 +224,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             if (!e.uri)
                 return;
             
-            var model, uri = e.uri, oSession = _self.$sessions[e.uri];
+            var uri      = e.uri,
+                oSession = _self.$sessions[e.uri];
             //if document isn't passed this must be a join request from a peer
             if (!e.document) {
                 //#ifdef __DEBUG
@@ -323,7 +326,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             return false;
         }
         
-        oSession.state    = apf.remote.SESSION_STARTED;
+        oSession.state = apf.remote.SESSION_STARTED;
         if (basetime && !oSession.basetime)
             oSession.basetime = basetime;
         
@@ -333,10 +336,15 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     }
 
     this.$queueMessage = function(args, model, qHost){
+        var bProcess = (qHost === this);
+        if (bProcess)
+            clearTimeout(this.$queueTimer);
+
         if (!qHost.rdbQueue)
             qHost.rdbQueue = {};
 
-        var uri = model.src, oSession = this.$sessions[uri];
+        var uri      = model.src,
+            oSession = this.$sessions[uri];
         
         // #ifdef __DEBUG
         if (!oSession) {
@@ -367,17 +375,25 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             args      : args,
             currdelta : new Date().getTime() - oSession.basetime
         });
+
+        if (bProcess) {
+            // attempt to batch consecutive calls...
+            var _self = this;
+            this.$queueTimer = $setTimeout(function() {
+                _self.$processQueue(qHost);
+            }, apf.remote.TIMEOUT);
+        }
     };
     
     this.$processQueue = function(qHost){
-        if (qHost === this)
-            clearTimeout(this.queueTimer);
+        if (qHost.$queueTimer)
+            clearTimeout(qHost.$queueTimer);
         if (apf.xmldb.disableRDB) 
             return;
 
-        var list;
-        for (var uri in qHost.rdbQueue) {
-            if (!(list = qHost.rdbQueue[uri]).length) 
+        var uri, list;
+        for (uri in qHost.rdbQueue) {
+            if (!(list = qHost.rdbQueue[uri]).length)
                 continue;
 
             //#ifdef __DEBUG
@@ -468,7 +484,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             else if (action == "replaceNode") {
                 q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
             }
-	        else if (action == "setValueByXpath") {}
+            else if (action == "setValueByXpath") {}
 
             q.unshift(xmlNode);
             
@@ -520,7 +536,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         //#ifdef __WITH_OFFLINE
         if (apf.offline && apf.offline.enabled) {
-            var queue = [];
+            var queue = [],
+                _self = this;
             apf.offline.addEventListener("afteronline", function(){
                 for (var i = 0, l = queue.length; i < l; i++)
                     _self.$receiveChange(queue[i]);
