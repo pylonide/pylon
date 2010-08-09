@@ -100,7 +100,7 @@ apf.upload.html5.isSupported = function() {
         // Insert the input inide the input container
         oCont.innerHTML = '<input id="' + uid + '_html5" ' +
             'style="width:100%;" type="file" accept="' + mimes.join(",") + '" ' +
-            (this.oUpload.multiselect ? 'multiple="multiple"' : '') + ' />';
+            (this.oUpload.multiple ? 'multiple="multiple"' : '') + ' />';
         oInput = document.getElementById(uid + "_html5");
 
         var _self = this;
@@ -170,7 +170,7 @@ apf.upload.html5.isSupported = function() {
             return;
         }
 
-        // Do we have upload progress support
+        // yay, upload progress support
         if (upload) {
             upload.onprogress = function(e) {
                 file.loaded = e.loaded - multipartSize;
@@ -179,46 +179,42 @@ apf.upload.html5.isSupported = function() {
         }
 
         xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
             var httpStatus;
-            if (xhr.readyState == 4) {
-                // Getting the HTTP status might fail on some Gecko versions
-                try {
-                    httpStatus = xhr.status;
-                }
-                catch (ex) {
-                    httpStatus = 0;
-                }
+            // Gecko workaround
+            try {
+                httpStatus = xhr.status;
+            }
+            catch (ex) {
+                httpStatus = 0;
+            }
+            var bError = (httpStatus >= 400 || httpStatus == 0);
 
-                file.status = apf.upload.DONE;
-                file.loaded = file.size;
-                _self.oUpload.$progress(file);
-                _self.oUpload.$fileDone(file, {
-                    response: xhr.responseText,
+            file.status = bError ? apf.upload.FAILED : apf.upload.DONE;
+            file.loaded = bError ? 0 : file.size;
+            _self.oUpload.$progress(file);
+            _self.oUpload.$fileDone(file, {
+                response: xhr.responseText,
+                status  : httpStatus
+            });
+
+            // Is error status
+            if (bError) {
+                apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
+
+                _self.oUpload.dispatchEvent("error", {
+                    code    : apf.upload.ERROR_CODES.HTTP_ERROR,
+                    message : "HTTP Error: " + xhr.responseText,
+                    file    : file,
                     status  : httpStatus
                 });
-
-                // Is error status
-                if (httpStatus >= 400 || httpStatus == 0) {
-		            apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
-
-                    _self.oUpload.dispatchEvent("error", {
-                        code    : apf.upload.ERROR_CODES.HTTP_ERROR,
-                        message : "HTTP Error: " + xhr.responseText,
-                        file    : file,
-                        status  : httpStatus
-                    });
-                }
             }
         };
 
         xhr.open("post", this.oUpload.$buildUrl(this.oUpload.target,
             {name : file.target_name || file.name}));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
-
-        // Set custom headers
-        //plupload.each(up.settings.headers, function(value, name) {
-        //    xhr.setRequestHeader(name, value);
-        //});
+        //@todo set custom headers
 
         nativeFile = html5files[file.id];
 

@@ -57,7 +57,7 @@
  *   apf.upload.STARTED   Upload process is running
  * @attribute {Number}  chunksize    the size of each chunk of data that is uploaded via the html5 upload control.
  * @attribute {Number}  maxfilesize  the maximum file size of a single file.
- * @attribute {Boolean} multiselect  whether the user can select multiple files from the browse dialog.
+ * @attribute {Boolean} multiple     whether the user can select multiple files from the browse dialog.
  * @attribute {String}  filedataname the name of the POST variable in the upload request which is send to the server.
  * @attribute {String}  target       the url that the POST request is sent to.
  * @attribute {String}  filter       the file filter used in the browse dialog using wildcards. Default is *.*.
@@ -220,18 +220,18 @@ apf.upload.ERROR_CODES = {
     this.state        = constants.STOPPED;
     this.chunksize    = 0;
     this.maxfilesize  = 1073741824; //"1gb"
-    this.multiselect  = true;
+    this.multiple     = true;
     this.multipart    = true;
     this.filedataname = "Filedata";
 
     this.$method      = null;
     this.$filter      = [];
 
-    this.$booleanProperties["multiselect"] = true;
+    this.$booleanProperties["multiple"]    = true;
     this.$booleanProperties["multipart"]   = true;
 
     this.$supportedProperties.push("state", "total", "chunksize", "maxfilesize",
-        "multiselect", "filedataname", "target", "filter", "multipart", "size",
+        "multiple", "filedataname", "target", "filter", "multipart", "size",
         "loaded", "percent", "bitrate", "uploaded", "failed", "queued", "button",
         "model");
 
@@ -240,10 +240,6 @@ apf.upload.ERROR_CODES = {
         // Get start time to calculate bps
         if (this.state & constants.STARTED)
             startTime = (+new Date());
-    };
-
-    this.$propHandlers["total"] = function(value) {
-        //todo
     };
 
     this.$propHandlers["chunksize"] = function(value) {
@@ -385,15 +381,14 @@ apf.upload.ERROR_CODES = {
         this.setProperty("size",     size);
         this.setProperty("loaded",   loaded);
         this.setProperty("uploaded", uploaded);
-        this.setProperty("failed",   uploaded);
+        this.setProperty("failed",   failed);
         this.setProperty("queued",   queued);
         this.setProperty("percent",  percent);
         this.setProperty("bitrate",  bitrate);
     }
 
-    function nextQueue() {
-        var file,
-            files = this.$files.toArray();
+    function nextQueue(file) {
+        var files = this.$files.toArray();
         if (this.state & constants.STARTED && fileIndex < files.length) {
             file = files[fileIndex++];
             if (file.status & constants.QUEUED)
@@ -401,10 +396,10 @@ apf.upload.ERROR_CODES = {
             else
                 nextQueue.call(this);
         }
-        else {
-			this.dispatchEvent("uploaded", {
-			    files : files
-			});
+        else if (!(this.state & constants.STOPPED)) {
+            this.dispatchEvent("uploaded", {
+                files : files
+            });
             this.stop();
         }
     }
@@ -461,11 +456,13 @@ apf.upload.ERROR_CODES = {
             }
 
             // Add valid file to list
+            if (!this.multiple)
+                this.$files.reset();
             this.$files.create(file);
             count++;
         }
 
-		this.dispatchEvent("queue", {files: selected_files});
+        this.dispatchEvent("queue", {files: selected_files});
 
         // Only refresh if any files where added
         if (count) {
@@ -488,7 +485,7 @@ apf.upload.ERROR_CODES = {
         file.status   = constants.DONE;
         file.response = e.response;
         this.$progress(file);
-        nextQueue.call(this);
+        nextQueue.call(this, file);
     };
 
     this.$fileRemove = function(file) {
@@ -540,6 +537,10 @@ apf.upload.ERROR_CODES = {
     this.stop = function() {
        if (!(this.state & constants.STOPPED))
            this.setProperty("state", constants.STOPPED);
+    };
+
+    this.remove = function(oFile) {
+        console.log(oFile);
     };
 
     this.addEventListener("error", function(e) {
@@ -595,8 +596,6 @@ apf.upload.files = function(oUpload, model) {
             else
                 model.id = model.name = sModel;
         }
-        // set the root node for this model
-        model.load("<xmpp/>");
     }
     //#ifdef __DEBUG
     if (!model) {
@@ -708,6 +707,12 @@ apf.upload.files = function(oUpload, model) {
         for (i in oFiles)
             a.push(oFiles[i].name);
         return a.join("|");
+    };
+
+    this.reset = function() {
+        model.load("<files/>");
+        oFiles = {};
+        aFiles = [];
     };
 };
 

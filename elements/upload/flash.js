@@ -60,8 +60,7 @@ apf.upload.flash.isSupported = function() {
             file = files.get(o.id);
         switch (name) {
             case "load":
-                var oBtn    = this.oUpload.$button.$ext,
-                    filter  = this.oUpload.$filter,
+                var filter  = this.oUpload.$filter,
                     oFilter = null;
                 // get filter to look like: 'Images (*.jpg, *.jpeg, *.gif, *.png)': '*.jpg; *.jpeg; *.gif; *.png'
                 if (filter.length) {
@@ -71,7 +70,7 @@ apf.upload.flash.isSupported = function() {
 
                 apf.flash.remote(this.$player, "initialize", {
                     typeFilter     : oFilter,
-                    multiple       : this.oUpload.multiselect,
+                    multiple       : this.oUpload.multiple,
                     queued         : 1,
                     url            : this.oUpload.target,
                     method         : "post",
@@ -122,20 +121,21 @@ apf.upload.flash.isSupported = function() {
                 break;
             case "fileComplete":
                 //Function to execute when a file is uploaded or failed with an error.
-                file.status = apf.upload.DONE;
-                file.loaded = file.size;
-                this.oUpload.$progress(file);
-                
                 var httpStatus = o.response && o.response.error ? 500 : 200;
+
+                file.status = httpStatus == 500 ? apf.upload.FAILED : apf.upload.DONE;
+                file.loaded = httpStatus == 500 ? 0 : file.size;
+                this.oUpload.$progress(file);
                 this.oUpload.$fileDone(file, {
                     response: o.response ? o.response.text : "",
                     status  : httpStatus
                 });
+                
                 // Is error status
                 if (httpStatus >= 400) {
                     this.oUpload.dispatchEvent("error", {
                         code    : apf.upload.ERROR_CODES.HTTP_ERROR,
-                        message : "HTTP Error.",
+                        message : "HTTP Error: " + o.response.error + ", " + o.response.text,
                         file    : file,
                         status  : httpStatus
                     });
@@ -217,6 +217,10 @@ apf.upload.flash.isSupported = function() {
 
     this.upload = function(file) {
         apf.flash.remote(this.$player, "fileStart", file.id);
+    };
+
+    this.removeFile = function(file) {
+        apf.flash.remote(this.$player, "fileRemove", file.id);
     };
 }).call(apf.upload.flash.prototype = new apf.Class());
 // #endif
