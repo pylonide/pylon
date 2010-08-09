@@ -2461,7 +2461,7 @@ apf.lm_exec = new (function(){
         
         if (editMode !== false) {
             return '<' + (options && options.multiline ? 'div style="display:inline-block"' : 'span') 
-              + ' class="liveEdit' + (!res && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
+              + ' class="liveEdit' + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? (m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m 
