@@ -1125,7 +1125,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.has  = 
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//node()[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("self::"), this.$local, this);
     }
     
     this.filter = function(filter){
