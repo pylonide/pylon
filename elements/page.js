@@ -411,7 +411,7 @@ apf.page = function(struct, tagName){
             
             //#ifdef __ENABLE_TAB_CLOSEBTN
             var closebtn = this.getAttribute("closebtn");
-            if ((apf.isTrue(closebtn) || (this.parentNode.buttons.indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
+            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn)))) {
                 var btncontainer = this.parentNode.$getLayoutNode("button", "container");
 
                 this.parentNode.$getNewContext("btnclose");
