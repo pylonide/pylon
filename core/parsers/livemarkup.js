@@ -2469,7 +2469,7 @@ apf.lm_exec = new (function(){
               + (options
                 ? ' options="' + apf.serialize(options).replace(/"/g, "&quot;").escapeHTML() + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + (res || options.initial || "&nbsp;") 
+                : "") + '>' + (res || options && options.initial || "&nbsp;") 
               + '</' + (options && options.multiline ? 'div' : 'span') + '>';
         }
         else {
