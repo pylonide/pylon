@@ -240,11 +240,13 @@ apf.page = function(struct, tagName){
     this.$position = 0;
     this.$first = function(remove){
         if (remove) {
+            this.$isFirst  = false;
             this.$position -= 1;
             this.parentNode.$setStyleClass(this.$button, "",
                 ["firstbtn", "firstcurbtn"]);
         }
         else {
+            this.$isFirst  = true;
             this.$position = this.$position | 1;
             this.parentNode.$setStyleClass(this.$button, "firstbtn"
                 + (this.parentNode.$activepage == this ? " firstcurbtn" : ""));
@@ -253,10 +255,12 @@ apf.page = function(struct, tagName){
 
     this.$last = function(remove){
         if (remove) {
+            this.$isLast   = false;
             this.$position -= 2;
             this.parentNode.$setStyleClass(this.$button, "", ["lastbtn"]);
         }
         else {
+            this.$isLast   = true;
             this.$position = this.$position | 2;
             this.parentNode.$setStyleClass(this.$button, "lastbtn");
         }
@@ -309,7 +313,7 @@ apf.page = function(struct, tagName){
         }
 
         if (this.parentNode.$hasButtons) {
-            if (this.$position > 0)
+            if (this.$isFirst)
                 this.parentNode.$setStyleClass(this.$button, "firstcurbtn");
             this.parentNode.$setStyleClass(this.$button, "curbtn");
         }
@@ -466,15 +470,12 @@ apf.page = function(struct, tagName){
             .$getLayoutNode("page", "container", this.$ext);
         //if (this.$int)
             //this.$int.setAttribute("id", this.$int.getAttribute("id"));
-    };
 
-    this.$loadAml = function(x){
-        //#ifdef __ENABLE_TAB_SCALE
-        //We're not parsing so the button is being added dynamically
-        if (!this.ownerDocument.$domParser.$parseContext) {
-            
-        }
-        //#endif
+        //@todo this doesnt support hidden nodes.
+        if (this.$isLast)
+            this.$last();
+        if (this.$isFirst)
+            this.$first();
     };
 
     this.$destroy = function(){

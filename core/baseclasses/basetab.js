@@ -1128,9 +1128,9 @@ apf.BaseTab = function(){
         while (rn && !rn.$last)
             rn = rn.previousSibling;
 
-        if (this.firstChild == amlNode && amlNode.nextSibling)
+        if (this.firstChild == amlNode && ln)
             ln && ln.$first();
-        if (this.lastChild == amlNode && amlNode.previousSibling)
+        if (this.lastChild == amlNode && rn)
             rn && rn.$last();
 
         if (this.$activepage == amlNode) {
@@ -1168,19 +1168,16 @@ apf.BaseTab = function(){
             return;
 
         if (!e.$beforeNode) {
-            var lastChild;
-            if (lastChild = this.lastChild) {
-                if (lastChild.nodeType != 1)
-                    lastChild = lastChild.previousSibling;
-                if (lastChild)
-                    lastChild.$last(true);
-            }
+            var lastChild, pg = this.getPages();
+            if (lastChild = pg[pg.length - 1])
+                lastChild.$last(true);
             amlNode.$last();
         }
-
-        if (!this.firstChild || e.$beforeNode == this.firstChild) {
-            if (this.firstChild)
-                this.firstChild.$first(true);
+    
+        var p = this.getPage(0); //@todo $beforeNode doesnt have to be a page
+        if (!p || e.$beforeNode == p) {
+            if (p)
+                p.$first(true);
             amlNode.$first();
         }
 
@@ -1414,15 +1411,10 @@ apf.BaseTab = function(){
             this.$int = this.oPages;
 
             //Build children
-            nodes = this.childNodes;
-            for (j = 0, i = 0, l = nodes.length; i < l; i++) {
-                if ("page|case".indexOf((node = nodes[i]).localName) > -1) {
-                    //Set first page marker
-                    if (j++ == 0)
-                        node.$first();
-                    if (j == l)
-                        node.$last();
-                }
+            nodes = this.getPages();
+            if (nodes.length) {
+                nodes[0].$first();
+                (node = nodes[nodes.length - 1]).$last();
             }
         }
 
