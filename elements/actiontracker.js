@@ -98,7 +98,7 @@
  */
 apf.actiontracker = function(struct, tagName){
     this.$init(tagName || "actiontracker", apf.NODE_HIDDEN, struct);
-    
+
     this.$undostack = [];
     this.$redostack = [];
     this.$execstack = [];
@@ -136,7 +136,7 @@ apf.actiontracker = function(struct, tagName){
     this.$handlePropSet = function(prop, value, force){
         if (this.$booleanProperties[prop])
             value = apf.isTrue(value);
-        
+
         //Read only properties
         switch (prop) {
             case "undolength":
@@ -155,7 +155,7 @@ apf.actiontracker = function(struct, tagName){
                     change.call(this, d, false, true);
                 else if (d < 0)
                     change.call(this, -1 * d);
-                
+
                 break;
             case "length":
                 this.length = this.undolength + this.redolength;
@@ -169,12 +169,12 @@ apf.actiontracker = function(struct, tagName){
                 this[prop] = value;
         }
     };
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode)
             this.parentNode.$at = this;
     });
-    
+
     //#ifdef __ENABLE_ACTIONTRACKER_HTML5
     this.item = function(index){
         if (index < this.$undostack.length)
@@ -182,34 +182,34 @@ apf.actiontracker = function(struct, tagName){
 
         return this.$redostack[index - this.$undostack.length];
     }
-    
+
     this.add = function(data, title){
         throw new Error("Not implemented yet");
     }
-    
+
     this.remove = function(index){
         throw new Error("Not implemented yet");
     }
-    
+
     this.clearUndo = function(){
         this.setProperty("undolength", this.$undostack.length = 0);
         //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
         this.setProperty("length", this.$redostack.length);
         //#endif
-        
+
         this.dispatchEvent("afterchange", {action: "clear-undo"});
     }
-    
+
     this.clearRedo = function(){
         this.setProperty("redolength", this.$redostack.length = 0);
         //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
         this.setProperty("length", this.$undostack.length);
         //#endif
-        
+
         this.dispatchEvent("afterchange", {action: "clear-redo"});
     }
     //#endif
-    
+
     /**
      * Adds a new action handler which can be used by any actiontracker.
      * @param {String} action Specifies the name of the action
@@ -293,7 +293,7 @@ apf.actiontracker = function(struct, tagName){
         //#endif
 
         //Respond
-        if (UndoObj.multiple) 
+        if (UndoObj.multiple)
             this.$addToQueue(UndoObj.multiple, false, true);
         else
             this.$addToQueue(UndoObj, false);
@@ -301,7 +301,7 @@ apf.actiontracker = function(struct, tagName){
         //Reset Redo Stack
         this.$redostack.length = 0;
         this.setProperty("redolength", this.$redostack.length);
-        
+
         //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
         this.setProperty("length", this.$undostack.length);
         //#endif
@@ -322,9 +322,9 @@ apf.actiontracker = function(struct, tagName){
         ]);
         this.$undostack.push(UndoObj);
         this.setProperty("undolength", this.$undostack.length);
-        
+
         //@todo reset redo here?
-        
+
         //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
         this.setProperty("length", this.$undostack.length);
         //#endif
@@ -354,16 +354,16 @@ apf.actiontracker = function(struct, tagName){
                 grouped action to parent ActionTracker
             */
             //parent.$addActionGroup(this.$undostack, stackRPC);
-            
+
             //Reset Stacks
             this.reset();
         }
     };
-    
+
     //#ifdef __ENABLE_ACTIONTRACKER_TRANSACTIONS
     /**
      * Starts recording a transaction. The transaction can either be committed
-     * or rolled back. Changes won't be executed until committed for xml data 
+     * or rolled back. Changes won't be executed until committed for xml data
      * nodes. For apf based data nodes (i.e. aml nodes) changes are executed
      * immediately and reverted on rollback.
      * @see element.actiontracker.method.commit
@@ -380,7 +380,7 @@ apf.actiontracker = function(struct, tagName){
                 //throw new Error("Existing transaction found!");
                 return;
             }
-            
+
             dataNode.$stack = this.$transtack[id] = [];
 
             dataNode.addEventListener("DOMCharacterDataModified", domCharMod);
@@ -391,35 +391,35 @@ apf.actiontracker = function(struct, tagName){
         //Assuming normal actiontracker use
         else {
             //@todo (for mike) for the new rdb method to work properly, it should
-            //be really easy to add xml changes to the actiontracker using this 
+            //be really easy to add xml changes to the actiontracker using this
             //begin commit method. We could add an at.exec(function(){}) that lasts
             //during the length of the function. Point is that we need to change
             //the xmldb to somehow find the right actiontracker, because we don't
             //have mutation events yet. One way is to add an a_at="" attribute
-            //that can be looked up to find actiontracker listeners. 
-            
+            //that can be looked up to find actiontracker listeners.
+
             //Set listener
-            //if (dataNode) 
+            //if (dataNode)
                 //apf.xmldb.setNodeListener();
-            
+
             id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
             if (this.$transtack[id] && !bClear) {
                 //throw new Error("Existing transaction found!");
                 return;
             }
-            
+
             this.$transtack[id] = [];
             this.$transtack[id].$native = true;
-            
+
             if (!this.$execute) {
                 this.$execute = this.execute;
                 this.execute = function(options){
                     var inTrans = false;
-                    
+
                     //Find transaction
                     if (options.selNode)
                         inTrans = this.$transtack[options.selNode.getAttribute(apf.xmldb.xmlIdTag)];
-                    
+
                     //Either stack or execute immediately
                     if (inTrans)
                         inTrans.push(options);
@@ -429,7 +429,7 @@ apf.actiontracker = function(struct, tagName){
             }
         }
     }
-    
+
     /**
      * Rolls back a transaction
      */
@@ -438,9 +438,9 @@ apf.actiontracker = function(struct, tagName){
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
             id = dataNode.$uniqueId;
             var stack = this.$transtack[id];
-            if (!stack) 
+            if (!stack)
                 return;
-            
+
             //undo all changes (in reverse order)
             for (var s, i = stack.length - 1; i >= 0; i--) {
                 s = stack[i];
@@ -455,10 +455,10 @@ apf.actiontracker = function(struct, tagName){
         }
         else
             id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
-        
+
         delete this.$transtack[id];
     }
-    
+
     /**
      * Commits a transaction
      */
@@ -491,7 +491,7 @@ apf.actiontracker = function(struct, tagName){
         else {
             id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
             stack = this.$transtack[id];
-            
+
             if (stack.length)
                 this.execute({
                     xmlNode : dataNode,
@@ -499,15 +499,15 @@ apf.actiontracker = function(struct, tagName){
                     args    : stack
                 });
         }
-        
+
         delete this.$transtack[id];
     }
-    
+
     this.pause = function(dataNode, bContinue){
         var id = dataNode && (dataNode.$regbase || dataNode.$regbase === 0)
             ? dataNode.$uniqueId
             : dataNode.getAttribute(apf.xmldb.xmlIdTag);
-        
+
         var stack = this.$transtack[id];
         if (!stack) {
             //#ifdef __DEBUG
@@ -529,7 +529,7 @@ apf.actiontracker = function(struct, tagName){
             dataNode.removeEventListener("DOMNodeRemoved",           domNodeRem);
         }
     }
-    
+
     /**
      * Executes a function as a single transaction
      */
@@ -538,7 +538,7 @@ apf.actiontracker = function(struct, tagName){
         func();
         this.commit(dataNode);
     }
-    
+
     var domCharMod = function(e){
         if (e.$didtrans || !e.currentTarget.$amlLoaded)
             return;
@@ -560,12 +560,12 @@ apf.actiontracker = function(struct, tagName){
                     oldValue : e.prevValue
                 }
             });
-        
+
         e.$didtrans = true;
     };
-    
+
     var domNodeIns = function(e){
-        if (e.$didtrans) 
+        if (e.$didtrans)
             return;
 
         var n = e.currentTarget;
@@ -596,9 +596,9 @@ apf.actiontracker = function(struct, tagName){
 
         e.$didtrans = true;
     };
-    
+
     var domNodeRem = function(e){
-        if (e.$didtrans) 
+        if (e.$didtrans)
             return;
 
         this.$stack.push({
@@ -649,7 +649,7 @@ apf.actiontracker = function(struct, tagName){
             redoStack = undo ? this.$redostack : this.$undostack; //local vars switch
 
         if (!undoStack.length) return;
-        
+
         if (single) {
             var UndoObj = undoStack[id];
             if (!UndoObj) return;
@@ -673,7 +673,7 @@ apf.actiontracker = function(struct, tagName){
                 apf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
 
             if (!rollback) {
-                if (UndoObj.multiple) 
+                if (UndoObj.multiple)
                     this.$addToQueue(UndoObj.multiple, undo, true);
                 else
                     this.$addToQueue(UndoObj, undo);
@@ -783,16 +783,16 @@ apf.actiontracker = function(struct, tagName){
                     Clearing the execStack, none of the changes will be send to
                     the server. This seems the best way right now and is related
                     to the todo item above.
-                    
-                    @todo: Think about adding ignore-fail to settings and 
+
+                    @todo: Think about adding ignore-fail to settings and
                            actiontracker.
                 */
                 this.$execstack = [];
-                
-                var oError = new Error(apf.formatErrorString(0, this, 
+
+                var oError = new Error(apf.formatErrorString(0, this,
                     "Executing action",
                     "Error sending action to the server:\n"
-                    + (extra.url ? "Url:" + extra.url + "\n\n" : "") 
+                    + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
                 if ((UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
@@ -802,7 +802,7 @@ apf.actiontracker = function(struct, tagName){
                     bubbles : true
                 }, extra)) === false)
                     return;
-                    
+
                 throw oError;
             }
         }
@@ -815,7 +815,7 @@ apf.actiontracker = function(struct, tagName){
 
             //#ifdef __WITH_RDB
             //Send out the RDB message, letting friends know of our change
-            this.$processRdbQueue(UndoObj);
+            UndoObj.processRsbQueue();
             //#endif
 
             if (callback)
@@ -842,7 +842,7 @@ apf.actiontracker = function(struct, tagName){
             //#endif
 
             //#ifdef __WITH_RDB
-            this.$clearRdbQueue(UndoObj);
+            UndoObj.clearRsbQueue();
             //#endif
 
             return;
@@ -855,8 +855,8 @@ apf.actiontracker = function(struct, tagName){
             for (var i = 0; i < UndoObj.length; i++) {
                 undoObj = UndoObj[i];
                 this.$execstack.unshift({
-                    undoObj : (undoObj.tagName 
-                        ? undoObj 
+                    undoObj : (undoObj.tagName
+                        ? undoObj
                         : new apf.UndoData(undoObj, this)).preparse(undo, this),
                     undo   : undo
                 });
@@ -968,38 +968,6 @@ apf.actiontracker = function(struct, tagName){
         this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this, callback);
     };
     //#endif
-
-    //#ifdef __WITH_RDB
-    this.$processRdbQueue = function(UndoObj){
-        if (!this.rdbQueue)
-            this.rdbQueue = {};
-        clearTimeout(this.$queueTimer);
-
-        // try to batch RDB calls
-        var i,
-            _self = this;
-        if (UndoObj.rdbModel)
-            this.rdbModel = UndoObj.rdbModel;
-        // merge queues
-        for (i in UndoObj.rdbQueue) {
-            if (!this.rdbQueue[i])
-                this.rdbQueue[i] = [];
-            this.rdbQueue[i] = this.rdbQueue[i].concat(UndoObj.rdbQueue[i]);
-        }
-        // after the merge, the local queue of the undo object can be cleared
-        UndoObj.rdbQueue = {}
-        this.$queueTimer = $setTimeout(function() {
-            _self.rdbModel.rdb.$processQueue(_self);
-        }, apf.remote.TIMEOUT);
-    };
-
-    this.$clearRdbQueue = function(UndoObj){
-        if (UndoObj)
-            UndoObj.rdbQueue = {};
-        this.rdbQueue = {};
-        this.rdbModel = null;
-    };
-    //#endif
 }).call(apf.actiontracker.prototype = new apf.AmlElement());
 
 apf.aml.setElement("actiontracker", apf.actiontracker);
@@ -1013,7 +981,7 @@ apf.actiontracker = function(){
             apf.actiontracker.actions[options.action](UndoObj, false, this);
         return UndoObj;
     };
-    
+
     this.reset = function(){}
 }
 #endif */

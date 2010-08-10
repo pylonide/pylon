@@ -246,6 +246,19 @@ apf.UndoData = function(settings, at){
     };
     //#endif
 
+    //#ifdef __WITH_RDB
+    //Send RDB Message..
+    this.processRsbQueue = function(){
+        if (this.rdbModel)
+            this.rdbModel.rdb.$processQueue(this);
+    };
+
+    this.clearRsbQueue = function(){
+        this.rdbQueue =
+        this.rdbModel = null;
+    };
+    //#endif
+
     /**
      * Save the change to a data source.
      * @param {Boolean} undo whether the change is undone.
@@ -267,7 +280,7 @@ apf.UndoData = function(settings, at){
 
         if (!dataInstruction) {
             //#ifdef __WITH_RDB
-            at.$processRdbQueue(this);
+            this.processRsbQueue();
             //#endif
             return at.$queueNext(this);
         }
@@ -275,10 +288,10 @@ apf.UndoData = function(settings, at){
         this.state = undo ? "restoring" : "saving";
 
         if (!options.asyncs) { //Precall didnt contain any async calls
-            return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode}, 
+            return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode},
                 this, callback);
         }
-        
+
         options.ignoreOffline = true;
         apf.saveData(dataInstruction, options);
     };
@@ -295,14 +308,14 @@ apf.UndoData = function(settings, at){
             return this;
 
         options = apf.extend({
-            xmlNode   : this.action == "multicall" 
+            xmlNode   : this.action == "multicall"
               ? this.args[0].xmlNode
               : this.selNode || this.xmlNode,
             userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             undo      : undo,
             precall   : true,
-            
+
             //Callback is only for async calls
             callback  : function(data, state, extra){
                 if (options.asyncs) { //Set by apf.saveData
@@ -320,7 +333,7 @@ apf.UndoData = function(settings, at){
         //#endif
 
         apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
-        
+
         return this;
     };
 };
@@ -333,7 +346,7 @@ apf.actiontracker = function(){
             apf.actiontracker.actions[options.action](UndoObj, false, this);
         return UndoObj;
     };
-    
+
     this.reset = function(){}
 }
 

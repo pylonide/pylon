@@ -156,7 +156,7 @@ apf.actiontracker.actions = {
         at[undo ? "undo" : "redo"](undoObj.$undostack.length, false,
             undoObj.$undostack, undoObj.$redostack);
     },
-    
+
     /*"setProperty" : function(undoObj, undo){
         var q = undoObj.args;//amlNode, name, value
 
@@ -164,26 +164,26 @@ apf.actiontracker.actions = {
             undoObj.extra.oldValue = q[0][q[1]];
             q[0].setProperty(q[1], q[2], q[3], q[4]);
         }
-        // Undo 
+        // Undo
         else {
             q[0].setProperty(q[1], undoObj.extra.oldValue);
         }
     },*/
-    
+
     "setValueByXpath" : function(undoObj, undo){
         var newNode, q = undoObj.args;//xmlNode, value, xpath
-        
+
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
             if (newNode = undoObj.extra.newNode) {
                 if (newNode.nodeType == 2) {
-                    apf.xmldb.setAttribute(undoObj.extra.ownerElement, 
+                    apf.xmldb.setAttribute(undoObj.extra.ownerElement,
                       newNode.nodeName, newNode.nodeValue);
                     undoObj.extra.newNode = undoObj.extra.ownerElement
                       .getAttributeNode(newNode.nodeName);
                 }
                 else
-                    apf.xmldb.appendChild(undoObj.extra.parentNode, 
+                    apf.xmldb.appendChild(undoObj.extra.parentNode,
                         undoObj.extra.newNode, null, null, null, undoObj);
             }
             else {
@@ -194,11 +194,11 @@ apf.actiontracker.actions = {
                     newNodes : newNodes,
                     forceNew : q[3]
                 });
-    
+
                 newNode = undoObj.extra.newNode = newNodes[0];
                 if (newNode) {
                     if (newNode.nodeType == 2)
-                        undoObj.extra.ownerElement = newNode.ownerElement 
+                        undoObj.extra.ownerElement = newNode.ownerElement
                           || newNode.selectSingleNode("..");
                     else
                         undoObj.extra.parentNode = undoObj.extra.newNode.parentNode;
@@ -209,27 +209,27 @@ apf.actiontracker.actions = {
         else {
             if (newNode = undoObj.extra.newNode) {
                 if (newNode.nodeType == 2)
-                    apf.xmldb.removeAttribute(undoObj.extra.ownerElement, 
+                    apf.xmldb.removeAttribute(undoObj.extra.ownerElement,
                       newNode.nodeName, null, undoObj);
                 else
                     apf.xmldb.removeNode(undoObj.extra.newNode, null, undoObj);
             }
             else
-                apf.setNodeValue(undoObj.extra.appliedNode, 
+                apf.setNodeValue(undoObj.extra.appliedNode,
                     undoObj.extra.oldValue, true, {undoObj: undoObj});
         }
     },
 
-    //@todo please change .func to .action for consistency reasons
+    //@todo please change .func to .action for constency reasons
     "multicall" : function(undoObj, undo, at){
-        var i, l,
-            q       = undoObj.args,
-            dUpdate = apf.xmldb.delayUpdate;
+        var q = undoObj.args;
+
+        var dUpdate = apf.xmldb.delayUpdate;
         apf.xmldb.delayUpdate = true;
 
         // Set Calls
         if (!undo) {
-            for (i = 0, l = q.length; i < l; i++) {
+            for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
                     q[i].extra = {};
                 //#ifdef __WITH_RDB
@@ -247,7 +247,7 @@ apf.actiontracker.actions = {
         }
         // Undo Calls
         else {
-            for (i = q.length - 1; i >= 0; i--)
+            for (var i = q.length - 1; i >= 0; i--)
                 apf.actiontracker.actions[q[i].action](q[i], true, at);
         }
 

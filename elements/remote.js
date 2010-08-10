@@ -23,24 +23,24 @@
 
 /**
  * Element allowing data synchronization between multiple clients using the same
- * application or application part. This element is designed as thecore of 
+ * application or application part. This element is designed as thecore of
  * collaborative application logic for Ajax.org Platform. The children of this
  * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
  * models to this element, all changes to their data will be streamed through
- * this element to all listening client over a choosen protocol. 
+ * this element to all listening client over a choosen protocol.
  * Example:
  * This example shows a small application which is editable by all clients that
  * have started it. Any change to the data is synchronized to all participants.
  * <code>
  *  <a:teleport>
  *      <a:xmpp id="myXMPP"
- *        url           = "http://ajax.org:5280/http-bind" 
- *        model         = "mdlRoster" 
- *        connection    = "bosh" 
+ *        url           = "http://ajax.org:5280/http-bind"
+ *        model         = "mdlRoster"
+ *        connection    = "bosh"
  *  </a:teleport>
- *  
+ *
  *  <a:remote transport="myXMPP" id="rmtPersons" />
- *  
+ *
  *  <a:model id="mdlPersons" remote="rmtPersons">
  *      <persons>
  *          <person id="1">mike</person>
@@ -58,7 +58,7 @@
  *
  *  <a:button action="remove" target="lstPersons">Remove</a:button>
  *  <a:button action="rename" target="lstPersons">Rename</a:button>
- *  
+ *
  *  <a:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
  *      Login
  *  </a:button>
@@ -70,16 +70,16 @@
  * and data loss by either user overwriting records edited during the same period.
  * Ajax.org Platform has built in support for optimistic and pessimistic locking
  * in smartbindings. For more information please see {@link term.locking}.
- * 
+ *
  * Advanced:
- * There is a very small theoretical risk that a user initiates and finishes an 
+ * There is a very small theoretical risk that a user initiates and finishes an
  * action during the latency period of the rdb communication. Usually this
  * latency is no more than 100 to 300ms which is near impossible for such action
  * to be performed. Therefor this is deemed acceptable.
- * 
+ *
  * Working in a multi user environment usually implies that data has a high
  * probability of changing. This might become a problem when syncing offline
- * changes after several hours. This should be a consideration for the 
+ * changes after several hours. This should be a consideration for the
  * application architect.
  *
  * Another concern for offline use is the offline messaging feature of certain
@@ -88,13 +88,13 @@
  * For instance 10 minutes. An accumulation of change messages would create a
  * serious scaling problem and is not preferred. apf.offline has built in support
  * for this type of timeout. By setting the rdb-timeout attribute it is aware
- * of when the server has timed out. When this timeout is reached the application 
+ * of when the server has timed out. When this timeout is reached the application
  * will reload all its data from the server and discard all offline rdb
  * messages before reconnecting to the server.
  *
  * @attribute {String} transport the name of the teleport element that provides a
  * bidirectional connection to (a pool of) other clients.
- * 
+ *
  * @see element.auth
  *
  * @define remote
@@ -143,18 +143,18 @@
  */
 apf.remote = function(struct, tagName){
     this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
-    
-    this.lookup     = {};
-    this.select     = [];
-    this.$sessions  = {};
-    this.rdbQueue   = {};
-    this.$queueTimer = null;
+
+    this.lookup              = {};
+    this.select              = [];
+    this.$sessions            = {};
+    this.rdbQueue            = {};
+    this.queueTimer          = null;
+    this.pendingTerminations = {};
 };
 
 apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
 apf.remote.SESSION_STARTED    = 0x0002; //Session is started
 apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
-apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch processing
 
 (function(){
     //#ifdef __WITH_OFFLINE
@@ -167,7 +167,7 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
     }, this.$attrExcludePropBind);
 
     this.$supportedProperties.push("transport");
-    
+
     /* @todo move this to the rdb-xmpp transport layer
     function checkProtocol(uri) {
         if (uri.indexOf("rdb__") === 0)
@@ -192,30 +192,28 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
                 oSession = _self.$sessions[uri];
                 if (oSession.state != apf.remote.SESSION_STARTED)
                     continue;
-                
+
                 this.join(uri, function(uri, iTime) {
                     _self.$startSession(uri, iTime);
                 });
             }
         });
-        
+
         this.transport.addEventListener("disconnect", function() {
             var uri, oSession;
             for (uri in _self.$sessions) {
-                if (oSession = _self.$sessions[uri])
-                    oSession.state = apf.remote.SESSION_TERMINATED;
+                oSession       = _self.$sessions[uri];
+                oSession.state = apf.remote.SESSION_TERMINATED;
             }
         });
 
         this.transport.addEventListener("update", function(e){
             var sData = e.message.args ? [e.message] : e.message;
-            var oData = typeof sData == "string" 
-              ? apf.unserialize(sData) 
+            var oData = typeof sData == "string"
+              ? apf.unserialize(sData)
               : sData;
-            var oSession = _self.$sessions[e.uri],
-                i        = 0,
-                l        = oData.length;
-            
+            var oSession = _self.$sessions[e.uri], i = 0, l = oData.length;
+
             for (; i < l; i++)
                 _self.$receiveChange(oData[i], oSession, e.annotator, e.callback);
         });
@@ -223,9 +221,8 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
         this.transport.addEventListener("join", function(e) {
             if (!e.uri)
                 return;
-            
-            var uri      = e.uri,
-                oSession = _self.$sessions[e.uri];
+
+            var model, uri = e.uri, oSession = _self.$sessions[e.uri];
             //if document isn't passed this must be a join request from a peer
             if (!e.document) {
                 //#ifdef __DEBUG
@@ -234,20 +231,20 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
                                   message originated from the server something \
                                   has gone wrong.");
                 //#endif
-                
+
                 return _self.dispatchEvent("joinrequest", e);
             }
-            
+
             //Create sesssion if it doesn't exist
             if (!oSession)
                 oSession = _self.createSession(uri, null, null, e.document, e.basetime);
         });
-        
+
         this.transport.addEventListener("leave", function(e) {
             _self.endSession(e.uri);
         });
     };
-    
+
     /**
      * Create a new RDB session based on a URI.
      * @param uri
@@ -256,23 +253,23 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
      */
     this.createSession = function(uri, model, xpath, doc, iTime){
         apf.console.log("Creating session for " + uri);
-        
+
         if (!model)
             model = this.dispatchEvent("modelfind", {uri: uri});
         if (model) {
             delete model.src;
-            
+
             //@todo if this model is in a session stop that session
         }
         else
             model = new apf.model(); //apf.nameserver.register("model", id, );
-        
+
         model.setProperty("remote", this);
         model.rdb = this;
         model.src = uri;
-        
+
         var oSession = this.$addSession(uri, model, xpath);
-        
+
         //We received the document and load it
         if (doc) {
             model.load(doc);
@@ -299,15 +296,15 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
     this.endSession = function(uri) {
         if (this.transport && this.transport.isConnected())
             this.transport.leave(uri);
-        
+
         this.$sessions[uri].state = apf.remote.SESSION_TERMINATED;
-        
+
         delete this.$sessions[uri];
     };
-    
+
     this.$addSession = function(uri, model, xpath){
         delete this.$sessions[uri];
-        
+
         return this.$sessions[uri] = {
             uri   : uri,
             model : model,
@@ -315,51 +312,46 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
             state : apf.remote.SESSION_INITED
         }
     }
-    
+
     this.$startSession = function(uri, basetime){
         var oSession = this.$sessions[uri];
-        
+
         if (!oSession) {
             //#ifdef __DEBUG
             apf.console.warn("Could not find RDB session to start " + uri);
             //#endif
             return false;
         }
-        
-        oSession.state = apf.remote.SESSION_STARTED;
+
+        oSession.state    = apf.remote.SESSION_STARTED;
         if (basetime && !oSession.basetime)
             oSession.basetime = basetime;
-        
+
         // #ifdef __DEBUG
         apf.console.log("session started: " + uri + ", " + oSession.basetime);
         // #endif
     }
 
     this.$queueMessage = function(args, model, qHost){
-        var bProcess = (qHost === this);
-        if (bProcess)
-            clearTimeout(this.$queueTimer);
-
         if (!qHost.rdbQueue)
             qHost.rdbQueue = {};
 
-        var uri      = model.src,
-            oSession = this.$sessions[uri];
-        
+        var uri = model.src, oSession = this.$sessions[uri];
+
         // #ifdef __DEBUG
         if (!oSession) {
             apf.console.error(apf.formatErrorString(0, this, "RDB: sending message",
-                "No RDB session found. Please make sure a session is created for this model: " 
+                "No RDB session found. Please make sure a session is created for this model: "
                 + model.serialize()));
             return false;
         }
         // #endif
-        
+
         if (!qHost.rdbQueue[uri]) {
             qHost.rdbQueue[uri] = [];
             qHost.rdbModel      = model;
         }
-        
+
         for (var node, i = 0, l = args.length; i < l; ++i) {
             if ((node = args[i]) && node.nodeType) {
                 //@todo some changes should not be sent to the server
@@ -375,24 +367,16 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
             args      : args,
             currdelta : new Date().getTime() - oSession.basetime
         });
-
-        if (bProcess) {
-            // attempt to batch consecutive calls...
-            var _self = this;
-            this.$queueTimer = $setTimeout(function() {
-                _self.$processQueue(qHost);
-            }, apf.remote.TIMEOUT);
-        }
     };
-    
+
     this.$processQueue = function(qHost){
-        if (qHost.$queueTimer)
-            clearTimeout(qHost.$queueTimer);
-        if (apf.xmldb.disableRDB) 
+        if (qHost === this)
+            clearTimeout(this.queueTimer);
+        if (apf.xmldb.disableRDB)
             return;
 
-        var uri, list;
-        for (uri in qHost.rdbQueue) {
+        var list;
+        for (var uri in qHost.rdbQueue) {
             if (!(list = qHost.rdbQueue[uri]).length)
                 continue;
 
@@ -405,7 +389,7 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
 
         qHost.rdbQueue = {};
     };
-    
+
     this.$receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
         if (apf.xmldb.disableRDB)
             return;
@@ -416,7 +400,7 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
             queue.push(oMessage);
             return;
         }
-        
+
         if (!oSession && oMessage.uri)
             oSession = this.$sessions[oMessage.uri];
         //#endif
@@ -431,11 +415,11 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
 
         if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
             return;
-            
+
         var model = oSession.model;
         if (!model) {
             //#ifdef __DEBUG
-            apf.console.warn("Remote Databinding Received: Could not find model while" 
+            apf.console.warn("Remote Databinding Received: Could not find model while"
                  + " receiving data for it with identifier '" + oMessage.model + "'");
             //#endif
             return;
@@ -450,7 +434,7 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
         oMessage.currdelta = oSession.basetime + parseInt(oMessage.currdelta);
 
         // #ifdef __DEBUG
-        apf.console.log("timestamp comparison (base: " + oSession.basetime + ") : " 
+        apf.console.log("timestamp comparison (base: " + oSession.basetime + ") : "
             + (new Date().toGMTString())
             + ", " + (new Date(oMessage.currdelta).toGMTString()));
         // #endif
@@ -484,10 +468,10 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
             else if (action == "replaceNode") {
                 q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
             }
-            else if (action == "setValueByXpath") {}
+	        else if (action == "setValueByXpath") {}
 
             q.unshift(xmlNode);
-            
+
             // pass the action to the actiontracker to execute it
             model.$at.execute({
                 action   : action,
@@ -523,10 +507,10 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
         if (oError)
             apf.console.error(oError.message)
     };
-    
+
     this.xmlToXpath = apf.xmlToXpath;
     this.xpathToXml = apf.xpathToXml;
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //#ifdef __DEBUG
         apf.console.info(this.id
@@ -536,8 +520,7 @@ apf.remote.TIMEOUT            = 200;    //Timeout in milliseconds for batch proc
 
         //#ifdef __WITH_OFFLINE
         if (apf.offline && apf.offline.enabled) {
-            var queue = [],
-                _self = this;
+            var queue = [];
             apf.offline.addEventListener("afteronline", function(){
                 for (var i = 0, l = queue.length; i < l; i++)
                     _self.$receiveChange(queue[i]);
