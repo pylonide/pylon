@@ -720,13 +720,16 @@ apf.BaseTab = function(){
      * @param {mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
-    this.remove = function(nameOrId){
+    this.remove = function(nameOrId, force){
         var page = typeof nameOrId == "object" 
             ? nameOrId 
             : this.$findPage(nameOrId);
         if (!page)
             return false;
-        
+
+        if (this.dispatchEvent("close", {page: page}) === false && !force)
+            return;
+
         //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale) {
             this.$scaleinit(page, "remove", function(){
@@ -741,7 +744,6 @@ apf.BaseTab = function(){
             //this.setScrollerState();
             // #endif
         }
-        
         return page;
     };
 
