@@ -1,0 +1,11 @@
+Each Flash project that is used by Ajax.org Platform, may be compiled with a Flash
+compiler like MTASC or the one bundled with the Flex SDK.
+
+We recommend to always use the latest versions of the compiler, so that your SWF
+files won't have issues running with the latest Flash runtimes.
+
+You can download MTASC for Flash 8 projects at
+ - http://www.mtasc.org
+
+You can download the Flex SDK from Adobe for Flash 9 and above at
+ - http://opensource.adobe.com/wiki/display/flexsdk/Downloads
