@@ -11,19 +11,19 @@
 
         <a:button id="btnSelect" width="200">Select Files</a:button>
 
-        <a:list id="lstFiles" model="mdlUpload" canrename="false" width="200">
+        <a:upload id="uplAvatar" 
+          model      = "mdlUpload"
+          button     = "btnSelect"
+          target     = "upload.php"
+          onerror    = "apf.console.log('ERROR EVENT RECEIVED', event)"
+          onqueue    = "apf.console.log('QUEUE EVENT RECEIVED', event)"
+          onuploaded = "apf.console.log('UPLOADED EVENT RECEIVED', event)" />
+        <br /><br />
+
+        <a:list id="lstFiles" model="mdlUpload" canrename="false" onremove="uplAvatar.remove(event)" width="200">
             <a:each match="[file]" />
             <a:caption match="[@name]" />
-        </a:list>
-
-        <a:upload id="uplAvatar" 
-          model  = "mdlUpload"
-          button = "btnSelect"
-          target = "http://localhost/platform/source/trunk/test/upload.php" 
-          onerror = "apf.console.log('ERROR EVENT RECEIVED')" 
-          onqueue = "apf.console.log('QUEUE EVENT RECEIVED')"
-          onuploaded = "apf.console.log('UPLOADED EVENT RECEIVED')" />
-        <br /><br />
+        </a:list><br />
 
         <a:progressbar
           width    = "200"
@@ -33,18 +33,18 @@
           visible  = "{uplAvatar.state == apf.upload.STARTED}">
         </a:progressbar>
 
-        <?lm
+        <!--?lm
             <div>
                 Upload state: {uplAvatar.state}<br />
                 Total Size: {uplAvatar.size}<br />
-                Total Number of files: {uplAvatar.loaded}<br />
+                Total Number of bytes loaded: {uplAvatar.loaded}<br />
                 Total Number of uploaded files: {uplAvatar.uploaded}<br />
                 Total Number of failed uploads: {uplAvatar.failed}<br />
                 Total Number of queued files: {uplAvatar.queued}<br />
                 Percentage of total upload: {uplAvatar.percent}<br />
                 Bitrate of current upload: {uplAvatar.bitrate}<br />
             </div>
-        ?>
+        ?-->
 
         <a:button id="btnUpload" onclick="uplAvatar.start()" width="150">Upload!</a:button>
     </body>

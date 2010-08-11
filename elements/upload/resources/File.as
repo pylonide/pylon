@@ -4,6 +4,7 @@
  * @licence     MIT Licence
  *
  * @author      Harald Kirschner <http://digitarald.de>
+ * @author      Mike de Boer <mike AT ajax DOT org>
  * @copyright   Authors
  */
 
@@ -18,18 +19,15 @@ package
     import flash.net.URLRequestMethod;
     import flash.net.URLVariables;
     
-    /**
-     * @author Harald Kirschner <mail [at] digitarald.de>
-     */
     public class File
     {
-        static var idStack:uint = 1;
+        public static var idStack:uint = 1;
         
-        static const STATUS_QUEUED:uint = 0;
-        static const STATUS_RUNNING:uint = 1;
-        static const STATUS_ERROR:uint = 2;
-        static const STATUS_COMPLETE:uint = 3;
-        static const STATUS_STOPPED:uint = 4;
+        public static const STATUS_QUEUED:uint = 0;
+        public static const STATUS_RUNNING:uint = 1;
+        public static const STATUS_ERROR:uint = 2;
+        public static const STATUS_COMPLETE:uint = 3;
+        public static const STATUS_STOPPED:uint = 4;
 
         public var id:uint = 0;
         

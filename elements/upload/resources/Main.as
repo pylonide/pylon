@@ -8,6 +8,7 @@
  * @author      Harald Kirschner <http://digitarald.de>
  * @author      Anders Rasmussen <aras@dr.dk>
  * @author      Valerio Proietti, <http://mad4milk.net>
+ * @author      Mike de Boer <mike AT ajax DOT org>
  * @copyright   Authors
  */
 
@@ -92,14 +93,13 @@ package
         
         private var buttonState:uint = 0;
         
-        const BUTTON_STATE_OVER = 1;
-        const BUTTON_STATE_DOWN = 2;
-        const BUTTON_STATE_DISABLED = 4;
+        public const BUTTON_STATE_OVER:uint = 1;
+        public const BUTTON_STATE_DOWN:uint = 2;
+        public const BUTTON_STATE_DISABLED:uint = 4;
     
         public function Main():void
         {
             playerID = loaderInfo.parameters.playerID;
-            
             if (stage)
                 init();
             else
@@ -175,7 +175,6 @@ package
             
             stage.addChild(buttonLoader);
             
-            
             buttonCursorSprite = new Sprite();
             buttonCursorSprite.graphics.beginFill(0xFFFFFF, 0.1);
             buttonCursorSprite.graphics.drawRect(0, 0, 1, 1);
@@ -190,22 +189,21 @@ package
             
             initButton();
             
-            verboseLog('initialized');
+            verboseLog('initialized, ' + fileList.length);
         }
         
         private function xSetOptions(options_override:Object = null):void
         {
-            if (options_override != null) {
-                for (var prop:String in options) {
-                    if (options_override.hasOwnProperty(prop)) {
-                        switch (prop) {
-                            case 'policyFile':
-                                if (options_override[prop] is String)
-                                    Security.loadPolicyFile(options_override[prop]);
-                                break;
-                        }
-                        options[prop] = options_override[prop];
+            if (options_override === null) return;
+            for (var prop:String in options) {
+                if (options_override.hasOwnProperty(prop)) {
+                    switch (prop) {
+                        case 'policyFile':
+                            if (options_override[prop] is String)
+                                Security.loadPolicyFile(options_override[prop]);
+                            break;
                     }
+                    options[prop] = options_override[prop];
                 }
             }
         }
@@ -472,7 +470,6 @@ package
             
             fileList = fileList.concat(added);
             
-            //fireEvent('select', [File.exportMany(added), File.exportMany(failed), queueUpdate()]);
             if (added.length)
                 fireEvent('selectSuccess', [File.exportMany(added)]);
             if (failed.length)

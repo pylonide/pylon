@@ -51,7 +51,7 @@ apf.upload.flash.isSupported = function() {
 };
 
 (function() {
-    var oCont
+    var oCont;
 
     this.event = function(name, o) {
         var file,
@@ -88,37 +88,37 @@ apf.upload.flash.isSupported = function() {
                     timeLimit      : apf.isLinux ? 0 : 30,
                     policyFile     : null
                 });
-                break;
+            break;
             case "buttonEnter":
             case "buttonLeave":
             case "buttonDown":
             case "buttonDisable":
                 this.oUpload.$setButtonState(name);
-                break;
+            break;
             case "browse":
                 //Function to execute when the browse-dialog opens.
             case "disabledBrowse":
                 //Function to execute when the user tries to open the browse-dialog,
                 //but the uploader is disabled.
                 this.oUpload.$setButtonState("buttonDisable");
-                break;
+            break;
             //case "select": <-- deprecated
             case "selectSuccess":
                 //Function to execute when files were selected and validated successfully.
                 //param: successFiles
                 this.oUpload.$queue(o);
-                break;
+            break;
             case "selectFail":
                 //Function to execute when files were selected and failed validation.
                 //param: failFiles
                 //validation error values: duplicate, sizeLimitMin, sizeLimitMax
                 this.$files.removeMany(o);
-                break;
+            break;
             case "fileProgress":
                 //Function to execute when the upload reports progress.
                 file.loaded = o.progress.bytesLoaded;
                 this.oUpload.$progress(file);
-                break;
+            break;
             case "fileComplete":
                 //Function to execute when a file is uploaded or failed with an error.
                 var httpStatus = o.response && o.response.error ? 500 : 200;
@@ -140,7 +140,7 @@ apf.upload.flash.isSupported = function() {
                         status  : httpStatus
                     });
                 }
-                break;
+            break;
             case "complete":
                 //Function to execute when all files are uploaded (or stopped).
             case "fail":
@@ -169,14 +169,13 @@ apf.upload.flash.isSupported = function() {
             case "fileRemove":
                 //Function to execute when a file got removed.
             default:
-                break;
+            break;
         }
     };
 
     this.draw = function() {
         var uid = this.oUpload.$uniqueId + "_swfupload";
         oCont = this.oUpload.$ext;
-        //console.dir(oExt);
         oCont.style.position   = "absolute",
         oCont.style.background = "transparent",
         oCont.style.width      = "100px",
@@ -206,13 +205,19 @@ apf.upload.flash.isSupported = function() {
     };
 
     this.refresh = function() {
-        var oBtn = this.oUpload.$button.$ext,
-            pos  = apf.getAbsolutePosition(oBtn);
+        var oBtn    = this.oUpload.$button.$ext,
+            btnPos  = apf.getAbsolutePosition(oBtn),
+            btnDims = [oBtn.offsetWidth, oBtn.offsetHeight],
+            contPos = apf.getAbsolutePosition(oCont);
 
-        oCont.style.left   = pos[0] + "px",
-        oCont.style.top    = pos[1] + "px",
-        oCont.style.width  = oBtn.offsetWidth  + "px",
-        oCont.style.height = oBtn.offsetHeight + "px";
+        if (btnPos[0] != contPos[0])
+            oCont.style.left   = btnPos[0] + "px";
+        if (btnPos[1] != contPos[1])
+            oCont.style.top    = btnPos[1] + "px";
+        if (btnDims[0] != oCont.offsetWidth)
+            oCont.style.width  = btnDims[0] + "px";
+        if (btnDims[1] != oCont.offsetHeight)
+            oCont.style.height = btnDims[1] + "px";
     };
 
     this.upload = function(file) {

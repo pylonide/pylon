@@ -218,7 +218,8 @@ apf.upload.ERROR_CODES = {
     );
 
     this.state        = constants.STOPPED;
-    this.chunksize    = 0;
+    this.size = this.loaded = this.uploaded = this.failed = this.queued 
+        = this.percent = this.bitrate = this.chunksize = 0;
     this.maxfilesize  = 1073741824; //"1gb"
     this.multiple     = true;
     this.multipart    = true;
@@ -267,6 +268,22 @@ apf.upload.ERROR_CODES = {
 
     this.$propHandlers["model"] = function(value) {
         this.$files = new constants.files(this, value);
+    };
+
+    this.$propHandlers["target"] = function(value) {
+        var oUrl = new apf.url(value);
+        this.target = oUrl.uri;
+
+        // #ifdef __DEBUG
+        if (oUrl.protocol == "file")
+            apf.console.warn("Upload: files uploaded to URL '" + this.src + "'\n"
+                + "will be loaded through the 'file://' protocol.\nThis may be "
+                + "unsupported by your browser.", "upload");
+        else if (!oUrl.isSameLocation())
+            apf.console.warn("Upload: the upload target with URL '" + this.src + "'\n"
+                + "does not have the same origin as your web application.\nThis may "
+                + "be unsupported by your browser.", "upload");
+        // #endif
     };
 
     this.$mimeTypes = {
@@ -535,8 +552,10 @@ apf.upload.ERROR_CODES = {
     };
 
     this.stop = function() {
-       if (!(this.state & constants.STOPPED))
+       if (!(this.state & constants.STOPPED)) {
            this.setProperty("state", constants.STOPPED);
+           this.setProperty("bitrate", 0);
+       }
     };
 
     this.remove = function(oFile) {
