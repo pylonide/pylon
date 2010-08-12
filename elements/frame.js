@@ -58,9 +58,7 @@ apf.frame    = function(struct, tagName){
 };
 
 (function(){
-    this.implement(
-        apf.BaseStateButtons
-    );
+    this.implement(apf.BaseStateButtons);
 
     this.$focussable     = false;
     

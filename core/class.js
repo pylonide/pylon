@@ -538,7 +538,7 @@ apf.Class.prototype = new (function(){
                 if (arguments[2]) {
                     apf.console.warn("[287] Could not create property binding with object."
                         + ". Element '"  + o[0] + "' does not exist.\n"
-                        + pValue.replace(/</g, "&lt;").substr(0, 100));
+                        + pValue.replace(/</g, "&lt;").substr(0, 400));
                 }
                 else {
                     //@todo this is sloppy and not efficient - shouldn't clear 

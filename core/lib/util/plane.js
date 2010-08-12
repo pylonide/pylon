@@ -39,18 +39,22 @@ apf.plane = {
     },
 
     lastCursor : null,
-    show : function(o, reAppend, copyCursor, useRealSize){
+    show : function(o, reAppend, copyCursor, useRealSize, options){
         this.init();
 
         var plane    = this.plane;
         
+        this.plane.style.background = options && options.color || "url(images/spacer.gif)";
+        this.animate = options && options.animate;
+        
         if (o) { //@experimental
             this.current = o;
-            if (!reAppend || o.parentNode != document.body) {
+            if (!reAppend) { // || o.parentNode != document.body
                 this.lastZ = this.current.style.zIndex;
-                this.current.style.zIndex = 100000;
+                this.current.style.zIndex = 100000001;
             }
             else {
+                this.$originalPlace = [o.parentNode, o.nextSibling];
                 this.plane.appendChild(o);
             }
         }
@@ -74,9 +78,26 @@ apf.plane = {
         //this.plane.style.left    = p.scrollLeft;
         //this.plane.style.top     = p.scrollTop;
         
+        var toOpacity = parseFloat(options && options.opacity) || 1;
+        if (this.animate) {
+            var _self = this;
+            apf.setOpacity(this.plane, 0);
+            setTimeout(function(){
+                apf.tween.single(_self.plane, {
+                    steps    : 5,
+                    interval : 10,
+                    type     : "fade",
+                    from     : 0,
+                    to       : toOpacity
+                });
+            }, 100);
+        }
+        else
+            apf.setOpacity(this.plane, toOpacity);
+        
         var diff = apf.getDiff(plane);
-        this.plane.style.width  = (pWidth - diff[0]) + "px";
-        this.plane.style.height = (pHeight - diff[1]) + "px";
+        this.plane.style.width  = "100%";//(pWidth - diff[0]) + "px";
+        this.plane.style.height = "100%";//(pHeight - diff[1]) + "px";
 
         return plane;
     },
@@ -97,7 +118,7 @@ apf.plane = {
     hide : function(){
         if (!this.plane)
             return;
-        
+
         var isChild =
             //#ifdef __WITH_XMLDATABASE
             apf.isChildOf(this.plane, document.activeElement);
@@ -111,12 +132,30 @@ apf.plane = {
                     this.current.style.zIndex = this.lastZ;
                 this.lastZ = null;
             }
-    
+
             if (this.current.parentNode == this.plane)
-                this.plane.parentNode.appendChild(this.current);
+                this.$originalPlace[0].insertBefore(this.current, this.$originalPlace[1]);
         }
         
-        this.plane.style.display  = "none";
+        if (this.animate) {
+            var _self = this;
+            setTimeout(function(){
+                apf.tween.single(_self.plane, {
+                    steps    : 5,
+                    interval : 10,
+                    type     : "fade",
+                    from     : apf.getOpacity(_self.plane),
+                    to       : 0,
+                    onfinish : function(){
+                        _self.plane.style.display  = "none";
+                    }
+                });
+            }, 100);
+        }
+        else {
+            apf.setOpacity(this.plane, 0);
+            this.plane.style.display  = "none";
+        }
         
         if (isChild && apf.document.activeElement) {
             if (!apf.isIE)

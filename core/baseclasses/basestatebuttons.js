@@ -128,6 +128,10 @@ apf.BaseStateButtons = function(){
         else this.$refParent = value;
     }
     
+    this.$propHandlers["maxconf"] = function(value){
+        this.$maxconf = value.splitSafe(",");
+    }
+    
     /**
      * @attribute {String} state the state of the window. The state can be a
      * combination of multiple states seperated by a pipe '|' character.
@@ -138,11 +142,11 @@ apf.BaseStateButtons = function(){
      *   edit       The window is in the edit state.
      *   closed     The window is closed.
      */
-    this.$propHandlers["state"] = function(value, noanim, comp, reenter){
+    this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
         var _self = this;
         if (!this.$amlLoaded) { //@todo I still think this is weird and should not be needed
             apf.queue.add("state" + this.$uniqueId, function(){
-                _self.$propHandlers["state"].call(_self, value, noanim);
+                _self.$propHandlers["state"].call(_self, value, prop, force, reenter, noanim);
             });
             return;
         }
@@ -183,6 +187,8 @@ apf.BaseStateButtons = function(){
 
             if (this.$lastpos) {
                 if (this.animate && !noanim) {
+                    apf.plane.hide();
+                    
                     //Pre remove paused event because of not having onresize
                     //if (apf.hasSingleRszEvent)
                         //delete apf.layout.onresize[apf.layout.getHtmlId(this.$pHtmlNode)];
@@ -200,14 +206,15 @@ apf.BaseStateButtons = function(){
 
                     this.animstate = 1;
                     apf.tween.multi(htmlNode, {
-                        steps    : 5,
+                        steps    : 15,
+                        anim     : apf.tween.easeInOutCubic,
                         interval : 10,
                         tweens   : [
                             {type: "left",   from: l,    to: this.$lastpos.px[0]},
                             {type: "top",    from: t,    to: this.$lastpos.px[1]},
-                            {type: "width",  from: this.$ext.offsetWidth - hordiff,
+                            {type: "width",  from: this.$ext.offsetWidth,
                                 to: this.$lastpos.px[2]},
-                            {type: "height", from: this.$ext.offsetHeight - verdiff,
+                            {type: "height", from: this.$ext.offsetHeight,
                                 to: this.$lastpos.px[3]}
                         ],
                         oneach   : function(){
@@ -217,18 +224,22 @@ apf.BaseStateButtons = function(){
                             //#endif
                         },
                         onfinish : function(){
-                            _self.$propHandlers["state"].call(_self, value, true,
-                                null, true);
+                            if (_self.$placeHolder)
+                                _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                            
+                            _self.$propHandlers["state"].call(_self, value, null,
+                                null, true, true);
                         }
                     });
 
                     return;
                 }
 
-                this.$ext.style.left   = this.$lastpos.css[0];
-                this.$ext.style.top    = this.$lastpos.css[1];
-                this.$ext.style.width  = this.$lastpos.css[2];
-                this.$ext.style.height = this.$lastpos.css[3];
+                this.$ext.style.position = this.$lastpos.pos;
+                this.$ext.style.left     = this.$lastpos.css[0];
+                this.$ext.style.top      = this.$lastpos.css[1];
+                this.$ext.style.width    = this.$lastpos.css[2];
+                this.$ext.style.height   = this.$lastpos.css[3];
                 
                 pNode = this.$lastpos.parentNode;
                 pNode.style.width    = this.$lastpos.parent[0];
@@ -305,7 +316,7 @@ apf.BaseStateButtons = function(){
                       ? document.documentElement
                       : this.$ext.parentNode);
 
-                _self.animstate = 0;
+                this.animstate = 0;
                 var hasAnimated = false, htmlNode = this.$ext;
                 
                 var position = apf.getStyle(htmlNode, "position");
@@ -323,21 +334,55 @@ apf.BaseStateButtons = function(){
                 this.$lastpos = {
                     css    : [this.$ext.style.left, this.$ext.style.top,
                               this.$ext.style.width, this.$ext.style.height],
-                    px     : [l, t, this.$ext.offsetWidth - hordiff, 
-                              this.$ext.offsetHeight - verdiff],
+                    px     : [l, t, this.$ext.offsetWidth, 
+                              this.$ext.offsetHeight],
                     parent : [pNode.style.width, pNode.style.height, 
                               pNode.style.overflow],
+                    pos        : htmlNode.style.position,
                     parentNode : pNode
                 };
 
+                if (this.parentNode.$layout) {
+                    if (!this.$placeHolder)
+                        this.$placeHolder = document.createElement("div");
+                    this.$placeHolder.style.position = this.$lastpos.pos;
+                    this.$placeHolder.style.left   = this.$lastpos.css[0];
+                    this.$placeHolder.style.top    = this.$lastpos.css[1];
+                    this.$placeHolder.style.width  = this.$lastpos.css[2];
+                    this.$placeHolder.style.height = this.$lastpos.css[3];
+                    this.$pHtmlNode.insertBefore(this.$placeHolder, this.$ext);
+                    
+                    htmlNode.style.position = "absolute";
+                }
+                
                 var from = [htmlNode.offsetWidth, htmlNode.offsetHeight];
                 function setMax(){
-                    var w = !apf.isIE && pNode == document.documentElement
+                    var w, h, pos, box, pDiff;
+                    if (_self.maxconf) {
+                        w = _self.$maxconf[0];
+                        h = _self.$maxconf[1];
+                        
+                        pos = [_self.$maxconf[2] == "center" 
+                            ? (apf.getWindowWidth() - w)/2
+                            : _self.$maxconf[2], 
+                               _self.$maxconf[3] == "center" 
+                            ? (apf.getWindowHeight() - h)/2
+                            : _self.$maxconf[3]];
+                    }
+                    else {
+                        w = !apf.isIE && pNode == document.documentElement
                             ? window.innerWidth
                             : pNode.offsetWidth,
                         h = !apf.isIE && pNode == document.documentElement
                             ? window.innerHeight
                             : pNode.offsetHeight;
+                    }
+                    
+                    if (!pos) {
+                        pos = pNode != htmlNode.offsetParent
+                            ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
+                            : [0, 0];
+                    }
                     
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
@@ -350,28 +395,33 @@ apf.BaseStateButtons = function(){
                         h -= 4;
                     }
                     
-                    var box = _self.$refParent ? [0,0,0,0] : marginBox,
-                        pos = pNode != htmlNode.offsetParent
-                            ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
-                            : [0, 0],
-                        pDiff = apf.getDiff(pNode);
+                    box = _self.$refParent ? [0,0,0,0] : marginBox;
+                    pDiff = apf.getDiff(pNode);
 
                     pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
                     pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
                     
                     if (_self.animate && !hasAnimated) {
+                        if (_self.$maxconf && _self.$maxconf[4])
+                            apf.plane.show(htmlNode, false, null, null, {
+                                color   : _self.$maxconf[4], 
+                                opacity : _self.$maxconf[5],
+                                animate : true
+                            });
+                        
                         _self.animstate = 1;
                         hasAnimated     = true;
                         apf.tween.multi(htmlNode, {
-                            steps    : 5,
+                            steps    : 15,
+                            anim     : apf.tween.easeInOutCubic,
                             interval : 10,
                             tweens   : [
                                 {type: "left",   from: l, to: pos[0] - box[3]},
                                 {type: "top",    from: t, to: pos[1] - box[0]},
-                                {type: "width",  from: from[0] - hordiff,
-                                    to: (w - hordiff + box[1] + box[3])},
-                                {type: "height", from: from[1] - verdiff,
-                                    to: (h - verdiff + box[0] + box[2])}
+                                {type: "width",  from: from[0],
+                                    to: (w + box[1] + box[3])},
+                                {type: "height", from: from[1],
+                                    to: (h + box[0] + box[2])}
                             ],
                             oneach   : function(){
                                 //#ifdef __WITH_LAYOUT
@@ -402,14 +452,17 @@ apf.BaseStateButtons = function(){
                 if (apf.layout)
                     apf.layout.pause(this.$pHtmlNode, setMax);
                 //#endif
+                
                 this.$lastzindex = [
                     this.$ext.style.zIndex || 1, 
                     this.oCover && this.oCover.style.zIndex || 1
                 ];
                 
-                if (this.oCover)
-                    this.oCover.style.zIndex = apf.WinServer.count + 1;
-                this.$ext.style.zIndex = apf.WinServer.count + 2;
+                if (!_self.$maxconf || !_self.$maxconf[4]) {
+                    if (this.oCover)
+                        this.oCover.style.zIndex = apf.WinServer.count + 1;
+                    this.$ext.style.zIndex = apf.WinServer.count + 2;
+                }
             }
             else {
                 styleClass.push(this.$baseCSSname + "Max");
