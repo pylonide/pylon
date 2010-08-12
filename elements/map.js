@@ -36,33 +36,38 @@
  * @inherits apf.DataAction
  * @inherits apf.XForms
  *
- * @attribute {Number} latitude          geographical coordinate
- * @attribute {Number} longitude         geographical coordinate
- * @attribute {mixed}  maptypecontrol    defines the if a MapType control should
- *                                       be visible and what its position and style should be.
- *                                       The value may be either 'false' (no control)
- *                                       or of the following form:
- *                                       'position:bottom-left,style:dropdown'
- *                                       Style options: 'dropdown', 'bar'
- * @attribute {mixed}  navigationcontrol defines the if a Navigation control should
- *                                       be visible and what its position and style should be.
- *                                       The value may be either 'false' (no control)
- *                                       or of the following form:
- *                                       'position:bottom-left,style:zoompan'
- *                                       Style options: 'android', 'small' or 'zoompan'
- * @attribute {mixed}  scalecontrol      defines the if a Navigation control should
- *                                       be visible and what its position and style should be.
- *                                       The value may be either 'false' (no control)
- *                                       or of the following form:
- *                                       'position:bottom-left,style:default'
- *                                       Style options: 'default' only.
- * @attribute {String} type              the type of map that should be rendered.
- *                                       Possible values: 'hybrid', 'roadmap', 'satellite', 'terrain'
- * @attribute {Number} zoom              The zoomlevel of the map.
- *                                       Value may vary between 1..100
- * @attribute {String} marker            if set, a marker will be placed on the map
- *                                       at the current location (or once a location
- *                                       is specified) with the value as its title.
+ * @attribute {Number}  latitude          geographical coordinate
+ * @attribute {Number}  longitude         geographical coordinate
+ * @attribute {mixed}   maptypecontrol    defines the if a MapType control should
+ *                                        be visible and what its position and style should be.
+ *                                        The value may be either 'false' (no control)
+ *                                        or of the following form:
+ *                                        'position:bottom-left,style:dropdown'
+ *                                        Style options: 'dropdown', 'bar'
+ * @attribute {mixed}   navigationcontrol defines the if a Navigation control should
+ *                                        be visible and what its position and style should be.
+ *                                        The value may be either 'false' (no control)
+ *                                        or of the following form:
+ *                                        'position:bottom-left,style:zoompan'
+ *                                        Style options: 'android', 'small' or 'zoompan'
+ * @attribute {mixed}   scalecontrol      defines the if a Navigation control should
+ *                                        be visible and what its position and style should be.
+ *                                        The value may be either 'false' (no control)
+ *                                        or of the following form:
+ *                                        'position:bottom-left,style:default'
+ *                                        Style options: 'default' only.
+ * @attribute {String}  type              the type of map that should be rendered.
+ *                                        Possible values: 'hybrid', 'roadmap', 'satellite', 'terrain'
+ * @attribute {Number}  zoom              The zoomlevel of the map.
+ *                                        Value may vary between 1..100
+ * @attribute {String}  marker            if set, a marker will be placed on the map
+ *                                        at the current location (or once a location
+ *                                        is specified) with the value as its title.
+ * @attribute {Boolean} loaded            if the javascript libraries from Google
+ *                                        have been loaded and the map is drawn, this
+ *                                        attribute has the value 'true'
+ *
+ * @event loaded Fires after the the javascript libraries from Google have been loaded and the map is drawn
  */
 apf.map = function(struct, tagName){
     this.$init(tagName || "map", apf.NODE_VISIBLE, struct);
@@ -364,6 +369,27 @@ apf.map = function(struct, tagName){
         return res;
     }
 
+    /**
+     * Retrieves the current location by reverse geocoding the geographical
+     * coordinates as displayed by the map. You may also pass in a different set
+     * of coordinates.
+     * Since the reverse geocoding process is asynchronous, a callback is required
+     * to pass the result, because it cannot be returned directly.
+     * The object that is passed to the callback has the following structure:
+     * <code>
+     * {
+     *     "street_number":{"long_name":"241","short_name":"241"},
+     *     "route":{"long_name":"Keizersgracht","short_name":"Keizersgracht"},
+     *     "sublocality":{"long_name":"Amsterdam","short_name":"Amsterdam"},
+     *     "locality":{"long_name":"Amsterdam","short_name":"Amsterdam"},
+     *     "administrative_area_level_1":{"long_name":"North Holland","short_name":"North Holland"},
+     *     "country":{"long_name":"The Netherlands","short_name":"NL"},
+     *     "postal_code":{"long_name":"1016","short_name":"1016"}
+     * }
+     * </code>
+     * 
+     * @type {void}
+     */
     this.getLocation = function(cb, coords) {
         if (!loaddone)
             return delegate.call(this, arguments.callee, arguments);
