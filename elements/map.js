@@ -91,9 +91,11 @@ apf.map = function(struct, tagName){
     this.$map                  = null;
 
     // for property specs, see: http://code.google.com/apis/maps/documentation/javascript/reference.html#MapOptions
-    this.$booleanProperties["draggable"]         = true;
+    this.$booleanProperties["draggable"] = true;
+    this.$booleanProperties["loaded"]    = true;
     this.$supportedProperties.push("latitude", "longitude", "bgcolor", "draggable",
-        "maptypecontrol", "navigationcontrol", "scalecontrol", "type", "zoom", "marker");
+        "maptypecontrol", "navigationcontrol", "scalecontrol", "type", "zoom", 
+        "marker", "marker-icon", "loaded");
     // default values:
     this.latitude              = 0;
     this.longitude             = 0;
@@ -103,7 +105,8 @@ apf.map = function(struct, tagName){
     this.navigationcontrol     = true;
     this.scalecontrol          = true;
     this.type                  = null;
-    this.zoom                  = 15;
+    this.zoom                  = 9;
+    this.loaded                = false;
 
     var timer, deltimer, lastpos,
         delegates = [],
@@ -333,6 +336,61 @@ apf.map = function(struct, tagName){
         };
     };
 
+    var addressParts = {
+        "street_number": 1,
+        "route": 1,
+        "sublocality": 1,
+        "locality": 1,
+        "administrative_area_level_1": 1,
+        "country": 1,
+        "postal_code": 1
+    };
+
+    function parseAddress(addr) {
+        var o, k, m,
+            i   = 0,
+            l   = addr.address_components.length,
+            res = {};
+        for (; i < l; ++i) {
+            o = addr.address_components[i];
+            for (k = 0, m = o.types.length; k < m; ++k) {
+                if (!addressParts[o.types[k]]) continue;
+                res[o.types[k]] = {
+                    long_name  : o.long_name,
+                    short_name : o.short_name
+                };
+            }
+        }
+        return res;
+    }
+
+    this.getLocation = function(cb, coords) {
+        if (!loaddone)
+            return delegate.call(this, arguments.callee, arguments);
+        if (!this.$geo)
+            this.$geo = new google.maps.Geocoder();
+        var pos = lastpos;
+        if (coords && coords.latitude && coords.longitude)
+            pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+        if (!pos)
+            return cb(null);
+        this.$geo.geocode({location: pos}, function(res, st) {
+            if (st != google.maps.GeocoderStatus.OK)
+                return cb(null);
+            cb(parseAddress(res[0]));
+        });
+    };
+
+    function getFunctionPointer(name) {
+        var i,
+            p     = self,
+            aName = name.splitSafe("\."),
+            sFunc = aName.pop();
+        while (p[i = aName.shift()])
+            p = p[i];
+        return p[sFunc] || apf.K;
+    }
+
     /**
      * Adds a marker on a specific geographical location, optionally with an 
      * information window attached to it with arbitrary HTML as its content.
@@ -353,10 +411,16 @@ apf.map = function(struct, tagName){
         if (!pos)
             return delegate2.call(this, arguments.callee, arguments);
 
+        if (this["marker-icon"] && !this.$markerIcon) {
+            this.$markerIcon = new apf.url(this["marker-icon"]).uri;
+            //icon = new google.maps.MarkerImage(this.$markerImage);
+        }
+
         var marker = new google.maps.Marker({
             position: pos,
             map     : this.$map,
-            title   : title || "Marker"
+            title   : title || "Marker",
+            icon    : this.$markerIcon || null
         });
 
         if (!content) return;
@@ -394,6 +458,9 @@ apf.map = function(struct, tagName){
         var _self = this;
         $setTimeout(function() {
             callDelegates.call(_self);
+
+            _self.setProperty("loaded", true);
+            _self.dispatchEvent("loaded");
         });
     };
 
