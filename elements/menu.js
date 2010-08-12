@@ -208,7 +208,9 @@ apf.menu = function(struct, tagName){
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
-        this.dispatchEvent("display");
+        this.dispatchEvent("display", {
+            opener: opener
+        });
 
         //Show / hide Child Nodes Based on XML
         if (xmlNode) {
