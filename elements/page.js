@@ -94,7 +94,7 @@ apf.page = function(struct, tagName){
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
     this.$booleanProperties["closebtn"] = true;
-    this.$supportedProperties.push("fake", "caption", "icon", 
+    this.$supportedProperties.push("fake", "caption", "icon", "tooltip",
         "type", "buttons", "closebtn", "trans-in", "trans-out");
 
     /**
@@ -103,7 +103,20 @@ apf.page = function(struct, tagName){
     this.$propHandlers["closebtn"] = function(value){
         this.closebtn = value;
     };
-    
+
+    /**
+     * @attribute {String} caption the text displayed on the button of this element.
+     */
+    this.$propHandlers["tooltip"] = function(value){
+        if (!this.parentNode)
+            return;
+
+        var node = this.parentNode
+            .$getLayoutNode("button", "caption", this.$button);
+
+        (node.nodeType == 1 ? node : node.parentNode).setAttribute("title", value || "");
+    }
+
     /**
      * @attribute {String} caption the text displayed on the button of this element.
      */
