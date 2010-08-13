@@ -666,6 +666,9 @@ var apf = {
         //this.browserDetect();
         this.setCompatFlags();
 
+        if (apf.onstart && apf.onstart() === false)
+            return false;
+
         //#ifdef __WITH_DEBUG_WIN
         apf.$debugwin.start();
         //#endif
