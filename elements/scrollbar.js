@@ -49,9 +49,33 @@ apf.scrollbar = function(struct, tagName){
         if (this.$host.focus && this.$host.$isWindowContainer !== true)
             this.$host.focus();
     });
-
-    this.$propHandlers["overflow"] = function(value){
+    
+    this.addEventListener("prop.class", function(){
         
+    });
+    
+    this.$propHandlers["overflow"] = function(value){
+        if (value == "auto") {
+            this.addEventListener("resize", this.$resize);
+            this.$resize();
+        }
+        else {
+            this.removeEventListener("resize", this.$resize);
+            
+            if (value == "scroll")
+                this.setProperty("visible", true);
+        }
+    }
+    
+    this.$resize = function(){
+        var html = this.$getHtmlHost();
+        if (!html)
+            return;
+
+        var size = this.$getViewPort(html);
+        var vis  = size - document.body[this.$offsetSize] > 0;
+        if (vis != this.visible)
+            this.setProperty("visible", vis);
     }
 
     this.$propHandlers["for"] = function(value){

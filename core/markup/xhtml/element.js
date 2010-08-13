@@ -59,20 +59,17 @@ apf.XhtmlElement = function(struct, tagName){
             apf.removeListener(this.$ext, type, this.$de);
     }
     
-    this.$handlePropSet = function(name, value, force){
+    this.$handlePropSet = function(name, value, force, inherit){
         if (this.$booleanProperties[name])
             value = apf.isTrue(value);
 
         this[name] = value;
-        
-        if (!this.$amlLoaded) return; //@todo optimize by namespacing attributes
-        
         var handler = this.$propHandlers && this.$propHandlers[name]
           || apf.GuiElement.propHandlers[name];
         
         if (handler)
             handler.call(this, value, null, name);
-        else if (this.$int) {
+        else if (this.$int && (force || this.$amlLoaded)) {
             this.$int.setAttribute(apf.isIE && name == "class" 
                 ? "className" : name, value);
         }
