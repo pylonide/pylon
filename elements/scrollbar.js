@@ -50,34 +50,13 @@ apf.scrollbar = function(struct, tagName){
             this.$host.focus();
     });
     
-    this.addEventListener("prop.class", function(){
-        
-    });
-    
     this.$propHandlers["overflow"] = function(value){
-        if (value == "auto") {
-            this.addEventListener("resize", this.$resize);
+        if (value == "auto")
             this.$resize();
-        }
-        else {
-            this.removeEventListener("resize", this.$resize);
-            
-            if (value == "scroll")
-                this.setProperty("visible", true);
-        }
+        else if (value == "scroll")
+            this.setProperty("visible", true);
     }
     
-    this.$resize = function(){
-        var html = this.$getHtmlHost();
-        if (!html)
-            return;
-
-        var size = this.$getViewPort(html);
-        var vis  = size - document.body[this.$offsetSize] > 0;
-        if (vis != this.visible)
-            this.setProperty("visible", vis);
-    }
-
     this.$propHandlers["for"] = function(value){
         if (value)
             this.$attach(typeof value == "string" ? self[value] : value);
@@ -169,7 +148,7 @@ apf.scrollbar = function(struct, tagName){
 
         var _self = this, scrolling;
         if (!this.$host.empty) {
-            amlNode.addEventListener("resize", function(){
+            amlNode.addEventListener("resize", function(){ //@todo cleanup?
                 _self.$update();
             });
             if (amlNode.hasFeature(apf.__DATABINDING__)) {
@@ -211,22 +190,29 @@ apf.scrollbar = function(struct, tagName){
         return this;
     };
     
+    this.$resize = function(){
+        this.$recalc();
+        this.$update();
+    }
+    
     this.$recalc = function(){
-        var oHtml            = this.$getHtmlHost();
+        var oHtml = this.$getHtmlHost();
         if (!oHtml) return;
         
-        this.$viewheight     = this.$getViewPort(oHtml);
+        this.$viewheight         = this.$getViewPort(oHtml);
         this.$scrollSizeheight   = this.$viewheight;
         this.$scrollSizeWait     = 0;//(this.$host.len * COLS)/2;
-        this.$stepValue      = (this.$viewheight / this.$scrollSizeheight) / 20;
-        this.$bigStepValue   = this.$stepValue * 3;
-        this.$slideMaxSize = this.$caret.parentNode[this.$offsetSize] 
+        this.$stepValue          = (this.$viewheight / this.$scrollSizeheight) / 20;
+        this.$bigStepValue       = this.$stepValue * 3;
+        this.$slideMaxSize       = this.$caret.parentNode[this.$offsetSize] 
             - (this.$btnDown ? this.$btnDown[this.$offsetSize] : 0)
             - (this.$btnUp ? this.$btnUp[this.$offsetSize] : 0);
     }
     
     this.$update = function(){
         var oHtml = this.$getHtmlHost();
+        if (!oHtml) return;
+        
         //Disable scrollbar
         if (this.$getViewPort(oHtml) >= oHtml[this.$scrollSize]) {
             if (this.overflow == "scroll") {
@@ -632,10 +618,7 @@ apf.scrollbar = function(struct, tagName){
         else
             this.$caret.style.display = "block";
         
-        this.addEventListener("resize", function(){
-            this.$recalc();
-            this.$update();
-        });
+        this.addEventListener("resize", this.$resize);
     }
 }).call(apf.scrollbar.prototype = new apf.Presentation());
 apf.aml.setElement("scrollbar", apf.scrollbar);

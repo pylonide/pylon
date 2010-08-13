@@ -1443,6 +1443,10 @@ apf.DataBinding = function(){
                     this.model = this.dataParent.model; //reset this property
 
                 model = apf.xmldb.findModel(value);
+                if (!model) {
+                    debugger;
+                    model = apf.xmldb.findModel(value);
+                }
                 var xpath = apf.xmlToXpath(value, model.data, true) || ".";
                 
                 //#ifdef __DEBUG
