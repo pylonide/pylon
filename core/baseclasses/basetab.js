@@ -744,6 +744,7 @@ apf.BaseTab = function(){
             //this.setScrollerState();
             // #endif
         }
+        // #endif
         return page;
     };
 
