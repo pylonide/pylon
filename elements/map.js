@@ -93,6 +93,7 @@ apf.map = function(struct, tagName){
     this.$mapTypeControl       = {};
     this.$navigationControl    = {};
     this.$scaleControl         = {};
+    this.$markers              = {};
     this.$map                  = null;
 
     // for property specs, see: http://code.google.com/apis/maps/documentation/javascript/reference.html#MapOptions
@@ -429,6 +430,41 @@ apf.map = function(struct, tagName){
      *                           Format: {latitude: x, longitude: y}
      */
     this.addMarker = function(title, content, coords) {
+        if (!this.$map) {
+            delegate2.call(this, arguments.callee, arguments);
+            return false;
+        }
+        var pos = lastpos;
+        if (coords && coords.latitude && coords.longitude)
+            pos = new google.maps.LatLng(coords.latitude, coords.longitude);
+        if (!pos) {
+            delegate2.call(this, arguments.callee, arguments);
+            return false;
+        }
+
+        if (this["marker-icon"] && !this.$markerIcon)
+            this.$markerIcon = new apf.url(this["marker-icon"]).uri;
+
+        var marker = this.$markers[[pos.lat(), pos.lng()]] = new google.maps.Marker({
+            position: pos,
+            map     : this.$map,
+            title   : title || "Marker",
+            icon    : this.$markerIcon || null
+        });
+
+        if (!content)
+            return marker;
+        var _self      = this,
+            infowindow = new google.maps.InfoWindow({
+                content: content
+            });
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(_self.$map, marker);
+        });
+        return marker;
+    };
+
+    this.removeMarker = function(coords) {
         if (!this.$map)
             return delegate2.call(this, arguments.callee, arguments);
         var pos = lastpos;
@@ -437,26 +473,14 @@ apf.map = function(struct, tagName){
         if (!pos)
             return delegate2.call(this, arguments.callee, arguments);
 
-        if (this["marker-icon"] && !this.$markerIcon) {
-            this.$markerIcon = new apf.url(this["marker-icon"]).uri;
-            //icon = new google.maps.MarkerImage(this.$markerImage);
+        var lat = pos.lat(),
+            lon = pos.lng();
+        for (var i in this.$markers) {
+            if (i[0] !== lat && i[1] !== lon)
+            this.$markers[i].setMap(null); //this removes the marker from the map
+            delete this.$markers[i];
+            break;
         }
-
-        var marker = new google.maps.Marker({
-            position: pos,
-            map     : this.$map,
-            title   : title || "Marker",
-            icon    : this.$markerIcon || null
-        });
-
-        if (!content) return;
-        var _self      = this,
-            infowindow = new google.maps.InfoWindow({
-                content: content
-            });
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(_self.$map, marker);
-        });
     };
 
     this.$draw = function(){
