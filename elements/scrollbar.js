@@ -34,7 +34,7 @@ apf.scrollbar = function(struct, tagName){
 
 (function(){
     this.realtime = true;
-    this.visible  = false;
+    //this.visible  = false;
     this.overflow = "scroll";
     
     this.$scrollSizeValue  = 0;
@@ -617,6 +617,7 @@ apf.scrollbar = function(struct, tagName){
             this.$caret.style.display = "block";
         
         this.addEventListener("resize", this.$resize);
+        this.$update();
     }
 }).call(apf.scrollbar.prototype = new apf.Presentation());
 apf.aml.setElement("scrollbar", apf.scrollbar);
