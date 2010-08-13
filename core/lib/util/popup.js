@@ -274,6 +274,8 @@ apf.popup = {
           && !apf.plane.current
           //#endif
           && this.isShowing(this.last)
+          && this.cache[this.last]
+          && this.cache[this.last].options
           && this.cache[this.last].options.autohide !== false) {
             var o = apf.lookup(this.last);
             if (!o)
