@@ -524,12 +524,16 @@ apf.date.dateFormat = (function () {
  *     ss     seconds, leading zero for single-digit seconds
  */
 apf.date.getDateTime = function(datetime, format) {
-    var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
-    var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC:)(?:[-+]\d{4})?)\b/g;
-    var alteration = 0;
-    var time, y = new Date().getFullYear(), m = 1, d = 1,
-        h = 12, M = 0, s = 0;
-    var i18n = apf.date.i18n;
+    var token    = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+        timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC:)(?:[-+]\d{4})?)\b/g,
+        alter    = 0,
+        y        = new Date().getFullYear(),
+        m        = 1,
+        d        = 1,
+        h        = 12,
+        M        = 0,
+        s        = 0,
+        i18n     = apf.date.i18n;
 
     if (!format) {
         throw new Error(apf.formatErrorString(0, null,
@@ -539,65 +543,65 @@ apf.date.getDateTime = function(datetime, format) {
     format = format.replace(timezone, "");
 
     var str = format.replace(token, function(str, offset, p) {
-        var part = datetime.substring(p + alteration, p + alteration + str.length);
+        var part = datetime.substring(p + alter, p + alter + str.length);
 
         switch (str) {
-            case 'd':
-            case 'm':
-            case 'h':
-            case 'H':
-            case 'M':
-            case 's':
+            case "d":
+            case "m":
+            case "h":
+            case "H":
+            case "M":
+            case "s":
                 if (!/[\/, :\-](d|m|h|H|M|s)$|^(d|m|h|H|M|s)[\/, :\-]|[\/, :\-](d|m|h|H|M|s)[\/, :\-]/.test(format)) {
                     throw new Error(apf.formatErrorString(0, null,
                         "date-format", "Dates without leading zero needs separators"));
                 }
 
-                var value = parseInt(datetime.substring(p + alteration,
-                    p + alteration + 2));
+                var value = parseInt(datetime.substring(p + alter,
+                    p + alter + 2));
 
                 if (value.toString().length == 2)
-                    alteration++;
+                    alter++;
     
-                return str == 'd'
+                return str == "d"
                     ? d = value
-                    : (str == 'm'
+                    : (str == "m"
                         ? m = value
-                        : (str == 'M'
+                        : (str == "M"
                             ? M = value
-                            : (str == 's'
+                            : (str == "s"
                                 ? s = value
                                 : h = value))); 
-            case 'dd':
+            case "dd":
                 return d = part; //01-31
-            case 'dddd':
+            case "dddd":
                 //changeing alteration because "dddd" have no information about day number
-                alteration += i18n.dayNames[i18n.dayNumbers[part.substring(0,3)] + 7].length - 4;
+                alter += i18n.dayNames[i18n.dayNumbers[part.substring(0,3)] + 7].length - 4;
                 break;
-            case 'mm':
+            case "mm":
                 return m = part; //01 - 11
-            case 'mmm':
+            case "mmm":
                 return m = i18n.monthNumbers[part] + 1;
-            case 'mmmm':
+            case "mmmm":
                 var monthNumber = i18n.monthNumbers[part.substring(0, 3)];
-                alteration += i18n.monthNames[monthNumber + 12].length - 4;
+                alter += i18n.monthNames[monthNumber + 12].length - 4;
                 return m = monthNumber + 1;
-            case 'yy':
+            case "yy":
                 return y = parseInt(part) < 70 ? "20" + part : part;
-            case 'yyyy':
+            case "yyyy":
                 return y = part;
-            case 'hh':
+            case "hh":
                 return h = part;
-            case 'HH':
+            case "HH":
                 return h = part;
-            case 'MM':
+            case "MM":
                 return M = part;
-            case 'ss':
+            case "ss":
                 return s = part;
-            case "'T'":
-            case "'Z'":
+            case ""T"":
+            case ""Z"":
                 //because in date we have only T
-                alteration -= 2;
+                alter -= 2;
                 break;
          }
     });
@@ -611,18 +615,18 @@ Date.prototype.format = function (mask, utc) {
 };
 
 // #ifdef __WITH_DATE_EXT
-Date.prototype.copy             = function() {
+Date.prototype.copy = function() {
     return new Date(this.getTime());
 };
-Date.prototype.inDaylightTime   = function() {
+Date.prototype.inDaylightTime = function() {
     // Calculate Daylight Saving Time
     var dst   = 0,
         jan1  = new Date(this.getFullYear(), 0, 1, 0, 0, 0, 0),  // jan 1st
         june1 = new Date(this.getFullYear(), 6, 1, 0, 0, 0, 0), // june 1st
         temp  = jan1.toUTCString(),
-        jan2  = new Date(temp.slice(0, temp.lastIndexOf(' ')-1));
+        jan2  = new Date(temp.slice(0, temp.lastIndexOf(" ")-1));
     temp = june1.toUTCString();
-    var june2 = new Date(temp.slice(0, temp.lastIndexOf(' ')-1));
+    var june2 = new Date(temp.slice(0, temp.lastIndexOf(" ")-1));
     var std_time_offset = (jan1 - jan2) / (1000 * 60 * 60),
         daylight_time_offset = (june1 - june2) / (1000 * 60 * 60);
 
@@ -638,7 +642,7 @@ Date.prototype.inDaylightTime   = function() {
     }
     return dst;
 };
-Date.prototype.addSeconds       = function(sec) {
+Date.prototype.addSeconds = function(sec) {
     sec = parseInt(sec);
     // Negative value given.
     if (sec < 0)
@@ -646,7 +650,7 @@ Date.prototype.addSeconds       = function(sec) {
 
     return this.addSpan(new apf.date.span(sec));
 };
-Date.prototype.addSpan          = function(span) {
+Date.prototype.addSpan = function(span) {
     if (!(span instanceof apf.date.span)) return this;
     var d;
 
@@ -681,7 +685,7 @@ Date.prototype.addSpan          = function(span) {
     this.setFullYear(parseInt(d2.year), parseInt(d2.month), parseInt(d2.day));
     return this;
 };
-Date.prototype.subtractSeconds  = function(sec) {
+Date.prototype.subtractSeconds = function(sec) {
     sec = parseInt(sec);
 
     // Negative value given.
@@ -690,7 +694,7 @@ Date.prototype.subtractSeconds  = function(sec) {
 
     return this.subtractSpan(new apf.date.span(sec));
 };
-Date.prototype.subtractSpan     = function(span) {
+Date.prototype.subtractSpan = function(span) {
     if (!(span instanceof apf.date.span)) return this;
     var d;
 
@@ -725,50 +729,50 @@ Date.prototype.subtractSpan     = function(span) {
     this.setFullYear(parseInt(d2.year), parseInt(d2.month), parseInt(d2.day));
     return this;
 };
-Date.prototype.before           = function(when) {
+Date.prototype.before = function(when) {
     return (apf.date.compare(this, when) == -1);
 };
-Date.prototype.after            = function(when) {
+Date.prototype.after = function(when) {
     return (apf.date.compare(this, when) == 1);
 };
-Date.prototype.equals           = function(when) {
+Date.prototype.equals = function(when) {
     return (apf.date.compare(this, when) === 0);
 };
-Date.prototype.isFuture         = function() {
+Date.prototype.isFuture = function() {
     return this.after(new Date());
 };
-Date.prototype.isPast           = function() {
+Date.prototype.isPast = function() {
     return this.before(new Date());
 };
-Date.prototype.isLeapYear       = function() {
+Date.prototype.isLeapYear = function() {
     return apf.date.isLeapYear(this.getFullYear());
 };
-Date.prototype.getJulianDate    = function() {
+Date.prototype.getJulianDate = function() {
     return apf.date.julianDate(this.getDate(), this.getMonth(), this.getFullYear());
 };
-Date.prototype.getWeekOfYear    = function() {
+Date.prototype.getWeekOfYear = function() {
     return apf.date.weekOfYear(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getQuarterOfYear = function() {
     return apf.date.quarterOfYear(this.getMonth());
 };
-Date.prototype.getDaysInMonth   = function() {
+Date.prototype.getDaysInMonth = function() {
     return apf.date.daysInMonth(this.getMonth(), this.getFullYear());
 };
-Date.prototype.getWeeksInMonth  = function() {
+Date.prototype.getWeeksInMonth = function() {
     return apf.date.weeksInMonth(this.getMonth(), this.getFullYear());
 };
-Date.prototype.getNextDay       = 
-Date.prototype.getNextWeekday   = function() {
+Date.prototype.getNextDay =
+Date.prototype.getNextWeekday = function() {
     var d = apf.date.nextDay(this.getDate(), this.getMonth(), this.getFullYear());
     return this.copy().setFullYear(d.year, d.month, d.day);
 };
-Date.prototype.getPrevDay       =
-Date.prototype.getPrevWeekday   = function() {
+Date.prototype.getPrevDay =
+Date.prototype.getPrevWeekday = function() {
     var d = apf.date.prevDay(this.getDate(), this.getMonth(), this.getFullYear());
     return this.copy().setFullYear(d.year, d.month, d.day);
 };
-Date.prototype.getCalendarWeek  = function() {
+Date.prototype.getCalendarWeek = function() {
     return apf.date.getCalendarWeek(this.getDate(), this.getMonth(), this.getFullYear());
 };
 Date.prototype.getCalendarMonth = function() {
@@ -778,32 +782,33 @@ Date.prototype.getCalendarYear = function() {
     return apf.date.getCalendarYear(this.getFullYear());
 };
 Date.prototype.fromISO8601 = function(formattedString) {
-	var match  = formattedString.match(/^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(.\d+)?)?((?:[+-](\d{2}):(\d{2}))|Z)?)?$/),
+    var match  = formattedString.match(/^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(.\d+)?)?((?:[+-](\d{2}):(\d{2}))|Z)?)?$/),
         result = null;
 
-	if(match){
-		match.shift();
-		if(match[1])
+    if (match) {
+        match.shift();
+        if (match[1])
             match[1]--; // Javascript Date months are 0-based
-		if(match[6])
+        if (match[6])
             match[6] *= 1000; // Javascript Date expects fractional seconds as milliseconds
 
-		result = new Date(match[0]||1970, match[1]||0, match[2]||1, match[3]||0, match[4]||0, match[5]||0, match[6]||0); //TODO: UTC defaults
-		if(match[0] < 100)
-			result.setFullYear(match[0] || 1970);
+        result = new Date(match[0]||1970, match[1]||0, match[2]||1, match[3]||0, match[4]||0, match[5]||0, match[6]||0); //TODO: UTC defaults
+        if (match[0] < 100)
+            result.setFullYear(match[0] || 1970);
 
-		var offset = 0,
-			zoneSign = match[7] && match[7].charAt(0);
-		if(zoneSign != 'Z'){
-			offset = ((match[8] || 0) * 60) + (Number(match[9]) || 0);
-			if(zoneSign != '-'){offset *= -1;}
-		}
-		if(zoneSign)
-			offset -= result.getTimezoneOffset();
-		if(offset)
-			result.setTime(result.getTime() + offset * 60000);
-	}
-	return result; // Date or null
+        var offset = 0,
+        zoneSign = match[7] && match[7].charAt(0);
+        if (zoneSign != "Z"){
+            offset = ((match[8] || 0) * 60) + (Number(match[9]) || 0);
+            if(zoneSign != "-")
+                offset *= -1;
+        }
+        if (zoneSign)
+            offset -= result.getTimezoneOffset();
+        if (offset)
+            result.setTime(result.getTime() + offset * 60000);
+    }
+    return result; // Date or null
 }
 
 Date.prototype.toISO8601 = function(date) {
@@ -816,14 +821,14 @@ Date.prototype.toISO8601 = function(date) {
     date = date ? date : new Date();
     var offset = date.getTimezoneOffset();
     return pad(date.getFullYear(), 4)
-    + "-" + pad(date.getMonth() + 1, 2)
-    + "-" + pad(date.getDate(), 2)
-    + "T" + pad(date.getHours(), 2)
-    + ":" + pad(date.getMinutes(), 2)
-    + ":" + pad(date.getUTCSeconds(), 2)
-    + (offset > 0 ? "-" : "+")
-    + pad(Math.floor(Math.abs(offset) / 60), 2)
-    + ":" + pad(Math.abs(offset) % 60, 2);
+        + "-" + pad(date.getMonth() + 1, 2)
+        + "-" + pad(date.getDate(), 2)
+        + "T" + pad(date.getHours(), 2)
+        + ":" + pad(date.getMinutes(), 2)
+        + ":" + pad(date.getUTCSeconds(), 2)
+        + (offset > 0 ? "-" : "+")
+        + pad(Math.floor(Math.abs(offset) / 60), 2)
+        + ":" + pad(Math.abs(offset) % 60, 2);
 };
 // #endif
 
