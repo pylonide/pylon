@@ -391,7 +391,7 @@ apf.offline = {
     $checkRsbTimeout : function(){
         if (!this.rdbTimeout)
             return;
-
+        //#ifdef __WITH_NAMESERVER
         var i, j, k, rdbs = apf.nameserver.getAll("remote");
         for (i = 0; i < rdbs.length; i++) {
             var rdb = rdbs[i];
@@ -424,7 +424,7 @@ apf.offline = {
                 }
             }
         }
-
+        //#endif
         if (this.reloading) {
             //#ifdef __DEBUG
             apf.console.warn("The application has been offline longer than the \
@@ -436,10 +436,12 @@ apf.offline = {
             apf.offline.transactions.clear("undo|redo");
             //#endif
 
+            //#ifdef __WITH_NAMESERVER
             var ats = apf.nameserver.getAll("actiontracker");
             for (var i = 0; i < ats.length; i++) {
                 ats[i].reset();
             }
+            //#endif
         }
     },
     //#endif

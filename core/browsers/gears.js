@@ -7,7 +7,7 @@ apf.initGears = function(){
     //		factory method to get a Google Gears plugin instance to
     //		expose in the browser runtime environment, if present
     var factory, results;
-
+    //#ifdef __WITH_NAMESERVER
     var gearsObj = apf.nameserver.get("google", "gears");
     if(gearsObj)
         return gearsObj; // already defined elsewhere
@@ -41,5 +41,6 @@ apf.initGears = function(){
         return null;
 
     return apf.nameserver.register("google", "gears", factory);
+    //#endif
 };
 //#endif

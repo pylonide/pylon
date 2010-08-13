@@ -400,7 +400,9 @@ apf.Validation = function(){
                 vgroup = value;
             }
             else {
+                //#ifdef __WITH_NAMESERVER
                 vgroup = apf.nameserver.get("validgroup", value);
+                //#endif
             }
 
             this.$validgroup = vgroup || new apf.ValidationGroup(value);
@@ -567,7 +569,9 @@ apf.ValidationGroup = function(name){
         apf.setReference(name, this);
     
     this.name = name || "validgroup" + this.$uniqueId;
+    //#ifdef __WITH_NAMESERVER
     apf.nameserver.register("validgroup", this.name, this);
+    //#endif
 };
 
 (function(){

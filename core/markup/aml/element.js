@@ -170,7 +170,9 @@ apf.AmlElement = function(struct, tagName){
             
             //@todo dispatch event for new name creation.
             //@todo old name disposal
+            //#ifdef __WITH_NAMESERVER
             apf.nameserver.register(this.localName, value, this)
+            //#endif
             
             this.name = value;
         }
@@ -522,7 +524,8 @@ apf.AmlElement = function(struct, tagName){
             }
         }
         // #endif
-        
+
+        //#ifdef __WITH_NAMESERVER
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults element if it exists
         var defs = apf.nameserver.getAll("defaults_" + this.localName);
@@ -546,6 +549,7 @@ apf.AmlElement = function(struct, tagName){
                 }
             }
         }
+        //#endif
         //#endif
 
         //Set all attributes

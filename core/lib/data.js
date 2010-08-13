@@ -222,7 +222,9 @@ apf.getData = function(instruction, options){
                 else model = null;
             }
             else {
+                //#ifdef __WITH_NAMESERVER
                 model = apf.nameserver.get("model", model)
+                //#endif
             }
             
             //#ifdef __DEBUG
@@ -332,10 +334,13 @@ apf.setModel = function(instruction, amlNode){
         };
 
     if (instruction == "@default" || fParsed.type == 2) {
+        //#ifdef __WITH_NAMESERVER
         var model = apf.nameserver.get("model", instruction);
         if (model)
             return model.register(amlNode);
-        else if (instruction == "@default")
+        else
+        //#endif
+            if (instruction == "@default")
             return;
         
         //@todo apf3.0 check here if string is valid url (relative or absolute)
@@ -352,6 +357,7 @@ apf.setModel = function(instruction, amlNode){
     if (fParsed.type == 3) {//This won't work for complex xpaths
         if (fParsed.models) { //check for # in xpaths[i] to determine if its calculated
             if (fParsed.xpaths.length == 2 && fParsed.xpaths[0] != '#' && fParsed.xpaths [1] != '#') {
+                //#ifdef __WITH_NAMESERVER
                 //#ifdef __DEBUG
                 if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
                     throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
@@ -359,6 +365,7 @@ apf.setModel = function(instruction, amlNode){
                 //#endif
                 
                 apf.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
+                //#endif
                 return;
             }
         }

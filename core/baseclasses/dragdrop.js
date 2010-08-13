@@ -1012,7 +1012,12 @@ apf.DragServer = {
                 if (!o.xmlRoot) {
                     var m = o.getModel 
                       ? o.getModel(true) 
-                      : apf.nameserver.get("model", o.model)
+                      :
+                      //#ifdef __WITH_NAMESERVER
+                      apf.nameserver.get("model", o.model)
+                      /* #else
+                      {}
+                      #endif */
                     if (m)
                         m.load(this.dragdata.data[0])
                     //else warn??

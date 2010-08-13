@@ -48,6 +48,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                      "nick": 1};
 
     if (typeof model == "string") {
+        //#ifdef __WITH_NAMESERVER
         var sModel = model;
         if (!(model = apf.nameserver.get(sModel))) {
             model = apf.setReference(sModel,
@@ -57,6 +58,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
             else
                 model.id = model.name = sModel;
         }
+        //#endif
         // set the root node for this model
         model.load("<xmpp/>");
     }

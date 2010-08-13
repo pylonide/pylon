@@ -1469,7 +1469,9 @@ apf.MultiSelect = function(){
                             }
                         }
                         else {
+                            //#ifdef __WITH_NAMESERVER
                             model = apf.nameserver.get("model", c.cvalue.xpaths[0]);
+                            //#endif
                             path  = c.cvalue.xpaths[1];
                         }
 

@@ -1074,7 +1074,7 @@ apf.DataBinding = function(){
         
         if (!value)
             return;
-
+        //#ifdef __WITH_NAMESERVER
         // #ifdef __DEBUG
         if (!apf.nameserver.get(prop, value))
             throw new Error(apf.formatErrorString(1064, this,
@@ -1083,6 +1083,7 @@ apf.DataBinding = function(){
         // #endif
 
         apf.nameserver.get(prop, value).register(this);
+        //#endif
         
         if (prop != "actions" && 
           this.$checkLoadQueue() === false && this.$amlLoaded)
@@ -1176,10 +1177,12 @@ apf.DataBinding = function(){
 
             if (!model) {
                 if (modelId) {
+                    //#ifdef __WITH_NAMESERVER
                     //@todo apf3.0 how is this cleaned up???
                     //Add change listener to the data of the model
                     model = apf.nameserver.get("model", modelId) //is model creation useful here?
                         || apf.setReference(modelId, apf.nameserver.register("model", modelId, new apf.model()));
+                    //#endif
                 }
                 else {
                     if (!this.$model && !this.$initingModel)
@@ -1420,9 +1423,11 @@ apf.DataBinding = function(){
         var model;
         if (typeof value == "object") {
             if (value.dataType == apf.ARRAY) { //Optimization used for templating
+                //#ifdef __WITH_NAMESERVER
                 model = apf.nameserver.get("model", value[0]);
                 model.register(this, value[1]);
                 return;
+                //#endif
             }
             else if (value.$isModel) { // A model node is passed
                 //Convert model object to value;

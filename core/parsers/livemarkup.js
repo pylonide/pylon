@@ -1977,6 +1977,7 @@ apf.lm = new (function(){
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
 apf.lm_exec = new (function(){
+    //#ifdef __WITH_NAMESERVER
     var wlvl = 1; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
 
     //warning functions
@@ -2643,5 +2644,6 @@ apf.lm_exec = new (function(){
     _async(_n,_c,_a,_w,apf.lm_exec.c342,this,
     LIVEMARKUP END CACHE*/
     var LMENDCACHE;
+    // #endif
 })();
 // #endif

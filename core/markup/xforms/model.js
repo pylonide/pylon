@@ -38,6 +38,7 @@ apf.XformsModelElement = function(struct, tagName){
      * @private
      */
     this.getBindNode = function(bindId){
+        //#ifdef __WITH_NAMESERVER
         var bindObj = apf.nameserver.get("bind", bindId);
 
         //#ifdef __DEBUG
@@ -49,6 +50,7 @@ apf.XformsModelElement = function(struct, tagName){
         //#endif
 
         return bindObj;
+        //#endif
     };
     
     /**

@@ -14,26 +14,28 @@ apf.dbg = function(struct, tagName){
     this.$createModelPropHandler = function(name, xml, callback) {
         return function(value) {
             if (!value) return;
-            
+            //#ifdef __WITH_NAMESERVER
             this[name] = apf.setReference(value,
                 apf.nameserver.register("model", value, new apf.model()));
             
             // set the root node for this model
             this[name].id = this[name].name = value;
             this[name].load(xml);
+            //#endif
         }
     };
 
     this.$createStatePropHandler = function(name) {
         return function(value) {
             if (!value) return;
-            
+            //#ifdef __WITH_NAMESERVER
             this[name] = apf.setReference(value,
                     apf.nameserver.register("state", value, new apf.state()));
             
             // set the root node for this model
             this[name].id = this[name].name = value;
             this[name].deactivate();
+            //#endif
         }
     };
     

@@ -665,6 +665,7 @@ apf.$debugwin = {
             lut[docId] = doc;
         }
         else if (lut[docId] != doc) {
+            //#ifdef __WITH_NAMESERVER
             var model1 = this.apf.nameserver.get("model", docId);
             lut[docId] = doc;
 
@@ -673,6 +674,7 @@ apf.$debugwin = {
             
             if (model1)
                 apf.nameserver.register("model", docId, model1);
+            //#endif
         }
         
         mrkData.load(xml);
@@ -789,8 +791,10 @@ apf.$debugwin = {
             if (islm) {
                 var func = apf.$debugwin.apf.lm.compile(code, {parsecode : true});
                 if (model && !loaded) {
+                    //#ifdef __WITH_NAMESERVER
                     if (data = apf.$debugwin.apf.nameserver.get("model", model))
                         data = data.data;
+                    //#endif
                     if (!data) {
                         var data = _self.apf.getData(model, {
                             useXML   : true,

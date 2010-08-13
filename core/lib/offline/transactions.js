@@ -141,6 +141,7 @@ apf.offline.transactions = {
         }
         
         var i, j, qItem, stack, namespace, at, start, len, type;
+        //#ifdef __WITH_NAMESERVER
         for (i = 0; i < ats.length; i++) {
             at        = apf.nameserver.get("actiontracker", ats[i][0]);
             type      = ats[i][1];
@@ -188,6 +189,7 @@ apf.offline.transactions = {
             
             apf.offline.sLookup = null;
         }
+        //#endif
     },
     
     clearActions : function(at, type){
@@ -214,6 +216,7 @@ apf.offline.transactions = {
     },
 
     getSyncLength : function(){
+        //#ifdef __WITH_NAMESERVER
         var ats = apf.nameserver.getAll("actiontracker");
         
         var len = 0;
@@ -221,6 +224,7 @@ apf.offline.transactions = {
             len += ats[i].$getQueueLength();
         
         return len;
+        //#endif
     },
 
     sync : function(callback){

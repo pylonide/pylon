@@ -1395,7 +1395,9 @@ apf.window = function(){
         if (apf.actiontracker) {
             this.$at      = new apf.actiontracker();
             this.$at.name = "default";
+            //#ifdef __WITH_NAMESERVER
             apf.nameserver.register("actiontracker", "default", this.$at);
+            //#endif
         }
         
         //#ifdef __WITH_CONTENTEDITABLE || __WITH_LIVEEDIT

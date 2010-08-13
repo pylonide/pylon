@@ -26,6 +26,7 @@
  */
 apf.storage.modules.gears = 
 apf.storage.modules["gears.sql"] = {
+    //#ifdef __WITH_NAMESERVER
     // instance methods and properties
     table_name  : "STORAGE",
     initialized : false,
@@ -368,5 +369,6 @@ apf.storage.modules["gears.sql"] = {
         throw new Error(this.declaredClass 
             + " does not support a storage settings user-interface");
     }
+    //#endif
 };
 // #endif

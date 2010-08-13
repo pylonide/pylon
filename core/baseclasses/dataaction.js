@@ -478,12 +478,14 @@ apf.DataAction = function(){
             sel[1] = m.xpath;
         }
         else {
+            //#ifdef __WITH_NAMESERVER
             model = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
             node  = model
                 ? model.queryNode(sel[1])
                 : (xmlNode || this.xmlRoot).selectSingleNode(sel[1]);
             if (model && !xmlNode)
                 xmlNode = model.data; //@experimental, after changing this, please run test/test_rename_edge.html
+            //#endif
         }
 
         if (node) {

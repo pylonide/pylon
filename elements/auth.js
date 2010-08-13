@@ -292,11 +292,13 @@ apf.aml.setElement("auth", apf.auth);
                 this.state.activate();
         }
 
+        //#ifdef __WITH_NAMESERVER
         if (e.data && this.model) {
             this.model = apf.nameserver.get("model", this.model);
             if (this.model)
                 this.model.load(e.data);
         }
+        //#endif
     });
 
     /**

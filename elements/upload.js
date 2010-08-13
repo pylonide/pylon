@@ -606,6 +606,7 @@ apf.upload.ERROR_CODES = {
 
 apf.upload.files = function(oUpload, model) {
     if (typeof model == "string") {
+        //#ifdef __WITH_NAMESERVER
         var sModel = model;
         if (!(model = apf.nameserver.get(sModel))) {
             model = apf.setReference(sModel,
@@ -615,6 +616,7 @@ apf.upload.files = function(oUpload, model) {
             else
                 model.id = model.name = sModel;
         }
+        //#endif
     }
     //#ifdef __DEBUG
     if (!model) {

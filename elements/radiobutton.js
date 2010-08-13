@@ -126,14 +126,21 @@ apf.radiobutton = function(struct, tagName){
         }
         
         var group = typeof value == "string"
-            ? apf.nameserver.get("radiogroup", value)
+            ?
+            //#ifdef __WITH_NAMESERVER
+            apf.nameserver.get("radiogroup", value)
+            /* #else
+            {}
+            #endif */
             : value;
         if (!group) {
+            //#ifdef __WITH_NAMESERVER
             group = apf.nameserver.register("radiogroup", value, 
                 new apf.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
             group.parentNode = this;
+            //#endif
         }
         this.$group = group;
         

@@ -664,6 +664,7 @@ apf.smartbinding = function(struct, tagName){
         switch(prop) {
             //@todo apf3 change this to use apf.setModel();
             case "model":
+                //#ifdef __WITH_NAMESERVER
                 if (typeof value == "string")
                     value = apf.nameserver.get("model", value);
                 this.model          = apf.nameserver.register("model", this.name, value);
@@ -680,6 +681,7 @@ apf.smartbinding = function(struct, tagName){
                         : amlNode.$uniqueId] || this.modelBaseXpath);
                     //this.$bindNodes[uniqueId].load(this.model);
                 }
+                //#endif
                 break;
             case "bindings":
                 if (this.$bindings)
@@ -687,7 +689,12 @@ apf.smartbinding = function(struct, tagName){
                 
                 this.$bindings = typeof value == "object" 
                     ? value 
-                    : apf.nameserver.lookup("bindings", value);
+                    : 
+                    //#ifdef __WITH_NAMESERVER
+                    apf.nameserver.lookup("bindings", value);
+                    /* #else
+                    {}
+                    #endif */
                 
                 this.add(this.$bindings);
                 
@@ -698,7 +705,12 @@ apf.smartbinding = function(struct, tagName){
                 
                 this.$actions = typeof value == "object" 
                     ? value 
-                    : apf.nameserver.lookup("actions", value);
+                    :
+                    //#ifdef __WITH_NAMESERVER
+                    apf.nameserver.lookup("actions", value);
+                    /* #else
+                    {}
+                    #endif */
                 
                 this.add(this.$actions);
             

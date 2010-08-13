@@ -33,7 +33,7 @@ apf.defaults = function(struct, tagName){
 
 (function(){
     this.$parsePrio = "002";
-    
+    //#ifdef __WITH_NAMESERVER
     this.$propHandlers["for"] = function(value){
         if (this.$lastFor)
             apf.nameserver.remove("defaults_" + this.$lastFor, this);
@@ -46,6 +46,7 @@ apf.defaults = function(struct, tagName){
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
         apf.nameserver.remove("defaults_" + this.$lastFor, this);
     });
+    //#endif
 }).call(apf.defaults.prototype = new apf.AmlElement());
 
 apf.aml.setElement("defaults", apf.defaults);

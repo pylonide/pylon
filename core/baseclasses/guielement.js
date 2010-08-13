@@ -789,6 +789,7 @@ apf.GuiElement.propHandlers = {
             this.$at = value;
         }
         else {
+            //#ifdef __WITH_NAMESERVER
             this.$at = typeof value == "string" && self[value]
               ? apf.nameserver.get("actiontracker", value) || self[value].getActionTracker()
               : apf.setReference(value,
@@ -797,6 +798,7 @@ apf.GuiElement.propHandlers = {
 
             if (!this.$at.name)
                 this.$at.name = value;
+            //#endif
         }
     },
     //#endif
@@ -835,7 +837,7 @@ apf.GuiElement.propHandlers = {
     ,"alias" : function(value){
         if (!value) //@todo think about whether this has more meaning
             return;
-
+        //#ifdef __WITH_NAMESERVER
         var cg = apf.nameserver.get("alias", value);
         if (!cg) {
             cg = apf.nameserver.register("alias", value, {
@@ -955,6 +957,7 @@ apf.GuiElement.propHandlers = {
         }
         
         cg.set(this);
+        //#endif
     }
     //#endif
 };

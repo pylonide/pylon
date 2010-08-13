@@ -33,6 +33,7 @@ apf.offline.application.gears = {
     fileIndex   : 0,
     
     init : function(){
+        //#ifdef __WITH_NAMESERVER
         // clip at 64 characters, the max length of a resource store name
         this.name = this.storeName.truncate(64);
         this.storeName = apf.config.name + ".apf.offline";
@@ -138,6 +139,7 @@ apf.offline.application.gears = {
         this.lastStore.abortCapture(this.cancelID);
         this.refreshing = false;
     }
+    // #endif
 };
 
 // #endif

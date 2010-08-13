@@ -131,7 +131,7 @@ apf.offline.models = {
 
     search : function(){
         //Save all the models
-
+        //#ifdef __WITH_NAMESERVER
         var done = {}, models = apf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++) {
             if (done[models[i].$uniqueId])
@@ -140,6 +140,7 @@ apf.offline.models = {
             done[models[i].$uniqueId] = true;
             this.updateModel(models[i]);
         }
+        //#endif
 
         return true;
     },

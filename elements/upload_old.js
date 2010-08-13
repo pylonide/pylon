@@ -747,7 +747,9 @@ apf.upload = function(struct, tagName){
 
 apf.upload.files = function(model) {
     if (typeof model == "string")
+        //#ifdef __WITH_NAMESERVER
         model = apf.nameserver.get("model", model);
+        //#endif
 
     if (model)
         model.load("<files/>");

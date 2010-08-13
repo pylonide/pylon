@@ -112,7 +112,9 @@ apf.model = function(struct, tagName){
 
     if (!apf.globalModel) {
         apf.globalModel = this;
+        //#ifdef __WITH_NAMESERVER
         apf.nameserver.register("model", "@default", this);
+        //#endif
     }
 };
 
@@ -161,7 +163,12 @@ apf.model = function(struct, tagName){
 
     this.share = function(xpath) {
         this.rdb = typeof this.remote == "string"
-            ? apf.nameserver.get("remote", this.remote)
+            ? 
+            //#ifdef __WITH_NAMESERVER
+            apf.nameserver.get("remote", this.remote)
+            /* #else
+            {}
+            #endif */
             : this.remote;
 
         //#ifdef __DEBUG

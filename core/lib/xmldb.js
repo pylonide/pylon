@@ -122,8 +122,10 @@ apf.xmldb = new (function(){
      *
      */
     this.setModel = function(model){
+        //#ifdef __WITH_NAMESERVER
         apf.nameserver.register("model", model.data.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag), model);
+        //#endif
     };
 
     /**
@@ -134,8 +136,10 @@ apf.xmldb = new (function(){
      */
     this.findModel = function(xmlNode){
         if (!xmlNode) debugger;
+        //#ifdef __WITH_NAMESERVER
         return apf.nameserver.get("model", xmlNode.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag));
+        //#endif
     };
 
     /**
@@ -719,8 +723,10 @@ apf.xmldb = new (function(){
         //#ifdef __WITH_OFFLINE
         if (typeof apf.offline != "undefined" && apf.offline.models.enabled
           && apf.offline.models.realtime) {
+            //#ifdef __WITH_NAMESERVER
             var model = apf.nameserver.get("model", apf.xmldb.getXmlDocId(xmlNode));
             if (model) apf.offline.models.markForUpdate(model);
+            //#endif
         }
         //#endif
 
@@ -892,7 +898,7 @@ apf.xmldb = new (function(){
 
         if (xmlNode.nodeType == 2)
             xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
-
+        //#ifdef __WITH_NAMESERVER
         var mdlId   = apf.xmldb.getXmlDocId(xmlNode),
             model   = apf.nameserver.get("model", mdlId);
         if (!model && apf.isO3)
@@ -929,6 +935,7 @@ apf.xmldb = new (function(){
                 });
             }
         }
+        //#endif
     };
     //#endif
 
@@ -1049,9 +1056,10 @@ apf.xmldb = new (function(){
             if (docEl)
                 docEl.setAttribute(this.xmlDocTag, docId);
         }
-
+        //#ifdef __WITH_NAMESERVER
         if (model)
             apf.nameserver.register("model", docId, model);
+        //#endif
 
         return docId;
     };

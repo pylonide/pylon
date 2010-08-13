@@ -262,7 +262,9 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (typeof value === "string") {
+            //#ifdef __WITH_NAMESERVER
             this.$debugger = apf.nameserver.get("debugger", value);
+            //#endif
         } else { 
             this.$debugger = value;
         }

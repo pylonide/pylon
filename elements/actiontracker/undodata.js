@@ -97,11 +97,13 @@ apf.UndoData = function(settings, at){
         for (var i = 0; i < args.length; i++) {
             if (args[i] && args[i].nodeType) {
                 if (!serialState.argsModel) {
+                    //#ifdef __WITH_NAMESERVER
                     var model = apf.nameserver.get("model",
                         apf.xmldb.getXmlDocId(args[i]));
 
                     if(model)
                         serialState.argsModel = model.name || model.$uniqueId;
+                    //#endif
                 }
 
                 args[i] = serializeNode(args[i]);
@@ -173,12 +175,15 @@ apf.UndoData = function(settings, at){
     };
 
     this.$import = function(){
+        //#ifdef __WITH_NAMESERVER
         //#ifdef __WITH_RDB
         if (this.rdbModel)
             this.rdbModel = apf.nameserver.get("model", this.rdbModel);
         //#endif
+        //#endif
 
         if (this.argsModel) {
+            //#ifdef __WITH_NAMESERVER
             var model = apf.nameserver.get("model", this.argsModel)
                 || apf.lookup(this.argsModel);
 
@@ -208,6 +213,7 @@ apf.UndoData = function(settings, at){
             }
 
             this.args = args;
+            //#endif
         }
 
         options = {
