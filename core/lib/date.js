@@ -598,8 +598,8 @@ apf.date.getDateTime = function(datetime, format) {
                 return M = part;
             case "ss":
                 return s = part;
-            case ""T"":
-            case ""Z"":
+            case "T":
+            case "Z":
                 //because in date we have only T
                 alter -= 2;
                 break;
