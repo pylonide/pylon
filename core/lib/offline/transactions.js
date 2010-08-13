@@ -228,6 +228,7 @@ apf.offline.transactions = {
     },
 
     sync : function(callback){
+        //#ifdef __WITH_NAMESERVER
         var ats = apf.nameserver.getAll("actiontracker");
         
         var qNr = 0, len = 0;
@@ -251,6 +252,7 @@ apf.offline.transactions = {
                 });
             }
         }
+        //#endif
     }
 };
 
