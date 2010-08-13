@@ -193,6 +193,7 @@ apf.scrollbar = function(struct, tagName){
     this.$resize = function(){
         this.$recalc();
         this.$update();
+        this.setScroll(null, true);
     }
     
     this.$recalc = function(){
@@ -492,10 +493,6 @@ apf.scrollbar = function(struct, tagName){
             };
         }
         
-        this.$caret.onmouseup = function() {
-            _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
-        };
-        
         this.$caret.onmousedown = function(e){
             if (_self.disabled)
                 return;
@@ -541,9 +538,10 @@ apf.scrollbar = function(struct, tagName){
                 if (!_self.realtime)
                     _self.setScroll();
                 
-                
                 if (this.releaseCapture)
                     this.releaseCapture();
+                
+                _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Down"]);
                 
                 document.onmouseup   = 
                 document.onmousemove = null;

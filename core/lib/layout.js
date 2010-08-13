@@ -1422,7 +1422,7 @@ apf.layout = {
             if (!no_exec)
                 f();
 
-            if (!this.$hasResizeEvent) {
+            if (!window.onresize) {
                 /*var f = apf.layout.onresize;
                 window.onresize = function(){
                     var s = [];
@@ -1437,7 +1437,8 @@ apf.layout = {
                     try{
                         var c = [];
                         for (var name in f)
-                            c.unshift(f[name]);
+                            if (f[name])
+                                c.unshift(f[name]);
                         for (var i = 0; i < c.length; i++){
                             c[i]();
                             if (c[i].children) {
@@ -1450,10 +1451,9 @@ apf.layout = {
                     }
                 }
                 
-                apf.addListener(window, "resize", function(){
+                window.onresize = function(){
                     rsz(apf.layout.onresize);
-                });
-                this.$hasResizeEvent = true;
+                }
             }
         }
     },
