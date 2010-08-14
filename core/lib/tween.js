@@ -259,7 +259,7 @@ var ID        = "id",
      */
     calcColorSteps = function(animtype, fromValue, toValue, nrOfSteps){
         var d2, d1,
-            c   = apf.color.colors,
+            c   = apf.color.colorshex,
             a   = parseInt((c[fromValue] || fromValue).slice(1), 16),
             b   = parseInt((c[toValue] || toValue).slice(1), 16),
             i   = 0,
@@ -796,6 +796,8 @@ return {
     RUNNING: 0,
     STOPPING: 1,
     STOPPED: 2,
+    
+    calcColorSteps: calcColorSteps,
 
     linear: function(t, x_min, dx) {
         return dx * t + x_min;
