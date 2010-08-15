@@ -928,6 +928,8 @@ apf.n = function(xml, xpath){
 apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
 }
+apf.b.$queue = [];
+apf.b.$state = 0;
 /**
  * Naive jQuery like set implementation
  * @todo add dirty flags
@@ -945,6 +947,28 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 (function(){
     this.add = function(){} //@todo not implemented
+    
+    this.begin = function(){
+        apf.b.$state = 1;
+        return this;
+    }
+    this.commit = function(){
+        if (apf.b.$queue.length) {
+            atPrivacy.execute({
+                action : 'multicall', 
+                args   : apf.b.$queue
+            });
+        }
+        
+        apf.b.$queue = [];
+        apf.b.$state = 0;
+        return this;
+    }
+    this.rollback = function(){
+        apf.b.$queue = [];
+        apf.b.$state = 0;
+        return this;
+    }
     
     this.before = function(){
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
@@ -996,10 +1020,15 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.attr = function(attrName, value){
         if (!value)
-            return this.$nodes[0].getAttribute(attrName);
+            return this.$nodes && this.$nodes[0] && this.$nodes[0].getAttribute(attrName) || "";
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
-                if (this.$local)
+                if (apf.b.$state)
+                    apf.b.$queue.push({
+                        action : 'setAttribute',
+                        args   : [this.$nodes[i], attrName, value]
+                    });
+                else if (this.$local)
                     this.$nodes[i].setAttribute(attrName, value);
                 else
                     apf.xmldb.setAttribute(this.$nodes[i], attrName, value);
@@ -1011,7 +1040,12 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.removeAttr = function(attrName){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            if (this.$local)
+            if (apf.b.$state)
+                apf.b.$queue.push({
+                    action : 'removeAttribute',
+                    args   : [this.$nodes[i], attrName]
+                });
+            else if (this.$local)
                 this.$nodes[i].removeAttribute(attrName);
             else
                 apf.xmldb.removeAttribute(this.$nodes[i], attrName);
@@ -1029,7 +1063,11 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.get   = 
-    this.index = 
+    this.index = function(idx){
+        if (idx == undefined)
+            return apf.getChildNumber(this.$nodes[0], this.$nodes[0].parentNode.getElementsByTagName("*"))
+    }
+    
     this.eq    = function(index){
         return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
     }
@@ -1043,26 +1081,30 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.next = function(selector){
-        return new apf.xmlset(this.$xml, "((following-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.nextAll = function(selector){
-        return new apf.xmlset(this.$xml, "(following-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.nextUntil = function(){}
     
     this.prev = function(selector){
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + this.$xpath + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     this.prevAll = function(selector){
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + this.$xpath + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
     }
     
     this.not = function(){}
 
     this.parent = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/..[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml.parentNode, this.$local, this);
     }
     
     this.parents = function(selector){}
@@ -1094,8 +1136,13 @@ apf.xmlset = function(xml, xpath, local, previous){
             node = this.$nodes[i];
             if (!node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
-                
-            if (this.$local)
+            
+            if (apf.b.$state)
+                apf.b.$queue.push({
+                    action : 'removeNode',
+                    args   : [node]
+                });
+            else if (this.$local)
                 node.parentNode.removeChild(node);
             else
                 apf.xmldb.removeNode(node);
@@ -1112,7 +1159,12 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (selector && !node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
             
-            if (this.$local)
+            if (apf.b.$state)
+                apf.b.$queue.push({
+                    action : 'removeNode',
+                    args   : [node]
+                });
+            else if (this.$local)
                 node.parentNode.removeChild(node);
             else
                 apf.xmldb.removeNode(node);
@@ -1183,7 +1235,14 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.each = function(func){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            func(this.$nodes[i]);
+            func.call(this.$nodes[i], i);
+        }
+        return this;
+    }
+    
+    this.eachrev = function(func){
+        for (var i = this.$nodes.length - 1; i >= 0; i--) {
+            func.call(this.$nodes[i], i);
         }
         return this;
     }
