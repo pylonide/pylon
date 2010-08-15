@@ -155,8 +155,9 @@ apf.BaseButton = function(){
           || (this.isBoolean && this.value)) {
             this.$setState("Down", e, strEvent);
         }
-        else if (this.$mouseOver)
+        else if (this.$mouseOver) {
             this.$setState("Over", e, strEvent);
+        }
         else
             this.$setState("Out", e, strEvent);
     };

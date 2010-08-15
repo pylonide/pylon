@@ -77,7 +77,6 @@ apf.checkbox = function(struct, tagName){
     );
 
     //Options
-    this.$notfromext = true;
     this.$focussable = true; // This object can get the focus
     this.checked     = false;
     this.$values     = [1, 0];
@@ -110,7 +109,7 @@ apf.checkbox = function(struct, tagName){
             if (this.getAttribute("values"))
                 this.$propHandler["values"].call(this, this.getAttribute("values"));
             else
-                this.$values = [false, true];
+                this.$values = [true, false];
         }
         this.setProperty("value", this.$values[value ? 0 : 1]);
     };
@@ -124,6 +123,9 @@ apf.checkbox = function(struct, tagName){
             return;
 
         var lbl = this.$getLayoutNode("main", "label", this.$ext);
+        if (!lbl)
+            return;
+        
         if (lbl.nodeType == 1)
             lbl.innerHTML = value;
         else
@@ -139,6 +141,8 @@ apf.checkbox = function(struct, tagName){
         this.$values = typeof value == "string"
             ? value.split("\|")
             : (value || [1, 0]);
+
+        this.$propHandlers["value"].call(this, this.value);
     };
 
     /**** Public Methods ****/
@@ -229,6 +233,7 @@ apf.checkbox = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal();
         this.$input = this.$getLayoutNode("main", "input", this.$ext);
+        this.$notfromext = this.$input && this.$input != this.$ext;
 
         this.$setupEvents();
     };

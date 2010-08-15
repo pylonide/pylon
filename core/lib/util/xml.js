@@ -95,6 +95,8 @@ apf.isOnlyChild = function(node, nodeType){
  * @return {Number} the child position of the node.
  */
 apf.getChildNumber = function(node, fromList){
+    if (!node) return -1;
+    
     var p = node.parentNode, j = 0;
     if (!p) return 0;
     if (!fromList)

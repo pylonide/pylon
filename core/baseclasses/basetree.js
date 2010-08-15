@@ -1128,6 +1128,15 @@ apf.BaseTree = function(){
         this.$ext.onclick = function(e){
             _self.dispatchEvent("click", {htmlEvent : e || event});
         };
+        this.$ext.onmousedown = function(e){
+            _self.dispatchEvent("mousedown", {htmlEvent : e || event});
+        };
+        this.$ext.onmouseover = function(e){
+            _self.dispatchEvent("mouseover", {htmlEvent : e || event});
+        };
+        this.$ext.onmousemove = function(e){
+            _self.dispatchEvent("mousemove", {htmlEvent : e || event});
+        };
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){

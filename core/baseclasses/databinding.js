@@ -1102,7 +1102,7 @@ apf.DataBinding = function(){
             if (this.hasFeature(apf.__MULTISELECT__)) {
                 //#ifdef __DEBUG
                 if (eachBinds[prop]) {
-                    throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
+                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
                 }
                 //#endif
             }

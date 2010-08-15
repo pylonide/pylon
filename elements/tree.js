@@ -318,7 +318,7 @@ apf.tree = function(struct, tagName){
           "o.stopRename();this.dorename=false;" + 
           //#endif
           (ocAction == "ondblclick" ? "o.slideToggle(this, null, null, true);" : "") +
-          "apf.cancelBubble(event,o);");
+          "apf.cancelBubble(event, o);");
         
         //Setup Nodes Identity (Look)
         if (elIcon) {

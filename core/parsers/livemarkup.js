@@ -372,7 +372,7 @@ apf.lm = new (function(){
     macro_c.output      = ")",
     macro_o.reset       = "(_o=[],l=0",
     macro_c.reset       = ")",
-    macro_o.index       = "apf.getChildNumber(_n",
+    macro_o.index       = "apf.getChildNumber.call(apf",
     macro_c.index       = ")",
     macro_o.item        = "(_t[_t.length-1][_t[_t.length-2]-1]",
     macro_c.item        = ")",
