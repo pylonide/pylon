@@ -80,8 +80,8 @@ apf.script = function(){
         if (!this.type || this.type == "text/javascript") {
             apf.jsexec(code);
         }
-        else if (this.type == "application/livemarkup"
-          || this.type == "application/lm") { //@todo this is wrong, it should start in code mode
+        else if (this.type.indexOf("livemarkup") > -1
+          || this.type.indexOf("lm") > -1) { //@todo this is wrong, it should start in code mode
             var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true, nostring: true});
             func(e || {});
         }

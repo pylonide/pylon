@@ -398,11 +398,12 @@ apf.actiontracker = function(struct, tagName){
             //have mutation events yet. One way is to add an a_at="" attribute
             //that can be looked up to find actiontracker listeners.
 
-            //Set listener
-            //if (dataNode)
-                //apf.xmldb.setNodeListener();
+            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), dataNode);
 
-            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), xmlNode);
+            //Set listener
+            if (dataNode)
+                apf.xmldb.addNodeListener(dataNode, this); //should be unique for for xml node xmldb.xmlIdTag
+
             if (this.$transtack[id] && !bClear) {
                 //throw new Error("Existing transaction found!");
                 return;
@@ -428,6 +429,10 @@ apf.actiontracker = function(struct, tagName){
                 }
             }
         }
+    }
+    
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
+        
     }
 
     /**
