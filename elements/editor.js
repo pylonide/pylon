@@ -188,6 +188,8 @@ apf.editor = function(struct, tagName){
         }
     });
 
+    var clickTimer;
+
     /**
      * Event handler; fired when the user clicked inside the editable area.
      *
@@ -197,6 +199,7 @@ apf.editor = function(struct, tagName){
      * @private
      */
     function onClick(e) {
+        clearTimeout(clickTimer);
         if (this.$oBookmark && apf.isGecko) {
             var oNewBm = _self.$selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
@@ -208,7 +211,7 @@ apf.editor = function(struct, tagName){
         var which  = e.which,
             button = e.button,
             _self  = this;
-        $setTimeout(function() {
+        clickTimer = $setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
             //#ifdef __WITH_FOCUS
             if (apf.document.activeElement != this) {
@@ -469,7 +472,8 @@ apf.editor = function(struct, tagName){
         if (!h || h < 0)
             h = 0;
 
-        this.iframe.parentNode.style.height = h + "px";
+        if (this.$container)
+            this.$container.style.height = h + "px";
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
         this.$notifyAllPlugins("resize");
