@@ -990,9 +990,20 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.andSelf = function(){}
     
     this.append = function(el){
-        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+        for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
-            node.appendChild(typeof el == "function" ? el(i, node) : el);
+            child = typeof el == "function" ? el(i, node) : el;
+            
+            if (apf.b.$state)
+                apf.b.$queue.push({
+                    action : 'appendChild',
+                    args   : [node, child]
+                });
+            else if (this.$local)
+                node.appendChild(child);
+            else
+                apf.xmldb.appendChild(node, child);
+            
         }
         
         return this;
