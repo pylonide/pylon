@@ -465,7 +465,7 @@ apf.editor = function(struct, tagName){
         if (!this.iframe || !this.iframe.parentNode || !this.$ext.offsetHeight)
             return;
             
-        var h = (this.$ext.offsetHeight - this.oToolbar.offsetHeight - 2);
+        var h = (this.$ext.offsetHeight - this.$toolbar.offsetHeight - 2);
         if (!h || h < 0)
             h = 0;
 

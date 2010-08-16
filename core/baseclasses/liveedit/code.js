@@ -185,8 +185,8 @@ apf.LiveEdit.plugin("code", function() {
         if (!oPreview || !editor) return;
         
         var w = editor.$ext.offsetWidth - 2;
-        var h = editor.$ext.offsetHeight - editor.oToolbar.offsetHeight - 4;
-        oCont.style.top       = editor.oToolbar.offsetHeight + "px";
+        var h = editor.$ext.offsetHeight - editor.$toolbar.offsetHeight - 4;
+        oCont.style.top       = editor.$toolbar.offsetHeight + "px";
         oCont.style.width     = 
         oToolbar.style.width  = w + "px";
         oPreview.style.width  = w - (apf.isIE ? 2 : 0) + "px";
