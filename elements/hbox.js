@@ -157,7 +157,10 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
-                node.$ext.style[size] = stretch ? "auto" : "";
+                if (stretch)
+                    node.$ext.style[size] = stretch ? "auto" : "";
+                else
+                    handlers["true"][size].call(this, node.height);
             }
         }
         else if (this.$amlLoaded) {

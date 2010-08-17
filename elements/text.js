@@ -99,13 +99,8 @@ apf.text = function(struct, tagName){
                     + "|onpropertychange", "g"), "ona");
         }
 
-        if (this.addOnly) {
-            this.$container.insertAdjacentHTML("beforeend", value);
-        }
-        else {
-            value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-            this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
-        }
+        value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
+        this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
 
         //Iframe bug fix for IE (leaves screen white);
         if (apf.cannotSizeIframe && this.oIframe)

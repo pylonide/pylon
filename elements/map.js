@@ -530,7 +530,9 @@ apf.map = function(struct, tagName){
         function loaded() {
             loaddone = true;
             _self.$draw();
-            delete self.google_maps_initialize;
+            try{
+                delete self.google_maps_initialize;
+            }catch(e){}
         }
         if (typeof google == "undefined" || typeof google.maps == "undefined") {
             self.google_maps_initialize = function() {
