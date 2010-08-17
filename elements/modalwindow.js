@@ -607,7 +607,6 @@ apf.AmlWindow = function(struct, tagName){
         this.oIcon    = this.$getLayoutNode("main", "icon",  this.$ext);
         this.oDrag    = this.$getLayoutNode("main", "drag",  this.$ext);
         this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
-        this.oDrag.host = this;
 
         if (this.popout)
             this.$ext.style.position = "absolute";
@@ -620,24 +619,27 @@ apf.AmlWindow = function(struct, tagName){
         //#endif
         
         var _self = this;
-        this.oDrag.onmousedown = function(e){
-            if (!e) e = event;
-
-            //because of some issue I don't understand oExt.onmousedown is not called
-            if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
-                apf.WinServer.setTop(_self);
-
-            if (_self.$lastState.maximized)
-                return false;
-
-            //#ifdef __WITH_ALIGNMENT
-            if (_self.aData && _self.dockable) {
-                if (_self.$lastState.normal) //@todo
-                    _self.startDocking(e);
-                return false;
-            }
-            //#endif
-        };
+        if (this.oDrag) {
+            this.oDrag.host = this;
+            this.oDrag.onmousedown = function(e){
+                if (!e) e = event;
+    
+                //because of some issue I don't understand oExt.onmousedown is not called
+                if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
+                    apf.WinServer.setTop(_self);
+    
+                if (_self.$lastState.maximized)
+                    return false;
+    
+                //#ifdef __WITH_ALIGNMENT
+                if (_self.aData && _self.dockable) {
+                    if (_self.$lastState.normal) //@todo
+                        _self.startDocking(e);
+                    return false;
+                }
+                //#endif
+            };
+        }
 
         this.$ext.onmousedown = function(){
             //#ifdef __WITH_FOCUS

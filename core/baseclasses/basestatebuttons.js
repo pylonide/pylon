@@ -224,6 +224,8 @@ apf.BaseStateButtons = function(){
                             //#endif
                         },
                         onfinish : function(){
+                            _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
                             if (_self.$placeHolder)
                                 _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
                             
@@ -326,36 +328,42 @@ apf.BaseStateButtons = function(){
                     t = htmlNode.offsetTop;
                 }
                 else {
-                    var pos = apf.getAbsolutePosition(htmlNode, pNode);
+                    var pos = apf.getAbsolutePosition(htmlNode); //pNode
                     l = pos[0];//parseInt(apf.getStyle(htmlNode, "left")) || 0;
                     t = pos[1];//parseInt(apf.getStyle(htmlNode, "top")) || 0;
                 }
                 
                 this.$lastpos = {
                     css    : [this.$ext.style.left, this.$ext.style.top,
-                              this.$ext.style.width, this.$ext.style.height],
+                              this.$ext.style.width, this.$ext.style.height,
+                              this.$ext.style.margin],
                     px     : [l, t, this.$ext.offsetWidth, 
                               this.$ext.offsetHeight],
                     parent : [pNode.style.width, pNode.style.height, 
                               pNode.style.overflow],
                     pos        : htmlNode.style.position,
-                    parentNode : pNode
+                    parentNode : pNode,
+                    beforeNode : this.$ext.nextSibling
                 };
-
+                
                 if (this.parentNode.$layout) {
                     if (!this.$placeHolder)
                         this.$placeHolder = document.createElement("div");
                     this.$placeHolder.style.position = this.$lastpos.pos;
                     this.$placeHolder.style.left   = this.$lastpos.css[0];
                     this.$placeHolder.style.top    = this.$lastpos.css[1];
-                    this.$placeHolder.style.width  = this.$lastpos.css[2];
-                    this.$placeHolder.style.height = this.$lastpos.css[3];
+                    this.$placeHolder.style.width  = this.$lastpos.px[2] + "px";
+                    this.$placeHolder.style.height = this.$lastpos.px[3] + "px";
+                    this.$placeHolder.style.margin = this.$lastpos.css[4];
                     this.$pHtmlNode.insertBefore(this.$placeHolder, this.$ext);
                     
                     htmlNode.style.position = "absolute";
                 }
                 
-                var from = [htmlNode.offsetWidth, htmlNode.offsetHeight];
+                document.body.appendChild(htmlNode);
+                htmlNode.style.left = l + "px";
+                htmlNode.style.top  = t + "px";
+                
                 function setMax(){
                     var w, h, pos, box, pDiff;
                     if (_self.maxconf) {
@@ -418,9 +426,9 @@ apf.BaseStateButtons = function(){
                             tweens   : [
                                 {type: "left",   from: l, to: pos[0] - box[3]},
                                 {type: "top",    from: t, to: pos[1] - box[0]},
-                                {type: "width",  from: from[0],
+                                {type: "width",  from: _self.$lastpos.px[2],
                                     to: (w + box[1] + box[3])},
-                                {type: "height", from: from[1],
+                                {type: "height", from: _self.$lastpos.px[3],
                                     to: (h + box[0] + box[2])}
                             ],
                             oneach   : function(){
