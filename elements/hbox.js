@@ -153,7 +153,7 @@ apf.vbox = function(struct, tagName){
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!(node = nodes[i]).$ext)
+                if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
                     continue;
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";

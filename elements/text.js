@@ -75,27 +75,12 @@ apf.text = function(struct, tagName){
     this.$supportedProperties.push("behavior", "scrolldown", "secure", "value");
 
     /**
-     * @attribute {String} behaviour specifying how this elements handles new values
-     *   Possible values
-     *   normal   new values replace the old value.
-     *   addonly  new values are added to the current value.
-     */
-    this.$propHandlers["behavior"] = function(value){
-        this.addOnly = value == "addonly";
-    }
-
-    /**
      * @attribute {String} value the contents of this element. This can be text or html or xhtml.
      */
     this.$propHandlers["value"] = function(value){
-        var cacheObj = false;
-
-        // #ifdef __WITH_CACHE
-        if (value)
-            this.$removeClearMessage();
-        //@todo else
-        //#endif
-
+        if (this.each)
+            return;
+        
         if (typeof value != "string") {
             if (value.nodeType)
                 value = value.nodeType > 1 && value.nodeType < 5
@@ -115,22 +100,11 @@ apf.text = function(struct, tagName){
         }
 
         if (this.addOnly) {
-            // #ifdef __WITH_CACHE
-            if (cacheObj)
-                cacheObj.contents += value;
-            else
-            //#endif
-                this.$container.insertAdjacentHTML("beforeend", value);
+            this.$container.insertAdjacentHTML("beforeend", value);
         }
         else {
             value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-
-            // #ifdef __WITH_CACHE
-            if (cacheObj)
-                cacheObj.contents = value;
-            else
-            //#endif
-                this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+            this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
         }
 
         //Iframe bug fix for IE (leaves screen white);
@@ -140,11 +114,12 @@ apf.text = function(struct, tagName){
         if (this.scrolldown && this.$scrolldown)
             this.oScroll.scrollTop = this.oScroll.scrollHeight;
     };
-
-    this.$propHandlers["empty-message"] = function(value) {
-        if (!this.childNodes.length)
-            this.$setClearMessage(this["empty-message"]);
-    };
+    
+    this.$eachHandler = function(value) {
+        this.$attrExcludePropBind = apf.extend({}, this.$attrExcludePropBind);
+        this.$attrExcludePropBind.value = value ? 2 : 0;
+    }
+    this.addEventListener("prop.each", this.$eachHandler);
 
     /**** Public methods ****/
 
@@ -208,97 +183,34 @@ apf.text = function(struct, tagName){
 
     /**** Private methods ****/
 
-    // #ifdef __WITH_DATABINDING
-    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        if (this.addOnly && action != "add") return;
-
-        //Action Tracker Support
-        if (UndoObj)
-            UndoObj.xmlNode = this.addOnly ? xmlNode : this.xmlRoot;//(contents ? contents.xmlRoot : this.xmlRoot);
-
-        //Refresh Properties
-        if (this.addOnly) {
-            apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
-            var cacheObj = this.$findHtmlNode(listenNode.getAttribute("id")
-                + "|" + this.$uniqueId);
-
-            this.$propHandlers["value"].call(this,
-                this.$applyBindRule("value", xmlNode) || "");
-        }
-        else {
-            this.$propHandlers["value"].call(this,
-                this.$applyBindRule("value", this.xmlRoot) || "");
-        }
-    };
-
-    this.$load = function(node){
-        //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(node, this);
-        var value = this.$applyBindRule("value", node);
-
-        if (value || typeof value == "string") {
-            if (this.caching) {
-                var cacheObj = this.$findHtmlNode(node.getAttribute("id")
-                    + "|" + this.$uniqueId);
-                if (cacheObj)
-                    cacheObj.contents = value;
-            }
-            this.$propHandlers["value"].call(this, value);
+    this.$nodes = [];
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+        var f = this.$attrBindings.value.cvalue;
+        var html = f(xmlNode);
+        html = "<div id='" + Lid + "'>" + html + "</div>";
+        if (htmlParentNode) {
+            if (beforeNode)
+                beforeNode.insertAdjacentHTML("beforebegin", html);
+            else 
+                this.$container.insertAdjacentHTML("beforeend", html);
+            //apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
+            
+            //Iframe bug fix for IE (leaves screen white);
+            if (apf.cannotSizeIframe && this.oIframe)
+                this.oIframe.style.width = this.oIframe.offsetWidth + "px";
+    
+            if (this.scrolldown && this.$scrolldown)
+                this.oScroll.scrollTop = this.oScroll.scrollHeight;
         }
         else
-            this.$propHandlers["value"].call(this, "");
-    };
-    // #endif
-
-    // #ifdef __WITH_CACHE
-    this.$getCurrentFragment = function(){
-        return {
-            nodeType : 1,
-            contents : this.$container.innerHTML
-        }
-    };
-
-    this.$setCurrentFragment = function(fragment){
-        this.$container.innerHTML = fragment.contents;
-        if (this.scrolldown)
-            this.$container.scrollTop = this.$container.scrollHeight;
-    };
-
-    this.$setClearMessage = this.$updateClearMessage = function(msg, className){
-        if (this.$lastClass)
-            this.$removeClearMessage();
-        //@todo move to setClearMessage
-        apf.setStyleClass(this.$ext, 
-            (this.$lastClass = this.$baseCSSname + (className || "Empty").uCaseFirst()));//"Empty");
-
-        if (msg) {
-            if (!this.height) {
-                if (this.$container.offsetHeight 
-                  && apf.getStyle(this.$container, "height") == "auto" 
-                  && (this.$changedHeight = true))
-                    this.$container.style.height = (this.$container.offsetHeight 
-                      - apf.getHeightDiff(this.$container)) + "px";
-                this.$container.innerHTML = msg;
-            }
-            this.$lastMsg = this.$container.innerHTML;
-        }
-    };
-
-    this.$removeClearMessage = function(){
-        if (this.$lastClass) {
-            apf.setStyleClass(this.$ext, "", [this.$lastClass]);
-            this.$lastClass = null;
-        }
-        
-        if (this.$container.innerHTML == this.$lastMsg) {
-            if (this.$changedHeight && !(this.$changedHeight = false))
-                this.$container.style.height = "";
-            this.$container.innerHTML = ""; //clear if no empty message is supported
-        }
-    };
-
-    this.caching = false; //Fix for now
-    // #endif
+            this.$nodes.push(html);
+    }
+    
+    this.$fill = function(){
+        //apf.insertHtmlNode(null, this.$container, null, this.$nodes.join(""));
+        this.$container.insertAdjacentHTML("beforeend", this.$nodes.join(""));
+        this.$nodes = [];
+    }
 
     /**** Init ****/
 
@@ -353,6 +265,9 @@ apf.text = function(struct, tagName){
                 this.$ext = this.$container = node;
             }
         }
+        
+        if (this.getAttribute("each"))
+            this.$eachHandler();
     };
 
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
@@ -364,7 +279,7 @@ apf.text = function(struct, tagName){
         
         this.oDrag = this.oIframe = this.oFocus  = null;
     });
-}).call(apf.text.prototype = new apf.BaseSimple());
+}).call(apf.text.prototype = new apf.MultiselectBinding());
 
 apf.aml.setElement("text", apf.text);
 // #endif

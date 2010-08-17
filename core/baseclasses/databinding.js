@@ -476,7 +476,7 @@ apf.DataBinding = function(){
             }
             
             //#ifdef __DEBUG
-            if (this.$amlLoaded && !this.$attrBindings) {
+            if (this.$amlLoaded) { // && !this.$attrBindings
                 apf.console.warn("Could not load data yet in " + (this.localName
                   ? this.localName + "[" + (this.name || "") + "]"
                   : this.nodeName) + ". The loaded data is queued "

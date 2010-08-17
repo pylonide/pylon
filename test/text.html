@@ -6,12 +6,23 @@
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
         
-        <a:appsettings debug="1" />
+        <a:appsettings debug="0" />
         
         <a:model id="mdlTest">
-            <data>test</data>
+            <data>
+                <item>test</item>
+            </data>
+        </a:model>
+        <a:model id="mdlTest2">
+            <item>test</item>
         </a:model>
         
-        <a:text id="txt" value="[mdlTest::text()]" />
+        <a:text id="txt" value="[mdlTest::item/text()]" />
+        <hr />
+        <a:text id="test" model="mdlTest" scrolldown="true" each="[item]" width="200" height="100" style="border:1px solid red"><?lm
+            [text()] + <br />
+        ?></a:text>
+        
+        <a:button onclick="mdlTest.appendXml(mdlTest2.data.cloneNode(true));">test</a:button>
     </body>
 </html>

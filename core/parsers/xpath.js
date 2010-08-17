@@ -62,8 +62,8 @@ apf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
-            throw new Error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
-            //apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            //throw new Error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
@@ -578,7 +578,7 @@ apf.CodeCompilation = function(code){
 
         //Xpath
         data = this.data.X;
-        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z\*][\*\.\@\/\w\-]*(?:\(\)){0,1})/g,
+        code = code.replace(/(^|\W|\_)([\@\.\/A-Za-z\*][\*\.\@\/\w\:\-]*(?:\(\)){0,1})/g,
             function(d, m1, m2){
                 return m1 + (data.push(m2) - 1) + "X_";
             })

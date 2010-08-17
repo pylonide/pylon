@@ -213,7 +213,7 @@ apf.preview = function(struct, tagName){
     this.$resize = function(){
         var diff = apf.getDiff(this.$ext);
         var wratio = 1, hratio = 1;
-        
+
         this.oImg.style.width = "";
         this.oImg.style.height = "";
         

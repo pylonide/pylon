@@ -163,9 +163,9 @@ apf.runNonIe = function (){
     Array.prototype.item = function(i){return this[i];};
     Array.prototype.expr = "";
     
-    try{
+    /*try{
         XMLDocument.prototype.readyState = 0;
-    }catch(e){}
+    }catch(e){}*/
     
     XMLDocument.prototype.$clearDOM = function(){
         while (this.hasChildNodes())

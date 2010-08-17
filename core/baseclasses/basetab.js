@@ -83,7 +83,7 @@ apf.BaseTab = function(){
     /**** Properties and Attributes ****/
 
     this.$supportedProperties.push("activepage", "activepagenr", "length",
-        "src", "loading");
+        "src", "loading", "trans-in", "trans-out");
 
     /**
      * @attribute {Number} activepagenr the child number of the active page.
@@ -564,6 +564,9 @@ apf.BaseTab = function(){
                         apf.setOpacity(h, 1);
                         delete this["out"];
                     }
+                    
+                    this.oPages.style.width = "";
+                    this.oPages.style.height = "";
                 }
             };
         }
@@ -571,10 +574,14 @@ apf.BaseTab = function(){
         //stop
         this.$transInfo.stop();
         
+        var d = apf.getDiff(this.oPages);
+        this.oPages.style.width = (this.oPages.offsetWidth - d[0]) + "px";
+        this.oPages.style.height = (this.oPages.offsetHeight - d[1]) + "px";
+        
         var preventNext = this.$createAnim(pageIn, animIn, false, pageOut);
         if (preventNext !== false && pageOut)
             this.$createAnim(pageOut, animOut, true, pageIn);
-        
+
         setTimeout(function(){
             _self.$transInfo.start();
         });

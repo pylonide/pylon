@@ -233,7 +233,7 @@ apf.model = function(struct, tagName){
             //this.$loadInAmlProp(amlNode);
         }
         else { //@experimental
-            if (amlNode.clear)
+            if (amlNode.hasFeature(apf.__CACHE__)) // amlNode.clear
                 amlNode.clear("empty");
         }
 

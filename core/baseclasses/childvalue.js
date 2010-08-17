@@ -28,7 +28,7 @@ apf.ChildValue = function(){
     
     this.$regbase = this.$regbase | apf.__CHILDVALUE__;
     
-    var f;
+    var f, re = /^[\s\S]*?>(<\?lm)?([\s\S]*?)(?:\?>)?<[^>]*?>$/;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
         if (e && (e.currentTarget == this 
           || e.currentTarget.nodeType == 2 && e.relatedNode == this))
@@ -38,13 +38,14 @@ apf.ChildValue = function(){
             return;
         
         //Get value from xml (could also serialize children, but that is slower
-        var m = this.serialize().match(/^[\s\S]*?>([\s\S]*)<[\s\S]*?$/),
-            v = m && m[1] || "";
+        var m = this.serialize().match(re),
+            v = m && m[2] || "";
+        if (m && m[1])
+            v = "{" + v + "}";
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (v.indexOf("{") > -1 || v.indexOf("[") > -1) {
+        if (v.indexOf("{") > -1 || v.indexOf("[") > -1)
             this.$setDynamicProperty(this.$childProperty, v);
-        }
         else
         //#endif
         if (this[this.$childProperty] != v)
@@ -65,15 +66,18 @@ apf.ChildValue = function(){
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var hasNoProp = typeof this[this.$childProperty] == "undefined";
+        
+        //this.firstChild.nodeType != 7 && 
         if (hasNoProp
           && !this.getElementsByTagNameNS(this.namespaceURI, "*", true).length 
           && (this.childNodes.length > 1 || this.firstChild 
           && (this.firstChild.nodeType == 1 
-          || this.firstChild.nodeType != 7 
-          && this.firstChild.nodeValue.trim().length))) {
+          || this.firstChild.nodeValue.trim().length))) {
             //Get value from xml (could also serialize children, but that is slower
-            var m = (this.$aml && this.$aml.xml || this.serialize()).match(/^[\s\S]*?>([\s\S]*)<[\s\S]*?$/),
-                v = m && m[1] || "";
+            var m = (this.$aml && this.$aml.xml || this.serialize()).match(re),
+                v = m && m[2] || "";
+            if (m && m[1])
+                v = "{" + v + "}";
 
             //#ifdef __WITH_PROPERTY_BINDING
             if (v.indexOf("{") > -1 || v.indexOf("[") > -1)

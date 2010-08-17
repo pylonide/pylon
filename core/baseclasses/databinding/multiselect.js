@@ -48,6 +48,8 @@ apf.MultiselectBinding = function(){
     if (!this.setQueryValue)
         this.implement(apf.DataBinding);
 
+    this.$regbase    = this.$regbase|apf.__MULTISELECT__; //We're pretending to have multiselect even though we might not.
+
     this.$init(function(){
         this.$selectTimer = {};
     });
