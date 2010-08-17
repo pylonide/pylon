@@ -344,9 +344,13 @@ apf.AmlWindow = function(struct, tagName){
      */
     this.$propHandlers["modal"] = function(value){
         if (value) {
-            if (this.oCover)
-                this.oCover.style.display = "block";
-            else {
+            if (this.visible)
+                apf.plane.show(this.$ext, false, null, null, {
+                    color   : "black", 
+                    opacity : 0.5
+                });
+                //this.oCover.style.display = "block";
+            /*else {
                 var oCover = this.$getLayoutNode("cover");
                 if (oCover) {
                     this.oCover = apf.insertHtmlNode(oCover, this.$pHtmlNode);
@@ -357,11 +361,11 @@ apf.AmlWindow = function(struct, tagName){
                     if (this.zindex)
                         this.oCover.style.zIndex = this.zindex;
                 }
-            }
+            }*/
         }
-
-        if (!value && this.oCover) {
-            this.oCover.style.display = "none";
+        else { //if (!value && this.oCover) {
+            apf.plane.hide();
+            //this.oCover.style.display = "none";
         }
     };
 
@@ -394,14 +398,18 @@ apf.AmlWindow = function(struct, tagName){
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
         if (apf.isTrue(value)){
-            if (this.oCover){
-    			if (this.oCover.offsetParent) {
+            if (this.modal){
+    			/*if (this.oCover.offsetParent) {
                     //@todo apf3.0 ie8 too high...
                     //this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
                         //document.documentElement.offsetHeight) + 'px';
                     //this.oCover.style.width  = "1000px";//this.oCover.offsetParent.scrollWidth + 'px';
     			}
-                this.oCover.style.display = "block";
+                this.oCover.style.display = "block";*/
+                apf.plane.show(this.$ext, false, null, null, {
+                    color   : "black", 
+                    opacity : 0.5
+                });
             }
 
             this.state = this.state.split("|").remove("closed").join("|");
@@ -483,8 +491,10 @@ apf.AmlWindow = function(struct, tagName){
         }
         else { //if (apf.isFalse(value)) 
             //this.setProperty("visible", false);
-            if (this.oCover)
-                this.oCover.style.display = "none";
+            //if (this.oCover)
+                //this.oCover.style.display = "none";
+            if (this.modal)
+                apf.plane.hide();
 
             this.$ext.style.display = "none";
 
@@ -507,8 +517,8 @@ apf.AmlWindow = function(struct, tagName){
 
     this.$propHandlers["zindex"] = function(value){
         this.$ext.style.zIndex = value + 1;
-        if (this.oCover)
-            this.oCover.style.zIndex = value;
+        //if (this.oCover)
+            //this.oCover.style.zIndex = value;
     };
 
     /**** Keyboard ****/
@@ -705,7 +715,7 @@ apf.AmlWindow = function(struct, tagName){
         }
         //#endif
 
-        if (this.modal === undefined && this.oCover) {
+        if (this.modal === undefined) { // && this.oCover) {
             this.$propHandlers.modal.call(this, true);
             this.modal = true;
         }
@@ -714,8 +724,8 @@ apf.AmlWindow = function(struct, tagName){
         if (!this.visible) {
             this.$ext.style.display = "none";
 
-            if (this.oCover)
-                this.oCover.style.display = "none";
+            //if (this.oCover)
+                //this.oCover.style.display = "none";
         }
         //#ifdef __WITH_FOCUS
         else if (this.modal) {

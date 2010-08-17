@@ -258,6 +258,7 @@ apf.BaseStateButtons = function(){
             if (apf.layout)
                 apf.layout.play(this.$pHtmlNode);
             //#endif
+
             if (this.$lastzindex) {
                 this.$ext.style.zIndex = this.$lastzindex[0];
                 if (this.oCover)
@@ -336,7 +337,7 @@ apf.BaseStateButtons = function(){
                 this.$lastpos = {
                     css    : [this.$ext.style.left, this.$ext.style.top,
                               this.$ext.style.width, this.$ext.style.height,
-                              this.$ext.style.margin],
+                              this.$ext.style.margin, this.$ext.style.zIndex],
                     px     : [l, t, this.$ext.offsetWidth, 
                               this.$ext.offsetHeight],
                     parent : [pNode.style.width, pNode.style.height, 
@@ -355,6 +356,7 @@ apf.BaseStateButtons = function(){
                     this.$placeHolder.style.width  = this.$lastpos.px[2] + "px";
                     this.$placeHolder.style.height = this.$lastpos.px[3] + "px";
                     this.$placeHolder.style.margin = this.$lastpos.css[4];
+                    this.$placeHolder.style.zIndex = this.$lastpos.css[5];
                     this.$pHtmlNode.insertBefore(this.$placeHolder, this.$ext);
                     
                     htmlNode.style.position = "absolute";
@@ -427,9 +429,9 @@ apf.BaseStateButtons = function(){
                                 {type: "left",   from: l, to: pos[0] - box[3]},
                                 {type: "top",    from: t, to: pos[1] - box[0]},
                                 {type: "width",  from: _self.$lastpos.px[2],
-                                    to: (w + box[1] + box[3])},
+                                    to: (w + box[1] + box[3] - apf.getWidthDiff(_self.$ext))},
                                 {type: "height", from: _self.$lastpos.px[3],
-                                    to: (h + box[0] + box[2])}
+                                    to: (h + box[0] + box[2] - apf.getHeightDiff(_self.$ext))}
                             ],
                             oneach   : function(){
                                 //#ifdef __WITH_LAYOUT
@@ -456,15 +458,16 @@ apf.BaseStateButtons = function(){
                             - verdiff + box[0] + box[2]) + "px";
                     }
                 }
+
+                this.$lastzindex = [
+                    this.$ext.style.zIndex || "", 
+                    this.oCover && this.oCover.style.zIndex || ""
+                ];
+
                 //#ifdef __WITH_LAYOUT
                 if (apf.layout)
                     apf.layout.pause(this.$pHtmlNode, setMax);
                 //#endif
-                
-                this.$lastzindex = [
-                    this.$ext.style.zIndex || 1, 
-                    this.oCover && this.oCover.style.zIndex || 1
-                ];
                 
                 if (!_self.$maxconf || !_self.$maxconf[4]) {
                     if (this.oCover)
