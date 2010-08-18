@@ -134,6 +134,11 @@ apf.editor = function(struct, tagName){
         });
     }
 
+    this.addEventListener("execcommand", function(e) {
+        if (this.scalewithiframe)
+            rescale.call(this);
+    });
+
     /**
      * Important function; tells the right <i>iframe</i> element that it may be
      * edited by the user.
@@ -356,6 +361,10 @@ apf.editor = function(struct, tagName){
             //#endif
             apf.window.$mousedown(e);
         });
+
+        if (this.$oWin.addEventListener)
+            this.$oWin.addEventListener("DOMMouseScroll", apf.window.$mousewheel, false);
+        window.onmousewheel = document.onmousewheel = apf.window.$mousewheel;
 
         apf.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this));
         //#ifdef __WITH_WINDOW_FOCUS

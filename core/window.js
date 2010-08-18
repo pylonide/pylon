@@ -1093,7 +1093,7 @@ apf.window = function(){
     });
 
     //#ifdef __WITH_MOUSESCROLL
-    function wheel(e) {
+    var wheel = this.$mousewheel = function wheel(e) {
         if (!e)
             e = event;
 

@@ -287,13 +287,11 @@ apf.scrollbar = function(struct, tagName){
             return;
 
         if (!noEvent) {
-            this.dispatchEvent("scroll", {
-                timed : timed, 
-                pos   : this.pos
-            });
-            
             if (this.$host) {
-                var oHtml = this.$getHtmlHost();
+                var oHtml    = this.$getHtmlHost();
+                var from     = oHtml[this.$scrollPos];
+                var viewport = this.$getViewPort(oHtml);
+                var to       = (oHtml[this.$scrollSize] - viewport) * this.$curValue
                 
                 if (this.step) {
                     var num = (this.$host.length - 4) || 100; //@todo this is a hack
@@ -309,8 +307,8 @@ apf.scrollbar = function(struct, tagName){
                     apf.tween.single(oHtml, {
                         type : this.$scrollPos,
                         anim : apf.tween.easeInOutCubic,
-                        from : oHtml[this.$scrollPos],
-                        to   : (oHtml[this.$scrollSize] - this.$getViewPort(oHtml)) * this.$curValue,
+                        from : from,
+                        to   : to,
                         steps : 15,
                         interval : 15,
                         onfinish : function(){
@@ -321,8 +319,17 @@ apf.scrollbar = function(struct, tagName){
                     });
                 }
                 else
-                    oHtml[this.$scrollPos] = (oHtml[this.$scrollSize] - this.$getViewPort(oHtml)) * this.$curValue;
+                    oHtml[this.$scrollPos] = to;
             }
+
+            this.dispatchEvent("scroll", {
+                timed        : timed,
+                viewportSize : viewport,
+                scrollPos    : to,
+                scrollSize   : oHtml[this.$scrollSize],
+                from         : from,
+                pos          : this.pos
+            });
         }
         
         this.pos = this.$curValue;
