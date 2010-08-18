@@ -86,7 +86,8 @@ apf.editor = function(struct, tagName){
 
     this.$isTextInput = true;
 
-    this.$supportedProperties.push("value", "characterset");
+    this.$booleanProperties["scalewithiframe"] = true;
+    this.$supportedProperties.push("value", "characterset", "scalewithiframe");
 
     this.$propHandlers["value"] = function(html){
         if (typeof html != "string")// || html == ""
@@ -113,9 +114,25 @@ apf.editor = function(struct, tagName){
             this.$activeDocument.body.innerHTML = html;
             this.$controlAgentBehavior(this.$activeDocument.body);
         }
+
+        if (this.scalewithiframe)
+            rescale.call(this);
             
         this.dispatchEvent("sethtml", {editor: this});
     };
+
+    var rescaleTimer;
+    function rescale() {
+        clearTimeout(rescaleTimer);
+        var _self = this;
+        rescaleTimer = $setTimeout(function() {
+            var h, w,
+                el = _self.$activeDocument && _self.$activeDocument.body;
+            if (!el || !(h = el.scrollHeight) || !(w = el.scrollWidth))
+                return;
+            _self.$resize({/*width: w, */height: h});
+        });
+    }
 
     /**
      * Important function; tells the right <i>iframe</i> element that it may be
@@ -324,7 +341,12 @@ apf.editor = function(struct, tagName){
         var _self = this;
         apf.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this));
         //apf.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
-        apf.addListener(this.$activeDocument, "keyup", apf.window.$keyup);
+        apf.addListener(this.$activeDocument, "keyup", function(e) {
+            e = e || window.event;
+            if (_self.scalewithiframe)
+                rescale.call(_self);
+            apf.window.$keyup(e);
+        });
         apf.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
         apf.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
@@ -342,7 +364,14 @@ apf.editor = function(struct, tagName){
         //#endif
         this.$activeDocument.host = this;
 
-        apf.addListener(this.$activeDocument.body, "paste", this.$paste.bindWithEvent(this));
+        apf.addListener(this.$activeDocument.body, "paste", function(e) {
+            e = e || window.event;
+            _self.$paste(e);
+            $setTimeout(function() {
+                if (_self.scalewithiframe)
+                    rescale.call(_self);
+            });
+        });
     };
 
     //this.addEventListener("contextmenu", onContextmenu);
@@ -464,16 +493,24 @@ apf.editor = function(struct, tagName){
      * 
      * @type {void}
      */
-    this.$resize = function() {
+    this.$resize = function(oSize) {
         if (!this.iframe || !this.iframe.parentNode || !this.$ext.offsetHeight)
             return;
             
-        var h = (this.$ext.offsetHeight - this.$toolbar.offsetHeight - 2);
-        if (!h || h < 0)
-            h = 0;
-
-        if (this.$container)
+        if (this.$container) {
+            var h = (this.$ext.offsetHeight - this.$toolbar.offsetHeight - 2);
+            if (!h || h < 0)
+                h = 0;
             this.$container.style.height = h + "px";
+        }
+
+        if (this.scalewithiframe && oSize) {
+            console.log(oSize);
+            if (oSize.width)
+                this.iframe.style.width  = oSize.width  + "px";
+            if (oSize.height)
+                this.iframe.style.height = oSize.height + "px";
+        }
 
         //TODO: check if any buttons from the toolbar became invisible/ visible again...
         this.$notifyAllPlugins("resize");

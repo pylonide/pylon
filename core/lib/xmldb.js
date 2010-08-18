@@ -892,7 +892,7 @@ apf.xmldb = new (function(){
         if (apf.xmldb.disableRDB)
             return;
 
-        var xmlNode = undoObj.localName
+        var xmlNode = undoObj.localName || !undoObj.xmlNode
             ? args[1] && args[1].length && args[1][0] || args[1]
             : undoObj.xmlNode;
 

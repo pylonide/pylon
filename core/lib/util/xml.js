@@ -952,9 +952,9 @@ apf.xmlset = function(xml, xpath, local, previous){
         apf.b.$state = 1;
         return this;
     }
-    this.commit = function(){
+    this.commit = function(at){
         if (apf.b.$queue.length) {
-            atPrivacy.execute({
+            at.execute({
                 action : 'multicall', 
                 args   : apf.b.$queue
             });
@@ -1213,12 +1213,12 @@ apf.xmlset = function(xml, xpath, local, previous){
         //return this.children(
     }
     
-    this.val = function(){
-        return apf.queryValue(this.$xml, this.$xpath);
+    this.val = function(selector){
+        return apf.queryValue(this.$xml, selector ? "(" + this.$xpath + ")/" + selector : this.$xpath);
     }
     
-    this.vals = function(){
-        return apf.queryValues(this.$xml, this.$xpath);
+    this.vals = function(selector){
+        return apf.queryValues(this.$xml, selector ? "(" + this.$xpath + ")/" + selector : this.$xpath);
     }
     
     this.clone = function(deep){
