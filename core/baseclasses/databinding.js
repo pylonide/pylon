@@ -1445,11 +1445,11 @@ apf.DataBinding = function(){
                 model = apf.xmldb.findModel(value);
                 if (!model) //@todo very strange, this should never happen, but it does
                     return;
-                var xpath = apf.xmlToXpath(value, model.data, true) || ".";
+                var xpath = apf.xmlToXpath(value, null, true) || ".";
                 
                 //#ifdef __DEBUG
                 if (model.queryNode(xpath) != value)
-                    throw new Error("xml data node is not attached to model");
+                    throw new Error("xml data node is not attached to model (" + xpath + ") : " + value + ":" + (value && value.xml));
                 //#endif
                 
                 model.register(this, xpath);
