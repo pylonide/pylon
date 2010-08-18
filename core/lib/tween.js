@@ -398,13 +398,15 @@ var ID        = "id",
             return apf.tween;
         }
 
-        if (info.control)
+        if (info.control) {
+            info.control.state = apf.tween.RUNNING;
             info.control.stop = function(){
                 info.control.state = apf.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
             }
+        }
 
         var steps = info.color
                 ? calcColorSteps(info.anim, info.from, info.to, info.steps)
@@ -586,13 +588,15 @@ var ID        = "id",
             return apf.tween;
         }
         
-        if (info.control)
+        if (info.control) {
+            info.control.state = apf.tween.RUNNING;
             info.control.stop = function(){
                 info.control.state = apf.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
             }
+        }
 
         var tweens       = info.tweens,
             stepFunction = function(step){

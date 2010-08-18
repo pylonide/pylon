@@ -423,10 +423,10 @@ apf.getDiff = function(oHtml){
 };
 
 apf.getMargin = function(oHtml) {
-    return [Math.max(0, (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0)),
-        Math.max(0, (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0))]
+    return [(parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0),
+      (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
+        + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)]
 };
 
 apf.getHtmlInnerWidth = function(oHtml){

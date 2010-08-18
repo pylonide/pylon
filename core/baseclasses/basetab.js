@@ -329,7 +329,7 @@ apf.BaseTab = function(){
     this.$scaleinit = function(node, type, callback){
         var pg = this.getPages();
         var l  = pg.length;
-        this.minwidth = this.$minBtnWidth * l + 10;
+        this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
         this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
         
         if (!type)
@@ -345,6 +345,7 @@ apf.BaseTab = function(){
             interval : 10,
             tweens   : [],
             oHtml    : node
+            //oneach   : function(){alert(1);}
         };
         this.$control.type = type;
         
@@ -381,6 +382,14 @@ apf.BaseTab = function(){
                 from  : html.offsetWidth - apf.getWidthDiff(html),
                 to    : 0
             });
+            var over = apf.getWidthDiff(html) + this.$btnMargin;
+            if (over)
+                anim.tweens.push({
+                    oHtml : html,
+                    type  : "marginLeft", 
+                    from  : 0,
+                    to    : -1 * over
+                });
             anim.tweens.push({
                 oHtml : html,
                 type  : "fade", 
@@ -438,7 +447,7 @@ apf.BaseTab = function(){
             pg = pg.slice();
             pg.remove(excl);
         }
-        var cw = this.$ext.offsetWidth - 1;//apf.getHtmlInnerWidth(this.$ext);
+        var cw = this.$buttons.offsetWidth;//apf.getHtmlInnerWidth(this.$ext);
         var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
         var re = Math.round((bw % 1) * 10);
@@ -457,7 +466,7 @@ apf.BaseTab = function(){
         anim.tweens.push({
             oHtml : html, 
             type  : "width", 
-            from  : html.offsetWidth - wd - (add ? 3 : 0),
+            from  : html.offsetWidth - wd, // - (add ? 3 : 0)
             to    : Math.max(this.$minBtnWidth, 
                 Math.min(cw, this.$maxBtnWidth)) - this.$btnMargin - wd
         });
@@ -465,17 +474,20 @@ apf.BaseTab = function(){
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (this.$waitForMouseOut)
+        if (this.$waitForMouseOut 
+          || this.$control && this.$control.state == apf.tween.RUNNING) {
+            //@todo queue call here to after anim
             return;
-        
+        }
+
         if (this.$btnMargin == undefined)
             this.$btnMargin = apf.getMargin(this.getPage().$button)[0];
-        
+
         var pg = this.getPages();
         if (excl)
             pg.remove(excl);
-        
-        var cw = this.$ext.offsetWidth - 1 - (excl ? this.$minBtnWidth : 0);//apf.getHtmlInnerWidth(this.$ext);
+
+        var cw = this.$buttons.offsetWidth - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
         var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
         var re = Math.round((bw % 1) * 10);
