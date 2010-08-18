@@ -505,7 +505,6 @@ apf.editor = function(struct, tagName){
         }
 
         if (this.scalewithiframe && oSize) {
-            console.log(oSize);
             if (oSize.width)
                 this.iframe.style.width  = oSize.width  + "px";
             if (oSize.height)
