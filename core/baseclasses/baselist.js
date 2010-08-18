@@ -754,7 +754,8 @@ apf.BaseList = function(){
             this.$getNewContext("item");
             var Item      = this.$getLayoutNode("item"),
                 elCaption = this.$getLayoutNode("item", "caption"),
-                elSelect  = this.$getLayoutNode("item", "select");
+                elSelect  = this.$getLayoutNode("item", "select"),
+                elIcon    = this.$getLayoutNode("item", "icon");
 
             Item.setAttribute("class", "more");
             elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId
@@ -765,8 +766,11 @@ apf.BaseList = function(){
                 + ').startMore(this, true)');
 
             if (elCaption)
-                apf.setNodeValue(elCaption,
-                    this.more.match(/caption:(.*)(;|$)/i)[1]);
+                apf.setNodeValue(elCaption, this.more.match(/caption:(.*)(;|$)/i)[1]);
+            
+            if (elIcon)
+                apf.setNodeValue(elIcon, this.iconPath + this.more.match(/icon:(.*)(;|$)/i)[1]);
+                
             this.listNodes.push(Item);
         }
 
