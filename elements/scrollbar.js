@@ -287,12 +287,24 @@ apf.scrollbar = function(struct, tagName){
             return;
 
         if (!noEvent) {
+            var oHtml, from, viewport, to;
             if (this.$host) {
-                var oHtml    = this.$getHtmlHost();
-                var from     = oHtml[this.$scrollPos];
-                var viewport = this.$getViewPort(oHtml);
-                var to       = (oHtml[this.$scrollSize] - viewport) * this.$curValue
-                
+                oHtml    = this.$getHtmlHost();
+                from     = oHtml[this.$scrollPos];
+                viewport = this.$getViewPort(oHtml);
+                to       = (oHtml[this.$scrollSize] - viewport) * this.$curValue;
+            }
+            
+            this.dispatchEvent("scroll", {
+                timed        : timed,
+                viewportSize : viewport,
+                scrollPos    : to,
+                scrollSize   : oHtml[this.$scrollSize],
+                from         : from,
+                pos          : this.pos
+            });
+            
+            if (this.$host) {
                 if (this.step) {
                     var num = (this.$host.length - 4) || 100; //@todo this is a hack
                     var v   = this.$curValue;
@@ -321,15 +333,6 @@ apf.scrollbar = function(struct, tagName){
                 else
                     oHtml[this.$scrollPos] = to;
             }
-
-            this.dispatchEvent("scroll", {
-                timed        : timed,
-                viewportSize : viewport,
-                scrollPos    : to,
-                scrollSize   : oHtml[this.$scrollSize],
-                from         : from,
-                pos          : this.pos
-            });
         }
         
         this.pos = this.$curValue;
