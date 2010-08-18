@@ -473,6 +473,8 @@ apf.LiveEdit.richtext = function(){
             }
             else
                 _self.$visualFocus();
+
+            _self.dispatchEvent("execcommand", {name: name, param: param});
         });
     };
 
