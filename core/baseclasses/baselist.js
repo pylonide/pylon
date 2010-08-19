@@ -756,7 +756,7 @@ apf.BaseList = function(){
                 elCaption = this.$getLayoutNode("item", "caption"),
                 elSelect  = this.$getLayoutNode("item", "select");
 
-            Item.setAttribute("class", "more");
+            Item.setAttribute("class", this.$baseCSSname + "More");
             elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId
                 + ');o.clearSelection();o.$setStyleClass(this, "more_down", null, true);');
             elSelect.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId
