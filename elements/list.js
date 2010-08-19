@@ -132,6 +132,8 @@ apf.select1   = function(struct, tagName){
 };
 
 (function(){
+    this.morePos = "end";
+    
     // #ifdef __WITH_RENAME
     if (!apf.isIphone)
         this.implement(apf.Rename);
@@ -207,7 +209,11 @@ apf.select1   = function(struct, tagName){
     
     /**** Properties and Attributes ****/
     
-    this.$supportedProperties.push("appearance", "mode", "more", "thumbsize");
+    this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
+    
+    this.$propHandlers["morepos"] = function(value) {
+        this.morePos = value; 
+    };
     
     this.$propHandlers["thumbsize"] = function(value){
         var className = this.thumbclass;
@@ -287,7 +293,10 @@ apf.select1   = function(struct, tagName){
             this.$setClearMessage    = function(msg){
                 if (!this.moreItem)
                     this.$fill();
-                this.$container.appendChild(this.moreItem);
+                if (this.morePos == "begin")
+                    this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+                else
+                    this.$container.appendChild(this.moreItem);
             };
             this.$updateClearMessage = function(){}
             this.$removeClearMessage = function(){};
@@ -301,8 +310,12 @@ apf.select1   = function(struct, tagName){
     };
     
     function $xmlUpdate(e){
-        if ((!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1) && this.moreItem)
-            this.$container.appendChild(this.moreItem);
+        if ((!e.action || "insert|add|synchronize|move".indexOf(e.action) > -1) && this.moreItem) {
+            if (this.morePos == "begin")
+                this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+            else
+                this.$container.appendChild(this.moreItem);
+        }
     }
     
     /*function $afterRenameMore(){

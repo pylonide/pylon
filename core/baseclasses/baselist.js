@@ -773,8 +773,10 @@ apf.BaseList = function(){
         apf.insertHtmlNodes(this.listNodes, this.$container);
         this.listNodes.length = 0;
 
-        if (this.more && !this.moreItem)
+        if (this.more && !this.moreItem) {
             this.moreItem = this.$container.lastChild;
+        }
+            
     };
 
     /**
@@ -809,7 +811,10 @@ apf.BaseList = function(){
 
         this.add(xmlNode, null, null, function(addedNode){
             this.select(addedNode, null, null, null, null, true);
-            this.$container.appendChild(this.moreItem);
+            if (this.morePos == "begin")
+                this.$container.insertBefore(this.moreItem, this.$container.firstChild);
+            else
+                this.$container.appendChild(this.moreItem);
     
             var undoLastAction = function(){
                 this.getActionTracker().undo(this.autoselect ? 2 : 1);
