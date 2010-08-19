@@ -74,6 +74,45 @@ apf.text = function(struct, tagName){
     this.$booleanProperties["secure"]     = true;
     this.$supportedProperties.push("behavior", "scrolldown", "secure", "value");
 
+    this.$propHandlers["scrolldown"] = function(value){
+        var _self = this;
+        
+        if (value) {
+            //this.addEventListener("resize", this.$resize);
+            this.$scrolldown = true;
+            this.$scrollArea.onscroll = function(){
+                _self.$scrolldown = this.scrollTop >= this.scrollHeight
+                    - this.offsetHeight + apf.getVerBorders(this);
+            }
+            this.addEventListener("scroll", this.$scroll);
+            clearInterval(this.$textTimer);
+            this.$textTimer = setInterval(function(){
+                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown) {
+                    _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
+                }
+            }, 60);
+        }
+        else {
+            //this.removeEventListener("resize", this.$resize);
+            
+            this.removeEventListener("scroll", this.$scroll);
+            clearInterval(this.$textTimer);
+            if (this.$scrollArea)
+                this.$scrollArea.onscoll = null;
+        }
+    }
+    
+    this.$scroll = function(e){
+        var html = this.$scrollArea;
+        this.$scrolldown = html.scrollTop >= html.scrollHeight
+            - html.offsetHeight + apf.getVerBorders(html);
+    };
+    
+    /*this.$resize = function(){
+        if (this.scrolldown && this.$scrolldown)
+            this.$scrollArea.scrollTop = this.$scrollArea.scrollHeight;
+    }*/
+
     /**
      * @attribute {String} value the contents of this element. This can be text or html or xhtml.
      */
@@ -107,7 +146,7 @@ apf.text = function(struct, tagName){
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
         if (this.scrolldown && this.$scrolldown)
-            this.oScroll.scrollTop = this.oScroll.scrollHeight;
+            this.$scrollArea.scrollTop = this.$scrollArea.scrollHeight;
     };
     
     this.$eachHandler = function(value) {
@@ -195,7 +234,7 @@ apf.text = function(struct, tagName){
                 this.oIframe.style.width = this.oIframe.offsetWidth + "px";
     
             if (this.scrolldown && this.$scrolldown)
-                this.oScroll.scrollTop = this.oScroll.scrollHeight;
+                this.$scrollArea.scrollTop = this.$scrollArea.scrollHeight;
         }
         else
             this.$nodes.push(html);
@@ -218,19 +257,7 @@ apf.text = function(struct, tagName){
         if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.$container, "padding"))
             this.$fixScrollBug();
 
-        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.$container;
-
-        this.$scrolldown = true;
-        this.oScroll.onscroll = function(){
-            _self.$scrolldown = this.scrollTop >= this.scrollHeight
-                - this.offsetHeight + apf.getVerBorders(this);
-        }
-        clearInterval(this.$textTimer);
-        this.$textTimer = setInterval(function(){
-            if (_self.oScroll && _self.$scrolldown && _self.scrolldown) {
-                _self.oScroll.scrollTop = _self.oScroll.scrollHeight;
-            }
-        }, 60);
+        this.$scrollArea = this.oFocus ? this.oFocus.parentNode : this.$container;
 
         if (this.$container.tagName.toLowerCase() == "iframe") {
             if (apf.isIE) {
@@ -269,8 +296,8 @@ apf.text = function(struct, tagName){
         clearInterval(this.$textTimer);
         apf.destroyHtmlNode(this.oDrag);
         
-        if (this.oScroll)
-            this.oScroll.onscoll = this.oScroll = null;
+        if (this.$scrollArea)
+            this.$scrollArea.onscoll = this.$scrollArea = null;
         
         this.oDrag = this.oIframe = this.oFocus  = null;
     });

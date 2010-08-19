@@ -295,7 +295,8 @@ apf.scrollbar = function(struct, tagName){
                 to       = (oHtml[this.$scrollSize] - viewport) * this.$curValue;
             }
             
-            this.dispatchEvent("scroll", {
+            (this.$host && this.$host.dispatchEvent ? this.$host : this)
+              .dispatchEvent("scroll", {
                 timed        : timed,
                 viewportSize : viewport,
                 scrollPos    : to,
