@@ -145,12 +145,12 @@ apf.scrollbar = function(struct, tagName){
                     setTimeout(function(){_self.$lastScrollState = 1;}, 300);
                 }
                 delete _self.$lastScrollState;
-                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * apf[_self.$getInner](oHtml)/10) / div;
+                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
                 _self.setScroll();
                 e.preventDefault();
             }
         };
-
+        
         var _self = this, scrolling;
         if (!this.$host.empty) {
             amlNode.addEventListener("resize", function(){ //@todo cleanup?
@@ -174,7 +174,7 @@ apf.scrollbar = function(struct, tagName){
                     scrollFunc();
             })
         }
-
+        
         var oHtml = _self.$getHtmlHost();
         oHtml.onscroll = function(){
             if (_self.animating) 
@@ -191,6 +191,18 @@ apf.scrollbar = function(struct, tagName){
                 return false;
             }
             scrolling = false;
+        }
+        
+        if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
+            var lastHeight = oHtml.scrollHeight;
+            setInterval(function(){
+                if (lastHeight != oHtml.scrollHeight) {
+                    lastHeight = oHtml.scrollHeight;
+                    _self.$recalc();
+                    _self.$update();
+                    //_self.setScroll(null, true);*/
+                }
+            }, 100);
         }
         
         this.$update();

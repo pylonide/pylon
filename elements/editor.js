@@ -362,9 +362,12 @@ apf.editor = function(struct, tagName){
             apf.window.$mousedown(e);
         });
 
-        if (this.$oWin.addEventListener)
-            this.$oWin.addEventListener("DOMMouseScroll", apf.window.$mousewheel, false);
-        window.onmousewheel = document.onmousewheel = apf.window.$mousewheel;
+        var scrollHandler = function(e){
+            apf.window.$mousewheel.call(window, {target: _self.$ext, wheelDelta: e.wheelDelta, detail: e.detail});
+        }
+        if (this.$oWin && this.$oWin.document.addEventListener)
+            this.$oWin.document.addEventListener("DOMMouseScroll", scrollHandler, false);
+        window.onmousewheel = document.onmousewheel = scrollHandler;
 
         apf.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this));
         //#ifdef __WITH_WINDOW_FOCUS
