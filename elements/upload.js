@@ -219,7 +219,7 @@ apf.upload.ERROR_CODES = {
 
     this.state        = constants.STOPPED;
     this.size = this.loaded = this.uploaded = this.failed = this.queued 
-        = this.percent = this.bitrate = this.chunksize = 0;
+        = this.percent = this.bitrate = this.chunksize = this.total = 0;
     this.maxfilesize  = 1073741824; //"1gb"
     this.multiple     = true;
     this.multipart    = true;
@@ -228,8 +228,8 @@ apf.upload.ERROR_CODES = {
     this.$method      = null;
     this.$filter      = [];
 
-    this.$booleanProperties["multiple"]    = true;
-    this.$booleanProperties["multipart"]   = true;
+    this.$booleanProperties["multiple"]  = true;
+    this.$booleanProperties["multipart"] = true;
 
     this.$supportedProperties.push("state", "total", "chunksize", "maxfilesize",
         "multiple", "filedataname", "target", "filter", "multipart", "size",
@@ -489,6 +489,10 @@ apf.upload.ERROR_CODES = {
         }
     };
 
+    this.$triggerCalc = function() {
+        calc.call(this);
+    };
+
     this.$progress = function(file) {
         if (file.status & constants.QUEUED)
             file.status = constants.UPLOADING;
@@ -558,8 +562,15 @@ apf.upload.ERROR_CODES = {
        }
     };
 
-    this.remove = function(oFile) {
-        console.log(oFile);
+    this.formatSize = function(bytes, precision) {
+        var test,
+            res = null;
+        ["B","kB","mB","gB"].forEach(function(size, index){
+            test = bytes / Math.pow(1024, index);
+            if (Math.floor(test) <= 1024 && !res)
+                res = test.toFixed(precision || 0) + size;
+        });
+        return res;
     };
 
     this.addEventListener("error", function(e) {
@@ -625,14 +636,25 @@ apf.upload.files = function(oUpload, model) {
     }
     //#endif
 
-    model.load("<files/>");
-
     var oFiles = {},
         aFiles = [],
+        _self  = this,
         userProps = {"addDate":1, "creationDate":1, "extension":1, "id":1,
                      "modificationDate":1, "name":1, "size":1, "status":1,
                      "validationError":1, "loaded":1
         };
+
+    model.load("<files/>");
+    model.addEventListener("update", function(e) {
+        // e.xmlNode, e.action, e.undoObj
+        if (e.action == "add" || e.action == "synchronize")
+            return;
+        var id = e.xmlNode.getAttribute("id");
+        if (e.action == "remove") {
+            _self.remove({id: id}, true);
+            oUpload.$triggerCalc();
+        }
+    });
 
     this.create = function(file) {
         if (!file || !file.id || oFiles[file.id]) return null;
@@ -683,22 +705,22 @@ apf.upload.files = function(oUpload, model) {
         return file;
     };
 
-    this.remove = function(file) {
+    this.remove = function(file, noXml) {
         if (!file || !file.id || !oFiles[file.id]) return;
 
         file = oFiles[file.id];
-        if (model && file.xml)
+        if (model && file.xml && !noXml)
             apf.xmldb.removeChild(model.data, file.xml);
         aFiles.remove(file);
         delete oFiles[file.id];
     };
 
-    this.removeMany = function(arr) {
+    this.removeMany = function(arr, noXml) {
         if (!arr || !arr.length) return;
 
         for (var i = 0, l = arr.length; i < l; i++) {
             if (arr[i])
-                this.remove(arr[i]);
+                this.remove(arr[i], noXml);
         }
     };
 

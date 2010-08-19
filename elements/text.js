@@ -155,6 +155,9 @@ apf.text = function(struct, tagName){
     }
     this.addEventListener("prop.each", this.$eachHandler);
 
+    // @todo replace this stub with something that does something
+    this.$moveNode = function() {};
+
     /**** Public methods ****/
 
     //#ifdef __WITH_CONVENIENCE_API

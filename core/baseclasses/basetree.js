@@ -1085,7 +1085,7 @@ apf.BaseTree = function(){
             return;
 
         do {
-            if (cNode.getAttribute("empty")) { //@todo hack
+            if (cNode.getAttribute && cNode.getAttribute("empty")) { //@todo hack
                 htmlNode.removeChild(cNode);
                 return;
             }
