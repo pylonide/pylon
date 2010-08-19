@@ -768,8 +768,8 @@ apf.LiveEdit.richtext = function(){
 
             this.$docklet.$getNewContext("toolbar");
             tb = bAfterRender
-                ? apf.insertHtmlNode(this.$docklet.$getLayoutNode("toolbar"), oParent)
-                : oParent.appendChild(this.$docklet.$getLayoutNode("toolbar"));//, oParent.lastChild
+                ? apf.insertHtmlNode(this.$docklet.$getLayoutNode("toolbar"), oParent, oParent.firstChild)
+                : oParent.insertBefore(this.$docklet.$getLayoutNode("toolbar"), oParent.firstChild);//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
                 item = buttons[z];

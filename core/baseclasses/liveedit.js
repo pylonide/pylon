@@ -622,7 +622,7 @@ apf.LiveEdit = function() {
                     if (!this.$editorCache[cacheId]) {
                         if (!this.id)
                             apf.setReference(this.id = (this.localName || "liveedit") + String(this.$uniqueId), this);
-                        
+
                         var _self     = this;
                         var constr    = apf.namespaces[apf.ns.aml].elements[editor];
                         var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;

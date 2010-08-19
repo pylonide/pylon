@@ -401,6 +401,7 @@ apf.editor = function(struct, tagName){
             this.iframe = document.createElement("iframe");
             this.iframe.setAttribute("frameborder", "0");
             this.iframe.setAttribute("border", "0");
+            this.iframe.setAttribute("scrolling", "no");
             this.iframe.setAttribute("marginwidth", "0");
             this.iframe.setAttribute("marginheight", "0");
             oEditor.appendChild(this.iframe);
@@ -479,10 +480,12 @@ apf.editor = function(struct, tagName){
             //#ifdef __WITH_LAYOUT
             // setup layout rules:
             //@todo add this to $destroy
-            apf.layout.setRules(this.$ext, this.$uniqueId + "_editor",
+            /*apf.layout.setRules(this.$ext, this.$uniqueId + "_editor",
                 "var o = apf.all[" + this.$uniqueId + "];if (o) o.$resize()");
-            apf.layout.queue(this.$ext);
+            apf.layout.queue(this.$ext);*/
             //#endif
+            
+            this.addEventListener("resize", this.$resize);
 
             this.$addListeners();
 
