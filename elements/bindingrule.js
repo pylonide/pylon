@@ -234,6 +234,7 @@ apf.BindingRule = function(struct, tagName){
 apf.aml.setElement("icon",       apf.BindingRule);
 apf.aml.setElement("image",      apf.BindingRule);
 apf.aml.setElement("caption",    apf.BindingRule);
+apf.aml.setElement("tooltip",    apf.BindingRule);
 apf.aml.setElement("css",        apf.BindingRule);
 apf.aml.setElement("selectable", apf.BindingRule);
 apf.aml.setElement("value",      apf.BindingRule);
