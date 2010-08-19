@@ -937,6 +937,9 @@ apf.b.$state = 0;
  * @todo rewrite to use arrays
  */
 apf.xmlset = function(xml, xpath, local, previous){
+    if (typeof(xml) == "string")
+        xml = apf.getXml(xml);
+    
     this.$xml = xml;
     if (xml)
         this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
@@ -1093,23 +1096,23 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.next = function(selector){
         if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     
     this.nextAll = function(selector){
         if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     
     this.nextUntil = function(){}
     
     this.prev = function(selector){
         if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     this.prevAll = function(selector){
         if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     
     this.not = function(){}
@@ -1125,7 +1128,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.siblings = function(selector){
         //preceding-sibling::
-        //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]");
+        //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
     }
 
     this.text = function(){
@@ -1185,16 +1188,16 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.children = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     
     this.has  = 
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("self::"), this.$local, this);
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("|self::"), this.$local, this);
     }
     
     this.filter = function(filter){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("self::") + "]", this.$local, this);
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("|self::") + "]", this.$local, this);
     }
     
     this.end = function(){
@@ -1219,6 +1222,14 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.vals = function(selector){
         return apf.queryValues(this.$xml, selector ? "(" + this.$xpath + ")/" + selector : this.$xpath);
+    }
+    
+    this.node = function(){
+        return apf.queryNode(this.$xml, this.$xpath);
+    }
+
+    this.nodes = function(){
+        return apf.queryNodes(this.$xml, this.$xpath);
     }
     
     this.clone = function(deep){
