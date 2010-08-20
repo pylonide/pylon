@@ -1463,7 +1463,13 @@ apf.DataBinding = function(){
             }*/
         }
         else if (value.indexOf("[::") > -1) { //@experimental
-            var model = apf.getInheritedAttribute(this.parentNode, "model");
+            var model, pNode = this;
+            do {
+                pNode = pNode.parentNode
+                model = pNode.getAttribute("model");
+            }
+            while (pNode.parentNode && pNode.parentNode.nodeType == 1 && (!model || model == value));
+
             if (model)
                 value = value.replace(/\[\:\:/g, "[" + model + "::");
         }
