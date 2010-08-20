@@ -101,7 +101,7 @@ apf.popup = {
 
         var popup = o.content, moveUp = false;
         if (!o.content.style.zIndex)
-            o.content.style.zIndex = 10000000;
+            o.content.style.zIndex = 1000000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
 

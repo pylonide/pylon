@@ -1248,6 +1248,9 @@ apf.DataBinding = function(){
         
         this.$amlLoaded = true; //@todo this can probably be removed
         this.$checkLoadQueue();
+        
+        if (!this.$model && !this.$initingModel)
+            initModel.call(this);
     });
     
     // #ifdef __WITH_LANG_SUPPORT
