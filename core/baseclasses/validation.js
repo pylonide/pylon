@@ -249,7 +249,7 @@ apf.Validation = function(){
         if (!this.$validgroup.allowMultipleErrors)
             this.$validgroup.hideAllErrors();
 
-        errBox.setMessage(this.invalidmsg);
+        errBox.setMessage(this.invalidmsg || value);
         
         apf.setStyleClass(this.$ext, this.$baseCSSname + "Error");
         this.showMe(); //@todo scroll refHtml into view

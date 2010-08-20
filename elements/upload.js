@@ -215,6 +215,9 @@ apf.upload.ERROR_CODES = {
         //#ifdef __WITH_DATAACTION
         apf.DataAction
         //#endif
+        //#ifdef __WITH_VALIDATION
+        ,apf.Validation
+        //#endif
     );
 
     this.state        = constants.STOPPED;
