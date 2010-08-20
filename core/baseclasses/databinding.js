@@ -1462,6 +1462,11 @@ apf.DataBinding = function(){
                 //@todo Error ??
             }*/
         }
+        else if (value.indexOf("[::") > -1) { //@experimental
+            var model = apf.getInheritedAttribute(this.parentNode, "model");
+            if (model)
+                value = value.replace(/\[\:\:/g, "[" + model + "::");
+        }
 
         //Optimize xmlroot position and set model async (unset the old one)
         //@todo apf3.0 this could be optimized by using apf.queue and only when not all info is there...
