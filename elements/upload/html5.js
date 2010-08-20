@@ -161,7 +161,16 @@ apf.upload.html5.isSupported = function() {
                 blob = multipartBlob;
             }
             // Send blob or multipart blob depending on config
-            xhr.sendAsBinary(blob);
+            try {
+                xhr.sendAsBinary(blob);
+            }
+            catch (ex) {
+                _self.oUpload.dispatchEvent("error", {
+                    code    : apf.upload.ERROR_CODES.HTTP_ERROR,
+                    message : ex.message,
+                    file    : file
+                });
+            }
         }
 
         // File upload finished
