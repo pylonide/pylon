@@ -1033,7 +1033,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.attr = function(attrName, value){
-        if (!value)
+        if (value === undefined)
             return this.$nodes && this.$nodes[0] && this.$nodes[0].getAttribute(attrName) || "";
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
