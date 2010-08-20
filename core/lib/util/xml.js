@@ -1196,6 +1196,10 @@ apf.xmlset = function(xml, xpath, local, previous){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("|self::"), this.$local, this);
     }
     
+    this.query = function(path){
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" + path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);    
+    }
+    
     this.filter = function(filter){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("|self::") + "]", this.$local, this);
     }
