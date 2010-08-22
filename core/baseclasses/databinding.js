@@ -201,6 +201,14 @@ apf.DataBinding = function(){
     this.$execProperty = function(prop, xmlNode, undoObj){
         var attr = this.$attrBindings[prop];
         
+        //#ifdef __DEBUG
+        if (!attr) {
+            apf.console.error("Could not find attribute handler for property '" 
+                + prop + "' on " + this.localName + ":" + (this.id || ""));
+            return;
+        }
+        //#endif
+        
         //#ifdef __WITH_LANG_SUPPORT
         apf.$lm_has_lang = false;
         //#endif

@@ -580,7 +580,8 @@ apf.GuiElement.propHandlers = {
      */
     "visible": function(value){
         if (apf.isFalse(value) || typeof value == "undefined") {
-            this.$ext.style.display = "none";
+            if (this.$ext)
+                this.$ext.style.display = "none";
             
             if (apf.document.activeElement == this || this.canHaveChildren
               && apf.isChildOf(this, apf.document.activeElement, false)) {
@@ -593,9 +594,11 @@ apf.GuiElement.propHandlers = {
             this.visible = false;
         }
         else { //if (apf.isTrue(value)) default
-            this.$ext.style.display = ""; //Some form of inheritance detection
-            if (!this.$ext.offsetHeight)
-                this.$ext.style.display = "block";
+            if (this.$ext) {
+                this.$ext.style.display = ""; //Some form of inheritance detection
+                if (!this.$ext.offsetHeight)
+                    this.$ext.style.display = "block";
+            }
             
             //#ifdef __WITH_LAYOUT
             if (apf.layout && this.$int) //apf.hasSingleRszEvent)

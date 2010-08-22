@@ -270,8 +270,8 @@ apf.scrollbar = function(struct, tagName){
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
             
-            this.$curValue = oHtml[this.$scrollPos] / (oHtml[this.$scrollSize] - apf[this.$getInner](oHtml));
-            
+            this.$curValue = oHtml[this.$scrollPos] / (oHtml[this.$scrollSize] - this.$getViewPort(oHtml));
+
             var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
             this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";

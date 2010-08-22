@@ -1532,7 +1532,7 @@ apf.lm = new (function(){
         return o;
     };
 
-    function handleError(e, last_line, part){
+    function handleError(e, last_line, part, linenr){
         // TODO: make a proper APF exception with this information:
         if (e.t) {
             throw new Error(apf.formatErrorString(0, null,
@@ -1543,8 +1543,10 @@ apf.lm = new (function(){
         }
         else {
             throw new Error(apf.formatErrorString(0, null,
-                "Compiling live markup function",
-                "Error whilst compiling: " + e.message + "\nInput:\n" + str
+                "Compiling live markup function on line " + linenr,
+                "Error whilst compiling: " + e.message 
+                //+ "\nStack Trace:\n" + e.stack
+                + "\nInput:\n" + str
                 + "\nGenerated:\n" + apf.lm.lastCode()));
         }
     }
@@ -1779,7 +1781,16 @@ apf.lm = new (function(){
                 f = apf.lm_exec.compile(o.join(""));
             }
             catch(e){
-                handleError(e,last_line);
+                var oErr = window.onerror;
+                window.onerror = function(x,y,line){
+                    window.onerror = oErr;
+                    handleError(e, last_line, null, line);
+                    return true;
+                }
+                apf.include("", "", null, o.join(""));
+                window.onerror = oErr;
+                
+                //handleError(e,last_line);
                 return null;
             }
         }
