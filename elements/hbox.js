@@ -59,7 +59,8 @@ apf.vbox = function(struct, tagName){
     this.$box        = true;
     this.$layout     = true;
     
-    var input = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
+    var MOZSTACK = "-moz-stack";
+    var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
      * @attribute {String}  padding      the space between each element. Defaults to 2.
@@ -200,7 +201,7 @@ apf.vbox = function(struct, tagName){
         if (apf.hasFlexibleBox) {
             if (this.$altExt)
                 this.$altExt.style.display = e.value 
-                    ? (apf.isGecko ? "-moz-stack" : apf.CSSPREFIX2 + "-box") 
+                    ? (apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box") 
                     : "none";
             return;
         }
@@ -277,7 +278,7 @@ apf.vbox = function(struct, tagName){
                         sp.appendChild(this.$ext);
                         
                         this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
-                        sp.style.display  = apf.isGecko ? "-moz-stack" : apf.CSSPREFIX2 + "-box";
+                        sp.style.display  = apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box";
                         sp.style.position = "relative";
                         if (!this.parentNode.$vbox)
                             sp.style["width"] = "43px";
@@ -360,7 +361,7 @@ apf.vbox = function(struct, tagName){
         if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
             if (apf.hasFlexibleBox) {
                 //if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "block")
-                    //amlNode.$ext.style.display = "-moz-stack"; //@todo visible toggle
+                    //amlNode.$ext.style.display = MOZSTACK; //@todo visible toggle
                 
                 //input elements are not handled correctly by firefox and webkit
                 if (input[amlNode.$ext.tagName]) {

@@ -580,11 +580,6 @@ apf.MultiselectBinding = function(){
                     xmlNode.getAttribute(apf.xmldb.xmlIdTag)
                     + "|" + this.$uniqueId);
 
-                if (htmlNode
-                  && (startNode != xmlNode || xmlNode == this.xmlRoot)
-                  && actionFeature[action] & 1)
-                    action = "update";
-
                 if (xmlNode == listenNode && !this.renderRoot) {
                     if (xmlNode == this.xmlRoot && action != "insert" && action != "replacenode") {
                         //@todo apf3.0 - fix this for binding on properties
@@ -602,11 +597,16 @@ apf.MultiselectBinding = function(){
                   && !this.isTraverseNode(xmlNode))
                     action = "remove"; //@todo why not break here?
 
-                if (!htmlNode && actionFeature[action] & 4
+                else if (!htmlNode && actionFeature[action] & 4
                   && this.isTraverseNode(xmlNode)){
                     action = "add";
                     break;
                 }
+                
+                else if (htmlNode
+                  && (startNode != xmlNode || xmlNode == this.xmlRoot)
+                  && actionFeature[action] & 1)
+                    action = "update";
 
                 if (htmlNode  || action == "move")
                     break;
@@ -758,8 +758,11 @@ apf.MultiselectBinding = function(){
         }
         else if (action == "remove") { //Check Remove
             //&& (!xmlNode || foundNode == xmlNode && xmlNode.parentNode
-            if (!xmlNode || startNode != xmlNode) //@todo unsure if I can remove above commented out statement
-                return;
+            //if (!xmlNode || startNode != xmlNode) //@todo unsure if I can remove above commented out statement
+                //return;
+            //I've commented above code out, because it disabled removing a 
+            //subnode of a node that through an each rule makes the traverse 
+            //node no longer a traverse node.
             
             //Remove HTML Node
             if (htmlNode)
@@ -986,7 +989,12 @@ apf.MultiselectBinding = function(){
                 this.each = value[1];
             }
             else
-                this.each = value.replace(/^\[|\]$/g, ""); 
+                this.each = value.replace(/^\[|\]$/g, "");
+            
+            if (!this.$model && !this.$initingModel) {
+                this.$initingModel = true;
+                this.$setInheritedAttribute("model");
+            }
         }
 
         //@todo apf3.0 find a better heuristic (portal demo)

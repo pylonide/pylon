@@ -170,7 +170,7 @@ apf.ruleList.prototype = {
                 s.push(rule.match, rule.value);
                 //#ifdef __WITH_AML_BINDINGS
                 if (!hasAml && rule.value)
-                    hasAml = rule.value.indexOf("<a:") > -1;
+                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
                 //#endif
             }
             
@@ -200,7 +200,7 @@ apf.ruleList.prototype = {
                 s.push(rule.match, rule.value);
                 //#ifdef __WITH_AML_BINDINGS
                 if (!hasAml && rule.value)
-                    hasAml = rule.value.indexOf("<a:") > -1;
+                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
                 //#endif
             }
             

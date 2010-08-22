@@ -78,6 +78,8 @@ apf.BindingRule = function(struct, tagName){
         match : 1
     }, this.$attrExcludePropBind);
 
+    this.$booleanProperties["hasaml"] = true;
+    
     this.$propHandlers["value"] = 
     this.$propHandlers["match"] = function(value, prop){
         delete this["c" + prop];

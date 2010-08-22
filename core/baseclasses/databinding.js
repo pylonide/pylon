@@ -268,6 +268,8 @@ apf.DataBinding = function(){
         
         var div, doc = this.ownerDocument;
         for (var lm, i = 0, l = queue.length; i < l; i++) {
+            if (!queue[i]) continue; //@todo check out why this happens
+            
             div = document.getElementById("placeholder_" 
                 + this.$uniqueId + "_" + i);
             
@@ -283,8 +285,8 @@ apf.DataBinding = function(){
                 pHtmlNode: div
             });
             
-            delete queue[i];
             queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
+            delete queue[i];
         }
         
         queue.length = 0;
@@ -1256,9 +1258,6 @@ apf.DataBinding = function(){
         
         this.$amlLoaded = true; //@todo this can probably be removed
         this.$checkLoadQueue();
-        
-        if (!this.$model && !this.$initingModel)
-            initModel.call(this);
     });
     
     // #ifdef __WITH_LANG_SUPPORT
