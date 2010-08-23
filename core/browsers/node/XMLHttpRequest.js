@@ -1,5 +1,6 @@
 // #ifdef __SUPPORT_NODE
-var sys = require('sys');
+var Url = require("url");
+
 /**
  * Wrapper for built-in http.js to emulate the browser XMLHttpRequest object.
  *
@@ -60,7 +61,7 @@ exports.XMLHttpRequest = function() {
 	 * @param string password Password for basic authentication (optional)
 	 */
 	this.open = function(method, url, async, user, password) {
-		settings = {
+	    settings = {
 			"method": method,
 			"url": url,
 			"async": async,
@@ -124,17 +125,12 @@ exports.XMLHttpRequest = function() {
             throw "INVALID_STATE_ERR: connection must be opened before send() is called";
 		}
 		
-		/**
-         * Figure out if a host and/or port were specified.  Regex borrowed
-         * from parseUri and modified. Needs additional optimization.  
-         * @see http://blog.stevenlevithan.com/archives/parseuri
-		 */
-		var loc = /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?([^?#]*)/.exec(settings.url);
-		
+        var url = Url.parse(settings.url)
+        
 		// Determine the server
-		switch (loc[1]) {
-			case 'http':
-				var host = loc[6];
+		switch (url.protocol) {
+			case 'http:':
+				var host = url.hostname;
 				break;
 			
 			case undefined:
@@ -142,7 +138,7 @@ exports.XMLHttpRequest = function() {
 				var host = "localhost";
 				break;
 			
-			case 'https':
+			case 'https:':
 				throw "SSL is not implemented.";
 				break;
 			
@@ -152,9 +148,8 @@ exports.XMLHttpRequest = function() {
 		
         // Default to port 80. If accessing localhost on another port be sure
         // to use http://localhost:port/path
-		var port = loc[7] || 80;
-		
-		var uri = loc[8] || "/";
+		var port = url.port || 80;
+		var uri = url.pathname + url.search;
 		
 		// Set the Host header or the server may reject the request
 		headers["Host"] = host;
@@ -170,7 +165,7 @@ exports.XMLHttpRequest = function() {
 				headers["Content-Type"] = "text/plain;charset=UTF-8";
 			}
 		}
-		
+
 		// Use the correct request method
         request = client.request(settings.method, uri, headers);
 
