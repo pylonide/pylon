@@ -238,7 +238,7 @@ apf.getData = function(instruction, options){
         else {
             //#ifdef __DEBUG
             if (!options.xmlNode) {
-                throw new Error(apf.formatErrorString(0, null,
+                return apf.console.error(apf.formatErrorString(0, null,
                     "Loading data",
                     "Xpath found without model and no xmlNode specified" 
                     + instruction));
