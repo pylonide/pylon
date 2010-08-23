@@ -643,15 +643,19 @@ apf.MultiselectBinding = function(){
             xmlNode = startNode;
 
         if (action == "replacenode") {
-            var tmpNode;
+            //var tmpNode;
             
             //Case for replacing the xmlroot or its direct parent
             if (UndoObj ? UndoObj.args[0] == this.xmlRoot : !this.xmlRoot.parentNode)
                 return this.load(UndoObj ? UndoObj.args[1] : listenNode, {force: true});
             
             //Case for replacing a node between the xmlroot and the traverse nodes
-            if ((tmpNode = this.getFirstTraverseNode()) && apf.isChildOf(startNode, tmpNode))
-                return this.load(this.xmlRoot, {force: true}); //Highly doubtfull this is exactly right...
+            var nodes = this.getTraverseNodes();
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (apf.isChildOf(startNode, nodes[i]))
+                    return this.load(this.xmlRoot, {force: true}); //This can be more optimized by using addNodes
+            }
+            //if ((tmpNode = this.getFirstTraverseNode()) && apf.isChildOf(startNode, tmpNode))
         }
 
         //Action Tracker Support - && xmlNode correct here??? - UndoObj.xmlNode works but fishy....

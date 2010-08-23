@@ -502,6 +502,9 @@ apf.xmldb = new (function(){
             undoObj.oldNode = oldNode;
             undoObj.xmlNode = newNode;
         }
+        
+        this.cleanNode(newNode);
+        
         var parentNode = oldNode.parentNode;
         parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
@@ -980,11 +983,6 @@ apf.xmldb = new (function(){
             nodes = xmlNode.selectNodes("descendant-or-self::node()[@a_loaded]");
             for (i = nodes.length - 1; i >= 0; i--)
                 nodes[i].removeAttribute("a_loaded");
-            // #ifdef __DEBUG
-            // var nodes = xmlNode.selectNodes("descendant-or-self::node()[@a_selection]");
-            // for (var i = nodes.length - 1; i >= 0; i--)
-            //     nodes[i].removeAttributeNode(nodes[i].getAttributeNode("a_selection"));
-            // #endif
         }
         catch (e) {}
 
