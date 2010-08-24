@@ -210,14 +210,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         });
 
         this.transport.addEventListener("update", function(e){
-            var sData = e.message.args ? [e.message] : e.message;
-            var oData = typeof sData == "string"
-              ? apf.unserialize(sData)
-              : sData;
-            var oSession = _self.$sessions[e.uri], i = 0, l = oData.length;
-
-            for (; i < l; i++)
-                _self.$receiveChange(oData[i], oSession, e.annotator, e.callback);
+            _self.$update(e);
         });
 
         this.transport.addEventListener("join", function(e) {
@@ -250,6 +243,17 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             _self.endSession(e.uri);
         });
     };
+    
+    this.$update = function(e){
+        var sData = e.message.args ? [e.message] : e.message;
+        var oData = typeof sData == "string"
+          ? apf.unserialize(sData)
+          : sData;
+        var oSession = this.$sessions[e.uri], i = 0, l = oData.length;
+
+        for (; i < l; i++)
+            this.$receiveChange(oData[i], oSession, e.annotator, e.callback);
+    }
 
     /**
      * Create a new RDB session based on a URI.
@@ -462,26 +466,25 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         //Fetch node based on their xpath
 	    var q   = oMessage.args.slice();
-        xmlNode = this.xpathToXml(q[1], model.data);
+        xmlNode = q[1] = this.xpathToXml(q[1], model.data);
         if (xmlNode) {
-            var action = q.splice(0, 2)[0];
+            var action = q.shift();
 
             if (action == "addChildNode")
-                q[2] = this.xpathToXml(q[2], model.data);
+                q[3] = this.xpathToXml(q[3], model.data);
             else if (action == "appendChild") {
-                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
-                q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
+                q[1] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
             }
             else if (action == "moveNode") {
-                q[0] = this.xpathToXml(q[0], model.data);
-                q[1] = q[1] ? this.xpathToXml(q[1], model.data) : null;
+                q[1] = this.xpathToXml(q[1], model.data);
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
             }
             else if (action == "replaceNode") {
-                q[0] = typeof q[0] == "string" ? apf.getXml(q[0]) : q[0];
+                q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[1] = xmlNode;
             }
 	        else if (action == "setValueByXpath") {}
-
-            q.unshift(xmlNode);
 
             // pass the action to the actiontracker to execute it
             model.$at.execute({

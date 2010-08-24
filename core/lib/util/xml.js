@@ -966,7 +966,7 @@ apf.xmlset = function(xml, xpath, local, previous){
                     }
                 });
             }
-            
+
             at.execute({
                 action : 'multicall', 
                 args   : apf.b.$queue
