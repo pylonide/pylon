@@ -453,7 +453,7 @@ apf.AmlElement = function(struct, tagName){
     };
     
     this.$setInheritedAttribute = function(prop){
-        var value, node = this;
+        var value, node = this, isInherit = false;
         
         value = node.getAttribute(prop);
         if (!value) {
@@ -463,6 +463,8 @@ apf.AmlElement = function(struct, tagName){
             while (node && node.nodeType == 1 && !(value = node.getAttribute(prop, true))) {
                 node = node.parentNode;
             }
+            
+            isInherit = true;
         }
         
         if (!value && apf.config && prop)
@@ -476,11 +478,13 @@ apf.AmlElement = function(struct, tagName){
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);
-                this.$inheritProperties[prop] = 2;
             }
             else 
             //#endif
                 this.setProperty(prop, value, false, false, 2);
+            
+            if (isInherit)
+                this.$inheritProperties[prop] = 2;
         }
         
         return value;
