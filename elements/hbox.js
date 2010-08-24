@@ -150,6 +150,9 @@ apf.vbox = function(struct, tagName){
         if (apf.hasFlexibleBox) {
             this.$int.style[apf.CSSPREFIX + "BoxAlign"] = value || "stretch";
             
+            if (apf.isGecko)
+                this.$int.style.overflow = "visible";
+            
             var stretch = !value || value == "stretch";
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
@@ -159,7 +162,7 @@ apf.vbox = function(struct, tagName){
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
                 if (stretch)
-                    node.$ext.style[size] = stretch ? (apf.isGecko && this.flex ? "1px" : "auto") : "";
+                    node.$ext.style[size] = stretch ? (apf.isGecko && this.flex ? "" : "auto") : "";
                 else
                     handlers["true"][size].call(this, node.height);
             }
@@ -461,8 +464,12 @@ apf.vbox = function(struct, tagName){
             if (apf.hasFlexibleBox) {
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
                 
-                if (apf.isGecko && amlNode.$ext.style.display == "block")
-                    amlNode.$ext.style.display = "";
+                if (apf.isGecko) {
+                    this.$int.style.overflow = "visible";
+                
+                    if (amlNode.$ext.style.display == "block")
+                        amlNode.$ext.style.display = "";
+                }
             }
             else {
                 amlNode.$ext.style.verticalAlign = "";

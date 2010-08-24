@@ -390,7 +390,13 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             apf.console.info(this.logprefix + "Sending " + list.length + " RDB messages to " + uri);
             //#endif
 
-            this.transport.sendUpdate(uri, apf.serialize(list));
+            if (this.transport)
+                this.transport.sendUpdate(uri, apf.serialize(list));
+            
+            this.dispatchEvent("rdbsend", {
+                uri     : uri,
+                message : list
+            });
         }
 
         qHost.rdbQueue = {};

@@ -955,12 +955,25 @@ apf.xmlset = function(xml, xpath, local, previous){
         apf.b.$state = 1;
         return this;
     }
-    this.commit = function(at){
+    this.commit = function(at, rmt, uri){
         if (apf.b.$queue.length) {
+            if (rmt) {
+                var _self = this;
+                rmt.addEventListener("rdbsend", function(e){
+                    if (!uri || e.uri == uri) {
+                        _self.rdbstack = e.message;
+                        rmt.removeEventListener("rdbsend", arguments.callee);
+                    }
+                });
+            }
+            
             at.execute({
                 action : 'multicall', 
                 args   : apf.b.$queue
             });
+            
+            if (rmt)
+                rmt.$processQueue(rmt);
         }
         
         apf.b.$queue = [];
@@ -971,6 +984,9 @@ apf.xmlset = function(xml, xpath, local, previous){
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
+    }
+    this.getRDBMessage = function(){
+        return this.rdbstack || [];
     }
     
     this.before = function(){
@@ -1124,7 +1140,25 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.parents = function(selector){}
     this.pushStack = function(){}
     this.replaceAll = function(){}
-    this.replaceWith = function(){}
+    this.replaceWith = function(el){
+        for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
+            node = this.$nodes[i];
+            child = typeof el == "function" ? el(i, node) : el;
+            
+            if (apf.b.$state)
+                apf.b.$queue.push({
+                    action : 'replaceNode',
+                    args   : [child, node]
+                });
+            else if (this.$local)
+                node.parentNode.replaceChild(child, node);
+            else
+                apf.xmldb.replaceNode(child, node);
+            
+        }
+        
+        return this;
+    }
     
     this.siblings = function(selector){
         //preceding-sibling::

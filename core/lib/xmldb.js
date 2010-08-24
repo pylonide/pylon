@@ -926,17 +926,10 @@ apf.xmldb = new (function(){
             clearTimeout(rdb.queueTimer);
 
             rdb.$queueMessage(args, model, rdb);
-            //#ifdef __WITH_O3
-            if (apf.isO3)
+            // use a timeout to batch consecutive calls into one RDB call
+            rdb.queueTimer = $setTimeout(function() {
                 rdb.$processQueue(rdb);
-            else
-            //#endif
-            {
-                // use a timeout to batch consecutive calls into one RDB call
-                rdb.queueTimer = $setTimeout(function() {
-                    rdb.$processQueue(rdb);
-                });
-            }
+            });
         }
         //#endif
     };
