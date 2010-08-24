@@ -320,7 +320,7 @@ apf.socket = function(){
 		
 		qItem.received += data;
 		var t = qItem.received.split(/(<\/(?:message|stream:features|challenge)>)/);
-sys.p(t);
+
 		if(t.length<=1){
 			return;
 		}

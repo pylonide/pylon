@@ -204,7 +204,7 @@ apf.persist = function(struct, tagName){
                             else if (d.type == "join") {
                                 _self.dispatchEvent("join", {
                                     uri       : d.uri,
-                                    basetime  : d.baseline, //@todo what is this?
+                                    basetime  : d.basetime, //@todo what is this?
                                     document  : d.document,
                                     annotator : d.uId
                                 });

@@ -182,7 +182,7 @@ apf.$loader
         "elements/bindingrule.js",
         "elements/collection.js",
         "elements/defaults.js",
-        "elements/model.js",
+        "elements/model.js",        
         "elements/remote.js",
         "elements/script.js",
         "elements/smartbinding.js",
@@ -215,6 +215,7 @@ apf.$loader
         "elements/rpc/rest.js",        // REST
         "elements/rpc/yql.js",         // YQL
         
+        "elements/persist.js",
         "elements/xmpp/muc.js",
         "elements/xmpp/rdb.js",
         "elements/xmpp/roster.js",

@@ -614,7 +614,7 @@ apf.model = function(struct, tagName){
     //@todo move this to propHandlers
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var x = this.$aml;
-        if (this.parentNode.hasFeature(apf.__DATABINDING__)) {
+        if (this.parentNode && this.parentNode.hasFeature(apf.__DATABINDING__)) {
             if (!this.name)
                 this.setProperty("id", "model" + this.parentNode.$uniqueId);
             //this.parentNode.$aml.setAttribute("model", this.name); //@todo don't think this is necesary anymore...
