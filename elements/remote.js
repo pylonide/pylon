@@ -466,7 +466,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         //Fetch node based on their xpath
 	    var q   = oMessage.args.slice();
-        xmlNode = q[1] = this.xpathToXml(q[1], model.data);
+	    var xpath = q[1];
+        xmlNode = q[1] = this.xpathToXml(xpath, model.data);
         if (xmlNode) {
             var action = q.shift();
 
@@ -506,7 +507,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         else {
             oError = new Error(apf.formatErrorString(0, this,
                 "Remote Databinding Received", "Could not get XML node from \
-                 model with Xpath '" + q[1] + "' for URI '" + oMessage.uri + "'"));
+                 model with Xpath '" + xpath + "' for URI '" + oMessage.uri + "' " + apf.serialize(oMessage)));
         }
         //#endif
 
