@@ -891,7 +891,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
     var id;//, pfx = "";
     while(lNode && lNode.nodeType == 1) {
         if (lNode == xmlContext) {
-            str.unshift("/");//pfx = "//";
+            //str.unshift("/");//pfx = "//";
             break;
         }
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
@@ -902,7 +902,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
         lNode = lNode.parentNode;
     };
 
-    return (str[0] == "/" ? "" : "/") + str.join("/"); //pfx + 
+    return (str[0] == "/" || xmlContext && xmlContext.nodeType == 1 ? "" : "/") + str.join("/"); //pfx + 
 };
     
 //for RDB: Xpath statement --> xmlNode
