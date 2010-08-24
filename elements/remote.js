@@ -144,8 +144,8 @@
 apf.remote = function(struct, tagName){
     this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
 
-    this.lookup              = {};
-    this.select              = [];
+//    this.lookup              = {};
+//    this.select              = [];
     this.$sessions            = {};
     this.rdbQueue            = {};
     this.queueTimer          = null;
