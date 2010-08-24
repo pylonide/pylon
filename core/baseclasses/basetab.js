@@ -74,7 +74,7 @@ apf.BaseTab = function(){
         }
         
         if (callback && this.activepage == page)
-            return callback();
+            return callback(this.getPage(page));
 
         this.$lastCallback = callback;
         this.setProperty("activepage", page);
@@ -160,6 +160,8 @@ apf.BaseTab = function(){
                     page     : next,
                     //@todo apf3.0 change callback arguments in xinclude
                     callback : function(options){
+                        delete _self.isLoading[next];
+                    
                         if (!options.xmlNode) {
                             var oError = new Error(apf.formatErrorString(0, null,
                                 "Loading new page", "Could not load new page: "
@@ -288,7 +290,7 @@ apf.BaseTab = function(){
         }
         
         if (typeof callback == "function") 
-            callback();
+            callback(page);
 
         return true;
     };
