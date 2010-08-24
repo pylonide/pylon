@@ -981,19 +981,28 @@ apf.MultiselectBinding = function(){
         return nodes;
     };
 
+    var axis = {"self":1, "following-sibling":1, "ancestor":1}; //@todo finish list
     this.$handleBindingRule = function(value, prop){
         if (!value)
             this[prop] = null;
 
         //@todo apf3.0 fix parsing
         if (prop == "each") {
+            value = value.charAt(0) == "[" && value.charAt(value.length - 1) == "]"
+                ? value.replace(/^\[|\]$/g, "")
+                : value;
+            
             if (value.indexOf("::") > -1) {
-                value = value.replace(/^\[|\]$/g, "").split("::"); //@todo could be optimized
-                this.setProperty("model", value[0]);
-                this.each = value[1];
+                var model = value.split("::"); //@todo could be optimized
+                if (!axis[model[0]]) {
+                    this.setProperty("model", model[0]);
+                    this.each = model[1];
+                }
+                else 
+                    this.each = value;
             }
             else
-                this.each = value.replace(/^\[|\]$/g, "");
+                this.each = value;
             
             if (!this.$model && !this.$initingModel) {
                 this.$initingModel = true;

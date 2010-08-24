@@ -58,8 +58,17 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.$propHandlers["for"] = function(value){
-        if (value)
-            this.$attach(typeof value == "string" ? self[value] : value);
+        if (value) {
+            var amlNode = typeof value == "string" ? self[value] : value;
+            if (!amlNode.$amlLoaded) {
+                var _self = this;
+                apf.queue.add("scrollbar" + this.$uniqueId, function(){
+                    _self.$attach(amlNode);
+                });
+            }
+            else
+                this.$attach(amlNode);
+        }
     }
     
     this.$booleanProperties["step"] = true;
