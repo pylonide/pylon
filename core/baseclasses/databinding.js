@@ -1479,6 +1479,7 @@ apf.DataBinding = function(){
 
             if (model)
                 value = value.replace(/\[\:\:/g, "[" + model + "::");
+            this.$inheritProperties.model = 3;
         }
 
         //Optimize xmlroot position and set model async (unset the old one)

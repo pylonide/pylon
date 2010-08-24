@@ -99,7 +99,7 @@ apf.AmlNamedNodeMap = function(host){
     this.join = function(glue){
         var x = [];
         for (var e, a, i = 0, l = this.length; i < l; i++) {
-            if ((e = (a = this[i]).ownerElement) && !e.$inheritProperties[a.nodeName])
+            if ((e = (a = this[i]).ownerElement) && e.$inheritProperties[a.nodeName] != 2)
                 x.push(this[i]);
         }
         return x.join(glue);

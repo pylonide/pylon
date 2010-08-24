@@ -795,6 +795,7 @@ apf.Class.prototype = new (function(){
                     -1 Set
              undefined Pass through
                      2 Inherited
+                     3 Semi-inherited
                     10 Dynamic property
         */
         //@todo fix DOM mutation icw property inheritance
@@ -823,14 +824,19 @@ apf.Class.prototype = new (function(){
                         node = nodes[i];
                         if (node.nodeType != 1 && node.nodeType != 7)
                             continue;
-                        
+
                         //Pass through
                         if (inheritType == 1
                           && !(n = node.$inheritProperties[prop]))
                             recur(node.childNodes);
                         //Set inherited property
-                        else if(!(n < 0)) //Will also pass through undefined
-                            node.setProperty(prop, value, false, false, 2); //This is recursive already
+                        else if(!(n < 0)) {//Will also pass through undefined
+                            if (n == 3)
+                                node[prop] = null;
+                            node.setProperty(prop, n == 2 
+                                ? value
+                                : node[prop], false, false, n); //This is recursive already
+                        }
                     }
                 })(this.childNodes);
             }
