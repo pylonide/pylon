@@ -54,7 +54,7 @@ apf.vardump = function(obj, depth, norecur, stack){
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
                     (norecur && depth > 0 ? "{/*"+typeof(obj[i])+"*/}" :
-                    apf.vardump2(obj[i], depth + 1, norecur, stack+'['+i+']')) );
+                    apf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -77,11 +77,12 @@ apf.vardump = function(obj, depth, norecur, stack){
             
             for (var prop in obj) if(prop!='$__vardump'){
                 try {
-                    var propname = (parseInt(prop)==prop)?"0x"+("00000000"+parseInt(prop).toString(16)).slice(-8):prop;
+                    //var propname = (parseInt(prop)==prop)?"0x"+("00000000"+parseInt(prop).toString(16)).slice(-8):prop;
+                    var propname = prop;
                     if(str.length>1)str.push(",\n");
                     str.push( "\t".repeat(depth+1), propname, ": ",
                       (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
-                        apf.vardump2(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
+                        apf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
                 } catch(e) {
                     str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
                 }

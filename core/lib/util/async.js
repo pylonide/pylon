@@ -115,7 +115,7 @@ apf.asyncChain = function(funcs) {
     next();
 }
 
-apf.asyncSafe = function(wrap, stringify){
+apf.asyncSafe = function(wrap){
     if( apf.asyncNoWrap )
         return func;
     return function() {
@@ -123,13 +123,9 @@ apf.asyncSafe = function(wrap, stringify){
             if(this.log){
                 var hooks;
             
-                if(stringify)
-                    hooks = this.log("call",stringify.apply(this,arguments));
-                else {
-                    var logargs = Array.prototype.slice.call(arguments)
-                    logargs.unshift("call");
-                    hooks = this.log.apply(this, logargs);
-                }
+                var logargs = Array.prototype.slice.call(arguments)
+                hooks = this.log.apply(this, ["call",wrap].concat(logargs));
+
                 if(hooks){
                     if(hooks.pre) // inject a pre-call
                         hooks.pre.apply(this, arguments);
@@ -138,7 +134,7 @@ apf.asyncSafe = function(wrap, stringify){
                         var _pthis = this;
                         var cb = args[args.length-1];
                         args[args.length-1] = function(){
-                            hooks.post.apply(_pthis, arguments);
+                            hooks.post.call(_pthis, logargs, arguments);
                             cb.apply(_pthis, arguments);
                         }
                         wrap.apply(this,args);
@@ -146,12 +142,49 @@ apf.asyncSafe = function(wrap, stringify){
                         wrap.apply(this, arguments);
                 }else
                     wrap.apply(this, arguments);
-            }else
-                wrap.apply(this, arguments);
+            }else{
+                if(false){//apf.asyncFailAll){;
+                    var args = Array.prototype.slice.call(arguments);
+                    var cb = args[args.length-1];
+                    args[args.length-1] = function(err){
+                        if(err)
+                            apf.console.error("Async Exception: "+err+"\n"+(new Error()).stack);
+                        cb.apply(this,arguments);
+                    }
+                    wrap.apply(this, args);
+                }else{
+                    wrap.apply(this, arguments);
+                }
+            }
         } catch (e) {
             apf.console.error("Caught asyncSafe error: " + e.stack);
             arguments[arguments.length-1](e);
         }
+    }
+}
+
+apf.syncSafe = function(wrap){
+    if( apf.syncNoWrap )
+        return func;
+    
+    return function() {
+        if(this.log){
+            var hooks;
+            
+            var logargs = Array.prototype.slice.call(arguments)
+            hooks = this.log.apply(this, ["call",wrap].concat(logargs));
+
+            if(hooks && hooks.pre) // inject a pre-call
+                hooks.pre.apply(this, arguments);
+                
+            var retVal = wrap.apply(this, arguments)
+                
+            if(hooks && hooks.post) // inject a post-call 
+                hooks.post.call(this, logargs, retVal);
+            
+            return retVal
+        }else
+            return wrap.apply(this, arguments);
     }
 }
 
@@ -162,19 +195,52 @@ apf.asyncLog = function( logger ){
         var name = m[1], file = m[2], line = m[3];
         var args =  Array.prototype.slice.call(arguments);
         var type = args.shift();
-        return logger.call(this,file,line,name,type,args,stack);
+        var wrap = args.shift();
+        return logger.call(this,file,line,name,type,args,stack,wrap);
     }
 }
-/*
-var p = require("livedoc").prototype;
-p.log = apf.asyncLog(function(file, line, name, type, args, stack){
-    if( name.match(/join|create|disconnect/) &&
-        this.uri == "101"){
-        return {
-            pre: function(){}
-            post: function(){}
-       };
-   }
-});*/
+
+apf.asynclogOff = function(){
+    for(k in apf.asyncLogOnSet){
+        delete apf.asyncLogOnSet[k].log
+    }
+    apf.asyncLogOnSet = {};
+}
+
+apf.asyncLogOnSet = {};
+
+apf.asyncLogOn = function(pattern) {
+    var m = pattern.split("::");
+    var proto = require(m[0]).prototype;
+    apf.asyncLogOnSet[m[0]] = proto;
+    var open = m[1].indexOf("(");
+    var fname = m[1], fargs = [];
+    if(open!=-1){
+        fname = m[1].slice(0,open);
+        fargs = m[1].slice(open+1,-1).split(/\s*,\s*/);
+    }
+    proto.log = apf.asyncLog(function(file, line, name, type, args, stack, wrap) {
+        var names = (wrap.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/);
+        if (name == fname) {
+            var s = [];
+            var argobj = {};
+            var skip = {};
+            for(var i = 0;i<fargs.length;i++)
+                if(fargs[i].charAt(0)=='!')skip[fargs[i].slice(1)] = 1;
+            
+            for(var i = 0,k,v;i<args.length;i++){
+                argobj[k = names[i]] = v = args[i];
+                s.push(k+" = "+ (skip[k]?"[skipped]":apf.dump(v)));
+            }
+            s = ['(',s.join(', '),')\n'];
+            for(var i = 0;i<fargs.length;i++)if(fargs[i].charAt(0)!='!'){
+                with(argobj){
+                    s.push(fargs[i],' = ',eval(fargs[i]),'\n');
+                }
+            } 
+            console.log(name + s.join(''));
+        }
+    });
+}
 
 //#endif __WITH_ASYNC
