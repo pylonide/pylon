@@ -173,6 +173,7 @@ apf.Presentation = function(){
         //Store needed state information
         var oExt       = this.$ext,
             oInt       = this.$int,
+            pNode      = this.$ext.parentNode,
             beforeNode = oExt.nextSibling,
             idExt      = this.$ext.getAttribute("id"),
             idInt      = this.$int && this.$int.getAttribute("id"),
@@ -196,8 +197,8 @@ apf.Presentation = function(){
         if (idExt)
             this.$ext.setAttribute("id", idExt);
 
-        if (beforeNode)
-            this.$ext.parentNode.insertBefore(this.$ext, beforeNode);
+        if (beforeNode || pNode != this.$ext.parentNode)
+            pNode.insertBefore(this.$ext, beforeNode);
 
         //Copy classes
         var i, l, newclasses = [],

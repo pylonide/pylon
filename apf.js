@@ -216,6 +216,8 @@ var apf = {
     },
     //#endif
     
+    aPathAxis  : {"self":1, "following-sibling":1, "ancestor":1}, //@todo finish list
+    
     availHTTP  : [],
     /**
      * @private

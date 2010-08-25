@@ -981,7 +981,6 @@ apf.MultiselectBinding = function(){
         return nodes;
     };
 
-    var axis = {"self":1, "following-sibling":1, "ancestor":1}; //@todo finish list
     this.$handleBindingRule = function(value, prop){
         if (!value)
             this[prop] = null;
@@ -994,7 +993,7 @@ apf.MultiselectBinding = function(){
             
             if (value.indexOf("::") > -1) {
                 var model = value.split("::"); //@todo could be optimized
-                if (!axis[model[0]]) {
+                if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];
                 }

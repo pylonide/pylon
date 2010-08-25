@@ -445,6 +445,11 @@ apf.BaseStateButtons = function(){
                                 _self.dispatchEvent("afterstatechange", {
                                   from : lastState, 
                                   to   : o});
+                                
+                                //#ifdef __WITH_LAYOUT
+                                if (apf.hasSingleRszEvent)
+                                    apf.layout.forceResize(_self.$int);
+                                //#endif
                             }
                         });
                     }

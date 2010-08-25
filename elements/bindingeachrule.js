@@ -160,6 +160,61 @@ apf.BindingEachRule = function(struct, tagName){
         //@todo apf3.0 change sort
     }
     
+    this.$updateEach = function(value){
+        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        if (pNode.localName == "bindings") {
+            
+        }
+        else {
+            if (pNode.each != value)
+                pNode.$handleBindingRule(value, "each");
+        }
+    }
+    
+    this.$propHandlers["filter"]  = function(value, prop){
+        if (!value) {
+            this.$updateEach(this.match);
+            return
+        }
+
+        var keywords = value.trim().toLowerCase().split(" ");
+        
+        var each = this.match.charAt(0) == "[" && this.match.charAt(this.match.length - 1) == "]"
+            ? this.match.replace(/^\[|\]$/g, "")
+            : this.match;
+        
+        var model;
+        if (each.indexOf("::") > -1) {
+            var parsed = each.split("::"); //@todo could be optimized
+            if (!apf.xPathAxis[parsed[0]]) {
+                model = parsed[0];
+                each  = parsed[1];
+            }
+        }
+        
+        // show search results
+        var search = [], word, words, fields = this.$fields || ["text()"];
+        for (var i = 0, l = keywords.length; i < l; i++) {
+            words = [], word = keywords[i];
+            for (var j = 0, jl = fields.length; j < jl; j++) {
+                words.push("contains(translate(" + fields[j] + ", 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + word + "')");
+            }
+            search.push(words.join(" or "));
+        }
+        var filter = "(" + search.join(") and (") + ")";
+        
+        each = each.split("|");
+        var newEach = [];
+        for (i = 0, l = each.length; i < l; i++) {
+            newEach.push("(" + each[i] + ")[" + filter + "]");
+        }
+        console.log(newEach.join("|"));
+        this.$updateEach(newEach.join("|"));
+    }
+    this.$propHandlers["filter-fields"]  = function(value, prop){
+        this.$fields = value.splitSafe(",");
+    }
+    
     this.addEventListener("prop.match", function(e){
         var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
