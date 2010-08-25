@@ -122,7 +122,7 @@ apf.plane = {
     hide : function(protect){
         if (!this.plane || this.protect && protect != this.protect)
             return;
-debugger;
+
         delete this.protect;
 
         var isChild =
