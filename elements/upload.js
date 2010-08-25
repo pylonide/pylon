@@ -568,12 +568,12 @@ apf.upload.ERROR_CODES = {
     this.formatSize = function(bytes, precision) {
         var test,
             res = null;
-        ["B","kB","mB","gB"].forEach(function(size, index){
-            test = bytes / Math.pow(1024, index);
-            if (Math.floor(test) <= 1024 && !res)
-                res = test.toFixed(precision || 0) + size;
-        });
-        return res;
+        ["B","kB","mB","gB"].forEach(function(size, index){
+            test = bytes / Math.pow(1024, index);
+            if (Math.floor(test) <= 1024 && !res)
+                res = test.toFixed(precision || 0) + size;
+        });
+        return res;
     };
 
     this.addEventListener("error", function(e) {
