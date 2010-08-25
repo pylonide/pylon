@@ -137,7 +137,7 @@ apf.window = function(){
                 //END OF ENTIRE APPLICATION STARTUP
         
                 //#ifdef __DEBUG
-                apf.console.info("Initialization finished");
+                //apf.console.info("Initialization finished");
                 //#endif
                 
                 // #ifdef __DEBUG

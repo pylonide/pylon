@@ -313,7 +313,7 @@ apf = {
             if (sourceFile.indexOf(base) !== 0)
                 sourceFile = base + sourceFile;
         }
-        apf.console.info("including js file: " + sourceFile);
+//        apf.console.info("including js file: " + sourceFile);
         //o3.js.include(sourceFile);
         require("./" + sourceFile.replace(/\.js$/i, ""));
         //var fd = fs.child(sourceFile);

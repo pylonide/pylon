@@ -58,7 +58,8 @@ apf.$loader
         "core/lib/draw/vml.js",
         "core/lib/draw/chartdraw.js",*/
         
-        "core/browsers/o3.js"
+        "core/browsers/o3.js",
+        "core/lib/util/async.js"
         //"core/browsers/non_ie.js",
     )
     .wait()
