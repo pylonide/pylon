@@ -220,6 +220,10 @@ apf.scrollbar = function(struct, tagName){
     };
     
     this.$resize = function(){
+        var oHtml = this.$getHtmlHost();
+        if (!oHtml || !oHtml.offsetHeight) 
+            return;
+        
         this.$recalc();
         this.$update();
         this.setScroll(null, true);
@@ -239,12 +243,17 @@ apf.scrollbar = function(struct, tagName){
             - (this.$btnUp ? this.$btnUp[this.$offsetSize] : 0);
     }
     
+    //@todo this function is called way too many times
     this.$update = function(){
         if (this.animating) 
             return;
 
         var oHtml = this.$getHtmlHost();
-        if (!oHtml) return;
+        if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
+            return;
+        
+        if (!this.$slideMaxSize)
+            this.$recalc();
         
         //Disable scrollbar
         if (this.$getViewPort(oHtml) >= oHtml[this.$scrollSize]) {

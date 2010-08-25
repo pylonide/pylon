@@ -1235,7 +1235,12 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.filter = function(filter){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[self::" + filter.split("|").join("|self::") + "]", this.$local, this);
+        var newList = [];
+        for (var i = 0, l = this.$nodes.length; i < l; i++) {
+            if (this.$nodes[i].selectSingleNode("self::node()[" + filter + "]"))
+                newList.push(this.$nodes[i]);
+        }
+        return new apf.xmlset(newList, null, this.$local, this);
     }
     
     this.end = function(){

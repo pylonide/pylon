@@ -51,7 +51,7 @@ apf.text = function(struct, tagName){
 
     this.$focussable       = true; // This object can't get the focus
     this.focussable        = false;
-    this.textselect      = true;
+    this.textselect        = true;
     this.$hasStateMessages = true;
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
@@ -85,6 +85,7 @@ apf.text = function(struct, tagName){
                     - this.offsetHeight + apf.getVerBorders(this);
             }
             this.addEventListener("scroll", this.$scroll);
+            this.addEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown) {
@@ -96,6 +97,7 @@ apf.text = function(struct, tagName){
             //this.removeEventListener("resize", this.$resize);
             
             this.removeEventListener("scroll", this.$scroll);
+            this.removeEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             if (this.$scrollArea)
                 this.$scrollArea.onscoll = null;
@@ -104,6 +106,13 @@ apf.text = function(struct, tagName){
     
     this.$scroll = function(e){
         var html = this.$scrollArea;
+        
+        if (e.name == "afterload") {
+            this.$scrolldown = true;
+            html.scrollTop = html.scrollHeight;
+            return;
+        }
+        
         this.$scrolldown = html.scrollTop >= html.scrollHeight
             - html.offsetHeight + apf.getVerBorders(html);
     };
@@ -248,6 +257,10 @@ apf.text = function(struct, tagName){
         this.$container.insertAdjacentHTML("beforeend", this.$nodes.join(""));
         this.$nodes = [];
     }
+    
+    this.$deInitNode = 
+    this.$updateNode =
+    this.$moveNode   = apf.K;
 
     /**** Init ****/
 

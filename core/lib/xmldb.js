@@ -268,10 +268,12 @@ apf.xmldb = new (function(){
                 if (amlNode) {
                     var model = apf.all[sUId[3]];
                     var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
-
-                    amlNode.$execProperty(sUId[2], xpath
+                    var node  = xpath
                         ? apf.queryNode(model.data, xpath)
-                        : xmlNode, args[3]);
+                        : xmlNode;
+
+                    if (node)
+                        amlNode.$execProperty(sUId[2], node, args[3]);
                 }
             }) - 1;
             this.$listeners[uId] = id;
