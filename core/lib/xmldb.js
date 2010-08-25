@@ -270,7 +270,7 @@ apf.xmldb = new (function(){
                     var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
 
                     amlNode.$execProperty(sUId[2], xpath
-                        ? apf.queryNode(xmlNode, xpath)
+                        ? apf.queryNode(model.data, xpath)
                         : xmlNode, args[3]);
                 }
             }) - 1;
