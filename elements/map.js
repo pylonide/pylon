@@ -418,6 +418,14 @@ apf.map = function(struct, tagName){
         return p[sFunc] || apf.K;
     }
 
+    function markerExists(lat, lon) {
+        for (var loc in this.$markers) {
+            if (loc[0] == lat && loc[1] == lon)
+                return this.$markers[loc];
+        }
+        return false;
+    }
+
     /**
      * Adds a marker on a specific geographical location, optionally with an 
      * information window attached to it with arbitrary HTML as its content.
@@ -445,22 +453,34 @@ apf.map = function(struct, tagName){
         if (this["marker-icon"] && !this.$markerIcon)
             this.$markerIcon = new apf.url(this["marker-icon"]).uri;
 
-        var marker = this.$markers[[pos.lat(), pos.lng()]] = new google.maps.Marker({
-            position: pos,
-            map     : this.$map,
-            title   : title || "Marker",
-            icon    : this.$markerIcon || null
-        });
+        var lat    = pos.lat(),
+            lon    = pos.lng(),
+            marker = markerExists(lat, lon);
+        if (!marker) {
+            marker = this.$markers[[lat, lon]] = new google.maps.Marker({
+                position: pos,
+                map     : this.$map,
+                title   : title || "Marker",
+                icon    : this.$markerIcon || null
+            });
+        }
 
         if (!content)
             return marker;
-        var _self      = this,
-            infowindow = new google.maps.InfoWindow({
+
+        if (marker.infowindow) {
+            marker.infowindow.setContent(content);
+        }
+        else {
+            var _self = this;
+            marker.infowindow = new google.maps.InfoWindow({
                 content: content
             });
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(_self.$map, marker);
-        });
+            google.maps.event.addListener(marker, "click", function() {
+                marker.infowindow.open(_self.$map, marker);
+            });
+        }
+        
         return marker;
     };
 
@@ -476,8 +496,13 @@ apf.map = function(struct, tagName){
         var lat = pos.lat(),
             lon = pos.lng();
         for (var i in this.$markers) {
-            if (i[0] !== lat && i[1] !== lon)
+            if (i[0] !== lat || i[1] !== lon) continue;
             this.$markers[i].setMap(null); //this removes the marker from the map
+            if (this.$markers[i].infowindow) {
+                // remove the infowindow from the DOM
+                this.$markers[i].infowindow.close();
+                delete this.$markers[i].infowindow;
+            }
             delete this.$markers[i];
             break;
         }
