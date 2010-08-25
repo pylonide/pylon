@@ -40,12 +40,16 @@ apf.plane = {
 
     lastCursor : null,
     show : function(o, reAppend, copyCursor, useRealSize, options){
-        this.init();
+         if (this.protect)
+            return;
 
-        var plane    = this.plane;
+        this.init();
+        
+        var plane = this.plane;
         
         this.plane.style.background = options && options.color || "url(images/spacer.gif)";
         this.animate = options && options.animate;
+        this.protect = options && options.protect;
         
         if (o) { //@experimental
             this.current = o;
@@ -115,9 +119,11 @@ apf.plane = {
     },
     //#endif
 
-    hide : function(){
-        if (!this.plane)
+    hide : function(protect){
+        if (!this.plane || this.protect && protect != this.protect)
             return;
+debugger;
+        delete this.protect;
 
         var isChild =
             //#ifdef __WITH_XMLDATABASE

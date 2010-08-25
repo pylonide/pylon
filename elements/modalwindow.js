@@ -347,7 +347,8 @@ apf.AmlWindow = function(struct, tagName){
             if (this.visible)
                 apf.plane.show(this.$ext, false, null, null, {
                     color   : "black", 
-                    opacity : 0.5
+                    opacity : 0.5,
+                    protect : this.$uniqueId
                 });
                 //this.oCover.style.display = "block";
             /*else {
@@ -364,7 +365,7 @@ apf.AmlWindow = function(struct, tagName){
             }*/
         }
         else { //if (!value && this.oCover) {
-            apf.plane.hide();
+            apf.plane.hide(this.$uniqueId);
             //this.oCover.style.display = "none";
         }
     };
@@ -408,7 +409,8 @@ apf.AmlWindow = function(struct, tagName){
                 this.oCover.style.display = "block";*/
                 apf.plane.show(this.$ext, false, null, null, {
                     color   : "black", 
-                    opacity : 0.5
+                    opacity : 0.5,
+                    protect : this.$uniqueId
                 });
             }
 
@@ -494,7 +496,7 @@ apf.AmlWindow = function(struct, tagName){
             //if (this.oCover)
                 //this.oCover.style.display = "none";
             if (this.modal)
-                apf.plane.hide();
+                apf.plane.hide(this.$uniqueId);
 
             this.$ext.style.display = "none";
 

@@ -262,10 +262,11 @@ apf.DataBinding = function(){
     var afterloadUpdate
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;
-        if (!this.$cbindings.queue || !(queue = this.$cbindings.queue.caption 
-          || this.$cbindings.queue.column))
-            return;
         
+        if (!this.$cbindings.queue || !(queue = this.$cbindings.queue.caption 
+           || this.$cbindings.queue.column))
+            return;
+
         var div, doc = this.ownerDocument;
         for (var lm, i = 0, l = queue.length; i < l; i++) {
             if (!queue[i]) continue; //@todo check out why this happens

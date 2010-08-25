@@ -187,7 +187,7 @@ apf.BaseStateButtons = function(){
 
             if (this.$lastpos) {
                 if (this.animate && !noanim) {
-                    apf.plane.hide();
+                    apf.plane.hide(this.$uniqueId);
                     
                     //Pre remove paused event because of not having onresize
                     //if (apf.hasSingleRszEvent)
@@ -416,7 +416,8 @@ apf.BaseStateButtons = function(){
                             apf.plane.show(htmlNode, false, null, null, {
                                 color   : _self.$maxconf[4], 
                                 opacity : _self.$maxconf[5],
-                                animate : true
+                                animate : true,
+                                protect : this.$uniqueId
                             });
                         
                         _self.animstate = 1;

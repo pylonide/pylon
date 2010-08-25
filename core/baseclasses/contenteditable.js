@@ -194,7 +194,7 @@ apf.addEventListener("load", function(){
         var o = apf.document.$getVisualSelect().$getOutline();
         if (!o) return;
         
-        apf.plane.hide();
+        //apf.plane.hide();
         var lastTop = o.style.top;
         o.style.top = "-10000px"
         var hOutline = document.getElementById("apf_outline");
