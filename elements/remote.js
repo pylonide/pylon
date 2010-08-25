@@ -146,7 +146,7 @@ apf.remote = function(struct, tagName){
 
 //    this.lookup              = {};
 //    this.select              = [];
-    this.$sessions            = {};
+    this.$sessions           = {};
     this.rdbQueue            = {};
     this.queueTimer          = null;
     this.pendingTerminations = {};
@@ -217,7 +217,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             if (!e.uri)
                 return;
 
-            var model, uri = e.uri, oSession = _self.$sessions[e.uri];
+            var uri      = e.uri,
+                oSession = _self.$sessions[e.uri];
             //if document isn't passed this must be a join request from a peer
             if (!e.document) {
                 //#ifdef __DEBUG
@@ -245,15 +246,17 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
     
     this.$update = function(e){
-        var sData = e.message.args ? [e.message] : e.message;
-        var oData = typeof sData == "string"
-          ? apf.unserialize(sData)
-          : sData;
-        var oSession = this.$sessions[e.uri], i = 0, l = oData.length;
+        var sData    = e.message.args ? [e.message] : e.message,
+            oData    = typeof sData == "string"
+                ? apf.unserialize(sData)
+                : sData,
+            oSession = this.$sessions[e.uri],
+            i        = 0,
+            l        = oData.length;
 
         for (; i < l; i++)
             this.$receiveChange(oData[i], oSession, e.annotator, e.callback);
-    }
+    };
 
     /**
      * Create a new RDB session based on a URI.
@@ -297,7 +300,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         }
 
         return oSession;
-    }
+    };
 
     /**
      * Terminate an RDB session based on a URI.
@@ -321,7 +324,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             xpath : xpath,
             state : apf.remote.SESSION_INITED
         }
-    }
+    };
 
     this.$startSession = function(uri, basetime){
         var oSession = this.$sessions[uri];
@@ -333,20 +336,21 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             return false;
         }
 
-        oSession.state    = apf.remote.SESSION_STARTED;
+        oSession.state = apf.remote.SESSION_STARTED;
         if (basetime && !oSession.basetime)
             oSession.basetime = basetime;
 
         // #ifdef __DEBUG
         apf.console.log(this.logprefix + "session started: " + uri + ", " + oSession.basetime);
         // #endif
-    }
+    };
 
     this.$queueMessage = function(args, model, qHost){
         if (!qHost.rdbQueue)
             qHost.rdbQueue = {};
 
-        var uri = model.src, oSession = this.$sessions[uri];
+        var uri      = model.src,
+            oSession = this.$sessions[uri];
 
         // #ifdef __DEBUG
         if (!oSession) {
@@ -375,7 +379,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         qHost.rdbQueue[uri].push({
             uri       : uri,
             args      : args,
-            currdelta : new Date().getTime() - oSession.basetime
+            currdelta : (new Date()).getUTCTime() - oSession.basetime
         });
     };
 
@@ -412,7 +416,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         //#ifdef __WITH_OFFLINE
         // @todo apf3.0 implement proper offline support in RDB
-        if (apf.offline && apf.offline.inProcess == 2) { //We're coming online, let's queue until after sync
+        if (apf.offline && apf.offline.inProcess == 2) {
+             //We're coming online, let's queue until after sync
             queue.push(oMessage);
             return;
         }
@@ -423,7 +428,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (!oSession) {
             // #ifdef __DEBUG
-            apf.console.warn(this.logprefix + "Could not find session while receiving data for a session with id '" + oMessage.uri + "'");
+            apf.console.warn(this.logprefix + "Could not find session while receiving data for a session with id '"
+                + oMessage.uri + "'");
             // #endif
             return;
         }
@@ -450,7 +456,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         // #ifdef __DEBUG
         apf.console.log(this.logprefix + "timestamp comparison (base: " + oSession.basetime + ") : "
-            + (new Date().toGMTString())
+            + (new Date((new Date()).getUTCTime()).toGMTString())
             + ", " + (new Date(oMessage.currdelta).toGMTString()));
         // #endif
 
@@ -465,8 +471,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         }
 
         //Fetch node based on their xpath
-	    var q   = oMessage.args.slice();
-	    var xpath = q[1];
+        var q     = oMessage.args.slice(),
+            xpath = q[1];
         xmlNode = q[1] = this.xpathToXml(xpath, model.data);
         if (xmlNode) {
             var action = q.shift();
@@ -485,7 +491,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
                 q[1] = xmlNode;
             }
-	        else if (action == "setValueByXpath") {}
+            else if (action == "setValueByXpath") {}
 
             // pass the action to the actiontracker to execute it
             model.$at.execute({

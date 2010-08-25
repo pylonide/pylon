@@ -37,6 +37,9 @@ apf.UndoData = function(settings, at){
     //#endif
     apf.extend(this, settings);
 
+    if (!this.timestamp)
+        this.timestamp = (new Date()).getUTCTime();
+
     if (at)
         this.at = at;
     //Copy Constructor

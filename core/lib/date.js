@@ -811,6 +811,13 @@ Date.prototype.fromISO8601 = function(formattedString) {
     return result; // Date or null
 }
 
+Date.prototype.getUTCTime = function() {
+    //Date.UTC(year, month[, date[, hrs[, min[, sec[, ms]]]]])
+    return Date.UTC(this.getUTCFullYear(), this.getUTCMonth(), this.getUTCDate(),
+        this.getUTCHours(), this.getUTCMinutes(), this.getUTCSeconds(),
+        this.getUTCMilliseconds());
+};
+
 Date.prototype.toISO8601 = function(date) {
     var pad = function (amount, width) {
         var padding = "";
