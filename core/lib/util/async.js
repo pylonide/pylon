@@ -39,7 +39,7 @@
  * @param {Function} callback function of the form function(error), which is
  *      called after all items have been processed
  */
-exports.forEach = function(list, async, callback) {
+apf.asyncForEach = function(list, async, callback) {
     var i = 0;
     var len = list.length;
 
@@ -70,7 +70,7 @@ exports.forEach = function(list, async, callback) {
  * @param {Function} mapper function of the form function(item, next)
  * @param {Function} callback function of the form function(error, result)
  */
-exports.map = function(list, mapper, callback) {
+apf.asyncMap = function(list, mapper, callback) {
     var i = 0;
     var len = list.length;
 
@@ -100,7 +100,7 @@ exports.map = function(list, mapper, callback) {
  * 
  * @param {Array} funcs
  */
-exports.chain = function(funcs) {
+apf.asyncChain = function(funcs) {
     var i = 0;
     var len = funcs.length;
     
@@ -114,4 +114,67 @@ exports.chain = function(funcs) {
     
     next();
 }
+
+apf.asyncSafe = function(wrap, stringify){
+    if( apf.asyncNoWrap )
+        return func;
+    return function() {
+        try {
+            if(this.log){
+                var hooks;
+            
+                if(stringify)
+                    hooks = this.log("call",stringify.apply(this,arguments));
+                else {
+                    var logargs = Array.prototype.slice.call(arguments)
+                    logargs.unshift("call");
+                    hooks = this.log.apply(this, logargs);
+                }
+                if(hooks){
+                    if(hooks.pre) // inject a pre-call
+                        hooks.pre.apply(this, arguments);
+                    if(hooks.post){ // inject a post-call 
+                        var args = Array.prototype.slice.call(arguments);
+                        var _pthis = this;
+                        var cb = args[args.length-1];
+                        args[args.length-1] = function(){
+                            hooks.post.apply(_pthis, arguments);
+                            cb.apply(_pthis, arguments);
+                        }
+                        wrap.apply(this,args);
+                    }else 
+                        wrap.apply(this, arguments);
+                }else
+                    wrap.apply(this, arguments);
+            }else
+                wrap.apply(this, arguments);
+        } catch (e) {
+            apf.console.error("Caught asyncSafe error: " + e.stack);
+            arguments[arguments.length-1](e);
+        }
+    }
+}
+
+apf.asyncLog = function( logger ){
+    return function(){
+        var stack = new Error().stack;
+        var m = stack.match(/(?:[^\n]*\n){2}.*?\.([\$A-Za-z0-9]+)(?:\s+\((.*?)\:(\d+)\:(\d+)\))?/);
+        var name = m[1], file = m[2], line = m[3];
+        var args =  Array.prototype.slice.call(arguments);
+        var type = args.shift();
+        return logger.call(this,file,line,name,type,args,stack);
+    }
+}
+/*
+var p = require("livedoc").prototype;
+p.log = apf.asyncLog(function(file, line, name, type, args, stack){
+    if( name.match(/join|create|disconnect/) &&
+        this.uri == "101"){
+        return {
+            pre: function(){}
+            post: function(){}
+       };
+   }
+});*/
+
 //#endif __WITH_ASYNC
