@@ -30,7 +30,6 @@ apf.dump =
 apf.vardump = function(obj, depth, norecur, stack){
     if (apf.isWebkit) //@todo RIK please fix this issue.
         return "";
-    
     if (!obj) return obj + "";
     if (!stack)stack = "";
     if (!depth) depth = 0;
@@ -77,7 +76,6 @@ apf.vardump = function(obj, depth, norecur, stack){
             
             for (var prop in obj) if(prop!='$__vardump'){
                 try {
-                    //var propname = (parseInt(prop)==prop)?"0x"+("00000000"+parseInt(prop).toString(16)).slice(-8):prop;
                     var propname = prop;
                     if(str.length>1)str.push(",\n");
                     str.push( "\t".repeat(depth+1), propname, ": ",
@@ -90,15 +88,14 @@ apf.vardump = function(obj, depth, norecur, stack){
             str.push( "\n", ("\t".repeat(depth)), "}");
             
             function cleanup(obj){
-                if(!obj['$__vardump'])return;
-                delete obj['$__vardump'];
+                if(obj['$__vardump']!== undefined)
+                    delete obj['$__vardump'];
+                else return;
                 for(var prop in obj){
                     var v = obj[prop];
-                    if(typeof(v)=='object')cleanup(obj);
+                    if(typeof(v)=='object' && v)cleanup(v);
                 }
             }
-            
-            //if(depth==0)
             cleanup(obj);
             
             return str.join('');

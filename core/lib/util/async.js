@@ -125,7 +125,18 @@ apf.asyncSafe = function(wrap){
             
                 var logargs = Array.prototype.slice.call(arguments)
                 hooks = this.log.apply(this, ["call",wrap].concat(logargs));
-
+                
+                if(apf.asyncCheck){
+                    if(!hooks)hooks = {};
+                    var post = hooks.post;
+                    hooks.post = function(log,input,result){
+                        if(result[0])
+                            apf.console.error("Async Exception: "+err+"\n"+(new Error()).stack);
+                        if(post)
+                            post.apply(this, arguments);
+                    }
+                }
+                
                 if(hooks){
                     if(hooks.pre) // inject a pre-call
                         hooks.pre.apply(this, arguments);
@@ -143,7 +154,7 @@ apf.asyncSafe = function(wrap){
                 }else
                     wrap.apply(this, arguments);
             }else{
-                if(false){//apf.asyncFailAll){;
+                if(apf.asyncCheck){;
                     var args = Array.prototype.slice.call(arguments);
                     var cb = args[args.length-1];
                     args[args.length-1] = function(err){
@@ -200,47 +211,93 @@ apf.asyncLog = function( logger ){
     }
 }
 
-apf.asynclogOff = function(){
-    for(k in apf.asyncLogOnSet){
-        delete apf.asyncLogOnSet[k].log
+apf.asyncLogOff = function(module){
+    if(!module){
+        for(k in apf.asyncLogOnSet){
+            delete apf.asyncLogOnSet[k].log
+        }
+        apf.asyncLogOnSet = {};
+    } else {
+        var k = apf.asyncLogOnSet[module];
+        if(k){
+            delete k.log;
+            delete k._log;
+            delete apf.asyncLogOnSet[module];
+        }
     }
-    apf.asyncLogOnSet = {};
 }
 
 apf.asyncLogOnSet = {};
 
-apf.asyncLogOn = function(pattern) {
+apf.asyncLogOn = function(pattern, prepost) {
+
     var m = pattern.split("::");
-    var proto = require(m[0]).prototype;
-    apf.asyncLogOnSet[m[0]] = proto;
-    var open = m[1].indexOf("(");
+    var mod = m[0];
+    var proto = require(mod).prototype;
+    var open = m[1].lastIndexOf("(");
     var fname = m[1], fargs = [];
     if(open!=-1){
         fname = m[1].slice(0,open);
         fargs = m[1].slice(open+1,-1).split(/\s*,\s*/);
+        if(fargs.length==1 && fargs[0]=="")fargs = [];
     }
-    proto.log = apf.asyncLog(function(file, line, name, type, args, stack, wrap) {
+    var fnamerx = new RegExp(fname);
+
+    apf.asyncLogOnSet[mod] = proto;
+    
+    var prev = proto._log;
+    proto._log = function(file, line, name, type, args, stack, wrap) {
         var names = (wrap.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/);
-        if (name == fname) {
-            var s = [];
+        if(prev)
+            prev.apply(this, arguments);
+            
+        if (name.match(fnamerx)) {
+            var s = [], t = [], i, k, v;
             var argobj = {};
             var skip = {};
-            for(var i = 0;i<fargs.length;i++)
+            for(i = 0;i<fargs.length;i++)
                 if(fargs[i].charAt(0)=='!')skip[fargs[i].slice(1)] = 1;
-            
-            for(var i = 0,k,v;i<args.length;i++){
-                argobj[k = names[i]] = v = args[i];
-                s.push(k+" = "+ (skip[k]?"[skipped]":apf.dump(v)));
+
+            for(i = 0;i<args.length;i++){
+                argobj[names[i]] = args[i];
             }
-            s = ['(',s.join(', '),')\n'];
-            for(var i = 0;i<fargs.length;i++)if(fargs[i].charAt(0)!='!'){
-                with(argobj){
-                    s.push(fargs[i],' = ',eval(fargs[i]),'\n');
+            for(i = 0;i<fargs.length;i++)if((k=fargs[i]).charAt(0)!='!'){
+                if(k.match(/\=\=|\!\=|\<|\>/)){ // eval as bool filter
+                    with(argobj){
+                        try{
+                            if( !eval(k) ) return;
+                        }catch(e){
+                            return;
+                        }
+                    }
+                } else {
+                    with(argobj){
+                        try{
+                            if(k == '#')
+                                t.push('stacktrace = ' +(new Error().stack));
+                            else
+                                t.push('  '+k+' = '+eval(k));
+                         } catch(e){
+                            t.push('  '+k+' = [eval exception]\n');
+                         }
+                    }
                 }
             } 
-            console.log(name + s.join(''));
+            for(i = 0;i<args.length;i++){
+                k = names[i], v = args[i];
+                if(k)
+                    s.push(k+" = "+ (skip[k]?"[skipped]":apf.dump(v)));
+                else
+                    s.push(apf.dump(v));
+            }
+            if(prepost && prepost.log)
+                prepost.apply(this,arguments);
+            else
+                console.log(mod+"::"+name + "("+ s.join(', ')+")" +(t.length?("\n"+t.join('\n')):""));
         }
-    });
+        return prepost;
+    };
+    proto.log = apf.asyncLog( proto._log );    
 }
 
 //#endif __WITH_ASYNC
