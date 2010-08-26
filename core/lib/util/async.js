@@ -129,7 +129,7 @@ apf.asyncSafe = function(wrap){
                 if(apf.asyncCheck){
                     if(!hooks)hooks = {};
                     var post = hooks.post;
-                    hooks.post = function(log,input,result){
+                    hooks.post = function(input,result){
                         if(result[0])
                             apf.console.error("Async Exception: "+err+"\n"+(new Error()).stack);
                         if(post)
