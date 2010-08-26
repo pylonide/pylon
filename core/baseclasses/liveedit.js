@@ -770,6 +770,7 @@ apf.LiveEdit = function() {
     
     this.isValid = function(checkRequired){
         //@todo only place for checkRequired
+        return true;
     };
     
     function initTabStack() {
