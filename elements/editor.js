@@ -110,7 +110,7 @@ apf.editor = function(struct, tagName){
         if (this.$pluginsActive == "code") {
             this.$plugins["code"].update(this, html);
         }
-        else {
+        else if (this.$activeDocument) {
             this.$activeDocument.body.innerHTML = html;
             this.$controlAgentBehavior(this.$activeDocument.body);
         }
@@ -182,6 +182,9 @@ apf.editor = function(struct, tagName){
      * @type {String}
      */
     this.getValue = function(bStrict) {
+        if (!this.$activeDocument)
+            return "";
+
         return (this.$value = apf.htmlCleaner.parse(
             this.$activeDocument.body.innerHTML, bStrict));
     };
@@ -363,6 +366,7 @@ apf.editor = function(struct, tagName){
         });
 
         var scrollHandler = function(e){
+            if (!e) e = event;
             apf.window.$mousewheel.call(window, {target: _self.$ext, wheelDelta: e.wheelDelta, detail: e.detail});
         }
         if (this.$oWin && this.$oWin.document.addEventListener)

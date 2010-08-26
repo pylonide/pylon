@@ -68,7 +68,7 @@ apf.LiveMarkupPi = function(){
     this.$propHandlers["calcdata"] = function(data){
         if (this.$skipChange) //Used by liveedit.js
             return;
-        
+
         if (this.$data) {
             // #ifdef __WITH_XMLDIFF
             if (this.$useXmlDiff) {

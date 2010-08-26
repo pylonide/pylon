@@ -2173,7 +2173,7 @@ apf.lm_exec = new (function(){
         var m = apf.xmldb.findModel(n);
         if(!m)
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valst"),/*#endif*/"");
-        return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + "/" + x + "]";
+        return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
     }
     
     function _nod_del(n, m, x){ // delete node

@@ -273,7 +273,7 @@ apf.DataBinding = function(){
             
             div = document.getElementById("placeholder_" 
                 + this.$uniqueId + "_" + i);
-            
+            alert(this.$cbindings.caption);
             lm = doc.createProcessingInstruction("lm", this.$cbindings.caption 
               || this.$cbindings.column);
             lm.$model  = this.$model;
@@ -295,6 +295,9 @@ apf.DataBinding = function(){
     
     //Add and remove handler
     this.addEventListener("xmlupdate", function(e){
+        if (e.xmlNode != e.traverseNode) //@todo this should be more specific
+            return;
+        
         if ("insert|add|synchronize|move".indexOf(e.action) > -1)
             afterloadUpdate.call(this, e);
         else if ("remove|move-away".indexOf(e.action) > -1) {

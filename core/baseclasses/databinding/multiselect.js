@@ -604,9 +604,12 @@ apf.MultiselectBinding = function(){
                 }
                 
                 else if (htmlNode
-                  && (startNode != xmlNode || xmlNode == this.xmlRoot)
-                  && actionFeature[action] & 1)
-                    action = "update";
+                  && (startNode != xmlNode || xmlNode == this.xmlRoot)) {
+                    if (actionFeature[action] & 1)
+                        action = "update";
+                    else if (action == "remove")
+                        return;
+                }
 
                 if (htmlNode  || action == "move")
                     break;
@@ -877,7 +880,8 @@ apf.MultiselectBinding = function(){
 
         this.dispatchEvent("xmlupdate", {
             action : action,
-            xmlNode: xmlNode,
+            xmlNode: startNode,
+            traverseNode : xmlNode,
             result : result,
             UndoObj: UndoObj
         });

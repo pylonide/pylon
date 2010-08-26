@@ -39,7 +39,7 @@
  *   {apf.page} previousPage the current page.
  *   {Mixed}    next         the name or number of the page the will become active.
  *   {Number}   nextId       the number of the page the will become active.
- *   {apf.page} nextpage     the page the will become active.
+ *   {apf.page} nextPage     the page the will become active.
  * @event afterswitch   Fires after this element has switched to another page.
  *   object:
  *   {Mixed}    previous     the name or number of the previous page.
@@ -47,7 +47,7 @@
  *   {apf.page} previousPage the previous page.
  *   {Mixed}    next         the name or number of the current page.
  *   {Number}   nextId       the number of the the current page.
- *   {apf.page} nextpage     the the current page.   
+ *   {apf.page} nextPage     the the current page.   
  */
 apf.BaseTab = function(){
     this.$init(true);
@@ -232,7 +232,7 @@ apf.BaseTab = function(){
                 previousPage : this.$activepage,
                 next         : next,
                 nextId       : info.position,
-                nextpage     : page
+                nextPage     : page
             };
 
             if (this.dispatchEvent("beforeswitch", oEvent) === false) {
@@ -737,7 +737,10 @@ apf.BaseTab = function(){
     };
 
     /**
-     * Removes a page element from this element.
+     * Removes a page element from this element. This function destroys ALL children
+     * of this page. To simple remove the page from the DOM tree use the
+     * removeNode() method.
+     *
      * @param {mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
@@ -755,10 +758,12 @@ apf.BaseTab = function(){
         if (this.$scale) {
             this.$scaleinit(page, "remove", function(){
                 page.removeNode();
+                page.destroy(true);
             });
         }
         else  {
             page.removeNode();
+            page.destroy(true);
 
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild

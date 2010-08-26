@@ -572,6 +572,8 @@ apf.xmldb = new (function(){
             undoObj.$filled = true;
             this.cleanNode(xmlNode);
         }
+        else
+            this.cleanNode(xmlNode);
 
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
