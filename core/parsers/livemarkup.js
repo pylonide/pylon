@@ -233,6 +233,7 @@ apf.lm = new (function(){
             8 : "_valattr(_n,",
             "foreach"   : "_nods(_n,",
             "each"      : "_nods(_n,",
+            "xabs"      : "_valst(_n,",
            // "edit"      : "_argwrap(_n,", 
            // "edit"      : "_val(_n,", // toggled by liveedit
             "local"     : "_nod(_n,",
@@ -366,6 +367,9 @@ apf.lm = new (function(){
     macro_o._editlm     = "_valedx(true, ", // only serves to switch default xpath in edit([xpath])
     macro_o._editnormal = "_valedx(false, ", // only serves to switch default xpath in edit([xpath])
     macro_c.edit        = ")",
+    macro_o.xabs        = "  (  ",
+    macro_c.xabs        = "  )  ",
+    
     macro_o.localName   = "_localName(_n",
     macro_c.localName   = ")",
     macro_o.output      = "_o.join(''",
