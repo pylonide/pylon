@@ -445,8 +445,10 @@ apf.AmlNode = function(){
                 $doOnlyAdmin : doOnlyAdmin
             });
             
-            if (!noHtmlDomEdit && !doOnlyAdmin && this.$ext && this.$ext.parentNode)
+            if (!noHtmlDomEdit && !doOnlyAdmin && this.$ext && this.$ext.parentNode) {
                 this.$ext.parentNode.removeChild(this.$ext);
+                delete this.$ext;
+            }
         }
 
         if (this.parentNode.firstChild == this)
