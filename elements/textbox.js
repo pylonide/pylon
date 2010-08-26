@@ -359,12 +359,12 @@ apf.textbox  = function(struct, tagName){
     /**
      * Deselects the text in this element.
      */
-    this.deselect = function(){ this.$input.deselect(); };
+    this.deselect = function(){this.$input.deselect();};
 
     /**** Private Methods *****/
 
-    this.$enable  = function(){ this.$input.disabled = false; };
-    this.$disable = function(){ this.$input.disabled = true; };
+    this.$enable  = function(){this.$input.disabled = false;};
+    this.$disable = function(){this.$input.disabled = true;};
 
     this.$insertData = function(str){
         return this.setValue(str);
@@ -536,7 +536,8 @@ apf.textbox  = function(struct, tagName){
     /**** Init ****/
 
     this.$draw = function(){
-        var _self = this;
+        var _self       = this,
+            typedBefore = false;
         
         //#ifdef __AMLCODEEDITOR
         if (this.localName == "codeeditor") {
@@ -551,7 +552,7 @@ apf.textbox  = function(struct, tagName){
 
             if ((typeof mask == "string" && mask.toLowerCase() == "password")
               || "secret|password".indexOf(this.localName) > -1) {
-                this.type == "password";
+                this.type = "password";
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             
@@ -636,6 +637,13 @@ apf.textbox  = function(struct, tagName){
                 return false;
             }
 
+            if (typedBefore && this.getAttribute("type") == "password") {
+                var hasClass = (_self.$ext.className.indexOf("capsLock") > -1),
+                    capsKey  = (e.keyCode === 20);
+                if (capsKey) // caps off
+                    apf.setStyleClass(_self.$ext, hasClass ? null : "capsLock", hasClass ? ["capsLock"] : null);
+            }
+
             //Autocomplete
             if (_self.$autoComplete || _self.oContainer) {
                 var keyCode = e.keyCode;
@@ -713,6 +721,36 @@ apf.textbox  = function(struct, tagName){
             r.collapse();
             r.select();
         };
+
+        var f;
+        apf.addListener(this.$input, "keypress", f = function(e) {
+            if (this.getAttribute("type") != "password")
+                return apf.removeListener(this, "keypress", f);
+            e = e || window.event;
+            // get key pressed
+            var which = -1;
+            if (e.which)
+                which = e.which;
+            else if (e.keyCode)
+                which = e.keyCode;
+
+            // get shift status
+            var shift_status = false;
+            if (e.shiftKey)
+                shift_status = e.shiftKey;
+            else if (e.modifiers)
+                shift_status = !!(e.modifiers & 4);
+
+            if (((which >= 65 && which <=  90) && !shift_status) ||
+                ((which >= 97 && which <= 122) && shift_status)) {
+                // uppercase, no shift key
+                apf.setStyleClass(_self.$ext, "capsLock");
+            }
+            else {
+                apf.setStyleClass(_self.$ext, null, ["capsLock"]);
+            }
+            typedBefore = true;
+        });
     };
 
     this.$loadAml = function() {
