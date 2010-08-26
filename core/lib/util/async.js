@@ -203,11 +203,10 @@ apf.asyncLog = function( logger ){
     return function(){
         var stack = new Error().stack;
         var m = stack.match(/(?:[^\n]*\n){2}.*?\.([\$A-Za-z0-9]+)(?:\s+\((.*?)\:(\d+)\:(\d+)\))?/);
-        var name = m[1], file = m[2], line = m[3];
         var args =  Array.prototype.slice.call(arguments);
         var type = args.shift();
         var wrap = args.shift();
-        return logger.call(this,file,line,name,type,args,stack,wrap);
+        return logger.call(this,m[2],m[3],m[1],type,args,stack,wrap);
     }
 }
 
@@ -229,12 +228,13 @@ apf.asyncLogOff = function(module){
 
 apf.asyncLogOnSet = {};
 
-apf.asyncLogOn = function(pattern, prepost) {
+apf.asyncLogOn = function(pattern, hooks) {
 
     var m = pattern.split("::");
     var mod = m[0];
+    if(m.length==1)m[1]="";
     var proto = require(mod).prototype;
-    var open = m[1].lastIndexOf("(");
+    var open = m[1].lastIndexOf("{");
     var fname = m[1], fargs = [];
     if(open!=-1){
         fname = m[1].slice(0,open);
@@ -244,14 +244,24 @@ apf.asyncLogOn = function(pattern, prepost) {
     var fnamerx = new RegExp(fname);
 
     apf.asyncLogOnSet[mod] = proto;
-    
+
     var prev = proto._log;
+    
     proto._log = function(file, line, name, type, args, stack, wrap) {
-        var names = (wrap.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/);
         if(prev)
             prev.apply(this, arguments);
-            
+        
+        if(hooks && m[1]=="" && typeof(hooks)=='function')
+            return hooks.apply(this,arguments);
+
         if (name.match(fnamerx)) {
+            if(args.length){
+                var names;
+                if(wrap.__args)
+                    names = wrap.__args;
+                else
+                    names = wrap.__args = (wrap.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/);
+            }
             var s = [], t = [], i, k, v;
             var argobj = {};
             var skip = {};
@@ -282,7 +292,7 @@ apf.asyncLogOn = function(pattern, prepost) {
                          }
                     }
                 }
-            } 
+            }
             for(i = 0;i<args.length;i++){
                 k = names[i], v = args[i];
                 if(k)
@@ -290,12 +300,17 @@ apf.asyncLogOn = function(pattern, prepost) {
                 else
                     s.push(apf.dump(v));
             }
-            if(prepost && prepost.log)
-                prepost.apply(this,arguments);
-            else
+            if(hooks){
+                if(typeof(hooks)=='function')
+                    return hooks.apply(this,arguments);
+                else{
+                    if(hooks.log)
+                        hooks.log.apply(this,arguments);
+                    return hooks;
+                }   
+            }else
                 console.log(mod+"::"+name + "("+ s.join(', ')+")" +(t.length?("\n"+t.join('\n')):""));
         }
-        return prepost;
     };
     proto.log = apf.asyncLog( proto._log );    
 }
