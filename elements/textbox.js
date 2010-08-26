@@ -505,7 +505,7 @@ apf.textbox  = function(struct, tagName){
         if (!this.realtime)
             this.change(this.getValue());
 
-        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", "capsLock"]);
 
         if (this["initial-message"] && this.$input.value == "") {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
@@ -637,7 +637,7 @@ apf.textbox  = function(struct, tagName){
                 return false;
             }
 
-            if (typedBefore && this.getAttribute("type") == "password") {
+            if (typedBefore && this.getAttribute("type") == "password" && this.value != "") {
                 var hasClass = (_self.$ext.className.indexOf("capsLock") > -1),
                     capsKey  = (e.keyCode === 20);
                 if (capsKey) // caps off
