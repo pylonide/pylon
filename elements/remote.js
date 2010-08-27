@@ -499,7 +499,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 args     : q,
                 annotator: sAnnotator,
                 message  : oMessage,
-                callback : fCallback
+                callback : fCallback,
+                rdb      : true
             });
 
             this.dispatchEvent("change", {

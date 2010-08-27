@@ -299,12 +299,15 @@ apf.actiontracker = function(struct, tagName){
             this.$addToQueue(UndoObj, false);
 
         //Reset Redo Stack
-        this.$redostack.length = 0;
-        this.setProperty("redolength", this.$redostack.length);
+        // @todo for rdb refactor we have to deal with collision handling within the at
+        if (!options.rdb) {
+            this.$redostack.length = 0;
+            this.setProperty("redolength", this.$redostack.length);
 
-        //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
-        this.setProperty("length", this.$undostack.length);
-        //#endif
+            //#ifdef __ENABLE_ACTIONTRACKER_SLIDER
+            this.setProperty("length", this.$undostack.length);
+            //#endif
+        }
 
         this.dispatchEvent("afterchange", {
             action   : "do"
