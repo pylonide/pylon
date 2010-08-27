@@ -736,15 +736,15 @@ apf.xmlDiff = function (doc1, doc2){
         for (var item, i = 0; i < list.length; i++) {
             item = list[i];
             if (!item) continue;
-            if (item[2].nodeType == 1) {
+            /*if (item[2].nodeType == 1) {
                 newNode = doc.createElementNS(item[2].namespaceURI || apf.ns.xhtml, item[2][apf.TAGNAME]);
                 item[1].insertBefore(newNode, item[1].childNodes[i]);
             }
-            else {
+            else {*/
                 newNode = doc.importNode(item[2], true);
                 if (newNode)
                     item[1].insertBefore(newNode, item[1].childNodes[i]);
-            }
+            //}
         }
     }
 
