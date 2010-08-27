@@ -482,10 +482,11 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
             len--;
     }
 
+    //Directly forwarding to the document element because of a bug in the o3 xml lib
     if (!paths[0]) {
-        contextNode = contextNode.ownerDocument;
-        paths.shift();
-        len--;
+        contextNode = contextNode.ownerDocument.documentElement;
+        paths.shift();paths.shift();
+        len--;len--;
     }
     
     for (var addedNode, isAdding = false, i = 0; i < len; i++) {
