@@ -265,8 +265,6 @@ apf.text = function(struct, tagName){
     /**** Init ****/
 
     this.$draw = function(){
-        var _self = this;
-
         this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
 
@@ -314,8 +312,8 @@ apf.text = function(struct, tagName){
         
         if (this.$scrollArea)
             this.$scrollArea.onscoll = this.$scrollArea = null;
-        
-        this.oDrag = this.oIframe = this.oFocus  = null;
+
+        this.oDrag = this.oIframe = this.oFocus = this.$container = this.$ext = null;
     });
 }).call(apf.text.prototype = new apf.MultiselectBinding());
 
