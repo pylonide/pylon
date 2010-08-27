@@ -103,7 +103,7 @@ apf.hookWrapSync = function(inner){
     return outer;
 }
 
-apf.hookWrap = function ( func ){
+apf.hookWrap = function ( func, onlyasync ){
     if(func._outer) 
         return func._outer;
     var names;
@@ -112,7 +112,7 @@ apf.hookWrap = function ( func ){
         var last = names[names.length-1];
         if(last == 'callback' || last=='_isasync')
             return apf.hookWrapAsync( func );
-        else
+        else if(!onlyasync)
             return apf.hookWrapSync( func );
     }
     return func;
