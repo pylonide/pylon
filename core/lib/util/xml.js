@@ -475,11 +475,17 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     }).split("-%-|-%-")[0].split(/\/(?!\/)/);//.split("/");
     if (!forceNew && (xmlNode = contextNode.selectSingleNode(xPath)))
         return xmlNode;
-    
-    var len = paths.length -1;
+
+    var len = paths.length - 1;
     if (forceNew) {
         if (paths[len].trim().match(/^\@(.*)$|^text\(\)$/))
             len--;
+    }
+
+    if (!paths[0]) {
+        contextNode = contextNode.ownerDocument;
+        paths.shift();
+        len--;
     }
     
     for (var addedNode, isAdding = false, i = 0; i < len; i++) {
