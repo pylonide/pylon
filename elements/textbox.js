@@ -140,7 +140,7 @@ apf.textbox  = function(struct, tagName){
 
         // Set Value
         if (!initial && !value) //@todo apf3.x research the use of clear
-            return this.clear();
+            return this.$clear();
         else if (this.isHTMLBox) {
             if (this.$input.innerHTML != value)
                 this.$input.innerHTML = value;
@@ -266,7 +266,7 @@ apf.textbox  = function(struct, tagName){
         }
         
         if (!this.value)
-            this.clear();
+            this.$clear();
             
         if (this.type == "password" && this.$inputInitFix) {
             this.$inputInitFix.innerHTML = value;
@@ -323,7 +323,8 @@ apf.textbox  = function(struct, tagName){
     };
     
     //@todo cleanup and put initial-message behaviour in one location
-    this.clear = function(){
+    this.$clear = function(){
+        this.setValue("");
         if (this["initial-message"]) {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
@@ -419,7 +420,7 @@ apf.textbox  = function(struct, tagName){
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
         if (this.$button && key == 27) {
-            //this.clear();
+            //this.$clear();
             this.change("");
             this.blur();
             //this.focus({mouse:true});
@@ -592,7 +593,7 @@ apf.textbox  = function(struct, tagName){
         
         if (this.$button) {
             this.$button.onmousedown = function(){
-                _self.clear(); //@todo why are both needed for doc filter
+                _self.$clear(); //@todo why are both needed for doc filter
                 _self.change(""); //@todo only this one should be needed
                 _self.focus({mouse:true});
             }
