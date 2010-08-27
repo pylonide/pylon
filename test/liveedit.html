@@ -62,6 +62,7 @@
                 <person name="Bas van Lippen Bisterveld
                     asdasdasd
                     asdasdasdasdasd" />
+                <person id="novalue"/>
             </data>
         </a:model>
         
@@ -86,6 +87,9 @@
             }
         ?></div>
         
+        <div liveedit="true" model="mdlBlah"><?lm
+            <div class="row">[person[@id='test']/text()]</div>
+        ?></div>
         <a:button width="80" id="btn" state="true" caption="{this.value ? 'Done' : 'Edit'}" />
 
         <!--div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
