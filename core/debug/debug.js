@@ -27,13 +27,13 @@
  * @param {mixed} obj the object to investigate
  */
 apf.dump =
-apf.vardump = function(obj, depth, norecur, stack){
+apf.vardump = function(obj, depth, maxdepth, stack){
+    if(maxdepth==0)maxdepth = 99;
     if (apf.isWebkit) //@todo RIK please fix this issue.
         return "";
     if (!obj) return obj + "";
     if (!stack)stack = "";
     if (!depth) depth = 0;
-
     var str;
     switch (obj.dataType) {
         case apf.STRING:
@@ -52,8 +52,8 @@ apf.vardump = function(obj, depth, norecur, stack){
             str = ["[ "];
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
-                    (norecur && depth > 0 ? "{/*"+typeof(obj[i])+"*/}" :
-                    apf.vardump(obj[i], depth + 1, norecur, stack+'['+i+']')) );
+                    (depth >= maxdepth ? "{/*"+typeof(obj[i])+"*/}" :
+                    apf.vardump(obj[i], depth + 1, maxdepth, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -66,7 +66,7 @@ apf.vardump = function(obj, depth, norecur, stack){
             if (obj.nodeType !== undefined)
                 return "<" + obj.tagName+"../>";
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            if (norecur && depth > 0)
+            if (depth >= maxdepth)
                 return "object";
 
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
@@ -79,8 +79,8 @@ apf.vardump = function(obj, depth, norecur, stack){
                     var propname = prop;
                     if(str.length>1)str.push(",\n");
                     str.push( "\t".repeat(depth+1), propname, ": ",
-                      (norecur && depth > 0 ? "{/*"+typeof(obj[prop])+"*/}":
-                        apf.vardump(obj[prop], depth + 1, norecur, stack+'.'+prop)) );
+                      (depth >= maxdepth ? "{/*"+typeof(obj[prop])+"*/}":
+                        apf.vardump(obj[prop], depth + 1, maxdepth, stack+'.'+prop)) );
                 } catch(e) {
                     str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
                 }

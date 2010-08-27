@@ -31,6 +31,7 @@
  *
  */
 
+apf.asyncCheck = 1;
 
 apf.hookWrapAsync = function(inner){
     var outer = function() {
@@ -66,6 +67,10 @@ apf.hookWrapAsync = function(inner){
                         apf.console.error("Caught hookAsync error: "+err+"\n"+(new Error()).stack);
                     oldcb.apply(this,arguments);
                 })[0];
+                var names = apf.getFunctionArgs(oldcb);
+                if(names[0]!='err'){
+                     apf.console.error("Caught hookAsync error ignore in function \n"+oldcb.toString());
+                }
                 return inner.apply(this, args);
             }
             return inner.apply(this, arguments);
@@ -103,12 +108,16 @@ apf.hookWrapSync = function(inner){
     return outer;
 }
 
+apf.getFunctionArgs = function(func){
+    return func._argnames || (func._argnames= (func.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/))
+}
+
 apf.hookWrap = function ( func, onlyasync ){
     if(func._outer) 
         return func._outer;
     var names;
     if(!func._inner){ // lets detect async or sync hooking
-        names = func._argnames || (func._argnames= (func.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/));
+        names = apf.getFunctionArgs(func);
         var last = names[names.length-1];
         if(last == 'callback' || last=='_isasync')
             return apf.hookWrapAsync( func );
@@ -155,17 +164,20 @@ apf.hookFormat = function(func, pre, format, name, module, output) {
         return '';
     }
     
-    function dump(data,names){
+    function dump(data,names,maxdepth){
        // lets dump some stuff
+       if (typeof(names) == 'number')
+            maxdepth = names, names = undefined;
+            
        if(names){
            var s = [];
            for(var i = 0;i<names.length;i++)
-                s.push(names[i]+" = "+apf.dump(data[i]));
+                s.push(names[i]+" = "+apf.dump(data[i],0,maxdepth||1));
            for(;i<data.length;i++)
-                s.push('ext'+(i-names.length)+" = "+apf.dump(data[i]));
+                s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],0,maxdepth||1));
            return s.join(', ');
        }
-       return apf.dump(data);
+       return apf.dump(data,0,maxdepth||1);
     }
     
     function arg2obj(argfunc, args, global, key){
@@ -203,6 +215,8 @@ apf.hookFormat = function(func, pre, format, name, module, output) {
                 if(out)
                     output( out );
             }catch(e){
+                if(e)
+                    output("Exception "+ e );
             }
             return args;
         });
@@ -220,6 +234,8 @@ apf.hookFormat = function(func, pre, format, name, module, output) {
                 if(out)
                     output( out );
             }catch(e){
+                if(e)
+                    output( "Exception "+e );
             }
             return results;
         });
