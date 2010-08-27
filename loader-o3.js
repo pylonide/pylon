@@ -59,7 +59,9 @@ apf.$loader
         "core/lib/draw/chartdraw.js",*/
         
         "core/browsers/o3.js",
-        "core/lib/util/async.js"
+        "core/lib/util/async.js",
+        "core/lib/util/hook.js"
+        
         //"core/browsers/non_ie.js",
     )
     .wait()

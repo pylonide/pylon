@@ -362,6 +362,11 @@ apf.lm = new (function(){
     macro_o.each        = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,(",
     macro_c.foreach     =
     macro_c.each        = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-2]++])||(_t.length-=2,_n=_t.pop(),0);)",
+    macro_o.foreachrev  =
+    macro_o.eachrev     = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,(",
+    macro_c.foreachrev  =
+    macro_c.eachrev     = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-1].length-(_t[_t.length-2]++)-1])||(_t.length-=2,_n=_t.pop(),0);)",
+
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local(",
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)",
     macro_o._editlm     = "_valedx(true, ", // only serves to switch default xpath in edit([xpath])
@@ -2559,21 +2564,21 @@ apf.lm_exec = new (function(){
 
     var _clut = apf.color?apf.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
 
-    function sort(set, xpath, st){
+    function sort(set, xpath, options){
         var s = new apf.Sort();
-        st = st || {};
+        options = options || {};
         if(!xpath.charAt)xpath = "";
         if(xpath.charAt(0)=='@'){
             xpath = xpath.slice(1);
-            st.getValue = function(n){
+            options.getValue = function(n){
                 return n.getAttribute(xpath);
             }
         }else{
-            st.getValue = function(n){
+            options.getValue = function(n){
                 return apf.queryValue(n,xpath);
             }
         }
-        s.set(st);
+        s.set(options);
         return s.apply(apf.getArrayFromNodelist(set));
     }
     
@@ -2631,6 +2636,16 @@ apf.lm_exec = new (function(){
     function clamp(a,b,c){ return a<b?b:(a>c?c:a); }
     
     this.compile = function(code){
+        // up-scope much used functions
+        var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
+        _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
+
+        eval(code);
+        
+        return _f;
+    }
+    
+    this.compileWith = function(code, withs){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;

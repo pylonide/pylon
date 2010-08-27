@@ -60,14 +60,14 @@ apf.vardump = function(obj, depth, norecur, stack){
             return str.join('');
         default:
             if (typeof obj == "function")
-                return "{/*function*/}";
+                return "function";
             if (obj.nodeType !== undefined && obj.style && depth != 0)
-                return "{/*HTML Element: " + obj.tagName + "*/}";
+                return "<" + obj.tagName+"../>" ;
             if (obj.nodeType !== undefined)
-                return "{/*XML Element : " + obj.tagName + "*/}";
+                return "<" + obj.tagName+"../>";
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (norecur && depth > 0)
-                return "{/*object/*}";
+                return "object";
 
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
             if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
