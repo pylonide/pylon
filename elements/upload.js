@@ -624,8 +624,8 @@ apf.upload.ERROR_CODES = {
     });
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
-        if (!this["model"])
-            this.setProperty("model", "apfupload".appendRandomNumber(5));
+        if (!this.$files)
+            this.$files = new constants.files(this, "apfupload".appendRandomNumber(5));
 
         // #ifdef __DEBUG
         if (!this.$button) {
