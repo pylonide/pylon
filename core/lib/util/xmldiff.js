@@ -468,6 +468,16 @@ apf.xmlDiff = function (doc1, doc2){
                     }
                 }*/
             }
+            //Add
+            else {
+                //New
+                (notFoundEl[path] || (notFoundEl[path] = [])).push({
+                    isNew   : true,
+                    arr     : null,
+                    node    : curItem.node,
+                    curNode : curItem.curParentNode
+                });
+            }
         }
         
         delete foundEl[path];//Will this mess with the iterator?
@@ -726,9 +736,14 @@ apf.xmlDiff = function (doc1, doc2){
         for (var item, i = 0; i < list.length; i++) {
             item = list[i];
             if (!item) continue;
-            newNode = doc.importNode(item[2], true);
-            if (newNode) {
+            if (item[2].nodeType == 1) {
+                newNode = doc.createElementNS(item[2].namespaceURI || apf.ns.xhtml, item[2][apf.TAGNAME]);
                 item[1].insertBefore(newNode, item[1].childNodes[i]);
+            }
+            else {
+                newNode = doc.importNode(item[2], true);
+                if (newNode)
+                    item[1].insertBefore(newNode, item[1].childNodes[i]);
             }
         }
     }
