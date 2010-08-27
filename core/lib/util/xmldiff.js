@@ -24,7 +24,7 @@
 apf.xmlDiff = function (doc1, doc2){
     /*var domParser = new apf.DOMParser();
     domParser.allowAnyElement = true;
-    domParser.preserveWhitespace = true;
+    domParser.preserveWhiteSpace = true;
     apf.compareDoc = domParser.parseFromXml(apf.getCleanCopy(mdlTest.data)).documentElement;
 
     var doc1 = apf.compareDoc,
@@ -33,6 +33,7 @@ apf.xmlDiff = function (doc1, doc2){
     var hash  = {},
         rules = [],
         appendRules = [],
+        preserveWhiteSpace = doc1.ownerDocument.$domParser.preserveWhiteSpace,
         
         //#ifdef __DEBUG
         dt = new Date().getTime(),
@@ -469,7 +470,7 @@ apf.xmlDiff = function (doc1, doc2){
             }
         }
         
-        delete foundEl[path];//Will this fuck with the iterator?
+        delete foundEl[path];//Will this mess with the iterator?
     }
 
     //Process conflicting element nodes
@@ -649,7 +650,7 @@ apf.xmlDiff = function (doc1, doc2){
     }
 
     var dt = new Date().getTime();
-    //This loop could be optimized away (@rik loop and switch bad for jit?)
+    //This loop could be optimized away
     var q = {}, doc = doc1.ownerDocument;
     for (i = 0, l = appendRules.length; i < l; i++) {
         switch((item = appendRules[i])[0]) {//@todo optimize
@@ -701,6 +702,11 @@ apf.xmlDiff = function (doc1, doc2){
                         }
                     }
                     else {
+                        //!preserveWhiteSpace 
+                        /*var list = item[2].parentNode.selectNodes("node()[local-name() or string-length(normalize-space())]");
+                        var idx  = apf.getChildNumber(item[2], list);
+                        if (idx < list.length) {*/
+
                         (item[1].$amlList || (item[1].$amlList = []))[apf.getChildNumber(item[2])] = item;
                         q[item[1].$uniqueId] = item[1];
                     }
@@ -721,8 +727,9 @@ apf.xmlDiff = function (doc1, doc2){
             item = list[i];
             if (!item) continue;
             newNode = doc.importNode(item[2], true);
-            if (newNode)
+            if (newNode) {
                 item[1].insertBefore(newNode, item[1].childNodes[i]);
+            }
         }
     }
 

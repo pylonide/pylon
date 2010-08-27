@@ -102,8 +102,10 @@ apf.getChildNumber = function(node, fromList){
     if (!fromList)
         fromList = p.childNodes;
     
-    //if (apf.hasIndexOfNodeList)
-        //return fromList.indexOf(node);
+    if (fromList.indexOf) {
+        var idx = fromList.indexOf(node);
+        return idx == -1 ? fromList.length : idx;
+    }
         
     for (var i = 0, l = fromList.length; i < l; i++) {
         if (fromList[i] == node)

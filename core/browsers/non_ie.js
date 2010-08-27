@@ -332,9 +332,12 @@ apf.runNonIe = function (){
         return new XMLHttpRequest();
     };
 
-    apf.getXmlDom = function(message, noError){
+    apf.getXmlDom = function(message, noError, preserveWhiteSpaces){
         var xmlParser;
         if (message) {
+            if (preserveWhiteSpaces === false)
+                message = message.replace(/>[\s\n\r]*</g, "><");
+            
             xmlParser = new DOMParser();
             xmlParser = xmlParser.parseFromString(message, "text/xml");
 

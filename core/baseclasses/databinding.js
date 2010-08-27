@@ -273,7 +273,7 @@ apf.DataBinding = function(){
             
             div = document.getElementById("placeholder_" 
                 + this.$uniqueId + "_" + i);
-            alert(this.$cbindings.caption);
+            
             lm = doc.createProcessingInstruction("lm", this.$cbindings.caption 
               || this.$cbindings.column);
             lm.$model  = this.$model;
@@ -285,7 +285,6 @@ apf.DataBinding = function(){
             lm.dispatchEvent("DOMNodeInsertedIntoDocument", {
                 pHtmlNode: div
             });
-            
             queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
             delete queue[i];
         }

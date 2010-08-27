@@ -1078,7 +1078,8 @@ apf.Class.prototype = new (function(){
 
         apf.all[this.$uniqueId] = undefined;
 
-        if (!this.nodeFunc && this.nodeType != 2) { //If this is not a AmlNode, we're done.
+        // != 2 && this.nodeType != 3
+        if (!this.nodeFunc && !this.nodeType) { //If this is not a AmlNode, we're done.
             //Remove id from global js space
             try {
                 if (this.id || this.name)
@@ -1088,8 +1089,9 @@ apf.Class.prototype = new (function(){
             return;
         }
 
-        if (this.$ext && !this.$ext.isNative && this.$ext.nodeType == 1 && this.localName != "a") {
-            this.$ext.oncontextmenu = this.$ext.host = null;
+        if (this.$ext && !this.$ext.isNative) { // && this.$ext.nodeType == 1
+            if (this.localName != "a")
+                this.$ext.oncontextmenu = this.$ext.host = null;
             if (clean) {
                 if (this.localName != "collection")
                     this.$ext.parentNode.removeChild(this.$ext);

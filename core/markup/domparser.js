@@ -39,7 +39,7 @@ apf.DOMParser = function(){};
 
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
-    this.preserveWhiteSpace = true; //@todo apf3.0 whitespace issue
+    this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
     this.$shouldWait = 0;
 
@@ -147,7 +147,7 @@ apf.DOMParser.prototype = new (function(){
             for (; i < l; i++) {
                 //Create child
                 newNode = _self.$createNode(doc, (node = nodes[i]).nodeType, node);
-                if (!newNode) continue; //for preserveWhitespace support
+                if (!newNode) continue; //for preserveWhiteSpace support
 
                 cNodes[cL = cNodes.length] = newNode; //Add to children
                 
@@ -358,7 +358,7 @@ apf.DOMParser.prototype = new (function(){
             case 3:
                 if (xmlNode) 
                     nodeValue = xmlNode && xmlNode.nodeValue;
-                if (!this.preserveWhitespace && !(nodeValue || "").trim())
+                if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
 
                 o = new apf.AmlText();
