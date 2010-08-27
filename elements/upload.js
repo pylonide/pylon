@@ -267,6 +267,20 @@ apf.upload.ERROR_CODES = {
                 "No valid identifier for a Button element passed to the 'button' attribute."));
         }
         //#endif
+
+        if (!this.$button.visible) {
+            var f, _self = this;
+            this.$button.addEventListener("prop.visible", f = function(e) {
+                if (!e.value) return; //visible = false --> no drawing yet...
+                if (_self.$method.refresh)
+                    _self.$method.refresh();
+                _self.$button.removeEventListener("prop.visible", f);
+            });
+        }
+        else {
+            if (this.$method.refresh)
+                this.$method.refresh();
+        }
     };
 
     this.$propHandlers["model"] = function(value) {
@@ -522,8 +536,26 @@ apf.upload.ERROR_CODES = {
     this.$draw = function(){
         if (!this.$method.draw)
             return;
-        
-        var p = this.parentNode;
+
+
+        // we need to check if a parent AML element is not hidden, because
+        // otherwise the button may still have no height set...
+        var parentVis = true,
+            p         = this.parentNode;
+
+        while ((parentVis = typeof p.visible == "undefined" ? true : p.visible) && p != apf.document.documentElement)
+            p = p.parentNode;
+        if (!parentVis) {
+            var f, _self = this;
+            p.addEventListener("prop.visible", f = function(e) {
+                if (!e.value) return; //visible = false --> no drawing yet...
+                if (_self.$method.refresh)
+                    _self.$method.refresh();
+                p.removeEventListener("prop.visible", f);
+            });
+        }
+
+        p = this.parentNode;
         while (p.$layout) {
             p = p.parentNode;
         }
@@ -612,8 +644,12 @@ apf.upload.ERROR_CODES = {
         var _self = this;
         $setTimeout(function() {
             calc.call(_self);
-            if (_self.$method.refresh)
+            if (_self.$method.refresh) {
                 _self.$method.refresh();
+                $setTimeout(function() {
+                    _self.$method.refresh();
+                }, 1000);
+            }
         });
     });
 }).call(apf.upload.prototype = new apf.GuiElement(), apf.upload);
