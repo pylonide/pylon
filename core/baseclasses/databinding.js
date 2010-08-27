@@ -1480,7 +1480,7 @@ apf.DataBinding = function(){
             }
             while (pNode.parentNode && pNode.parentNode.nodeType == 1 && (!model || model == value));
 
-            if (typeof model == "object")
+            if (model && typeof model == "object")
                 model = model.id;
 
             if (model)
