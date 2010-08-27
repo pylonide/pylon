@@ -131,7 +131,7 @@ apf.asyncSafe = function(wrap){
                     var post = hooks.post;
                     hooks.post = function(input,result){
                         if(result[0])
-                            apf.console.error("Async Exception: "+err+"\n"+(new Error()).stack);
+                            apf.console.error("Async Exception: "+result[0]+"\n"+(new Error()).stack);
                         if(post)
                             post.apply(this, arguments);
                     }
@@ -205,7 +205,8 @@ apf.asyncLog = function( logger ){
         var m = stack.match(/(?:[^\n]*\n){2}.*?\.([\$A-Za-z0-9]+)(?:\s+\((.*?)\:(\d+)\:(\d+)\))?/);
         var args =  Array.prototype.slice.call(arguments);
         var type = args.shift();
-        var wrap = args.shift();
+        if (typeof args[0] == "function")
+            var wrap = args.shift();
         return logger.call(this,m[2],m[3],m[1],type,args,stack,wrap);
     }
 }

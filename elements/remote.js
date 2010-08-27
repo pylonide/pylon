@@ -222,7 +222,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             //if document isn't passed this must be a join request from a peer
             if (!e.document) {
                 //#ifdef __DEBUG
-                apf.console.warn(_self.logprefix + "Did not receive a document with the join message. \
+                this.log && this.log("rdb", _self.logprefix + "Did not receive a document with the join message. \
                                   Assuming a join request from a peer. If this \
                                   message originated from the server something \
                                   has gone wrong.");
@@ -265,7 +265,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
      * @param xpath
      */
     this.createSession = function(uri, model, xpath, doc, iTime){
-        apf.console.log(this.logprefix + "Creating session for " + uri);
+        this.log && this.log("rdb", this.logprefix + "Creating session for " + uri);
 
         if (!model)
             model = this.dispatchEvent("modelfind", {uri: uri});
@@ -331,7 +331,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (!oSession) {
             //#ifdef __DEBUG
-            apf.console.warn(this.logprefix + "Could not find RDB session to start " + uri);
+            this.log && this.log("rdb", this.logprefix + "Could not find RDB session to start " + uri);
             //#endif
             return false;
         }
@@ -341,7 +341,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             oSession.basetime = basetime;
 
         // #ifdef __DEBUG
-        apf.console.log(this.logprefix + "session started: " + uri + ", " + oSession.basetime);
+        this.log && this.log("rdb", this.logprefix + "session started: " + uri + ", " + oSession.basetime);
         // #endif
     };
 
@@ -354,7 +354,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         // #ifdef __DEBUG
         if (!oSession) {
-            apf.console.error(this.logprefix + apf.formatErrorString(0, this, "RDB: sending message",
+            this.log && this.log("rdb", this.logprefix + apf.formatErrorString(0, this, "RDB: sending message",
                 "No RDB session found. Please make sure a session is created for this model: "
                 + model.serialize()));
             return false;
@@ -395,7 +395,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 continue;
 
             //#ifdef __DEBUG
-            apf.console.info(this.logprefix + "Sending " + list.length + " RDB messages to " + uri);
+            this.log && this.log("rdb", this.logprefix + "Sending " + list.length + " RDB messages to " + uri);
             //#endif
 
             if (this.transport)
@@ -428,7 +428,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (!oSession) {
             // #ifdef __DEBUG
-            apf.console.warn(this.logprefix + "Could not find session while receiving data for a session with id '"
+            this.log && this.log("rdb", this.logprefix + "Could not find session while receiving data for a session with id '"
                 + oMessage.uri + "'");
             // #endif
             return;
@@ -440,7 +440,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         var model = oSession.model;
         if (!model) {
             //#ifdef __DEBUG
-            apf.console.warn(this.logprefix + "Remote Databinding Received: Could not find model while"
+            this.log && this.log("rdb", this.logprefix + "Remote Databinding Received: Could not find model while"
                  + " receiving data for it with identifier '" + oMessage.model + "'");
             //#endif
             return;
@@ -455,7 +455,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         oMessage.currdelta = oSession.basetime + parseInt(oMessage.currdelta);
 
         // #ifdef __DEBUG
-        apf.console.log(this.logprefix + "timestamp comparison (base: " + oSession.basetime + ") : "
+        this.log && this.log("rdb", this.logprefix + "timestamp comparison (base: " + oSession.basetime + ") : "
             + (new Date((new Date()).getUTCTime()).toGMTString())
             + ", " + (new Date(oMessage.currdelta).toGMTString()));
         // #endif
@@ -536,7 +536,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //#ifdef __DEBUG
-        apf.console.info(this.logprefix + (this.id
+        this.log && this.log("rdb", this.logprefix + (this.id
             ? "Creating remote [" + this.id + "]"
             : "Creating implicitly assigned remote"));
         //#endif

@@ -474,7 +474,7 @@ apf.actiontracker = function(struct, tagName){
             stack = this.$transtack[id];
             if (!stack) {
                 //#ifdef __DEBUG
-                apf.console.log("Commit called without transaction started");
+                this.log && this.log("at", "Commit called without transaction started");
                 //#endif
                 return;
             }
@@ -694,7 +694,7 @@ apf.actiontracker = function(struct, tagName){
             return;
 
         //#ifdef __DEBUG
-        apf.console.info("Executing " + (undo ? "undo" : "redo"));
+        this.log && this.log("at", "Executing " + (undo ? "undo" : "redo"));
         //#endif
 
         //Undo the last X places - where X = id;
@@ -759,7 +759,7 @@ apf.actiontracker = function(struct, tagName){
               })) === false) {
 
                 //#ifdef __DEBUG
-                apf.console.warn("You have cancelled the automatic undo \
+                this.log && this.log("at", "You have cancelled the automatic undo \
                     process! Please be aware that if you don't retry this call \
                     the queue will fill up and none of the other actions will \
                     be sent through.");
