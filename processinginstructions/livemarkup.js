@@ -76,6 +76,7 @@ apf.LiveMarkupPi = function(){
                     + apf.ns.apf + "'>" + apf.xmlentities(data) + "</a:application>", 
                   null, 
                   this.ownerDocument.$domParser.preserveWhiteSpace); //@todo apf3.0 slow, rethink xmlentities
+                  
                 var oldXml = this.$data;
                 apf.xmlDiff(oldXml, newXml);
                 

@@ -1250,6 +1250,9 @@
     }
     
     function keydown(e){
+        if (!apf.document.$getVisualSelect)
+            return;
+        
         var selected = apf.document.$getVisualSelect().getLastSelection();//apf.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
         if (!selected.length)
             return;

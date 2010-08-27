@@ -1090,7 +1090,7 @@ apf.Class.prototype = new (function(){
         }
 
         if (this.$ext && !this.$ext.isNative) { // && this.$ext.nodeType == 1
-            if (this.localName != "a")
+            if (this.nodeType == 1 && this.localName != "a")
                 this.$ext.oncontextmenu = this.$ext.host = null;
             if (clean) {
                 if (this.localName != "collection")

@@ -77,6 +77,8 @@ apf.xmlDiff = function (doc1, doc2){
         
         (hash[curPath] || (hash[curPath] = [])).push(el);
         el.$isValid = false;
+        if (el.$amlList)
+            delete el.$amlList;
         //el.$validChildren = 0;
     })(doc1, "", hash);
 
@@ -362,7 +364,7 @@ apf.xmlDiff = function (doc1, doc2){
         
         if (!found.length) { //was !count
             //Update or New
-            (notFoundEl[p] || (notFoundEl[p] = [])).push({
+            (notFoundEl[curPath] || (notFoundEl[curPath] = [])).push({
                 arr     : s,
                 node    : el,
                 curNode : curParentNode
@@ -382,13 +384,14 @@ apf.xmlDiff = function (doc1, doc2){
         do remove node from .arr to say its determined
     */
 
+
     //Process all conflicting nodes on this path
     //@todo this should be optimized a lot
     function recurEl(path){
         var pathCollision = foundEl[path];
         if (!pathCollision)
             return;
-    
+
         var curItem, curMatch, l, count, nMatch, j, i, potentialMatches,
             leastMatchNodes, pl, pNode;
         for (i = 0, pl = pathCollision.length; i < pl; i++) {
@@ -448,7 +451,7 @@ apf.xmlDiff = function (doc1, doc2){
                 }
                 
                 //Determine who's who for the parents
-                recurEl(curItem.curParentNode.curPath),
+                recurEl(curItem.curParentNode.curPath);
                 
                 pNode = curItem.curParentNode.curNode;
                 for (j = 0, l = potentialMatches.length; j < l; j++) {
@@ -468,15 +471,34 @@ apf.xmlDiff = function (doc1, doc2){
                     }
                 }*/
             }
-            //Add
+            //Add when node is same as others
             else {
-                //New
-                (notFoundEl[path] || (notFoundEl[path] = [])).push({
-                    isNew   : true,
-                    arr     : null,
-                    node    : curItem.node,
-                    curNode : curItem.curParentNode
-                });
+                //This case is for when there is a node that almost looks the 
+                //same and was discarded but was actually needed
+                var nodes = hash[path], foundLast;
+                for (var k = 0; k < nodes.length; k++) {
+                    if (nodes[k] && !nodes[k].$isValid) {
+                        nodes[k].$isValid = true;
+                        curItem.curNode.curNode = nodes[k];
+                        foundLast = true;
+                        break;
+                    }
+                }
+                
+                //if (curItem.curParentNode.include.length == 1) {
+                //This case is for when a node looks the same as other nodes
+                if (!foundLast) {
+                    curItem.curNode.isAdding = true;
+
+                    if (!curItem.curParentNode.isAdding) {
+                        (notFoundEl[path] || (notFoundEl[path] = [])).push({
+                            isNew   : true,
+                            arr     : null,
+                            node    : curItem.node,
+                            curNode : curItem.curParentNode
+                        });
+                    }
+                }
             }
         }
         
@@ -516,7 +538,7 @@ apf.xmlDiff = function (doc1, doc2){
                     }
                     
                     //if not found, what does it mean?
-                    if (!found)
+                    if (!found && !t.curNode.isAdding)
                         (notFoundEl[path] || (notFoundEl[path] = [])).push(t);
                 }
             }
@@ -555,10 +577,8 @@ apf.xmlDiff = function (doc1, doc2){
                     }
                     
                     //if not found, what does it mean?
-                    if (!found) {
-                        //throw new Error("hmm, new?");
+                    if (!found && !t.curNode.isAdding)
                         (notFoundAttr[path] || (notFoundAttr[path] = [])).push(t);
-                    }
                 }
             }
             else {
