@@ -313,7 +313,7 @@ apf.lm = new (function(){
         c_statexpath,   // which xpath to use for the stateful value
         c_injectself,   // add self:: in some o_xpathpairs
         c_propassign,   // support property assigns
-        c_funcglobal,   // globalize function
+        c_export,       // export function to some object
         // outputs
         o, ol,          // output and output len
         o_asyncs,       // number of async calls
@@ -835,9 +835,9 @@ apf.lm = new (function(){
                                         s[sl++] = scope, s[sl++] = "function", //func def
                                         o[ol++] = "(", scope = segment = ol;
                                         //TODO! check the depth with which functions are made global
-                                        if(last_tok!="function" && c_funcglobal && sl==4){
+                                        if(last_tok!="function" && c_export && sl==4){
                                             o[v=(o[ol - 4] == "function")?(ol-4):(ol-5)] =
-                                                "var "+last_tok+" = self."+last_tok+" = function";
+                                                "var "+last_tok+" = "+c_export+"."+last_tok+" = function";
                                             o[v+2] = "";
                                         }
                                     }
@@ -1643,7 +1643,7 @@ apf.lm = new (function(){
             
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.liveedit ? 7:0;
-        c_funcglobal = cfg.funcglobal;
+        c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
         c_process_async = !cfg.event;
 
         xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
