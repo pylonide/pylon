@@ -34,6 +34,7 @@ apf.xmlDiff = function (doc1, doc2){
         hash  = {},
         rules = [],
         appendRules = [],
+        reorderRules = [],
         preserveWhiteSpace = doc1.ownerDocument.$domParser.preserveWhiteSpace,
         
         //#ifdef __DEBUG
@@ -60,11 +61,13 @@ apf.xmlDiff = function (doc1, doc2){
             for (i = 0; i < l; i++) {
                 if ((e = nodes[i]).nodeType == 1) {
                     createHash(nodes[i], curPath, hash);
+                    nodes[i].$childNumber = i;
                 }
                 else {
                     p = curPath + "/" + e.nodeType,
                     (hash[p] || (hash[p] = [])).push(e),
                     e.$isValid = false;
+                    e.$childNumber = i;
                 }
             }
         }
@@ -84,7 +87,7 @@ apf.xmlDiff = function (doc1, doc2){
     })(doc1, "", hash);
 
     curNode.include[doc1.parentNode.$uniqueId] = doc1;
-    (function match(el, curPath, hash, pNode, curParentNode){
+    (function match(el, curPath, hash, pNode, curParentNode, childNumber){
         var total, first, v, jl, item, include, i, nodes, attr, l, a, e, p, s, sh,
             tn, curNode, pcur, pcurl, id, count, node,
             max        = 0,
@@ -115,7 +118,7 @@ apf.xmlDiff = function (doc1, doc2){
         if (l = (nodes = el.childNodes).length){
             for (i = 0; i < l; i++) {
                 if ((e = nodes[i]).nodeType == 1) {
-                    match(e, curPath, hash, pNode, curNode);
+                    match(e, curPath, hash, pNode, curNode, i);
                 }
                 else {
                     if ((sh = hash[p = curPath + "/" + e.nodeType])) {
@@ -132,7 +135,8 @@ apf.xmlDiff = function (doc1, doc2){
                                         arr     : sh,
                                         curNode : curNode,
                                         pcur    : [tn.parentNode.$uniqueId],
-                                        found   : [j]
+                                        found   : [j],
+                                        childNumber : i
                                     };
                                 }
                                 else {
@@ -344,7 +348,8 @@ apf.xmlDiff = function (doc1, doc2){
                         arr     : s,
                         curNode : curNode,
                         curParentNode : curParentNode,
-                        found   : found
+                        found   : found,
+                        childNumber : childNumber
                     };
                     
                     //foundEl should be here with found array filled by this loop - we trust our scheme
@@ -380,7 +385,8 @@ apf.xmlDiff = function (doc1, doc2){
                 node    : el,
                 curParentNode : curParentNode,
                 curNode : curNode,
-                found   : found
+                found   : found,
+                childNumber : childNumber
             });
             
             //Update or New
@@ -391,7 +397,7 @@ apf.xmlDiff = function (doc1, doc2){
                 me      : curNode
             });*/
         }
-        
+
         curNode.curNode = found[0],
         curNode.parent  = curParentNode,
         curNode.curPath = curPath;
@@ -404,6 +410,11 @@ apf.xmlDiff = function (doc1, doc2){
         indexOf (nodes in arrPath) to find out if node still exists. 
         do remove node from .arr to say its determined
     */
+
+    function checkOrder(node1, node2) {
+        if (node1.$childNumber != node2.childNumber)
+            reorderRules.push([node1, node2.childNumber]);
+    }
 
     //Process all conflicting nodes on this path
     //@todo this should be optimized a lot
@@ -445,6 +456,7 @@ apf.xmlDiff = function (doc1, doc2){
                         curMatch.$isValid = true,
                         //curMatch.parentNode.$validChildren++;
                         curItem.curNode.curNode = curMatch;//set who is me
+                        checkOrder(curMatch, curItem);
                         break;
                     }
                 }
@@ -463,6 +475,7 @@ apf.xmlDiff = function (doc1, doc2){
                             curMatch.$isValid = true,
                             //curMatch.parentNode.$validChildren++;
                             curItem.curNode.curNode = curMatch;//set who is me
+                            checkOrder(curMatch, curItem);
                             break;
                         }
                     }
@@ -481,6 +494,7 @@ apf.xmlDiff = function (doc1, doc2){
                         curMatch.$isValid = true,
                         //curMatch.parentNode.$validChildren++;
                         curItem.curNode.curNode = curMatch;//set who is me
+                        checkOrder(curMatch, curItem);
                         break;
                     }
                 }
@@ -500,6 +514,7 @@ apf.xmlDiff = function (doc1, doc2){
                     if (nodes[k] && !nodes[k].$isValid) {
                         nodes[k].$isValid = true;
                         curItem.curNode.curNode = nodes[k];
+                        checkOrder(nodes[k], curItem);
                         foundLast = true;
                         break;
                     }
@@ -545,6 +560,7 @@ apf.xmlDiff = function (doc1, doc2){
             //Find the right node
             if ((p = t.curNode) && (p = p.curNode)) {
                 if (arrPath[t.index] && p == arrPath[t.index].parentNode) {
+                    checkOrder(arrPath[t.index], t);
                     delete arrPath[t.index];
                     //p.$validChildren++;
                 }
@@ -552,6 +568,7 @@ apf.xmlDiff = function (doc1, doc2){
                     //cleanup hash
                     for (found = false, j = 0; j < arrIndex.length; j++) {
                         if (arrPath[arrIndex[j]] && arrPath[arrIndex[j]].parentNode == p) {
+                            checkOrder(arrPath[arrIndex[j]], t);
                             delete arrPath[arrIndex[j]],
                             //p.$validChildren++;
                             found = true;
@@ -648,6 +665,8 @@ apf.xmlDiff = function (doc1, doc2){
         l       = arr.length,
         arrPath = arr[0].arr || emptyArr,
         lPath   = arrPath.length;
+
+        //should there be a check for isAdded here?
 
         for (i = 0; i < l; i++) {
             a = arr[i];
@@ -862,6 +881,16 @@ apf.xmlDiff = function (doc1, doc2){
                 item[1].setAttribute((item = item[2]).nodeName, item.nodeValue);
                 break;
         }
+    }
+
+    for (var node, pnode, next, nr, tonr, i = 0;i < reorderRules.length; i++) {
+        node = reorderRules[i][0];
+        nr   = node.$childNumber;
+        tonr = reorderRules[i][1];
+        pnode = node.parentNode;
+        next = pnode.childNodes[tonr + (nr < tonr ? 1 : 0)];
+        if (node.nextSibling != next && node != next)
+            pnode.insertBefore(node, next);
     }
     
     apf.queue.empty();

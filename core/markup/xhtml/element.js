@@ -36,20 +36,20 @@ apf.XhtmlElement = function(struct, tagName){
 
 (function(){
     var excludedEvents = {
-        "contextmenu": 2,
-        "keydown": 2,
-        "keypress": 2,
-        "keyup": 2,
-        "DOMNodeInserted": 1,
-        "DOMNodeInsertedIntoDocument": 1,
-        "DOMNodeRemoved": 1,
-        "DOMNodeRemovedFromDocument": 1
+        "contextmenu": 1,
+        "keydown": 1,
+        "keypress": 1,
+        "keyup": 1,
+        "DOMNodeInserted": 2,
+        "DOMNodeInsertedIntoDocument": 2,
+        "DOMNodeRemoved": 2,
+        "DOMNodeRemovedFromDocument": 2
     };
     
     this.$xae = function(type, fn){
         this.$xoe.apply(this, arguments);
         
-        if (excludedEvents[type] > (this.editable ? 1 : 0)
+        if (excludedEvents[type] > (this.editable ? 0 : 1)
           || type.substr(0, 5) == "prop.")
             return;
         
