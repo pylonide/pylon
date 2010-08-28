@@ -249,7 +249,7 @@ apf.editor = function(struct, tagName){
                 _self.$focus({});
         });
 
-        apf.stopEvent(e);
+        //apf.stopEvent(e); // @todo why was here a stopEvent??
     }
 
     /**
@@ -353,9 +353,15 @@ apf.editor = function(struct, tagName){
             e = e || window.event;
             if (_self.scalewithiframe)
                 rescale.call(_self);
+            apf.document.activeElement = _self;
+            //e.amlNode = _self;
             apf.window.$keyup(e);
         });
-        apf.addListener(this.$activeDocument, "keydown", apf.window.$keydown);
+        apf.addListener(this.$activeDocument, "keydown", function(e) {
+            apf.document.activeElement = _self;
+            //e.amlNode = _self;
+            apf.window.$keydown(e);
+        });
         apf.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
