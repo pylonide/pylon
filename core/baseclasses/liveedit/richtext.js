@@ -110,7 +110,7 @@ apf.LiveEdit.richtext = function(){
         //@todo check the current field to see if it supports richtext
         var found,
             code = e.which || e.keyCode;
-        
+
         if (apf.isIE) {
             switch (code) {
                 case 66:  // B
@@ -841,7 +841,7 @@ apf.LiveEdit.richtext = function(){
     };
     
     var wasVisible;
-     this.$editors["richtext"] = {
+    this.$editors["richtext"] = {
         create : function(oHtml, rule){
             this.getValue = function(){
                 return apf.htmlCleaner.parse(oHtml.innerHTML);
@@ -942,7 +942,7 @@ apf.LiveEdit.richtext = function(){
                 this.$selection.moveToBookmark(obm);
             }
             //#endif
-            
+
             this.addEventListener("keydown", keydownHandler, true);
             this.addEventListener("keyup",   keyupHandler, true);
         },
@@ -953,7 +953,7 @@ apf.LiveEdit.richtext = function(){
             else
                 document.designMode = "off";
             oHtml.setAttribute("richtext", "false");
-            
+
             this.removeEventListener("keydown", keydownHandler, true);
             this.removeEventListener("keyup",   keyupHandler, true);
         }
@@ -993,6 +993,9 @@ apf.LiveEdit.richtext = function(){
                 this.$drawToolbars(o);
             });
             this.$toolbar = this.$getLayoutNode("main", "toolbar", this.$ext);
+
+            this.addEventListener("keydown", keydownHandler, true);
+            this.addEventListener("keyup",   keyupHandler, true);
         }
         //@todo apf3.0 get this from portal.js
         else if (!this.$docklet && !(apf.LiveEdit.toolwin = this.$docklet)) {
