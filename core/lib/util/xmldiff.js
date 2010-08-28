@@ -475,7 +475,7 @@ apf.xmlDiff = function (doc1, doc2){
             else {
                 //This case is for when there is a node that almost looks the 
                 //same and was discarded but was actually needed
-                var nodes = hash[path], foundLast;
+                var nodes = hash[path], foundLast = false;
                 for (var k = 0; k < nodes.length; k++) {
                     if (nodes[k] && !nodes[k].$isValid) {
                         nodes[k].$isValid = true;
@@ -640,6 +640,9 @@ apf.xmlDiff = function (doc1, doc2){
 
         for (i = 0; i < l; i++) {
             t = arr[i];
+            
+            if (t.curNode.isAdding)
+                continue;
             
             //Found parent
             if ((p = t.curNode) && (p = p.curNode)) {
