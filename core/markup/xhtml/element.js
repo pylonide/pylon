@@ -35,16 +35,29 @@ apf.XhtmlElement = function(struct, tagName){
 };
 
 (function(){
+    var excludedEvents = {
+        "contextmenu": 2,
+        "keydown": 2,
+        "keypress": 2,
+        "keyup": 2,
+        "DOMNodeInserted": 1,
+        "DOMNodeInsertedIntoDocument": 1,
+        "DOMNodeRemoved": 1,
+        "DOMNodeRemovedFromDocument": 1
+    };
+    
     this.$xae = function(type, fn){
         this.$xoe.apply(this, arguments);
         
-        //#ifdef __WITH_CONTENTEDITABLE
-        if (this.editable && "contextmenu|keydown|keypress|keyup".indexOf(type) > -1)
+        if (excludedEvents[type] > (this.editable ? 1 : 0)
+          || type.substr(0, 5) == "prop.")
             return;
-        //#endif
         
-        if (this.$ext)
+        if (this.$ext) {
+            if (type.substr(0,2) == "on")
+                type = type.substr(2);
             apf.addListener(this.$ext, type, this.$de);
+        }
     };
     
     this.$xre = function(type, fn) {
@@ -80,11 +93,19 @@ apf.XhtmlElement = function(struct, tagName){
         if (!(pHtmlNode = this.$pHtmlNode = this.parentNode.$int)) 
             return;
 
-        if (this.$aml) {
+        var str, aml = this.$aml;
+        if (aml) {
+            if (aml.serialize)
+                str = aml.serialize();
+            else {
+                aml = aml.cloneNode(false);
+                str = aml.xml || aml.nodeValue;
+            }
+
+            str = str.replace(/ on\w+="[^"]*"| on\w+='[^']*'/g, "");
+            
             this.$ext = 
-            this.$int = apf.insertHtmlNode(this.$aml.serialize
-                ? this.$aml 
-                : this.$aml.cloneNode(false), pHtmlNode);
+            this.$int = apf.insertHtmlNode(null, pHtmlNode, null, apf.html_entity_decode(str));
         }
         else {
             this.$ext = this.$int = 

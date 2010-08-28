@@ -30,7 +30,8 @@ apf.xmlDiff = function (doc1, doc2){
     var doc1 = apf.compareDoc,
         doc2 = apf.getCleanCopy(mdlTest2.data),*/
 
-    var hash  = {},
+    var debug = true,
+        hash  = {},
         rules = [],
         appendRules = [],
         preserveWhiteSpace = doc1.ownerDocument.$domParser.preserveWhiteSpace,
@@ -261,12 +262,16 @@ apf.xmlDiff = function (doc1, doc2){
                 delete s[i];
             }
         }*/
+        
+        //if (curPath == "/a:application/div/div/div") debugger;
 
         for (id in curNode) {
             if (curNode[id] > max) {
-                max = curNode[id],
-                //me = id;
-                count = 1;
+                //if (curNode.include[id]) {
+                    max = curNode[id];
+                    //me = id;
+                    count = 1;
+                //}
             }
             else if (curNode[id] == max) {
                 count++;
@@ -305,7 +310,7 @@ apf.xmlDiff = function (doc1, doc2){
                 pNode = (node = apf.all[id]).parentNode;
                 
                 if (node.$isValid || !include[node.$uniqueId] || !oldInclude[pNode.$uniqueId]) {
-                    delete include[node.$uniqueId],//@todo is this needed?
+                    delete include[node.$uniqueId]; //@todo is this needed?
                     count--;
                     continue;
                 }
@@ -363,12 +368,28 @@ apf.xmlDiff = function (doc1, doc2){
         }
         
         if (!found.length) { //was !count
-            //Update or New
-            (notFoundEl[curPath] || (notFoundEl[curPath] = [])).push({
+            //There might be information in the parent about who we are so 
+            //we'll continue the search in recurEl()
+            var found = [];
+            for (var prop in curNode.include) {
+                found.push(curNode.include[prop]);
+            }
+            
+            (foundEl[curPath] || (foundEl[curPath] = [])).push({
                 arr     : s,
                 node    : el,
-                curNode : curParentNode
+                curParentNode : curParentNode,
+                curNode : curNode,
+                found   : found
             });
+            
+            //Update or New
+            /*(notFoundEl[curPath] || (notFoundEl[curPath] = [])).push({
+                arr     : s,
+                node    : el,
+                curNode : curParentNode,
+                me      : curNode
+            });*/
         }
         
         curNode.curNode = found[0],
@@ -383,7 +404,6 @@ apf.xmlDiff = function (doc1, doc2){
         indexOf (nodes in arrPath) to find out if node still exists. 
         do remove node from .arr to say its determined
     */
-
 
     //Process all conflicting nodes on this path
     //@todo this should be optimized a lot
@@ -511,11 +531,13 @@ apf.xmlDiff = function (doc1, doc2){
     }
 
     //Process conflicting text nodes
+    //debugger;
     for (path in foundTxt) {
         arr     = foundTxt[path], //found text nodes with this path
         l       = arr.length,
         arrPath = arr[0].arr;
 
+        var lost = [];
         for (i = 0; i < l; i++) {
             t        = arr[i],
             arrIndex = t.found;
@@ -545,8 +567,25 @@ apf.xmlDiff = function (doc1, doc2){
             else {
                 //throw new Error("hmm, new?");
                 //part of a new chain?
+                /*if (!t.curNode.isAdding) {
+                    
+                }*/
+                //lost.push(t);
+
+                if (!t.curNode.isAdding)
+                    (notFoundEl[path] || (notFoundEl[path] = [])).push(t);
             }
         }
+        
+        /*for (i = 0; i < lost.length; i++) {
+            for (var j = 0; j < arrPath.length; j++) {
+                if (!arrPath[j])
+                    continue;
+                alert(1);
+                (notFoundEl[path] || (notFoundEl[path] = [])).push(lost[i]);
+                break;
+            }
+        }*/
     }
     
     //Process conflicting attr nodes
@@ -584,6 +623,9 @@ apf.xmlDiff = function (doc1, doc2){
             else {
                 //throw new Error("hmm, new?");
                 //part of a new chain?
+                
+                if (!t.curNode.isAdding)
+                    (notFoundAttr[path] || (notFoundAttr[path] = [])).push(t);
             }
         }
     }
@@ -630,7 +672,6 @@ apf.xmlDiff = function (doc1, doc2){
             }
         }
     }
-    
     //Process not found nodes (all but attribute)
     for (path in notFoundEl) {
         arr     = notFoundEl[path], //not found attributes with this path
@@ -638,14 +679,18 @@ apf.xmlDiff = function (doc1, doc2){
         arrPath = arr[0].arr || emptyArr,
         lPath   = arrPath.length;
 
+//if (path == "/a:application/div/div/div/div/a/3") debugger;
+
         for (i = 0; i < l; i++) {
             t = arr[i];
             
-            if (t.curNode.isAdding)
+            if ((p = t.curNode) && p.isAdding) {
+                //Ignore, parent is new, so this will be added automatically
                 continue;
+            }
             
             //Found parent
-            if ((p = t.curNode) && (p = p.curNode)) {
+            if (p = p.curNode) {
                 appendRules.push(lastRule = [APPEND, p, t.node]);
                 //p.$validChildren++;
                 //cleanup hash
@@ -655,8 +700,9 @@ apf.xmlDiff = function (doc1, doc2){
                             lastRule[0] = UPDATE;
                             lastRule[1] = arrPath[j];
                         }
-                        else
+                        else {
                             appendRules.length--;
+                        }
 
                         delete arrPath[j];
                         break;
@@ -664,7 +710,7 @@ apf.xmlDiff = function (doc1, doc2){
                 }
             }
             else {
-                //Ignore, parent is new, so this will be added automatically (i think :S)
+                
             }
         }
     }
@@ -688,6 +734,14 @@ apf.xmlDiff = function (doc1, doc2){
     for (i = 0, l = appendRules.length; i < l; i++) {
         switch((item = appendRules[i])[0]) {//@todo optimize
             case UPDATE:
+                //#ifdef __DEBUG
+                if (debug) {
+                    apf.console.log("XmlDiff: UPDATE " 
+                        + item[1].nodeValue + " with "
+                        + item[2].nodeValue);
+                }
+                //#endif
+            
                 //item[1].nodeValue = item[2].nodeValue;
                 item[1].$setValue(item[2].nodeValue);
                 if (item[1].nodeType != 2) { //@todo apf3.0 optimize this
@@ -699,6 +753,14 @@ apf.xmlDiff = function (doc1, doc2){
                 //@todo need trigger for aml node
                 break;
             case APPEND:
+                //#ifdef __DEBUG
+                if (debug) {
+                    apf.console.log("XmlDiff: APPEND " 
+                        + (item[2].tagName ? "<" + item[2].tagName + ">" : item[2].nodeValue) + " to "
+                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "]");
+                }
+                //#endif
+            
                 if (!item[1].canHaveChildren) {
                     item[1].$aml = item[2].parentNode;
                     if (item[1].$redraw)
@@ -774,6 +836,13 @@ apf.xmlDiff = function (doc1, doc2){
     for (i = 0, l = rules.length; i < l; i++) {
         switch((item = rules[i])[0]) {
             case REMOVE:
+                //#ifdef __DEBUG
+                if (debug) {
+                    apf.console.log("XmlDiff: REMOVE " 
+                        + (item[1].localName ? "<" + item[1].localName + ">" : item[1].nodeValue) 
+                        + " [" + item[1].$uniqueId + "] ");
+                }
+                //#endif
                 if ((node = item[1]).destroy) {
                     node.destroy(true, true);
                 }
@@ -783,15 +852,23 @@ apf.xmlDiff = function (doc1, doc2){
                     node.ownerElement.removeAttributeNode(node);
                 break;
             case SETATTRIBUTE:
+                //#ifdef __DEBUG
+                if (debug) {
+                    apf.console.log("XmlDiff: ATTRIBUTE " 
+                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "] " 
+                        + item[2].nodeName + "=\"" + item[2].nodeValue + "\"");
+                }
+                //#endif
                 item[1].setAttribute((item = item[2]).nodeName, item.nodeValue);
                 break;
         }
     }
     
     apf.queue.empty();
-    //alert(new Date().getTime() - dt);
+
     //#ifdef __DEBUG
-    //apf.console.time("Diff time:" + (time = (new Date().getTime() - dt)));
+    if (debug)
+        apf.console.time("Diff time:" + (time = (new Date() - dt)));
     
     /*var res1 = (apf.formatXml(doc2.xml));
     var res2 = (apf.formatXml(doc1.serialize()));

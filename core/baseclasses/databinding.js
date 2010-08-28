@@ -259,7 +259,25 @@ apf.DataBinding = function(){
     };
 
     //#ifdef __WITH_AML_BINDINGS
-    var afterloadUpdate
+    this.addEventListener("beforeload", afterloadUpdate = function(){
+        var queue;
+        if (!this.$cbindings.queue || !this.$cbindings.queue.caption
+          || !(queue = this.$cbindings.queue.caption))
+            return;
+        
+        for (var id in queue) {
+            var lm = queue[id];
+            if (lm.destroy) {
+                lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
+                lm.destroy();
+            }
+            delete queue[id];
+        }
+        
+        //delete this.$cbindings.queue;
+    });
+    
+    var afterloadUpdate;
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;
         
