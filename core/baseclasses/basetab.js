@@ -1240,16 +1240,29 @@ apf.BaseTab = function(){
 
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
-        for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
-            node = nodes[i];
-            if ("page|case".indexOf(node.localName) > -1 && (t++ == nameOrId
-              || (nameOrId.localName && node || node.name) == nameOrId)) {
-                if (info)
-                    info.position = t - 1;
-                return node;
+        
+        if (nameOrId.localName) {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (++t) && node == nameOrId) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
             }
         }
-
+        else {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (t++ == nameOrId
+                  || node.name == nameOrId)) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
+            }
+        }
+        
         return null;
     };
 
