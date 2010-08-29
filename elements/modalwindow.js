@@ -486,10 +486,15 @@ apf.AmlWindow = function(struct, tagName){
                 this.$ext.className = "rnd" + Math.random();
                 this.$ext.className = cls;
             }
+            
             var _self = this;
-            $setTimeout(function() {
-                _self.dispatchEvent("show");
-            });
+            if (this.$rendered === false) {
+                this.addEventListener("afterrender", function(){
+                    _self.dispatchEvent("show");
+                });
+            }
+            else
+                this.dispatchEvent("show");
         }
         else { //if (apf.isFalse(value)) 
             //this.setProperty("visible", false);
@@ -509,9 +514,9 @@ apf.AmlWindow = function(struct, tagName){
             if (this.hasFocus())
                 apf.window.moveNext(true, this, true);//go backward to detect modals
 
-            this.dispatchEvent("close");
-            
             this.visible = false;
+            
+            this.dispatchEvent("hide");
         }
 
         wasVisible = value;

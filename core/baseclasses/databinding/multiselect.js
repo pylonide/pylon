@@ -520,6 +520,7 @@ apf.MultiselectBinding = function(){
 
     var actionFeature = {
         "insert"      : 127,//1111111
+        "replacenode" : 127,//1111011
         "add"         : 123,//1111011
         "remove"      : 46, //0101110
         "redo-remove" : 79, //1001111
@@ -1011,6 +1012,11 @@ apf.MultiselectBinding = function(){
                 this.$initingModel = true;
                 this.$setInheritedAttribute("model");
             }
+
+            if (this.each == this.$lastEach)
+                return;
+            
+            this.$lastEach = value;
         }
 
         //@todo apf3.0 find a better heuristic (portal demo)
@@ -1018,8 +1024,9 @@ apf.MultiselectBinding = function(){
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
                 //#ifdef __DEBUG
-                apf.console.log("Reloading multiselect based on \
-                                 attribute bind change: " + _self.serialize(true));
+                apf.console.log("Reloading multiselect based on attribute '" 
+                                 + prop + "' bind change to value '" 
+                                 + value + "'\n\n" + _self.serialize(true));
                 //#endif
                 _self.reload();
             });

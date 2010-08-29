@@ -494,7 +494,7 @@ apf.DataBinding = function(){
 
         // If control hasn't loaded databinding yet, queue the call
         if (this.$preventDataLoad || !this.$canLoadData 
-          && ((!this.$bindings && !this.$canLoadDataAttr) || !this.$amlLoaded) 
+          && ((!this.$bindings && (!this.$canLoadDataAttr || !this.each)) || !this.$amlLoaded) 
           && (!this.hasFeature(apf.__MULTISELECT__) || !this.each) 
           || this.$canLoadData && !this.$canLoadData()) {
             

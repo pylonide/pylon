@@ -1153,7 +1153,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             child = typeof el == "function" ? el(i, node) : el;
-            
+
             if (apf.b.$state)
                 apf.b.$queue.push({
                     action : 'replaceNode',
@@ -1231,6 +1231,17 @@ apf.xmlset = function(xml, xpath, local, previous){
     }
     
     this.children = function(selector){
+        var nodes = [];
+        for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
+            var list = (node = this.$nodes[i]).selectNodes(selector);
+            for (var j = 0, jl = list.length; j < jl; j++) {
+                nodes.push(list[j]);
+            }
+        }
+        return new apf.xmlset(nodes, null, this.$local, this);
+    }
+    
+    this.children2 = function(selector){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
     
