@@ -408,7 +408,7 @@ apf.LiveEdit = function() {
             return;
     
         var _self = this;
-        var hasRule = oHtml.getAttribute("options");
+        var hasRule = getOptions(oHtml);
         var rule = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
         oHtml.setAttribute("multiline", rule.multiline || "false"); //For lookup at keydown 13
 
@@ -456,7 +456,7 @@ apf.LiveEdit = function() {
         this.$lastValue = oHtml.innerHTML;
 
         var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
-        handler.create.call(this, oHtml, rule, oHtml.getAttribute("xpath"));
+        handler.create.call(this, oHtml, rule, getXpath(oHtml));
         
         //#ifdef __WITH_WINDOW_FOCUS
         if (apf.hasFocusBug) {
@@ -468,13 +468,21 @@ apf.LiveEdit = function() {
         this.dispatchEvent("$createEditor", rule);
     }
     
+    function getXpath(node){
+        return node.getAttribute("xpath").replace(/\\([\[\{\]\}])/g, "$1");
+    }
+    
+    function getOptions(node){
+        return node.getAttribute("options").replace(/\\([\[\{\]\}])/g, "$1");
+    }
+    
     function removeEditor(oHtml, bProcess, callback) {
         if (!oHtml) oHtml = this.$activeNode;
         if (!oHtml || oHtml.nodeType != 1) return false;
 
-        var xpath   = oHtml.getAttribute("xpath"),
+        var xpath   = getXpath(oHtml),
             xmlNode = this.xmlRoot.ownerDocument.selectSingleNode(xpath),
-            hasRule = oHtml.getAttribute("options"),
+            hasRule = getOptions(oHtml),
             rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
 
         this.$activeNode = null;

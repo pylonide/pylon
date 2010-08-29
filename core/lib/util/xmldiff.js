@@ -377,6 +377,8 @@ apf.xmlDiff = function (doc1, doc2){
             //we'll continue the search in recurEl()
             var found = [];
             for (var prop in curNode.include) {
+                if (prop == "length")
+                    continue;
                 found.push(curNode.include[prop]);
             }
             
@@ -670,6 +672,12 @@ apf.xmlDiff = function (doc1, doc2){
 
         for (i = 0; i < l; i++) {
             a = arr[i];
+            
+            if ((p = t.curNode) && p.isAdding) {
+                //Ignore, parent is new, so this will be added automatically
+                continue;
+            }
+            
             //Found parent
             if ((p = a.curNode) && (p = p.curNode)) {
                 if (a.node.nodeName == "id")
@@ -878,6 +886,7 @@ apf.xmlDiff = function (doc1, doc2){
                         + item[2].nodeName + "=\"" + item[2].nodeValue + "\"");
                 }
                 //#endif
+
                 item[1].setAttribute((item = item[2]).nodeName, item.nodeValue);
                 break;
         }

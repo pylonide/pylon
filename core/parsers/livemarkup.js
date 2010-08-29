@@ -2483,12 +2483,14 @@ apf.lm_exec = new (function(){
         if (editMode !== false) {
             return '<' + (options && options.multiline ? 'div' : 'span') 
               + ' class="liveEdit' + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
-                ? (m.substr(0,1) != "/" 
+                ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
-                    : "") + "/" + m 
+                    : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
                 : "") + '"' 
               + (options
-                ? ' options="' + apf.serialize(options).replace(/"/g, "&quot;").escapeHTML() + '"'
+                ? ' options="' + apf.serialize(options).escapeHTML()
+                                  .replace(/"/g, "&quot;")
+                                  .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
                 : "") + '>' + (res || options && options.initial || "&nbsp;") 
               + '</' + (options && options.multiline ? 'div' : 'span') + '>';
