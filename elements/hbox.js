@@ -392,8 +392,9 @@ apf.vbox = function(struct, tagName){
                 else {
                     if (apf.getStyle(amlNode.$ext, "display") == "inline")
                         amlNode.$ext.style.display = "block"; //@todo undo
-                    if (apf.getStyle(amlNode.$ext, "position") == "absolute")
-                        amlNode.$ext.style.position = "relative"; //@todo undo
+                    //This is nice for positioning elements in the context of an hbox/vbox
+                    //if (apf.getStyle(amlNode.$ext, "position") == "absolute")
+                        //amlNode.$ext.style.position = "relative"; //@todo undo
                 }
                 
                 amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
