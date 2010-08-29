@@ -1642,7 +1642,7 @@ apf.lm = new (function(){
 
             
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
-        c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = cfg.liveedit ? 7:0;
+        c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = 0;
         c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
         c_process_async = !cfg.event;
 

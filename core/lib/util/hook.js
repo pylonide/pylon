@@ -149,6 +149,17 @@ apf.hookUnwrap = function( func ){
     return func;
 }
 
+apf.hookClear = function( func ){
+    var f = func;
+    if(f._outer)
+        f = f._outer;
+    if(f._pres)
+        delete f._pres;
+    if(f._posts)
+        delete f._posts;
+    return func;
+}
+
 apf.hookFormat = function(func, pre, format, name, module, output) {
     // compile our livemarkup format
     var global = {};
