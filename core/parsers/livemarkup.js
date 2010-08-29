@@ -1619,7 +1619,7 @@ apf.lm = new (function(){
         if (!cfg)
             cfg = emptyCfg;
         if(istr == null || !istr.length){
-            return cfg.nostring?function(){return istr}:{
+            return (cfg.nostring || cfg.event)?function(){return istr}:{
                 type: 2,
                 str :istr
             };
@@ -1689,7 +1689,7 @@ apf.lm = new (function(){
             for(c in o_props)is_single_prop++;
             if(is_single_prop!=1)is_single_prop = 0;  
         }
-        if (!cfg.nostring && (parse_mode == 2 && segment == 4 || ol == 4)) {
+        if ((!cfg.nostring && !cfg.event)&& (parse_mode == 2 && segment == 4 || ol == 4)) {
             return {
                 type: 2,
                 str : o.slice(5, -1).join("").replace(/\\n/g, "\n").replace(/\\"/g, '"')
