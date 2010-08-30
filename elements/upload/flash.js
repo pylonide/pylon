@@ -174,7 +174,8 @@ apf.upload.flash.isSupported = function() {
     };
 
     this.draw = function() {
-        var uid = this.oUpload.$uniqueId + "_swfupload";
+        var uid   = this.oUpload.$uniqueId + "_swfupload",
+            _self = this;
         oCont = this.oUpload.$ext;
         oCont.style.position   = "absolute",
         oCont.style.background = "transparent",
@@ -185,6 +186,9 @@ apf.upload.flash.isSupported = function() {
             // apf.flash#embed properties
             context          : this,
             htmlNode         : oCont,
+            onError          : function(e) {
+                _self.oUpload.dispatchEvent("error", e);
+            },
             // movie properties
             src              : this.DEFAULT_SWF_PATH,
             width            : "100%",
@@ -205,8 +209,9 @@ apf.upload.flash.isSupported = function() {
     };
 
     this.refresh = function() {
-        var oBtn    = this.oUpload.$button.$ext,
-            btnPos  = apf.getAbsolutePosition(oBtn),
+        var oBtn    = this.oUpload.$button.$ext;
+        if (!oBtn) return;
+        var btnPos  = apf.getAbsolutePosition(oBtn),
             btnDims = [oBtn.offsetWidth, oBtn.offsetHeight],
             contPos = apf.getAbsolutePosition(oCont);
 

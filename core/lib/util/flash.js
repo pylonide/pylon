@@ -275,7 +275,12 @@ apf.flash = (function(){
 
                     $setTimeout(function() {
                         var fail = null;
-                        if (!obj[prop].parentNode) {
+                        if (!obj[prop]) {
+                            fail = "The Flash movie failed to load. "
+                                 + "Please check if you're loading the movie on a "
+                                 + "website running through http://.";
+                        }
+                        else if (!obj[prop].parentNode) {
                             fail = "The movie has to be enabled "
                                  + "manually because of Flashblock. No browser refresh is required.";
                         }
@@ -290,9 +295,12 @@ apf.flash = (function(){
 
                         if (fail) {
                             // #ifdef __DEBUG
-                            apf.console.error(fail, "audio");
+                            apf.console.error(fail, "flash");
                             // #endif
-                            obj.dispatchEvent("error", {message: fail});
+                            if (options.onError)
+                                options.onError({message: fail});
+                            else
+                                obj.dispatchEvent("error", {message: fail});
                         }
                     }, 1000);
                 }, 200);
