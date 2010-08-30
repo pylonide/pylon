@@ -99,13 +99,15 @@ apf.popup = {
         //if(this.last != cacheId) 
         //this.popup.document.body.innerHTML = o.content.outerHTML;
 
-        var popup = o.content, moveUp = false;
+        var dp,
+            popup  = o.content,
+            moveUp = false,
+            fixed  = false;
         if (!o.content.style.zIndex)
             o.content.style.zIndex = 1000000000;
-        if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
+        if ((dp = o.content.style.display) && dp.indexOf("none") > -1)
             o.content.style.display = "";
 
-        var fixed = false;
         if (options.ref) {
             var pos, top,
                 p = options.ref;
