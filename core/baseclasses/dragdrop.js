@@ -1223,7 +1223,7 @@ apf.MultiselectDragDrop = function() {
         var prefix = this.oDrag.className.split(" ")[0]
         //@todo the class should be removed here
         this.$setStyleClass(this.oDrag, (this.multiple
-            ? prefix + "_multiple" : "") + (this.class ? " " + this.class : ""), [prefix + "_multiple"]);
+            ? prefix + "_multiple" : "") + (this["class"] ? " " + this["class"] : ""), [prefix + "_multiple"]);
 
         if (this.multiple) {
             document.body.appendChild(this.oDrag);
