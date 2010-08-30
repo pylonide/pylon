@@ -386,7 +386,8 @@ apf.persist = function(struct, tagName){
     };
     
     this.$addMethod = function(def){
-        this[def.name] = function(){
+        var funcName = def.name.replace(/\/(\w)/g, function(m, a) { return a.toUpperCase()})
+        this[funcName] = function(){
             var args = def.args, out = [];
             for (var i = 0; i < args.length; i++) {
                 out.push(args[i] + "=" + encodeURIComponent(arguments[i]));
