@@ -287,11 +287,11 @@ apf.persist = function(struct, tagName){
      * @type  {void}
      */
     this.login   = 
-    this.connect = function(username, password, redirect, callback) {
+    this.connect = function(username, password, redirect, token, callback) {
         var _self = this;
         if (this.listening)
             return this.disconnect(function(){
-                _self.connect(username, password, redirect, callback);
+                _self.connect(username, password, redirect, token, callback);
             })
 
         this.contentType = "application/x-www-form-urlencoded";
@@ -303,6 +303,9 @@ apf.persist = function(struct, tagName){
                             + "&password=" + encodeURIComponent(password)
                             + (redirect
                                 ? "&redirect=" + encodeURIComponent(redirect)
+                                : "")
+                            + (token
+                                ? "&token=" + encodeURIComponent(token)
                                 : ""),
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
@@ -422,7 +425,7 @@ apf.persist = function(struct, tagName){
     this.exec = function(method, args, callback){
         switch(method){
             case "login":
-                this.connect(args[0], args[1], args[2], callback);
+                this.connect(args[0], args[1], args[2], args[3], callback);
                 break;
             case "logout":
                 this.disconnect(callback);
