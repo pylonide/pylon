@@ -1010,6 +1010,7 @@ apf.LiveEdit.richtext = function(){
                     resizable  : false, //"horizontal",
                     draggable  : true,
                     focussable : true,
+                    modal      : false,
                     left       : 500,
                     top        : 100,
                     width      : 275,
