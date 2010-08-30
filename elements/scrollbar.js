@@ -256,7 +256,10 @@ apf.scrollbar = function(struct, tagName){
             this.$recalc();
         
         //Disable scrollbar
-        if (this.$getViewPort(oHtml) >= oHtml[this.$scrollSize]) {
+        var vp = this.$getViewPort(oHtml);
+        var sz = oHtml[this.$scrollSize];
+        
+        if (vp >= sz) {
             if (this.overflow == "scroll") {
                 this.$caret.style.display = "none";
                 this.disable();
@@ -283,12 +286,12 @@ apf.scrollbar = function(struct, tagName){
             //oHtml.style.overflowY = "scroll";
             
             //Set scroll size
-            this.$caret.style[this.$size] = (Math.max(5, (this.$getViewPort(oHtml) / oHtml[this.$scrollSize]
+            this.$caret.style[this.$size] = (Math.max(5, (vp / sz
                 * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
             
-            this.$curValue = oHtml[this.$scrollPos] / (oHtml[this.$scrollSize] - this.$getViewPort(oHtml));
+            this.$curValue = oHtml[this.$scrollPos] / (sz - vp);
 
             var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
             this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)

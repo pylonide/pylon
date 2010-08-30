@@ -118,12 +118,12 @@ apf.LiveEdit = function() {
         
         function focusHandler(){
             moEditor.removeEventListener("focus", focusHandler);
-            apf.removeListener(moEditor.$ext, "mouseout");
+            apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
             moEditor = null;
         }
         
         function removeHandler(){
-            apf.removeListener(moEditor.$ext, "mouseout");
+            apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
             if (_self.$lastEditor && _self.$lastEditor[0] == moEditor)
                 removeEditor.call(_self, _self.$activeNode, true);
             moEditor.removeEventListener("focus", focusHandler);
@@ -132,7 +132,7 @@ apf.LiveEdit = function() {
         
         function extOutHandler(){
             if (!_self.$lastEditor) {
-                apf.removeListener(moEditor.$ext, "mouseout");
+                apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
                 return;
             }
                 

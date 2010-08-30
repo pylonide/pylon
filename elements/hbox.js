@@ -545,6 +545,9 @@ apf.vbox = function(struct, tagName){
         else if (!this.$heighttimer) {
             var _self = this;
             this.$heighttimer = $setInterval(function(){
+                if (_self.$amlDestroyed)
+                    return;
+
                 var nodes = _self.childNodes;
                 for (var $int, i = 0, l = nodes.length; i < l; i++) {
                     if (!($int = (node = nodes[i]).$int || node.$container))
