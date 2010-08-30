@@ -55,9 +55,12 @@ apf.LiveEdit = function() {
     this.$booleanProperties["realtime"]  = true;
     
     this.$propHandlers["liveedit"]       = function(value){
+        if (this.childNodes.length) //@todo rearch this
+            return;
+    
         if (this.realtime == undefined)
             this.$setInheritedAttribute("realtime");
-
+            
         if (value) {
             if (!this.$focussable || !this.focussable) {
                 this.$focussable   = true;
@@ -68,7 +71,7 @@ apf.LiveEdit = function() {
             
             if (!this.$mouseOver)
                 this.$setMouseEvents();
-            
+
             apf.addListener(this.$ext, "mouseup",   this.$mouseUp);
             apf.addListener(this.$ext, "mousedown", this.$mouseDown);
             apf.addListener(this.$ext, "mouseout",  this.$mouseOut);
