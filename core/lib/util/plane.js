@@ -133,7 +133,13 @@ apf.plane = {
             },
         
             hide : function(){
-                var isChild = apf.isChildOf(this.plane, document.activeElement);
+                var isChild; // try...catch block is needed to work around a FF3 Win issue with HTML elements
+                try {
+                    isChild = apf.isChildOf(this.plane, document.activeElement);
+                }
+                catch (ex) {
+                    isChild = false;
+                }
                 if (this.current) {
                     if (this.lastZ !== null) {
                         if (this.current.style.zIndex == 100000)
