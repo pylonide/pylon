@@ -97,11 +97,13 @@ apf.LiveMarkupPi = function(){
         if (typeof data == "string" && data.indexOf("<a:") > -1) { //@todo use the .hasAml attribute
             this.$ext.innerHTML = "";//data;
 
-            this.$data = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
+            var doc = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
               + apf.ns.apf + "'>" + data + "</a:application>", "text/xml", {
                 htmlNode : this.$ext
                 //nodelay  : true
-            }).documentElement;
+            })
+            this.$data = doc.documentElement;
+            doc.$parentNode = this;
             
             //apf.queue.empty();
             

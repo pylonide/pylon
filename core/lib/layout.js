@@ -1198,22 +1198,25 @@ apf.layout = {
     dlist : [],
     $hasQueue : false,
     
-    queue : function(oHtml, obj, compile){
-        this.$hasQueue = true;
+    queue : function(oHtml, obj, compile, q){
+        if (!q) {
+            this.$hasQueue = true;
+            q = this.qlist;
+        }
         
         var id;
         if (!(id = this.getHtmlId(oHtml)))
             id = apf.setUniqueHtmlId(oHtml);
             
-        if (this.qlist[id]) {
+        if (q[id]) {
             if (obj)
-                this.qlist[id][2].push(obj);
+                q[id][2].push(obj);
             if (compile)
-                this.qlist[id][1] = compile;
+                q[id][1] = compile;
             return;
         }
 
-        this.qlist[id] = [oHtml, compile, [obj]];
+        q[id] = [oHtml, compile, [obj]];
 
         if (!this.timer)
             this.timer = apf.setZeroTimeout(function(){
@@ -1232,6 +1235,7 @@ apf.layout = {
         }
 
         do {
+            var newq = {};
             var qlist = this.qlist;
             this.qlist = {};
             
@@ -1245,8 +1249,14 @@ apf.layout = {
     
                 list = qItem[2];
                 for (i = 0, l = list.length; i < l; i++) {
-                    if (list[i])
-                        list[i].$updateLayout();
+                    if (list[i]) {
+                        if (list[i].$amlDestroyed)
+                            continue;
+                        //if (list[i].$amlLoaded)
+                            list[i].$updateLayout();
+                        /*else
+                            this.queue(qItem[0], list[i], null, newq);*/
+                    }
                 }
     
                 apf.layout.activateRules(qItem[0]);

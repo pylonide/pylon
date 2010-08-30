@@ -1067,6 +1067,7 @@ apf.Class.prototype = new (function(){
         
         this.$amlLoaded    = false;
         this.$amlDestroyed = true;
+        if (!apf.isDestroying) debugger;
         
         if (this.$destroy)
             this.$destroy();

@@ -835,6 +835,8 @@ apf.model = function(struct, tagName){
         if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
             var _self = this;
             this.data = this.$copy = xmlNode; //@todo expirement
+            apf.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
+            
             this.$queueLoading = true;
             apf.queue.add("modelload" + this.$uniqueId, function(){
                 _self.load(xmlNode, options);
