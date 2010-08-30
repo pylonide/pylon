@@ -161,9 +161,9 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
-                if (stretch)
-                    node.$ext.style[size] = stretch ? (apf.isGecko && this.flex ? "" : "auto") : "";
-                else
+                if (!stretch)
+                    //node.$ext.style[size] = stretch ? (apf.isGecko && this.flex ? "" : "auto") : "";
+                //else
                     handlers["true"][size].call(this, node.height);
             }
         }
@@ -306,8 +306,9 @@ apf.vbox = function(struct, tagName){
         //Handlers for older browsers
         "false" : {
             "width" : function(value){
-                if (this.parentNode.$vbox && this.parentNode.align == "stretch")
-                    return;
+                //@todo this should check the largest and only allow that one
+                //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
+                    //return;
               
                 this.$ext.style.width = value
                     ? (parseInt(value) == value 
@@ -317,8 +318,9 @@ apf.vbox = function(struct, tagName){
             },
             
             "height" : function(value){
-                if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
-                    return;
+                //@todo this should check the largest and only allow that one
+                //if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
+                    //return;
       
                 this.$ext.style.height = value 
                     ? (parseInt(value) == value 

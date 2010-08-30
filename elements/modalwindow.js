@@ -457,8 +457,10 @@ apf.AmlWindow = function(struct, tagName){
                 }
             }
 
-            if (this.modal)
-                this.bringToFront();
+            if (this.modal) {
+                //this.bringToFront();
+                this.$ext.style.zIndex = apf.plane.$zindex;
+            }
             
             if (!this.$rendered) {
                 this.addEventListener("afterrender", function(){

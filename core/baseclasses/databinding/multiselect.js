@@ -521,6 +521,7 @@ apf.MultiselectBinding = function(){
     var actionFeature = {
         "insert"      : 127,//1111111
         "replacenode" : 127,//1111011
+        "attribute"   : 127,//1111011
         "add"         : 123,//1111011
         "remove"      : 46, //0101110
         "redo-remove" : 79, //1001111
@@ -771,12 +772,12 @@ apf.MultiselectBinding = function(){
             //I've commented above code out, because it disabled removing a 
             //subnode of a node that through an each rule makes the traverse 
             //node no longer a traverse node.
-            
+
             //Remove HTML Node
             if (htmlNode)
                 this.$deInitNode(xmlNode, htmlNode);
-            else if (xmlNode == this.xmlRoot) {
-                return this.load({
+            else if (startNode == this.xmlRoot) {
+                return this.load(null, {
                     noClearMsg: !this.dataParent || !this.dataParent.autoselect
                 });
             }

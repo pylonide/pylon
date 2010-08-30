@@ -796,7 +796,7 @@ apf.xmldb = new (function(){
                             }
                         }
 
-                        hash.push(["update", xmlNode, loopNode, undoObj, oParent]);
+                        hash.push([action, xmlNode, loopNode, undoObj, oParent]);
                         runTimer = true;
                         continue;
                     }

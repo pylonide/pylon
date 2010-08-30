@@ -417,7 +417,7 @@ apf.BaseStateButtons = function(){
                                 color   : _self.$maxconf[4], 
                                 opacity : _self.$maxconf[5],
                                 animate : true,
-                                protect : this.$uniqueId
+                                protect : _self.$uniqueId
                             });
                         
                         _self.animstate = 1;

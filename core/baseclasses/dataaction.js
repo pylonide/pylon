@@ -45,12 +45,12 @@ apf.DataAction = function(){
             tracker = this.dataParent.parent.$at; //@todo apf3.0 change this to be recursive??
 
         while (!tracker) {
-            if (!pNode.parentNode) {
+            if (!pNode.parentNode && !pNode.$parentNode) {
                 var model;
                 return (model = this.getModel && this.getModel(true)) && model.$at || apf.window.$at;
             }
 
-            tracker = (pNode = pNode.parentNode).$at;
+            tracker = (pNode = pNode.parentNode || pNode.$parentNode).$at;
         }
         return tracker;
     };

@@ -1258,7 +1258,8 @@ apf.MultiselectDragDrop = function() {
         }
         else {
             var sel = this.$selected || this.$caret;
-            this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
+            if (!apf.getStyle(this.oDrag, "width"))
+                this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
         }
         
@@ -1270,9 +1271,9 @@ apf.MultiselectDragDrop = function() {
         if (!this.multiple && !success && oDrag.style.display == "block") {
             var pos = apf.getAbsolutePosition(this.$selected || this.$caret);
             apf.tween.multi(oDrag, {
-                anim     : apf.tween.EASEIN,
-                steps    : 15,
-                interval : 10,
+                anim     : apf.tween.easeInOutCubic,
+                steps    : apf.isIE ? 15 : 20,
+                interval : 15,
                 tweens   : [
                     {type: "left", from: oDrag.offsetLeft, to: pos[0]},
                     {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
