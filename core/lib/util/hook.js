@@ -32,6 +32,9 @@
  */
 
 apf.asyncCheck = 1;
+apf.asyncCheckError = 1;
+apf.asyncCheckIgnore = 0;
+apf.asyncCheckTimeout = 1;
 
 apf.hookWrapAsync = function(inner){
     var outer = function() {
@@ -61,15 +64,39 @@ apf.hookWrapAsync = function(inner){
                 return inner.apply(this, args);
             }
             if(apf.asyncCheck){
-                var args = Array.prototype.slice.call(arguments);
-                var oldcb = args.splice(-1,1,function(err){
-                    if(err)
-                        apf.console.error("Caught hookAsync error: "+err+"\n"+(new Error()).stack);
-                    oldcb.apply(this,arguments);
-                })[0];
-                var names = apf.getFunctionArgs(oldcb);
-                if(names[0]!='err'){
-                     apf.console.error("Caught hookAsync error ignore in function \n"+oldcb.toString());
+                if(apf.asyncCheckError){
+                    var args = Array.prototype.slice.call(arguments);
+                    var oldcb = args.splice(-1,1,function(err){
+                        if(err)
+                            apf.console.error("Caught hookAsync error: "+err+"\n"+(new Error()).stack);
+                        oldcb.apply(this,arguments);
+                    })[0];
+                }
+                if(apf.asyncCheckIgnore){
+                    var names = apf.getFunctionArgs(oldcb);
+                    if(names[0]!='err'){
+                         apf.console.error("Caught hookAsync error ignore in function \n"+oldcb.toString());
+                    }
+                }
+                if(apf.asyncCheckTimeout){
+                    // lets inject a timeout check
+                    var args = Array.prototype.slice.call(arguments);
+                    var timeout;
+                    var oldcb = args.splice(-1,1,function(err){
+                        clearTimeout(timeout);
+                        var cb = oldcb; oldcb = null;
+                        if(cb)
+                            cb.apply(this,arguments);
+                    })[0];
+                    
+                    timeout = setTimeout(function(){
+                        clearTimeout(timeout);
+                        var cb = oldcb; oldcb = null;
+                        if(cb){
+                            apf.console.error("Timeout ocurred in hookAsync for callback\n"+cb.toString());
+                            cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
+                        }
+                    },1000);
                 }
                 return inner.apply(this, args);
             }
