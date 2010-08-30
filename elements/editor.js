@@ -122,7 +122,7 @@ apf.editor = function(struct, tagName){
     };
 
     var rescaleTimer;
-    function rescale() {
+    function rescale(timeout) {
         clearTimeout(rescaleTimer);
         var _self = this;
         rescaleTimer = $setTimeout(function() {
@@ -131,7 +131,7 @@ apf.editor = function(struct, tagName){
             if (!el || !(h = el.scrollHeight) || !(w = el.scrollWidth))
                 return;
             _self.$resize({/*width: w, */height: h});
-        });
+        }, timeout || 0);
     }
 
     this.addEventListener("execcommand", function(e) {
@@ -558,6 +558,8 @@ apf.editor = function(struct, tagName){
 
         //if (typeof this.realtime == "undefined")
             //this.$propHandlers["realtime"].call(this);
+        if (this.scalewithiframe)
+            rescale.call(this, 2000);
     });
 
     this.$destroy = function() {
