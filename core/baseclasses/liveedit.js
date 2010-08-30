@@ -476,7 +476,7 @@ apf.LiveEdit = function() {
     }
     
     function getOptions(node){
-        return node.getAttribute("options").replace(/\\([\[\{\]\}])/g, "$1");
+        return (node.getAttribute("options") || "").replace(/\\([\[\{\]\}])/g, "$1");
     }
     
     function removeEditor(oHtml, bProcess, callback) {

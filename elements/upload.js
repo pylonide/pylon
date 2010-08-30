@@ -277,7 +277,9 @@ apf.upload.ERROR_CODES = {
                 _self.$button.removeEventListener("prop.visible", f);
             });
         }
-        else {
+        //RLD: Apparently the button is not created in the draw function. 
+        //This is obviously wrong. by checking for $amlLoaded we've created a temporary workaround.
+        else if (this.$button.$amlLoaded) {
             if (this.$method.refresh)
                 this.$method.refresh();
         }
