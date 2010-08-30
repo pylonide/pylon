@@ -1243,7 +1243,7 @@ apf.MultiselectDragDrop = function() {
             oDrag.style.position = "absolute";
             oDrag.style.width    = sel.offsetWidth + "px";
             oDrag.style.display  = "none";
-            oDrag.style.zIndex   = 10000000;
+            oDrag.style.zIndex   = 100000101;
             oDrag.removeAttribute("id");
             this.$setStyleClass(oDrag, "draggrid");
             var nodes = sel.childNodes;
@@ -1309,7 +1309,7 @@ apf.MultiselectDragDrop = function() {
         this.oDrag = apf.insertHtmlNode(
             this.$getLayoutNode("dragindicator"), document.body);
 
-        this.oDrag.style.zIndex   = 10000000;
+        this.oDrag.style.zIndex   = 100000101;
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
@@ -1427,7 +1427,7 @@ apf.StandardDragDrop = function() {
         
         this.oDrag = document.body.appendChild(this.$ext.cloneNode(true));
         
-        this.oDrag.style.zIndex     = 1000000;
+        this.oDrag.style.zIndex     = 100000101;
         this.oDrag.style.position   = "absolute";
         this.oDrag.style.cursor     = "default";
         this.oDrag.style.filter     = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
