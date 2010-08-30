@@ -107,19 +107,20 @@ apf.popup = {
 
         var fixed = false;
         if (options.ref) {
-            var p = options.ref;
+            var pos, top,
+                p = options.ref;
             while(p && p.nodeType == 1) {
                 if (fixed = apf.getStyle(p, "position") == "fixed")
                     break;
                 p = p.parentNode;
             }
-            
+
             if (!fixed) {
-                var pos    = apf.getAbsolutePosition(options.ref, 
-                                o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
-                    top    = (options.y || 0) + pos[1],
-                        //+ (apf.isWebkit ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
-                    p      = apf.getOverflowParent(o.content);
+                pos = apf.getAbsolutePosition(options.ref,
+                            o.content.offsetParent || o.content.parentNode),//[ref.offsetLeft+2,ref.offsetTop+4];//
+                top = (options.y || 0) + pos[1],
+                    //+ (apf.isWebkit ? window.pageYOffset : 0), <-- appears to be needed in NEW safari...
+                p   = apf.getOverflowParent(o.content);
     
                 if (options.width || o.width)
                     popup.style.width = ((options.width || o.width) - 3) + "px";
@@ -136,7 +137,13 @@ apf.popup = {
                     ? (top - (options.height || o.height || o.content.offsetHeight) - (options.y || 0))
                     : top) + "px"
             }
-            else popup.style.position = "fixed";
+            else {
+                pos = apf.getAbsolutePosition(options.ref, p);
+                top = (options.y || 0) + pos[1] + p.offsetTop;
+                pos[0] += p.offsetLeft;
+                popup.style.position = "fixed";
+                popup.style.top      = top + "px";
+            }
             
             if (!options.noleft)
                 popup.style.left = ((options.x || 0) + (pos ? pos[0] : 0)) + "px";
