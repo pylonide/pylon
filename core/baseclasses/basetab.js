@@ -667,11 +667,11 @@ apf.BaseTab = function(){
 
                 var hInt = apf[info[3]](this.$int);
 
-                from1 = info[0] * hInt;//h[info[1]];
-                to1   = 0;
+                var from1 = info[0] * hInt;//h[info[1]];
+                var to1   = 0;
                 
-                from2 = 0;
-                to2   = -1 * info[0] * hInt;//h2[info[1]];
+                var from2 = 0;
+                var to2   = -1 * info[0] * hInt;//h2[info[1]];
                 
                 if (out)
                     h2.style[info[2]] = to2 + "px";
