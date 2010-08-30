@@ -115,9 +115,9 @@ apf.textbox  = function(struct, tagName){
 
     this.$childProperty    = "value";
 
-    //this.realtime          = false;
+    //this.realtime        = false;
     this.value             = "";
-    this.$isTextInput       = true;
+    this.$isTextInput      = true;
     this.multiline         = false;
 
     /**
@@ -139,7 +139,7 @@ apf.textbox  = function(struct, tagName){
             return;
 
         // Set Value
-        if (!initial && !value) //@todo apf3.x research the use of clear
+        if (!initial && !value && !this.hasFocus()) //@todo apf3.x research the use of clear
             return this.$clear();
         else if (this.isHTMLBox) {
             if (this.$input.innerHTML != value)
@@ -322,12 +322,15 @@ apf.textbox  = function(struct, tagName){
         return this.setProperty("value", value, false, true);
     };
     
+    this.clear = function(){
+        this.setProperty("value", "");
+    }
+    
     //@todo cleanup and put initial-message behaviour in one location
     this.$clear = function(){
-        this.setValue("");
         if (this["initial-message"]) {
-            this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
+            this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
         }
         else {
             this.$propHandlers["value"].call(this, "", null, null, true);

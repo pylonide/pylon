@@ -83,6 +83,9 @@ apf.ActionRule = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeRemoved", function(e){
+        if (this.$amlDestroyed)
+            return;
+        
         if (e.currentTarget == this) {
             this.parentNode.$actions[this.localName].remove(this);
         }

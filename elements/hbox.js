@@ -287,7 +287,15 @@ apf.vbox = function(struct, tagName){
                             sp.style["width"] = "43px";
                         else if (!apf.isWebkit) //stupid webkit isnt 90 degrees symmetrical
                             sp.style["height"] = "0px";
-                        sp.style[this.parentNode.$vbox ? "minHeight" : "minWidth"] = "100%";
+                            
+                        if (!this.parentNode.$vbox) //For firefox setting minHeight had the averse effect for non fixed heights
+                            sp.style["minWidth"] = "100%"; //? "minHeight" : 
+                        else if (!this.parentNode.height 
+                          && !this.parentNode.parentNode.$layout) {
+                            //@todo remove this again
+                            this.parentNode.$ext.style.height = "100%"; //added this for vboxes with children width flex that are inside an element that scales itself
+                        }
+                            
                         sp.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
                         sp.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
                         

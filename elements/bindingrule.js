@@ -141,6 +141,9 @@ apf.BindingRule = function(struct, tagName){
     });
     
     this.addEventListener("DOMNodeRemoved", function(e){
+        if (this.$amlDestroyed)
+            return;
+        
         //Find parent that this rule works on
         var first, node = this;
         while (node && node.$bindingRule) 

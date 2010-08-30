@@ -340,13 +340,18 @@ apf.BaseTab = function(){
         if (this.$control && this.$control.type != "remove")
             this.$control.stop();
 
-        var anim = {
+        var _self = this;
+        var anim  = {
             steps    : apf.isIE ? 10 : 20,
             control  : this.$control = {},
             anim     : apf.tween.EASEOUT,
             interval : 10,
             tweens   : [],
-            oHtml    : node
+            oHtml    : node,
+            onfinish : function(){
+                if (node)
+                    node.dispatchEvent("afteropen");
+            }
             //oneach   : function(){alert(1);}
         };
         this.$control.type = type;
@@ -361,7 +366,6 @@ apf.BaseTab = function(){
             this.$buildScaleAnim(anim, pg);
         }
         else if (type == "remove") {
-            var _self = this;
             anim.onfinish = function(){
                 callback();
                 
@@ -750,19 +754,19 @@ apf.BaseTab = function(){
         if (!page)
             return false;
 
-        if (this.dispatchEvent("close", {page: page}) === false && !force)
+        if (!force && this.dispatchEvent("close", {page: page}) === false)
             return;
 
         //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale) {
             this.$scaleinit(page, "remove", function(){
-                page.removeNode();
-                page.destroy(true);
+                //page.removeNode();
+                page.destroy(true, true);
             });
         }
         else  {
-            page.removeNode();
-            page.destroy(true);
+            //page.removeNode();
+            page.destroy(true, true);
 
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild

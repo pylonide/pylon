@@ -55,9 +55,9 @@ apf.LiveEdit = function() {
     this.$booleanProperties["realtime"]  = true;
     
     this.$propHandlers["liveedit"]       = function(value){
-        if (this.childNodes.length) //@todo rearch this
+        if (this.childNodes.length && !this.hasFeature(apf.__CHILDVALUE__)) //@todo rearch this
             return;
-    
+
         if (this.realtime == undefined)
             this.$setInheritedAttribute("realtime");
             
@@ -84,10 +84,12 @@ apf.LiveEdit = function() {
 
             if (this.nodeType == 7)
                 this.addEventListener("prop.calcdata", xmlupdateHandler);
+            else if (this.hasFeature(apf.__CHILDVALUE__)) 
+                this.addEventListener("prop." + this.$childProperty, xmlupdateHandler);
             else
                 this.addEventListener("xmlupdate", xmlupdateHandler);
         }
-        else {
+        else if (this.$mouseOver) {
             if (this.$unFocussable) {
                 this.$focussable = this.$unFocussable[0];
                 apf.GuiElement.propHandlers.focussable.call(this, this.$unFocussable[1]);
@@ -109,6 +111,8 @@ apf.LiveEdit = function() {
 
             if (this.nodeType == 7)
                 this.removeEventListener("prop.calcdata", xmlupdateHandler);
+            else if (this.hasFeature(apf.__CHILDVALUE__)) 
+                this.removeEventListener("prop." + this.$childProperty, xmlupdateHandler);
             else
                 this.removeEventListener("xmlupdate", xmlupdateHandler);
         }

@@ -39,6 +39,8 @@
  */
 apf.text = function(struct, tagName){
     this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
+    
+    this.$nodes = [];
 };
 
 (function(){
@@ -229,7 +231,6 @@ apf.text = function(struct, tagName){
 
     /**** Private methods ****/
 
-    this.$nodes = [];
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         var f = this.$attrBindings.value.cvalue;
         var html = f(xmlNode);

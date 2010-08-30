@@ -706,7 +706,7 @@ apf.DataBinding = function(){
      * @see baseclass.databinding.method.load
      * @private
      */
-    //@todo this function is call way too much for a single load of a tree
+    //@todo this function is called way too much for a single load of a tree
     //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
         if (!this.$container)

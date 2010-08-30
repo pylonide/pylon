@@ -456,6 +456,33 @@ apf.datagrid = function(struct, tagName){
     /**** Focus ****/
     // Too slow for IE
     
+    // #ifdef __WITH_RENAME
+    this.$getCaptionElement = function(){
+        if (!this.$selected) 
+            return false;
+
+        var nodes     = this.$head.childNodes,
+            htmlNodes = this.$selected.childNodes, i = 0;
+            
+        nodeIter = htmlNodes[i];
+        while (nodeIter) {
+            if (nodeIter.nodeType != 1) {
+                nodeIter = nodeIter.nextSibling;
+                continue;
+            }
+            
+            h = apf.all[nodes[i].getAttribute("hid")];
+            if (h.tree || h.rename)
+                return this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;
+            
+            i++;
+            nodeIter = nodeIter.nextSibling;
+        }
+        
+        throw new Error("Datagrid without rename column specified");
+    };
+    // #endif 
+    
     this.$focus = function(){
         if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;

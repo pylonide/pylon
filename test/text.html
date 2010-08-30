@@ -16,13 +16,25 @@
         <a:model id="mdlTest2">
             <item>test</item>
         </a:model>
+        <a:model id="mdlTest3">
+            <data>
+                <item>test</item>
+                <item>test</item>
+                <item>test</item>
+            </data>
+        </a:model>
         
-        <a:text id="txt" value="[mdlTest::item/text()]" />
-        <hr />
-        <a:text id="test" model="mdlTest" scrolldown="true" each="[item]" width="200" height="100" style="border:1px solid red"><?lm
-            [text()] + <br />
-        ?></a:text>
+        <div model="mdlTest" id="blah">
+            <a:text id="txt" value="[mdlTest::item/text()]" />
+            <hr />
+            <a:text id="test" scrolldown="true" each="[item]" caching="false" width="200" height="100" style="border:1px solid red"><?lm
+                <div>{
+                    [text()] + <br />
+                }</div>
+            ?></a:text>
+        </div>
         
         <a:button onclick="mdlTest.appendXml(mdlTest2.data.cloneNode(true));">test</a:button>
+        <a:button onclick="blah.setAttribute('model', test.$model == mdlTest ? mdlTest3 : mdlTest)">switch</a:button>
     </body>
 </html>

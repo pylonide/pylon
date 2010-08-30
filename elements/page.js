@@ -203,6 +203,10 @@ apf.page = function(struct, tagName){
 
     this.$propHandlers["type"] = function(value) {
         this.setProperty("fake", true);
+        
+        if (this.relPage && this.$active)
+            this.relPage.$deactivate();
+        
         this.relPage = this.parentNode.getPage(value);
         if (this.$active)
             this.$activate();
@@ -333,22 +337,24 @@ apf.page = function(struct, tagName){
 
         if (!this.fake || this.relPage) {
             if (this.fake) {
-                this.relPage.$ext.style.display = "";
-                this.parentNode.$setStyleClass(this.relPage.$ext, "curpage");
+                if (this.relPage) {
+                    this.relPage.$ext.style.display = "";
+                    this.parentNode.$setStyleClass(this.relPage.$ext, "curpage");
 
-                // #ifdef __WITH_DELAYEDRENDER
-                if (this.relPage.$render)
-                    this.relPage.$render();
-                // #endif
-                
-                this.relPage.dispatchEvent("prop.visible", {value:true});
+                    // #ifdef __WITH_DELAYEDRENDER
+                    if (this.relPage.$render)
+                        this.relPage.$render();
+                    // #endif
+                    
+                    this.relPage.dispatchEvent("prop.visible", {value:true});
+                }
             }
             else {
                 this.parentNode.$setStyleClass(this.$ext, "curpage");
             }
             
             //#ifdef __WITH_LAYOUT
-            if (apf.layout)
+            if (apf.layout && this.relPage)
                 apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
             //#endif
         }
@@ -493,6 +499,9 @@ apf.page = function(struct, tagName){
 
     this.$destroy = function(){
         if (this.$button) {
+            if (!this.parentNode.$amlDestroyed)
+                this.$button.parentNode.removeChild(this.$button);
+            
             this.$button.host = null;
             this.$button = null;
         }

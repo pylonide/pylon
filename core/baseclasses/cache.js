@@ -71,7 +71,7 @@ apf.Cache = function(){
             //Information needs to be passed to the followers... even when cached...
             if (nodes.length && this.autoselect)
                 this.select(nodes[0], null, null, null, true);
-            else
+            else if (this.clearSelection)
                 this.clearSelection(); //@todo apf3.0 was setProperty("selected", null
 
             if (!nodes.length) {
@@ -331,7 +331,7 @@ apf.Cache = function(){
         this.$setCurrentFragment = function(fragment){
             this.$container.appendChild(fragment);
     
-            if (!apf.window.hasFocus(this))
+            if (!apf.window.hasFocus(this) && this.blur)
                 this.blur();
         };
     }

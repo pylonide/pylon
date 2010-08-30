@@ -441,11 +441,13 @@ apf.Class.prototype = new (function(){
         }
         else if (exclNr === 0) {
             options = {
-                parsecode : true,
-                liveedit  : this.liveedit
+                parsecode : true
                 /*#ifdef __DEBUG */, nothrow : this.target.match(/-debug$/) ? true : false /* #endif */
             };
         }
+        
+        if (this.liveedit)
+            (options || (options = {})).liveedit = true;
         
         //#ifdef __DEBUG
         if (apf.config.debugLm)
@@ -1067,7 +1069,6 @@ apf.Class.prototype = new (function(){
         
         this.$amlLoaded    = false;
         this.$amlDestroyed = true;
-        if (!apf.isDestroying) debugger;
         
         if (this.$destroy)
             this.$destroy();
