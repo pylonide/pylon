@@ -406,12 +406,11 @@ apf.BaseTab = function(){
             //Set activetab if the current one is lost
             if (this.$activepage == node) {
                 var ln = node.nextSibling;
-                while (ln && !ln.$first)
+                while (ln && (!ln.$first || !ln.visible))
                     ln = ln.nextSibling;
                 var rn = node.previousSibling;
-                while (rn && !rn.$last)
+                while (rn && (!rn.$last || !rn.visible))
                     rn = rn.previousSibling;
-        
                 if (ln || rn)
                     this.set(ln || rn);
             }
