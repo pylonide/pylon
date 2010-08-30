@@ -1279,12 +1279,17 @@ apf.xmlset = function(xml, xpath, local, previous){
         //return this.children(
     }
     
-    this.val = function(selector){
-        return apf.queryValue(this.$xml, selector ? "(" + this.$xpath + ")/" + selector : this.$xpath);
+    this.val = function(value){
+        if (value !== undefined) {
+            apf.setQueryValue(this.$xml, this.$xpath, value);
+            return this;
+        }
+        else
+            return apf.queryValue(this.$xml, this.$xpath);
     }
     
-    this.vals = function(selector){
-        return apf.queryValues(this.$xml, selector ? "(" + this.$xpath + ")/" + selector : this.$xpath);
+    this.vals = function(){
+        return apf.queryValues(this.$xml, this.$xpath);
     }
     
     this.node = function(){
