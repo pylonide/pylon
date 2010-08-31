@@ -326,7 +326,7 @@ apf.Anchoring = function(){
             this.$isWaitingOnDisplay = true;
             this.addEventListener("prop.visible", propChange);
 
-            var p = this.parentNode || p.$parentNode;
+            var p = this.parentNode || this.$parentNode;
             while(p) {
                 p.addEventListener("prop.visible", propChange);
                 p = p.parentNode || p.$parentNode;
