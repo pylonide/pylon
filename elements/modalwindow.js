@@ -399,6 +399,9 @@ apf.AmlWindow = function(struct, tagName){
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
         if (apf.isTrue(value)){
+            if (this.dispatchEvent("beforeshow") === false)
+                return (this.visible = false);
+            
             if (this.modal){
     			/*if (this.oCover.offsetParent) {
                     //@todo apf3.0 ie8 too high...

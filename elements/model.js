@@ -94,7 +94,7 @@
  * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
  * @attribute  {String}  session      the data instruction on how to store the session data from this model.
  * @attribute  {Boolean} autoinit     whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} save-original whether to save the original state of the data. This enables the use of the reset() call.
+ * @attribute  {Boolean} allowreset   whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -123,7 +123,7 @@ apf.model = function(struct, tagName){
     this.$isModel   = true;
     
     this.canHaveChildren  = false;
-    this["save-original"] = true;
+    this.allowreset       = false;
 
     this.$state = 0;//1 = loading
 
@@ -134,10 +134,10 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["autoinit"]      = true;
-    this.$booleanProperties["save-original"] = true;
+    this.$booleanProperties["autoinit"] = true;
+    this.$booleanProperties.allowreset  = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "save-original", "remote"];
+        "allowreset", "remote"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -877,7 +877,7 @@ apf.model = function(struct, tagName){
             apf.xmldb.nodeConnect(
                 apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
-            if ((!options || !options.nocopy) && this["save-original"])
+            if ((!options || !options.nocopy) && this.allowreset)
                 this.$copy = apf.xmldb.getCleanCopy(xmlNode);
         }
 

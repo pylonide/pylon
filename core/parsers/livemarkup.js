@@ -2023,6 +2023,7 @@ apf.lm_exec = new (function(){
 
     // xml parse function used by all livemarkup objects
     function xmlParse(str){
+        debugger;
         var n = apf.getXmlDom("<_apflmlist_>" + str + "</_apflmlist_>");
         if (!n || !(n = n.documentElement))
             return null;

@@ -44,7 +44,7 @@
  * Slideshow component with 3 pictures. Each image has its own thumbnail 
  * and description. A new image is shown every 5 seconds.
  * <code>
- *  <a:model id="mdlImages" save-original="true" >
+ *  <a:model id="mdlImages" allowreset="true">
  *      <slideshow>
  *          <picture src="img1.jpg" thumb="thumb1.jpg" title="First Picture"></picture>
  *          <picture src="img2.jpg" thumb="thumb2.jpg" title="Second Picture"></picture>

@@ -73,7 +73,9 @@ apf.aml.setElement("include", apf.XiInclude);
             })
         }
         
-        this.parentNode.removeChild(this);
+        //@todo hack!! this should never happen. Find out why it happens
+        if (this.parentNode)
+            this.parentNode.removeChild(this);
     }
     
     function finish(xmlNode){
