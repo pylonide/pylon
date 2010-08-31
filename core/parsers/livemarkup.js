@@ -123,7 +123,7 @@ apf.lm = new (function(){
             "switch": 1, "case": 1, "break": 1, "continue": 1, "default": 1,
             "function":2, "return": 1, "try": 1, "catch": 1, "throw":1,
             "debugger": 1, "alert": 1, "confirm": 1,"setTimeout": 1,"setInterval": 1,"delete": 1, "export": 1, "import": 1,
-            "label": 1, "foreach":1, "each": 1, "node": 1, "local": 1, "yield": 1,
+            "label": 1, "foreach":1, "each": 1, "eachrev":1, "foreachrev":1, "node": 1, "local": 1, "yield": 1,
             "let":1, "finally":1, "delete":1
         },
         type_lut = { // used for optimizing the parse regexp
@@ -233,6 +233,8 @@ apf.lm = new (function(){
             8 : "_valattr(_n,",
             "foreach"   : "_nods(_n,",
             "each"      : "_nods(_n,",
+            "foreachrev": "_nods(_n,",
+            "eachrev"   : "_nods(_n,",
             "xabs"      : "_valst(_n,",
            // "edit"      : "_argwrap(_n,", 
            // "edit"      : "_val(_n,", // toggled by liveedit
@@ -365,7 +367,7 @@ apf.lm = new (function(){
     macro_o.foreachrev  =
     macro_o.eachrev     = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,(",
     macro_c.foreachrev  =
-    macro_c.eachrev     = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-1].length-(_t[_t.length-2]++)-1])||(_t.length-=2,_n=_t.pop(),0);)",
+    macro_c.eachrev     = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-1].length-(_t[_t.length-2]++)-2])||(_t.length-=2,_n=_t.pop(),0);)",
 
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local(",
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)",
