@@ -49,6 +49,9 @@ apf.LiveEdit = function() {
 
     this.$activeDocument = document;
     this.$selection      = null;
+    this.$activeNode     = null;
+    this.$lastActiveNode = null;
+    this.$activeIndex    = 0;
 
     this.$supportedProperties.push("liveedit", "realtime");
     this.$booleanProperties["liveedit"]  = true;
@@ -348,13 +351,13 @@ apf.LiveEdit = function() {
         
         // Tab navigation handling
         if (code == 9 || isDone) {
+            if (!this.$tabStack)
+                initTabStack.call(this);
             var idx,
-                bShift = e.shiftKey,
-                // a callback is passed, because the call is a-sync
-                lastPos = (this.$tabStack || initTabStack.call(this)).indexOf(this.$activeNode);
+                bShift = e.shiftKey;
             oNode = this.$activeNode;
-            removeEditor.call(this, this.$activeNode, true) || initTabStack.call(this)[lastPos];
-            oNode = this.$tabStack[this.$tabStack.indexOf(oNode) + (bShift ? -1 : 1)];
+            removeEditor.call(this, this.$activeNode, true) || initTabStack.call(this)[this.$activeIndex];
+            oNode = this.$tabStack[this.$activeIndex + (bShift ? -1 : 1)];
 
             if (oNode) {
                 createEditor.call(this, oNode);
@@ -454,7 +457,8 @@ apf.LiveEdit = function() {
         if (this.hasFocus && !this.hasFocus())
             this.$skipFocusOnce = true;
 
-        this.$activeNode = oHtml;
+        this.$activeNode  = oHtml;
+        this.$activeIndex = (this.$tabStack || initTabStack.call(this)).indexOf(oHtml);
         apf.setStyleClass(oHtml, "liveEditActive", ["liveEditOver", "liveEditInitial"]);
 
         if (oHtml.innerHTML == rule.initial)

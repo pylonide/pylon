@@ -37,6 +37,11 @@ apf.LiveEdit.richtext = function(){
                             "paste", "outdent", "indent", "undo", "redo"];
     this.$changeTimer    = null;
     this.$toolbar        = null;
+
+    // List of punctuation characters from
+    // http://www.adobe.com/livedocs/coldfusion/5.0/Using_ColdFusion_Studio/language5.htm
+    // ! ' # S % & ' ( ) * + , - . / : ; < = > ? @ [ / ] ^ _ { | } ~
+    var rePunctuation    = /[\n\t!`#%&'"\(\)\*\.+-\.\/\:;<=>\?@\[\\\]\^_\{\|\}\~]+/g;
     
     this.$supportedProperties.push("state", "plugins", "language");
     
@@ -209,14 +214,19 @@ apf.LiveEdit.richtext = function(){
                 r   = this.$selection.getRange();
                 // get first word from node:
                 r2  = r.cloneRange();
-                var l;
-                // set the end of the range to match the end of the string inside the active node.
-                r2.setEnd(r2.commonAncestorContainer, l = this.$activeNode.innerHTML.stripTags().length);
-                m   = r2.toString().match(/[\w]*(:?\W)?/g);
-                if (m && m.length == 2 && !m[1]) { //only one word left
-                    r2.setStart(r2.commonAncestorContainer, l);
-                    sel.removeAllRanges();
-                    sel.addRange(r2);
+                if (r2.commonAncestorContainer.nodeType == 3) {
+                    // set the end of the range to match the end of the string of the
+                    // active textNode inside the active node.
+                    var s = r2.commonAncestorContainer.textContent.replace(rePunctuation, ""),
+                        l = s.length;
+                    r2.setEnd(r2.commonAncestorContainer, l);
+                    m = r2.toString().match(/[\w]*(:?\W)?/g);
+                    if (m && m.length == 2 && !m[1]) { //only one word left
+                        r2.setEnd(r2.commonAncestorContainer, l);
+                        r2.setStart(r2.commonAncestorContainer, l);
+                        sel.removeAllRanges();
+                        sel.addRange(r2);
+                    }
                 }
             }
         }
