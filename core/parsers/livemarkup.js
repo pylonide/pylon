@@ -367,7 +367,7 @@ apf.lm = new (function(){
     macro_o.foreachrev  =
     macro_o.eachrev     = "\nfor(var _t=_t||[],_t=(_t.push(_n,0,(",
     macro_c.foreachrev  =
-    macro_c.eachrev     = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-1].length-(_t[_t.length-2]++)-2])||(_t.length-=2,_n=_t.pop(),0);)",
+    macro_c.eachrev     = ")||[]),_t);(_n=_t[_t.length-1][_t[_t.length-1].length-(_t[_t.length-2]++)-1])||(_t.length-=2,_n=_t.pop(),0);)",
 
     macro_o.local       = "\nfor(var _t=_t||[],_t=(_t.push(_n,((_n=_local(",
     macro_c.local       = ")),1)),_t);(_t[_t.length-1]--&&_n)||(_t.length--,_n=_t.pop(),0);)",
