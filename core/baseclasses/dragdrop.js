@@ -1257,8 +1257,10 @@ apf.MultiselectDragDrop = function() {
             return (this.lastDragNode = oDrag);
         }
         else {
-            var sel = this.$selected || this.$caret;
-            if (!apf.getStyle(this.oDrag, "width"))
+            var sel = this.$selected || this.$caret,
+                width = apf.getStyle(this.oDrag, "width");
+            
+            if (!width || width == "auto")
                 this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
         }
