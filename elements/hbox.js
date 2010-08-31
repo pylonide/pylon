@@ -243,6 +243,7 @@ apf.vbox = function(struct, tagName){
         //Handlers for flexible box layout
         "true" : {
             "width" : function(value){
+                //@todo this should check the largest and only allow that one
                 if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
                 
@@ -254,6 +255,7 @@ apf.vbox = function(struct, tagName){
             },
             
             "height" : function(value){
+                //@todo this should check the largest and only allow that one
                 if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
 
@@ -315,8 +317,8 @@ apf.vbox = function(struct, tagName){
         "false" : {
             "width" : function(value){
                 //@todo this should check the largest and only allow that one
-                //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
-                    //return;
+                if (this.parentNode.$vbox && this.parentNode.align == "stretch")
+                    return;
               
                 this.$ext.style.width = value
                     ? (parseInt(value) == value 
@@ -327,8 +329,8 @@ apf.vbox = function(struct, tagName){
             
             "height" : function(value){
                 //@todo this should check the largest and only allow that one
-                //if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
-                    //return;
+                if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
+                    return;
       
                 this.$ext.style.height = value 
                     ? (parseInt(value) == value 

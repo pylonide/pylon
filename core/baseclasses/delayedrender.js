@@ -93,6 +93,10 @@ apf.DelayedRender = function(){
         if (this.$rendered)
             return;
 
+        // Hide render pass from sight for inner callstack 
+        // redrawing browsers like firefox
+        this.$ext.style.visibility = "hidden";
+
         var domParser = this.ownerDocument.$domParser;
         domParser.parseFromXml(this.$aml, {
             amlNode       : this,
@@ -105,6 +109,8 @@ apf.DelayedRender = function(){
         this.$rendered = true;
 
         this.dispatchEvent("afterrender");
+        
+        this.$ext.style.visibility = "";
     };
     
     var f;
