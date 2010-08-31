@@ -582,8 +582,8 @@ apf.BaseTab = function(){
                         delete this["out"];
                     }
                     
-                    this.oPages.style.width = "";
-                    this.oPages.style.height = "";
+                    _self.oPages.style.width = "";
+                    _self.oPages.style.height = "";
                 }
             };
         }

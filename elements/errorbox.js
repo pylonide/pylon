@@ -94,7 +94,7 @@ apf.errorbox = function(struct, tagName){
         
         var refHtml = 
             //#ifdef __WITH_HTML5
-            host.validityState ? host.validityState.$errorHtml :
+            host.validityState && host.validityState.$errorHtml ||
             //#endif
             host.$ext;
 

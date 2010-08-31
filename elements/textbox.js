@@ -728,8 +728,8 @@ apf.textbox  = function(struct, tagName){
 
         var f;
         apf.addListener(this.$input, "keypress", f = function(e) {
-            if (this.getAttribute("type") != "password")
-                return apf.removeListener(this, "keypress", f);
+            if (_self.$input.getAttribute("type") != "password")
+                return apf.removeListener(_self.$input, "keypress", f);
             e = e || window.event;
             // get key pressed
             var which = -1;
