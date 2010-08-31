@@ -649,7 +649,8 @@ apf.LiveEdit = function() {
                             htmlNode   : editParent,
                             //width      : "100%+2",
                             //height     : 19,
-                            style      : "display:inline-block;position:relative;", //z-index:10000
+                            //display:inline-block;
+                            style      : "position:relative;", //z-index:10000
                             value      : "[{" + this.id + ".root}::" + xpath + "]",
                             focussable : false,
                             realtime   : "{" + this.id + ".realtime}",
