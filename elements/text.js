@@ -231,6 +231,10 @@ apf.text = function(struct, tagName){
 
     /**** Private methods ****/
 
+    this.$canLoadData = function(){
+        return this.$attrBindings.value ? true : false;
+    }
+
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         var f = this.$attrBindings.value.cvalue;
         var html = f(xmlNode);
