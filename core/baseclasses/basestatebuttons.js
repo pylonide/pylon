@@ -259,11 +259,8 @@ apf.BaseStateButtons = function(){
                 apf.layout.play(this.$pHtmlNode);
             //#endif
 
-            if (this.$lastzindex) {
+            if (this.$lastzindex)
                 this.$ext.style.zIndex = this.$lastzindex[0];
-                if (this.oCover)
-                    this.oCover.style.zIndex = this.$lastzindex[1];
-            }
 
             this.$lastheight = this.$lastpos = this.$lastzindex = null;
 
@@ -466,8 +463,7 @@ apf.BaseStateButtons = function(){
                 }
 
                 this.$lastzindex = [
-                    this.$ext.style.zIndex || "", 
-                    this.oCover && this.oCover.style.zIndex || ""
+                    this.$ext.style.zIndex || ""
                 ];
 
                 //#ifdef __WITH_LAYOUT
@@ -475,11 +471,9 @@ apf.BaseStateButtons = function(){
                     apf.layout.pause(this.$pHtmlNode, setMax);
                 //#endif
                 
-                if (!_self.$maxconf || !_self.$maxconf[4]) {
-                    if (this.oCover)
-                        this.oCover.style.zIndex = apf.WinServer.count + 1;
-                    this.$ext.style.zIndex = apf.WinServer.count + 2;
-                }
+                //if (!_self.$maxconf || !_self.$maxconf[4]) {
+                    this.$ext.style.zIndex = apf.plane.$zindex + 2;
+                //}
             }
             else {
                 styleClass.push(this.$baseCSSname + "Max");
