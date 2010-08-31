@@ -108,6 +108,8 @@ apf.DOMParser.prototype = new (function(){
                 doc.$aml       = xmlNode;
                 doc.$domParser = this;
             }
+            if (options.host)
+                doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
             
             // #ifdef __DEBUG
             //Check for children in Aml node

@@ -99,11 +99,11 @@ apf.LiveMarkupPi = function(){
 
             var doc = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
               + apf.ns.apf + "'>" + data + "</a:application>", "text/xml", {
-                htmlNode : this.$ext
+                htmlNode : this.$ext,
+                host     : this
                 //nodelay  : true
             })
             this.$data = doc.documentElement;
-            doc.$parentNode = this;
             
             //apf.queue.empty();
             

@@ -431,10 +431,15 @@ apf.xmldb = new (function(){
      */
     this.setAttribute =
     apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
+        //Action Tracker Support
+        if (undoObj && !undoObj.$filled) {
+            undoObj.name = name;
+            undoObj.$filled = true;
+        }
+        
         //Apply Changes
         if (range) { //@todo apf3.0 range
             undoObj.extra.range = range;
-
         }
         else
             (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
