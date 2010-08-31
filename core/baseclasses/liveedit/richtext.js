@@ -191,10 +191,25 @@ apf.LiveEdit.richtext = function(){
                 }
             }
             var sel, r, r2, m;
-            // in webkit, first word cannot be reached by ctrl+left
-            if (apf.isWebkit && code == 37 && (e.ctrlKey || (apf.isMac && e.altKey)) && !e.shiftKey) {
+            // gecko cannot collapse the selection with the arrow keys. Please, don't ask me why...
+            if (apf.isGecko && (code == 37 || code == 39) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !this.$selection.isCollapsed()) {
                 // get current range
-                sel = this.$selection.get();
+                sel = this.$selection.get()
+                r   = this.$selection.getRange();
+                r2  = r.cloneRange();
+                var _self = this;
+                // we need to use a timeout here because a direct collapse() leaves
+                // rendering artifacts.
+                setTimeout(function() {
+                    sel.removeAllRanges();
+                    sel.addRange(r2);
+                    _self.$selection.collapse((code == 37));
+                }, 20);
+            }
+            // in webkit, first word cannot be reached by ctrl+left
+            else if (apf.isWebkit && code == 37 && (e.ctrlKey || (apf.isMac && e.altKey)) && !e.shiftKey) {
+                // get current range
+                sel = this.$selection.get()
                 r   = this.$selection.getRange();
                 // get first word from node:
                 r2  = r.cloneRange();
@@ -208,9 +223,9 @@ apf.LiveEdit.richtext = function(){
             }
             // in gecko, the last word cannot be reached by ctrl+right (strangely 
             // enough this does not occur on mac - prolly 'cause it uses the alt-key)
-            else if (apf.isGecko && code == 39 && !apf.isMac && e.ctrlKey && !e.shiftKey && !e.altKey) {
+            else if (apf.isGecko && code == 39 && !apf.isMac && e.ctrlKey && !e.altKey) {
                 // get current range
-                sel = this.$selection.get();
+                sel = this.$selection.get()
                 r   = this.$selection.getRange();
                 // get first word from node:
                 r2  = r.cloneRange();
