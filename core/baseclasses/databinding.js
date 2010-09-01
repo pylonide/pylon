@@ -297,7 +297,7 @@ apf.DataBinding = function(){
             lm.$model  = this.$model;
             lm.xmlRoot = queue[i]; //xmlNode
             lm.$noInitModel = true;
-            lm.$useXmlDiff  = true;
+            //lm.$useXmlDiff  = true;
             lm.$focusParent = this;
             lm.parentNode   = this;
             lm.dispatchEvent("DOMNodeInsertedIntoDocument", {
