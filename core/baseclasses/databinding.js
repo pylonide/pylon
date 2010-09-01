@@ -1501,9 +1501,14 @@ apf.DataBinding = function(){
             if (model && typeof model == "object")
                 model = model.id;
 
-            if (model)
-                value = value.replace(/\[\:\:/g, "[" + model + "::");
             this.$inheritProperties.model = 3;
+            if (model) {
+                value = value.replace(/\[\:\:/g, "[" + model + "::");
+            }
+            else {
+                apf.console.warn("Not found model on any of the parent for model overloading: " + value);
+                return;
+            }
         }
 
         //Optimize xmlroot position and set model async (unset the old one)

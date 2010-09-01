@@ -807,9 +807,8 @@ apf.Class.prototype = new (function(){
         //      $loadAml is not called yet
         if ((aci || (aci = apf.config.$inheritProperties))[prop] && this.$amlLoaded) {
             //@todo this is actually wrong. It should be about removing attributes.
-            
             var resetting = value === "" || typeof value == "undefined";
-            if (inherited != 10 && resetting) {
+            if (inherited != 10 && !value) {
                 delete this.$inheritProperties[prop];
                 if (this.$setInheritedAttribute(prop))
                     return;
@@ -835,11 +834,13 @@ apf.Class.prototype = new (function(){
                             recur(node.childNodes);
                         //Set inherited property
                         else if(!(n < 0)) {//Will also pass through undefined
-                            if (n == 3)
+                            if (n == 3) {
+                                var sameValue = node[prop];
                                 node[prop] = null;
+                            }
                             node.setProperty(prop, n != 3
                                 ? value
-                                : node[prop], false, false, n); //This is recursive already
+                                : sameValue, false, false, n); //This is recursive already
                         }
                     }
                 })(this.childNodes);
