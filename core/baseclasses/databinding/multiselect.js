@@ -519,15 +519,15 @@ apf.MultiselectBinding = function(){
     };
 
     var actionFeature = {
-        "insert"      : 127,//1111111
-        "replacenode" : 127,//1111011
-        "attribute"   : 127,//1111011
-        "add"         : 123,//1111011
-        "remove"      : 46, //0101110
-        "redo-remove" : 79, //1001111
-        "synchronize" : 127,//1111111
-        "move-away"   : 105,//1101001
-        "move"        : 77  //1001101
+        "insert"      : 127,//11111110
+        "replacenode" : 255,//11110110
+        "attribute"   : 255,//11110111
+        "add"         : 251,//11110111
+        "remove"      : 46, //01011100
+        "redo-remove" : 79, //10011110
+        "synchronize" : 127,//11111110
+        "move-away"   : 233,//11010011
+        "move"        : 77  //10011011
     };
 
     /**
@@ -621,7 +621,12 @@ apf.MultiselectBinding = function(){
                 break;
             }
 
-            if (xmlNode == listenNode) break;
+            if (xmlNode == listenNode) {
+                if (actionFeature[action] & 128) //The change is not for us.
+                    return;
+                
+                break;
+            }
             xmlNode = xmlNode.parentNode;
         }
         while (xmlNode && xmlNode.nodeType != 9);
