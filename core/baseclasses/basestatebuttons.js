@@ -472,7 +472,7 @@ apf.BaseStateButtons = function(){
                 //#endif
                 
                 //if (!_self.$maxconf || !_self.$maxconf[4]) {
-                    this.$ext.style.zIndex = apf.plane.$zindex + 2;
+                    this.$ext.style.zIndex = apf.plane.$zindex;
                 //}
             }
             else {
