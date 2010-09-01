@@ -81,7 +81,7 @@ apf.plane = {
                     this.current = o;
                     if (!reAppend) { // || o.parentNode != document.body
                         this.lastZ = this.current.style.zIndex;
-                        this.current.style.zIndex = 100000001;
+                        this.current.style.zIndex = this.host.$zindex;
                     }
                     else {
                         this.$originalPlace = [o.parentNode, o.nextSibling];
