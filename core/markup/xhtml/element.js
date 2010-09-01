@@ -83,7 +83,7 @@ apf.XhtmlElement = function(struct, tagName){
         if (handler)
             handler.call(this, value, null, name);
         else if (this.$int && (force || this.$amlLoaded)) {
-            this.$int.setAttribute(apf.isIE < 8 && name == "class" 
+            this.$int.setAttribute(apf.isIE && apf.isIE < 8 && name == "class" 
                 ? "className" : name, value);
         }
     };
