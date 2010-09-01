@@ -513,6 +513,9 @@ apf.xmldb = new (function(){
         this.cleanNode(newNode);
         
         var parentNode = oldNode.parentNode;
+        if (!parentNode)
+            return;
+        
         parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
 
