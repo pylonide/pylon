@@ -260,6 +260,10 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         for (; i < l; i++)
             this.$receiveChange(oData[i], oSession, e.annotator, e.callback);
     };
+    
+    this.clear = function(){
+        this.$sessions = {};
+    }
 
     /**
      * Create a new RDB session based on a URI.

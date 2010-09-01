@@ -323,9 +323,11 @@ apf.model = function(struct, tagName){
             return;
         }
         //#endif
-                 
+
         for (prop in p) {
-            if (node = p[prop].listen ? xmlNode.selectSingleNode(p[prop].listen) : xmlNode) {
+            if (xmlNode && (node = p[prop].listen 
+              ? xmlNode.selectSingleNode(p[prop].listen) 
+              : xmlNode)) {
                 apf.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + id + "|" + prop + "|" + this.$uniqueId);
                 
