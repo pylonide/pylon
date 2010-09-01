@@ -154,15 +154,16 @@ apf.hookWrap = function ( func, onlyasync ){
     return func;
 }
 
-apf.hookPre = function ( func, cb ){
-    var hooked = func._inner?func:apf.hookWrap(func);
+apf.hookPre = function ( func, forcesync, cb){
+    var hooked = func._inner?func:(forcesync?apf.hookWrapSync(func):apf.hookWrap(func));
     (hooked._pres || (hooked._pres=[])).push(cb);
+    if(hooked._pres && hooked._pres.length>1)hooked._pres.pop();
     hooked._hooks = 1;
     return hooked;
 }
 
-apf.hookPost = function ( func, cb ){
-    var hooked = func._inner?func:apf.hookWrap(func);
+apf.hookPost = function ( func, forcesync, cb){
+    var hooked = func._inner?func:(forcesync?apf.hookWrapSync(func):apf.hookWrap(func));
     (hooked._posts || (hooked._posts=[])).push(cb);
     hooked._hooks = 1;
     return hooked;
@@ -187,7 +188,7 @@ apf.hookClear = function( func ){
     return func;
 }
 
-apf.hookFormat = function(func, pre, format, name, module, output) {
+apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) {
     // compile our livemarkup format
     var global = {};
     
@@ -242,7 +243,7 @@ apf.hookFormat = function(func, pre, format, name, module, output) {
    
     // lets put a log hook pre or post
     if( pre ) {// we are a pre log hook
-        return apf.hookPre( func, function(outer, inner, args){
+        return apf.hookPre( func, forcesync, function(outer, inner, args){
         
             arg2obj(inner, args, global, 'args');
             global._name = name;
@@ -251,29 +252,31 @@ apf.hookFormat = function(func, pre, format, name, module, output) {
             try{
                 var out =fmt (global,this);
                 if(out)
-                    output( out );
+                    outputcb( out );
             }catch(e){
                 if(e)
-                    output("Exception "+ e );
+                    outputcb("Exception "+ e );
             }
             return args;
         });
     } else { // post log hook
-        return apf.hookPost( func, function(outer, inner, args, callback, results){
+        return apf.hookPost( func, forcesync, function(outer, inner, args, callback, results){
                 
             arg2obj(inner, args, global, 'args');
             if(callback)
                 arg2obj(callback, results, global, 'results');
+            else
+                global.results = [results], global.resultnames = ['retval'];
             global._name = name;
             global._module = module;
             
             try{
                 var out =  fmt(global,this);
                 if(out)
-                    output( out );
+                    outputcb( out );
             }catch(e){
                 if(e)
-                    output( "Exception "+e );
+                    outputcb( "Exception "+e );
             }
             return results;
         });
