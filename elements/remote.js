@@ -162,6 +162,9 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     //#endif
 
     this.logprefix = "";
+    this.log = function(type, msg){
+        apf.console.log(msg);
+    }
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -452,16 +455,16 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         apf.xmldb.disableRDB = 2; //Feedback prevention
 
         // Correct timestamp with the session basetime
-        oMessage.currdelta = oSession.basetime + parseInt(oMessage.currdelta);
+        var time = oSession.basetime + parseInt(oMessage.currdelta);
 
         // #ifdef __DEBUG
         this.log && this.log("rdb", this.logprefix + "timestamp comparison (base: " + oSession.basetime + ") : "
             + (new Date((new Date()).getUTCTime()).toGMTString())
-            + ", " + (new Date(oMessage.currdelta).toGMTString()));
+            + ", " + (new Date(time).toGMTString()));
         // #endif
 
         // Undo all items until state is equal to when message was executed on original client.
-        var aUndos = model.$at.getDone(oMessage.currdelta),
+        var aUndos = model.$at.getDone(time),
             i      = 0,
             l      = aUndos.length;
         if (l) {
