@@ -267,6 +267,9 @@ apf.xmldb = new (function(){
                 var amlNode = apf.all[sUId[1]]; //It's possible the aml node dissapeared in this loop.
                 if (amlNode) {
                     var model = apf.all[sUId[3]];
+                    if (!model)
+                        return;
+                    
                     var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                     var node  = xpath
                         ? apf.queryNode(model.data, xpath)
