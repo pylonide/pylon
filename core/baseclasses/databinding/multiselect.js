@@ -656,7 +656,7 @@ apf.MultiselectBinding = function(){
             //var tmpNode;
             //Case for replacing the xmlroot or its direct parent
             if (UndoObj ? UndoObj.args[1] == this.xmlRoot : !this.xmlRoot.parentNode)
-                return this.load(UndoObj ? UndoObj.args[0] : listenNode, {force: true});
+                return this.load(UndoObj ? UndoObj.xmlNode : listenNode, {force: true});
             
             //Case for replacing a node between the xmlroot and the traverse nodes
             var nodes = this.getTraverseNodes();

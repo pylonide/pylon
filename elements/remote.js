@@ -464,7 +464,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         // #endif
 
         // Undo all items until state is equal to when message was executed on original client.
-        var aUndos = model.$at.getDone(time),
+        var aUndos = [], //model.$at.getDone(time),
             i      = 0,
             l      = aUndos.length;
         if (l) {

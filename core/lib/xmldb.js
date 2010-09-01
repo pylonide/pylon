@@ -684,6 +684,9 @@ apf.xmldb = new (function(){
         //Apply Changes
         this.applyChanges("remove", xmlNode, undoObj);
         var p = xmlNode.parentNode;
+        if (!p)
+            return;
+        
         p.removeChild(xmlNode);
         this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
 
