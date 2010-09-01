@@ -79,11 +79,11 @@ apf.XhtmlElement = function(struct, tagName){
         this[name] = value;
         var handler = this.$propHandlers && this.$propHandlers[name]
           || apf.GuiElement.propHandlers[name];
-        
+
         if (handler)
             handler.call(this, value, null, name);
         else if (this.$int && (force || this.$amlLoaded)) {
-            this.$int.setAttribute(apf.isIE && name == "class" 
+            this.$int.setAttribute(apf.isIE < 8 && name == "class" 
                 ? "className" : name, value);
         }
     };
