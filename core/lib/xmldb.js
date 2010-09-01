@@ -934,7 +934,7 @@ apf.xmldb = new (function(){
         var rdb = model.rdb;
 
         // Add the messages to the undo object
-        if (undoObj.localName)
+        if (undoObj.action)
             rdb.$queueMessage(args, model, undoObj);
         // Or send message now
         else {
