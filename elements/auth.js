@@ -255,8 +255,9 @@ apf.aml.setElement("auth", apf.auth);
         }
     });
 
+    var knownHttpAuthErrors = {401:1, 403:1}
     function failFunction(e){
-        var st = (e.state == apf.TIMEOUT
+        var st = (e.state == apf.TIMEOUT || !knownHttpAuthErrors[e.status]
             ? self[this["error-state"]]
             : self[this["fail-state"]]) || self[this["fail-state"]]
 
