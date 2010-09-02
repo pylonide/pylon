@@ -93,8 +93,8 @@ apf.hookWrapAsync = function(inner){
                         clearTimeout(timeout);
                         var cb = oldcb; oldcb = null;
                         if(cb){
-                            apf.console.error("Timeout ocurred in hookAsync for callback\n"+cb.toString());
-                            cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
+                            sys.debug("Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")");
+                            //cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
                         }
                     },1000);
                 }
@@ -188,6 +188,22 @@ apf.hookClear = function( func ){
     return func;
 }
 
+apf.hookArgDump = function(data,names,maxdepth){
+    // lets dump some stuff
+    if (typeof(names) == 'number')
+         maxdepth = names, names = undefined;
+         
+    if(names){
+        var s = [];
+        for(var i = 0;i<names.length;i++)
+             s.push(names[i]+" = "+apf.dump(data[i],0,maxdepth||1));
+        for(;i<data.length;i++)
+             s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],0,maxdepth||1));
+        return s.join(', ');
+    }
+    return apf.dump(data,0,maxdepth||1);
+}
+
 apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) {
     // compile our livemarkup format
     var global = {};
@@ -201,22 +217,6 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
     function where(equal){
         if(!equal) throw 0;
         return '';
-    }
-    
-    function dump(data,names,maxdepth){
-       // lets dump some stuff
-       if (typeof(names) == 'number')
-            maxdepth = names, names = undefined;
-            
-       if(names){
-           var s = [];
-           for(var i = 0;i<names.length;i++)
-                s.push(names[i]+" = "+apf.dump(data[i],0,maxdepth||1));
-           for(;i<data.length;i++)
-                s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],0,maxdepth||1));
-           return s.join(', ');
-       }
-       return apf.dump(data,0,maxdepth||1);
     }
     
     function arg2obj(argfunc, args, global, key){
