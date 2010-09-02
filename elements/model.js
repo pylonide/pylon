@@ -917,25 +917,33 @@ apf.model = function(struct, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //@todo optimize by only doing this for add, sync etc actions
         
+        if (action == "replacenode" && xmlNode == this.data.ownerDocument.documentElement) {
+            var _self = this;
+            setTimeout(function(){
+                _self.load(xmlNode);
+            });
+            return;
+        }
+        
         //#ifdef __WITH_RDB
         if (this.rdb && !this.$at && UndoObj)
             this.$at = UndoObj.at;
         //#endif
 
         //#ifdef __WITH_UIRECORDER
-            if (apf.uirecorder && apf.uirecorder.captureDetails) {
-                if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
-                    if (this.ownerDocument && this.$aml) {
-                        apf.uirecorder.capture.captureModelChange({
-                            action      : action,
-                            amlNode     : this,
-                            xmlNode     : xmlNode,
-                            listenNode  : listenNode,
-                            UndoObj     : UndoObj
-                        }); 
-                    }
+        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+            if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
+                if (this.ownerDocument && this.$aml) {
+                    apf.uirecorder.capture.captureModelChange({
+                        action      : action,
+                        amlNode     : this,
+                        xmlNode     : xmlNode,
+                        listenNode  : listenNode,
+                        UndoObj     : UndoObj
+                    }); 
                 }
             }
+        }
         //#endif
         
         var p, b;
