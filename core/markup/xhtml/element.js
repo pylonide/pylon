@@ -111,6 +111,7 @@ apf.XhtmlElement = function(struct, tagName){
             this.$ext = this.$int = 
               pHtmlNode.appendChild(document.createElement(this.localName));
         }
+        this.style = this.$ext.style;
     }, true);
     
     //#ifdef __WITH_GUIELEMENT
