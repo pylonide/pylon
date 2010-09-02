@@ -162,8 +162,10 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     //#endif
 
     this.logprefix = "";
-    this.log = function(type, msg){
-        apf.console.log(msg);
+    if (!apf.isO3) { 
+        this.log = function(type, msg){
+            apf.console.log(msg);
+        }
     }
     
     //1 = force no bind rule, 2 = force bind rule
