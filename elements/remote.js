@@ -379,7 +379,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         for (var node, i = 0, l = args.length; i < l; ++i) {
             if ((node = args[i]) && node.nodeType) {
                 //@todo some changes should not be sent to the server
-                if (args[0] == "setAttribute" && args[2] == "level")
+                if (args[0] == "setAttribute" && args[2] == "level" 
+                  && args[1] == args[1].ownerDocument.documentElement)
                     return false; //@todo refactor and make configurable
 
                 args[i] = this.xmlToXpath(args[i], model.data);

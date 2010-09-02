@@ -520,7 +520,7 @@ apf.MultiselectBinding = function(){
 
     var actionFeature = {
         "insert"      : 127,//11111110
-        "replacenode" : 255,//11110110
+        "replacenode" : 127,//11110110
         "attribute"   : 255,//11110111
         "add"         : 251,//11110111
         "remove"      : 46, //01011100
