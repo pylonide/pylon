@@ -444,7 +444,7 @@ apf.page = function(struct, tagName){
                     apf.setStyleClass(elBtn, "btnclose");
 
                     elBtnClose.setAttribute("onmousedown", 
-                        "apf.stopEvent(event);");
+                        "apf.cancelBubble(event, apf.lookup(" + this.$uniqueId + "));");
                     elBtnClose.setAttribute("onclick",
                         'var page = apf.lookup(' + this.$uniqueId + ');\
                          page.parentNode.remove(page);');
