@@ -748,6 +748,11 @@ apf.BaseList = function(){
         else
             this.listNodes.push(oItem);
     };
+    
+    this.addEventListener("$skinchange", function(e){
+        if (this.more)
+            delete this.moreItem;
+    });
 
     this.$fill = function(){
         if (this.more && !this.moreItem) {

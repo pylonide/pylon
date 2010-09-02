@@ -200,11 +200,17 @@ apf.Presentation = function(){
         if (beforeNode || pNode != this.$ext.parentNode)
             pNode.insertBefore(this.$ext, beforeNode);
 
-        //Copy classes
+        //Style
+        
+        //Border
+        
+        //Margin
+
+        //Classes
         var i, l, newclasses = [],
-               classes    = (oExt.className || "").splitSafe("\s+");
-        for (i = 0; i < classes; i++) {
-            if (classes[i] && classes[i] != oldBase)
+               classes    = (oExt.className || "").splitSafe("\\s+");
+        for (i = 0; i < classes.length; i++) {
+            if (classes[i] && classes[i].indexOf(oldBase) != 0)
                 newclasses.push(classes[i].replace(oldBase, this.$baseCSSname));
         }
         apf.setStyleClass(this.$ext, newclasses.join(" "));
@@ -266,6 +272,12 @@ apf.Presentation = function(){
         if (this.$focussable && apf.document.activeElement == this)
             this.$focus(); //@todo apf3.0 test
 
+        //Dispatch event
+        this.dispatchEvent("$skinchange", {
+            ext  : oExt,
+            "int": oInt
+        });
+
         //#ifdef __WITH_DATABINDING
         //Reload data
         if (this.hasFeature(apf.__DATABINDING__) && this.xmlRoot)
@@ -274,12 +286,6 @@ apf.Presentation = function(){
         //#endif
         if (this.value)
             this.$propHandlers["value"].call(this, this.value);
-
-        //Dispatch event
-        this.dispatchEvent("$skinchange", {
-            ext  : oExt,
-            "int": oInt
-        });
 
         //#ifdef __WITH_MULTISELECT
         //Set Selection
