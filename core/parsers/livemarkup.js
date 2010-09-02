@@ -1792,16 +1792,19 @@ apf.lm = new (function(){
                 f = apf.lm_exec.compile(o.join(""));
             }
             catch(e){
-                var oErr = window.onerror;
-                window.onerror = function(x,y,line){
+                if (!apf.isIE) {
+                    var oErr = window.onerror;
+                    window.onerror = function(x,y,line){
+                        window.onerror = oErr;
+                        handleError(e, last_line, null, line);
+                        return true;
+                    }
+                    apf.include("", "", null, o.join(""));
                     window.onerror = oErr;
-                    handleError(e, last_line, null, line);
-                    return true;
                 }
-                apf.include("", "", null, o.join(""));
-                window.onerror = oErr;
-                
-                //handleError(e,last_line);
+                else {
+                    handleError(e,last_line);
+                }
                 return null;
             }
         }
