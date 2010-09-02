@@ -163,19 +163,21 @@ apf.BindingEachRule = function(struct, tagName){
     this.$updateEach = function(value){
         var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
-            
+            var nodes = pNode.$amlNodes,
+                i     = 0,
+                l     = nodes.length;
+            for (; i < l; ++i)
+                if (nodes[i].each != value)
+                    nodes[i].$handleBindingRule(value, "each");
         }
-        else {
+        else
             if (pNode.each != value)
                 pNode.$handleBindingRule(value, "each");
-        }
     }
     
-    this.$propHandlers["filter"]  = function(value, prop){
-        if (!value) {
-            this.$updateEach(this.match);
-            return
-        }
+    this.$getFilteredMatch = function(value){
+        if (!value)
+            return this.match;
 
         var keywords = value.trim().toLowerCase().split(" ");
         
@@ -208,24 +210,28 @@ apf.BindingEachRule = function(struct, tagName){
         for (i = 0, l = each.length; i < l; i++) {
             newEach.push("(" + each[i] + ")[" + filter + "]");
         }
-        console.log(newEach.join("|"));
-        this.$updateEach(newEach.join("|"));
+        
+        return newEach.join("|");
+    }
+    
+    this.$propHandlers["filter"]  = function(value, prop){
+        if (!this.$amlLoaded)
+            return;
+        
+        this.$updateEach(this.$getFilteredMatch(value));
     }
     this.$propHandlers["filter-fields"]  = function(value, prop){
         this.$fields = value.splitSafe(",");
     }
     
     this.addEventListener("prop.match", function(e){
-        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
-        if (pNode.localName == "bindings") {
-            var nodes = pNode.$amlNodes,
-                i     = 0,
-                l     = nodes.length;
-            for (; i < l; ++i)
-                nodes[i].$handleBindingRule(this.match, "each");
-        }
+        if (!this.$amlLoaded)
+            return;
+        
+        if (this.filter)
+            this.$propHandlers["filter"].call(this, this.filter);
         else
-            pNode.$handleBindingRule(this.match, "each");
+            this.$updateEach(this.match);
     });
     
     //@todo apf3.0 optimize
@@ -233,7 +239,8 @@ apf.BindingEachRule = function(struct, tagName){
     this.addEventListener("DOMNodeInserted", f = function(e){
         if (e.currentTarget != this)
             return;
-        
+
+        var match = this.$getFilteredMatch(this.filter);
         var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
             pNode.addEventListener("noderegister", this.$noderegister);
@@ -242,7 +249,7 @@ apf.BindingEachRule = function(struct, tagName){
                 i     = 0,
                 l     = nodes.length;
             for (; i < l; ++i) {
-                nodes[i].$handleBindingRule(this.match, "each");
+                nodes[i].$handleBindingRule(match, "each");
     
                 //#ifdef __WITH_SORTING
                 nodes[i].$sort = this.sort ? new apf.Sort(this) : null;
@@ -250,7 +257,7 @@ apf.BindingEachRule = function(struct, tagName){
             }
         }
         else {
-            pNode.$handleBindingRule(this.match, "each");
+            pNode.$handleBindingRule(match, "each");
     
             //#ifdef __WITH_SORTING
             pNode.$sort = this.sort ? new apf.Sort(this) : null;
