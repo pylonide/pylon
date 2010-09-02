@@ -165,10 +165,11 @@ apf.auth = function(struct, tagName){
 apf.aml.setElement("auth", apf.auth);
 
 (function(){
+    this.autostart = true;
+    
     this.$retry      = true;
-    this.loggedIn   = false;
+    this.loggedIn    = false;
     this.$needsLogin = false;
-    this.$autoStart  = true;
     this.$hasHost    = false;
 
     /**
@@ -219,7 +220,7 @@ apf.aml.setElement("auth", apf.auth);
             this.$hasHost = true;
         }
 
-        if (this.$autoStart && !this.$hasHost) {
+        if (this.autostart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
                 _self.authRequired();
@@ -562,10 +563,16 @@ apf.aml.setElement("auth", apf.auth);
             this.$do(options.service, options, "out", null, callback);
 
     };
+    
+    this.getCredentials = function(service){
+        var cache = this.$cache[service || "default"];
+        return !cache ? ["", ""] : [cache.username, cache.password];
+    }
 
     /**
      * Signals services that a log in is required and fires authrequired event
-     * @param {Object}   [options]  information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
+     * @param {Object}   [options]      information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
+     * @param {Object}   [forceNoRetry] don't try to log in with stored credentials. 
      */
     this.authRequired = function(options, forceNoRetry){
         // If we're already logging in return
@@ -578,7 +585,7 @@ apf.aml.setElement("auth", apf.auth);
         }
         else if (this.inProcess != 1) { //If we're not already logging in
             if (this.$hasHost && typeof options == "function") { //inside Teleport element
-                if (this.$credentials)
+                if (this.$credentials) 
                     return options();
                 this.$hostCallback = options;
             }
