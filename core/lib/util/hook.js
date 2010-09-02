@@ -214,6 +214,8 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
         return new Error().stack;
     }
     
+    var dump = apf.hookArgDump;
+    
     function where(equal){
         if(!equal) throw 0;
         return '';
