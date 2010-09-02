@@ -2487,8 +2487,8 @@ apf.lm_exec = new (function(){
             res = res.replace(/\n/g, "<br />");
         
         if (editMode !== false) {
-            return '<' + (options && options.multiline ? 'div' : 'span') 
-              + ' class="liveEdit' + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
+            return '<div' 
+              + ' class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
@@ -2499,7 +2499,7 @@ apf.lm_exec = new (function(){
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
                 : "") + '>' + (res || options && options.initial || "&nbsp;") 
-              + '</' + (options && options.multiline ? 'div' : 'span') + '>';
+              + '</div>';
         }
         else {
             return res;
