@@ -253,11 +253,19 @@ apf.history = {
     },
 
     hasChanged: function(page, force){
-        if (page == this.page && !force) return;
+        if (page == this.page && !force) 
+            return;
         this.changePage(page, force);
 
         this.changing = true;
-        apf.dispatchEvent("hashchange", {page: page, index: this.update(page)});
+        if (apf.dispatchEvent("hashchange", {
+            oldURL : this.page,
+            newURL : page,
+            page   : page, 
+            index  : this.update(page)
+        }) === false) {
+            page = location.hash = this.page;
+        };
         this.changing = false;
 
         this.page = page;

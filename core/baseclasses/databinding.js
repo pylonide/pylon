@@ -1506,7 +1506,7 @@ apf.DataBinding = function(){
                 value = value.replace(/\[\:\:/g, "[" + model + "::");
             }
             else {
-                apf.console.warn("Not found model on any of the parent for model overloading: " + value);
+                apf.console.warn("No found model on any of the parents for this element while trying to overload model: " + value);
                 return;
             }
         }
