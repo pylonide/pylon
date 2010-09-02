@@ -316,11 +316,13 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     this.endSession = function(uri) {
         if (!this.$sessions || !this.$sessions[uri])
             return;
-        
-        if (this.transport && this.transport.isConnected())
+
+        var oSession = this.$sessions[uri];
+        if (this.transport && this.transport.isConnected() 
+          && oSession.state != apf.remote.SESSION_TERMINATED)
             this.transport.leave(uri);
 
-        this.$sessions[uri].state = apf.remote.SESSION_TERMINATED;
+        oSession.state = apf.remote.SESSION_TERMINATED;
 
         delete this.$sessions[uri];
     };

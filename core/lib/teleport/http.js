@@ -872,7 +872,7 @@ apf.http = function(){
             state   : state,
             bubbles : true
         }, extra)) === false)
-            return true;
+            return 2;
     };
 
     /**

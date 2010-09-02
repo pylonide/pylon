@@ -118,8 +118,22 @@ apf.persist = function(struct, tagName){
         if (typeof callback == "function") {
             return callback.call(amlNode, data, state, extra, oError);
         }
-        else if (amlNode.retryTimeout(extra, state, amlNode, oError) === true)
-            return true;
+        else {
+            var result = amlNode.retryTimeout(extra, state, amlNode, oError)
+            //Retrying
+            if (result === true)
+                return true;
+            
+            //Cancelled Error
+            else if (result === 2) {
+                this.dispatchEvent("disconnect");
+                this.$stopListen();
+                return true;
+            }
+        }
+
+        this.dispatchEvent("disconnect");
+        this.$stopListen();
 
         throw oError;
 
@@ -254,7 +268,7 @@ apf.persist = function(struct, tagName){
             method        : "UNLOCK",
             callback      : function(data, state, extra){
                 if (state != apf.SUCCESS)
-                    return _self.$handleError(data, state, extra, callback);
+                    return _self.$handleError(data, state, extra); //, callback
             }
         });
     }
