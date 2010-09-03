@@ -492,7 +492,8 @@ apf.BaseTab = function(){
         if (excl)
             pg.remove(excl);
 
-        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
+        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) 
+            - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
         var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
         var re = Math.round((bw % 1) * 10);
@@ -699,7 +700,7 @@ apf.BaseTab = function(){
     this.getPages = function(){
         var r = [], nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ("page|case".indexOf(nodes[i].localName) > -1)
+            if ("page|case".indexOf(nodes[i].localName) > -1 && nodes[i].visible !== false)
                 r.push(nodes[i]);
         }
         return r;
