@@ -89,7 +89,7 @@ apf.LiveMarkupPi = function(){
                 nodes[i].destroy(true);
         }
 
-//var dt = new Date().getTime();
+        //var dt = new Date().getTime();
 
         //if (!this.xmlRoot)
             //return this.$ext.innerHTML = "loading...";

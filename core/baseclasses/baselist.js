@@ -707,7 +707,7 @@ apf.BaseList = function(){
             //#ifdef __WITH_AML_BINDINGS
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
-                var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
 
                 if (elCaption == oItem) {
                     apf.setNodeValue(elCaption, "");

@@ -337,7 +337,7 @@ apf.tree = function(struct, tagName){
             //#ifdef __WITH_AML_BINDINGS
             if (elCaption.nodeType == 1 
               && this.$cbindings.caption && this.$cbindings.caption.hasAml){
-                var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
                 
                 elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
                     + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));

@@ -705,7 +705,7 @@ apf.datagrid = function(struct, tagName){
                 
                 //#ifdef __WITH_AML_BINDINGS
                 if (h.cvalue2.hasAml){
-                    var q = (this.$cbindings.queue || (this.$cbindings.queue = {}));
+                    var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
                     
                     var htmlEl = this.$getLayoutNode(cellType, 
                         "caption", oRow.appendChild(cell));

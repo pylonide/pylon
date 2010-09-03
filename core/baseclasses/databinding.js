@@ -259,12 +259,11 @@ apf.DataBinding = function(){
     };
 
     //#ifdef __WITH_AML_BINDINGS
-    this.addEventListener("beforeload", afterloadUpdate = function(){
+    this.addEventListener("$clear", function(){
         var queue;
-        if (!this.$cbindings.queue || !this.$cbindings.queue.caption
-          || !(queue = this.$cbindings.queue.caption))
+        if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
             return;
-        
+
         for (var id in queue) {
             var lm = queue[id];
             if (lm.destroy) {
@@ -274,15 +273,15 @@ apf.DataBinding = function(){
             delete queue[id];
         }
         
-        //delete this.$cbindings.queue;
+        //delete this.$amlBindQueue;
     });
     
     var afterloadUpdate;
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;
         
-        if (!this.$cbindings.queue || !(queue = this.$cbindings.queue.caption 
-           || this.$cbindings.queue.column))
+        if (!this.$amlBindQueue 
+          || !(queue = this.$amlBindQueue.caption || this.$amlBindQueue.column))
             return;
 
         var div, doc = this.ownerDocument;
@@ -319,8 +318,7 @@ apf.DataBinding = function(){
             afterloadUpdate.call(this, e);
         else if ("remove|move-away".indexOf(e.action) > -1) {
             var queue;
-            if (!this.$cbindings.queue || !this.$cbindings.queue.caption
-              || !(queue = this.$cbindings.queue.caption))
+            if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
                 return;
 
             /*var htmlNode = apf.xmldb.findHtmlNode(e.xmlNode, this);
