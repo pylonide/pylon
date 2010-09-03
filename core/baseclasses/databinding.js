@@ -1234,7 +1234,8 @@ apf.DataBinding = function(){
             if (model && (!this.hasFeature(apf.__MULTISELECT__) 
               && eachBinds[prop] != 2 || !eachBinds[prop])) {
                 //Create the attribute binding
-                model.$bindXmlProperty(this, prop, xpath, list[modelId] == 1, expression.indexOf("*[") > -1);
+                //@todo: remove listenRoot = expression.indexOf("*[") > -1 -> because it doesnt make sense in certain context. recheck selection handling
+                model.$bindXmlProperty(this, prop, xpath, list[modelId] == 1); 
                 rule.models.push(model);
             }
             
