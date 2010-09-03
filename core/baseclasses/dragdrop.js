@@ -1308,6 +1308,10 @@ apf.MultiselectDragDrop = function() {
         oDrag.style.top  = (e.clientY + this.diffY + (this.multiple ? 15 : 0)) + "px";// - this.oDrag.startY
     };
     
+    this.addEventListener("$skinchange", function(){
+        this.$initDragDrop();
+    });
+    
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("dragindicator")) 
             return;
