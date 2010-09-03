@@ -67,6 +67,7 @@ apf.$x = apf.$loader
         "core/lib/util/syntax.js",
         "core/lib/util/xml.js",
         "core/lib/util/xmldiff.js",
+        "core/lib/util/zmanager.js",
     
         "core/lib/tween.js",
         "core/lib/date.js",

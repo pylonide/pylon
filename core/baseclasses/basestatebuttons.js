@@ -41,7 +41,6 @@ apf.BaseStateButtons = function(){
     };
     this.$lastheight  = null;
     this.$lastpos     = null;
-    this.$lastzindex  = null;
 
     this.$lastState = {"normal":true};    
     this.$booleanProperties["animate"] = true;
@@ -259,10 +258,7 @@ apf.BaseStateButtons = function(){
                 apf.layout.play(this.$pHtmlNode);
             //#endif
 
-            if (this.$lastzindex)
-                this.$ext.style.zIndex = this.$lastzindex[0];
-
-            this.$lastheight = this.$lastpos = this.$lastzindex = null;
+            this.$lastheight = this.$lastpos = null;
 
             if (o.normal)
                 styleClass.push("",
@@ -462,18 +458,10 @@ apf.BaseStateButtons = function(){
                     }
                 }
 
-                this.$lastzindex = [
-                    this.$ext.style.zIndex || ""
-                ];
-
                 //#ifdef __WITH_LAYOUT
                 if (apf.layout)
                     apf.layout.pause(this.$pHtmlNode, setMax);
                 //#endif
-                
-                //if (!_self.$maxconf || !_self.$maxconf[4]) {
-                    this.$ext.style.zIndex = apf.plane.$zindex;
-                //}
             }
             else {
                 styleClass.push(this.$baseCSSname + "Max");

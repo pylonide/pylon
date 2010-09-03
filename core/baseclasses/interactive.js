@@ -802,7 +802,8 @@ apf.Interactive = function(){
             
             oOutline.style.position = "absolute";
             oOutline.style.display  = "none";
-            oOutline.style.zIndex   = 2000000;
+            //oOutline.style.zIndex   = 2000000;
+            apf.window.zManager.set("drag", oOutline);
             oOutline.host = false;
         }
         oOutline.refCount++

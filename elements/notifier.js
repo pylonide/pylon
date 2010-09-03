@@ -401,7 +401,7 @@ apf.notifier = function(struct, tagName){
         this.$ext = this.$getExternal("notification");
         this.$ext.style.display  = "none";
         this.$ext.style.position = "absolute";
-        this.$ext.style.zIndex   = 100000;
+        apf.window.zManager.set("notifier", this.$ext);
     };
 }).call(apf.notifier.prototype = new apf.Presentation());
 

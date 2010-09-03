@@ -126,6 +126,8 @@ apf.visualConnect = function (sel){
         div.style.left = "0px";
         div.style.top = "0px";
         div.style.zIndex = 100000001;
+        
+        //@todo use apf.window.zManager.set("drag", this.panel);
 /*
         var showAllTimer = setTimeout(function(){
             // lets show the drawing till someone clicks and then its gone

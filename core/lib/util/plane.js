@@ -25,7 +25,6 @@
  * @private
  */
 apf.plane = {
-    $zindex : 100000000,
     $set    : [],
     $lookup : {},
     $find : function(id){
@@ -72,22 +71,18 @@ apf.plane = {
             show : function(o, reAppend, copyCursor, useRealSize, options){
                 var plane = this.plane;
                 
-                this.plane.style.zIndex = this.host.$zindex++;
                 this.plane.style.background = options && options.color || "url(images/spacer.gif)";
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
                 
                 if (o) { //@experimental
                     this.current = o;
-                    if (!reAppend) { // || o.parentNode != document.body
-                        this.lastZ = this.current.style.zIndex;
-                        this.current.style.zIndex = this.host.$zindex;
-                    }
-                    else {
+                    if (reAppend) { 
                         this.$originalPlace = [o.parentNode, o.nextSibling];
                         this.plane.appendChild(o);
                     }
                 }
+                apf.window.zManager.set("plane", this.plane, !reAppend && o);
                 
                 useRealSize = apf.isIE;
                 var pWidth = (plane.parentNode == document.body
@@ -141,12 +136,8 @@ apf.plane = {
                     isChild = false;
                 }
                 if (this.current) {
-                    if (this.lastZ !== null) {
-                        if (this.current.style.zIndex == 100000)
-                            this.current.style.zIndex = this.lastZ;
-                        this.lastZ = null;
-                    }
-        
+                    apf.window.zManager.clear(this.current);
+                    
                     if (this.current.parentNode == this.plane)
                         this.$originalPlace[0].insertBefore(this.current, this.$originalPlace[1]);
                 }

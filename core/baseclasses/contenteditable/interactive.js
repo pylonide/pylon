@@ -46,6 +46,7 @@
             div.style.position = "absolute";
             div.className = classes[i];
             div.style.zIndex = 1000000;
+            //@todo use apf.window.zManager.set("drag", div);
             div.style.display = "none";
             div.host = false;
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...

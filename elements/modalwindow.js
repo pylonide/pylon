@@ -29,7 +29,8 @@ apf.WinServer = {
     wins  : [],
 
     setTop : function(win, norecur){
-        if (win.zindex) return;
+        if (win.zindex || win.modal) 
+            return;
         
         if (win.$opened) {
             if (win.$opened.visible)
@@ -350,23 +351,9 @@ apf.AmlWindow = function(struct, tagName){
                     opacity : 0.5,
                     protect : this.$uniqueId
                 });
-                //this.oCover.style.display = "block";
-            /*else {
-                var oCover = this.$getLayoutNode("cover");
-                if (oCover) {
-                    this.oCover = apf.insertHtmlNode(oCover, this.$pHtmlNode);
-    
-                    if (!this.visible)
-                        this.oCover.style.display = "none";
-    
-                    if (this.zindex)
-                        this.oCover.style.zIndex = this.zindex;
-                }
-            }*/
         }
-        else { //if (!value && this.oCover) {
+        else { 
             apf.plane.hide(this.$uniqueId);
-            //this.oCover.style.display = "none";
         }
     };
 
@@ -395,6 +382,39 @@ apf.AmlWindow = function(struct, tagName){
         this.oIcon.style.display = value ? "block" : "none";
         apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
+    
+    this.$afterRender = function(){
+        if (this.center) {
+            //#ifdef __WITH_LAYOUT
+            apf.layout.processQueue();
+            //#endif
+    
+            var size = !this.$ext.offsetParent || this.$ext.offsetParent.tagName == "BODY"
+                ? [apf.getWindowWidth(), apf.getWindowHeight()]
+                : [this.$ext.offsetParent.offsetWidth, this.$ext.offsetParent.offsetHeight, 0, 0];
+    
+            if (size.length == 2) {
+                size.push(document.documentElement.scrollLeft, 
+                  document.documentElement.scrollTop);
+            }
+            
+            //@todo it's better to add this to the layout queue
+            this.$ext.style.left = (Math.max(0, ((
+                size[0] - parseInt(this.$ext.offsetWidth || 0))/2)) + size[2]) + "px";
+            this.$ext.style.top  = (Math.max(0, ((
+                size[1] - parseInt(this.$ext.offsetHeight || 0))/3)) + size[3]) + "px";
+        }            
+        
+        // #ifdef __WITH_FOCUS
+        //@todo make widget a tagname and alias
+        if (this.$amlLoaded && (this.model 
+          || (!this.dockable || !this.aData) && !this.$isWidget 
+          && this.localName != "toolwindow"))
+            this.focus(false, {mouse:true});
+        // #endif
+        
+        this.dispatchEvent("show");
+    }
 
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
@@ -403,13 +423,6 @@ apf.AmlWindow = function(struct, tagName){
                 return (this.visible = false);
             
             if (this.modal){
-    			/*if (this.oCover.offsetParent) {
-                    //@todo apf3.0 ie8 too high...
-                    //this.oCover.style.height = Math.max(this.oCover.offsetParent.scrollHeight,
-                        //document.documentElement.offsetHeight) + 'px';
-                    //this.oCover.style.width  = "1000px";//this.oCover.offsetParent.scrollWidth + 'px';
-    			}
-                this.oCover.style.display = "block";*/
                 apf.plane.show(this.$ext, false, null, null, {
                     color   : "black", 
                     opacity : 0.5,
@@ -428,28 +441,6 @@ apf.AmlWindow = function(struct, tagName){
             //if (this.modal) 
                 //this.$ext.style.position = "fixed";
             
-            if (this.center) {
-                //#ifdef __WITH_LAYOUT
-                apf.layout.processQueue();
-                //#endif
-                var size = !this.$ext.offsetParent || this.$ext.offsetParent.tagName == "BODY"
-                    ? [apf.getWindowWidth(), apf.getWindowHeight()]
-                    : [this.$ext.offsetParent.offsetWidth, this.$ext.offsetParent.offsetHeight, 0, 0];
-
-                if (size.length == 2) {
-                    size.push(document.documentElement.scrollLeft, 
-                      document.documentElement.scrollTop);
-                }
-                
-                //@todo it's better to add this to the layout queue
-                //this.$ext.offsetWidth
-                //this.$ext.offsetHeight
-                this.$ext.style.left = (Math.max(0, ((
-                    size[0] - parseInt(this.width || 0))/2)) + size[2]) + "px";
-                this.$ext.style.top  = (Math.max(0, ((
-                    size[1] - parseInt(this.height || 0))/3)) + size[3]) + "px";
-            }
-
             if (!apf.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
                 var nodes = document.getElementsByTagName("select");
@@ -460,29 +451,8 @@ apf.AmlWindow = function(struct, tagName){
                 }
             }
 
-            if (this.modal)
-                this.$ext.style.zIndex = apf.plane.$zindex;
-            
-            if (!this.$rendered) {
-                this.addEventListener("afterrender", function(){
-                    // #ifdef __WITH_FOCUS
-                    //@todo make widget a tagname and alias
-                    if (this.$amlLoaded && (this.model 
-                      || (!this.dockable || !this.aData) && !this.$isWidget 
-                      && this.localName != "toolwindow"))
-                        this.focus(false, {mouse:true});
-                    // #endif
-                });
-            }
-            else {
-                // #ifdef __WITH_FOCUS
-                //@todo make widget a tagname and alias
-                if (this.$amlLoaded && (this.model 
-                  || (!this.dockable || !this.aData) && !this.$isWidget 
-                  && this.localName != "toolwindow"))
-                    this.focus(false, {mouse:true});
-                // #endif
-            }
+            //if (this.modal)
+                //this.$ext.style.zIndex = apf.plane.$zindex - 1;
             
             if (apf.isIE) {
                 var cls = this.$ext.className;
@@ -490,19 +460,12 @@ apf.AmlWindow = function(struct, tagName){
                 this.$ext.className = cls;
             }
             
-            var _self = this;
-            if (this.$rendered === false) {
-                this.addEventListener("afterrender", function(){
-                    _self.dispatchEvent("show");
-                });
-            }
+            if (this.$rendered === false)
+                this.addEventListener("afterrender", this.$afterRender);
             else
-                this.dispatchEvent("show");
+                this.$afterRender();
         }
-        else { //if (apf.isFalse(value)) 
-            //this.setProperty("visible", false);
-            //if (this.oCover)
-                //this.oCover.style.display = "none";
+        else { 
             if (this.modal)
                 apf.plane.hide(this.$uniqueId);
 
@@ -527,8 +490,6 @@ apf.AmlWindow = function(struct, tagName){
 
     this.$propHandlers["zindex"] = function(value){
         this.$ext.style.zIndex = value + 1;
-        //if (this.oCover)
-            //this.oCover.style.zIndex = value;
     };
 
     /**** Keyboard ****/
@@ -725,7 +686,7 @@ apf.AmlWindow = function(struct, tagName){
         }
         //#endif
 
-        if (this.modal === undefined) { // && this.oCover) {
+        if (this.modal === undefined) { 
             this.$propHandlers.modal.call(this, true);
             this.modal = true;
         }
@@ -733,9 +694,6 @@ apf.AmlWindow = function(struct, tagName){
         //Set default visible hidden
         if (!this.visible) {
             this.$ext.style.display = "none";
-
-            //if (this.oCover)
-                //this.oCover.style.display = "none";
         }
         //#ifdef __WITH_FOCUS
         else if (this.modal) {
@@ -784,7 +742,7 @@ apf.AmlWindow = function(struct, tagName){
             this.oDrag = null;
         }
 
-        this.oTitle =  this.oIcon = this.oCover = null;
+        this.oTitle =  this.oIcon = null;
 
         if (this.$ext && !skinChange) {
             this.$ext.onmousedown = null;
