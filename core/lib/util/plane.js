@@ -135,12 +135,8 @@ apf.plane = {
                 catch (ex) {
                     isChild = false;
                 }
-                if (this.current) {
-                    apf.window.zManager.clear(this.current);
-                    
-                    if (this.current.parentNode == this.plane)
-                        this.$originalPlace[0].insertBefore(this.current, this.$originalPlace[1]);
-                }
+                if (this.current && this.current.parentNode == this.plane)
+                    this.$originalPlace[0].insertBefore(this.current, this.$originalPlace[1]);
                 
                 if (this.animate) {
                     var _self = this;
@@ -153,12 +149,17 @@ apf.plane = {
                             to       : 0,
                             onfinish : function(){
                                 _self.plane.style.display  = "none";
+                                
+                                if (_self.current)
+                                    apf.window.zManager.clear(_self.current);
                             }
                         });
                     }, 100);
                 }
                 else {
                     apf.setOpacity(this.plane, 0);
+                    if (this.current)
+                        apf.window.zManager.clear(this.current);
                     this.plane.style.display  = "none";
                 }
                 
