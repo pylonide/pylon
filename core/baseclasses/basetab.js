@@ -349,8 +349,13 @@ apf.BaseTab = function(){
             tweens   : [],
             oHtml    : node,
             onfinish : function(){
-                if (node)
+                if (!node)
+                    return;
+                
+                if (type == "add")
                     node.dispatchEvent("afteropen");
+                else if (type == "remove")
+                    node.dispatchEvent("afterclose");
             }
             //oneach   : function(){alert(1);}
         };
