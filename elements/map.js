@@ -555,9 +555,8 @@ apf.map = function(struct, tagName){
         function loaded() {
             loaddone = true;
 
-            if (apf.window.vManager.check(_self, "map", function(){_self.$draw();})) {
+            if (apf.window.vManager.check(_self, "map", _self.$draw))
                 _self.$draw();
-            }
             
             try{
                 delete self.google_maps_initialize;

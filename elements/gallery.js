@@ -788,11 +788,8 @@ apf.gallery = function(struct, tagName){
             });
         };
         
-        if (apf.window.vManager.check(this, "gallery", function(){
-            _self.initiateThumbnailEvents();
-        })) {
+        if (apf.window.vManager.check(this, "gallery", this.initiateThumbnailEvents))
             this.initiateThumbnailEvents();
-        }
     };
 }).call(apf.gallery.prototype = new apf.BaseList());
 

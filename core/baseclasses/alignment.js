@@ -233,8 +233,6 @@ apf.Alignment = function(){
      * @private
      */
     this.$purgeAlignment = function(){
-        var _self = this;
-        
         if (!apf.window.vManager.check(this, "alignment", visCheck))
             return;
         

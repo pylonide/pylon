@@ -312,7 +312,6 @@ apf.Anchoring = function(){
         if (!this.$anchoringEnabled)
             return;
 
-        var _self = this;
         if (!apf.window.vManager.check(this, "anchoring", visCheck))
             return;
 

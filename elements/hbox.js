@@ -633,7 +633,6 @@ apf.vbox = function(struct, tagName){
           this.$lastSize[1] == this.$int.offsetHeight)
             return;
         
-        var _self = this;
         if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
             return;
         
