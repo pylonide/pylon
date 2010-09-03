@@ -292,6 +292,10 @@ apf.window = function(){
 
     /**** Focus Internals ****/
 
+    //#ifdef __WITH_VISIBILITYMANAGER
+    this.vManager = new apf.visibilitymanager();
+    //#endif
+
     //#ifdef __WITH_ZMANAGER
     this.zManager = new apf.zmanager();
     //#endif

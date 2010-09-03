@@ -1013,14 +1013,11 @@ apf.Class.prototype = new (function(){
         var s, stack = useCapture ? this.$captureStack : this.$eventsStack;
         if (!(s = stack[eventName]))
             s = stack[eventName] = [];
-        if (s.indexOf(callback) == -1)
-            s.unshift(callback);
         
-        //@todo is this the best way?
-        /*for (var i = this.$removalQueue.length - 1; i >= 0; i--) {
-            if (this.$removalQueue[i][0] == s && this.$removalQueue[i][1] == callback)
-                this.$removalQueue.removeIndex(i);
-        }*/
+        if (s.indexOf(callback) > -1)
+            return;
+        
+        s.unshift(callback);
         
         var f;
         if (f = this.$eventsStack["$event." + eventName])

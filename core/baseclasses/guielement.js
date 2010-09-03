@@ -604,6 +604,7 @@ apf.GuiElement.propHandlers = {
             if (apf.layout && this.$int) //apf.hasSingleRszEvent)
                 apf.layout.forceResize(this.$int);//this.$int
             //#endif
+            
             this.visible = true;
         }
     },

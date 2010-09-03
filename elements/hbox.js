@@ -623,37 +623,6 @@ apf.vbox = function(struct, tagName){
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
-    this.$isWaitingOnDisplay = false;
-    this.$waitForVisibility = function(){
-        if (this.$isWaitingOnDisplay)
-            return;
-        
-        var _self = this;
-        this.$listenToDisplay = function (e){
-            if (apf.isTrue(e.value) 
-              && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
-                _self.$resize();
-                
-                //Cleanup
-                var p = _self;
-                while (p) {
-                    p.removeEventListener("prop.visible", _self.listenToDisplay);
-                    p = p.parentNode;
-                }
-                
-                _self.$isWaitingOnDisplay = false;
-            }
-        }
-        
-        var p = this;
-        while(p) {
-            p.addEventListener("prop.visible", this.$listenToDisplay);
-            p = p.parentNode;
-        }
-        
-        this.$isWaitingOnDisplay = true;
-    }
-    
     this.$resize = function(force){
         if (!this.$amlLoaded || this.$noResize) //force !== true && 
             return;
@@ -664,8 +633,9 @@ apf.vbox = function(struct, tagName){
           this.$lastSize[1] == this.$int.offsetHeight)
             return;
         
-        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth)
-            return this.$waitForVisibility();
+        var _self = this;
+        if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
+            return;
         
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
         

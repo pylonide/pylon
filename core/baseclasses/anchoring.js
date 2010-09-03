@@ -301,39 +301,20 @@ apf.Anchoring = function(){
     };
     //#endif
 
+    function visCheck(){
+        if (this.$updateQueue) {
+            this.$updateLayout();
+            apf.layout.activateRules(this.$ext.parentNode);
+        }
+    }
+
     this.$updateLayout = function(){
         if (!this.$anchoringEnabled)
             return;
 
-        //@todo review if this can be improved
-        if (!this.$ext.offsetHeight && !this.$ext.offsetWidth) {
-            var _self      = this;
-            var propChange = function (e){
-                if (_self.$updateQueue && apf.isTrue(e.value) && (_self.$ext.offsetWidth || _self.$ext.offsetHeight)) {
-                    _self.$updateLayout();
-                    apf.layout.activateRules(_self.$ext.parentNode);
-                    
-                    var p = _self;
-                    while (p) {
-                        p.removeEventListener("prop.visible", propChange);
-                        p = p.parentNode || p.$parentNode;
-                    }
-                    
-                    _self.$isWaitingOnDisplay = false;
-                }
-            }
-
-            this.$isWaitingOnDisplay = true;
-            this.addEventListener("prop.visible", propChange);
-
-            var p = this.parentNode || this.$parentNode;
-            while(p) {
-                p.addEventListener("prop.visible", propChange);
-                p = p.parentNode || p.$parentNode;
-            }
-            
+        var _self = this;
+        if (!apf.window.vManager.check(this, "anchoring", visCheck))
             return;
-        }
 
         if (!this.$parsed) {
             if (!this.$ext.getAttribute("id"))

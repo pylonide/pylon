@@ -788,18 +788,10 @@ apf.gallery = function(struct, tagName){
             });
         };
         
-        //Refresh when gallery is shown
-        var propChange = function (name, old, value) {
+        if (apf.window.vManager.check(this, "gallery", function(){
             _self.initiateThumbnailEvents();
-        }
-
-        this.$isWaitingOnDisplay = true;
-        this.watch("visible", propChange);
-
-        var p = this.parentNode;
-        while(p) {
-            p.watch("visible", propChange);
-            p = p.parentNode;
+        })) {
+            this.initiateThumbnailEvents();
         }
     };
 }).call(apf.gallery.prototype = new apf.BaseList());

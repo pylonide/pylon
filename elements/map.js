@@ -539,25 +539,6 @@ apf.map = function(struct, tagName){
         });
     };
 
-    this.$drawSafe = function() {
-        // we need to check if a parent AML element is not hidden, because
-        // a Google Map does not like to be drawn inside those...
-        var parentVis = true,
-            p         = this.parentNode;
-
-        while ((parentVis = typeof p.visible == "undefined" ? true : p.visible) && p != apf.document.documentElement)
-            p = p.parentNode;
-        if (parentVis)
-            return this.$draw();
-
-        var f, _self = this;
-        p.addEventListener("prop.visible", f = function(e) {
-            if (!e.value) return; //visible = false --> no drawing yet...
-            _self.$draw();
-            p.removeEventListener("prop.visible", f);
-        });
-    };
-
     this.$destroy = function(){
         if (this.$map) {
             var div = this.$map.getDiv();
@@ -573,7 +554,11 @@ apf.map = function(struct, tagName){
         var _self   = this;
         function loaded() {
             loaddone = true;
-            _self.$drawSafe();
+
+            if (apf.window.vManager.check(_self, "map", function(){_self.$draw();})) {
+                _self.$draw();
+            }
+            
             try{
                 delete self.google_maps_initialize;
             }

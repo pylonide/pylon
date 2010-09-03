@@ -224,47 +224,21 @@ apf.Alignment = function(){
         apf.layout.processQueue(); //@todo apf3.0 might not be the best but fixes trunk/test/toc.html
     };
 
+    function visCheck(){
+        l.queue(this.$pHtmlNode, null, l.get(this.$pHtmlNode).root);
+    }
+
     /**
      * Calculates the rules for this element and activates them.
      * @private
      */
     this.$purgeAlignment = function(){
-        var layout = l.get(this.$pHtmlNode);
+        var _self = this;
         
-        //@todo review if this can be improved
-        //#ifdef __WITH_PROPERTY_WATCH
-        if (this.$ext && this.$ext.style.display == "block" 
-          && !this.$ext.offsetHeight && !this.$ext.offsetWidth) {
-            var _self      = this;
-            var propChange = function (name, old, value){
-                if (_self.$ext.offsetWidth || _self.$ext.offsetHeight) {
-                    l.queue(_self.$pHtmlNode, null, layout.root);
-                    //apf.layout.activateRules(_self.$ext.parentNode);
-                    
-                    var p = _self;
-                    while (p) {
-                        p.unwatch("visible", propChange);
-                        p = p.parentNode;
-                    }
-                    
-                    _self.$isWaitingOnDisplay = false;
-                }
-            }
-
-            this.$isWaitingOnDisplay = true;
-            this.watch("visible", propChange);
-            
-            var p = this.parentNode;
-            while(p) {
-                p.watch("visible", propChange);
-                p = p.parentNode;
-            }
-            
+        if (!apf.window.vManager.check(this, "alignment", visCheck))
             return;
-        }
-        //#endif
         
-        l.queue(this.$pHtmlNode, null, layout.root);
+        l.queue(this.$pHtmlNode, null, l.get(this.$pHtmlNode).root);
     };
 
     function remove(e){
