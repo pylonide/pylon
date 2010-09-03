@@ -479,7 +479,7 @@ apf.aml.setElement("auth", apf.auth);
                 if (_self.$cache[service || "default"])
                      _self.$cache[service || "default"] = null;
 
-                _self.authRequired();
+                //_self.authRequired();
             }
 
             if (callback)
