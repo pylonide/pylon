@@ -490,6 +490,58 @@ apf.AmlElement = function(struct, tagName){
         return value;
     };
     
+    //@todo in proper W3C implementation this needs to change
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget != this || e.$isMoveWithinParent 
+          || this.parentNode.nodeType != 1)
+            return;
+        
+        //Check inherited attributes for reparenting
+        /*
+            States:
+                    -1 Set
+             undefined Pass through
+                     2 Inherited
+                     3 Semi-inherited
+                    10 Dynamic property
+        */
+        var vOld, vNew;
+        var aci = apf.config.$inheritProperties;
+        for (var prop in aci) {
+            vOld = apf.getInheritedAttribute(e.$oldParent, prop);
+            vNew = apf.getInheritedAttribute(this.parentNode, prop);
+            
+            //Property has changed, lets recursively set it on inherited nodes
+            if (vOld != vNew) {
+                //@todo code duplication from class.js
+                (function recur(nodes) {
+                    var i, l, node, n;
+                    for (i = 0, l = nodes.length; i < l; i++) {
+                        node = nodes[i];
+                        if (node.nodeType != 1 && node.nodeType != 7)
+                            continue;
+
+                        //Pass through
+                        n = node.$inheritProperties[prop];
+                        if (aci[prop] == 1 && !n)
+                            recur(node.childNodes);
+                        //Set inherited property
+                        //@todo why are dynamic properties overwritten??
+                        else if(!(n < 0)) {//Will also pass through undefined - but why??? @todo seems inefficient
+                            if (n == 3) {
+                                var sameValue = node[prop];
+                                node[prop] = null;
+                            }
+                            node.setProperty(prop, n != 3
+                                ? vNew
+                                : sameValue, false, false, n); //This is recursive already
+                        }
+                    }
+                })([this]);
+            }
+        }
+    });
+    
     this.$handlePropSet = function(prop, value, force){
         if (value && this.$booleanProperties[prop])
             value = apf.isTrue(value);

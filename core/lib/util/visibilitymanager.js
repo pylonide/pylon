@@ -55,14 +55,15 @@ apf.visibilitymanager = function(){
             amlNode.$visibleCheck = {};
         amlNode.$visibleCheck[type] = true;
 
-        function check(){
+        function check(e){
+            //apf.isTrue(e.value)
             if (!amlNode.$ext.offsetHeight && !amlNode.$ext.offsetWidth)
                 return;
                 
             callback.call(amlNode);
             
             p = amlNode;
-            while (p && p.nodeType != 9) {
+            while (p) {
                 p.removeEventListener("prop.visible", check);
                 p = p.parentNode || p.$parentNode;
             }
@@ -74,8 +75,8 @@ apf.visibilitymanager = function(){
         amlNode.addEventListener("prop.visible", check);
         //amlNode.addEventListener("DOMNodeRemovedFromDocument", destroy); 
         
-        var uId, p = amlNode.parentNode || amlNode.$parentNode;
-        while (p && p.nodeType != 9) {
+        var p = amlNode.parentNode || amlNode.$parentNode;
+        while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
         }
@@ -88,6 +89,32 @@ apf.visibilitymanager = function(){
         }*/
         
         return false;
+    }
+    
+    this.permanent = function(amlNode, show, hide){
+        var state = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+        function check(e){
+            var newState = amlNode.$ext.offsetHeight && amlNode.$ext.offsetWidth;
+            if (newState == state)
+                return;
+            
+            if (newState) show();
+            else hide();
+            
+            state = newState;
+        }
+
+        //Set events on the parent tree
+        amlNode.addEventListener("prop.visible", check);
+        //amlNode.addEventListener("DOMNodeRemovedFromDocument", destroy); 
+        
+        var p = amlNode.parentNode || amlNode.$parentNode;
+        while (p) {
+            p.addEventListener("prop.visible", check);
+            p = p.parentNode || p.$parentNode;
+        }
+
+        return state;
     }
 };
 //#endif

@@ -370,7 +370,7 @@ apf.AmlNode = function(){
                 amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
                     beforeNode && beforeNode.$ext || null);
             }
-
+            
             //Signal node and all it's ancestors
             amlNode.dispatchEvent("DOMNodeInserted", {
                 $beforeNode         : beforeNode,
@@ -444,10 +444,10 @@ apf.AmlNode = function(){
                 bubbles      : true,
                 $doOnlyAdmin : doOnlyAdmin
             });
-            
+
             if (!noHtmlDomEdit && !doOnlyAdmin && this.$ext && this.$ext.parentNode) {
                 this.$ext.parentNode.removeChild(this.$ext);
-                delete this.$ext;
+                //delete this.$ext; //WTF???
             }
         }
 

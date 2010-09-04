@@ -829,11 +829,12 @@ apf.Class.prototype = new (function(){
                             continue;
 
                         //Pass through
-                        if (inheritType == 1
-                          && !(n = node.$inheritProperties[prop]))
+                        n = node.$inheritProperties[prop];
+                        if (inheritType == 1 && !n)
                             recur(node.childNodes);
                         //Set inherited property
-                        else if(!(n < 0)) {//Will also pass through undefined
+                        //@todo why are dynamic properties overwritten??
+                        else if(!(n < 0)) {//Will also pass through undefined - but why??? @todo seems inefficient
                             if (n == 3) {
                                 var sameValue = node[prop];
                                 node[prop] = null;

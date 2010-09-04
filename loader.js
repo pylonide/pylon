@@ -335,6 +335,7 @@ apf.$x = apf.$loader
         "elements/iconmap.js",
         "elements/img.js",
         "elements/item.js",
+        "elements/junction.js",
         "elements/label.js",
         "elements/list.js",
         "elements/loader.js",
