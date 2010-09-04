@@ -329,9 +329,9 @@ apf.persist = function(struct, tagName){
                     _self.sessionId = data.sId;
                     
                     if (!_self.sessionId) {
-                        return _self.$handleError(data, apf.ERROR, {
+                        return _self.$handleError(data, apf.ERROR, apf.extend({
                             message: "Did not get a session id from the server"
-                        }, callback);
+                        }, extra), callback);
                     }
                     else {
                         var m = data.availableMethods;
