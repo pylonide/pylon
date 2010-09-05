@@ -550,8 +550,14 @@ apf.vbox = function(struct, tagName){
         if (e.currentTarget == this || e.currentTarget.nodeType != 1)
             return;
 
-        if (e.relatedNode == this && !e.$isMoveWithinParent)
+        if (e.relatedNode == this && !e.$isMoveWithinParent) {
             e.currentTarget.$setLayout(this.localName, true);
+            
+            if (e.currentTarget.$altExt) {
+                
+                return false;
+            }
+        }
     });
 
     function myVisibleHandler(e){

@@ -366,10 +366,10 @@ apf.AmlNode = function(){
               && apf.findHost(iframelist[0].parentNode) == amlNode);*/
 
             var nextNode = beforeNode;
-            if (!_self.$useLateDom && !noHtmlDomEdit && amlNode.$ext 
-              && !amlNode.$coreHtml) {
+            //!_self.$useLateDom && 
+            if (!noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {
                 nextNode = beforeNode;
-                while (nextNode && !nextNode.$ext) {
+                while (nextNode && !(nextNode.$altExt || nextNode.$ext)) {
                     nextNode = nextNode.nextSibling;
                 }
                 
@@ -387,7 +387,7 @@ apf.AmlNode = function(){
                 bubbles             : true
             });
             
-            if (_self.$useLateDom && !noHtmlDomEdit && (!amlNode.$altExt 
+            /*if (_self.$useLateDom && !noHtmlDomEdit && (!amlNode.$altExt 
               || amlNode.$altExt.parentNode == amlNode.$pHtmlNode)) {
                 nextNode = beforeNode;
                 while (nextNode && !(nextNode.$altExt || nextNode.$ext)) {
@@ -396,7 +396,7 @@ apf.AmlNode = function(){
                 
                 amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
                     nextNode && (nextNode.$altExt || nextNode.$ext) || null);
-            }
+            }*/
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
