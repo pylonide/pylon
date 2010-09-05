@@ -133,7 +133,9 @@ apf.aml.setElement("skin", apf.skin);
           apf.getAbsolutePath(path, includeNode.getAttribute("src")), {
           callback: function(xmlString, state, extra){
             if (state != apf.SUCCESS) {
-                throw new Error("Could not load skin include");//@todo apf3.0 make this into a proper error
+                throw new Error(apf.formatErrorString(0, _self,
+                    "Loading skin includes",
+                    "Could not load skin include: " + extra.url));
             }
 
             var newPart = apf.getXml(xmlString.substr(0, 8) == "<a:skin "
