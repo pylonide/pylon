@@ -103,6 +103,7 @@ apf.hookWrapAsync = function(inner){
             return inner.apply(this, arguments);
         } catch (e) {
             apf.console.error("Caught hookAsync exception: " + e.stack);
+//			process.exit(0);
             arguments[arguments.length-1](e);
         }
     }
@@ -188,20 +189,21 @@ apf.hookClear = function( func ){
     return func;
 }
 
-apf.hookArgDump = function(data,names,maxdepth){
+apf.hookArgDump = function(data,names,opts){
     // lets dump some stuff
+	if(!opts) opts = {maxdepth:1};
     if (typeof(names) == 'number')
          maxdepth = names, names = undefined;
          
     if(names){
         var s = [];
         for(var i = 0;i<names.length;i++)
-             s.push(names[i]+" = "+apf.dump(data[i],0,maxdepth||1));
+             s.push(names[i]+" = "+apf.dump(data[i],opts));
         for(;i<data.length;i++)
-             s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],0,maxdepth||1));
+             s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],opts));
         return s.join(', ');
     }
-    return apf.dump(data,0,maxdepth||1);
+    return apf.dump(data,opts);
 }
 
 apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) {
@@ -252,7 +254,7 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
             global._module = module;
             
             try{
-                var out =fmt (global,this);
+                var out =fmt.call(this,global,this);
                 if(out)
                     outputcb( out );
             }catch(e){

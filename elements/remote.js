@@ -251,6 +251,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
     
     this.$update = function(e){
+    	
         var sData    = e.message.args ? [e.message] : e.message,
             oData    = typeof sData == "string"
                 ? apf.unserialize(sData)
@@ -426,6 +427,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
 
     this.$receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
+    	
         if (apf.xmldb.disableRDB)
             return;
 

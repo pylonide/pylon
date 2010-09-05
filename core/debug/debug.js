@@ -27,17 +27,19 @@
  * @param {mixed} obj the object to investigate
  */
 apf.dump =
-apf.vardump = function(obj, depth, maxdepth, stack){
-    if(maxdepth==0)maxdepth = 99;
+apf.vardump = function(obj, o, depth, stack){
+	o = o || {};
+	if(o.maxdepth === undefined)o.maxdepth = 99;
+
     if (apf.isWebkit) //@todo RIK please fix this issue.
         return "";
     if (!obj) return obj + "";
-    if (!stack)stack = "";
+    if (!stack) stack = "";
     if (!depth) depth = 0;
     var str;
     switch (obj.dataType) {
         case apf.STRING:
-            return "\"" + obj + "\"";
+            return "\"" + (o.clip?(obj.length>o.clip?(obj.slice(0,o.clip)+"..."):obj):obj).replace(/[\"]/g,"'") + "\"";
         case apf.NUMBER:
             return obj;
         case apf.BOOLEAN:
@@ -52,8 +54,8 @@ apf.vardump = function(obj, depth, maxdepth, stack){
             str = ["[ "];
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
-                    (depth >= maxdepth ? "{/*"+typeof(obj[i])+"*/}" :
-                    apf.vardump(obj[i], depth + 1, maxdepth, stack+'['+i+']')) );
+                    (depth >= o.maxdepth ? typeof(obj[i]) :
+                    apf.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -61,31 +63,29 @@ apf.vardump = function(obj, depth, maxdepth, stack){
         default:
             if (typeof obj == "function")
                 return "function";
-            if (obj.nodeType !== undefined && obj.style && depth != 0)
-                return "<" + obj.tagName+"../>" ;
-            if (obj.nodeType !== undefined)
-                return "<" + obj.tagName+"../>";
+        	if (obj.nodeType !== undefined)
+                return o.xml?(str=obj.xml,o.clip?((str=str.replace(/\s*[\r\n]\s*/g,"")).length>o.clip?str.slice(0,o.clip)+"...>":str):str):("<" + obj.tagName+"../>") ;
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            if (depth >= maxdepth)
+            if (depth >= o.maxdepth)
                 return "object";
 
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
             if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
             obj['$__vardump'] = stack;
-            str = ["{\n"];
-            
+            str = ["{"+(o.clip?"":"\n")];
             for (var prop in obj) if(prop!='$__vardump'){
+            	if(o.clipobj && str.join('').length>o.clipobj){str.push( ", ..."); break;}
                 try {
                     var propname = prop;
-                    if(str.length>1)str.push(",\n");
-                    str.push( "\t".repeat(depth+1), propname, ": ",
-                      (depth >= maxdepth ? "{/*"+typeof(obj[prop])+"*/}":
-                        apf.vardump(obj[prop], depth + 1, maxdepth, stack+'.'+prop)) );
+                    if(str.length>1)str.push(o.clip?", ":",\n");
+                    str.push( o.clip?"":("\t".repeat(depth+1)), propname, ": ",
+                      (depth >= o.maxdepth ? typeof(obj[prop]):
+                        apf.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
                 } catch(e) {
-                    str.push( "\t".repeat(depth+1) , prop , ": null /*ERROR*/");
+                    str.push( o.clip?"":("\t".repeat(depth+1)) , prop , ": dumperror");
                 }
             }
-            str.push( "\n", ("\t".repeat(depth)), "}");
+            str.push(o.clip?"":"\n", o.clip?"":("\t".repeat(depth)), "}");
             
             function cleanup(obj){
                 if(obj['$__vardump']!== undefined)
@@ -93,7 +93,7 @@ apf.vardump = function(obj, depth, maxdepth, stack){
                 else return;
                 for(var prop in obj){
                     var v = obj[prop];
-                    if(typeof(v)=='object' && v)cleanup(v);
+                    if(typeof(v)=='object' && v) cleanup(v);
                 }
             }
             cleanup(obj);

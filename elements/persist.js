@@ -326,7 +326,7 @@ apf.persist = function(struct, tagName){
                     return _self.$handleError(data, state, extra, callback);
                 else {
                     data = apf.unserialize(data);
-                    _self.sessionId = data.sId;
+                    _self.sessionId = data.sId || data.pId;
                     
                     if (!_self.sessionId) {
                         extra.message = "Did not get a session id from the server";
