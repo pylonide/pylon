@@ -130,7 +130,7 @@ apf.GuiElement = function(){
         "width", "left", "top", "height", "tooltip"
     );
 
-    this.$setLayout = function(type){
+    this.$setLayout = function(type, insert){
         if (!this.$drawn || !this.$pHtmlNode)
             return false;
 
@@ -139,7 +139,7 @@ apf.GuiElement = function(){
             if (this.parentNode.localName == "table") {
                 if (this.$disableCurrentLayout)
                     this.$disableCurrentLayout();
-                this.parentNode.register(this);
+                this.parentNode.register(this, insert);
                 this.$disableCurrentLayout = null;
                 return type == "table";
             }else
@@ -149,7 +149,7 @@ apf.GuiElement = function(){
             if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
                 if (this.$disableCurrentLayout)
                     this.$disableCurrentLayout();
-                this.parentNode.register(this);
+                this.parentNode.register(this, insert);
                 this.$disableCurrentLayout = null;
                 return type == this.parentNode.localName;
             } //else

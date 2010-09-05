@@ -159,7 +159,7 @@ apf.plane = {
                 else {
                     apf.setOpacity(this.plane, 0);
                     if (this.current)
-                        apf.window.zManager.clear(this.current);
+                        apf.window.zManager.clear(this.plane, this.current);
                     this.plane.style.display  = "none";
                 }
                 

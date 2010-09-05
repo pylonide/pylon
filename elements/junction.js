@@ -32,24 +32,27 @@
  * @since       0.4
  */
 apf.junction = function(){
-    this.$init("comment", apf.NODE_HIDDEN);
+    this.$init("junction", apf.NODE_HIDDEN);
 };
 
 (function(){
-    this.$focussable     = false;
+    this.$focussable = false;
+    
+    this.autoshow = true;
     
     /**
      * @attribute {String} for
+     * @attribute {String} autoshow
      */
-    this.$propHandlers["for"] = function(value) {
-    }
+    this.$booleanProperties["autoshow"] = true;
     
     this.$reparent = function(){
         var amlNode = self[this.for];
         if (!amlNode)
             return; //@todo warn?
         
-        amlNode.show();
+        if (this.autoshow)
+            amlNode.show();
         
         this.parentNode.insertBefore(amlNode, this);
     }

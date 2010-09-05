@@ -365,10 +365,16 @@ apf.AmlNode = function(){
               && (iframelist = amlNode.$ext.getElementsByTagName("iframe")).length > 0
               && apf.findHost(iframelist[0].parentNode) == amlNode);*/
 
-            if (!_self.$useLateDom && !noHtmlDomEdit 
-              && amlNode.$ext && !amlNode.$coreHtml) {
+            var nextNode = beforeNode;
+            if (!_self.$useLateDom && !noHtmlDomEdit && amlNode.$ext 
+              && !amlNode.$coreHtml) {
+                nextNode = beforeNode;
+                while (nextNode && !nextNode.$ext) {
+                    nextNode = nextNode.nextSibling;
+                }
+                
                 amlNode.$pHtmlNode.insertBefore(amlNode.$ext,
-                    beforeNode && beforeNode.$ext || null);
+                    nextNode && nextNode.$ext || null);
             }
             
             //Signal node and all it's ancestors
@@ -381,10 +387,15 @@ apf.AmlNode = function(){
                 bubbles             : true
             });
             
-            if (_self.$useLateDom && !noHtmlDomEdit) {
-                if (!amlNode.$altExt || amlNode.$altExt.parentNode == amlNode.$pHtmlNode)
-                    amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
-                        beforeNode && (beforeNode.$altExt || beforeNode.$ext) || null);
+            if (_self.$useLateDom && !noHtmlDomEdit && (!amlNode.$altExt 
+              || amlNode.$altExt.parentNode == amlNode.$pHtmlNode)) {
+                nextNode = beforeNode;
+                while (nextNode && !(nextNode.$altExt || nextNode.$ext)) {
+                    nextNode = nextNode.nextSibling;
+                }
+                
+                amlNode.$pHtmlNode.insertBefore(isMoveWithinParent && amlNode.$altExt || amlNode.$ext,
+                    nextNode && (nextNode.$altExt || nextNode.$ext) || null);
             }
         }
 

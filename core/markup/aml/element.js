@@ -475,6 +475,9 @@ apf.AmlElement = function(struct, tagName){
             //Remove any bounds if relevant
             this.$clearDynamicProperty(prop);
     
+            if (isInherit)
+                this.$inheritProperties[prop] = 2;
+    
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);
@@ -482,20 +485,17 @@ apf.AmlElement = function(struct, tagName){
             else 
             //#endif
                 this.setProperty(prop, value, false, false, 2);
-            
-            if (isInherit)
-                this.$inheritProperties[prop] = 2;
         }
         
         return value;
     };
     
     //@todo in proper W3C implementation this needs to change
+    //@todo this won't work with a combo of remove/append
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget != this || e.$isMoveWithinParent 
-          || this.parentNode.nodeType != 1)
+        if (e.currentTarget != this || e.$isMoveWithinParent || !e.$oldParent)
             return;
-        
+
         //Check inherited attributes for reparenting
         /*
             States:
@@ -525,6 +525,7 @@ apf.AmlElement = function(struct, tagName){
                         n = node.$inheritProperties[prop];
                         if (aci[prop] == 1 && !n)
                             recur(node.childNodes);
+                        
                         //Set inherited property
                         //@todo why are dynamic properties overwritten??
                         else if(!(n < 0)) {//Will also pass through undefined - but why??? @todo seems inefficient

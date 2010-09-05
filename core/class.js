@@ -638,6 +638,9 @@ apf.Class.prototype = new (function(){
         apf.language.removeProperty(this, prop);
         //#endif
         
+        if (this.$inheritProperties)
+            delete this.$inheritProperties[prop];
+        
         if (prop == MODEL)
             this.$modelParsed = null;
         
@@ -800,12 +803,9 @@ apf.Class.prototype = new (function(){
                      3 Semi-inherited
                     10 Dynamic property
         */
-        //@todo fix DOM mutation icw property inheritance
         //@todo this whole section should be about attribute inheritance and moved
         //      to AmlElement
-        //@todo the check on $amlLoaded is not as optimized as can be because
-        //      $loadAml is not called yet
-        if ((aci || (aci = apf.config.$inheritProperties))[prop] && this.$amlLoaded) {
+        if ((aci || (aci = apf.config.$inheritProperties))[prop]) {
             //@todo this is actually wrong. It should be about removing attributes.
             var resetting = value === "" || typeof value == "undefined";
             if (inherited != 10 && !value) {
@@ -818,7 +818,8 @@ apf.Class.prototype = new (function(){
             }
 
             //cancelable, needed for transactions
-            if ((!e || e.returnValue !== false) && this.childNodes) {
+            //@todo the check on $amlLoaded is not as optimized as can be because $loadAml is not called yet
+            if (this.$amlLoaded && (!e || e.returnValue !== false) && this.childNodes) {
                 var inheritType = aci[prop];
 
                 (function recur(nodes) {
@@ -832,10 +833,11 @@ apf.Class.prototype = new (function(){
                         n = node.$inheritProperties[prop];
                         if (inheritType == 1 && !n)
                             recur(node.childNodes);
+                        
                         //Set inherited property
                         //@todo why are dynamic properties overwritten??
                         else if(!(n < 0)) {//Will also pass through undefined - but why??? @todo seems inefficient
-                            if (n == 3) {
+                            if (n == 3 || inherited == 3) { //Because when parent sets semi-inh. prop the value can be the same
                                 var sameValue = node[prop];
                                 node[prop] = null;
                             }

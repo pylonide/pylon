@@ -216,7 +216,8 @@ apf.getData = function(instruction, options){
                         xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
                     }
                     else {
-                        throw new Error();
+                        //Model is not yet available. When it comes available we will be recalled (at least for prop binds)
+                        return;
                     }
                 }
                 else model = null;

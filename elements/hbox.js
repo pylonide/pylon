@@ -89,7 +89,7 @@ apf.vbox = function(struct, tagName){
         
         var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded)
+            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
                 elms.push(node);
         }
 
@@ -201,6 +201,13 @@ apf.vbox = function(struct, tagName){
     };
     
     function visibleHandler(e){
+        //@todo this can be more optimized by calcing if it WAS the last vis child.
+        //if (isLastVisibleChild(this)) {
+            this.parentNode.$propHandlers["padding"]
+                .call(this.parentNode, this.parentNode.padding);
+            this.$propHandlers["margin"].call(this, this.margin);
+        //}
+        
         if (apf.hasFlexibleBox) {
             if (this.$altExt)
                 this.$altExt.style.display = e.value 
@@ -268,7 +275,7 @@ apf.vbox = function(struct, tagName){
             
             "margin" : function(value){
                 var b = apf.getBox(value);
-                if (this.parentNode.lastChild != this)
+                if (!isLastVisibleChild(this))
                     b[this.parentNode.$vbox ? 2 : 1] += this.parentNode.padding;
                 this.$ext.style.margin = b.join("px ") + "px";
             },
@@ -342,7 +349,7 @@ apf.vbox = function(struct, tagName){
             "margin" : function(value){
                 var b = apf.getBox(value);
                 if (this.padding) {
-                    if (this.parentNode.lastChild != this)
+                    if (!isLastVisibleChild(this))
                         b[this.parentNode.$vbox ? 2 : 1] += this.padding;
                     if (this != this.parentNode.firstChild && this.parentNode.align == "stretch" && this.parentNode.$vbox) //@todo
                         b[0] += this.padding;
@@ -358,8 +365,18 @@ apf.vbox = function(struct, tagName){
         }
     }
     
+    function isLastVisibleChild(amlNode){
+        var lastChild = amlNode.parentNode.lastChild;
+        while(lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
+          || lastChild.visible === false)) {
+            lastChild = lastChild.previousSibling;
+        }
+        
+        return lastChild && lastChild == amlNode;
+    }
+    
     //@todo move this to enableTable, disableTable
-    this.register = function(amlNode){
+    this.register = function(amlNode, insert){
         if (amlNode.$altExt) //@todo hack, need to re-arch layouting
             return;
 
@@ -443,7 +460,8 @@ apf.vbox = function(struct, tagName){
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
             
-            if (this.lastChild == amlNode) {
+            var isLast = isLastVisibleChild(amlNode);
+            if (isLast || insert) {
                 this.$propHandlers["padding"].call(this, this.padding);
                 this.$propHandlers["align"].call(this, this.align);
                 
@@ -453,7 +471,7 @@ apf.vbox = function(struct, tagName){
         
             delete this.$noResize;
             
-            if (!apf.hasFlexibleBox && this.lastChild == amlNode)
+            if (!apf.hasFlexibleBox && isLast)
                 this.$resize();
         }
     }
@@ -528,22 +546,14 @@ apf.vbox = function(struct, tagName){
         }
     });
 
-    /*this.addEventListener("DOMNodeInserted", function(e){
+    this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this || e.currentTarget.nodeType != 1)
             return;
 
-        if (e.relatedNode == this) {
-            if (e.$isMoveWithinParent) {
-                visibleHandler.call(e.currentTarget, {sync: true}); 
-            }
-            else {
-                e.currentTarget.$setLayout("table");
-                if (e.currentTarget.nextSibling)
-                    visibleHandler.call(e.currentTarget, {sync: true});
-            }
-        }
-    });*/
-    
+        if (e.relatedNode == this && !e.$isMoveWithinParent)
+            e.currentTarget.$setLayout(this.localName, true);
+    });
+
     function myVisibleHandler(e){
         if (e.value)
             this.$int.style.display = apf.CSSPREFIX2 + "-box";

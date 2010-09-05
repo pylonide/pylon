@@ -68,8 +68,8 @@ apf.zmanager = function(){
         }
     }
     
-    this.clear = function(companion){
-        if (companion.$storedZ != undefined) {
+    this.clear = function(main, companion){
+        if (companion.$storedZ == main.style.zIndex + 1) {
             companion.style.zIndex = companion.$storedZ;
             companion.$storedZ = undefined;
         }
