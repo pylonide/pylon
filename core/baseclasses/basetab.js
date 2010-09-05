@@ -351,11 +351,9 @@ apf.BaseTab = function(){
             onfinish : function(){
                 if (!node)
                     return;
-                
+
                 if (type == "add")
                     node.dispatchEvent("afteropen");
-                else if (type == "remove")
-                    node.dispatchEvent("afterclose");
             }
             //oneach   : function(){alert(1);}
         };
@@ -381,6 +379,8 @@ apf.BaseTab = function(){
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
+                
+                node.dispatchEvent("afterclose");
             }
             anim.onstop = function(){
                 apf.setOpacity(html, 1);
