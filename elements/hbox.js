@@ -152,7 +152,7 @@ apf.vbox = function(struct, tagName){
             
             if (apf.isGecko)
                 this.$int.style.overflow = "visible";
-            
+
             var stretch = !value || value == "stretch";
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
@@ -161,9 +161,9 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
-                if (!stretch)
-                    //node.$ext.style[size] = stretch ? (apf.isGecko && this.flex ? "" : "auto") : "";
-                //else
+                if (stretch && !node[size])
+                    node.$ext.style[size] = apf.isGecko && node.flex ? "1px" : "auto";
+                else
                     handlers["true"][size].call(this, node.height);
             }
         }
@@ -459,7 +459,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.margin.call(amlNode, amlNode.margin);
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
-            
+
             var isLast = isLastVisibleChild(amlNode);
             if (isLast || insert) {
                 this.$propHandlers["padding"].call(this, this.padding);

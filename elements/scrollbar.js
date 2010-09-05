@@ -34,7 +34,7 @@ apf.scrollbar = function(struct, tagName){
 
 (function(){
     this.realtime = true;
-    //this.visible  = false;
+    this.visible  = false;
     this.overflow = "scroll";
     
     this.$scrollSizeValue  = 0;
@@ -51,8 +51,10 @@ apf.scrollbar = function(struct, tagName){
     });
     
     this.$propHandlers["overflow"] = function(value){
-        if (value == "auto")
+        if (value == "auto") {
+            this.$ext.style.display = "none";
             this.$resize();
+        }
         else if (value == "scroll")
             this.setProperty("visible", true);
     }
