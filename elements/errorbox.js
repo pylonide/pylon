@@ -91,7 +91,7 @@ apf.errorbox = function(struct, tagName){
     this.$positioning = "basic";
     this.display = function(host){
         this.host = host;
-        
+
         var refHtml = 
             //#ifdef __WITH_HTML5
             host.validityState && host.validityState.$errorHtml ||

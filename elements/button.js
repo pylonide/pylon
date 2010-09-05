@@ -65,26 +65,33 @@ apf.button  = function(struct, tagName){
     
     this.$init(function(){
         //@todo reparenting
-        var forceFocus, _self = this;
+        var forceFocus, _self = this, lastDefaultParent;
         this.$propHandlers["default"] = function(value){
+            if (parseInt(value) != value)
+                value = apf.isTrue(value) ? 1 : 0;
+
+            this["default"] = parseInt(value);
+            
             if (!this.focussable && value || forceFocus)
                 this.setAttribute("focussable", forceFocus = value);
 
-            var pNode = this.parentNode;
-            while (pNode && !pNode.focussable)
-                pNode = pNode.parentNode;
-                
-            if (!pNode) return;
-
-            pNode.removeEventListener("focus", setDefault);
-            pNode.removeEventListener("blur", removeDefault);
-    
+            if (lastDefaultParent) {
+                lastDefaultParent.removeEventListener("focus", setDefault);
+                lastDefaultParent.removeEventListener("blur", removeDefault);
+            }
+            
             if (!value)
                 return;
-    
+
+            var pNode = this.parentNode;
+            while (pNode && !pNode.focussable && value--)
+                pNode = pNode.parentNode;
+                
             //Currrently only support for parentNode, this might need to be expanded
-            pNode.addEventListener("focus", setDefault);
-            pNode.addEventListener("blur", removeDefault);
+            if (pNode) {
+                pNode.addEventListener("focus", setDefault);
+                pNode.addEventListener("blur", removeDefault);
+            }
         };
     
         function setDefault(e){
@@ -181,10 +188,10 @@ apf.button  = function(struct, tagName){
      *   apply    Executes a commitTransaction() on the target element.
      *   close    Closes the target element.
      * @attribute {String}  target   id of the element to apply the action to. Defaults to the parent container.
-     * @attribute {String}  default  whether this button is the default action for the containing window.
+     * @attribute {Number}  default  Search depth for which this button is the default action. 1 specifies the direct parent. 2 the parent of this parent. Et cetera.
      * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
      */
-    this.$booleanProperties["default"] = true;
+    //this.$booleanProperties["default"] = true;
     this.$booleanProperties["state"]   = true;
     this.$supportedProperties.push("icon", "value", "tooltip", "state",
         "color", "caption", "action", "target", "default", "submenu", "hotkye");
