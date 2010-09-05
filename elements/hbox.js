@@ -164,7 +164,7 @@ apf.vbox = function(struct, tagName){
                 if (stretch && !node[size])
                     node.$ext.style[size] = apf.isGecko && node.flex ? "1px" : "auto";
                 else
-                    handlers["true"][size].call(this, node.height);
+                    handlers["true"][size].call(this, node[size]);
             }
         }
         else if (this.$amlLoaded) {
@@ -253,7 +253,7 @@ apf.vbox = function(struct, tagName){
                 //@todo this should check the largest and only allow that one
                 if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     return;
-                
+
                 (this.$altExt || this.$ext).style.width = value 
                     ? (parseInt(value) == value 
                         ? value + "px"

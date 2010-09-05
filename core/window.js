@@ -1120,7 +1120,7 @@ apf.window = function(){
             if (apf.isIE) {
                 var el = e.srcElement || e.target;
                 while (el && el.scrollHeight <= el.offsetHeight)
-                    el = el.parentNode;
+                    el = el.parentNode || el.$parentNode;
                 
                 if (!el) return;
                 
