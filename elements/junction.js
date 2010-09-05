@@ -47,7 +47,7 @@ apf.junction = function(){
     this.$booleanProperties["autoshow"] = true;
     
     this.$reparent = function(){
-        var amlNode = self[this.for];
+        var amlNode = self[this["for"]];
         if (!amlNode)
             return; //@todo warn?
         
