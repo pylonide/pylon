@@ -60,9 +60,18 @@ apf.scrollbar = function(struct, tagName){
     this.$propHandlers["for"] = function(value){
         if (value) {
             var amlNode = typeof value == "string" ? self[value] : value;
-            if (!amlNode.$amlLoaded) {
+            if (!amlNode || !amlNode.$amlLoaded) {
                 var _self = this;
                 apf.queue.add("scrollbar" + this.$uniqueId, function(){
+                    if (!amlNode) {
+                        amlNode = typeof value == "string" ? self[value] : value;
+                        
+                        if (!amlNode) {
+                            throw new Error(apf.formatErrorString(0, _self,
+                               "Attaching scrollbar to element",
+                               "Could not find element to attach scrollbar to: " + value));
+                        }
+                    }
                     _self.$attach(amlNode);
                 });
             }

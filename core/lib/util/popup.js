@@ -103,8 +103,10 @@ apf.popup = {
             popup  = o.content,
             moveUp = false,
             fixed  = false;
-        if (!apf.getStyle(o.content, "zIndex"))
-            apf.window.zManager.set("popup", o.content);
+
+        //if (!apf.getStyle(o.content, "zIndex"))
+        apf.window.zManager.set("popup", o.content);
+        
         if ((dp = o.content.style.display) && dp.indexOf("none") > -1)
             o.content.style.display = "";
 
