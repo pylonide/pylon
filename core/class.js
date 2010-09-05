@@ -843,7 +843,7 @@ apf.Class.prototype = new (function(){
                             }
                             node.setProperty(prop, n != 3
                                 ? value
-                                : sameValue, false, false, n); //This is recursive already
+                                : sameValue, false, false, n || 2); //This is recursive already
                         }
                     }
                 })(this.childNodes);
