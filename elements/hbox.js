@@ -593,7 +593,7 @@ apf.vbox = function(struct, tagName){
         this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
         this.$ext.className = this.localName;
 
-        this.$vbox = this.localName == "vbox";
+        this.$vbox    = this.localName == "vbox";
         this.$int = apf.isGecko && !this.parentNode.$box || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
@@ -609,6 +609,8 @@ apf.vbox = function(struct, tagName){
         }
         
         if (apf.hasFlexibleBox) {
+            this.$display = "-" + apf.CSSPREFIX +"-box";
+            
             this.$int.style.display = apf.CSSPREFIX2 + "-box";
             this.$int.style[apf.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
             if (apf.isGecko) //!webkit
