@@ -711,7 +711,7 @@ apf.datagrid = function(struct, tagName){
                         "caption", oRow.appendChild(cell));
                     htmlEl.setAttribute("id", "placeholder_" + this.$uniqueId 
                         + "_" + ((q.column || (q.column = [])).push(xmlNode) - 1));
-                    apf.setNodeValue(htmlEl, "");
+                    apf.setNodeValue(htmlEl, '&nbsp');
                 }
                 else
                 //#endif

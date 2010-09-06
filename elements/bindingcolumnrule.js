@@ -290,7 +290,7 @@ apf.BindingColumnRule = function(struct, tagName){
             hCaption.nodeValue = "&nbsp;";
         }
         else*/
-            hCaption.nodeValue = this.caption || caption || "";
+            hCaption.nodeValue = this.caption || caption || '&nbsp';
         
         this.$ext = this.$int = apf.insertHtmlNode($head, pNode.$head || pNode.$container);
         
