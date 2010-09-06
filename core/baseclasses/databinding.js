@@ -1478,8 +1478,10 @@ apf.DataBinding = function(){
                 var xpath = apf.xmlToXpath(value, null, true) || ".";
                 
                 //#ifdef __DEBUG
-                if (model.queryNode(xpath) != value)
-                    throw new Error("xml data node is not attached to model (" + xpath + ") : " + value + ":" + (value && value.xml));
+                if (model.queryNode(xpath) != value) {
+                    throw new Error("xml data node is not attached to model (" 
+                        + xpath + ") : " + value + ":" + (value && value.xml));
+                    }
                 //#endif
                 
                 model.register(this, xpath);
