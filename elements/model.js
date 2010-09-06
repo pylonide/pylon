@@ -94,7 +94,7 @@
  * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
  * @attribute  {String}  session      the data instruction on how to store the session data from this model.
  * @attribute  {Boolean} autoinit     whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} allowreset   whether to save the original state of the data. This enables the use of the reset() call.
+ * @attribute  {Boolean} enablereset  whether to save the original state of the data. This enables the use of the reset() call.
  * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -123,7 +123,7 @@ apf.model = function(struct, tagName){
     this.$isModel   = true;
     
     this.canHaveChildren  = false;
-    this.allowreset       = false;
+    this.enablereset       = false;
 
     this.$state = 0;//1 = loading
 
@@ -135,9 +135,9 @@ apf.model = function(struct, tagName){
     }, this.$attrExcludePropBind);
 
     this.$booleanProperties["autoinit"] = true;
-    this.$booleanProperties.allowreset  = true;
+    this.$booleanProperties.enablereset  = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "allowreset", "remote"];
+        "enablereset", "remote"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
@@ -584,6 +584,9 @@ apf.model = function(struct, tagName){
      *
      */
     this.reset = function(){
+        var doc = this.data.ownerDocument;
+        doc.removeChild(this.data);
+        doc.appendChild(this.$copy);
         this.load(this.$copy);
     };
 
@@ -835,17 +838,21 @@ apf.model = function(struct, tagName){
         }
 
         if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
-            if (!this.$queueLoading) {
+            //if (!this.$queueLoading) {
                 var _self = this;
-                this.data = this.$copy = xmlNode; //@todo expirement
+                this.data = xmlNode; //@todo expirement //this.$copy = 
                 apf.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
                 
                 this.$queueLoading = true;
                 apf.queue.add("modelload" + this.$uniqueId, function(){
-                    _self.load(xmlNode, options);
-                    _self.$queueLoading = false;
+                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$shouldWait)
+                        apf.queue.add("modelload" + _self.$uniqueId, arguments.callee);
+                    else {
+                        _self.load(xmlNode, options);
+                        _self.$queueLoading = false;
+                    }
                 });
-            }
+            //}
             return;
         }
         else if (this.$queueLoading)
@@ -881,7 +888,7 @@ apf.model = function(struct, tagName){
             apf.xmldb.nodeConnect(
                 apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
-            if ((!options || !options.nocopy) && this.allowreset)
+            if ((!options || !options.nocopy) && this.enablereset)
                 this.$copy = apf.xmldb.getCleanCopy(xmlNode);
         }
 

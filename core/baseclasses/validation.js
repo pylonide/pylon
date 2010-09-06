@@ -441,7 +441,7 @@ apf.Validation = function(){
         delete this.$vOptions.isValid;
     };
     
-    //@todo rewrite this for apf3.0
+    //@todo rewrite this for apf3.0 - it should just execute a live markup
     this.$propHandlers["validtest"] = function(value){
         var _self = this, rvCache = {};
         /**
