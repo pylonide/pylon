@@ -835,15 +835,17 @@ apf.model = function(struct, tagName){
         }
 
         if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
-            var _self = this;
-            this.data = this.$copy = xmlNode; //@todo expirement
-            apf.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
-            
-            this.$queueLoading = true;
-            apf.queue.add("modelload" + this.$uniqueId, function(){
-                _self.load(xmlNode, options);
-                _self.$queueLoading = false;
-            });
+            if (!this.$queueLoading) {
+                var _self = this;
+                this.data = this.$copy = xmlNode; //@todo expirement
+                apf.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
+                
+                this.$queueLoading = true;
+                apf.queue.add("modelload" + this.$uniqueId, function(){
+                    _self.load(xmlNode, options);
+                    _self.$queueLoading = false;
+                });
+            }
             return;
         }
         else if (this.$queueLoading)
@@ -908,10 +910,10 @@ apf.model = function(struct, tagName){
         else 
             this.$listeners[amlNode.$uniqueId] = amlNode;
         
-        //@todo apf3.0 this was useful for something, i'm sure it was
-        //node.xmlRoot = null; //.load(null)
-        //if (amlNode.xmlRoot)
-            //amlNode.clear();
+        //When data is not available at model load but element had already data
+        //loaded, it is cleared here.
+        if (amlNode.xmlRoot)
+            amlNode.clear();
     };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
