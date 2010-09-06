@@ -209,15 +209,6 @@ apf.menu = function(struct, tagName){
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
         
-        //@todo consider renaming this to onshow and onhide
-        if (this.$rendered !== false)
-            this.dispatchEvent("display", {opener: opener});
-        else {
-            this.addEventListener("afterrender", function(){
-                this.dispatchEvent("display", {opener: opener});
-            });
-        }
-
         //Show / hide Child Nodes Based on XML
         if (xmlNode) {
             var last, i, node,
@@ -262,51 +253,64 @@ apf.menu = function(struct, tagName){
                 this.oOverlay.style.display = "none";
         }
 
-        this.visible = false;
-        this.show();
+        function afterRender(){
+            //@todo consider renaming this to onshow and onhide
+            this.dispatchEvent("display", {opener: opener});
 
-        if (x === null) {
-            apf.popup.show(this.$uniqueId, {
-                x            : 0, 
-                y            : opener.$ext.offsetHeight, 
-                animate      : noanim || !this.anim ? false : "fade",
-                steps        : (apf.isIE ? 5 : 10),
-                ref          : opener.$ext,
-                allowTogether: openMenuId,
-                autohide     : this.autohide !== false,
-                noleft       : this.left !== undefined
-            });
+            if (x === null) {
+                apf.popup.show(this.$uniqueId, {
+                    x            : 0, 
+                    y            : opener.$ext.offsetHeight, 
+                    animate      : noanim || !this.anim ? false : "fade",
+                    steps        : (apf.isIE ? 5 : 10),
+                    ref          : opener.$ext,
+                    allowTogether: openMenuId,
+                    autohide     : this.autohide !== false,
+                    noleft       : this.left !== undefined
+                });
+            }
+            else {
+                var bodyPos = apf.getAbsolutePosition(document.body);
+                apf.popup.show(this.$uniqueId, {
+                    x            : x - bodyPos[0], 
+                    y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
+                    animate      : noanim || !this.anim ? false : "fade",
+                    steps        : (apf.isIE ? 5 : 10),
+                    ref          : this.$ext.offsetParent,
+                    allowTogether: openMenuId,
+                    autohide     : this.autohide !== false,
+                    autoCorrect  : false
+                });
+            }
+            
+            var lastFocus      =
+            apf.menu.lastFocus = opener && opener.$focussable === true
+                ? opener
+                : apf.menu.lastFocus || apf.document.activeElement;
+            
+            apf.popup.last = null;
+            
+            if (!apf.isGecko)
+                this.focus();
+    
+            //Make the component that provides context appear to have focus
+    
+            if (lastFocus && lastFocus != this && lastFocus.$focus)
+                lastFocus.$focus();
+    
+            this.xmlReference = xmlNode;
+        }
+        
+        this.visible = false;
+        
+        if (this.$rendered !== false) {
+            this.show();
+            afterRender.call(this);
         }
         else {
-            var bodyPos = apf.getAbsolutePosition(document.body);
-            apf.popup.show(this.$uniqueId, {
-                x            : x - bodyPos[0], 
-                y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
-                animate      : noanim || !this.anim ? false : "fade",
-                steps        : (apf.isIE ? 5 : 10),
-                ref          : this.$ext.offsetParent,
-                allowTogether: openMenuId,
-                autohide     : this.autohide !== false,
-                autoCorrect  : false
-            });
-        }
-        
-        var lastFocus      =
-        apf.menu.lastFocus = opener && opener.$focussable === true
-            ? opener
-            : apf.menu.lastFocus || apf.document.activeElement;
-        
-        apf.popup.last = null;
-        
-        if (!apf.isGecko)
-            this.focus();
-
-        //Make the component that provides context appear to have focus
-
-        if (lastFocus && lastFocus != this && lastFocus.$focus)
-            lastFocus.$focus();
-
-        this.xmlReference = xmlNode;
+            this.addEventListener("afterrender", afterRender);
+            this.show();
+        }                
     };
 
     /**
