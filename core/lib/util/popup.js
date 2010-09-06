@@ -166,11 +166,7 @@ apf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : apf.tween.NORMAL,
-                    steps : options.steps || 5,
-                    onfinish : function(){
-                        if (apf.isIE)
-                            popup.style.filter = "";
-                    }
+                    steps : options.steps || (apf.isIE ? 5 : 15)
                 });
             }
             else {
