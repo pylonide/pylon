@@ -805,12 +805,14 @@ apf.BaseList = function(){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
+                apf.console.warn("No add action rule is defined for element while more='true'.");
+                /*throw new Error(apf.formatErrorString(0, this,
                     "Could not start more",
                     "No add action rule is defined for this component",
-                    this.$aml));
+                    this.$aml));*/
                 //#endif
-                return false;
+                //return false;
+                xmlNode = "<item />";
             }
         }
 
