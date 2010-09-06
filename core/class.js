@@ -564,8 +564,9 @@ apf.Class.prototype = new (function(){
 
             if (!this.$funcHandlers[prop])
                 this.$funcHandlers[prop] = [];
-                
-            this.$funcHandlers[prop].push({
+
+            var last;
+            this.$funcHandlers[prop].push(last = {
                 amlNode : node, 
                 prop    : bProp, 
                 handler : node.$bindProperty(bProp, this, prop, fParsed, 
@@ -583,7 +584,7 @@ apf.Class.prototype = new (function(){
         }
 
         if (found) {
-            this.$funcHandlers[prop][0].handler({initial: true});
+            last.handler({initial: true});
         }
         else {
             //@todo optimize this
