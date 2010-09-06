@@ -391,6 +391,7 @@ apf.AmlElement = function(struct, tagName){
         }
         
         this.childNodes.length = 0;
+
         this.$int.innerHTML = "<div class='loading'>loading...</div>";
 
         //Do an insertMarkup
