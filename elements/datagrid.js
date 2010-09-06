@@ -718,7 +718,7 @@ apf.datagrid = function(struct, tagName){
                 {
                     apf.setNodeValue(this.$getLayoutNode(cellType, 
                         "caption", oRow.appendChild(cell)),
-                        h.cvalue2(xmlNode) || "");
+                        h.cvalue2(xmlNode) || '&nbsp');
                 }
             }
         }
