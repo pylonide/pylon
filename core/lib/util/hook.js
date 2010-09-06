@@ -93,7 +93,7 @@ apf.hookWrapAsync = function(inner){
                         clearTimeout(timeout);
                         var cb = oldcb; oldcb = null;
                         if(cb){
-                            sys.debug("Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")");
+                            sys.debug("Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")" + inner.toString());
                             //cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
                         }
                     },1000);

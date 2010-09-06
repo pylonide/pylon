@@ -998,7 +998,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         return this.rdbstack || [];
     }
     
-    this.before = function(){
+    this.before = function(el){
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             node.parentNode.insertBefore(typeof el == "function" ? el(i) : el, node);
@@ -1318,7 +1318,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     
     this.data = function(data){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            apf.setQueryValue(this.$nodes[i], ".", value);
+            apf.setQueryValue(this.$nodes[i], ".", data);
         }
         return this;
     }
