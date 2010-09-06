@@ -149,13 +149,18 @@ apf.page = function(struct, tagName){
             return;
 
         if (value) {
+            if (this.$fake) {
+                this.parentNode.set(this.$fake); 
+                this.visible = false;
+                return;
+            }
+            
             this.$ext.style.display = "";
             if (this.parentNode.$hasButtons)
                 this.$button.style.display = "block";
 
-            if (!this.parentNode.$activepage) {
+            if (!this.parentNode.$activepage)
                 this.parentNode.set(this);
-            }
         }
         else {
             if (this.$active) {
@@ -340,6 +345,7 @@ apf.page = function(struct, tagName){
                 if (this.relPage) {
                     this.relPage.$ext.style.display = "";
                     this.parentNode.$setStyleClass(this.relPage.$ext, "curpage");
+                    this.relPage.$fake = this;
 
                     // #ifdef __WITH_DELAYEDRENDER
                     if (this.relPage.$render)
