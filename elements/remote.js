@@ -514,6 +514,12 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
                 q[1] = xmlNode;
             }
+            else if (action == "removeNodeList") {
+                var arr = q[0];
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = this.xpathToXml(arr[i], model.data);
+                }
+            }
             else if (action == "setValueByXpath") {}
 
             // pass the action to the actiontracker to execute it
