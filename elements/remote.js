@@ -390,6 +390,12 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
                 args[i] = this.xmlToXpath(args[i], model.data);
             }
+            else if (node && node.dataType == apf.ARRAY) {
+                for (var j = 0; j < node.length; j++) {
+                    if (node[j] && node[j].nodeType)
+                        node[j] = this.xmlToXpath(node[j], model.data);
+                }
+            }
         }
 
         qHost.rdbQueue[uri].push({

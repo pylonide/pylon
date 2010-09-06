@@ -705,6 +705,10 @@ apf.xmldb = new (function(){
      */
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
+        // #ifdef __WITH_RDB
+        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
+        // #endif
+        
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
@@ -727,10 +731,6 @@ apf.xmldb = new (function(){
             undoObj.$filled          = true;
             undoObj.extra.removeList = rData;
         }
-
-        // #ifdef __WITH_RDB
-        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
-        // #endif
     };
 
     /**
