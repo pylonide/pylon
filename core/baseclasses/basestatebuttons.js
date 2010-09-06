@@ -235,6 +235,14 @@ apf.BaseStateButtons = function(){
 
                     return;
                 }
+                else if (!this.animate) {
+                    apf.plane.hide(this.$uniqueId, true);
+                    
+                    _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
+                            
+                    if (_self.$placeHolder)
+                        _self.$placeHolder.parentNode.removeChild(_self.$placeHolder);
+                }
 
                 this.$ext.style.position = this.$lastpos.pos;
                 this.$ext.style.left     = this.$lastpos.css[0];
@@ -369,7 +377,7 @@ apf.BaseStateButtons = function(){
                             ? (apf.getWindowWidth() - w)/2
                             : _self.$maxconf[2], 
                                _self.$maxconf[3] == "center" 
-                            ? (apf.getWindowHeight() - h)/2
+                            ? (apf.getWindowHeight() - h)/3
                             : _self.$maxconf[3]];
                     }
                     else {

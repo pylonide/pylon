@@ -35,6 +35,7 @@ apf.scrollbar = function(struct, tagName){
 (function(){
     this.realtime = true;
     this.visible  = false;
+    this.$visible = false;
     this.overflow = "scroll";
     
     this.$scrollSizeValue  = 0;
@@ -86,6 +87,12 @@ apf.scrollbar = function(struct, tagName){
     this.$propHandlers["step"] = function(value){
         
     }
+    
+    this.addEventListener("prop.visible", function(e){
+        if (!this.$updating) {
+            this.$visible = e.value;
+        }
+    });
     
     this.$detach = function(){
         
@@ -148,7 +155,7 @@ apf.scrollbar = function(struct, tagName){
         var scrollFunc = function(e){
             if (e.returnValue === false)
                 return;
-            
+
             scrolling = apf.isIE;
             var oHtml = _self.$getHtmlHost();
 
@@ -197,7 +204,7 @@ apf.scrollbar = function(struct, tagName){
         
         var oHtml = _self.$getHtmlHost();
         oHtml.onscroll = function(){
-            if (_self.animating) 
+            if (_self.animating || !_self.$visible) 
                 return;
             
             if (!scrolling) {
@@ -256,7 +263,7 @@ apf.scrollbar = function(struct, tagName){
     
     //@todo this function is called way too many times
     this.$update = function(){
-        if (this.animating) 
+        if (this.animating || !this.$visible) 
             return;
 
         var oHtml = this.$getHtmlHost();
@@ -265,6 +272,8 @@ apf.scrollbar = function(struct, tagName){
         
         if (!this.$slideMaxSize)
             this.$recalc();
+        
+        this.$updating = true;
         
         //Disable scrollbar
         var vp = this.$getViewPort(oHtml);
@@ -308,6 +317,8 @@ apf.scrollbar = function(struct, tagName){
             this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
         }
+        
+        this.$updating = false;
     }
     
     this.setScroll = function (timed, noEvent){
@@ -327,7 +338,7 @@ apf.scrollbar = function(struct, tagName){
         this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
 
-        if (this.animating) 
+        if (this.animating || !this.$visible) 
             return;
 
         if (!noEvent) {
@@ -476,7 +487,7 @@ apf.scrollbar = function(struct, tagName){
     }*/
     
     this.updatePos = function(){
-        if (this.animating) 
+        if (this.animating || !this.$visible) 
             return;
         
         var o = this.$host;

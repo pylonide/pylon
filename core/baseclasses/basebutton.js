@@ -177,6 +177,8 @@ apf.BaseButton = function(){
             _self.$refMouseDown = 1;
             _self.$mouseLeft    = false;
             _self.$updateState(e, "mousedown");
+            
+            apf.cancelBubble(e);
         };
         
         this.$ext.onmouseup = function(e, force) {

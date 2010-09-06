@@ -30,7 +30,7 @@ apf.XhtmlElement = function(struct, tagName){
     
     var _self = this;
     this.$de = function(e){
-        _self.dispatchEvent(e.type, e);
+        _self.dispatchEvent(e.type, null, e);
     }
 };
 

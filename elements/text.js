@@ -90,9 +90,8 @@ apf.text = function(struct, tagName){
             this.addEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             this.$textTimer = setInterval(function(){
-                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown) {
+                if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
                     _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
-                }
             }, 60);
         }
         else {

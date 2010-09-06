@@ -46,10 +46,10 @@ apf.plane = {
         item.show(o, reAppend, copyCursor, useRealSize, options);
     },
     
-    hide : function(protect){
+    hide : function(protect, noAnim){
         var item = this.$lookup[protect || "default"];
         if (item) {
-            item.hide();
+            item.hide(noAnim);
             delete this.$lookup[protect || "default"];
             this.$set.push(item);
         }
@@ -74,6 +74,9 @@ apf.plane = {
                 this.plane.style.background = options && options.color || "url(images/spacer.gif)";
                 this.animate = options && options.animate;
                 this.protect = options && options.protect;
+                
+                if (this.protect)
+                    apf.setProperty("planes", (apf.planes || 0) + 1);
                 
                 if (o) { //@experimental
                     this.current = o;
@@ -127,7 +130,10 @@ apf.plane = {
                 return plane;
             },
         
-            hide : function(){
+            hide : function(noAnim){
+                if (this.protect)
+                    apf.setProperty("planes", apf.planes - 1);
+                
                 var isChild; // try...catch block is needed to work around a FF3 Win issue with HTML elements
                 try {
                     isChild = apf.isChildOf(this.plane, document.activeElement);
@@ -138,7 +144,7 @@ apf.plane = {
                 if (this.current && this.current.parentNode == this.plane)
                     this.$originalPlace[0].insertBefore(this.current, this.$originalPlace[1]);
                 
-                if (this.animate) {
+                if (this.animate && !noAnim) {
                     var _self = this;
                     setTimeout(function(){
                         apf.tween.single(_self.plane, {
