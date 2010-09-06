@@ -88,6 +88,12 @@ apf.upload.html5.isSupported = function() {
                 mimes.push(type);
         }
 
+        // cleanup first
+        if (oInput && oInput.parentNode) {
+            oCont.removeChild(oInput);
+            oInput = null;
+        }
+
         oCont.style.position   = "absolute",
         oCont.style.background = "transparent",
         oCont.style.width      = "100px",
