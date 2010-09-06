@@ -92,14 +92,19 @@ apf.vbox = function(struct, tagName){
             if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
                 elms.push(node);
         }
+        
+        if (!elms.length)
+            return;
 
-        for (var i = 0, l = elms.length - 1; i < l; i++) {
-            var b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
+        for (var b, el, i = 0, l = elms.length - 1; i < l; i++) {
+            b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
             b[this.$vbox ? 2 : 1] += this.padding;
             if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
                 b[0] += this.padding;
             el.$ext.style.margin = b.join("px ") + "px";
         }
+        b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
+        el.$ext.style.margin = b.join("px ") + "px";
         
         if (!apf.hasFlexibleBox)
             this.$resize();
@@ -205,7 +210,6 @@ apf.vbox = function(struct, tagName){
         //if (isLastVisibleChild(this)) {
             this.parentNode.$propHandlers["padding"]
                 .call(this.parentNode, this.parentNode.padding);
-            this.$propHandlers["margin"].call(this, this.margin);
         //}
         
         if (apf.hasFlexibleBox) {
