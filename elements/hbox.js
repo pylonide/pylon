@@ -37,6 +37,11 @@
  *      <a:bar width="100" caption="Right bar"/>
  *  </a:hbox>
  * </code>
+ * Remarks:
+ * Firefox has some issues. 
+ * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
+ * height value.
+ * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
  * @addnode elements
  * @constructor
  *
