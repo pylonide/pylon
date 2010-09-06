@@ -35,6 +35,7 @@ apf.divider = function(struct, tagName){
     this.implement(apf.ChildValue);
     this.$childProperty = "caption";
     
+    //@todo apf3.0 fix this
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;
@@ -52,23 +53,12 @@ apf.divider = function(struct, tagName){
     this.$supportedProperties.push("caption", "value", "for", "textalign");
     this.$propHandlers["caption"] = function(value){
         if (this.$caption) {
-            this.$caption.style.display = value ? "inline" : "";
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Caption");
             this.$caption.innerHTML = value;
         }
-    };
-    
-    /**
-     * @ref amlNode#show
-     */
-    this.show = function(){
-        this.setProperty("visible", true);
-    };
-    
-    /**
-     * @ref amlNode#hide
-     */
-    this.hide = function(){
-        this.setProperty("visible", false);
+        else {
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Caption"]);
+        }
     };
     
     this.$canLeechSkin = true;
