@@ -218,6 +218,11 @@ apf.upload.html5.isSupported = function() {
                     status  : httpStatus
                 });
             }
+            else if (apf.isGecko) {
+                // workaround for gecko bug that deletes input after a successful upload... or is it a feature?
+                _self.draw();
+                $setTimeout(function() {_self.refresh();});
+            }
         };
 
         xhr.open("post", this.oUpload.$buildUrl(this.oUpload.target,
