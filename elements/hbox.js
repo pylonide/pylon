@@ -172,7 +172,7 @@ apf.vbox = function(struct, tagName){
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
                 if (stretch && !node[size])
-                    node.$ext.style[size] = apf.isGecko && this.flex ? "1px" : "auto";
+                    node.$ext.style[size] = apf.isGecko && (this.flex && node.flex) ? "1px" : "auto";
                 else
                     handlers["true"][size].call(this, node[size]);
             }
