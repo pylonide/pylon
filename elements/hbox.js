@@ -440,9 +440,10 @@ apf.vbox = function(struct, tagName){
             else {
                 if (this.$vbox) {
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
+                    //amlNode.$br.style.display = "none";
                     //amlNode.$br.style.lineHeight = "0";
-                    this.$int.style.fontSize = "";
-                    amlNode.$ext.style.fontSize = apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                    //this.$int.style.fontSize = "";
+                    //amlNode.$ext.style.fontSize = apf.getStyle(amlNode.$ext, "fontSize") || "normal";
                     this.$int.style.fontSize = "0";
                 }
                 else {
@@ -469,7 +470,8 @@ apf.vbox = function(struct, tagName){
             if (amlNode.flex)
                 propHandlers.flex.call(amlNode, amlNode.flex);    
 
-            var isLast = isLastVisibleChild(amlNode);
+            //Ie somehow sets the visible flags in between registration
+            var isLast = apf.isIE ? this.lastChild == amlNode : isLastVisibleChild(amlNode);
             if (isLast || insert) {
                 this.$propHandlers["padding"].call(this, this.padding);
                 this.$propHandlers["align"].call(this, this.align);
@@ -687,7 +689,7 @@ apf.vbox = function(struct, tagName){
         
         var total    = 0;
         var size     = this.$vbox ? "width" : "height";
-        var minsize  = this.$vbox ? "min-width" : "min-height";
+        var minsize  = this.$vbox ? "minWidth" : "minHeight";
         var osize    = this.$vbox ? "height" : "width";
         var offset   = this.$vbox ? "offsetWidth" : "offsetHeight";
         var ooffset  = this.$vbox ? "offsetHeight" : "offsetWidth";
@@ -719,7 +721,7 @@ apf.vbox = function(struct, tagName){
         }
         
         //Stretching - for IE8 this could be done using box-sizing and height:100%
-        if (this.align == "stretch") {
+        if (this.align == "stretch" && (this[size] || this.flex)) {
             var pH = this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 node = hNodes[i];
