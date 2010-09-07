@@ -408,7 +408,7 @@ apf.GuiElement = function(){
         this.$drawn = true;
     }, true);
     
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+    var f = function(e){
         if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMInsert or whatever its called
             return;
         
@@ -439,7 +439,10 @@ apf.GuiElement = function(){
         
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
-    });
+    };
+    
+    this.addEventListener("DOMNodeInsertedIntoDocument", f);
+    this.addEventListener("$skinchange", f);
     
     //#ifdef __WITH_LAYOUT
     var f;

@@ -235,8 +235,8 @@ apf.Presentation = function(){
         this.$ext.style.display  = oExt.style.display;
 
         //Widget specific
-        if (this.$loadAml)
-            this.$loadAml(this.$aml);
+        //if (this.$loadAml)
+            //this.$loadAml(this.$aml);
         
         if (idInt)
             this.$int.setAttribute("id", idInt);
@@ -323,8 +323,6 @@ apf.Presentation = function(){
         }
         //#endif
 */
-        this.$setLayout();
-
         //#ifdef __WITH_INTERACTIVE
         if (this.draggable && this.$propHandlers["draggable"]) //@todo move these to the event below apf3.0)
             this.$propHandlers["draggable"].call(this, this.draggable);

@@ -170,10 +170,10 @@ apf.actiontracker = function(struct, tagName){
         }
     };
 
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+    /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode)
             this.parentNode.$at = this;
-    });
+    });*/
 
     //#ifdef __ENABLE_ACTIONTRACKER_HTML5
     this.item = function(index){
