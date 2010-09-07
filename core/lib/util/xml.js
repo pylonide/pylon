@@ -269,18 +269,22 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         xmlNode.firstChild.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
 
         if (applyChanges)
-            apf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
+            apf.xmldb.applyChanges("text", xmlNode, undoObj);
     }
     else {
         var oldValue      = xmlNode.nodeValue;
         xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
+        
+        if (undoObj) {
+            undoObj.name = xmlNode.nodeName; 
+        }
         
         //AML support - getters/setters would be awesome
         if (xmlNode.$triggerUpdate)
             xmlNode.$triggerUpdate(null, oldValue);
 
         if (applyChanges)
-            apf.xmldb.applyChanges("synchronize", xmlNode.parentNode
+            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode
                 || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                 undoObj);
     }
