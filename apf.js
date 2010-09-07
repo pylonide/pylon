@@ -623,6 +623,7 @@ var apf = {
      *   {Boolean} autoroute      whether the request can fallback to a server proxy.
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
+     *   {String}  contentType    the mime type of the message
      *   {Function} callback      the handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.

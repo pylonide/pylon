@@ -373,7 +373,7 @@ apf.runNonIe = function (){
                 linenr  = str[2].match(/\w+ (\d+)/)[1],
                 message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1"),
             
-                srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
+                srcText = xml.documentElement.lastChild.firstChild.nodeValue;//.split("\n")[0];
             
             throw new Error(apf.formatErrorString(1050, null, 
                 "XML Parse Error on line " +  linenr, message + 

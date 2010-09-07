@@ -222,6 +222,7 @@ apf.http = function(){
      *   {Boolean} autoroute      whether the request can fallback to a server proxy.
      *   {Boolean} caching        whether the request should use internal caching.
      *   {Boolean} ignoreOffline  whether to ignore offline catching.
+     *   {String}  contentType    the mime type of the message
      *   {Function} callback      the handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
@@ -429,7 +430,7 @@ apf.http = function(){
                 setRequestHeader("User-Agent", "Ajax.org Teleport 3.0"); //@deprecated
             setRequestHeader("X-Requested-With", "XMLHttpRequest");
             if (!options.headers || !options.headers["Content-type"])
-                setRequestHeader("Content-type", this.contentType
+                setRequestHeader("Content-type", options.contentType || this.contentType
                     || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
 
             if (autoroute) {
