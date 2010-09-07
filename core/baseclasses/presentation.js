@@ -302,7 +302,7 @@ apf.Presentation = function(){
                 apf.layout.activateRules(this.$int);
         }
 
-        //#ifdef __WITH_ANCHORING
+/*        //#ifdef __WITH_ANCHORING
         if (this.hasFeature(apf.__ANCHORING__))
             this.$recalcAnchoring();
         //#endif
@@ -322,6 +322,8 @@ apf.Presentation = function(){
             }
         }
         //#endif
+*/
+        this.$setLayout();
 
         //#ifdef __WITH_INTERACTIVE
         if (this.draggable && this.$propHandlers["draggable"]) //@todo move these to the event below apf3.0)
