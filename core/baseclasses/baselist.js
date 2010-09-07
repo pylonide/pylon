@@ -712,6 +712,8 @@ apf.BaseList = function(){
                 if (elCaption == oItem) {
                     apf.setNodeValue(elCaption, "");
                     var span = elCaption.appendChild(elCaption.ownerDocument.createElement("span"));
+                    if (apf.isIE)
+                        span.appendChild(elCaption.ownerDocument.createTextNode(" "));
                     span.setAttribute("id", "placeholder_" + this.$uniqueId
                         + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
                 }
