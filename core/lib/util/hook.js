@@ -112,8 +112,10 @@ apf.hookWrapAsync = function(inner){
 }
 
 apf.hookWrapSync = function(inner){
+	
     var outer = function() {
         if(outer._hooks){
+        	
             var args = Array.prototype.slice.call(arguments)
 
             if(outer._pres){
@@ -171,6 +173,7 @@ apf.hookPost = function ( func, forcesync, cb){
 }
 
 apf.hookUnwrap = function( func ){
+
     if(func._inner){
         func._inner._outer = func;
         return func._inner;
@@ -248,7 +251,7 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
     // lets put a log hook pre or post
     if( pre ) {// we are a pre log hook
         return apf.hookPre( func, forcesync, function(outer, inner, args){
-        
+
             arg2obj(inner, args, global, 'args');
             global._name = name;
             global._module = module;
@@ -265,7 +268,7 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
         });
     } else { // post log hook
         return apf.hookPost( func, forcesync, function(outer, inner, args, callback, results){
-                
+
             arg2obj(inner, args, global, 'args');
             if(callback)
                 arg2obj(callback, results, global, 'results');

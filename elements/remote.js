@@ -261,7 +261,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             l        = oData.length;
 
         for (; i < l; i++)
-            this.$receiveChange(oData[i], oSession, e.annotator, e.callback);
+            this.$receiveChange(oData[i], oSession, e.annotator);
     };
     
     this.clear = function(){
@@ -432,7 +432,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         qHost.rdbQueue = {};
     };
 
-    this.$receiveChange = function(oMessage, oSession, sAnnotator, fCallback){
+    this.$receiveChange = function(oMessage, oSession, sAnnotator){
     	
         if (apf.xmldb.disableRDB)
             return;
@@ -451,7 +451,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (!oSession) {
             // #ifdef __DEBUG
-            this.log && this.log("rdb", this.logprefix + "Could not find session while receiving data for a session with id '"
+        	apf.console.error("Could not find session while receiving data for a session with id '"
                 + oMessage.uri + "'");
             // #endif
             return;
@@ -463,7 +463,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         var model = oSession.model;
         if (!model) {
             //#ifdef __DEBUG
-            this.log && this.log("rdb", this.logprefix + "Remote Databinding Received: Could not find model while"
+            apf.console.error("Remote Databinding Received: Could not find model while"
                  + " receiving data for it with identifier '" + oMessage.model + "'");
             //#endif
             return;
@@ -528,7 +528,6 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 args     : q,
                 annotator: sAnnotator,
                 message  : oMessage,
-                callback : fCallback,
                 rdb      : true
             });
 
@@ -557,7 +556,6 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (oError) {
             apf.console.error(this.logprefix + oError.message)
-            fCallback && fCallback(oError);
         }
     };
 
