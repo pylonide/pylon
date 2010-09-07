@@ -231,12 +231,16 @@ apf.upload.html5.isSupported = function() {
             }
         };
 
+        nativeFile = html5files[file.id];
+
         xhr.open("post", this.oUpload.$buildUrl(this.oUpload.target,
-            {name : file.target_name || file.name}));
+            {name : file.target_name || file.name}), true);
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", nativeFile.fileName);
+        xhr.setRequestHeader("X-File-Size", nativeFile.fileSize);
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         //@todo set custom headers
-
-        nativeFile = html5files[file.id];
 
         if (xhr.sendAsBinary)
             sendBinaryBlob(nativeFile.getAsBinary());
