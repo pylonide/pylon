@@ -22,6 +22,11 @@
 // #ifdef __WITH_AMLPROCESSINGINSTRUCTION
 apf.AmlProcessingInstruction = function(isPrototype){
     this.$init(isPrototype);
+    
+    this.$supportedProperties = [];
+    this.$propHandlers        = {};
+    this.$booleanProperties   = {};
+    this.$inheritProperties   = {};
 };
 
 (function(){
@@ -52,10 +57,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
     
     this.getAttribute = function(){};
     this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
-    this.$supportedProperties = [];
-    this.$propHandlers        = {};
-    this.$booleanProperties   = {};
-    this.$inheritProperties   = {};
     
     //#ifdef __WITH_LIVEEDIT
     apf.LiveEdit && this.implement(apf.LiveEdit);
