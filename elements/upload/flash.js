@@ -177,6 +177,7 @@ apf.upload.flash.isSupported = function() {
         var uid   = this.oUpload.$uniqueId + "_swfupload",
             _self = this;
         oCont = this.oUpload.$ext;
+        document.body.appendChild(oCont);
         oCont.style.position   = "absolute",
         oCont.style.background = "transparent",
         oCont.style.width      = "100px",
