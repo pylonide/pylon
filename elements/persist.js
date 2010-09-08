@@ -338,11 +338,12 @@ apf.persist = function(struct, tagName){
                             this[m[i]] = _self.$addMethod(m[i]);
                         }
                         
-                        _self.$startListen();
                         _self.dispatchEvent("connect", data);
                         
                         if (callback) 
                             callback(data, state, extra);
+                            
+                        _self.$startListen();
                     }
                 }
             }

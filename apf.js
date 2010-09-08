@@ -1100,7 +1100,7 @@ var apf = {
 
             this.debugInfo.push(msg);
 
-            if (self.console) {
+            if (self.console && (!document.all || apf.config.debug)) {
                 console[type == "warn" ? "warn" : 
                     (type == "error" ? "error" : "log")]
                         (apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));

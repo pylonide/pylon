@@ -440,11 +440,13 @@ apf.vbox = function(struct, tagName){
             else {
                 if (this.$vbox) {
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
-                    //amlNode.$br.style.display = "none";
+                    if (amlNode.visible === false)
+                        amlNode.$br.style.display = "none";
                     //amlNode.$br.style.lineHeight = "0";
                     //this.$int.style.fontSize = "";
-                    //amlNode.$ext.style.fontSize = apf.getStyle(amlNode.$ext, "fontSize") || "normal";
-                    this.$int.style.fontSize = "0";
+                    if (amlNode.$box)
+                        amlNode.$ext.style.fontSize = "0";//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                    //this.$int.style.fontSize = "0";
                 }
                 else {
                     if (amlNode.visible !== false)
@@ -522,7 +524,7 @@ apf.vbox = function(struct, tagName){
                 if (amlNode.$br) {
                     amlNode.$br.parentNode.removeChild(amlNode.$br);
                     delete amlNode.$br;
-                    amlNode.$ext.style.fontSize = "";
+                    //amlNode.$ext.style.fontSize = "";
                 }
                 
                 amlNode.removeEventListener("resize", resizeHandler);

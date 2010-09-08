@@ -154,7 +154,7 @@ apf.getData = function(instruction, options){
     var result, chr = instruction.charAt(0), callback = options.callback;
 
     //#ifdef __DEBUG
-    var gCallback  = function(data, state, extra){
+    /*var gCallback  = function(data, state, extra){
         var _self = this;
         $setTimeout(function(){
             s2.call(_self, data, state, extra);
@@ -162,9 +162,9 @@ apf.getData = function(instruction, options){
     }
     
     var s2 = 
-    /* #else
+     #else */
     var gCallback = 
-    #endif */
+    //#endif
 
     function(data, state, extra){
         var callback = options.callback
