@@ -394,6 +394,10 @@ apf.getVerBorders = function(oHtml){
 };
 
 apf.getWidthDiff = function(oHtml){
+    if (apf.hasFlexibleBox 
+      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+        return 0;
+    
     return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
         + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
@@ -401,6 +405,10 @@ apf.getWidthDiff = function(oHtml){
 };
 
 apf.getHeightDiff = function(oHtml){
+    if (apf.hasFlexibleBox 
+      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+        return 0;
+    
     return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
         + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)

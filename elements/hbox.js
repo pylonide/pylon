@@ -723,16 +723,23 @@ apf.vbox = function(struct, tagName){
         }
         
         //Stretching - for IE8 this could be done using box-sizing and height:100%
-        if (this.align == "stretch" && (this[size] || this.flex)) {
+        /*
+             && (this[size] || this.flex)
+        */
+        if (this.align == "stretch") {
+            //var hasSize = this[size] || this.flex;
+            var l  = hNodes.length;
             var pH = this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
-            for (var i = 0, l = hNodes.length; i < l; i++) {
+            for (var i = 0; i < l; i++) {
                 node = hNodes[i];
                 
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
-                    node.$ext.style[size] = 
-                        Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
+                    //@todo minsize
+                    node.$ext.style[size] = node.$ext.offsetHeight == pH
+                        ? ""
+                        : Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }
             }
         }
@@ -748,6 +755,7 @@ apf.vbox = function(struct, tagName){
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {
+                    if (node.id == "test") debugger;
                     var v = (i % 2 == 0 ? Math.floor : Math.ceil)((rW / total) * parseInt(node.flex));
                     done += parseInt(node.flex);
                     var m = node.margin && apf.getBox(node.margin);

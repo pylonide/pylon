@@ -471,7 +471,7 @@ var apf = {
         delete t;
 
         this.supportVML                = apf.isIE;
-        this.supportSVG                = !apf.isIE;
+        this.supportSVG                = !apf.isIE || apf.isIE > 8;
         this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !!document.createElement("canvas").getContext;
         this.supportCanvasText         = !!(this.supportCanvas
@@ -517,6 +517,10 @@ var apf = {
         t = null;
         delete t;
         //#endif
+
+        this.enableAnim   = !apf.isIE || apf.isIE > 8;
+        this.animSteps    = apf.isIE ? 0.3 : 1;
+        this.animInterval = apf.isIE ? 7 : 1;
 
         this.CSSFLOAT    = apf.isIE ? "styleFloat" : "cssFloat";
         this.CSSPREFIX   = apf.isGecko ? "Moz" : (apf.isWebkit ? "webkit" : "");

@@ -331,7 +331,9 @@ var ID        = "id",
      *     stop                 set on the object passed .
      */
     single = function(oHtml, info){
-        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
+        info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
+        info.steps    *= apf.animSteps;
+        info.interval *= apf.animInterval;
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
@@ -495,7 +497,9 @@ var ID        = "id",
      *                          single tween method).
      */
     multi = function(oHtml, info){
-        info = apf.extend({steps: 3, interval: 20, anim: apf.tween.linear, control: {}}, info);
+        info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
+        info.steps    *= apf.animSteps;
+        info.interval *= apf.animInterval;
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;

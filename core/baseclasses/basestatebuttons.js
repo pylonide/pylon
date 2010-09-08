@@ -31,7 +31,6 @@
 apf.BaseStateButtons = function(){
     this.state   = "normal";
     this.edit    = false;
-    this.animate = true;//!apf.hasSingleRszEvent; // experimental
     
     var actions  = {
         "min"   : ["minimized", "minimize", "restore"],
@@ -185,9 +184,9 @@ apf.BaseStateButtons = function(){
                 this.$ext.style.height = this.$lastheight;//(this.$lastheight - apf.getHeightDiff(this.$ext)) + "px";
 
             if (this.$lastpos) {
+                apf.plane.hide(this.$uniqueId);
+                
                 if (this.animate && !noanim) {
-                    apf.plane.hide(this.$uniqueId);
-                    
                     //Pre remove paused event because of not having onresize
                     //if (apf.hasSingleRszEvent)
                         //delete apf.layout.onresize[apf.layout.getHtmlId(this.$pHtmlNode)];
@@ -368,6 +367,10 @@ apf.BaseStateButtons = function(){
                 htmlNode.style.top  = t + "px";
                 
                 function setMax(){
+                    //While animating dont execute this function
+                    if (_self.animstate)
+                        return;
+                    
                     var w, h, pos, box, pDiff;
                     if (_self.maxconf) {
                         w = _self.$maxconf[0];
@@ -394,7 +397,7 @@ apf.BaseStateButtons = function(){
                             ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
                             : [0, 0];
                     }
-                    
+
                     if (position != "absolute") {
                         var diff = apf.getDiff(pNode);
                         w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
@@ -412,15 +415,15 @@ apf.BaseStateButtons = function(){
                     pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
                     pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
                     
+                    if (!hasAnimated && _self.$maxconf && _self.$maxconf[4])
+                        apf.plane.show(htmlNode, false, null, null, {
+                            color   : _self.$maxconf[4], 
+                            opacity : _self.$maxconf[5],
+                            animate : _self.animate,
+                            protect : _self.$uniqueId
+                        });
+                    
                     if (_self.animate && !hasAnimated) {
-                        if (_self.$maxconf && _self.$maxconf[4])
-                            apf.plane.show(htmlNode, false, null, null, {
-                                color   : _self.$maxconf[4], 
-                                opacity : _self.$maxconf[5],
-                                animate : true,
-                                protect : _self.$uniqueId
-                            });
-                        
                         _self.animstate = 1;
                         hasAnimated     = true;
                         apf.tween.multi(htmlNode, {
@@ -446,7 +449,8 @@ apf.BaseStateButtons = function(){
                                 
                                 _self.dispatchEvent("afterstatechange", {
                                   from : lastState, 
-                                  to   : o});
+                                  to   : o
+                                });
                                 
                                 //#ifdef __WITH_LAYOUT
                                 if (apf.hasSingleRszEvent)
@@ -459,10 +463,11 @@ apf.BaseStateButtons = function(){
                         htmlNode.style.left = (pos[0] - box[3]) + "px";
                         htmlNode.style.top  = (pos[1] - box[0]) + "px";
 
+                        var diff = apf.getDiff(_self.$ext);
                         htmlNode.style.width  = (w
-                            - hordiff + box[1] + box[3]) + "px";
+                            - diff[0] + box[1] + box[3]) + "px";
                         htmlNode.style.height = (h
-                            - verdiff + box[0] + box[2]) + "px";
+                            - diff[1] + box[0] + box[2]) + "px";
                     }
                 }
 
@@ -513,7 +518,8 @@ apf.BaseStateButtons = function(){
                 //#endif
             }
 
-            if (!o.maximized || lastState.maximized && _self.animate) {
+            //@todo research why this is not symmetrical
+            if (!o.maximized || !this.animate || lastState.maximized && _self.animate) {
                 _self.dispatchEvent("afterstatechange", {
                   from : lastState, 
                   to   : o});
@@ -600,9 +606,6 @@ apf.BaseStateButtons = function(){
             this.$buttons.insertBefore(btn, this.$buttons.firstChild);
         }
         
-        var diff = apf.getDiff(this.$ext);
-        hordiff  = diff[0]; 
-        verdiff  = diff[1];
         marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
     };
     
@@ -630,6 +633,8 @@ apf.BaseStateButtons = function(){
     }
     
     this.$initButtons = function(oExt){
+        this.animate = apf.enableAnim;
+        
         this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
         var oButtons = this.$getLayoutNode("main", "buttons", oExt);

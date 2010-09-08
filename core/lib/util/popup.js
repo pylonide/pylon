@@ -166,7 +166,7 @@ apf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : apf.tween.NORMAL,
-                    steps : options.steps || (apf.isIE ? 5 : 15)
+                    steps : options.steps || 15 * apf.animSteps
                 });
             }
             else {

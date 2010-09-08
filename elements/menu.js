@@ -82,6 +82,8 @@
  */
 apf.menu = function(struct, tagName){
     this.$init(tagName || "menu", apf.NODE_VISIBLE, struct);
+    
+    this.animate = apf.enableAnim;
 };
 
 (function(){
@@ -92,12 +94,12 @@ apf.menu = function(struct, tagName){
 
     /**** Properties and Attributes ****/
     
-    this.anim   = true;
-    this.zindex = 10000000;
+    this.zindex  = 10000000;
     this.visible = false;
 
-    this.$booleanProperties["anim"]     = true;
+    this.$booleanProperties["animate"]  = true;
     this.$booleanProperties["autohide"] = true;
+    
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
         if (value) {
             this.$ext.style.display = "block";
@@ -261,8 +263,8 @@ apf.menu = function(struct, tagName){
                 apf.popup.show(this.$uniqueId, {
                     x            : 0, 
                     y            : opener.$ext.offsetHeight, 
-                    animate      : noanim || !this.anim ? false : "fade",
-                    steps        : (apf.isIE ? 5 : 10),
+                    animate      : noanim || !this.animate ? false : "fade",
+                    steps        : 10,
                     ref          : opener.$ext,
                     allowTogether: openMenuId,
                     autohide     : this.autohide !== false,
@@ -274,8 +276,8 @@ apf.menu = function(struct, tagName){
                 apf.popup.show(this.$uniqueId, {
                     x            : x - bodyPos[0], 
                     y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
-                    animate      : noanim || !this.anim ? false : "fade",
-                    steps        : (apf.isIE ? 5 : 10),
+                    animate      : noanim || !this.animate ? false : "fade",
+                    steps        : 10,
                     ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
                     autohide     : this.autohide !== false,
