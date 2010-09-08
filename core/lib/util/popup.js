@@ -116,7 +116,7 @@ apf.popup = {
             while(p && p.nodeType == 1) {
                 if (fixed = apf.getStyle(p, "position") == "fixed")
                     break;
-                p = p.parentNode;
+                p = p.parentNode || p.$parentNode;
             }
 
             if (!fixed) {

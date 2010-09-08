@@ -442,17 +442,6 @@ apf.vbox = function(struct, tagName){
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
                     if (amlNode.visible === false)
                         amlNode.$br.style.display = "none";
-
-                    var pNode = this.$int.parentNode;
-                    while(pNode.style.fontSize == "0") {
-                        pNode = pNode.parentNode;
-                    }
-
-                    //amlNode.$br.style.lineHeight = "0";
-                    //this.$int.style.fontSize = "";
-                    if (!amlNode.localName != "vbox")
-                        amlNode.$ext.style.fontSize = apf.getStyle(pNode, "fontSize");//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
-                    this.$int.style.fontSize = "0";
                 }
                 else {
                     if (amlNode.visible !== false)
@@ -461,6 +450,14 @@ apf.vbox = function(struct, tagName){
                     amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
                 }
+                
+                var pNode = this.$int.parentNode;
+                while(pNode.style.fontSize == "0") {
+                    pNode = pNode.parentNode;
+                }
+                if (!amlNode.localName != "vbox")
+                    amlNode.$ext.style.fontSize = apf.getStyle(pNode, "fontSize");//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                this.$int.style.fontSize = "0";
                 
                 amlNode.addEventListener("resize", resizeHandler);
             }
@@ -742,7 +739,7 @@ apf.vbox = function(struct, tagName){
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
-                    //@todo minsize
+                    
                     node.$ext.style[size] = node.$ext.offsetHeight == pH
                         ? ""
                         : Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
@@ -761,7 +758,6 @@ apf.vbox = function(struct, tagName){
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {
-                    if (node.id == "test") debugger;
                     var v = (i % 2 == 0 ? Math.floor : Math.ceil)((rW / total) * parseInt(node.flex));
                     done += parseInt(node.flex);
                     var m = node.margin && apf.getBox(node.margin);

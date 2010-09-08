@@ -245,7 +245,7 @@ apf.menu = function(struct, tagName){
                 }
             }
         }
-        
+
         if (this.oOverlay) {
             if (btnWidth) {
                 this.oOverlay.style.display = "block";

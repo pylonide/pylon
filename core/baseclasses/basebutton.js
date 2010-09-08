@@ -178,7 +178,8 @@ apf.BaseButton = function(){
             _self.$mouseLeft    = false;
             _self.$updateState(e, "mousedown");
             
-            apf.cancelBubble(e);
+            if (!apf.isIE || !_self.submenu) //Causes a focus problem for menus
+                apf.cancelBubble(e);
         };
         
         this.$ext.onmouseup = function(e, force) {
