@@ -165,7 +165,8 @@ apf.auth = function(struct, tagName){
 apf.aml.setElement("auth", apf.auth);
 
 (function(){
-    this.autostart = true;
+    this.autostart     = true;
+    this.authenticated = false;
     
     this.$retry      = true;
     this.loggedIn    = false;
@@ -192,7 +193,7 @@ apf.aml.setElement("auth", apf.auth);
 
     this.$supportedProperties.push("login", "logout", "fail-state", "error-state",
         "login-state", "logout-state", "waiting-state", "window", "autostart",
-        "remember");
+        "remember", "authenticated");
 
     this.$propHandlers["login"]         = 
     this.$propHandlers["login-state"]   = function(value){
@@ -459,6 +460,8 @@ apf.aml.setElement("auth", apf.auth);
                     throw commError; //@todo ouch, too harsh?
 
                 //@todo Call auth required again??
+                
+                _self.setProperty("authenticated", false);
 
                 return;
             }
@@ -498,6 +501,8 @@ apf.aml.setElement("auth", apf.auth);
             apf.console.info("Log " + type + " success for service '"
                 + service + "'", "auth");
             //#endif
+            
+            _self.setProperty("authenticated", true);
         };
         apf.saveData(xmlNode.getAttribute("log" + type), options);
     };
