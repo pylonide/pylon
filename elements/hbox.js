@@ -451,13 +451,19 @@ apf.vbox = function(struct, tagName){
                     this.$int.style.whiteSpace = "nowrap";
                 }
                 
-                var pNode = this.$int.parentNode;
-                while(pNode.style.fontSize == "0") {
-                    pNode = pNode.parentNode;
-                }
-                if (!amlNode.localName != "vbox")
-                    amlNode.$ext.style.fontSize = apf.getStyle(pNode, "fontSize");//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
                 this.$int.style.fontSize = "0";
+                if (!amlNode.$box) {
+                    var fontSize = apf.getStyle(amlNode.$ext, "fontSize");
+                    if (fontSize == "0px") {
+                        amlNode.$ext.style.fontSize = "";
+                        var pNode = this.$int.parentNode;
+                        while(pNode.style.fontSize == "0px") {
+                            pNode = pNode.parentNode;
+                        }
+                        fontSize = apf.getStyle(pNode, "fontSize");
+                    }
+                    amlNode.$ext.style.fontSize = fontSize;//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                }
                 
                 amlNode.addEventListener("resize", resizeHandler);
             }

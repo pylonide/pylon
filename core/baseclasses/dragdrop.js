@@ -1273,6 +1273,9 @@ apf.MultiselectDragDrop = function() {
     this.$hideDragIndicator = function(success){
         var oDrag = this.lastDragNode || this.oDrag, _self = this;
         if (!this.multiple && !success && oDrag.style.display == "block") {
+            if (!this.$selected && !this.$caret)
+                return;
+            
             var pos = apf.getAbsolutePosition(this.$selected || this.$caret);
             apf.tween.multi(oDrag, {
                 anim     : apf.tween.easeInOutCubic,

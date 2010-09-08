@@ -266,7 +266,7 @@ apf.textbox  = function(struct, tagName){
         }
         
         if (!this.value)
-            this.$clear();
+            this.$clear(true);
             
         if (this.type == "password" && this.$inputInitFix) {
             this.$inputInitFix.innerHTML = value;
@@ -327,7 +327,7 @@ apf.textbox  = function(struct, tagName){
     }
     
     //@todo cleanup and put initial-message behaviour in one location
-    this.$clear = function(){
+    this.$clear = function(noEvent){
         if (this["initial-message"]) {
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
@@ -336,7 +336,8 @@ apf.textbox  = function(struct, tagName){
             this.$propHandlers["value"].call(this, "", null, null, true);
         }
         
-        this.dispatchEvent("clear");//@todo this should work via value change
+        if (!noEvent)
+            this.dispatchEvent("clear");//@todo this should work via value change
     }
 
     /**
