@@ -442,11 +442,17 @@ apf.vbox = function(struct, tagName){
                     amlNode.$br = this.$int.insertBefore(amlNode.$ext.ownerDocument.createElement("br"), amlNode.$ext.nextSibling);
                     if (amlNode.visible === false)
                         amlNode.$br.style.display = "none";
+
+                    var pNode = this.$int.parentNode;
+                    while(pNode.style.fontSize == "0") {
+                        pNode = pNode.parentNode;
+                    }
+
                     //amlNode.$br.style.lineHeight = "0";
                     //this.$int.style.fontSize = "";
-                    if (amlNode.$box)
-                        amlNode.$ext.style.fontSize = "0";//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
-                    //this.$int.style.fontSize = "0";
+                    if (!amlNode.localName != "vbox")
+                        amlNode.$ext.style.fontSize = apf.getStyle(pNode, "fontSize");//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                    this.$int.style.fontSize = "0";
                 }
                 else {
                     if (amlNode.visible !== false)

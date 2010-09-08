@@ -332,8 +332,8 @@ var ID        = "id",
      */
     single = function(oHtml, info){
         info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
-        info.steps    *= apf.animSteps;
-        info.interval *= apf.animInterval;
+        info.steps    = Math.ceil(info.steps * apf.animSteps);
+        info.interval = Math.ceil(info.interval * apf.animInterval);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
@@ -498,8 +498,8 @@ var ID        = "id",
      */
     multi = function(oHtml, info){
         info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
-        info.steps    *= apf.animSteps;
-        info.interval *= apf.animInterval;
+        info.steps    = Math.ceil(info.steps * apf.animSteps);
+        info.interval = Math.ceil(info.interval * apf.animInterval);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
