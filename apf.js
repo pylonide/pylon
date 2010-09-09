@@ -317,6 +317,11 @@ var apf = {
         this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) : -1;
         this.versionSafari = this.isSafari ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
+        this.versionOpera  = this.isOpera 
+            ? parseFloat(sAgent.match(b===4 
+                ? /(?:version)\/([\d\.]+)/i 
+                : /(?:opera)\/([\d\.]+)/i)[1]) 
+            : -1;
 
         var found;
         /**
