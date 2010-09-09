@@ -90,7 +90,10 @@ apf.upload.html5.isSupported = function() {
 
         // cleanup first
         if (oInput && oInput.parentNode && oCont && oCont.parentNode) {
-            oCont.removeChild(oInput);
+            try {
+                oCont.removeChild(oInput);
+            }
+            catch(ex) {}
             oInput = null;
         }
 
