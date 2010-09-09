@@ -254,7 +254,8 @@ var apf = {
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
          */
-        this.isOpera      = b===4;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        this.isOpera      = b===4 || b===5;//(self.opera && Object.prototype.toString.call(self.opera) == "[object Opera]");
+        //b = 5 for Opera 9
         
         /**
          * Specifies whether the application is running in the Konqueror browser.
@@ -310,10 +311,12 @@ var apf = {
          * Specifies whether the application is running in the Firefox browser version 3.
          * @type {Boolean}
          */
-        this.isGecko3     = this.isGecko;// && (function x(){})[-5] == "x";
-        this.isGecko35    = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
-        this.versionGecko = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
-        this.versionFF    = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) : -1;
+        this.isGecko3      = this.isGecko;// && (function x(){})[-5] == "x";
+        this.isGecko35     = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
+        this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
+        this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) : -1;
+        this.versionSafari = this.isSafari ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
+        this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
 
         var found;
         /**
