@@ -588,8 +588,8 @@ apf.vbox = function(struct, tagName){
     }
     
     function myHeightHandler(e){
+        clearInterval(this.$heighttimer);
         if (e.value || this.align != "stretch") {
-            clearInterval(this.$heighttimer);
             delete this.$heighttimer;
         }
         else if (!this.$heighttimer) {
@@ -606,7 +606,10 @@ apf.vbox = function(struct, tagName){
                     if ($int.scrollHeight > $int.offsetHeight)
                         return _self.$resize(true);
                 }
-            }, 500);
+                
+                if (_self.flex)
+                    clearInterval(this.$heighttimer);
+            }, this.flex ? 1 : 500);
         }
     }
     
@@ -675,9 +678,9 @@ apf.vbox = function(struct, tagName){
         
         if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
             return;
-        
+
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
-        
+
         //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
         
         /*if (this.$table.offsetWidth >= this.$ext.offsetWidth)
@@ -697,6 +700,7 @@ apf.vbox = function(struct, tagName){
         }*/
         
         //if (!this.$vbox) alert("here");
+
         
         var total    = 0;
         var size     = this.$vbox ? "width" : "height";
@@ -719,7 +723,7 @@ apf.vbox = function(struct, tagName){
                 //if (!node.$skipResizeOnce) node.$skipResizeOnce = 1;
                 //else node.$skipResizeOnce++;
                 //node.$skipResizeOnce = 1
-                node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
+                //node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
             }
 
             if (parseInt(node.flex))
@@ -730,7 +734,7 @@ apf.vbox = function(struct, tagName){
                 fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
             }
         }
-        //if (this.id == "test2") debugger;
+        
         /*
              && (this[size] || this.flex)
         */

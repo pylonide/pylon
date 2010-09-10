@@ -283,6 +283,7 @@ apf.scrollbar = function(struct, tagName){
             }
             else if (this.visible) {
                 this.hide();
+                
                 //this.$ext.style.display = "none";
             }
             
@@ -304,8 +305,6 @@ apf.scrollbar = function(struct, tagName){
                 this.$recalc();
             if (!this.$slideMaxSize)
                 return;
-            
-            if (this.parentNode.id == "test2") debugger;
             
             //oHtml.style.overflowY = "scroll";
             
