@@ -201,6 +201,12 @@ apf.DataBinding = function(){
     this.$execProperty = function(prop, xmlNode, undoObj){
         var attr = this.$attrBindings[prop];
         
+        //@todo this is a hacky solution for replaceNode support - Have to rethink this.
+        if (this.nodeType == 7) {
+            if (xmlNode != this.xmlRoot)
+                this.xmlRoot = xmlNode;
+        }
+        
         //#ifdef __DEBUG
         if (!attr) {
             apf.console.error("Could not find attribute handler for property '" 
@@ -497,6 +503,9 @@ apf.DataBinding = function(){
           || this.$canLoadData && !this.$canLoadData()) {
             
             if (!this.caching || !this.hasFeature(apf.__CACHE__)) {
+                
+                //@todo this is wrong. It is never updated when there are only
+                //Property binds and then it just leaks xml nodes
                 this.xmlRoot = xmlNode;
                 
                 //#ifdef __WITH_PROPERTY_BINDING
