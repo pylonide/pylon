@@ -2488,7 +2488,7 @@ apf.lm_exec = new (function(){
         
         if (editMode !== false) {
             return '<div' 
-              + ' class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
+              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
                 ? ((m.substr(0,1) != "/" 
                     ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")

@@ -721,7 +721,7 @@ if (myProp == "planes") debugger;
             var isChanged = (typeof value == OBJ)
                 ? value != (typeof oldvalue == OBJ ? oldvalue : null)
                 : String(oldvalue) !== String(value);
-        }catch(e){
+        } catch(e){
             var isChanged = true;
         }
             

@@ -181,8 +181,10 @@ apf.LiveEdit = function() {
 
             apf.setStyleClass(el, null, ["liveEditOver"]);
         };
-        this.$mouseDown = function(e) {
-            apf.cancelBubble(e);
+        this.$mouseDown = function(e, preventPropagation) {
+            if (!preventPropagation)
+                apf.cancelBubble(e);
+
             var el = e.srcElement || e.target;
             if (!el) return;
             if (_self.$activeNode && _self.$selection && apf.isChildOf(_self.$activeNode, el, true))
@@ -198,7 +200,7 @@ apf.LiveEdit = function() {
             }
 
             createEditor.call(_self, el);
-            if (!_self.$lastEditor) {
+            if (!_self.$lastEditor && !preventPropagation) {
                 e.cancelBubble = true;
                 apf.window.$mousedown({srcElement: _self.$activeNode});
                 $setTimeout(function(){
@@ -838,4 +840,16 @@ apf.LiveEdit = function() {
 };
 
 apf.config.$inheritProperties["liveedit"] = 2;
+
+apf.LiveEdit.mousedown = function(oHtml, event){
+    if (oHtml.$ext) {
+        var amlNode = apf.findHost(oHtml.$ext);
+        var lm      = amlNode.ownerDocument.$parentNode;
+        if (!lm.hasFocus())
+            lm.focus();
+        lm.$mouseDown(event, true);
+        apf.stopPropagation(event);
+    }
+}
+
 // #endif
