@@ -124,7 +124,7 @@ apf.persist = function(struct, tagName){
             if (result === true)
                 return true;
             
-            //Cancelled Error
+            //Canceled Error
             else if (result === 2) {
                 this.dispatchEvent("disconnect");
                 this.$stopListen();
@@ -429,6 +429,7 @@ apf.persist = function(struct, tagName){
             });
         }
     }
+    this.$addMethod({name: "sendpassword", args: ["username"]});
     
     /**
      * Instruction handler for XMPP protocols. It supports the following directives:
