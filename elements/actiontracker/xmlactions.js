@@ -188,6 +188,10 @@ apf.actiontracker.actions = {
             }
             else {
                 var newNodes = [];
+                // @todo: this should be fixed in libxml
+                if (apf.isO3)
+                    q[1] = apf.escapeXML(q[1])
+                    
                 apf.setNodeValue(q[0], q[1], true, {
                     undoObj  : undoObj,
                     xpath    : q[2],
@@ -220,7 +224,7 @@ apf.actiontracker.actions = {
         }
     },
 
-    //@todo please change .func to .action for constency reasons
+    //@todo please change .func to .action for consistency reasons
     "multicall" : function(undoObj, undo, at){
         var q = undoObj.args;
 
