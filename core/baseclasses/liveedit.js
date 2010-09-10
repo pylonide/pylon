@@ -285,7 +285,7 @@ apf.LiveEdit = function() {
     function xmlupdateHandler(){
         if (!this.$skipChange) {
             initTabStack.call(this);
-            this.$activeNode = null;
+            //this.$activeNode = null;
         }
     }
     //@todo skin change
