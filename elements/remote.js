@@ -433,10 +433,10 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
 
     this.$receiveChange = function(oMessage, oSession, sAnnotator){
-        if (apf.xmldb.disableRDB) {
-            this.log && this.log("rdb", this.logprefix + "Not executing incoming change because RDB is disabled");
-            return;
-        }
+        //if (apf.xmldb.disableRDB) {
+            this.log && this.log("rdb", this.logprefix + "Receiving change. disableRDB=" + apf.xmldb.disableRDB);
+            //return;
+        //}
 
         //#ifdef __WITH_OFFLINE
         // @todo apf3.0 implement proper offline support in RDB
