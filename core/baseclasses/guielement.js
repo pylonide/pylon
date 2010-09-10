@@ -816,8 +816,7 @@ apf.GuiElement.propHandlers = {
      * that loads new aml as children of this element.
      */
     "aml": function(value){
-        //Clear??
-        this.insertMarkup(value);
+        this.replaceMarkup(value);
     }
 
     /**

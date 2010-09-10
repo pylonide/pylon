@@ -433,15 +433,18 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
 
     this.$receiveChange = function(oMessage, oSession, sAnnotator){
-    	
-        if (apf.xmldb.disableRDB)
+        if (apf.xmldb.disableRDB) {
+            this.log && this.log("rdb", this.logprefix + "Not executing incoming change because RDB is disabled");
             return;
+        }
 
         //#ifdef __WITH_OFFLINE
         // @todo apf3.0 implement proper offline support in RDB
         if (apf.offline && apf.offline.inProcess == 2) {
              //We're coming online, let's queue until after sync
             queue.push(oMessage);
+            
+            this.log && this.log("rdb", this.logprefix + "Not executing incoming change because we're offline. Action is queued.");
             return;
         }
 
@@ -457,8 +460,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             return;
         }
 
-        if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
-            return;
+        //if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
+            //return;
 
         var model = oSession.model;
         if (!model) {

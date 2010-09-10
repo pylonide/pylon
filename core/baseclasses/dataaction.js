@@ -401,7 +401,11 @@ apf.DataAction = function(){
         }
 
         //Call ActionTracker and return ID of Action in Tracker
-        var UndoObj = this.getActionTracker().execute(ev);
+        var at      = this.getActionTracker(); 
+        if (!at)// This only happens at destruction of apf
+            return UndoObj;
+        
+        var UndoObj = at.execute(ev);
         ev.xmlNode = UndoObj.xmlNode;
         ev.undoObj = UndoObj;
 

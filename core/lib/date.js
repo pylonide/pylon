@@ -808,6 +808,9 @@ Date.prototype.fromISO8601 = function(formattedString) {
         if (offset)
             result.setTime(result.getTime() + offset * 60000);
     }
+    else 
+        return new Date(formattedString);
+
     return result; // Date or null
 }
 

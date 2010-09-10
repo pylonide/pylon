@@ -83,7 +83,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
         if (this.clear)
             this.parentNode.$int.innerHTML = "";
-        
+
         if (xmlNode) {
             domParser.parseFromXml(xmlNode, {
                 doc        : this.ownerDocument,

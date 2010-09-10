@@ -730,8 +730,7 @@ apf.vbox = function(struct, tagName){
                 fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
             }
         }
-        
-        //Stretching - for IE8 this could be done using box-sizing and height:100%
+        //if (this.id == "test2") debugger;
         /*
              && (this[size] || this.flex)
         */
@@ -741,12 +740,12 @@ apf.vbox = function(struct, tagName){
             var pH = this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
             for (var i = 0; i < l; i++) {
                 node = hNodes[i];
-                
+
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
                     
-                    node.$ext.style[size] = node.$ext.offsetHeight == pH
+                    node.$ext.style[size] = !this[size] && !this.flex && node.$ext.offsetHeight == pH
                         ? ""
                         : Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                 }

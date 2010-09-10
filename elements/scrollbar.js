@@ -270,9 +270,6 @@ apf.scrollbar = function(struct, tagName){
         if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
             return;
         
-        if (!this.$slideMaxSize)
-            this.$recalc();
-        
         this.$updating = true;
         
         //Disable scrollbar
@@ -302,6 +299,13 @@ apf.scrollbar = function(struct, tagName){
                 //this.$ext.style.display = "block";
                 //this.$caret.style.display = "block";
             }
+            
+            if (!this.$slideMaxSize)
+                this.$recalc();
+            if (!this.$slideMaxSize)
+                return;
+            
+            if (this.parentNode.id == "test2") debugger;
             
             //oHtml.style.overflowY = "scroll";
             

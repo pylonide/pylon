@@ -41,6 +41,11 @@ apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
+    /* 
+        @todo domParser needs to get a queue based on the parentNode that is 
+              waiting to be parsed. This will prevent collisions when multiple
+              parts of the document are altered at the same time.
+    */
     this.$shouldWait = 0;
 
     // privates
@@ -249,7 +254,7 @@ apf.DOMParser.prototype = new (function(){
                 }
             }
         }
-        
+
         //instead of $amlLoaded use something more generic see compareDocumentPosition
         if (!options.ignoreSelf && !amlNode.$amlLoaded)
             amlNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}

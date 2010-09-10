@@ -44,10 +44,12 @@ apf.StateServer = {
         if (!this.groups[name]) {
             this.groups[name] = [];
 
-            var pState = new apf.state("state", null, null, true);
+            var pState = new apf.state({
+                id : name,
+            });
             pState.parentNode = pNode;
-            pState.implement(apf.AmlNode);
-            pState.name   = name;
+            //pState.implement(apf.AmlNode);
+            //pState.name   = name;
             pState.toggle = function(){
                 for (var next = 0, i = 0; i < apf.StateServer.groups[name].length; i++) {
                     if (apf.StateServer.groups[name][i].active) {

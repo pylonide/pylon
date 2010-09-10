@@ -356,6 +356,7 @@ apf.AmlNode = function(){
         this.lastChild  = this.childNodes[this.childNodes.length - 1];
 
         //@todo fix event struture, fix tree events
+        var initialAppend = !amlNode.$amlLoaded;
         function triggerUpdate(){
             amlNode.$pHtmlNode = _self.canHaveChildren ? _self.$int : document.body;
 
@@ -367,7 +368,7 @@ apf.AmlNode = function(){
 
             var nextNode = beforeNode;
             //!_self.$useLateDom && 
-            if (!noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {
+            if (!initialAppend && !noHtmlDomEdit && amlNode.$ext && !amlNode.$coreHtml) {
                 nextNode = beforeNode;
                 while (nextNode && !(nextNode.$altExt || nextNode.$ext)) {
                     nextNode = nextNode.nextSibling;
@@ -407,11 +408,8 @@ apf.AmlNode = function(){
             return; //We don't update the tree if this is a doc fragment
 
         //@todo review this...
-        //this.nodeType == 1 && 
-        if (!amlNode.$amlLoaded) {
-            //amlNode.$reappendToParent = triggerUpdate;
+        if (initialAppend) {
             (this.ownerDocument || this).$domParser.$continueParsing(amlNode, {delay: true});
-            //return amlNode; //@todo apf3.0 so we do call DOMNodeInserted here
         }
 
         triggerUpdate();

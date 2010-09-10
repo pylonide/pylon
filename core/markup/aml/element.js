@@ -416,12 +416,15 @@ apf.AmlElement = function(struct, tagName){
             return false; //it's the responsibility of the dev to check this
         //#endif
 
+        var _self   = this;
         var include = new apf.XiInclude();
         include.setAttribute("href", amlDefNode);
         if (options && options.clear)
             include.setAttribute("clear", true);
         include.options  = options;
-        include.callback = options && options.callback;
+        include.callback = options && options.callback || function(){
+            _self.dispatchEvent("afteramlinserted", {src: amlDefNode});
+        };
         this.appendChild(include);
     };
     
