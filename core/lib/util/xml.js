@@ -272,6 +272,10 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             apf.xmldb.applyChanges("text", xmlNode, undoObj);
     }
     else {
+        // @todo: this should be fixed in libxml
+        if (apf.isO3 && xmlNode.nodeType == 2)
+            nodeValue = nodeValue.replace(/&/g, "&amp;");
+        
         var oldValue      = xmlNode.nodeValue;
         xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
         

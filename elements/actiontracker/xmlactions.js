@@ -188,10 +188,6 @@ apf.actiontracker.actions = {
             }
             else {
                 var newNodes = [];
-                // @todo: this should be fixed in libxml
-                if (apf.isO3)
-                    q[1] = apf.escapeXML(q[1])
-                    
                 apf.setNodeValue(q[0], q[1], true, {
                     undoObj  : undoObj,
                     xpath    : q[2],
