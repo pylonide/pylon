@@ -153,8 +153,8 @@ apf.getData = function(instruction, options){
     //Instruction type detection
     var result, chr = instruction.charAt(0), callback = options.callback;
 
-    //#ifdef __DEBUG
-    /*var gCallback  = function(data, state, extra){
+    /*#ifdef __DEBUG
+    var gCallback  = function(data, state, extra){
         var _self = this;
         $setTimeout(function(){
             s2.call(_self, data, state, extra);
@@ -162,7 +162,7 @@ apf.getData = function(instruction, options){
     }
     
     var s2 = 
-     #else */
+    #else */
     var gCallback = 
     //#endif
 
