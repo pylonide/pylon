@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __LIVEMARKUP || __INC_ALL
+// #ifdef __WITH_LIVEMARKUP || __INC_ALL
 
 /**
  * Live Markup processor for a processing instruction

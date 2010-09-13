@@ -32,7 +32,7 @@ apf.AmlText = function(isPrototype){
         return apf.xmlentities(this.nodeValue).replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
     
-    //#ifdef __ENABLED_LIVETEXT
+    //#ifdef __ENABLE_LIVETEXT
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
         if (prop == "data") {
