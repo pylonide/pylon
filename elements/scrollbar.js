@@ -196,10 +196,12 @@ apf.scrollbar = function(struct, tagName){
                 amlNode.addEventListener("mousescroll", scrollFunc);
         }
         else {
-            apf.dispatchEvent("mousescroll", function(e){
-                if (amlNode == e.target)
-                    scrollFunc();
-            })
+            if (!this.horizontal) {
+                apf.addEventListener("mousescroll", function(e){
+                    if (amlNode == e.target || (amlNode == document.documentElement && e.target == document.body))
+                        scrollFunc(e);
+                })
+            }
         }
         
         var oHtml = _self.$getHtmlHost();
