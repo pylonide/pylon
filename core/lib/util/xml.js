@@ -677,6 +677,7 @@ apf.convertMethods = {
             
             if (node.nodeType == 1) {
                 name = node.tagName;
+                
                 isOnly = node.parentNode.selectNodes(name).length == 1 
                     ? true 
                     : false;
@@ -723,9 +724,16 @@ apf.convertMethods = {
                 
                 tagNames[name]++;
             }
-            // handle node values (for form submission)
+            //@todo, that's that ??
+            //handle node values (for form submission)
             else if (node.nodeType == 3 && isSub) {
-                output = node.nodeType;
+                var nval = node.nodeValue;
+                
+                if (nval && nval.trim() !== "") {
+                    output.push(basename + "=" + escape(nval));
+                }
+                
+                //was: output = node.nodeType;
             }
         }
 
