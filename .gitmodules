@@ -10,3 +10,6 @@
 [submodule "client/vendor/ace"]
 	path = client/vendor/ace
 	url = git@github.com:ajaxorg/editor.git
+[submodule "lib/vendor/connect"]
+	path = lib/vendor/connect
+	url = git://github.com/senchalabs/connect.git
