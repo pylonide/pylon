@@ -1,0 +1,12 @@
+[submodule "lib/vendor/socket.io"]
+	path = lib/vendor/socket.io
+	url = http://github.com/LearnBoost/Socket.IO-node.git
+[submodule "lib/vendor/async"]
+	path = lib/vendor/async
+	url = git://github.com/fjakobs/async.js.git
+[submodule "lib/vendor/jsdav"]
+	path = lib/vendor/jsdav
+	url = git://github.com/mikedeboer/jsDAV.git
+[submodule "client/vendor/ace"]
+	path = client/vendor/ace
+	url = git@github.com:ajaxorg/editor.git
