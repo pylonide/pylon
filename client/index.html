@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Debugger</title>
+        <script>var loader2 = true</script>        
+        <script src="vendor/apf/apf.js"></script>
+        
+        <style type="text/css" media="screen">
+            html{
+                overflow: hidden;
+            }
+        </style>        
+    </head>
+    <body>
+        <a:skin src="vendor/apf/skins.xml" media-path="vendor/apf/images/" icon-path="vendor/apf/test/editor/debugger_icons/" />
+
+        <a:appsettings debug="0" />
+
+        <a:debugger id="dbg"
+          state-running     = "stRunning"
+          state-attached    = "stAttached"
+          model-sources     = "mdlDbgSources"
+          model-stack       = "mdDbgStack"
+          model-breakpoints = "mdlDbgBreakpoints" 
+          onbreak           = ""
+          onchangeframe     = "if (event.data) lstScripts.setProperty('selected', mdlDbgSources.queryNode('file[@id=' + event.data.getAttribute('scriptid') +']'));"
+          oncontinue        = "" />
+        
+        <!--
+            Be sure to set .xmlRoot to the data of mdlTabs
+        -->
+
+        <a:debughost id="dbgNode"
+          port     = "{txtV8Port.value}" 
+          server   = "{txtV8Host.value}" 
+          type     = "v8"
+          autoinit = "false"
+          model-tabs      = "mdlTabs"
+          state-connected = "stConnected" />
+
+      <a:window id="winV8" 
+         title="Connect to V8"
+         icon="standalone_v8_16.png"
+         zindex="10" 
+         center="true" 
+         modal="true" 
+         width="200" 
+         height="120" 
+         buttons="close"
+         visible="false">
+           <a:table columns="90,90" padding="5" edge="5">
+               <a:label>Hostname</a:label>
+               <a:textbox id="txtV8Host" value="localhost" />
+               <a:label>Port</a:label>
+               <a:textbox id="txtV8Port" value="5858" />
+           </a:table>
+           <a:button
+             right="5" 
+             bottom="5" 
+             width="80" 
+             default="true"
+             onclick="winV8.close();dbg.attach(dbgNode)">
+               Connect
+           </a:button>
+       </a:window>        
+
+        <a:vbox anchors="0 0 0 0">
+        
+        <a:toolbar height="26">
+            <a:bar>
+                <a:button
+                  icon="standalone_v8_16.png"
+                  onclick="winV8.show();"
+                  disabled="{stConnected.active}" />
+                <a:divider />
+                <a:button
+                  icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}"
+                  onclick="dbg.continueScript();"
+                  disabled="{stRunning.active or !stConnected.active}" />
+                <a:button
+                  icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}"
+                  onclick="dbg.suspend();"
+                  disabled="{!stRunning.active or !stConnected.active}"/>
+                <!-- a:button
+                  icon="{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
+                  onclick="dbg.detach();"
+                  disabled="{!stAttached.active}" /-->
+                <a:button
+                  icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}"
+                  onclick="dbgNode.disconnect();"
+                  disabled="{!stConnected.active}" />
+                <a:divider />
+                <a:button
+                  icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" 
+                  onclick="dbg.stepInto();" 
+                  disabled="{stRunning.active}" />
+                <a:button
+                  icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}"
+                  onclick="dbg.stepNext();"
+                  disabled="{stRunning.active}" />
+                <a:button
+                  icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" 
+                  onclick="dbg.stepOut();"
+                  disabled="{stRunning.active}" />
+            </a:bar>
+        </a:toolbar>
+        
+        <a:hbox flex="1">
+            <a:codeeditor id="ce" 
+              flex        = "1"
+              model       = "{lstScripts.selected}"
+              debugger    = "{dbg}"
+              syntax      = "js" 
+              readonly    = "true"        
+              showinvisibles    = "false"
+              showprintmargin   = "true"
+              printmargincolumn = "80">
+                <a:load get="{adbg.loadScript(dbg, {lstScripts.selected})}"/>
+                <a:value value="[text()]" />
+            </a:codeeditor>
+        
+            <!--a:vbox>
+                <a:list id="lstScripts"
+                  flex="1"
+                  model="mdlDbgSources"
+                  each="[file]"
+                  caption="[@text]"
+                  icon="file_obj.gif">
+                    <a:actions />
+                </a:list>
+
+                <a:datagrid
+                  flex       = "1"
+                  id         = "dgStack"
+                  options    = "size|move"
+                  caching    = "false"
+                  prerender  = "false"
+                  model      = "mdDbgStack"
+                  selected   = "{dbg.activeframe}">
+                    <a:actions />               
+                    <a:column caption="Function" value="[@name]" width="60%" icon="stckframe_obj.gif" />
+                    <a:column caption="Script" value="[@script]" width="40%" />
+                    <a:column caption="Ln" value="[@line]" width="25"/>
+                    <a:column caption="Col" value="[@column]" width="25"/>
+                    <a:each match="[frame]" />
+                </a:datagrid>    
+
+                <a:datagrid id="dgWatch"
+                  flex       = "1"
+                  options    = "size|move"
+                  prerender  = "false"
+                  model      = "[{dgStack.selected}::vars]"
+                  loading-message = "Calculating...">
+                    <a:load get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+                    <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+                    <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
+                    <a:column caption="Value" value="[@value]" width="100%" />
+                    <a:column caption="Type" value="[@type]" width="80"/>
+                    <a:each match="[item]" sort="[@name]" />
+                </a:datagrid>       
+            </a:vbox-->        
+    </a:hbox>
+    </a:vbox>
+        
+    </body>
+</html>

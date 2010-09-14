@@ -1,15 +1,15 @@
-[submodule "lib/vendor/socket.io"]
-	path = lib/vendor/socket.io
+[submodule "common/socket.io"]
+	path = common/socket.io
 	url = http://github.com/LearnBoost/Socket.IO-node.git
-[submodule "lib/vendor/async"]
-	path = lib/vendor/async
+[submodule "common/async"]
+	path = common/async
 	url = git://github.com/fjakobs/async.js.git
-[submodule "lib/vendor/jsdav"]
-	path = lib/vendor/jsdav
+[submodule "common/jsdav"]
+	path = common/jsdav
 	url = git://github.com/mikedeboer/jsDAV.git
-[submodule "client/vendor/ace"]
-	path = client/vendor/ace
+[submodule "common/ace"]
+	path = common/ace
 	url = git@github.com:ajaxorg/editor.git
-[submodule "lib/vendor/connect"]
-	path = lib/vendor/connect
+[submodule "common/connect"]
+	path = common/connect
 	url = git://github.com/senchalabs/connect.git
