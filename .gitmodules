@@ -1,9 +1,6 @@
 [submodule "common/socket.io"]
 	path = common/socket.io
 	url = http://github.com/LearnBoost/Socket.IO-node.git
-[submodule "common/async"]
-	path = common/async
-	url = git://github.com/fjakobs/async.js.git
 [submodule "common/jsdav"]
 	path = common/jsdav
 	url = git://github.com/mikedeboer/jsDAV.git
@@ -13,3 +10,6 @@
 [submodule "common/connect"]
 	path = common/connect
 	url = git://github.com/senchalabs/connect.git
+[submodule "common/async"]
+	path = common/async
+	url = git@github.com:ajaxorg/async.js.git
