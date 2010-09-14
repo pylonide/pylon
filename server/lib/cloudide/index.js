@@ -9,7 +9,6 @@ exports.main = function(projectDir, port) {
         connect.staticProvider(__dirname + "/../../../common")
     );
 
-//    var server = require("http").createServer();
     server.listen(port);
     new IdeServer(projectDir, server);
 };

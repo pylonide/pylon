@@ -2,18 +2,20 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Socket.IO</title>
-        <script src="/socket.io/socker.io.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
         
     </head>
     <body>
     
-    <input type="button" value="VERSION" id="version">
+    <input type="button" value="run" id="run">
+    <input type="button" value="kill" id="kill">
     
     <script type="text/javascript" charset="utf-8">
-        
-        io.setPath('vendor/socket.io/');
 
-        var socket = new io.Socket(null, {port: 3000});
+		var options = {
+  			transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+		};
+        var socket = new io.Socket(null, options);
         socket.connect();
         socket.on("message", function(data){
             var obj = JSON.parse(data);
@@ -22,8 +24,16 @@
         
         socket.on("connect", function(){
             console.log("connect");
-            document.getElementById("version").onclick = function() {
-                socket.send('{"seq":69,"type":"request","command":"version"}');
+            document.getElementById("run").onclick = function() {
+				var command = {
+					"command": "debugBrk",
+					"file": "test/all.js",
+					"cwd" : "test"
+				}
+                socket.send(JSON.stringify(command));
+            }
+            document.getElementById("kill").onclick = function() {
+                socket.send(JSON.stringify({"command": "kill"}));
             }
         });
         
