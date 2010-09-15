@@ -8,6 +8,8 @@
     <body>
     
     <input type="button" value="run" id="run">
+    <input type="button" value="debug" id="debug">
+    <input type="button" value="version" id="version">
     <input type="button" value="kill" id="kill">
     
     <script type="text/javascript" charset="utf-8">
@@ -26,9 +28,28 @@
             console.log("connect");
             document.getElementById("run").onclick = function() {
 				var command = {
-					"command": "debugBrk",
+					"command": "Run",
 					"file": "test/all.js",
 					"cwd" : "test"
+				}
+                socket.send(JSON.stringify(command));
+            }
+            document.getElementById("debug").onclick = function() {
+				var command = {
+					"command": "RunDebugBrk",
+					"file": "test/all.js",
+					"cwd" : "test"
+				}
+                socket.send(JSON.stringify(command));
+            }
+            document.getElementById("version").onclick = function() {
+				var command = {
+					"command": "Debug",
+					"body": { 
+						"seq": 1,
+					    "type": "request",
+					    "command": "version"
+					}
 				}
                 socket.send(JSON.stringify(command));
             }
