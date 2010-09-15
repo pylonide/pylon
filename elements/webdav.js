@@ -510,14 +510,17 @@ apf.webdav = function(struct, tagName){
      * 
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {String}   sContent New content-body of the file
+     * @param {Boolean}  [bLock]  Whether to require a lock before write
      * @param {String}   [sLock]  Lock token that MAY be omitted in preference of a lock refresh
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
-    this.write = function(sPath, sContent, sLock, callback) {
-        var oLock = this.lock(sPath);
-        if (!oLock.token)
-            return updateLockedStack.call(this, oLock, "write", arguments);
+    this.write = function(sPath, sContent, bLock, callback) {
+        if (bLock) {
+            var oLock = this.lock(sPath);
+            if (!oLock.token)
+                return updateLockedStack.call(this, oLock, "write", arguments);
+        }
 
         this.method = "PUT";
         this.doRequest(function(data, state, extra) {
@@ -535,8 +538,8 @@ apf.webdav = function(struct, tagName){
             else {
                 this.getProperties(sPath, 0, callback);
             }
-        }, sPath, sContent, sLock
-            ? {"If": "<" + sLock + ">"}
+        }, sPath, sContent, bLock && oLock.token
+            ? {"If": "<" + oLock.token + ">"}
             : null);
     };
 
@@ -544,18 +547,21 @@ apf.webdav = function(struct, tagName){
      * Copies a file or directory resource to any location on the same WebDAV
      * server.
      * 
-     * @param {String}   sFrom      Path to the file on the WebDAV server to be copied
-     * @param {String}   sTo        New location to place the copy at
-     * @param {Boolean}  bOverwrite Tells whether to overwrite any existing resource
-     * @param {Function} callback   Function to execute when the request was successful
+     * @param {String}   sFrom        Path to the file on the WebDAV server to be copied
+     * @param {String}   sTo          New location to place the copy at
+     * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
+     * @param {Boolean}  [bLock]      Whether to require a lock before copy
+     * @param {Function} callback     Function to execute when the request was successful
      * @type  {void}
      */
-    this.copy = function(sFrom, sTo, bOverwrite, callback) {
+    this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo) return;
         
-        var oLock = this.lock(sFrom);
-        if (!oLock.token)
-            return updateLockedStack.call(this, oLock, "copy", arguments);
+        if (bLock) {
+            var oLock = this.lock(sFrom);
+            if (!oLock.token)
+                return updateLockedStack.call(this, oLock, "copy", arguments);
+        }
 
         this.method  = "COPY";
         var oHeaders = {
@@ -565,10 +571,10 @@ apf.webdav = function(struct, tagName){
             bOverwrite = true;
         if (!bOverwrite)
             oHeaders["Overwrite"] = "F";
-        if (oLock.token)
+        if (bLock && oLock.token)
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
-            unregisterLock.call(this, sFrom);
+            bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412 
               || iStatus == 423 || iStatus == 424 || iStatus == 502
@@ -594,18 +600,21 @@ apf.webdav = function(struct, tagName){
      * Moves a file or directory resource to any location on the same WebDAV
      * server.
      * 
-     * @param {String}   sFrom      Path to the file on the WebDAV server to be moved
-     * @param {String}   sTo        New location to move the resource to
-     * @param {Boolean}  bOverwrite Tells whether to overwrite any existing resource
-     * @param {Function} callback   Function to execute when the request was successful
+     * @param {String}   sFrom        Path to the file on the WebDAV server to be moved
+     * @param {String}   sTo          New location to move the resource to
+     * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
+     * @param {Boolean}  [bLock]      Whether to require a lock before move
+     * @param {Function} callback     Function to execute when the request was successful
      * @type  {void}
      */
-    this.move = function(sFrom, sTo, bOverwrite, callback) {
+    this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo) return;
         
-        var oLock = this.lock(sFrom);
-        if (!oLock.token)
-            return updateLockedStack.call(this, oLock, "move", arguments);
+        if (bLock) {
+            var oLock = this.lock(sFrom);
+            if (!oLock.token)
+                return updateLockedStack.call(this, oLock, "move", arguments);
+        }
 
         this.method  = "MOVE";
         var oHeaders = {
@@ -615,10 +624,10 @@ apf.webdav = function(struct, tagName){
             bOverwrite = true;
         if (!bOverwrite)
             oHeaders["Overwrite"] = "F";
-        if (oLock.token)
+        if (bLock && oLock.token)
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
-            unregisterLock.call(this, sFrom);
+            bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502) {
@@ -642,17 +651,20 @@ apf.webdav = function(struct, tagName){
      * Removes an existing directory or file resource from the WebDAV server.
      * 
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
+     * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
-    this.remove = function(sPath, callback) {
-        var oLock = this.lock(sPath);
-        if (!oLock.token)
-            return updateLockedStack.call(this, oLock, "remove", arguments);
+    this.remove = function(sPath, bLock, callback) {
+        if (bLock) {
+            var oLock = this.lock(sPath);
+            if (!oLock.token)
+                return updateLockedStack.call(this, oLock, "remove", arguments);
+        }
 
         this.method = "DELETE";
         this.doRequest(function(data, state, extra) {
-            unregisterLock.call(this, sPath);
+            bLock && unregisterLock.call(this, sPath);
             var iStatus = parseInt(extra.status);
             if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
@@ -665,7 +677,7 @@ apf.webdav = function(struct, tagName){
                     throw oError;
             }
             callback.call(this, data, state, extra);
-        }, sPath, null, oLock.token 
+        }, sPath, null, bLock && oLock.token
             ? { "If": "<" + oLock.token + ">" }
             : null);
     };
@@ -744,7 +756,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function newLock(sPath) {
-        return $this.locks[sPath] = {
+        return this.locks[sPath] = {
             path : sPath,
             id   : this.$lockId++,
             token: null
@@ -1068,17 +1080,17 @@ apf.webdav = function(struct, tagName){
                 this.read(oItem.path, callback);
                 break;
             case "create":
-                this.write(oItem.path + "/" + args[1], args[2], null, callback);
+                this.write(oItem.path + "/" + args[1], args[2], args[3] || false, null, callback);
                 break;
             case "write":
             case "store":
             case "save":
-                this.write(oItem.path, args[1], null, callback);
+                this.write(oItem.path, args[1], args[2] || false, null, callback);
                 break;
             case "copy":
             case "cp":
                 var oItem2 = this.getItemById(args[1]);
-                this.copy(oItem.path, oItem2.path, args[2], callback);
+                this.copy(oItem.path, oItem2.path, args[2], args[3] || false, callback);
                 break;
             case "rename":
                 oItem = this.getItemById(args[1]);
@@ -1086,18 +1098,18 @@ apf.webdav = function(struct, tagName){
     
                 var sBasepath = oItem.path.replace(oItem.name, '');
                 //TODO: implement 'Overwrite' setting...
-                this.move(oItem.path, sBasepath + args[0], false, callback);
+                this.move(oItem.path, sBasepath + args[0], args[1] || false, args[2] || false, callback);
                 break;
             case "move":
             case "mv":
                 //TODO: implement 'Overwrite' setting...
                 this.move(oItem.path, this.getItemById(args[1]).path + "/"
-                    + oItem.name, false, callback);
+                    + oItem.name, args[2] || false, args[3] || false, callback);
                 break;
             case "remove":
             case "rmdir":
             case "rm":
-                this.remove(oItem.path, callback);
+                this.remove(oItem.path, args[1] || false, callback);
                 break;
             case "scandir":
             case "readdir":
