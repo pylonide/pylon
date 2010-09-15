@@ -42,13 +42,13 @@ apf.aml.setElement("include", apf.XiInclude);
 
     this.$propHandlers["href"] = 
     this.$propHandlers["src"]  = function(value){
+        if (typeof value != "string")
+            return finish.call(this, value);
+        
         if (value.trim().charAt(0) == "<") {
             loadIncludeFile.call(this, value.trim());
             return;
         }
-        
-        if (typeof value != "string")
-            return finish.call(this, value);
 
         this.$path = value.charAt(0) == "{" //@todo this shouldn't happen anymore
           ? value

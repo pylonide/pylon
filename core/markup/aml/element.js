@@ -87,8 +87,8 @@ apf.AmlElement = function(struct, tagName){
             
             if (!this.ownerDocument) {
                 this.ownerDocument = apf.document;
-                this.prefix        = "";
-                this.namespaceURI  = null;
+                this.prefix        = "a";
+                this.namespaceURI  = apf.ns.aml;
                 this.tagName       = tagName;
             }
             
@@ -418,6 +418,10 @@ apf.AmlElement = function(struct, tagName){
 
         var _self   = this;
         var include = new apf.XiInclude();
+        
+        if (amlDefNode.trim().charAt(0) == "<")
+            amlDefNode = apf.getXml(amlDefNode);
+        
         include.setAttribute("href", amlDefNode);
         if (options && options.clear)
             include.setAttribute("clear", true);

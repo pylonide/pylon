@@ -484,7 +484,7 @@ apf.BaseTab = function(){
     
     var round = [Math.floor, Math.ceil];
     function scalersz(e, excl){
-        if (this.$waitForMouseOut 
+        if (!this.length || this.$waitForMouseOut 
           || this.$control && this.$control.state == apf.tween.RUNNING) {
             //@todo queue call here to after anim
             return;
