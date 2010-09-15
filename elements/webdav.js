@@ -980,7 +980,8 @@ apf.webdav = function(struct, tagName){
         if (!this.$showHidden && bHidden)
             return "";
         
-        var iId, oItem = getItemByPath.call(this, sPath);
+        var t, iId,
+            oItem = getItemByPath.call(this, sPath);
         if (oItem && typeof oItem.id == "number")
             iId = oItem.id;
         else
@@ -1000,9 +1001,9 @@ apf.webdav = function(struct, tagName){
             contentType : (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
                 : ""),
-            creationDate: $xmlns(oNode, "creationdate", NS.lp1)[0].firstChild.nodeValue,
-            lastModified: $xmlns(oNode, "getlastmodified", NS.lp1)[0].firstChild.nodeValue,
-            etag        : $xmlns(oNode, "getetag", NS.lp1)[0].firstChild.nodeValue,
+            creationDate: (t = $xmlns(oNode, "creationdate", NS.lp1)).length ? t[0].firstChild.nodeValue : "",
+            lastModified: (t = $xmlns(oNode, "getlastmodified", NS.lp1)).length ? t[0].firstChild.nodeValue : "",
+            etag        : (t = $xmlns(oNode, "getetag", NS.lp1)).length ? t[0].firstChild.nodeValue : "",
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         };
