@@ -10,3 +10,6 @@
 [submodule "common/async"]
 	path = common/async
 	url = git@github.com:ajaxorg/async.js.git
+[submodule "common/jsdav"]
+	path = common/jsdav
+	url = git@github.com:ajaxorg/jsDAV.git
