@@ -995,7 +995,7 @@ apf.webdav = function(struct, tagName){
             path        : sPath,
             type        : sType,
             size        : parseInt(sType == "file"
-                ? $xmlns(oNode, "getcontentlength", NS.lp1)[0].firstChild.nodeValue
+                ? (t = $xmlns(oNode, "getcontentlength", NS.lp1)).length ? t[0].firstChild.nodeValue : 0
                 : 0),
             name        : sName,
             contentType : (sType == "file" && aCType.length
