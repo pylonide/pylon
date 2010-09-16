@@ -25,6 +25,36 @@ return ext.register("ext/console/console", {
 
     destroy : function(){
         winDbgConsole.destroy(true, true);
+    },
+
+    clear : function() {
+        txtConsole.clear();
+    },
+
+    logNodeStream : function(data, stream) {
+        var colors = {
+            30: "black",
+            31: "red",
+            32: "green",
+            33: "yellow",
+            34: "blue",
+            35: "magenta",
+            36: "cyan",
+            37: "white"
+        };
+
+        var lines = data.split("\n");
+        var color = "black";
+        var log = [];
+
+        for (var i=0; i<lines.length; i++) {
+            log.push("<div><span style='color:" + color + "'>" + lines[i].replace(/\033\[(\d+)m/g, function(m, c) {
+                color = colors[c] || "black";
+                return "</span><span style='color:" + color + "'>"
+            }) + "</span></div>");
+        }
+        console.log(log);
+        txtConsole.addValue(log.join(""));
     }
 });
 

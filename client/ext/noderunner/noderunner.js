@@ -47,6 +47,7 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "node-data":
                 //ide.log(message.data);
+                log.logNodeStream(message.data, message.stream);
                 break;
         }
     },

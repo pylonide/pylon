@@ -1,5 +1,10 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgConsole" skin="dockwin" title="Console" modal="false" height="200">
-    
+        <a:text id="txtConsole"
+	      anchors="0 0 0 0"
+          scrolldown="true" 
+          focussable="true"
+          class="apf_console"
+        />
     </a:window>
 </a:application>
