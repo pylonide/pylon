@@ -27,10 +27,6 @@
  */
 apf.splitter = function(struct, tagName){
     this.$init(tagName || "splitter", apf.NODE_VISIBLE, struct);
-    
-    // #ifdef __WITH_PLANE
-    apf.plane.init();
-    // #endif
 };
 
 (function() {
