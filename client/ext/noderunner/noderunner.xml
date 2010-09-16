@@ -1,0 +1,19 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:state id="stConnected" active="{false}" />
+    <a:state id="stRunning" active="{false}" />
+
+	<a:toolbar id="tbNoderunner">
+		<a:button
+		  icon="debugger/{this.disabled ? 'run_tool_disabled.gif' : 'run_tool.gif'}"
+		  disabled="{stRunning.active}"
+		  onclick="ide.run()"
+		/>
+		<a:button
+		  icon="debugger/{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
+		  disabled="{!stRunning.active}"
+		  onclick="ide.kill()"
+		/>
+	</a:toolbar>
+        	
+</a:application>
