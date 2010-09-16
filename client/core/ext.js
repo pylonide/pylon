@@ -13,8 +13,8 @@
  * - Add layout modes
  */
 require.def("core/ext", ["core/ide"], function(ide) {
-var ext;
 
+var ext;
 ide.addEventListener("load", function(){
     ide.tabEditors.addEventListener("beforeswitch", function(e){
         ext.beforeswitch(e);

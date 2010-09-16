@@ -45,7 +45,6 @@
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
                         var modules = [
                             (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
-                            "ext/noderunner/noderunner",
                             "ext/refactor/refactor",
                             "ext/save/save",
                             "ext/code/code", 
@@ -53,6 +52,8 @@
                             "ext/richtext/richtext",
                             "ext/debugger/debugger"
                         ];
+                        if (location.host)
+                            modules.push("ext/noderunner/noderunner");
                         
                         apf.addEventListener("load", function(){
                             //Load extensions

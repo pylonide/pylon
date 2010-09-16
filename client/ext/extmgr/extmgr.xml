@@ -6,6 +6,7 @@
       center    = "true"
       render    = "runtime"
       resizable = "true"
+      buttons   = "max|close"
       width     = "550"
       height    = "400">
         <a:vbox anchors="0 0 0 0" edge="10">

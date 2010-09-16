@@ -4,60 +4,62 @@
 require.def("ext/richtext/richtext",
     ["core/ide", "core/ext"],
     function(ide, ext) {
-        //Add a menu item to the list of editors
-        ide.mnuEditors.appendChild(new apf.item({
-            caption : "Rich Text Editor",
-            value   : "ext/richtext/richtext"
+        
+//Add a menu item to the list of editors
+ide.mnuEditors.appendChild(new apf.item({
+    caption : "Rich Text Editor",
+    value   : "ext/richtext/richtext"
+}));
+
+return ext.register("ext/richtext/richtext", {
+    name    : "Rich Text Editor",
+    dev     : "Ajax.org",
+    type    : ext.EDITOR,
+    fileext : ["rtf"],
+    //markup  : "richtext.xml",
+
+    nodes : [],
+
+    init : function(amlPage){
+        this.rteEdior = amlPage.appendChild(new apf.editor({
+            value   : "[data]",
+            anchors : "0 0 0 0"
         }));
 
-        return {
-            name    : "Rich Text Editor",
-            dev     : "Ajax.org",
-            type    : ext.EDITOR,
-            fileext : ["rtf"],
-            //markup  : "richtext.xml",
+        this.nodes.push(
+            //Add a panel to the statusbar showing whether the insert button is pressed
+            sbMain.appendChild(new apf.section({
+                caption : "{rteEditor.insert}"
+            })),
 
-            nodes : [],
+            //Add a panel to the statusbar showing the length of the document
+            sbMain.appendChild(new apf.section({
+                caption : "Length: {rteEditor.value.length}"
+            }))
+        );
+    },
 
-            init : function(amlPage){
-                this.rteEdior = amlPage.appendChild(new apf.editor({
-                    value   : "[data]",
-                    anchors : "0 0 0 0"
-                }));
+    enable : function(){
+        this.nodes.each(function(item){
+            item.show();
+        });
+    },
 
-                this.nodes.push(
-                    //Add a panel to the statusbar showing whether the insert button is pressed
-                    sbMain.appendChild(new apf.section({
-                        caption : "{rteEditor.insert}"
-                    })),
+    disable : function(){
+        this.nodes.each(function(item){
+            item.hide();
+        });
+    },
 
-                    //Add a panel to the statusbar showing the length of the document
-                    sbMain.appendChild(new apf.section({
-                        caption : "Length: {rteEditor.value.length}"
-                    }))
-                );
-            },
+    destroy : function(){
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.rteEdior.destroy(true, true);
 
-            enable : function(){
-                this.nodes.each(function(item){
-                    item.show();
-                });
-            },
+        this.nodes = [];
+    }
+});
 
-            disable : function(){
-                this.nodes.each(function(item){
-                    item.hide();
-                });
-            },
-
-            destroy : function(){
-                this.nodes.each(function(item){
-                    item.destroy(true, true);
-                });
-                this.rteEdior.destroy(true, true);
-
-                this.nodes = [];
-            }
-        }
     }
 );
