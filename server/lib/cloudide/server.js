@@ -167,7 +167,7 @@ module.exports = IdeServer = function(projectDir, server) {
         if (this.debugProxy)
             return this.error("Debug session already running", message);
 
-        this.debugProxy = new DebugProxy(this.DEBUG_PORT);
+        this.debugProxy = new DebugProxy(this.DEBUG_PORT++);
         this.debugProxy.on("message", function(body, headers) {
             if (!_self.client) return;
 
@@ -176,6 +176,16 @@ module.exports = IdeServer = function(projectDir, server) {
                 "body": body
             };
             _self.client.send(JSON.stringify(msg));
+        });
+
+        this.debugProxy.on("connection", function() {
+            _self.client && _self.client.send('{"type": "debug-ready"}');
+        });
+
+        this.debugProxy.on("end", function() {
+            if (_self.debugProxy == this) {
+                delete _self.debugProxy;
+            }
         });
 
         this.debugProxy.connect();

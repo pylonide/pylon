@@ -19,6 +19,7 @@ module.exports = DebugProxy = function(port) {
 
     this.stream.addListener('end', function (data) {
         _self.stream.end();
+        this.connected = false;
         _self.emit("end");
     });
 };
@@ -33,6 +34,9 @@ sys.inherits(DebugProxy, process.EventEmitter);
     };
 
     this.send = function(msgJson) {
+        if (!this.connected)
+            return;
+
         var text = typeof msgJson === "string" ? msgJson : JSON.stringify(msgJson);
         var msg = ["Content-Length:", text.length, "\r\n\r\n", text].join("");
         this.stream.write(msg, 'utf8');
