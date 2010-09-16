@@ -207,6 +207,13 @@ apf.http = function(){
         options.callback = callback;
         return this.get(url, options);
     };
+    
+    this.getJSON = function(url, callback, options){
+        if (!options) options = {};
+        options.callback = callback;
+        options.useJSON = true;
+        return this.get(url, options);
+    };
 
     /**
      * Makes an http request.
@@ -701,7 +708,9 @@ apf.http = function(){
         if (http.status > 600)
             return this.$timeout(id);
 
-        extra.data = http.responseText; //Can this error?
+        extra.data = qItem.options.useJSON 
+            ? eval("(" + http.responseText + ")") 
+            : http.responseText; //Can this error?
 
         if (http.status >= 400 && http.status < 600 || http.status < 10 
           && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
