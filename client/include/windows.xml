@@ -1,0 +1,97 @@
+<a:window
+  id        = "winConfirm"
+  title     = "Confirm"
+  icon      = ""
+  center    = "true"
+  render    = "runtime"
+  onclose   = "btnConfirmOk.onclick = function(){}"
+  width     = "512"
+  skin      = "change_photo">
+    <a:vbox padding="10" edge="15 20 20 20">
+        <h3 class="wheader">Are you sure you want <a:label id="lblConfirmTitle" style="display:inline;font-size:18px;font-weight:bold;" caption=""/>?</h3>
+        <a:label id="lblConfirmContent" caption="" />
+    </a:vbox>
+
+    <a:vbox edge="0 0 4 0" padding="8">
+        <a:divider skin="hordivider" />
+        <a:hbox pack="end" padding="7" edge="0 10 0 10">
+            <a:button id="btnConfirmOk" default="3" class="ui-btn-green">Ok</a:button>
+            <a:button onclick="winConfirm.hide()">Cancel</a:button>
+        </a:hbox>
+    </a:vbox>
+</a:window>
+
+<a:window
+  id        = "winDelConfirm"
+  title     = "Are you sure ?"
+  icon      = ""
+  center    = "true"
+  render    = "runtime"
+  onshow    = "app.windows.push(winDelConfirm);"
+  onhide    = "app.windows.remove(winDelConfirm);"
+  width     = "512"
+  skin      = "change_photo">
+    <a:vbox padding="10" edge="15 20 20 20">
+        <h3 class="wheader">Delete the internet?</h3>
+        <div>Are you sure you want to do this? All websites and their content will be deleted. This cannot be undone.</div>
+    </a:vbox>
+
+    <a:vbox edge="0 0 4 0" padding="8">
+        <a:divider skin="hordivider" />
+        <a:hbox pack="end" padding="7" edge="0 10 0 10">
+            <a:button default="3" class="ui-btn-red">Delete</a:button>
+            <a:button onclick="winDelConfirm.hide()">Cancel</a:button>
+        </a:hbox>
+    </a:vbox>
+</a:window>
+
+<a:window
+  id        = "winSaveChanges"
+  title     = "Save your changes?"
+  icon      = ""
+  center    = "true"
+  render    = "runtime"
+  onshow    = "app.windows.push(winSaveChanges);"
+  onhide    = "app.windows.remove(winSaveChanges);"
+  width     = "512"
+  skin      = "change_photo">
+    <a:vbox padding="10" edge="15 20 20 20">
+        <h3 class="wheader">Are you sure you want to leave this page?</h3>
+        <div>If you leave this page you will lose any unsaved changes<br/>
+        Click OK to leave this page, or Cancel to stay on this page.</div>
+    </a:vbox>
+
+    <a:vbox edge="0 0 4 0" padding="8">
+        <a:divider skin="hordivider" />
+        <a:hbox pack="end" padding="7" edge="0 10 0 10">
+            <!--a:button margin="0 10 0 0" class="ui-btn-green"
+              onclick="app.toggleEdit(1);loader.show();winSaveChanges.hide();app.navigateTo(app.targetPageId);">Save</a:button-->
+            <a:button class="ui-btn-green" default="3" onclick="app.toggleEdit(-1);loader.show();winSaveChanges.hide();app.navigateTo(app.targetPageId);">OK</a:button>
+            <a:button onclick="winSaveChanges.hide();">Cancel</a:button>
+        </a:hbox>
+    </a:vbox>
+</a:window>
+
+<a:window
+  id        = "winAlert"
+  title     = ""
+  icon      = ""
+  center    = "true"
+  render    = "runtime"
+  onshow    = "app.windows.push(winAlert);"
+  onhide    = "app.windows.remove(winAlert);"
+  width     = "512" skin="change_photo">
+    <a:vbox width="100%">
+        <a:hbox edge="15 10 20 10" padding="10">
+            <div class="alertWarn" margin="0 10 0 10"/>
+            <a:vbox flex="1" padding="5">
+                <h3 id="winAlertHeader"></h3>
+                <div id="winAlertMsg" class="alertMsg"></div>
+            </a:vbox>
+        </a:hbox>
+        <a:divider skin="hordivider" />
+        <a:hbox edge="10 10 5 10" pack="end">
+            <a:button id="winAlertButton" default="3" onclick="winAlert.hide();">OK</a:button>
+        </a:hbox>
+    </a:vbox>
+</a:window>

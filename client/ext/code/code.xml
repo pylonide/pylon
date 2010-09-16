@@ -1,0 +1,18 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:vbox id="barEditor" anchors="0 0 0 0">
+        <a:hbox>
+            <a:dropdown flex="1" />
+            <a:filler />
+            <a:dropdown flex="1" />
+        </a:hbox>
+        <a:codeeditor id="ceEditor" value="[text()]" flex="1" />
+    </a:vbox>
+    
+    <a:bar id="barCodeTb" visible="false">
+        <a:divider />
+        <a:button>Button 1</a:button>
+        <a:button>Button 2</a:button>
+        <a:button>Button 3</a:button>
+        <a:button>Button 4</a:button>
+    </a:bar>
+</a:application>
