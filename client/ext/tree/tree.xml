@@ -26,7 +26,7 @@
         
     ]]></a:script>
     
-    <a:webdav id="davProject" url="{location.protocol + '//' + (location.host || apf.getDirname(location.pathname))}/workspace" />
+    <a:webdav id="davProject" url="{location.protocol + '//' + location.host}/workspace" />
     <a:model id="mdlFiles" src="{davProject.getroot()}" />
 
 	<a:tree id="trFiles" flex="1" autoselect="false" 
