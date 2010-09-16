@@ -1,8 +1,4 @@
 <a:menu id="mnuFile">
-    <a:item>Example 1</a:item>
-    <a:item>Example 2</a:item>
-    <a:item>Example 3</a:item>
-    <a:item>Example 4</a:item>
     <a:divider />
     <a:item>Exit</a:item>
 </a:menu>

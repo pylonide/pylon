@@ -19,20 +19,7 @@ require.def("ext/localtree/localtree",
                     if (node.tagName != 'file')
                         return;
 
-                    ext.openEditor(trFiles.value, trFiles.selected);
-
-                    /*if (node.selectSingleNode("data"))
-                        return;
-
-                    apf.getData('{davProject.read([@id])}', {
-                        xmlNode : node,
-                        callback: function(data) {
-                            var xml = apf.getXml(
-                                '<data><![CDATA[' + data + ']]></data>'
-                            );
-                            apf.b(node).append(xml);
-                        }
-                    });*/
+                    ext.openEditor(this.value, node);
                 });
             },
 
@@ -45,7 +32,6 @@ require.def("ext/localtree/localtree",
             },
 
             destroy : function(){
-                davProject.destroy(true, true);
                 mdlFiles.destroy(true, true);
                 trFiles.destroy(true, true);
                 
