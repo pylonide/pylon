@@ -2,12 +2,12 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/debugger/debugger",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+    ["core/ide", "core/ext", "text!ext/debugger/debugger.xml"],
+    function(ide, ext, markup) {
         return {
             name   : "Debug",
             type   : ext.LAYOUT,
-            markup : "debugger.xml",
+            markup : markup,
             
             nodes : [],
             

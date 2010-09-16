@@ -48,28 +48,11 @@ require.def("core/ext",
             currentEditor     : null,
             
             register : function(path, oExtension, force){
-                if (oExtension.registed && !force)
+                if (oExtension.registed)
                     return;
                 
                 oExtension.registed = true;
                 oExtension.path     = path;
-                
-                if (oExtension.markup && !force) {
-                    apf.ajax(apf.getDirname(path) + oExtension.markup, {
-                        callback : function(data, state, extra){
-                            //@todo error handling
-                            
-                            if (state == apf.SUCCESS) {
-                                oExtension.$markup = data;
-                                ext.register(path, oExtension, true);
-                            }
-                            else {
-                                alert("Could not load " + extra.url);
-                            }
-                        }
-                    });
-                    return;
-                }
                 
                 switch(oExtension.type) {
                     case this.GENERAL:
@@ -129,7 +112,7 @@ require.def("core/ext",
             
             initExtension : function(oExtension, amlParent){
                 //Load markup
-                var markup = oExtension.$markup;
+                var markup = oExtension.markup;
                 if (markup)
                     apf.document.body.insertMarkup(markup);
                 

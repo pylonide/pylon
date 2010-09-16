@@ -2,11 +2,11 @@
  * Refactor Module for the Ajax.org Cloud IDE
  */
 require.def("ext/refactor/refactor",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+    ["core/ide", "core/ext", "text!ext/refactor/refactor.xml"],
+    function(ide, ext, markup) {
         return {
             type   : ext.GENERAL, 
-            markup : "refactor.xml",
+            markup : markup,
             
             nodes : [],
             
