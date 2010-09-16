@@ -43,8 +43,13 @@
 
                 apf.onstart = function(){
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
-                        var modules = ["ext/refactor/refactor", "ext/code/code", 
-                                       "ext/richtext/richtext", "ext/debugger/debugger"];
+                        var modules = [
+                            "ext/tree/tree",
+                            "ext/refactor/refactor",
+                             "ext/code/code", 
+                             "ext/richtext/richtext",
+                             "ext/debugger/debugger"
+                        ];
                         
                         apf.addEventListener("load", function(){
                             //Load extensions
@@ -225,11 +230,6 @@
             
             <a:hbox padding="3" flex="1">
                 <a:vbox width="200" padding="3">
-                    <a:tree id="trFiles" flex="1" autoselect="false" 
-                      model     = "mdlFiles"
-                      each      = "[file|folder]" 
-                      caption   = "[@filename]" 
-                      eachvalue = "[@filename]" />
                 </a:vbox>
 
                 <a:vbox flex="1" padding="3">

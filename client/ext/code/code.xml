@@ -5,7 +5,12 @@
             <a:filler />
             <a:dropdown flex="1" />
         </a:hbox>
-        <a:codeeditor id="ceEditor" value="[text()]" flex="1" />
+        <a:codeeditor id="ceEditor"
+          flex="1" 
+          value="[data]"
+          syntax="{getSyntax(%[.])}"
+          showinvisibles="false"
+        />
     </a:vbox>
     
     <a:bar id="barCodeTb" visible="false">
@@ -15,4 +20,21 @@
         <a:button>Button 3</a:button>
         <a:button>Button 4</a:button>
     </a:bar>
+    
+    <a:script><![CDATA[
+		SupportedModes = {
+			"application/javascript": "js",
+			"application/json": "js",
+			"text/css": "css",
+			"text/html": "html",
+			"application/xhtml+xml": "html",
+			"application/xml": "xml"
+		}
+
+		function getSyntax(xmlNode) {
+             var mime = xmlNode.getAttribute('contenttype').split(";")[0];
+             return (SupportedModes[mime] || "text");
+		}
+
+     ]]></a:script>    
 </a:application>

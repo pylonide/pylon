@@ -7,7 +7,7 @@ require.def("core/ide",
 
         ide.start = function(){
             var last = "";
-            
+
             //Set references to global elements - aka extension points
             this.tbMain       = tbMain;
             this.mnuCtxEditor = mnuCtxEditor;
@@ -19,16 +19,15 @@ require.def("core/ide",
             this.vbMain       = vbMain;
             this.ddModes      = ddModes;
             this.tabEditors   = tabEditors;
-            this.trFiles      = trFiles;
-            
+
             this.dispatchEvent("load");
-            
+
             /**** Error Handling ****/
-            
+
             //Catch all unhandled errors
             var loc = location.href;
-            if (location.protocol != "file:" 
-              && loc.indexOf("dev") == -1 
+            if (location.protocol != "file:"
+              && loc.indexOf("dev") == -1
               && loc.indexOf("worknets.com") > -1) {
                 window.onerror = function(m, u, l) {
                     if (self.console)
@@ -49,7 +48,7 @@ require.def("core/ide",
                     return true;
                 };
             }
-            
+
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
                 apf.ajax("/debug", {
@@ -70,40 +69,40 @@ require.def("core/ide",
                     })
                 });
             });
-            
+
             //Connection Error
             /*pWorknets.addEventListener("error", function(e){
                 if (e.status == 403) {
-                    ide.util.alert("Permission Denied", 
+                    ide.util.alert("Permission Denied",
                         "Permission Denied Accessing This Page",
                         "You are not allowed to view the page you clicked on.");
                     ide.loader.hide();
-                    
+
                     e.stopPropagation();
                     return false;
                 }
-                
+
                 setTimeout(function(){
                     if (apf.isDestroying)
                         return;
-                
+
                     ide.redirectPage = ide.objId;
                     auth.authRequired(null, true);
                 });
-                
+
                 e.stopPropagation();
                 return false;
             });*/
-            
+
             //Page Not Found Error
             tabEditors.addEventListener("error", function(e){
                 //this.$setTabState("notfound");
                 e.stopPropagation();
                 return false;
             });
-            
+
             /**** Log in Flow ****/
-            
+
             /*auth.addEventListener("loginsuccess", function(e){
                 apf.storage.put('username', e.username);
                 apf.storage.put('password', e.password);
@@ -111,14 +110,14 @@ require.def("core/ide",
                 if (!ide.loc)
                     ide.navigateTo(ide.redirectPage || 'myhome');
             });
-            
+
             auth.addEventListener("loginfail", function(e){
                 if (!ide.loc || !pgSite.activepage) {
                     ide.navigateTo('home');
                     ide.loader.hide();
                 }
             });
-            
+
             this.logout = function(e){
                 apf.storage.remove('username');
                 apf.storage.remove('password');
@@ -129,23 +128,23 @@ require.def("core/ide",
                 }
                 delete ide.inviteInfo;
                 delete ide.userId;
-                
+
                 rmtWorknets.clear();
                 mdlDashboard.clear();
                 //mdlDashboard.load("<person />");
             }
-            
+
             auth.addEventListener("logoutfail", this.logout);
             auth.addEventListener("logoutsuccess", this.logout);
-            
+
             auth.addEventListener("authrequired", function(e){
                 mdlDashboard.unshare();
             });*/
         };
-        
+
         apf.addEventListener("load", function(){
             ide.start();
         });
-        
+
         return ide;
     });
