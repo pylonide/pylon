@@ -34,7 +34,7 @@ apf.aml.setElement("include", apf.XiInclude);
 (function(){
     this.$parsePrio = "002";
 
-    //1 = force no bind rule, 2 = force bind rule
+    //1 = force no bind rule, 2 = force bind rule 
     /*this.$attrExcludePropBind = apf.extend({
         href : 1,
         src  : 1

@@ -319,7 +319,7 @@ apf.vbox = function(struct, tagName){
                         
                         this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
                     }
-                    this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
+                    (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {
                     this.parentNode.$int.replaceChild(this.$ext, this.$altExt);

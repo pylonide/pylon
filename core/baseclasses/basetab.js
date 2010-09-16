@@ -1159,12 +1159,6 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
-        /*if (this.parentNode && this.parentNode.getPages().length == 0) {
-            if (this.parentNode.$activepage == this)
-                delete this.parentNode.$activepage;
-            this.$deactivate();
-        }*/
-
         var ln = amlNode.nextSibling;
         while (ln && (!ln.$first || !ln.visible))
             ln = ln.nextSibling;
