@@ -223,6 +223,10 @@ apf.page = function(struct, tagName){
         if (e && e.currentTarget != this)
             return;
         
+        if (this.parentNode && this.parentNode.$activepage == this)
+            delete this.parentNode.$activepage;
+        this.$deactivate();
+        
         if (this.$button) {
             if (this.$position & 1)
                 this.parentNode.$setStyleClass(this.$button, "", ["firstbtn", "firstcurbtn"]);
