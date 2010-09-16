@@ -2,8 +2,8 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/code/code",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+    ["core/ide", "core/ext", "text!ext/code/code.xml"],
+    function(ide, ext, markup) {
         //Add a menu item to the list of editors
         ide.mnuEditors.appendChild(new apf.item({
             caption : "Code Editor",
@@ -14,7 +14,7 @@ require.def("ext/code/code",
             name    : "Code Editor",
             type    : ext.EDITOR, 
             fileext : ["js", "html", "xml", "css", "xhtml", "aml", "txt", "php"],
-            markup  : "code.xml",
+            markup  : markup,
             
             nodes : [],
             
