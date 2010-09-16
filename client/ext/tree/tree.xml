@@ -14,7 +14,7 @@
             "application/xml":'xml',
             "video":'movie',
             "audio": 'audio',
-            "text/plain": 'txt',
+            "text/plain": 'page_white_text',
             "application/javascript": 'page_white_code'
         };
         
