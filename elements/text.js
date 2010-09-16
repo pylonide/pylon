@@ -126,7 +126,7 @@ apf.text = function(struct, tagName){
     /**
      * @attribute {String} value the contents of this element. This can be text or html or xhtml.
      */
-    this.$propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value, prop, force, forceAdd){
         if (this.each)
             return;
         
@@ -149,7 +149,13 @@ apf.text = function(struct, tagName){
         }
 
         value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-        this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+        
+        if (forceAdd) {
+            this.$container.insertAdjacentHTML("beforeend", value);
+            this.value += value;
+        }
+        else
+            this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
 
         //Iframe bug fix for IE (leaves screen white);
         if (apf.cannotSizeIframe && this.oIframe)
@@ -171,6 +177,10 @@ apf.text = function(struct, tagName){
     /**** Public methods ****/
 
     //#ifdef __WITH_CONVENIENCE_API
+
+    this.addValue = function(value){
+        this.$propHandlers["value"].call(this, value, null, null, true);
+    }
 
     /**
      * Sets the value of this element. This should be one of the values
