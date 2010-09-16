@@ -2,13 +2,13 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+    ["core/ide", "core/ext", "text!ext/tree/tree.xml"],
+    function(ide, ext, markup) {
 
         var plugin = {
             name    : "Tree",
             type    : ext.GENERAL,
-            markup  : "tree.xml",
+            markup  : markup,
 
             init : function(){
                 plugin.trFiles = trFiles;
