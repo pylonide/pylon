@@ -58,7 +58,9 @@ return ext.register("ext/code/code", {
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
-        barEditor.destroy(true, true);
+        
+        if (self.barEditor)
+            barEditor.destroy(true, true);
 
         this.nodes = [];
     }
