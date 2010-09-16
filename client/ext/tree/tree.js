@@ -7,6 +7,7 @@ require.def("ext/tree/tree",
 
         var plugin = {
             name    : "Tree",
+            dev     : "Ajax.org",
             type    : ext.GENERAL,
             markup  : markup,
 

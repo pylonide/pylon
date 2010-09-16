@@ -12,6 +12,7 @@ require.def("ext/code/code",
         
         return {
             name    : "Code Editor",
+            dev     : "Ajax.org",
             type    : ext.EDITOR, 
             fileext : ["js", "html", "xml", "css", "xhtml", "aml", "txt", "php"],
             markup  : markup,

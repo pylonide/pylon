@@ -7,6 +7,7 @@ require.def("ext/localtree/localtree",
 
         var plugin = {
             name    : "Local Tree",
+            dev     : "Ajax.org",
             type    : ext.GENERAL,
             markup  : markup,
 
