@@ -173,8 +173,8 @@ apf.vbox = function(struct, tagName){
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
                 if (stretch && !node[size])
                     node.$ext.style[size] = apf.isGecko && (this.flex && node.flex) ? "1px" : "auto";
-                else
-                    handlers["true"][size].call(this, node[size]);
+                else if (node[size])
+                    handlers["true"][size].call(node, node[size]);
             }
         }
         else if (this.$amlLoaded) {
@@ -260,8 +260,8 @@ apf.vbox = function(struct, tagName){
         "true" : {
             "width" : function(value){
                 //@todo this should check the largest and only allow that one
-                if (this.parentNode.$vbox && this.parentNode.align == "stretch")
-                    return;
+                //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
+                    //return;
 
                 (this.$altExt || this.$ext).style.width = value 
                     ? (parseInt(value) == value 
@@ -272,8 +272,8 @@ apf.vbox = function(struct, tagName){
             
             "height" : function(value){
                 //@todo this should check the largest and only allow that one
-                if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
-                    return;
+                //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
+                    //return;
 
                 (this.$altExt || this.$ext).style.height = value 
                     ? (parseInt(value) == value 
@@ -333,8 +333,8 @@ apf.vbox = function(struct, tagName){
         "false" : {
             "width" : function(value){
                 //@todo this should check the largest and only allow that one
-                if (this.parentNode.$vbox && this.parentNode.align == "stretch")
-                    return;
+                //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
+                    //return;
               
                 this.$ext.style.width = value
                     ? (parseInt(value) == value 
@@ -345,8 +345,8 @@ apf.vbox = function(struct, tagName){
             
             "height" : function(value){
                 //@todo this should check the largest and only allow that one
-                if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
-                    return;
+                //if (this.parentNode.localName == "hbox" && this.parentNode.align == "stretch")
+                    //return;
       
                 this.$ext.style.height = value 
                     ? (parseInt(value) == value 
