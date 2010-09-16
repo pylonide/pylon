@@ -27,7 +27,6 @@
  */
 
 // #ifndef __PACKAGED
-
 if (location.protocol != "file:") {
     apf.console.warn("You are serving multiple files from a (local) "
            + "webserver - please consider\nusing the file:// protocol to "
@@ -68,12 +67,15 @@ apf.$x = apf.$loader
         "core/lib/util/syntax.js",
         "core/lib/util/xml.js",
         "core/lib/util/xmldiff.js",
+        "core/lib/util/zmanager.js",
+        "core/lib/util/visibilitymanager.js",
     
         "core/lib/tween.js",
         "core/lib/date.js",
         "core/lib/data.js",
         "core/lib/flow.js",
         
+        "core/lib/geolocation.js",
         "core/lib/history.js",
         "core/lib/html.js",
         "core/lib/layout.js",
@@ -168,7 +170,6 @@ apf.$x = apf.$loader
         "core/markup/aml/documentfragment.js",
         "core/markup/aml/event.js",
         "core/markup/aml/textrectangle.js",
-        "core/markup/aml/processinginstruction.js",
         "core/markup/aml/range.js",
         "core/markup/aml/selection.js",
         
@@ -186,30 +187,8 @@ apf.$x = apf.$loader
         "core/baseclasses/contenteditable/visualselect.js",
         "core/baseclasses/contenteditable/visualconnect.js",
 
-        "core/baseclasses/liveedit/anchor.js",
-        "core/baseclasses/liveedit/blockquote.js",
-        "core/baseclasses/liveedit/charmap.js",
-        "core/baseclasses/liveedit/clipboard.js",
-        "core/baseclasses/liveedit/code.js",
-        "core/baseclasses/liveedit/color.js",
-        "core/baseclasses/liveedit/datetime.js",
-        "core/baseclasses/liveedit/directions.js",
-        "core/baseclasses/liveedit/emotions.js",
-        "core/baseclasses/liveedit/fontbase.js",
-        "core/baseclasses/liveedit/fontstyle.js",
-        "core/baseclasses/liveedit/help.js",
-        "core/baseclasses/liveedit/hr.js",
-        "core/baseclasses/liveedit/image.js",
-        "core/baseclasses/liveedit/links.js",
-        "core/baseclasses/liveedit/list.js",
-        "core/baseclasses/liveedit/media.js",
-        "core/baseclasses/liveedit/printing.js",
-        //"core/baseclasses/liveedit/spell.js",
-        "core/baseclasses/liveedit/search.js",
-        "core/baseclasses/liveedit/subsup.js",
-        "core/baseclasses/liveedit/tables.js",
-        "core/baseclasses/liveedit/visualaid.js",
-    
+        "core/baseclasses/liveedit/richtext.js",
+
         "core/markup/xhtml/ignore.js",
         "core/markup/xhtml/option.js",
         "core/markup/xhtml/body.js",
@@ -244,10 +223,37 @@ apf.$x = apf.$loader
         "core/debug/debugwin.js",
         //"debug/profiler.js",
         "core/baseclasses/alignment.js",
-        "core/baseclasses/anchoring.js"
+        "core/baseclasses/anchoring.js",
+        "core/baseclasses/dataaction.js"
     )
     .wait()
     .script(
+        "core/markup/aml/processinginstruction.js",
+    
+        "core/baseclasses/liveedit/anchor.js",
+        "core/baseclasses/liveedit/blockquote.js",
+        "core/baseclasses/liveedit/charmap.js",
+        "core/baseclasses/liveedit/clipboard.js",
+        "core/baseclasses/liveedit/code.js",
+        "core/baseclasses/liveedit/color.js",
+        "core/baseclasses/liveedit/datetime.js",
+        "core/baseclasses/liveedit/directions.js",
+        "core/baseclasses/liveedit/emotions.js",
+        "core/baseclasses/liveedit/fontbase.js",
+        "core/baseclasses/liveedit/fontstyle.js",
+        "core/baseclasses/liveedit/help.js",
+        "core/baseclasses/liveedit/hr.js",
+        "core/baseclasses/liveedit/image.js",
+        "core/baseclasses/liveedit/links.js",
+        "core/baseclasses/liveedit/list.js",
+        "core/baseclasses/liveedit/media.js",
+        "core/baseclasses/liveedit/printing.js",
+        //"core/baseclasses/liveedit/spell.js",
+        "core/baseclasses/liveedit/search.js",
+        "core/baseclasses/liveedit/subsup.js",
+        "core/baseclasses/liveedit/tables.js",
+        "core/baseclasses/liveedit/visualaid.js",
+        
         "core/baseclasses/guielement.js"
     )
     .wait()
@@ -264,7 +270,6 @@ apf.$x = apf.$loader
         "core/baseclasses/databinding/multiselect.js",
         "core/baseclasses/validation.js",
         
-        "core/baseclasses/dataaction.js",
         "core/baseclasses/delayedrender.js",
         "core/baseclasses/docking.js",
         "core/baseclasses/dragdrop.js",
@@ -283,60 +288,7 @@ apf.$x = apf.$loader
         "core/baseclasses/basetree.js",
         "core/baseclasses/basesimple.js",
         "core/baseclasses/basetab.js",
-        "core/baseclasses/basestatebuttons.js",
-        
-        "elements/editor/src/ace/lib/core.js",
-        "elements/editor/src/ace/lib/oop.js",
-        "elements/editor/src/ace/lib/lang.js",
-        "elements/editor/src/ace/lib/event.js",
-        "elements/editor/src/ace/lib/dom.js",
-        "elements/editor/src/ace/mode/Text.js",
-        "elements/editor/src/ace/mode/TextHighlightRules.js",
-        "elements/editor/src/ace/mode/JavaScript.js",
-        "elements/editor/src/ace/mode/DocCommentHighlightRules.js",
-        "elements/editor/src/ace/mode/JavaScriptHighlightRules.js",
-        "elements/editor/src/ace/mode/Html.js",
-        "elements/editor/src/ace/mode/HtmlHighlightRules.js",
-        "elements/editor/src/ace/mode/Css.js",
-        "elements/editor/src/ace/mode/CssHighlightRules.js",
-        "elements/editor/src/ace/mode/Xml.js",
-        "elements/editor/src/ace/mode/XmlHighlightRules.js",
-        "elements/editor/src/ace/mode/MatchingBraceOutdent.js",
-        "elements/editor/src/ace/MEventEmitter.js",
-        "elements/editor/src/ace/Range.js",
-        "elements/editor/src/ace/Selection.js",
-        "elements/editor/src/ace/Search.js",
-        "elements/editor/src/ace/UndoManager.js",
-        "elements/editor/src/ace/Document.js",
-        "elements/editor/src/ace/Tokenizer.js",
-        "elements/editor/src/ace/BackgroundTokenizer.js",
-        "elements/editor/src/ace/layer/Cursor.js",	
-        "elements/editor/src/ace/layer/Gutter.js",	
-        "elements/editor/src/ace/layer/Text.js",	
-        "elements/editor/src/ace/layer/Marker.js",	
-        "elements/editor/src/ace/ScrollBar.js",	
-        "elements/editor/src/ace/TextInput.js",
-        "elements/editor/src/ace/KeyBinding.js",	
-        "elements/editor/src/ace/Editor.js",	
-        "elements/editor/src/ace/VirtualRenderer.js",
-        
-        "elements/editor/src/debug/O3Socket.js",
-        "elements/editor/src/debug/ChromeDebugMessageStream.js",
-        "elements/editor/src/debug/DevToolsService.js",
-        "elements/editor/src/debug/DevToolsMessage.js",
-        "elements/editor/src/debug/V8DebuggerService.js",
-        "elements/editor/src/debug/Breakpoint.js",
-        "elements/editor/src/debug/V8Debugger.js",
-        "elements/editor/src/debug/V8Message.js",
-        "elements/editor/src/debug/MessageReader.js",
-        "elements/editor/src/debug/StandaloneV8DebuggerService.js",
-        "elements/editor/src/debug/WebSocketV8DebuggerService.js",
-
-        "elements/debughost.js",
-        "elements/dbg/v8debugger.js",
-        "elements/dbg/chromedebughost.js",
-        "elements/dbg/v8debughost.js",
-        "elements/debugger.js"
+        "core/baseclasses/basestatebuttons.js"
     )
     .wait()
     .script(
@@ -357,6 +309,7 @@ apf.$x = apf.$loader
         "elements/browser.js",
         "elements/button.js",
         "elements/calendar.js",
+        "elements/calendarlist.js",
         "elements/caldropdown.js",
         "elements/chart.js",
         "elements/checkbox.js",
@@ -372,6 +325,7 @@ apf.$x = apf.$loader
         "elements/editor.js",
         "elements/errorbox.js",
         "elements/event.js",
+        "elements/filler.js",
         "elements/flashplayer.js",
         "elements/flowchart.js",
         "elements/frame.js",
@@ -381,9 +335,12 @@ apf.$x = apf.$loader
         "elements/iconmap.js",
         "elements/img.js",
         "elements/item.js",
+        "elements/junction.js",
         "elements/label.js",
         "elements/list.js",
         "elements/loader.js",
+        "elements/loadindicator.js",
+        "elements/map.js",
         "elements/menu.js",
         "elements/modalwindow.js",
         "elements/model.js",
@@ -391,6 +348,7 @@ apf.$x = apf.$loader
         "elements/page.js",
         "elements/pager.js",
         "elements/palette.js",
+        "elements/persist.js",
         "elements/portal.js",
         "elements/progressbar.js",
         "elements/propedit.js",
@@ -432,8 +390,61 @@ apf.$x = apf.$loader
         /*
         "elements/repeat.js",
         "elements/submitform.js",*/
-        "elements/markupedit.js"
+        "elements/markupedit.js",
         /*"elements/validation"*/
+        
+        "elements/editor/src/ace/lib/core.js",
+        "elements/editor/src/ace/lib/oop.js",
+        "elements/editor/src/ace/lib/lang.js",
+        "elements/editor/src/ace/lib/event.js",
+        "elements/editor/src/ace/lib/dom.js",
+        "elements/editor/src/ace/mode/Text.js",
+        "elements/editor/src/ace/mode/TextHighlightRules.js",
+        "elements/editor/src/ace/mode/JavaScript.js",
+        "elements/editor/src/ace/mode/DocCommentHighlightRules.js",
+        "elements/editor/src/ace/mode/JavaScriptHighlightRules.js",
+        "elements/editor/src/ace/mode/Html.js",
+        "elements/editor/src/ace/mode/HtmlHighlightRules.js",
+        "elements/editor/src/ace/mode/Css.js",
+        "elements/editor/src/ace/mode/CssHighlightRules.js",
+        "elements/editor/src/ace/mode/Xml.js",
+        "elements/editor/src/ace/mode/XmlHighlightRules.js",
+        "elements/editor/src/ace/mode/MatchingBraceOutdent.js",
+        "elements/editor/src/ace/MEventEmitter.js",
+        "elements/editor/src/ace/Range.js",
+        "elements/editor/src/ace/Selection.js",
+        "elements/editor/src/ace/Search.js",
+        "elements/editor/src/ace/UndoManager.js",
+        "elements/editor/src/ace/Document.js",
+        "elements/editor/src/ace/Tokenizer.js",
+        "elements/editor/src/ace/BackgroundTokenizer.js",
+        "elements/editor/src/ace/layer/Cursor.js",	
+        "elements/editor/src/ace/layer/Gutter.js",	
+        "elements/editor/src/ace/layer/Text.js",	
+        "elements/editor/src/ace/layer/Marker.js",	
+        "elements/editor/src/ace/ScrollBar.js",	
+        "elements/editor/src/ace/TextInput.js",
+        "elements/editor/src/ace/KeyBinding.js",	
+        "elements/editor/src/ace/Editor.js",	
+        "elements/editor/src/ace/VirtualRenderer.js",
+
+        "elements/editor/src/debug/O3Socket.js",
+        "elements/editor/src/debug/ChromeDebugMessageStream.js",
+        "elements/editor/src/debug/DevToolsService.js",
+        "elements/editor/src/debug/DevToolsMessage.js",
+        "elements/editor/src/debug/V8DebuggerService.js",
+        "elements/editor/src/debug/Breakpoint.js",
+        "elements/editor/src/debug/V8Debugger.js",
+        "elements/editor/src/debug/V8Message.js",
+        "elements/editor/src/debug/MessageReader.js",
+        "elements/editor/src/debug/StandaloneV8DebuggerService.js",
+        "elements/editor/src/debug/WebSocketV8DebuggerService.js",
+
+        "elements/debughost.js",
+        "elements/dbg/v8debugger.js",
+        "elements/dbg/chromedebughost.js",
+        "elements/dbg/v8debughost.js",
+        "elements/debugger.js"        
     )
     .wait()
     .script(
@@ -452,12 +463,17 @@ apf.$x = apf.$loader
         
         //RPC extensions (all need rpc.js)
         "elements/rpc/xmlrpc.js",      // XML-RPC
-        "elements/rpc/soap.js",      // SOAP
+        "elements/rpc/soap.js",        // SOAP
         "elements/rpc/jsonrpc.js",     // JSON
         //"elements/rpc/jphp.js",      // JPHP
         "elements/rpc/cgi.js",         // CGI
+        "elements/rpc/rdb.js",         // RDB-RPC
         "elements/rpc/rest.js",        // REST
         "elements/rpc/yql.js",         // YQL
+
+        "elements/upload/html4.js",
+        "elements/upload/html5.js",
+        "elements/upload/flash.js",
         
         "elements/video/type_flv.js",
         "elements/video/type_native.js",
@@ -489,30 +505,30 @@ apf.$x = apf.$loader
         if (apf.started) 
             return; //@todo ask @getify why this function is called twice
         apf.start();
-
-        //Conditional compilation workaround... (can this be improved??)
-        if (document.all) {
-            var oldWinError = window.onerror, z;
-            window.onerror = z = function(m){
-                apf.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
-
-                if (!arguments.caller)
-                    return true;
-            }
-        }
-        apf.Init.addConditional(function(){
-            if (document.all && window.onerror == z) //Conditional compilation workaround... (can this be improved??)
-                window.onerror = oldWinError;
-
-            apf.dispatchEvent("domready");
-        }, null, ["body", "class"]);
     }
+
+//Conditional compilation workaround... (can this be improved??)
+if (document.all) {
+    var oldWinError = window.onerror, z;
+    window.onerror = z = function(m){
+        apf.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
+
+        if (!arguments.caller)
+            return true;
+    }
+}
+apf.Init.addConditional(function(){
+    if (document.all && window.onerror == z) //Conditional compilation workaround... (can this be improved??)
+        window.onerror = oldWinError;
+
+    apf.dispatchEvent("domready");
+}, null, ["body", "class"]);
 
 apf.require = function(){
     var dir = apf.getDirname(location.href), req = [];
     for (var i = 0, l = arguments.length; i < l; i++) 
         req.push(apf.getAbsolutePath(dir, arguments[i]))
-    apf.$x.script.apply(null, req).wait();
+    apf.$x.script.apply(apf.$loader, req).wait();
 };
 
 /*if(document.body)
