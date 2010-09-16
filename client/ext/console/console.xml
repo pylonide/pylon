@@ -1,0 +1,5 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winDbgConsole" skin="dockwin" title="Console" modal="false" height="200">
+    
+    </a:window>
+</a:application>

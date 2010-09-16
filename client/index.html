@@ -50,10 +50,11 @@
                             "ext/code/code", 
                             "ext/extmgr/extmgr",
                             "ext/richtext/richtext",
-                            "ext/debugger/debugger"
+                            "ext/debugger/debugger",
+                            "ext/console/console"
                         ];
                         if (location.host)
-                            modules.push("ext/noderunner/noderunner");
+                            modules.unshift("ext/noderunner/noderunner");
                         
                         apf.addEventListener("load", function(){
                             //Load extensions
