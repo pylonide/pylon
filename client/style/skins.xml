@@ -119,6 +119,24 @@
         .same{cursor : not-allowed;}
     ]]></a:style>
 
+	<a:style condition="apf.isGecko"><![CDATA[
+		.dockwin {
+			-moz-box-orient: vertical;
+			display: -moz-box;
+			padding: 0;
+		}
+		
+		.dockwin .docktitle {
+			margin: 0
+		}	
+
+		.dockwin .dockcontent {
+			margin: 0;
+			height: auto;
+			-moz-box-flex: 1;
+		}	
+    ]]></a:style>
+	
     <a:presentation>
         <a:main 
           collapsed-height = "22"
