@@ -192,7 +192,6 @@ Function.prototype.bindWithEvent = function() {
  */
 if (!Function.prototype.bind)  
     Function.prototype.bind = function(context /*, arg1, arg2... */) {  
-        'use strict';  
         if (typeof this !== 'function') throw new TypeError();  
         var _arguments = Array.prototype.slice.call(arguments, 1),  
             _this = this,  
