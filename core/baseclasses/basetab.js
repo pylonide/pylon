@@ -1159,11 +1159,17 @@ apf.BaseTab = function(){
           || amlNode.localName != "page")
             return;
         
+        /*if (this.parentNode && this.parentNode.getPages().length == 0) {
+            if (this.parentNode.$activepage == this)
+                delete this.parentNode.$activepage;
+            this.$deactivate();
+        }*/
+
         var ln = amlNode.nextSibling;
-        while (ln && !ln.$first)
+        while (ln && (!ln.$first || !ln.visible))
             ln = ln.nextSibling;
         var rn = amlNode.previousSibling;
-        while (rn && !rn.$last)
+        while (rn && (!rn.$last || !rn.visible))
             rn = rn.previousSibling;
 
         if (this.firstChild == amlNode && ln)
@@ -1175,6 +1181,8 @@ apf.BaseTab = function(){
             if (ln || rn)
                 this.set(ln || rn);
             else {
+                amlNode.$deactivate();
+                
                 // #ifdef __ENABLE_TABSCROLL
                 //this.setScrollerState();
                 // #endif

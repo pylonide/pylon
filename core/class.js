@@ -1078,7 +1078,8 @@ if (myProp == "planes") debugger;
             this.$destroy();
 
         this.dispatchEvent("DOMNodeRemoved", {
-            bubbles : !apf.isDestroying
+            relatedNode  : this.parentNode,
+            bubbles      : !apf.isDestroying
         });
         this.dispatchEvent("DOMNodeRemovedFromDocument");
 
