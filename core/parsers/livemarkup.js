@@ -258,44 +258,7 @@ apf.lm = new (function(){
             "_valst(_n,"    : "_valm(",
             "_valed(_n,"    : "_valed(0,",
             "_lng("         : "_lng(",
-            "_lnged("       : "_lnged(",
-            "_nod_del(_n,"  : "_nod_del(0,",
-            "_nods_del(_n," : "_nods_del(0,"
-        },
-        xpath_op = { // which autoxpath to use when doing macro({xpath})
-            "=":{
-                "_val(_n,"      : "_nod_asn(_n,",
-                "_valm("        : "_nod_asn(0,",
-                "_valcr(_n,_cr,": "_nod_asn(_n,",
-                "_valcr(0,_cr," : "_nod_asn(0,",
-                "_nod(_n,"      : "_nod_asn(_n,",
-                "_nodm("        : "_nod_asn(0,",
-                "_nodcr(_n,_cr,": "_nod_asn(_n,",
-                "_nodcr(0,_cr," : "_nod_asn(0,",
-                "_nods(_n,"     : "_nods_asn(_n,",
-                "_nodsm("       : "_nods_asn(0,"
-            },
-            "+=":{ // which autoxpath to use when doing macro({xpath})
-                "_val(_n,"      : "_nod_add(_n,",
-                "_valm("        : "_nod_add(0,",
-                "_valcr(_n,_cr,": "_nod_add(_n,",
-                "_valcr(0,_cr," : "_nod_add(0,",
-                "_nod(_n,"      : "_nod_add(_n,",
-                "_nodm("        : "_nod_add(0,",
-                "_nodcr(_n,_cr,": "_nod_add(_n,",
-                "_nodcr(0,_cr," : "_nod_add(0,",
-                "_nods(_n,"     : "_nods_add(_n,",
-                "_nodsm("       : "_nods_add(0,"
-            }
-        },
-        xpath_del = {
-            "_cnt(_n,"      : "_nod_del(_n,",
-            "_xpt(_n,"      : "_nod_del(_n,",
-            "_val(_n,"      : "_nod_del(_n,",
-            "_valcr(_n,"    : "_nod_del(_n,",
-            "_nod(_n,"      : "_nod_del(_n,",
-            "_nodcr(_n,_cr,": "_nod_del(_n,",
-            "_nods(_n,"     : "_nods_del(_n,"
+            "_lnged("       : "_lnged("
         },
         parserx = /(\r?[\n]|\/\*|\*\/|\/\/|\<\!\-\-|\-\-\>|[=\!+\/\*-]=|\+\+|\-\-|["'{(\[\])}\]\<\>]|$)|([ \t]+)|([a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF.$_][\w.$_]*)|(\d[x\d.]*)|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>]?)/g,
         selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g, // inject self regexp
@@ -572,17 +535,7 @@ apf.lm = new (function(){
                                                 s[sl++] = ""; // notabene, this stored item is checked everywhere
                                             }
                                         }
-                                        else if (o[v = ol - 2] == ") ") { // recognise tail of xpath macro
-                                            if (!(u = xpath_op[tok]) || !(u = u[ o[w = s[sl] & 0xfffffff]]))
-                                                throw {
-                                                    t: "Invalid xpath assign",
-                                                    p: pos
-                                                };
-                                            o[w] = u,o[v] = ",", o[v + 1] = "", o[v + 2] = "";
-                                            s[sl++] = scope | (parse_mode << 28),
-                                            s[sl++] = "" // this value is checked everywhere
-                                        }
-                                    }else{
+                                     }else{
                                         o[ol++] = tok;
                                     }break;
                                 case 5: // '/' // regexp mode
@@ -768,13 +721,9 @@ apf.lm = new (function(){
 
                             if ((w = xpath_lut_code[last_tok])) {
                                 ol--, last_tok = o[ol-1]; // xpath with *%$#
-                                if (o[ol - 1] == "delete" || (o[ol - 2] == "delete" && ol--))
-                                    w = xpath_del[w], ol--; // delete *[xpath]
                             }
                             else {
                                 w = xpath_macro[s[sl - 1]] || xpath_macro[nesting ? 0 : c_xpathmode];
-                                if (last_tok == "delete") // delete [xpath]
-                                    w = xpath_del[w], ol -= 2;
                             }
                             if ((v = (u = ((out_context_word[last_tok] || o[ol - 1] == "\n")
                               && !new_block[last_tok])) && !s[sl - 1].indexOf("{")
@@ -1736,13 +1685,7 @@ apf.lm = new (function(){
                     else
                         o[2] = cc_async_o, o[3] = cc_o_blk_o, o[ol-2] = cc_async_c;
                 }
-                /*
-                if (cfg.precall)
-                    o[2] = cc_pc_o, o[ol++] = cc_pc_c;
-                else
-                    o[2] = cc_async_o, o[ol++] = cc_async_c;
-                */
-            }
+             }
 
             if (cfg.withopt)
                 o[1] = cc_opt_o, o[ol++] = cc_opt_c;
@@ -2028,7 +1971,6 @@ apf.lm_exec = new (function(){
 
     // xml parse function used by all livemarkup objects
     function xmlParse(str){
-        debugger;
         var n = apf.getXmlDom("<_apflmlist_>" + str + "</_apflmlist_>");
         if (!n || !(n = n.documentElement))
             return null;
@@ -2185,182 +2127,6 @@ apf.lm_exec = new (function(){
         if(!m)
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valst"),/*#endif*/"");
         return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
-    }
-    
-    function _nod_del(n, m, x){ // delete node
-        if(n) x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_nod_del"),/*#endif*/null);
-        if( !(n=n.selectSingleNode(x)) )
-            return (/*#ifdef __DEBUG*/wlvl>2&&wxpath(m,x,"_nod_del"),/*#endif*/null);
-        apf.xmldb.removeNode(n);
-    }
-
-    function _nods_del(n, m, x){ // delete nodes
-        if(n) x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_nods_del"),/*#endif*/null);
-
-        if(!(n = n.selectNodes(x)))
-            return;
-        apf.xmldb.removeNodeList(n);
-    }
-
-    function _nod_asn(n, m, x, v){ // assign node
-        if(n) v = x, x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                "Cannot assign to nonresolving model:"+m+"\nxpath:"+x+"\nvalue:"+v));
-
-        if(!n || (x && !(n=apf.createNodeFromXpath(n, x))) )
-            throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                "Cannot assign could not resolve \nxpath:"+x+"\nvalue:"+v));
-
-        var c;
-        if(!v || (v.charAt && (c=v.charAt(0)!="<")) || typeof(v)=="number"){
-            apf.setNodeValue( n, v, true);
-            return v;
-        }
-        if(!c){
-            if(n.nodeType!=1)
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                    "Cannot assign to a non-element node\nxpath:"+x+"\nvalue:"+v));
-
-            if(!(c = xmlParse(v)))
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                    "Cannot append broken XML.\nxpath:"+x+"\nvalue:"+v));
-            if(c.tagName != "_apflmlist_"){
-                return apf.xmldb.replaceNode( c, n );
-            }else{
-                c = c.childNodes;
-                apf.xmldb.replaceNode( n = c[0], n );
-                for(var i = 0, j = c.length;i<j;i++)
-                    n = apf.xmldb.appendChild( n.parentNode, c[0], n.nextSibling );
-                return n;
-            }
-        }else{
-            if(v.length){ //@todo implement this its an array thingy
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                    "Assign of xpath nodelists not yet supported\nxpath:"+x+"\nvalue:"+v));
-            }else{
-                if(!v.selectNodes)
-                    throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                        "Cannot assign non-element node\nxpath:"+x+"\nvalue:"+v));
-
-                if(v.nodeType == 2){
-                    if(n.nodeType != 2)
-                        throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                            "Cannot assign attribute node to replace non attribute, use += xpath:"+x+"\nvalue:"+v));
-
-                    apf.xmldb.removeAttribute(c = n.ownerElement || n.selectSingleNode(".."),
-                        n.nodeName);
-
-                    apf.xmldb.setAttribute(c, v.nodeName, v.nodeValue);
-
-                    c.getAttributeNode(v.nodeName);
-                }else
-                    apf.xmldb.replaceNode(v, n);
-            }
-        }
-        return v;
-    }
-
-    function _nods_asn(n, m, x, v){ // assign nodes
-        if(n) v = x, x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                "Cannot assign to nonresolving model:"+m+"\nxpath:"+x+"\nvalue:"+v));
-
-        for(var i = 0, j = (n = n.selectNodes(x)).length;i<j;i++)
-            _nod_asn( n[i], null, v);
-
-        return v;
-    }
-
-
-    function _nod_add(n, m, x, v){ // add node
-        if(n) v = x, x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                "Cannot append to nonresolving model:"+m+"\nxpath:"+x+"\nvalue:"+v));
-
-        if(!n || (x && !(n=n.selectSingleNode(x))) ){ // can only add when the xpath exists.
-            return _nod_asn(n,0,x,v);
-        }
-
-        var c;
-        if(!v || (v.charAt && (c=v.charAt(0)!="<")) || typeof(v)=="number"){
-            apf.setNodeValue( n,  // append v to node value
-                v= ((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
-                    (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || "")+v,
-                true);
-            return v;
-        }
-        if(!c){
-            if(n.nodeType!=1)
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                    "Cannot append to a non-element node\nxpath:"+x+"\nvalue:"+v));
-            // check the parsed XML.
-            if(!(c = xmlParse(v)))
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                    "Cannot append broken XML.\nxpath:"+x+"\nvalue:"+v));
-            if(c.tagName != "_apflmlist_"){
-                return apf.xmldb.appendChild( n.parentNode, xmlParse(v), n.nextSibling );
-            }else{
-                c = c.childNodes;
-                for(var i = 0, j = c.length;i<j;i++) // c nodelist gets smaller.
-                    n = apf.xmldb.appendChild( n.parentNode, c[0], n.nextSibling );
-                return n;
-            }
-        }else{
-            if(v.length){ //@todo implement this, its an array rhs
-                throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                    "Nodelists not yet supported\nxpath:"+x+"\nvalue:"+v));
-            }else{
-                if(!v.selectNodes)
-                    throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                        "Cannot assign non-element node\nxpath:"+x+"\nvalue:"+v));
-
-                if(v.nodeType == 2){
-                    if(n.nodeType != 1)
-                        throw new Error(apf.formatErrorString(0,0,"LM Xpath append",
-                            "Cannot append attribute to anything but element node"));
-
-                    apf.xmldb.setAttribute(c = n.ownerElement || n.selectSingleNode(".."),
-                        v.nodeName, v.nodeValue);
-
-                    apf.xmldb.removeAttribute(v.ownerElement || v.selectSingleNode(".."),
-                        v.nodeName);
-
-                    return c.getAttributeNode(v.nodeName);
-                }else
-                    return apf.xmldb.appendChild( n.parentNode, v, n.nextSibling );
-            }
-        }
-    }
-
-    function _nods_add(n, m, x, v){ // add nodes
-        if(n) v = x, x = m;
-        else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
-        (m.$isModel?m.data:(m.charAt?0:m))))
-            throw new Error(apf.formatErrorString(0,0,"LM Xpath Assign",
-                "Cannot append to nonresolving model:"+m+"\nxpath:"+x+"\nvalue:"+v));
-
-        for(var i = 0, j = (n = n.selectNodes(x)).length;i<j;i++)
-            _nod_add( n[i], null, v);
-
-        return v;
     }
 
     function _asn(o, p, v){     // assign propert
