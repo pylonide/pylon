@@ -6,13 +6,13 @@
 	<a:toolbar id="tbNoderunner">
 		<a:button
 		  icon="debugger/{this.disabled ? 'run_tool_disabled.gif' : 'run_tool.gif'}"
-		  disabled="{stRunning.active}"
-		  onclick="ide.run()"
+		  caption="run"
+		  disabled="{stRunning.active || (trFiles.selected.getAttribute('contenttype') || '').indexOf('application/javascript') != 0}"
 		/>
 		<a:button
 		  icon="debugger/{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
+		  caption="stop"
 		  disabled="{!stRunning.active}"
-		  onclick="ide.kill()"
 		/>
 	</a:toolbar>
         	
