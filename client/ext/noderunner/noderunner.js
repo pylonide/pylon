@@ -11,16 +11,30 @@ require.def("ext/noderunner/noderunner",
             nodes : [],
 
             init : function(amlNode){
-                ide.tbMain.appendChild(tbNoderunner);
+                while(tbNoderunner.childNodes.length) {
+                    var button = tbNoderunner.firstChild;
+                    ide.barTools.appendChild(button);
+                    this.nodes.push(button);
+                }
             },
 
             enable : function(){
+                this.nodes.each(function(item){
+                    item.enable();
+                });
             },
 
             disable : function(){
+                this.nodes.each(function(item){
+                    item.disable();
+                });
             },
 
             destroy : function(){
+                this.nodes.each(function(item){
+                    item.destroy(true, true);
+                });
+                this.nodes = [];
             }
         };
     }
