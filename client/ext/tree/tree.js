@@ -14,7 +14,7 @@ require.def("ext/tree/tree",
                 plugin.trFiles = trFiles;
                 ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
 
-                trFiles.addEventListener("afterselect", function() {
+                trFiles.addEventListener("afterselect", this.$afterselect = function() {
                     var node = this.selected;
                     if (node.tagName != 'file')
                         return;
@@ -37,12 +37,19 @@ require.def("ext/tree/tree",
             },
 
             enable : function(){
+                trFiles.show();
             },
 
             disable : function(){
+                trFiles.hide();
             },
 
             destroy : function(){
+                davProject.destroy(true, true);
+                mdlFiles.destroy(true, true);
+                trFiles.destroy(true, true);
+                
+                trFiles.removeEventListener("afterselect", this.$afterselect);
             }
         };
 
