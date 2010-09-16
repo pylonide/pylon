@@ -5,14 +5,14 @@ require.def("ext/tree/tree",
     ["core/ide", "core/ext", "text!ext/tree/tree.xml"],
     function(ide, ext, markup) {
 
-        var plugin = {
+        return ext.register("ext/tree/tree", {
             name    : "Tree",
             dev     : "Ajax.org",
             type    : ext.GENERAL,
             markup  : markup,
 
             init : function(){
-                plugin.trFiles = trFiles;
+                this.trFiles = trFiles;
                 ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
 
                 trFiles.addEventListener("afterselect", this.$afterselect = function() {
@@ -49,11 +49,9 @@ require.def("ext/tree/tree",
                 davProject.destroy(true, true);
                 mdlFiles.destroy(true, true);
                 trFiles.destroy(true, true);
-                
+
                 trFiles.removeEventListener("afterselect", this.$afterselect);
             }
-        };
-
-        return plugin;
+        });
     }
 );
