@@ -379,7 +379,7 @@ apf.AmlWindow = function(struct, tagName){
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
 
-        this.oIcon.style.display = value ? "block" : "none";
+        this.oIcon.style.display = value ? "" : "none";
         apf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
     
@@ -432,7 +432,7 @@ apf.AmlWindow = function(struct, tagName){
 
             this.state = this.state.split("|").remove("closed").join("|");
 
-            this.$ext.style.display = "block"; //Some form of inheritance detection
+            this.$ext.style.display = ""; //Some form of inheritance detection
 
             //#ifdef __WITH_LAYOUT
             if (apf.layout && this.$int)

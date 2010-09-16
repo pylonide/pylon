@@ -292,7 +292,7 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = value = parseInt(value);
                 if (value) {
-                    if (false && !this.$altExt) {
+                    if (!this.$altExt) {
                         var doc = this.$ext.ownerDocument;
                         var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);

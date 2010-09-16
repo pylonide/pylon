@@ -600,7 +600,7 @@ apf.GuiElement.propHandlers = {
             if (this.$ext) {
                 this.$ext.style.display = ""; //Some form of inheritance detection
                 if (!this.$ext.offsetHeight)
-                    this.$ext.style.display = this.$display || "block";
+                    this.$ext.style.display = this.$display || "";
             }
             
             //#ifdef __WITH_LAYOUT
