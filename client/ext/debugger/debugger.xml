@@ -44,7 +44,6 @@
     
     <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" height="200" />
     <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1" width="250"/>
-    <a:window id="winDbgConsole" skin="dockwin" title="Console" modal="false" height="200" />
     
     <a:toolbar id="tbDebug" height="26">
         <a:bar>

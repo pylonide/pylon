@@ -12,7 +12,7 @@ return ext.register("ext/noderunner/noderunner", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     markup : markup,
-    deps   : [tree],
+    deps   : [tree, console],
 
     nodes : [],
 
