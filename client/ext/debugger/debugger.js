@@ -3,7 +3,7 @@
  */
 require.def("ext/debugger/debugger",
     ["core/ide", "core/ext", "ext/console/console", "text!ext/debugger/debugger.xml"],
-    function(ide, ext, console, markup) {
+    function(ide, ext, log, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -27,6 +27,8 @@ return ext.register("ext/debugger/debugger", {
             //Append the stack window at the right
             ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgStack)
         );
+
+        log.enable();
     },
 
     enable : function(){
@@ -34,6 +36,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.show)
                 item.show();
         });
+        log.enable();
     },
 
     disable : function(){
@@ -41,6 +44,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.hide)
                 item.hide();
         });
+        log.disable();
     },
 
     destroy : function(){

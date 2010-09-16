@@ -5,14 +5,15 @@ require.def("ext/noderunner/noderunner",
     ["core/ide",
      "core/ext",
      "ext/tree/tree",
+     "ext/console/console",
      "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, tree, markup) {
+     "/socket.io/socket.io.js"], function(ide, ext, tree, log, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     markup : markup,
-    deps   : [tree, console],
+    deps   : [tree, log],
 
     nodes : [],
 
@@ -72,6 +73,7 @@ return ext.register("ext/noderunner/noderunner", {
             "file": this.$getPath(file)
         };
         this.socket.send(JSON.stringify(command));
+        log.enable();
         stRunning.activate();
     },
 
