@@ -178,6 +178,36 @@ Function.prototype.bindWithEvent = function() {
 };
 
 /**
+ * The bind function creates a new function (a bound function) that calls the
+ * function that is its this value (the bound function's target function) with 
+ * a specified this parameter, which cannot be overridden. bind also accepts 
+ * leading default arguments to provide to the target function when the bound 
+ * function is called.  A bound function may also be constructed using the new 
+ * operator: doing so acts as though the target function had instead been 
+ * constructed.  The provided this value is ignored, while prepended arguments 
+ * are provided to the emulated function.
+ * 
+ * @param {Object} context The 'this' context of the bound function
+ * @type Function
+ */
+if (!Function.prototype.bind)  
+    Function.prototype.bind = function(context /*, arg1, arg2... */) {  
+        'use strict';  
+        if (typeof this !== 'function') throw new TypeError();  
+        var _arguments = Array.prototype.slice.call(arguments, 1),  
+            _this = this,  
+            _concat = Array.prototype.concat,  
+            _function = function() {  
+                return _this.apply(this instanceof _dummy ? this : context,  
+                    _concat.apply(_arguments, arguments));  
+            },  
+            _dummy = function() {};  
+        _dummy.prototype = _this.prototype;  
+        _function.prototype = new _dummy();  
+        return _function;  
+};
+
+/**
  * Copy an array, like this statement would: 'this.concat([])', but then do it
  * recursively.
  */
