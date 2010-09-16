@@ -1,0 +1,28 @@
+<a:menu id="mnuFile">
+    <a:item>Example 1</a:item>
+    <a:item>Example 2</a:item>
+    <a:item>Example 3</a:item>
+    <a:item>Example 4</a:item>
+    <a:divider />
+    <a:item>Exit</a:item>
+</a:menu>
+
+<a:menu id="mnuExample">
+    <a:item onclick="
+        var ext = require('core/ext');
+        ext.unregister(require('ext/refactor/refactor'));
+      ">Remove Search&amp;Replace Plugin</a:item>
+    <a:item onclick="
+        var ext = require('core/ext');
+        ext.register('ext/refactor/refactor', require('ext/refactor/refactor'));
+      ">Add Search&amp;Replace Plugin</a:item>
+</a:menu>
+
+<a:menu id="mnuEditors">
+</a:menu>
+
+<a:menu id="mnuCtxEditor">
+    <a:item>Cut</a:item>
+    <a:item>Copy</a:item>
+    <a:item>Paste</a:item>
+</a:menu>

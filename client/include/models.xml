@@ -1,0 +1,18 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlFiles">
+        <project>
+            <file filename="file.txt">
+                This is a test
+            </file>
+            <file filename="file.js">
+                alert(1);
+            </file>
+            <file filename="file.xml"><![CDATA[
+                <test />
+            ]]></file>
+            <file filename="file.rtf"><![CDATA[
+                <strong>asdasdasd</strong>
+            ]]></file>
+        </project>
+    </a:model>
+</a:application>

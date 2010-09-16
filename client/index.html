@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head profile="http://www.w3.org/2005/10/profile">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Ajax.org Cloud IDE</title>
+        <meta name="description" content=""/>
+        <meta name="keywords" content=""/>
+        
+        <link rel="stylesheet" type="text/css" href="style/style.css" />
+        
+        <script type="text/javascript" src="require.js"></script>
+        <script type="text/javascript">//<!--
+            var RELEASE = "release";
+            var DEBUG   = "debug";
+            var FILES   = "files";
+            
+            var HOST    = "http://dev1.ajax.org";
+            var TESTING = false; //Load data from test models
+            var VERSION = FILES; //Change the version you want to use here
+            
+            var apfLoc = VERSION == FILES 
+                ? "common/apf/apf.js" 
+                : "js/apf_" + VERSION + ".js";
+
+            require([apfLoc], function(){
+                /*apf.onstart = function(){
+                    //old browsers
+                    var vIE     = apf.isIE6 || apf.isIE7,
+                        vFF     = apf.isGecko && apf.versionFF < 3.6,
+                        vSafari = apf.isSafari && apf.versionSafari < 4,
+                        vChrome = apf.isChrome && apf.versionChrome < 4,
+                        vOpera  = apf.isOpera && apf.versionOpera < 10;
+                    
+                    if (vIE || vFF || vSafari || vChrome || vOpera) {
+                        //Display proper message to user
+                        document.body.innerHTML = document.getElementById("noscript").innerHTML;
+                        document.getElementsByTagName('html')[0].style.display = 'block';
+                        return false;
+                    }
+                    return true;
+                };*/
+
+                apf.onstart = function(){
+                    require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
+                        var modules = ["ext/refactor/refactor", "ext/code/code", 
+                                       "ext/richtext/richtext", "ext/debugger/debugger"];
+                        
+                        apf.addEventListener("load", function(){
+                            //Load extensions
+                            require(modules, function(){
+                                for (var i = 0; i < modules.length; i++) {
+                                    ext.register(modules[i], arguments[i]);
+                                }
+                            });
+                        });
+                    });
+                }
+            });
+        //--></script>
+    </head>
+    <body>
+        <div id="noscript">
+            <div class="noscript">
+                <div id="hp_header">
+                    <div id="logo"></div>
+                </div>
+                <div class="oldbro_middle_panel">
+                    <div class="content">
+                        <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
+                        <span class="browser_option">
+                            <a href="http://www.mozilla.com/firefox" target="_blank">
+                                <img src="style/images/browsers/ff_32x32.png" alt="" />
+                                <div>Mozilla Firefox</div>
+                            </a>
+                        </span>
+                        <span class="browser_option" style="width:50px;">
+                            <a href="http://www.apple.com/safari" target="_blank">
+                                <img src="style/images/browsers/safari_32x32.png" alt="" />
+                                <div>Safari</div>
+                            </a>
+                        </span>
+                        <span class="browser_option">
+                            <a href="http://www.google.com/chrome" target="_blank">
+                                <img src="style/images/browsers/chrome_32x32.png" alt="" />
+                                <div>Google Chrome</div>
+                            </a>
+                        </span>
+                        <span class="browser_option">
+                            <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
+                                <img src="style/images/browsers/ie_32x32.png" alt="" />
+                                <div>Internet Explorer</div>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="wn_main_section_rounded">
+                    <div class="wnmsr_left"></div>
+                    <div class="wnmsr_middle"></div>
+                    <div class="wnmsr_right"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!--a:skin 
+          src        = "style/skins/_index.xml" 
+          media-path = "style/skinimg/" 
+          icon-path  = "icon/skin_icons/" /-->
+        
+        <a:skin 
+          src        = "style/skins.xml" 
+          media-path = "style/images/" 
+          icon-path  = "icon/skin_icons/" />
+        
+        <a:appsettings name="ide" debug="false"
+          disable-space       = "true"
+          auto-hide-loading   = "false"
+          allow-select        = "false"
+          allow-blur          = "true"
+          initdelay           = "false"
+          storage             = "cookie"
+          baseurl             = "{apf.host ? apf.host : ''}" />
+        
+        <!--a:auth id="auth"
+          login           = "{pWorknets.login(username, password, app.getRedirectPage(), app.getInviteToken())}"
+          logout          = "{pWorknets.logout()}"
+          autostart       = "false"
+          fail-state      = "stFail"
+          login-state     = "stIdle"
+          waiting-state   = "stLoggingIn"
+          error-state     = "stError"
+          logout-state    = "stLoggedOut"
+          authreq-state   = "stAuthReq" />
+        
+        <a:persist id="pWorknets" 
+          host = "{apf.host ? apf.host : HOST}" />
+
+        <a:remote id="rmtWorknets" transport="pWorknets" />
+
+        <a:state-group
+          id                 = "stGr1"
+          loginError.visible = "false">
+            <a:state id="stFail"
+              loginError.caption    = "Wrong e-mail and password combination."
+              loginError.visible    = "true"
+              winPwStatus.caption   = "Wrong e-mail and password combination."
+              winPwStatus.visible   = "true"
+              winPassword.disabled  = "false"
+              loginMsg.caption      = ""
+              sni_txt1.disabled     = "false"
+              sni_txt2.disabled     = "false"
+              sni_btn1.disabled     = "false" />
+            <a:state id="stError"
+              loginError.caption    = "Network failure, check your network."
+              loginError.visible    = "true"
+              winPwStatus.caption   = "Network failure, check your network."
+              winPwStatus.visible   = "true"
+              winPassword.disabled  = "false"
+              loginMsg.caption      = ""
+              sni_txt1.disabled     = "false"
+              sni_txt2.disabled     = "false"
+              sni_btn1.disabled     = "false" />
+            <a:state id="stLoggedOut"
+              loginError.value      = ""
+              loginError.visible    = "false"
+              winPwStatus.caption   = ""
+              winPassword.disabled  = "false"
+              loginMsg.caption      = ""
+              sni_txt1.disabled     = "false"
+              sni_txt2.disabled     = "false"
+              sni_btn1.disabled     = "false" />
+            <a:state id="stIdle"
+              loginError.visible    = "false"
+              winPwStatus.caption   = ""
+              winPassword.disabled  = "false"
+              loginMsg.caption      = "" />
+            <a:state id="stLoggingIn"
+              loginMsg.caption      = "Logging in..."
+              winPwStatus.caption   = "Logging in..."
+              winPwStatus.visible   = "true"
+              winPassword.disabled  = "true"
+              loginMsg.visible      = "true"
+              loginError.visible    = "false"
+              sni_txt1.disabled     = "true"
+              sni_txt2.disabled     = "true"
+              sni_btn1.disabled     = "true" />
+            <a:state id="stAuthReq"
+              loginError.value      = ""
+              loginError.visible    = "false" 
+              winPwStatus.visible   = "false"
+              winPassword.disabled  = "false"
+              onactivate            = "
+                if (apf.loaded) {
+                    delete app.redirectPage;
+                    winPassword.setAttribute('mode', 'login');
+                    winPassword.show();
+                }
+              "/>
+        </a:state-group-->
+
+        <a:loader id="loader">
+            <div id="loadscreen" class="loader">
+                <div>Loading...</div>
+            </div>
+        </a:loader>
+        
+        <a:include src="include/models.xml" />
+        <a:include src="include/menus.xml" />
+        <a:include src="include/windows.xml" />
+        
+        <a:vbox anchors="0 0 0 0" id="vbMain">
+            <a:toolbar id="tbMain">
+                <a:menubar id="barMenu">
+                    <a:button submenu="mnuFile">Example</a:button>
+                    <a:button submenu="mnuExample">Example</a:button>
+                    <a:button submenu="mnuEditors">Editors</a:button>
+                    <a:button submenu="mnuCtxEditor">Context Menu</a:button>
+                    <a:dropdown right="1" top="1" id="ddModes"
+                      onafterselect = "
+                        var ext = require('core/ext');
+                        ext.setLayoutMode(this.value);
+                      ">
+                        <a:item value="default" caption="Default" />
+                    </a:dropdown>
+                </a:menubar>
+                <a:bar id="barTools">
+                    
+                </a:bar>
+            </a:toolbar>
+            
+            <a:hbox padding="3" flex="1">
+                <a:vbox width="200" padding="3">
+                    <a:tree id="trFiles" flex="1" autoselect="false" 
+                      model     = "mdlFiles"
+                      each      = "[file|folder]" 
+                      caption   = "[@filename]" 
+                      eachvalue = "[@filename]" />
+                </a:vbox>
+
+                <a:vbox flex="1" padding="3">
+                    <a:tab id="tabEditors"
+                      flex           = "1"
+                      skin           = "session_tab"
+                      buttons        = "close"
+                      buttons2        = "close|scale"
+                      style          = "margin:0 auto;">
+                        <!-- empty -->
+                    </a:tab>
+                </a:vbox>
+                
+                <a:vbox padding="3">
+                    
+                </a:vbox>
+            </a:hbox>
+
+            <a:statusbar id="sbMain">
+                <a:section />
+            </a:statusbar>
+        </a:vbox>
+    </body>
+</html>
