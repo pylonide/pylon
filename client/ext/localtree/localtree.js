@@ -12,10 +12,9 @@ return ext.register("ext/localtree/localtree", {
     markup  : markup,
 
     init : function(){
-        this.trFiles = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
 
-        trFiles.addEventListener("afterselect", this.$afterselect = function() {
+        trFiles.addEventListener("afterselect", function() {
             var node = this.selected;
             if (node.tagName != 'file')
                 return;
@@ -35,8 +34,6 @@ return ext.register("ext/localtree/localtree", {
     destroy : function(){
         mdlFiles.destroy(true, true);
         trFiles.destroy(true, true);
-
-        trFiles.removeEventListener("afterselect", this.$afterselect);
     }
 });
 
