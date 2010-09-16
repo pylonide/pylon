@@ -44,7 +44,7 @@
                 apf.onstart = function(){
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
                         var modules = [
-                            "ext/tree/tree",
+                            (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
                             "ext/refactor/refactor",
                             "ext/code/code", 
                             "ext/richtext/richtext",
