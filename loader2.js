@@ -424,9 +424,11 @@ apf.$x = apf.$loader
         "elements/editor/src/ace/layer/Marker.js",	
         "elements/editor/src/ace/ScrollBar.js",	
         "elements/editor/src/ace/TextInput.js",
-        "elements/editor/src/ace/KeyBinding.js",	
+        "elements/editor/src/ace/KeyBinding.js",
         "elements/editor/src/ace/Editor.js",	
         "elements/editor/src/ace/VirtualRenderer.js",
+        "elements/editor/src/ace/conf/keybindings/default_mac.js",
+        "elements/editor/src/ace/conf/keybindings/default_win.js",
 
         "elements/editor/src/debug/O3Socket.js",
         "elements/editor/src/debug/ChromeDebugMessageStream.js",
