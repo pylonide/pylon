@@ -5,6 +5,7 @@ require.def("ext/save/save",
     ["core/ide", "core/ext", "core/util", "text!ext/save/save.xml"],
     function(ide, ext, util, markup) {
         return {
+            dev    : "Ajax.org",
             type   : ext.GENERAL, 
             markup : markup,
             

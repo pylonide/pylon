@@ -5,6 +5,7 @@ require.def("ext/refactor/refactor",
     ["core/ide", "core/ext", "text!ext/refactor/refactor.xml"],
     function(ide, ext, markup) {
         return {
+            dev    : "Ajax.org",
             type   : ext.GENERAL, 
             markup : markup,
             

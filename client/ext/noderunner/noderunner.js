@@ -9,6 +9,7 @@ require.def("ext/noderunner/noderunner",
      "/socket.io/socket.io.js"],
     function(ide, ext, tree, markup) {
         return {
+            dev    : "Ajax.org",
             type   : ext.GENERAL,
             markup : markup,
 

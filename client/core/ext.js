@@ -39,6 +39,12 @@ require.def("core/ext",
             extensions    : [],
             extLut        : {},
             fileext       : {},
+            typeLut       : {
+                1 : "General",
+                2 : "Layout",
+                3 : "Editor",
+                4 : "Editor Plugin"
+            },
 
             currentLayoutMode : null,
             currentEditor     : null,
@@ -76,6 +82,13 @@ require.def("core/ext",
 
                     break;
                 }
+                
+                if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
+                    mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
+                        + '" name="' + (oExtension.name || "") + '" path="' + path
+                        + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
+                else
+                    mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
                 this.extLut[path] = oExtension;
                 this.extensions.push(oExtension);
@@ -98,6 +111,8 @@ require.def("core/ext",
 
                     break;
                 }
+
+                mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
                 oExtension.destroy();
                 delete oExtension.registed;

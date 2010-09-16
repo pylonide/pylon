@@ -12,6 +12,7 @@ require.def("ext/richtext/richtext",
 
         return {
             name    : "Rich Text Editor",
+            dev     : "Ajax.org",
             type    : ext.EDITOR,
             fileext : ["rtf"],
             //markup  : "richtext.xml",

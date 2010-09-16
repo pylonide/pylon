@@ -6,6 +6,7 @@ require.def("ext/debugger/debugger",
     function(ide, ext, markup) {
         return {
             name   : "Debug",
+            dev    : "Ajax.org",
             type   : ext.LAYOUT,
             markup : markup,
             
