@@ -1,0 +1,16 @@
+HTML {
+    overflow : hidden;
+}
+
+BODY {
+    background-color : #fefefe;
+    font-family      : Trebuchet MS;
+    color            : #222222;
+    margin           : 0;
+    padding          : 0 ;
+    font-size        : 12px;
+}
+
+.noscript{
+    display: none;
+}
