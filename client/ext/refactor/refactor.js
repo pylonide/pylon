@@ -25,6 +25,7 @@ require.def("ext/refactor/refactor",
                 this.nodes.push(
                     ide.barTools.appendChild(new apf.button({
                         icon    : "replace.png",
+                        tooltip : "Search & Replace",
                         onclick : openUi
                     })),
                     
