@@ -1,12 +1,12 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
  */
-require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "text!ext/tree/tree.xml"],
+require.def("ext/localtree/localtree",
+    ["core/ide", "core/ext", "text!ext/localtree/localtree.xml"],
     function(ide, ext, markup) {
 
         var plugin = {
-            name    : "Tree",
+            name    : "Local Tree",
             type    : ext.GENERAL,
             markup  : markup,
 
@@ -21,7 +21,7 @@ require.def("ext/tree/tree",
 
                     ext.openEditor(trFiles.value, trFiles.selected);
 
-                    if (node.selectSingleNode("data"))
+                    /*if (node.selectSingleNode("data"))
                         return;
 
                     apf.getData('{davProject.read([@id])}', {
@@ -32,7 +32,7 @@ require.def("ext/tree/tree",
                             );
                             apf.b(node).append(xml);
                         }
-                    });
+                    });*/
                 });
             },
 

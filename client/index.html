@@ -46,10 +46,11 @@
                         var modules = [
                             "ext/tree/tree",
                             "ext/noderunner/noderunner",
+                            (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
                             "ext/refactor/refactor",
-                             "ext/code/code", 
-                             "ext/richtext/richtext",
-                             "ext/debugger/debugger"
+                            "ext/code/code", 
+                            "ext/richtext/richtext",
+                            "ext/debugger/debugger"
                         ];
                         
                         apf.addEventListener("load", function(){
