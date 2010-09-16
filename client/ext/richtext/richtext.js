@@ -21,7 +21,7 @@ return ext.register("ext/richtext/richtext", {
     nodes : [],
 
     init : function(amlPage){
-        this.rteEdior = amlPage.appendChild(new apf.editor({
+        this.rteEditor = amlPage.appendChild(new apf.editor({
             value   : "[data]",
             anchors : "0 0 0 0"
         }));
@@ -55,7 +55,9 @@ return ext.register("ext/richtext/richtext", {
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
-        this.rteEdior.destroy(true, true);
+        
+        if (this.rteEditor)
+            this.rteEditor.destroy(true, true);
 
         this.nodes = [];
     }

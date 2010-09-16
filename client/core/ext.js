@@ -12,7 +12,7 @@
  * - Add AML elements
  * - Add layout modes
  */
-require.def("core/ext", ["core/ide"], function(ide) {
+require.def("core/ext", ["core/ide", "core/util"], function(ide, util) {
 
 var ext;
 ide.addEventListener("load", function(){
@@ -80,6 +80,13 @@ return ext = {
 
             break;
         }
+        
+        var deps = oExtension.deps;
+        if (deps) {
+            deps.each(function(dep){
+                
+            });
+        }
 
         if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
             mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
@@ -102,9 +109,19 @@ return ext = {
                 oExtension.$layoutItem.destroy(true, true);
             break;
             case this.EDITOR:
+                var _self = this;
                 oExtension.fileext.each(function(fe){
-                    delete this.fileext[fe];
+                    delete _self.fileext[fe];
                 });
+                
+                if (this.fileext["default"] == oExtension) {
+                    delete this.fileext["default"];
+                    
+                    for (prop in this.fileext) {
+                        this.fileext["default"] = this.fileext[prop];
+                        break;
+                    }
+                }
             break;
             case this.EDITOR_PLUGIN:
 
@@ -156,9 +173,17 @@ return ext = {
 
         var fileext = (filename.match(/\.([^\.]*)$/) || {})[1];
         var editor = this.fileext[fileext] || this.fileext["default"];
-
+        
         if (this.currentEditor)
             this.currentEditor.disable();
+        
+        if (!editor) {
+            util.alert(
+                "No editor is registered", 
+                "Could you not find any editor to display content",
+                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+            return;
+        }
 
         if (!editor.inited) {
             //Create Page Element
