@@ -250,6 +250,16 @@ var apf = {
             // 1->IE, 0->FF, 2->GCrome, 3->Safari, 4->Opera, 5->Konqueror 
             b      = (typeof/./)[0]=='f'?+'1\0'?3:2:+'1\0'?5:1-'\0'?1:+{valueOf:function(x){return!x}}?4:0;
 
+       /*
+        * Fix for firefox older than 2
+        * Older versions of firefox have (typeof/./) = function
+        * So firefox to be treated as Chrome, since the above expresion will return 2
+        * Newer versions have (typeof/./) = object
+        * 
+        */
+       if((typeof/./)[0]=='f' && parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) <= 2)
+           b = 0;
+
         /**
          * Specifies whether the application is running in the Opera browser.
          * @type {Boolean}
