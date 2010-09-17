@@ -33,9 +33,7 @@ apf.__VALIDATION__ = 1 << 6;
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Alignment
  * @inherits apf.Anchoring
- * @inherits apf.Docking
  * @inherits apf.DelayedRender
  * @inherits apf.DragDrop
  * @inherits apf.Focussable
@@ -154,18 +152,6 @@ apf.GuiElement = function(){
                 return type == this.parentNode.localName;
             } //else
             // #endif
-            
-            // #ifdef __WITH_ALIGNMENT
-            if (this.align && !this.$box) {
-                if (!this.$alignmentEnabled) {
-                    if (this.$disableCurrentLayout)
-                        this.$disableCurrentLayout();
-                    this.$enableAlignment();
-                    this.$disableCurrentLayout = this.$disableAlignment;
-                }
-                return type == "alignment";
-            }
-            // #endif
         }
         
         // #ifdef __WITH_ANCHORING
@@ -189,9 +175,6 @@ apf.GuiElement = function(){
     this.implement(
         //#ifdef __WITH_ANCHORING
         apf.Anchoring
-        //#endif
-        //#ifdef __WITH_ALIGNMENT
-        ,apf.Alignment
         //#endif
         //#ifdef __WITH_CONTENTEDITABLE
         ,apf.ContentEditable
@@ -736,13 +719,6 @@ apf.GuiElement.propHandlers = {
         this.$ext.setAttribute("title", value);
     },
     
-    //#ifdef __WITH_ALIGNMENT
-    "align" : function(value){
-        if (value)
-            this.$setLayout("alignment");
-    },
-    //#endif
-
     //#ifdef __AMLCONTEXTMENU
     /**
      * @attribute {String} contextmenu the name of the menu element that will

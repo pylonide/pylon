@@ -133,9 +133,6 @@ apf.Init.addConditional(function(){
         //#ifdef __WITH_ANCHORING
         apf.Anchoring
         //#endif
-        //#ifdef __WITH_ALIGNMENT
-        ,apf.Alignment
-        //#endif
     );
 
     //#ifdef __WITH_GUIELEMENT

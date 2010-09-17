@@ -222,7 +222,6 @@ apf.$x = apf.$loader
         "core/debug/debug.js",
         "core/debug/debugwin.js",
         //"debug/profiler.js",
-        "core/baseclasses/alignment.js",
         "core/baseclasses/anchoring.js",
         "core/baseclasses/dataaction.js"
     )
@@ -271,7 +270,6 @@ apf.$x = apf.$loader
         "core/baseclasses/validation.js",
 
         "core/baseclasses/delayedrender.js",
-        "core/baseclasses/docking.js",
         "core/baseclasses/dragdrop.js",
         "core/baseclasses/focussable.js",
         "core/baseclasses/media.js",

@@ -179,9 +179,7 @@
  *
  * The following classes are automatically implemented when needed by apf.GuiElement.
  * <code>
- * - apf.Alignment
  * - apf.Anchoring
- * - apf.Docking
  * - apf.DelayedRender
  * - apf.DragDrop
  * - apf.Focussable

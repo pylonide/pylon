@@ -124,7 +124,6 @@ apf.WinServer = {
  * @since       0.4
  *
  * @inherits apf.Presentation
- * @inherits apf.Docking
  * @inherits apf.Transaction
  *
  * @event show          Fires when the window is opened.
@@ -154,9 +153,6 @@ apf.AmlWindow = function(struct, tagName){
 
 (function(){
     this.implement(
-        //#ifdef __WITH_DOCKING
-        apf.Docking,
-        //#endif
         apf.BaseStateButtons
     );
 
@@ -306,26 +302,6 @@ apf.AmlWindow = function(struct, tagName){
         apf.WinServer.setTop(this);
         return this;
     };
-
-    //#ifdef __WITH_ALIGNMENT
-    /**
-     * @todo change this to use setProperty
-     * @private
-     */
-    this.syncAlignment = function(oItem){
-        if (oItem.hidden == 3)
-            apf.WinServer.setTop(this);
-
-        if (oItem.state > 0) {
-            this.$setStyleClass(this.$ext, this.$baseCSSname + "Min",
-                [this.$baseCSSname + "Edit", this.$baseCSSname + "Max"]);
-        }
-        else {
-            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Min",
-                this.$baseCSSname + "Edit", this.$baseCSSname + "Max"]);
-        }
-    };
-    //#endif
 
     /**** Properties and Attributes ****/
 

@@ -145,15 +145,6 @@ apf.extend(apf.config, {
             });
             //#endif
         },
-        //Activate Layout Rules [Maybe change idef to something more specific]
-        //#ifdef __WITH_ALIGNMENT
-        "layout" : function(value){
-            apf.queue.add("layout", function(){
-                apf.setModel(apf.config.layout, apf.layout);
-                //apf.layout.$loadFrom(value); //@todo apf3.0 test
-            });
-        },
-        // #endif
         "resource-path" : function(value){
             this.resourcePath = apf.parseExpression(value || "")
               .replace(/resources\/?|\/$/g, '');

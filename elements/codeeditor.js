@@ -36,7 +36,7 @@
  * @since       0.1
  */
 
-if (!window.require && typeof require.def != "function")
+if (!window.require || typeof require.def != "function")
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     require.def("apf/elements/codeeditor",

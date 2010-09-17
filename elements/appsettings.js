@@ -55,8 +55,6 @@
  * @see baseclass.interactive
  * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @see baseclass.interactive
- * @attribute {String}  layout                  the {@link term.datainstruction data instruction} to retrieve the layout xml definition.
- * @see core.layout
  * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instruction}.
  * @see teleport.http
  * @see term.datainstruction
@@ -103,8 +101,7 @@ apf.appsettings = function(struct, tagName){
     this.$attrExcludePropBind = {
         language : 1,
         login    : 1,
-        logout   : 1,
-        layout   : 1
+        logout   : 1
     };
     
     this.$supportedProperties = ["debug", "name", "baseurl", "resource-path", 
@@ -114,7 +111,7 @@ apf.appsettings = function(struct, tagName){
         "initdelay", "default-page", "query-append", "outline", "drag-outline", 
         "resize-outline", "resize-outline", "iepngfix", "iepngfix-elements", 
         "iphone-fullscreen", "iphone-statusbar", "iphone-icon", 
-        "iphone-icon-is-glossy", "iphone-fixed-viewport", "layout", "skinset", 
+        "iphone-icon-is-glossy", "iphone-fixed-viewport", "skinset", 
         "language", "storage", "offline", "login"];
     this.$booleanProperties = {
         //#ifdef __WITH_CONTENTEDITABLE

@@ -439,8 +439,8 @@ apf.AmlElement = function(struct, tagName){
                 + (this.prefix 
                   ? this.prefix + ":" + this.localName + " xmlns:" 
                     + this.prefix + "=\"" + this.namespaceURI + "\""
-                  : this.localName) + (this.attributes.length ? " " : "")
-                + this.attributes.join(" ")
+                  : this.localName) + (this.attributes && this.attributes.length ? " " : "")
+                + (this.attributes && this.attributes.join(" ") || "")
                 + "/>";
         }
         else {
@@ -448,8 +448,8 @@ apf.AmlElement = function(struct, tagName){
                 + (this.prefix 
                   ? this.prefix + ":" + this.localName + " xmlns:" 
                     + this.prefix + "=\"" + this.namespaceURI + "\""
-                  : this.localName) + (this.attributes.length ? " " : "")
-                + this.attributes.join(" ")
+                  : this.localName) + (this.attributes && this.attributes.length ? " " : "")
+                + (this.attributes && this.attributes.join(" ") || "")
                 + ">"];
             
             for (var i = this.firstChild; i; i = i.nextSibling)
