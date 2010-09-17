@@ -38,7 +38,7 @@ return ext.register("ext/html/html", {
     },
 
     onOpenPage : function() {
-        var file = this.page.model;
+        var file = this.page.model.data;
         window.open(location.protocol + "//" + location.host + "/workspace/" + treeutil.getPath(file), "_blank");
     },
 
