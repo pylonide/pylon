@@ -6,6 +6,7 @@ require.def("ext/testredbar/testredbar",
         
 return ext.register("ext/testredbar/testredbar", {
     dev    : "Ajax.org",
+    alone  : true,
     type   : ext.GENERAL, 
     
     init : function(amlNode){

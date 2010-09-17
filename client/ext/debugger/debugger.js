@@ -10,7 +10,7 @@ return ext.register("ext/debugger/debugger", {
     dev    : "Ajax.org",
     type   : ext.LAYOUT,
     markup : markup,
-    deps   : [console],
+    deps   : [log],
 
     nodes : [],
 
@@ -52,7 +52,6 @@ return ext.register("ext/debugger/debugger", {
             item.destroy(true, true);
         });
         winV8.destroy(true, true);
-        barEditor.destroy(true, true);
 
         this.nodes = [];
     }

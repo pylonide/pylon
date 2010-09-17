@@ -8,6 +8,7 @@ require.def("ext/save/save",
 return ext.register("ext/save/save", {
     dev    : "Ajax.org",
     name   : "Save",
+    alone  : true,
     type   : ext.GENERAL, 
     markup : markup,
     

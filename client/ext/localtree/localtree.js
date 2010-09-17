@@ -8,6 +8,7 @@ require.def("ext/localtree/localtree",
 return ext.register("ext/localtree/localtree", {
     name    : "Local Tree",
     dev     : "Ajax.org",
+    alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
 

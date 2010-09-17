@@ -48,10 +48,23 @@ return ext = {
     currentEditor     : null,
 
     register : function(path, oExtension, force){
-        if (oExtension.registed)
+        if (oExtension.registered)
             return oExtension;
+        
+        if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
+            mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
+                + '" name="' + (oExtension.name || "") + '" path="' + path
+                + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
+        else
+            mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+        
+        //Don't init general extensions that cannot live alone
+        if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
+            oExtension.path = path;
+            return oExtension;
+        }
 
-        oExtension.registed = true;
+        oExtension.registered = true;
         oExtension.path     = path;
 
         switch(oExtension.type) {
@@ -81,26 +94,47 @@ return ext = {
             break;
         }
 
-        var deps = oExtension.deps;
-        if (deps) {
-            deps.each(function(dep){
-
-            });
-        }
-
-        if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
-            mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
-                + '" name="' + (oExtension.name || "") + '" path="' + path
-                + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
-        else
-            mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
-
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
         return oExtension;
     },
 
-    unregister : function(oExtension){
+    unregister : function(oExtension, silent){
+        //Check exts that depend on oExtension
+        var using = oExtension.using;
+        if (using) {
+            var inUseBy = [];
+            for (var use, i = 0, l = using.length; i < l; i++) {
+                if ((use = using[i]).registered)
+                    inUseBy.push(use.path);
+            }
+            
+            if (inUseBy.length) {
+                if (!silent)
+                    util.alert(
+                        "Could not disable extension",
+                        "Extension is still in use",
+                        "This extension cannot be disabled, because it is still in use by the following extensions:<br /><br />"
+                        + " - " + inUseBy.join("<br /> - ")
+                        + "<br /><br /> Please disable those extensions first.");
+                return;
+            }
+        }
+
+        delete oExtension.registered;
+        this.extensions.remove(oExtension);
+        delete this.extLut[oExtension.path];
+        
+        //Check deps to clean up
+        var deps = oExtension.deps;
+        if (deps) {
+            for (var dep, i = 0, l = deps.length; i < l; i++) {
+                dep = deps[i];
+                if (dep.registered && dep.type == this.GENERAL && !oExtension.alone)
+                    this.unregister(dep, true);
+            }
+        }
+        
         switch(oExtension.type) {
             case this.GENERAL:
 
@@ -130,11 +164,10 @@ return ext = {
 
         mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
-        oExtension.destroy();
-        delete oExtension.registed;
-        delete oExtension.inited;
-        this.extensions.remove(oExtension);
-        delete this.extLut[oExtension.path];
+        if (oExtension.inited) {
+            oExtension.destroy();
+            delete oExtension.inited;
+        }
     },
 
     initExtension : function(oExtension, amlParent){
@@ -142,6 +175,16 @@ return ext = {
         var markup = oExtension.markup;
         if (markup)
             apf.document.body.insertMarkup(markup);
+
+        var deps = oExtension.deps;
+        if (deps) {
+            deps.each(function(dep){
+                if (!dep.registered)
+                    ext.register(dep.path, dep, true);
+
+                (dep.using || (dep.using = [])).pushUnique(oExtension);
+            });
+        }
 
         oExtension.init(amlParent);
         oExtension.inited = true;

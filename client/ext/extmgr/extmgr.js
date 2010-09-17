@@ -6,7 +6,9 @@ require.def("ext/extmgr/extmgr",
     function(ide, ext, util, markup) {
         
 return ext.register("ext/extmgr/extmgr", {
+    name   : "Extension Manager",
     dev    : "Ajax.org",
+    alone  : true,
     type   : ext.GENERAL, 
     markup : markup,
     
