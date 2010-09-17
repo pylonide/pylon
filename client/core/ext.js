@@ -36,7 +36,7 @@ return ext = {
 
     extensions    : [],
     extLut        : {},
-    fileext       : {},
+    contenttypes  : {},
     typeLut       : {
         1 : "General",
         2 : "Layout",
@@ -69,22 +69,22 @@ return ext = {
                 }));
             break;
             case this.EDITOR:
-                oExtension.fileext.each(function(fe){
-                    ext.fileext[fe] = oExtension;
+                oExtension.contenttypes.each(function(mime){
+                    ext.contenttypes[mime] = oExtension;
                 });
 
-                if (!this.fileext["default"])
-                    this.fileext["default"] = oExtension;
+                if (!this.contenttypes["default"])
+                    this.contenttypes["default"] = oExtension;
             break;
             case this.EDITOR_PLUGIN:
 
             break;
         }
-        
+
         var deps = oExtension.deps;
         if (deps) {
             deps.each(function(dep){
-                
+
             });
         }
 
@@ -110,15 +110,15 @@ return ext = {
             break;
             case this.EDITOR:
                 var _self = this;
-                oExtension.fileext.each(function(fe){
-                    delete _self.fileext[fe];
+                oExtension.contenttypes.each(function(fe){
+                    delete _self.contenttypes[fe];
                 });
-                
-                if (this.fileext["default"] == oExtension) {
-                    delete this.fileext["default"];
-                    
-                    for (prop in this.fileext) {
-                        this.fileext["default"] = this.fileext[prop];
+
+                if (this.contenttypes["default"] == oExtension) {
+                    delete this.contenttypes["default"];
+
+                    for (prop in this.contenttypes) {
+                        this.contenttypes["default"] = this.contenttypes[prop];
                         break;
                     }
                 }
@@ -171,15 +171,15 @@ return ext = {
             return;
         }
 
-        var fileext = (filename.match(/\.([^\.]*)$/) || {})[1];
-        var editor = this.fileext[fileext] || this.fileext["default"];
-        
+        var contenttype = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
+        var editor = this.contenttypes[contenttype] || this.contenttypes["default"];
+
         if (this.currentEditor)
             this.currentEditor.disable();
-        
+
         if (!editor) {
             util.alert(
-                "No editor is registered", 
+                "No editor is registered",
                 "Could you not find any editor to display content",
                 "There is something wrong with the configuration of your IDE. No editor plugin is found.");
             return;
