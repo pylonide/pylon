@@ -8,7 +8,7 @@ apf.hotkeys = {};
     /**
      * @private
      */
-    var keyMods = {"ctrl": 1, "alt": 2, "shift": 4, "meta": 8};
+    var keyMods = {"ctrl": 1, "alt": 2, "option" : 2, "shift": 4, "meta": 8, "command": 8};
 
     /**
      * @private
@@ -42,14 +42,30 @@ apf.hotkeys = {};
         "123": "F12"
     };
 
-    this.macUnicode = {
+    var macUnicode = {
+        "meta"     : "\u2318", // ⌘
+        "command"  : "\u2318",
+        "alt"      : "\u2325", // ⌥
+        "option"   : "\u2325",
+        "shift"    : "\u21E7", // ⇧
+        "esc"      : "\u238B", // ⎋
+        "control"  : "\u2303", // ⌃
+        "backspace": "\u232B", // ⌫
+        "del"      : "\u2326", // ⌦
+        "enter"    : "\u21A9"  // ↩
+    };
+    
+    var macUnicodeHtml = {
+        "meta"     : "&#8984;", // ⌘
+        "command"  : "&#8984;",
         "alt"      : "&#8997;", // ⌥
+        "option"   : "&#8997;",
         "shift"    : "&#8679;", // ⇧
         "esc"      : "&#9099;", // ⎋
-        "control"  : "&#2303;", // ⌃,
-        "backspace": "&#232B;", // ⌫
-        "del"      : "&#2326;", // ⌦
-        "enter"    : "&#21A9;"  // ↩
+        "control"  : "&#2303;", // ⌃ TODO
+        "backspace": "&#232B;", // ⌫ TODO
+        "del"      : "&#2326;", // ⌦ TODO
+        "enter"    : "&#21A9;"  // ↩ TODO
     };
 
     // hash to store the hotkeys in
@@ -120,6 +136,20 @@ apf.hotkeys = {};
      */
     apf.removeHotkey = this.remove = function(hotkey) {
         _self.register(hotkey, null);
+    };
+
+    this.toMacNotation = function(hotkey, bHtml) {
+        var t, s,
+            keys = hotkey.splitSafe("\\-"),
+            i    = 0,
+            l    = keys.length;
+
+        for (; i < l; ++i) {
+            if (!keys[i]) continue;
+            if (t = (bHtml ? macUnicodeHtml : macUnicode)[keys[i].toLowerCase()])
+                keys[i] = t;
+        }
+        return keys.join(" ");
     };
 
     apf.addEventListener("keydown", function(eInfo) {

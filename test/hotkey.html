@@ -6,6 +6,46 @@
     <body>
         <a:skin src="../skins/platform/trunk/xml/_index.xml" media-path="../skins/platform/trunk/images/" icon-path="../icons/" />
         
-        <a:button onclick="alert('who fired me?')" hotkey="Ctrl-Z">Click Me!</a:button>
+        <a:vbox anchors="0 0 0 0" id="vbMain">
+            <a:toolbar id="tbMain">
+                <a:menubar id="barMenu">
+                    <a:button submenu="mnuFile">File</a:button>
+                    <a:button submenu="mnuExample">Example</a:button>
+                    <a:button submenu="mnuEditors">Editors</a:button>
+                    <a:button submenu="mnuCtxEditor">Context Menu</a:button>
+                </a:menubar>
+            </a:toolbar>
+
+            <span>
+                &#8984; &#8997; &#8679; &#9099;
+            </span>
+            
+            <a:hbox padding="3">
+                <a:button onclick="alert('who fired me?')" hotkey="{apf.isMac ? 'Command-Z' : 'Ctrl-Z'}">Click Me!</a:button>
+            </a:hbox>
+
+            <a:statusbar id="sbMain">
+                <a:section />
+            </a:statusbar>
+        </a:vbox>
+        
+        <a:menu id="mnuFile">
+            <a:divider />
+            <a:item>Exit</a:item>
+        </a:menu>
+
+        <a:menu id="mnuExample">
+            <a:item onclick="alert('fired remove plugin!')">Remove Search&amp;Replace Plugin</a:item>
+            <a:item onclick="alert('fired add plugin!')">Add Search&amp;Replace Plugin</a:item>
+        </a:menu>
+
+        <a:menu id="mnuEditors">
+        </a:menu>
+
+        <a:menu id="mnuCtxEditor">
+            <a:item onclick="alert('Cut!')"   hotkey="{apf.isMac ? 'Command-X' : 'Ctrl-X'}">Cut</a:item>
+            <a:item onclick="alert('Copy!')"  hotkey="{apf.isMac ? 'Command-C' : 'Ctrl-C'}">Copy</a:item>
+            <a:item onclick="alert('Paste!')" hotkey="{apf.isMac ? 'Command-P' : 'Ctrl-P'}">Paste</a:item>
+        </a:menu>
     </body>
 </html>

@@ -210,15 +210,15 @@ apf.item  = function(struct, tagName){
      */
     this.$propHandlers["hotkey"] = function(value){
         if (this.$hotkey)
-            apf.setNodeValue(this.$hotkey, value);
+            apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
 
         if (this.$lastHotkey)
-            apf.removeHotkey(this.$lastHotkey);
+            apf.hotkeys.remove(this.$lastHotkey);
 
         if (value) {
             this.$lastHotkey = value;
             var _self = this;
-            apf.registerHotkey(value, function(){
+            apf.hotkeys.register(value, function(){
                 if (_self.disabled || !_self.visible)
                     return;
                 
