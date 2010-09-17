@@ -16,7 +16,7 @@ return ext.register("ext/html/html", {
     dev     : "Ajax.org",
     type    : ext.EDITOR,
     deps    : [code],
-    contenttypes : [
+    contentTypes : [
         "text/html",
         "application/xhtml+xml"
     ],

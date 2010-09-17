@@ -15,7 +15,7 @@ return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contenttypes : [
+    contentTypes : [
         "application/javascript",
         "application/json",
         "text/css",

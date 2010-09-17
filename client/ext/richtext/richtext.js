@@ -15,7 +15,7 @@ return ext.register("ext/richtext/richtext", {
     name    : "Rich Text Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contenttypes : ["application/rtf"],
+    contentTypes : ["application/rtf"],
     //markup  : "richtext.xml",
 
     nodes : [],

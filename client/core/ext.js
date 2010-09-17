@@ -36,7 +36,7 @@ return ext = {
 
     extensions    : [],
     extLut        : {},
-    contenttypes  : {},
+    contentTypes  : {},
     typeLut       : {
         1 : "General",
         2 : "Layout",
@@ -65,7 +65,7 @@ return ext = {
         }
 
         oExtension.registered = true;
-        oExtension.path     = path;
+        oExtension.path       = path;
 
         switch(oExtension.type) {
             case this.GENERAL:
@@ -82,12 +82,12 @@ return ext = {
                 }));
             break;
             case this.EDITOR:
-                oExtension.contenttypes.each(function(mime){
-                    ext.contenttypes[mime] = oExtension;
+                oExtension.contentTypes.each(function(mime){
+                    ext.contentTypes[mime] = oExtension;
                 });
 
-                if (!this.contenttypes["default"])
-                    this.contenttypes["default"] = oExtension;
+                if (!this.contentTypes["default"])
+                    this.contentTypes["default"] = oExtension;
             break;
             case this.EDITOR_PLUGIN:
 
@@ -144,15 +144,15 @@ return ext = {
             break;
             case this.EDITOR:
                 var _self = this;
-                oExtension.contenttypes.each(function(fe){
-                    delete _self.contenttypes[fe];
+                oExtension.contentTypes.each(function(fe){
+                    delete _self.contentTypes[fe];
                 });
 
-                if (this.contenttypes["default"] == oExtension) {
-                    delete this.contenttypes["default"];
+                if (this.contentTypes["default"] == oExtension) {
+                    delete this.contentTypes["default"];
 
-                    for (prop in this.contenttypes) {
-                        this.contenttypes["default"] = this.contenttypes[prop];
+                    for (prop in this.contentTypes) {
+                        this.contentTypes["default"] = this.contentTypes[prop];
                         break;
                     }
                 }
@@ -214,8 +214,8 @@ return ext = {
             return;
         }
 
-        var contenttype = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
-        var editor = this.contenttypes[contenttype] || this.contenttypes["default"];
+        var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
+        var editor = this.contentTypes[contentType] || this.contentTypes["default"];
 
         if (this.currentEditor)
             this.currentEditor.disable();
@@ -244,7 +244,8 @@ return ext = {
             editorPage = ide.tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var fake  = tabEditors.add(filename, filename, editor.path);
+        var fake      = tabEditors.add(filename, filename, editor.path);
+        fake.mimeType = contentType;
 
         //Create ActionTracker
         var at    = fake.$at    = new apf.actiontracker();
