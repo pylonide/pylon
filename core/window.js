@@ -1250,55 +1250,20 @@ apf.window = function(){
         //#endif
 
         var eInfo = {
-            ctrlKey   : e.ctrlKey,
-            metaKey   : e.metaKey,
-            shiftKey  : e.shiftKey,
-            altKey    : e.altKey,
-            keyCode   : e.keyCode,
-            htmlEvent : e,
-            bubbles   : true
+            ctrlKey    : e.ctrlKey,
+            metaKey    : e.metaKey,
+            shiftKey   : e.shiftKey,
+            altKey     : e.altKey,
+            keyCode    : e.keyCode,
+            htmlEvent  : e,
+            isTextInput: isTextInput,
+            bubbles    : true
         };
         
-        //#ifdef __WITH_HOTKEY
-        //Hotkey
-        if (!isTextInput && apf && apf.dispatchEvent("hotkey", eInfo) === false
-          || eInfo.returnValue === false) {
-            apf.stopEvent(e);
-            if (apf.canDisableKeyCodes) {
-                try {
-                    e.keyCode = 0;
-                }
-                catch(e) {}
-            }
-            return false;
-        }
-        //#endif
-
-        //#ifdef __WITH_HOTKEY_PROPERTY
-        var keys = []; //@todo put this in a lut
-        if (e.altKey)
-            keys.push("Alt");
-        if (e.ctrlKey)
-            keys.push("Ctrl");
-        if (e.shiftKey)
-            keys.push("Shift");
-        if (e.metaKey)
-            keys.push("Meta");
-
-        if (apf.keyNames[e.keyCode])
-            keys.push(apf.keyNames[e.keyCode]);
-
-        if (keys.length) {
-            if (e.keyCode > 46)
-                keys.push(String.fromCharCode(e.keyCode));
-            apf.setProperty("hotkey", keys.join("-"));
-        }
-        //#endif
-
         delete eInfo.currentTarget;
         //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
-        var aEl = amlNode; //isTextInput ? amlNode : 
+        var aEl = amlNode; //isTextInput ? amlNode :
         if ((aEl && !aEl.disableKeyboard && !aEl.editable
           ? aEl.dispatchEvent("keydown", eInfo) 
           : apf.dispatchEvent("keydown", eInfo)) === false) {
