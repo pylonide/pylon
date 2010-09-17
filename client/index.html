@@ -18,12 +18,17 @@
             var TESTING = false; //Load data from test models
             var VERSION = FILES; //Change the version you want to use here
 
-            var loader2 = true;
             var apfLoc = VERSION == FILES 
                 ? "common/apf/apf.js" 
                 : "js/apf_" + VERSION + ".js";
 
-            require([apfLoc], function(){
+            var config = {
+      			paths: {
+				    "ace": "/common/ace/src/ace",
+				    "debugger": "/common/ace/src/debug"
+				}
+            }
+            require(config, [apfLoc], function(){
                 /*apf.onstart = function(){
                     //old browsers
                     var vIE     = apf.isIE6 || apf.isIE7,
@@ -47,6 +52,7 @@
                             (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
                             "ext/refactor/refactor",
                             "ext/save/save",
+                            "ext/html/html",
                             "ext/code/code", 
                             "ext/extmgr/extmgr",
                             "ext/richtext/richtext",

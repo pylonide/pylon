@@ -4,7 +4,7 @@
 require.def("ext/code/code",
     ["core/ide", "core/ext", "text!ext/code/code.xml"],
     function(ide, ext, markup) {
-        
+
 //Add a menu item to the list of editors
 ide.mnuEditors.appendChild(new apf.item({
     caption : "Code Editor",
@@ -15,7 +15,14 @@ return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    fileext : ["js", "html", "xml", "css", "xhtml", "aml", "txt", "php"],
+    contenttypes : [
+        "application/javascript",
+        "application/json",
+        "text/css",
+        "application/xml",
+        "text/plain",
+        "application/x-httpd-php"
+    ],
     markup  : markup,
 
     nodes : [],
@@ -58,7 +65,7 @@ return ext.register("ext/code/code", {
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
-        
+
         if (self.barEditor)
             barEditor.destroy(true, true);
 
@@ -66,5 +73,4 @@ return ext.register("ext/code/code", {
     }
 });
 
-    }
-);
+});

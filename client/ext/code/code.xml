@@ -23,17 +23,17 @@
     
     <a:script><![CDATA[
 		SupportedModes = {
-			"application/javascript": "js",
-			"application/json": "js",
-			"text/css": "css",
-			"text/html": "html",
-			"application/xhtml+xml": "html",
-			"application/xml": "xml"
+			"application/javascript": "JavaScript",
+			"application/json": "JavaScript",
+			"text/css": "Css",
+			"text/html": "Html",
+			"application/xhtml+xml": "Html",
+			"application/xml": "Xml"
 		}
 
 		function getSyntax(xmlNode) {
              var mime = xmlNode.getAttribute('contenttype').split(";")[0];
-             return (SupportedModes[mime] || "text");
+             return (SupportedModes[mime] || "Text");
 		}
 
      ]]></a:script>    

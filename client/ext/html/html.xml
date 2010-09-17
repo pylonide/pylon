@@ -1,0 +1,10 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    
+    <a:bar id="barHtmlMode" visible="false">
+        <a:divider />
+        <a:button id="btnHtmlRun">run on server...</a:button>
+        <a:button id="btnHtmlOpen">open in browser</a:button>
+    </a:bar>
+    
+   
+</a:application>
