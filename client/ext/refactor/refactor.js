@@ -6,6 +6,7 @@ require.def("ext/refactor/refactor",
     function(ide, ext, markup) {
         
 return ext.register("ext/refactor/refactor", {
+    name   : "Refactor",
     dev    : "Ajax.org",
     type   : ext.GENERAL, 
     markup : markup,

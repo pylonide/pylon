@@ -6,11 +6,11 @@
       center    = "true"
       render    = "runtime"
       resizable = "true"
-      buttons   = "max|close"
+      buttons   = "close"
       width     = "550"
       height    = "400">
         <a:vbox anchors="0 0 0 0" edge="10">
-            <a:hbox align="center">
+            <a:hbox align="center" edge="0 0 5 0" padding="5">
                 <a:textbox id="tbModuleName" flex="1" 
                   required   = "true" 
                   invalidmsg = "Missing module name;Please enter a module name" />

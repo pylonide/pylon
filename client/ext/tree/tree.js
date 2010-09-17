@@ -8,6 +8,7 @@ require.def("ext/tree/tree",
 return ext.register("ext/tree/tree", {
     name    : "Tree",
     dev     : "Ajax.org",
+    alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
 
