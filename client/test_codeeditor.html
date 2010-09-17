@@ -1,7 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-		<script>var loader2 = true</script>
+        <script src="/require.js"></script>
+		<script>
+			require({
+				paths: {
+				    "ace": "/common/ace/src/ace",
+				    "debugger": "/common/ace/src/debug"
+				}
+			})		
+		</script>
         <script src="/apf/apf.js"></script>
         <style type="text/css" media="screen">
             html, body {
@@ -49,9 +57,9 @@
         <a:toolbar align="right" height="26">
             <a:bar>
                 <a:dropdown value="[{tree.selected}::@syntax]">
-                    <a:item value="js">Javascript</a:item>
-                    <a:item value="css">CSS</a:item>
-                    <a:item value="html">HTML</a:item>
+                    <a:item value="JavaScript">Javascript</a:item>
+                    <a:item value="Css">CSS</a:item>
+                    <a:item value="Html">HTML</a:item>
                 </a:dropdown>
                 <a:dropdown value="[{tree.selected}::@tabsize]">
                     <a:item value="2">2</a:item>
@@ -69,7 +77,7 @@
                     <doc
                         caption="juhu.js"
                         icon="page_white_code.png"
-                        syntax="js"
+                        syntax="JavaScript"
                         tabsize="2"
                         softtabs="true"
                        ><![CDATA[function foo(items) {
@@ -81,7 +89,7 @@
                     <doc
                         caption="styles.css"
                         icon="css.png"
-                        syntax="css"
+                        syntax="Css"
                         tabsize="4"
                         softtabs="true"
                         ><![CDATA[.text-layer {
@@ -93,7 +101,7 @@
                     <doc
                         caption="index.html"
                         icon="html.png"
-                        syntax="html"
+                        syntax="Html"
                         tabsize="4"
                         softtabs="false"
                        ><![CDATA[<html>
