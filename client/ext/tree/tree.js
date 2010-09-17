@@ -34,9 +34,10 @@ return ext.register("ext/tree/tree", {
                         var nl = "windows";
                     else
                         nl = "unix";
-                    var xml = apf.getXml(
-                        '<data><![CDATA[' + data + ']]></data>'
-                    );
+
+                    var doc = node.ownerDocument;
+                    var xml = doc.createElement("data");
+                    xml.appendChild(doc.createTextNode(data));
                     xml.setAttribute("newline", nl);
                     apf.b(node).append(xml);
                 }
