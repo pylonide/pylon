@@ -21,7 +21,9 @@ return ext.register("ext/code/code", {
         "text/css",
         "application/xml",
         "text/plain",
-        "application/x-httpd-php"
+        "application/x-httpd-php",
+        "text/html",
+        "application/xhtml+xml"
     ],
     markup  : markup,
 

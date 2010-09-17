@@ -50,14 +50,14 @@ return ext = {
     register : function(path, oExtension, force){
         if (oExtension.registered)
             return oExtension;
-        
+
         if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
             mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
                 + '" name="' + (oExtension.name || "") + '" path="' + path
                 + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
         else
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
-        
+
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
             oExtension.path = path;
@@ -69,7 +69,8 @@ return ext = {
 
         switch(oExtension.type) {
             case this.GENERAL:
-                this.initExtension(oExtension);
+                if (!oExtension.hook)
+                    this.initExtension(oExtension);
 
                 //@todo
                 //if (!this.currentEditor)
@@ -96,6 +97,10 @@ return ext = {
 
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
+
+        if (oExtension.hook)
+            oExtension.hook();
+
         return oExtension;
     },
 
@@ -108,7 +113,7 @@ return ext = {
                 if ((use = using[i]).registered)
                     inUseBy.push(use.path);
             }
-            
+
             if (inUseBy.length) {
                 if (!silent)
                     util.alert(
@@ -124,7 +129,7 @@ return ext = {
         delete oExtension.registered;
         this.extensions.remove(oExtension);
         delete this.extLut[oExtension.path];
-        
+
         //Check deps to clean up
         var deps = oExtension.deps;
         if (deps) {
@@ -134,7 +139,7 @@ return ext = {
                     this.unregister(dep, true);
             }
         }
-        
+
         switch(oExtension.type) {
             case this.GENERAL:
 
@@ -171,6 +176,9 @@ return ext = {
     },
 
     initExtension : function(oExtension, amlParent){
+        if (oExtension.inited)
+            return;
+
         //Load markup
         var markup = oExtension.markup;
         if (markup)

@@ -5,23 +5,28 @@ require.def("ext/html/html",
     ["core/ide", "core/ext", "ext/code/code", "ext/tree/treeutil", "text!ext/html/html.xml"],
     function(ide, ext, code, treeutil, markup) {
 
-//Add a menu item to the list of editors
-ide.mnuEditors.appendChild(new apf.item({
-    caption : "Code Editor",
-    value   : "ext/code/code"
-}));
-
 return ext.register("ext/html/html", {
     name    : "HTML Editor",
     dev     : "Ajax.org",
-    type    : ext.EDITOR,
+    type    : ext.GENERAL,
+    alone   : true,
     deps    : [code],
-    contentTypes : [
-        "text/html",
-        "application/xhtml+xml"
-    ],
     markup  : markup,
     nodes : [],
+
+    hook : function(){
+        var _self = this;
+        ide.tabEditors.addEventListener("prop.activepage", function(e){
+            var mime = e.page.contentType;
+            if (mime == "text/html" || mime == "application/xhtml+xml") {
+                ext.initExtension(_self);
+                _self.enable();
+            }
+            else {
+                _self.disable();
+            }
+        });
+    },
 
     init : function(amlPage) {
         this.page = amlPage;
@@ -32,7 +37,6 @@ return ext.register("ext/html/html", {
             this.nodes.push(ide.barTools.appendChild(nodes[0]));
         }
         ext.initExtension(code, amlPage);
-        code.enable();
 
         btnHtmlOpen.onclick = this.onOpenPage.bind(this);
     },
@@ -43,17 +47,17 @@ return ext.register("ext/html/html", {
     },
 
     enable : function() {
+        console.log("enable HTML")
         this.nodes.each(function(item){
             item.show();
         });
-        code.enable();
     },
 
     disable : function(){
+        console.log("disable HTML")
         this.nodes.each(function(item){
             item.hide();
         });
-        code.disable();
     },
 
     destroy : function(){
