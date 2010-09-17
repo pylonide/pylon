@@ -37,6 +37,21 @@ return ext.register("ext/tree/tree", {
         });
     },
 
+    getSelectedPath: function() {
+        return this.getPath(this.trFiles.selected);
+    },
+
+    getPath : function(fileEl) {
+        var path = [fileEl.getAttribute("name")];
+
+        while (fileEl.parentNode.tagName == "folder") {
+            fileEl = fileEl.parentNode;
+            path.push(fileEl.getAttribute("name"));
+        }
+
+        return path.reverse().join("/");
+    },
+
     enable : function(){
         trFiles.show();
     },
@@ -54,5 +69,4 @@ return ext.register("ext/tree/tree", {
     }
 });
 
-    }
-);
+});

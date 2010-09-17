@@ -19,8 +19,6 @@ return ext.register("ext/code/code", {
         "application/javascript",
         "application/json",
         "text/css",
-        "text/html",
-        "application/xhtml+xml",
         "application/xml",
         "text/plain",
         "application/x-httpd-php"
@@ -75,5 +73,4 @@ return ext.register("ext/code/code", {
     }
 });
 
-    }
-);
+});

@@ -71,7 +71,7 @@ return ext.register("ext/noderunner/noderunner", {
         console.log("running", file);
         var command = {
             "command": "Run",
-            "file": this.$getPath(file)
+            "file": tree.getPath(file)
         };
         this.socket.send(JSON.stringify(command));
         log.enable();
@@ -102,17 +102,6 @@ return ext.register("ext/noderunner/noderunner", {
             item.destroy(true, true);
         });
         this.nodes = [];
-    },
-
-    $getPath : function(fileEl) {
-        var path = [fileEl.getAttribute("name")];
-
-        while (fileEl.parentNode.tagName == "folder") {
-            fileEl = fileEl.parentNode;
-            path.push(fileEl.getAttribute("name"));
-        }
-
-        return path.reverse().join("/");
     }
 });
 
