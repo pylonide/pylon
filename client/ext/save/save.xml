@@ -21,4 +21,9 @@
             </a:hbox>
         </a:vbox>
     </a:window>
+    
+    <a:bar id="barSave" visible="false">
+        <a:divider />
+        <a:button id="btnSave" icon="debugger/save_edit{this.disabled ? '_disbled' : ''}.gif">Save file</a:button>
+    </a:bar>
 </a:application>

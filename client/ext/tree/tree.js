@@ -38,6 +38,12 @@ return ext.register("ext/tree/tree", {
         });
     },
 
+    saveFile : function(fileEl) {
+        var id = fileEl.getAttribute("id");
+        var data = apf.queryValue(fileEl, "data");
+        davProject.write(id, data);
+    },
+
     getSelectedPath: function() {
         return treeutil.getPath(this.trFiles.selected);
     },
