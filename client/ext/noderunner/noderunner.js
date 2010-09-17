@@ -65,7 +65,7 @@ return ext.register("ext/noderunner/noderunner", {
         if (!file)
             return;
 
-        if (file.getAttribute("contenttype").indexOf("application/javascript") != 0)
+        if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0)
             return;
 
         console.log("running", file);

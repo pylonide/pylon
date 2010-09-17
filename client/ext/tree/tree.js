@@ -2,8 +2,8 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "text!ext/tree/tree.xml"],
-    function(ide, ext, markup) {
+    ["core/ide", "core/ext", "ext/tree/treeutil", "text!ext/tree/tree.xml"],
+    function(ide, ext, treeutil, markup) {
 
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -38,18 +38,7 @@ return ext.register("ext/tree/tree", {
     },
 
     getSelectedPath: function() {
-        return this.getPath(this.trFiles.selected);
-    },
-
-    getPath : function(fileEl) {
-        var path = [fileEl.getAttribute("name")];
-
-        while (fileEl.parentNode.tagName == "folder") {
-            fileEl = fileEl.parentNode;
-            path.push(fileEl.getAttribute("name"));
-        }
-
-        return path.reverse().join("/");
+        return treeutil.getPath(this.trFiles.selected);
     },
 
     enable : function(){

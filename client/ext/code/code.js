@@ -49,13 +49,13 @@ return ext.register("ext/code/code", {
         );
     },
 
-    enable : function(){
+    enable : function() {
         this.nodes.each(function(item){
             item.show();
         });
     },
 
-    disable : function(){
+    disable : function() {
         this.nodes.each(function(item){
             item.hide();
         });

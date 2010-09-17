@@ -2,8 +2,8 @@
  * HTML Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/html/html",
-    ["core/ide", "core/ext", "ext/code/code", "ext/tree/tree", "text!ext/html/html.xml"],
-    function(ide, ext, code, tree, markup) {
+    ["core/ide", "core/ext", "ext/code/code", "ext/tree/treeutil", "text!ext/html/html.xml"],
+    function(ide, ext, code, treeutil, markup) {
 
 //Add a menu item to the list of editors
 ide.mnuEditors.appendChild(new apf.item({
@@ -11,11 +11,11 @@ ide.mnuEditors.appendChild(new apf.item({
     value   : "ext/code/code"
 }));
 
-return ext.register("ext/code/code", {
+return ext.register("ext/html/html", {
     name    : "HTML Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    deps    : [code, tree],
+    deps    : [code],
     contenttypes : [
         "text/html",
         "application/xhtml+xml"
@@ -24,6 +24,8 @@ return ext.register("ext/code/code", {
     nodes : [],
 
     init : function(amlPage) {
+        this.page = amlPage;
+
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--) {
@@ -36,10 +38,11 @@ return ext.register("ext/code/code", {
     },
 
     onOpenPage : function() {
-        window.open(location.protocol + "//" + location.host + "/workspace/" + tree.getSelectedPath(), "_blank");
+        var file = this.page.model;
+        window.open(location.protocol + "//" + location.host + "/workspace/" + treeutil.getPath(file), "_blank");
     },
 
-    enable : function(){
+    enable : function() {
         this.nodes.each(function(item){
             item.show();
         });
