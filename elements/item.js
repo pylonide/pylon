@@ -531,7 +531,8 @@ apf.item  = function(struct, tagName){
                         p.dispatchEvent("afterload");
                 });
                 this.addEventListener("DOMNodeRemoved", function(e){
-                    this.parentNode.removeEventListener("$skinchange", f);
+                    if (e.currentTarget == this)
+                        this.parentNode.removeEventListener("$skinchange", f);
                 });
                 
                 this.$hasSetSkinListener = true;

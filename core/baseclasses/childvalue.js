@@ -31,7 +31,8 @@ apf.ChildValue = function(){
     var f, re = /^[\s\S]*?>(<\?lm)?([\s\S]*?)(?:\?>)?<[^>]*?>$/;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
         if (e && (e.currentTarget == this 
-          || e.currentTarget.nodeType == 2 && e.relatedNode == this))
+          || e.currentTarget.nodeType == 2 && e.relatedNode == this)
+          || this.$amlDestroyed)
             return;
 
         if (this.getAttribute(this.$childProperty))
