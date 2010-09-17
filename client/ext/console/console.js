@@ -44,16 +44,22 @@ return ext.register("ext/console/console", {
         };
 
         var lines = data.split("\n");
-        var color = "black";
+        var style = "color:black;";
         var log = [];
 
         for (var i=0; i<lines.length; i++) {
-            log.push("<div><span style='color:" + color + "'>" + lines[i].replace(/\033\[(\d+)m/g, function(m, c) {
-                color = colors[c] || "black";
-                return "</span><span style='color:" + color + "'>"
-            }) + "</span></div>");
+            log.push("<div><span style='" + style + "'>" + lines[i]
+                .replace(/\s/g, "&nbsp;")
+                .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
+                    style = "color:" + (colors[color] || "black");
+                    if (extra == 1) {
+                        style += ";font-weight=bold"
+                    } else if (extra == 4) {
+                        style += ";text-decoration=underline";
+                    }
+                    return "</span><span style='" + style + "'>"
+                }) + "</span></div>");
         }
-        console.log(log);
         txtConsole.addValue(log.join(""));
     }
 });
