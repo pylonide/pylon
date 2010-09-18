@@ -33,6 +33,13 @@ apf.splitter = function(struct, tagName){
     this.$focussable = false; // This object can get the focus
     this.$splitter   = true;
     
+    this.$booleanProperties["realtime"] = true;
+    
+    this.$propHandlers["realtime"] = function(value){
+        this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
+            [this.$baseCSSname + "Realtime"]);
+    }
+    
     this.$propHandlers["type"] = function(value){
         this.$setStyleClass(this.$ext, value,
             [value == "horizontal" ? "vertical" : "horizontal"]);
@@ -241,7 +248,7 @@ apf.splitter = function(struct, tagName){
             apf.plane.show(this);
             // #endif
 
-            _self.$setStyleClass(this, "moving");
+            _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
             
             _self.$setStyleClass(document.body,
                 _self.type == "vertical" ? "w-resize" : "n-resize",
@@ -266,7 +273,7 @@ apf.splitter = function(struct, tagName){
                     }
                 }
                 
-                _self.$setStyleClass(_self.$ext, "", ["moving"]);
+                _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
         
                 // #ifdef __WITH_PLANE
                 apf.plane.hide();
@@ -310,7 +317,8 @@ apf.splitter = function(struct, tagName){
                     }
                 }
                 
-                _self.update();
+                if (_self.realtime)
+                    _self.update();
                 
                 e.returnValue  = false;
                 e.cancelBubble = true;
@@ -323,7 +331,8 @@ apf.splitter = function(struct, tagName){
     };
         
     this.$loadAml = function(x){
-        
+        if (this.realtime !== false)
+            this.$propHandlers.realtime.call(this, this.realtime = true);
     };
 }).call(apf.splitter.prototype = new apf.Presentation());
 
