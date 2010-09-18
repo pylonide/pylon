@@ -4,6 +4,17 @@
 require.def("ext/tree/tree",
     ["core/ide", "core/ext", "ext/tree/treeutil", "text!ext/tree/tree.xml"],
     function(ide, ext, treeutil, markup) {
+        
+if (!location.host)
+    return {
+        name    : "Disabled Tree No Host",
+        dev     : "Ajax.org",
+        alone   : true,
+        type    : ext.GENERAL,
+        path    : "ext/tree/tree",
+        init    : function(){},
+        destroy : function(){}
+    };
 
 return ext.register("ext/tree/tree", {
     name    : "Tree",
