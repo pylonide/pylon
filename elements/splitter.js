@@ -101,29 +101,23 @@ apf.splitter = function(struct, tagName){
     this.update = function(finalPass){
         with (this.$info) {
             var posPrev = apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int);
-            var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]) 
-                + (finalPass ? 0 : this.$ext[offsetSize]);
+            var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
             var max = this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize];
 
-            if (this.$previous.flex) {
-                //Both flex
-                if (this.$next.flex) {
-                    var totalFlex = this.$previous.flex + this.$next.flex - (finalPass ? this.parentNode.padding : 0);
-                    this.$previous.setAttribute("flex", pos);
-                    this.$next.setAttribute("flex", totalFlex - pos);
-                }
-                //Next is fixed
-                else {
-                    
-                }
+            //Both flex
+            if (this.$previous.flex && this.$next.flex) {
+                if (!finalPass) 
+                    pos -= this.$ext[offsetSize];
+                var totalFlex = this.$previous.flex + this.$next.flex - (finalPass ? this.parentNode.padding : 0);
+                this.$previous.setAttribute("flex", pos);
+                this.$next.setAttribute("flex", totalFlex - pos);
             }
-            //Previous is fixed
-            else if (this.$next.flex) {
-                
-            }
-            //Both are fixed
+            //Fixed
             else {
-                
+                if (!this.$next.flex)
+                    this.$next.setAttribute(osize, max - pos);
+                if (!this.$previous.flex)
+                    this.$previous.setAttribute(osize, pos);
             }
         }
         
@@ -189,18 +183,32 @@ apf.splitter = function(struct, tagName){
                 _self.tx = e.clientX - pos[0];
                 
                 if (apf.hasFlexibleBox) {
-                    var mBox = apf.getBox(_self.$previous.margin);
-                    mBox[1] = _self.parentNode.padding;
-                    _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                    if (_self.$previous.flex && !_self.$next.flex) {
+                        var mBox = apf.getBox(_self.$next.margin);
+                        mBox[3] = _self.parentNode.padding;
+                        _self.$next.$ext.style.margin = mBox.join("px ") + "px";
+                    }
+                    else {
+                        var mBox = apf.getBox(_self.$previous.margin);
+                        mBox[1] = _self.parentNode.padding;
+                        _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                    }
                 }
             }
             else {
                 _self.ty = e.clientY - pos[1];
                 
                 if (apf.hasFlexibleBox) {
-                    var mBox = apf.getBox(_self.$previous.margin);
-                    mBox[2] = _self.parentNode.padding;
-                    _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                    if (_self.$previous.flex && !_self.$next.flex) {
+                        var mBox = apf.getBox(_self.$next.margin);
+                        mBox[0] = _self.parentNode.padding;
+                        _self.$next.$ext.style.margin = mBox.join("px ") + "px";
+                    }
+                    else {
+                        var mBox = apf.getBox(_self.$previous.margin);
+                        mBox[2] = _self.parentNode.padding;
+                        _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                    }
                 }
             }
 
@@ -284,7 +292,8 @@ apf.splitter = function(struct, tagName){
                 _self.parentNode.$int.style.position = "";
                 
                 if (apf.hasFlexibleBox)
-                    _self.$previous.$ext.style.margin 
+                    (_self.$previous.flex && !_self.$next.flex
+                      ? _self.$next : _self.$previous).$ext.style.margin 
                         = apf.getBox(_self.$previous.margin).join("px ") + "px";
                 
                 _self.update(true);
