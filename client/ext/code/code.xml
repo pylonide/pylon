@@ -6,10 +6,10 @@
             <a:dropdown flex="1" />
         </a:hbox>
         <a:codeeditor id="ceEditor"
-          flex="1" 
-          value="[data]"
-          syntax="{getSyntax(%[.])}"
-          showinvisibles="false"
+          flex   = "1" 
+          value  = "[data]"
+          syntax = "{getSyntax([@contenttype])}"
+          showinvisibles = "false"
         />
     </a:vbox>
     
@@ -25,14 +25,14 @@
 		SupportedModes = {
 			"application/javascript": "JavaScript",
 			"application/json": "JavaScript",
-			"text/css": "Css",
+			"text/css": "CSS",
 			"text/html": "Html",
 			"application/xhtml+xml": "Html",
 			"application/xml": "Xml"
 		}
 
-		function getSyntax(xmlNode) {
-             var mime = xmlNode.getAttribute('contenttype').split(";")[0];
+		function getSyntax(type) {
+             var mime = type.split(";")[0];
              return (SupportedModes[mime] || "Text");
 		}
 
