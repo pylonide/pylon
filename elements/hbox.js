@@ -270,7 +270,7 @@ apf.vbox = function(struct, tagName){
                     //return;
 
                 (this.$altExt || this.$ext).style.width = value 
-                    ? (parseInt(value) == value 
+                    ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
                     : "";
@@ -282,7 +282,7 @@ apf.vbox = function(struct, tagName){
                     //return;
 
                 (this.$altExt || this.$ext).style.height = value 
-                    ? (parseInt(value) == value 
+                    ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
                     : "";
@@ -345,7 +345,7 @@ apf.vbox = function(struct, tagName){
                     //return;
               
                 this.$ext.style.width = value
-                    ? (parseInt(value) == value 
+                    ? (parseFloat(value) == value 
                         ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
                         : value)
                     : "";
@@ -357,7 +357,7 @@ apf.vbox = function(struct, tagName){
                     //return;
       
                 this.$ext.style.height = value 
-                    ? (parseInt(value) == value 
+                    ? (parseFloat(value) == value 
                         ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
                         : value)
                     : "";
