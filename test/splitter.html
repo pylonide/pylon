@@ -11,13 +11,20 @@
           media-path = "../../../skins/platform/trunk/images/" 
           icon-path  = "../../../skins/platform/trunk/icons/" />
 
-        <a:vbox padding="5" anchors="0 0 0 0" edge="10">
-            <a:tree flex="1" />
-            <a:hbox padding="5" flex="1">
+        <a:vbox padding="25" anchors="0 0 0 0" edge="10" height2="330" width2="400">
+            <a:tree id="v1" flex="1" />
+            <a:splitter />
+                <a:tree id="v1" flex="1" />
+            <a:splitter />
+            <a:hbox id="v2" padding="5" flex="1">
                 <a:tree flex="1" />
+                <a:splitter />
                 <a:tree flex="1" />
+                <a:splitter />
                 <a:list flex="1" />
             </a:hbox>
+            <a:splitter />
+            <a:tree id="v3" flex="1" />
         </a:vbox>
     </body>
 </html>

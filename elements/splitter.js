@@ -31,350 +31,142 @@ apf.splitter = function(struct, tagName){
 
 (function() {
     this.$focussable = false; // This object can get the focus
+    this.$splitter   = true;
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
-    this.update = function(){
-        //Optimize this to not recalc for certain cases
-        var b = (this.type == "vertical")
-            ? {
-                fsize      : "fwidth",
-                size       : "width",
-                offsetPos  : "offsetLeft",
-                offsetSize : "offsetWidth",
-                pos        : "left"
-              }
-            : {
-                fsize      : "fheight",
-                size       : "height",
-                offsetPos  : "offsetTop",
-                offsetSize : "offsetHeight", 
-                pos        : "top"
-              };
+    this.$propHandlers["type"] = function(value){
+        this.$setStyleClass(this.$ext, value,
+            [value == "horizontal" ? "vertical" : "horizontal"]);
         
-        this.$ext.offsetTop; //@weird somehow this will fix a problem in IE8
-        
-        this.$amlNode = this.refNode;
-        var htmlNode  = this.refHtml;
-
-        var v          = apf.layout.vars;
-        var oItem      = this.oItem;
-        var needRecalc = false;
-        
-        var itemStart = htmlNode 
-            ? htmlNode[b.offsetPos] 
-            : v[b.pos + "_" + oItem.id];
-        var itemSize  = htmlNode 
-            ? htmlNode[b.offsetSize] 
-            : v[b.size + "_" + oItem.id];
-
-        var row = oItem.parent.children;
-        for (var z = 0, i = 0; i < row.length; i++)
-            if (!row[i][b.fsize])
-                z++;
-
-        if (!oItem[b.fsize] && z > 1) {
-            for (var rTotal = 0, rSize = 0, i = oItem.stackId + 1; i < row.length; i++) {
-                if (!row[i][b.fsize]) {
-                    rTotal += row[i].weight || 1;
-                    rSize  += (row[i].node 
-                        ? row[i].oHtml[b.offsetSize] 
-                        : v[b.size + "_" + row[i].id]);
-                }
-            }
-            
-            var diff  = this.$ext[b.offsetPos] - itemStart - itemSize;
-            var rEach = (rSize - diff)/rTotal;
-            
-            for (var i = 0; i < oItem.stackId; i++) {
-                if (!row[i][b.fsize])
-                    row[i].original.weight = (row[i].node 
-                        ? row[i].oHtml[b.offsetSize] 
-                        : v[b.size + "_" + row[i].id]) / rEach;
-            }
-
-            oItem.original.weight = (itemSize + diff) / rEach
-            needRecalc = true;
-        }
-        else {
-            var isNumber     = oItem[b.fsize] ? oItem[b.fsize].match(/^\d+$/) : false;
-            var isPercentage = oItem[b.fsize] ? oItem[b.fsize].match(/^([\d\.]+)\%$/) : false;
-            if (isNumber || isPercentage || !oItem[b.fsize]) {
-                var diff      = this.$ext[b.offsetPos] - itemStart - itemSize;
-                var newHeight = this.$ext[b.offsetPos] - itemStart;
-                
-                for (var total = 0, size = 0, i = oItem.stackId + 1; i < row.length; i++) {
-                    if (!row[i][b.fsize]) {
-                        total += row[i].weight || 1;
-                        size  += (row[i].node 
-                            ? row[i].oHtml[b.offsetSize] 
-                            : v[b.size + "_" + row[i].id]);
-                    }
-                }
-                
-                if (total > 0) {
-                    var ratio = ((size-diff)/total)/(size/total);
-                    for (var i = oItem.stackId + 1; i < row.length; i++)
-                        row[i].original.weight = ratio * (row[i].weight || 1);
-                }
-                else {
-                    for (var i = oItem.stackId + 1; i < row.length; i++) {
-                        if (row[i][b.fsize].match(/^\d+$/)) {
-                            //should check for max here as well
-                            var nHeight = (row[i].node 
-                                ? row[i].oHtml[b.offsetSize] 
-                                : v[b.size + "_" + row[i].id]) - diff;
-                            row[i].original[b.fsize] = "" + Math.max(0, nHeight, row[i].minheight || 0);
-                            if (row[i][b.fsize] - nHeight != 0) 
-                                diff = row[i][b.fsize] - nHeight;
-                            else
-                                break;
-                        }
-                        else
-                            if (row[i][b.fsize].match(/^([\d\.]+)\%$/)) {
-                                var nHeight = (row[i].node 
-                                    ? row[i].oHtml[b.offsetSize] 
-                                    : v[b.size + "_" + row[i].id]) - diff;
-                                row[i].original[b.fsize] = Math.max(0,
-                                    ((parseFloat(RegExp.$1) / (row[i].node 
-                                    ? row[i].oHtml[b.offsetSize] 
-                                    : v[b.size + "_" + row[i].id])) * nHeight)) + "%";
-                                //check fheight
-                                break;
-                            }
-                    }
-                }
-                
-                if (oItem.original[b.fsize]) {
-                    oItem.original[b.fsize] = isPercentage 
-                        ? ((parseFloat(isPercentage[1])/itemSize) * newHeight) + "%" 
-                        : "" + newHeight;
-                }
-                
-                //if(total > 0  || isPercentage) needRecalc = true;
-                needRecalc = true;
-            }
-        }
-
-        if (needRecalc) {
-            /*
-            var l = apf.layout.layouts[this.$ext.parentNode.getAttribute("id")];
-            apf.layout.compileAlignment(l.root);
-            apf.layout.activateRules(this.$ext.parentNode);
-
-            */
-            
-            apf.layout.compile(this.$ext.parentNode);
-            apf.layout.activateRules(this.$ext.parentNode);
-            
-            if (apf.hasSingleRszEvent)
-                apf.layout.forceResize();
-
-            return;
-        }
-
-        apf.layout.forceResize(this.$ext.parentNode);
-    };
-    
-    /* *********
-        INIT
-    **********/
-    //this.implement(apf.GuiElement); /** @inherits apf.GuiElement */
-    
-    this.init = function(size, refNode, oItem){
-        /*var li = size + min + max + (refNode.$uniqueId || refNode);
-        if(li == this.$lastinit) return;
-        this.$lastinit = li;*/
-        this.min     = 0;
-        this.max     = 1000000;
-        this.size    = parseInt(size) || 3;
-        this.refNode = null;
-        this.refHtml = null;
-        
-        var pNode;
-        if (refNode) {
-            if (typeof refNode != "object")
-                refNode = apf.lookup(refNode);
-            this.refNode = refNode;
-            this.refHtml = this.refNode.$ext;
-            pNode        = this.refHtml.parentNode;
-
-            oItem        = refNode.aData.calcData;
-        }
-        else
-            pNode = oItem.pHtml;
-        
-        this.oItem = oItem;
-        if (pNode && pNode != this.$ext.parentNode)
-            pNode.appendChild(this.$ext);
-        
-        var diff = apf.getDiff(this.$ext);
-        this.$verdiff  = diff[0];
-        this.$hordiff  = diff[1];
-        this.$sizeArr  = [];
-        
-        this.type = oItem.parent.vbox ? "horizontal" : "vertical";
-        
-        var layout = apf.layout.get(this.$ext.parentNode).layout;
-        var name   = "splitter" + this.$uniqueId;
-        layout.addRule("var " + name + " = apf.lookup(" + this.$uniqueId + ").$ext");
-        
-        var vleft   = [name + ".style.left = "];
-        var vtop    = [name + ".style.top = "];
-        var vwidth  = [name + ".style.width = -" + this.$hordiff + " + "];
-        var vheight = [name + ".style.height = -" + this.$verdiff + " + "];
-        var oNext   = oItem.parent.children[oItem.stackId+1];
-        
-        if (this.type == "horizontal") {
-            vwidth.push("Math.max(");
-            if (oItem.node) {
-                vleft.push(oItem.id  + ".offsetLeft");
-                vtop.push(oItem.id   + ".offsetTop + " + oItem.id + ".offsetHeight");
-                vwidth.push(oItem.id + ".offsetWidth");
-            }
-            else {
-                vleft.push("v.left_"   + oItem.id);
-                vtop.push("v.top_"     + oItem.id + " + v.height_" + oItem.id);
-                vwidth.push("v.width_" + oItem.id);
-            }
-            vwidth.push(",", oNext
-                ? (oNext.node 
-                    ? oNext.id + ".offsetWidth" 
-                    : "v.width_" + oNext.id)
-                :  0, ")");
-            
-            layout.addRule(vwidth.join(""));
-            this.$ext.style.height = (oItem.splitter - this.$hordiff) + "px";
-        }
-        else {
-            vheight.push("Math.max(");
-            if (oItem.node) {
-                vleft.push(oItem.id   + ".offsetLeft + " + oItem.id + ".offsetWidth");
-                vtop.push(oItem.id    + ".offsetTop");
-                vheight.push(oItem.id + ".offsetHeight");
-            }
-            else {
-                vleft.push("v.left_"     + oItem.id + " + v.width_" + oItem.id);
-                vtop.push("v.top_"       + oItem.id);
-                vheight.push("v.height_" + oItem.id);
-            }
-            vheight.push(",", oNext 
-                ? (oNext.node 
-                    ? oNext.id + ".offsetHeight" 
-                    : "v.height_" + oNext.id)
-                : 0, ")");
-            
-            layout.addRule(vheight.join(""));
-            this.$ext.style.width = (oItem.splitter - this.$hordiff) + "px";
-        }
-        
-        layout.addRule(vleft.join(""));
-        layout.addRule(vtop.join(""));
-
-        //if(!apf.p) apf.p = new apf.ProfilerClass();
-        //apf.p.start();
-        
-        //Determine min and max
-        var row = oItem.parent.children;
-        if (this.type == "vertical") {
-            layout.addRule(name + ".host.min = " + (oItem.node 
-                ? "document.getElementById('" + oItem.id + "').offsetLeft" 
-                : "v.left_" + oItem.id) + " + "
-                    + parseInt(oItem.minwidth || oItem.childminwidth || 10));
-
-            var max = [], extra = [];
-            for (var hasRest = false, i = oItem.stackId + 1; i < row.length; i++) {
-                if (!row[i].fwidth)
-                    hasRest = true;
-            }
-            
-            for (var d, i = oItem.stackId + 1; i < row.length; i++) {
-                d = row[i];
-                
-                //should take care here of minwidth due to html padding and html borders
-                if (d.minwidth || d.childminheight)
-                    max.push(parseInt(d.minwidth || d.childminheight));
-                else
-                    if (d.fwidth) {
-                        if (!hasRest && i == oItem.stackId+1)
-                            max.push(10);
-                        else
-                            if(d.fwidth.indexOf("%") != -1)
-                                max.push("(" + d.parent.innerspace + ") * " 
-                                    + (parseFloat(d.fwidth)/100));
-                        else 
-                            max.push(d.fwidth);
-                    }
-                else 
-                    max.push(10);
-                
-                max.push(d.edgeMargin);
-            }
-            
-            layout.addRule(name + ".host.max = v.left_" + oItem.parent.id 
-                + " + v.width_" + oItem.parent.id + " - (" 
-                + (max.join("+")||0) + ")");
-        }
-        else {
-            layout.addRule(name + ".host.min = " + (oItem.node 
-                ? "document.getElementById('" + oItem.id + "').offsetTop" 
-                : "v.top_" + oItem.id) + " + " 
-                    + parseInt(oItem.minheight || oItem.childminheight || 10));
-
-            var max = [], extra = [];
-            for (var hasRest = false, i = oItem.stackId + 1; i < row.length; i++) {
-                if (!row[i].fheight) 
-                    hasRest = true;
-            }
-            
-            //This line prevents splitters from sizing minimized items without a rest
-            if (!hasRest && oNext && oNext.state > 0)
-                return this.$ext.parentNode.removeChild(this.$ext);
-            
-            for (var d, i = oItem.stackId + 1; i < row.length; i++) {
-                d = row[i];
-                
-                //should take care here of minwidth due to html padding and html borders
-                if (d.minheight || d.childminheight)
-                    max.push(parseInt(d.minheight || d.childminheight));
-                else if (d.fheight) {
-                    if (!hasRest && i == oItem.stackId+1)
-                        max.push(10);
-                    else if(d.fheight.indexOf("%") != -1)
-                        max.push("(" + d.parent.innerspace + ") * " 
-                            + (parseFloat(d.fheight)/100));
-                    else 
-                        max.push(d.fheight);
-                }
-                else
-                    max.push(10);
-                
-                if (d.edgeMargin)
-                    max.push(d.edgeMargin);
-            }
-
-            layout.addRule(name + ".host.max = v.top_" + oItem.parent.id 
-                + " + v.height_" + oItem.parent.id + " - (" 
-                + (max.join("+")||0) + ")");
-        }
-
-        //apf.p.stop();
-        //document.title = apf.p.totalTime;	
-        
-        this.$setStyleClass(this.$ext, this.type,
-            [this.type == "horizontal" ? "vertical" : "horizontal"]);
-        
-        if (this.type == "vertical")
+        if (value == "vertical")
             this.$setStyleClass(this.$ext, "w-resize", ["n-resize"]);
         else
             this.$setStyleClass(this.$ext, "n-resize", ["w-resize"]);
 
+        //Optimize this to not recalc for certain cases
+        if (value == "horizontal") {
+            this.$info = {
+                pos         : "top",
+                opos        : "left",
+                size        : "width",
+                osize       : "height",
+                offsetPos   : "offsetTop",
+                offsetSize  : "offsetHeight",
+                oOffsetPos  : "offsetLeft",
+                oOffsetSize : "offsetWidth",
+                d1          : 1,
+                d2          : 0
+            };
+        }
+        else {
+            this.$info = {
+                pos         : "left",
+                opos        : "top",
+                size        : "height",
+                osize       : "width",
+                offsetPos   : "offsetLeft",
+                offsetSize  : "offsetWidth",
+                oOffsetPos  : "offsetTop",
+                oOffsetSize : "offsetHeight",
+                d1          : 0,
+                d2          : 1
+            }
+        }
+    }
+    
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget != this)
+            return;
+        
+        if (e.$oldParent) {
+            e.$oldParent.removeEventListener("DOMNodeInserted", this.$siblingChange);
+            e.$oldParent.removeEventListener("DOMNodeRemoved", this.$siblingChange);
+        }
+        
+        this.init();
+    });
+    
+    this.$siblingChange = function(e){
+        //if (e.currentTarget
+        
+        //this.init();
+    }
+    
+    this.update = function(finalPass){
+        with (this.$info) {
+            var posPrev = apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int);
+            var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]) 
+                + (finalPass ? 0 : this.$ext[offsetSize]);
+            var max = this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize];
+
+            if (this.$previous.flex) {
+                //Both flex
+                if (this.$next.flex) {
+                    var totalFlex = this.$previous.flex + this.$next.flex - (finalPass ? this.parentNode.padding : 0);
+                    this.$previous.setAttribute("flex", pos);
+                    this.$next.setAttribute("flex", totalFlex - pos);
+                }
+                //Next is fixed
+                else {
+                    
+                }
+            }
+            //Previous is fixed
+            else if (this.$next.flex) {
+                
+            }
+            //Both are fixed
+            else {
+                
+            }
+        }
+        
+        apf.layout.forceResize(this.$ext.parentNode);
+    };
+    
+    this.init = function(size, refNode, oItem){
+        this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
+        this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
+        
+        this.$previous = this.previousSibling;
+        while(this.$previous && (this.$previous.nodeType != 1 
+          || this.$previous.visible === false 
+          || this.$previous.nodeFunc != apf.NODE_VISIBLE))
+            this.$previous = this.$previous.previousSibling;
+        this.$next     = this.nextSibling;
+        while(this.$next && (this.$next.nodeType != 1 
+          || this.$next.visible === false 
+          || this.$next.nodeFunc != apf.NODE_VISIBLE))
+            this.$next = this.$next.nextSibling;
+
+        this.$thickness = null;
+        if (this.parentNode.$box) {
+            this.setProperty("type", this.parentNode.localName == "vbox" 
+                ? "horizontal" 
+                : "vertical");
+            this.$thickness = parseInt(this.parentNode.padding);
+        }
+        
+        with (this.$info) {
+            var diff = apf.getDiff(this.$ext);
+            if (!this.parentNode.$box) {
+                var iSize  = Math.max(
+                    this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
+                this.$ext.style[size] = (iSize - diff[d1]) + "px";
+            }
+
+            var iThick = this[osize] = this.$thickness 
+                || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
+                    - this.$previous[oOffsetSize]);
+
+            this.$ext.style[osize] = (iThick - diff[d2]) + "px";
+        }
+        
         return this;
     };
     
     this.$draw = function(){
+        //use zManager
+        
         //Build Main Skin
         this.$ext = this.$getExternal();
 
@@ -383,15 +175,64 @@ apf.splitter = function(struct, tagName){
             if (!e)
                 e = event;
             
-            var amlNode = _self;//.$amlNode;
+            _self.parentNode.$int.style.position = "relative";
+            
             var pos = apf.getAbsolutePosition(this);
-            if (amlNode.type == "vertical")
-                amlNode.tx = e.clientX - pos[0];
-            else
-                amlNode.ty = e.clientY - pos[1];
-            amlNode.startPos = amlNode.type == "vertical" 
+            if (_self.type == "vertical") {
+                _self.tx = e.clientX - pos[0];
+                
+                if (apf.hasFlexibleBox) {
+                    var mBox = apf.getBox(_self.$previous.margin);
+                    mBox[1] = _self.parentNode.padding;
+                    _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                }
+            }
+            else {
+                _self.ty = e.clientY - pos[1];
+                
+                if (apf.hasFlexibleBox) {
+                    var mBox = apf.getBox(_self.$previous.margin);
+                    mBox[2] = _self.parentNode.padding;
+                    _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                }
+            }
+
+            with (_self.$info) {
+                var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
+                var min = posPrev[d1] || 0;
+                var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
+                var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
+            
+                //Set flex to pixel sizes
+                if (_self.$previous.flex && _self.$next.flex) {
+                    var set = [], nodes = _self.parentNode.childNodes, padding = 0;
+                    for (var node, i = 0, l = nodes.length; i < l; i++) {
+                        if ((node = nodes[i]).visible === false 
+                          || node.nodeFunc != apf.NODE_VISIBLE || node.$splitter)
+                            continue;
+                        
+                        if (node.flex)
+                            set.push(node, node.$ext[offsetSize] 
+                                + (apf.hasFlexibleBox && node == _self.$previous 
+                                    ? 2 * _self.parentNode.padding : 0));
+                    }
+                    for (var i = 0, l = set.length; i < l; i+=2) {
+                        set[i].setAttribute("flex", set[i+1]);
+                    }
+                }
+            }
+                        
+            _self.startPos = _self.type == "vertical" 
                 ? this.offsetLeft 
                 : this.offsetTop;
+            
+            var diff = apf.getDiff(this);
+            var myPos = apf.getAbsolutePosition(this, _self.parentNode.$int);
+            this.style.left     = pos[0] + "px";
+            this.style.top      = pos[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
+            this.style.width    = (this.offsetWidth - diff[0]) + "px";
+            this.style.height   = (this.offsetHeight - diff[1]) + "px";
+            this.style.position = "absolute";
             
             e.returnValue  = false;
             e.cancelBubble = true;
@@ -400,22 +241,51 @@ apf.splitter = function(struct, tagName){
             apf.plane.show(this);
             // #endif
 
-            amlNode.$setStyleClass(this, "moving");
+            _self.$setStyleClass(this, "moving");
             
-            amlNode.$setStyleClass(document.body,
-                amlNode.type == "vertical" ? "w-resize" : "n-resize",
-                [amlNode.type == "vertical" ? "n-resize" : "w-resize"]);
+            _self.$setStyleClass(document.body,
+                _self.type == "vertical" ? "w-resize" : "n-resize",
+                [_self.type == "vertical" ? "n-resize" : "w-resize"]);
             
             //@todo convert to proper way
-            document.onmouseup = function(){
-                amlNode.$setStyleClass(amlNode.$ext, "", ["moving"]);
+            document.onmouseup = function(e){
+                if(!e) e = event;
+                
+                if (_self.type == "vertical") {
+                    if (e.clientX >= 0) {
+                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        _self.$ext.style.left = (Math.min(max,
+                            Math.max(min, (e.clientX - pos[0]) - _self.tx))) + "px";
+                    }
+                }
+                else {
+                    if (e.clientY >= 0) {
+                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        _self.$ext.style.top = (Math.min(max,
+                            Math.max(min, (e.clientY - pos[1]) - _self.ty))) + "px";
+                    }
+                }
+                
+                _self.$setStyleClass(_self.$ext, "", ["moving"]);
         
                 // #ifdef __WITH_PLANE
                 apf.plane.hide();
                 // #endif
         
-                amlNode.update();
-                amlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                
+                _self.parentNode.$int.style.position = "";
+                
+                if (apf.hasFlexibleBox)
+                    _self.$previous.$ext.style.margin 
+                        = apf.getBox(_self.$previous.margin).join("px ") + "px";
+                
+                _self.update(true);
+                
+                _self.$ext.style.left     = "";
+                _self.$ext.style.top      = "";
+                _self.$ext.style[_self.$info.size] = "";
+                _self.$ext.style.position = "";
                 
                 document.onmouseup   = 
                 document.onmousemove = null;
@@ -425,49 +295,35 @@ apf.splitter = function(struct, tagName){
             document.onmousemove = function(e){
                 if(!e) e = event;
         
-                if (amlNode.type == "vertical") {
+                if (_self.type == "vertical") {
                     if (e.clientX >= 0) {
-                        var pos = apf.getAbsolutePosition(amlNode.$ext.offsetParent);
-                        amlNode.$ext.style.left = (Math.min(amlNode.max,
-                            Math.max(amlNode.min, (e.clientX - pos[0]) - amlNode.tx))) + "px";
+                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        _self.$ext.style.left = (Math.min(max,
+                            Math.max(min, (e.clientX - pos[0]) - _self.tx))) + "px";
                     }
                 }
                 else {
                     if (e.clientY >= 0) {
-                        var pos = apf.getAbsolutePosition(amlNode.$ext.offsetParent);
-                        amlNode.$ext.style.top = (Math.min(amlNode.max,
-                            Math.max(amlNode.min, (e.clientY - pos[1]) - amlNode.ty))) + "px";
+                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        _self.$ext.style.top = (Math.min(max,
+                            Math.max(min, (e.clientY - pos[1]) - _self.ty))) + "px";
                     }
                 }
+                
+                _self.update();
                 
                 e.returnValue  = false;
                 e.cancelBubble = true;
             };
         }
+        
+        apf.queue.add("splitter" + this.$uniqueId, function(){
+            _self.init();
+        });
     };
         
     this.$loadAml = function(x){
-        if (this.left || this.top) {
-            var O1 = this.left || this.top;
-            var O2 = this.right || this.bottom;
-            O1 = O1.split(/\s*,\s*/);
-            O2 = O2.split(/\s*,\s*/);
-            
-            for (var i = 0; i < O1.length; i++)
-                O1[i] = O1[i];
-            for (var i = 0; i < O2.length; i++)
-                O2[i] = O2[i];
-                
-            //Not a perfect hack, but ok, for now
-            var _self = this;
-            $setTimeout(function(){
-                this.$amlNode.init(_self.type,
-                    _self.size, 
-                    _self.min, 
-                    _self.max, 
-                    _self.change, O1, O2);
-            });
-        }
+        
     };
 }).call(apf.splitter.prototype = new apf.Presentation());
 

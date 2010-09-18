@@ -101,14 +101,20 @@ apf.vbox = function(struct, tagName){
         if (!elms.length)
             return;
 
-        for (var b, el, i = 0, l = elms.length - 1; i < l; i++) {
+        for (var last, b, el, i = elms.length - 2; i >= 0; i--) {
             b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
-            b[this.$vbox ? 2 : 1] += this.padding;
-            if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
-                b[0] += this.padding;
+            
+            if ((!last || !last.$splitter) && !el.$splitter) {
+                b[this.$vbox ? 2 : 1] += this.padding;
+
+                if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
+                    b[0] += this.padding;
+            }
+            
             el.$ext.style.margin = b.join("px ") + "px";
+            last = el;
         }
-        b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
+        b = (el = elms[elms.length - 1]).margin && apf.getBox(el.margin) || [0,0,0,0];
         el.$ext.style.margin = b.join("px ") + "px";
         
         if (!apf.hasFlexibleBox)
@@ -301,8 +307,9 @@ apf.vbox = function(struct, tagName){
                         this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
                         sp.style.display  = apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box";
                         sp.style.position = "relative";
+                        sp.style.overflow = "hidden";
                         if (!this.parentNode.$vbox)
-                            sp.style["width"] = "43px";
+                            sp.style["width"] = "0";
                         else if (!apf.isWebkit) //stupid webkit isnt 90 degrees symmetrical
                             sp.style["height"] = "0px";
                             
@@ -317,7 +324,8 @@ apf.vbox = function(struct, tagName){
                         sp.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
                         sp.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
                         
-                        this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+                        if (!apf.isGecko)
+                            this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
                     }
                     (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
@@ -762,8 +770,10 @@ apf.vbox = function(struct, tagName){
                 this.$int.style.height = "100%";
             this.$int.style.overflow = "hidden";
             
+            var splitterCount = apf.n(this).children("a:splitter").length() * 2;
+            
             var rW = this.$int[ooffset] - apf[ogetDiff](this.$int) - fW 
-              - ((hNodes.length - 1) * this.padding);// - (2 * this.edge);
+              - ((hNodes.length - 1 - splitterCount) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {
