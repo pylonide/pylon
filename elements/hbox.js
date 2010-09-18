@@ -377,7 +377,7 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = parseInt(value);
                 if (this.$amlLoaded)
-                    this.parentNode.$resize();
+                    this.parentNode.$resize(true);
             }
         }
     }

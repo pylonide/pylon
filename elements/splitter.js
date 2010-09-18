@@ -106,25 +106,26 @@ apf.splitter = function(struct, tagName){
     
     this.update = function(newPos, finalPass){
         with (this.$info) {
-            var posPrev = apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int);
             //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
             var max = this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize];
-            newPos -= posPrev[d1];
-            
+            var method = finalPass ? "setAttribute" : "setProperty";
+            if (apf.hasFlexibleBox)
+                newPos -= apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1];
+
             //Both flex
             if (this.$previous.flex && this.$next.flex) {
-                if (!finalPass || this.realtime) 
+                if (!finalPass && !this.realtime) 
                     newPos -= this.$ext[offsetSize];
                 var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                this.$previous.setAttribute("flex", newPos);
-                this.$next.setAttribute("flex", totalFlex - newPos);
+                this.$previous[method]("flex", newPos);
+                this.$next[method]("flex", totalFlex - newPos);
             }
             //Fixed
             else {
                 if (!this.$next.flex)
-                    this.$next.setAttribute(osize, max - newPos);
+                    this.$next[method](osize, max - newPos);
                 if (!this.$previous.flex)
-                    this.$previous.setAttribute(osize, newPos);
+                    this.$previous[method](osize, newPos);
             }
         }
         
@@ -207,10 +208,10 @@ apf.splitter = function(struct, tagName){
                     }
                 }
             
-                var startPos;
+                var startPos, startOffset;
                 if (apf.hasFlexibleBox) {
-                    var pos = apf.getAbsolutePosition(this);
-                    startPos = e[clientPos] - pos[d1];
+                    var coords = apf.getAbsolutePosition(this);
+                    startPos = e[clientPos] - coords[d1];
                     
                     if (!_self.realtime) {
                         if (apf.hasFlexibleBox) {
@@ -227,18 +228,24 @@ apf.splitter = function(struct, tagName){
                         }
                         
                         var diff = apf.getDiff(this);
-                        this.style.left     = pos[0] + "px";
-                        this.style.top      = pos[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
+                        this.style.left     = coords[0] + "px";
+                        this.style.top      = coords[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
                         this.style.width    = (this.offsetWidth - diff[0]) + "px";
                         this.style.height   = (this.offsetHeight - diff[1]) + "px";
                         this.style.position = "absolute";
                     }
                 }
                 else {
-                    startPos            = 0;
-                    this.style.left     = "0px";
-                    this.style.top      = "0px";
-                    this.style.position = "relative";
+                    var coords = apf.getAbsolutePosition(this.offsetParent);
+                    startOffset = apf.getAbsolutePosition(_self.$previous.$ext)[d1];
+                    startPos    = e[clientPos] - coords[d1];
+                    
+                    if (!_self.realtime) {
+                        this.style.left     = "0px";
+                        this.style.top      = "0px";
+                        this.style.position = "relative";
+                    }
+                    min = -1000; //@todo
                 }
             }
             
@@ -259,15 +266,15 @@ apf.splitter = function(struct, tagName){
             document.onmouseup = function(e){
                 if(!e) e = event;
                 
-                var newPos;
                 with (_self.$info) {
                     var newPos;
                     if (e[clientPos] >= 0) {
-                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - pos[d1]) - startPos)));
+                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                            (apf.hasFlexibleBox ? startPos : startOffset))));
                     }
                 }
-                
+
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
                 _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
                 
@@ -303,13 +310,15 @@ apf.splitter = function(struct, tagName){
                 with (_self.$info) {
                     var newPos;
                     if (e[clientPos] >= 0) {
-                        var pos = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - pos[d1]) - startPos)));
+                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                            (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset))));
                     
                         if (_self.realtime)
                             _self.update(newPos);
-                        else
+                        else {
                             _self.$ext.style[pos] = newPos + "px";
+                        }
                     }
                 }
                 
@@ -324,7 +333,7 @@ apf.splitter = function(struct, tagName){
     };
         
     this.$loadAml = function(x){
-        if (this.realtime !== false && (!apf.isIE || apf.isIE > 8))
+        if (this.realtime !== false) // && (!apf.isIE || apf.isIE > 8))
             this.$propHandlers.realtime.call(this, this.realtime = true);
     };
 }).call(apf.splitter.prototype = new apf.Presentation());
