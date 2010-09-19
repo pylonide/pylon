@@ -64,12 +64,13 @@ return ext.register("ext/save/save", {
         }
 
         btnSave.onclick = save;
-
+        
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
                 onclick : save
             }), ide.mnuFile.firstChild)
+            //ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.childNodes[1])
         );
     },
 

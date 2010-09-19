@@ -225,6 +225,10 @@ return ext = {
 
         oExtension.init(amlParent);
         oExtension.inited = true;
+        
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
+        });
     },
 
     setLayoutMode : function(mode){

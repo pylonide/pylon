@@ -22,6 +22,21 @@ return ext.register("ext/code/code", {
     markup  : markup,
 
     nodes : [],
+    
+    hook : function(){
+        //Settings Support
+        ide.addEventListener("init.ext/settings/settings", function(e){
+            var page = e.ext.addSection("Code Editor", "section[@name='Editor']");
+            page.insertMarkup(
+              '<a:application xmlns:a="' + apf.ns.aml + '">'
+                + '<a:frame caption="Code Editor" anchors="0 0 0 0">'
+                    + '<a:table columns="100,144" padding="5">'
+                        + '<a:label>Font Size</a:label><a:slider value="[@fontsize]" min="8" max="72" mask="#" snap="1" />'
+                    + '</a:table>'
+                  + '</a:frame>'
+              + '</a:application>');
+        });
+    },
 
     init : function(amlPage){
         amlPage.appendChild(barEditor);

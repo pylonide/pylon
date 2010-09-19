@@ -11498,6 +11498,19 @@
             display: block;
         }
     ]]></a:style>
+    <a:style condition="apf.isGecko"><![CDATA[
+		.pages {
+			-moz-box-orient: vertical;
+			display: -moz-box;
+		}
+		
+		.pages .page {
+			height: auto;
+			-moz-box-flex: 1;
+			overflow : hidden;
+			position : relative;
+		}	
+    ]]></a:style>
 
     <a:presentation>
         <a:main pages=".">
