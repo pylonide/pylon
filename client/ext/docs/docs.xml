@@ -5,11 +5,12 @@
         <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar>
-                    <a:hbox edge="2">
+                    <a:hbox edge="2" padding="3">
                         <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
                             onclick="pgDocs.set(0)" />
                         <!--a:button icon="arrow_right.png" skin="toolbarbutton" /-->
-                        <a:textbox id="tbDocsSearch" realtime="true" initial-message="Search for keywords" flex="1" margin="0 0 0 3" />
+                        <a:textbox id="tbDocsSearch" realtime="true" initial-message="Search for keywords" flex="1" 
+                            onkeydown="if (event.keyCode == 13) pgDocs.set(0)"/>
                     </a:hbox>
                 </a:bar>
             </a:toolbar>
@@ -28,7 +29,7 @@
                     </a:datagrid>
                 </a:page>
                 <a:page trans-in="push-right" trans-out="push-right">
-                    <div id="lmParent" flex="1" style="padding:10px"><?lm
+                    <div id="lmParent" anchors="0 0 0 0" style="overflow:auto;padding:10px"><?lm
                         <h1>[@type]</h1>
                         <p>[description]</p>
                     ?></div>
