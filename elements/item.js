@@ -386,7 +386,9 @@ apf.item  = function(struct, tagName){
 
         this.parentNode.dispatchEvent("itemclick", {
             value       : this.value || this.caption,
-            relatedNode : this
+            relatedNode : this,
+            checked     : this.checked,
+            selected    : this.selected
         });
 
         //@todo Anim effect here?
