@@ -82,12 +82,12 @@
 apf.radiobutton = function(struct, tagName){
     this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
     
-    this.$constructor = apf.radiobutton;
+    /*this.$constructor = apf.radiobutton;
     var fEl = apf.aml.setElement("radiobutton", function(){
         this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
     });
     fEl.prototype = apf.radiobutton.prototype;
-    apf.radiobutton = fEl;
+    apf.radiobutton = fEl;*/
 };
 
 (function(){
@@ -202,6 +202,10 @@ apf.radiobutton = function(struct, tagName){
             //this.$group.setProperty("value", "");
     };
     
+    this.$propHandlers["selected"] = function(value){
+        this.setProperty("checked", value);
+    }
+    
     this.addEventListener("prop.model", function(e){
         if (this.$group)
             this.$group.setProperty("model", e.value);
@@ -264,6 +268,7 @@ apf.radiobutton = function(struct, tagName){
         return this.value;
     };
     
+    this.select = 
     this.check = function(){
         this.setProperty("checked", true, false, true);
     }

@@ -43,7 +43,6 @@ else
         ["ace/Editor", "ace/VirtualRenderer", "ace/Document", "ace/UndoManager", "ace/Range"],
         function(Editor, VirtualRenderer, Document, UndoManager, Range) {
 
-
 apf.codeeditor = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
 

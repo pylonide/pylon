@@ -221,7 +221,7 @@ apf.BaseTab = function(){
         //If page is given as first argument, let's use its position
         if (next.tagName) {
             next = info.position;
-            this.activepage = page.type || page.name || next;
+            this.activepage = page.name || next;//page.type || 
         }
 
         //Call the onbeforeswitch event;

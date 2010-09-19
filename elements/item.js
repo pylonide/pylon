@@ -285,6 +285,17 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "", ["checked"]);
     }
     
+    this.select = function(){
+        this.parentNode.select(this.group, this.value || this.caption);
+    }
+    
+    this.check = function(){
+        this.setProperty("checked", true);
+    }
+    this.uncheck = function(){
+        this.setProperty("checked", false);
+    }
+    
     this.$check = function(){
         apf.setStyleClass(this.$ext, "selected");
     }
