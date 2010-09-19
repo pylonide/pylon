@@ -4,11 +4,12 @@
 require.def("ext/refactor/refactor",
     ["core/ide", "core/ext", "text!ext/refactor/refactor.xml"],
     function(ide, ext, markup) {
-        
+
 return ext.register("ext/refactor/refactor", {
     name   : "Refactor",
     dev    : "Ajax.org",
     type   : ext.GENERAL, 
+    alone  : true,
     markup : markup,
     
     nodes : [],

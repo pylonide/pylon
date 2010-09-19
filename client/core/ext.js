@@ -83,8 +83,30 @@ return ext = {
                 }));
             break;
             case this.EDITOR:
+                var id = "rb" + oExtension.path.replace(/\//g, "_");
+            
+                oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+                    id        : id,
+                    label     : oExtension.name,
+                    value     : oExtension.path,
+                    visible   : "{require('core/ext').isEditorAvailable(tabEditors.activepage, '" + oExtension.path + "')}",
+                    onclick   : function(){
+                        require('core/ext').switchEditor(this.value);
+                    }
+                }));
+
+                //Add a menu item to the list of editors
+                oExtension.$itmEditor = ide.mnuEditors.appendChild(new apf.item({
+                    type    : "radio",
+                    caption : oExtension.name,
+                    value   : oExtension.path,
+                    onclick   : function(){
+                        require('core/ext').switchEditor(this.value);
+                    }
+                }));
+            
                 oExtension.contentTypes.each(function(mime){
-                    ext.contentTypes[mime] = oExtension;
+                    (ext.contentTypes[mime] || (ext.contentTypes[mime] = [])).push(oExtension);
                 });
 
                 if (!this.contentTypes["default"])
@@ -115,6 +137,7 @@ return ext = {
             }
 
             if (inUseBy.length) {
+                //@todo move this to outside this function
                 if (!silent)
                     util.alert(
                         "Could not disable extension",
@@ -148,16 +171,21 @@ return ext = {
                 oExtension.$layoutItem.destroy(true, true);
             break;
             case this.EDITOR:
+                oExtension.$rbEditor.destroy(true, true);
+                oExtension.$itmEditor.destroy(true, true);
+            
                 var _self = this;
                 oExtension.contentTypes.each(function(fe){
-                    delete _self.contentTypes[fe];
+                    _self.contentTypes[fe].remove(oExtension);
+                    if (!_self.contentTypes[fe].length)
+                        delete _self.contentTypes[fe];
                 });
 
                 if (this.contentTypes["default"] == oExtension) {
                     delete this.contentTypes["default"];
 
                     for (prop in this.contentTypes) {
-                        this.contentTypes["default"] = this.contentTypes[prop];
+                        this.contentTypes["default"] = this.contentTypes[prop][0];
                         break;
                     }
                 }
@@ -214,6 +242,46 @@ return ext = {
         module.enable();
         this.currentLayoutMode = module;
     },
+    
+    isEditorAvailable : function(page, path){
+        var editor = this.extLut[path];
+        var contentTypes = editor.contentTypes;
+        return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
+    },
+    
+    initEditor : function(editor){
+        //Create Page Element
+        var editorPage = new apf.page({
+            id        : editor.path,
+            mimeTypes : editor.contentTypes,
+            visible   : false,
+            realtime  : false
+        });
+        ide.tabEditors.appendChild(editorPage);
+
+        //Initialize Content of the page
+        this.initExtension(editor, editorPage);
+        
+        return editorPage;
+    },
+    
+    switchEditor : function(path){
+        var page = tabEditors.getPage();
+        if (page.type == path)
+            return;
+        
+        var lastType = page.type;
+        
+        var editor = this.extLut[path];
+        if (!editor.inited)
+            this.initEditor(editor);
+        
+        editor.$itmEditor.select();
+        editor.$rbEditor.select();
+        
+        page.setAttribute("type", path);
+        this.afterswitch({nextPage: page, previousPage: {type: lastType}});
+    },
 
     openEditor : function(filename, xmlNode) {
         var page = ide.tabEditors.getPage(filename);
@@ -223,7 +291,7 @@ return ext = {
         }
 
         var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
-        var editor = this.contentTypes[contentType] || this.contentTypes["default"];
+        var editor = this.contentTypes[contentType][0] || this.contentTypes["default"];
 
         if (this.currentEditor)
             this.currentEditor.disable();
@@ -231,29 +299,19 @@ return ext = {
         if (!editor) {
             util.alert(
                 "No editor is registered",
-                "Could you not find any editor to display content",
+                "Could not find an editor to display content",
                 "There is something wrong with the configuration of your IDE. No editor plugin is found.");
             return;
         }
 
-        if (!editor.inited) {
-            //Create Page Element
-            var editorPage = new apf.page({
-                id       : editor.path,
-                visible  : false,
-                realtime : false
-            });
-            ide.tabEditors.appendChild(editorPage);
-
-            //Initialize Content of the page
-            this.initExtension(editor, editorPage);
-        }
+        if (!editor.inited)
+            editorPage = this.initEditor(editor);
         else
             editorPage = ide.tabEditors.getPage(editor.path);
 
         //Create Fake Page
         var fake      = tabEditors.add(filename, filename, editor.path);
-        fake.mimeType = contentType;
+        fake.contentType = contentType;
 
         //Create ActionTracker
         var at    = fake.$at    = new apf.actiontracker();
@@ -271,6 +329,8 @@ return ext = {
         });*/
 
         editor.enable();
+        editor.$itmEditor.select();
+        editor.$rbEditor.select();
 
         this.currentEditor = editor;
     },
@@ -322,6 +382,9 @@ return ext = {
                 fromHandler.disable();
             toHandler.enable();
         }
+        
+        toHandler.$itmEditor.select();
+        toHandler.$rbEditor.select();
 
         /*if (self.TESTING) {}
             //do nothing

@@ -5,12 +5,6 @@ require.def("ext/code/code",
     ["core/ide", "core/ext", "text!ext/code/code.xml"],
     function(ide, ext, markup) {
 
-//Add a menu item to the list of editors
-ide.mnuEditors.appendChild(new apf.item({
-    caption : "Code Editor",
-    value   : "ext/code/code"
-}));
-
 return ext.register("ext/code/code", {
     name    : "Code Editor",
     dev     : "Ajax.org",

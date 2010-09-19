@@ -1,10 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:vbox id="barEditor" anchors="0 0 0 0">
-        <a:hbox>
-            <a:dropdown flex="1" />
-            <a:filler />
-            <a:dropdown flex="1" />
-        </a:hbox>
         <a:codeeditor id="ceEditor"
           flex   = "1" 
           value  = "[data]"
