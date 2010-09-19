@@ -2,8 +2,8 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/code/code",
-    ["core/ide", "core/ext", "text!ext/code/code.xml"],
-    function(ide, ext, markup) {
+    ["core/ide", "core/ext", "text!ext/code/code.xml", "text!ext/code/settings.xml"],
+    function(ide, ext, markup, settings) {
 
 return ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -27,14 +27,7 @@ return ext.register("ext/code/code", {
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
             var page = e.ext.addSection("Code Editor", "section[@name='Editor']");
-            page.insertMarkup(
-              '<a:application xmlns:a="' + apf.ns.aml + '">'
-                + '<a:frame caption="Code Editor" anchors="0 0 0 0">'
-                    + '<a:table columns="100,144" padding="5">'
-                        + '<a:label>Font Size</a:label><a:slider value="[@fontsize]" min="8" max="72" mask="#" snap="1" />'
-                    + '</a:table>'
-                  + '</a:frame>'
-              + '</a:application>');
+            page.insertMarkup(settings);
         });
     },
 
