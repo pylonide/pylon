@@ -36,7 +36,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.show)
                 item.show();
         });
-        log.enable();
+        log.enable(true);
     },
 
     disable : function(){
@@ -44,7 +44,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.hide)
                 item.hide();
         });
-        log.disable();
+        log.disable(true);
     },
 
     destroy : function(){

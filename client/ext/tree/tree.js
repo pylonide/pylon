@@ -7,7 +7,7 @@ require.def("ext/tree/tree",
         
 if (!location.host)
     return {
-        name    : "Disabled Tree No Host",
+        name    : "Tree [Disabled - file://]",
         dev     : "Ajax.org",
         alone   : true,
         type    : ext.GENERAL,
@@ -26,6 +26,16 @@ return ext.register("ext/tree/tree", {
     init : function(){
         this.trFiles = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
+        
+        var _self = this;
+        this.mnuItem = mnuPanels.appendChild(new apf.item({
+            caption : this.name,
+            type    : "check",
+            checked : true,
+            onclick : function(){
+                this.checked ? _self.enable() : _self.disable();
+            }
+        }));
 
         trFiles.addEventListener("afterselect", this.$afterselect = function() {
             var node = this.selected;
@@ -61,16 +71,19 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         trFiles.show();
+        this.mnuItem.check();
     },
 
     disable : function(){
         trFiles.hide();
+        this.mnuItem.uncheck();
     },
 
     destroy : function(){
         davProject.destroy(true, true);
         mdlFiles.destroy(true, true);
         trFiles.destroy(true, true);
+        this.mnuItem.destroy(true, true);
 
         trFiles.removeEventListener("afterselect", this.$afterselect);
     }

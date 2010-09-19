@@ -13,18 +13,36 @@ return ext.register("ext/console/console", {
     init : function(amlNode){
         //Append the console window at the bottom below the tab
         ide.vbMain.selectSingleNode("a:hbox/a:vbox[2]").appendChild(winDbgConsole);
+        
+        var _self = this;
+        this.mnuItem = mnuPanels.appendChild(new apf.item({
+            caption : this.name,
+            type    : "check",
+            checked : true,
+            onclick : function(){
+                this.checked ? _self.enable() : _self.disable();
+            }
+        }));
     },
 
-    enable : function(){
-        winDbgConsole.show();
+    enable : function(fromParent){
+        this.mnuItem.show();
+        if (!fromParent)
+            this.mnuItem.check();
+        if (this.mnuItem.checked)
+            winDbgConsole.show();
     },
 
-    disable : function(){
+    disable : function(fromParent){
         winDbgConsole.hide();
+        fromParent
+            ? this.mnuItem.hide()
+            : this.mnuItem.uncheck();
     },
 
     destroy : function(){
         winDbgConsole.destroy(true, true);
+        this.mnuItem.destroy(true, true);
     },
 
     clear : function() {

@@ -27,7 +27,13 @@ return ext.register("ext/refactor/refactor", {
         };
         
         this.nodes.push(
-            ide.barTools.appendChild(new apf.button({
+            mnuEdit.appendChild(new apf.divider()),
+            mnuEdit.appendChild(new apf.item({
+                caption : "Refactor",
+                onclick : openUi
+            }))
+        
+            /*ide.barTools.appendChild(new apf.button({
                 icon    : "replace.png",
                 tooltip : "Search & Replace",
                 onclick : openUi
@@ -36,7 +42,7 @@ return ext.register("ext/refactor/refactor", {
             ide.mnuCtxEditor.appendChild(new apf.item({
                 caption : "Search & Replace",
                 onclick : openUi
-            }))
+            }))*/
         );
     },
     

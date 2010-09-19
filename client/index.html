@@ -50,8 +50,10 @@
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
                         var modules = [
                             (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
-                            "ext/refactor/refactor",
                             "ext/save/save",
+                            "ext/undo/undo",
+                            "ext/clipboard/clipboard",
+                            "ext/refactor/refactor",
                             "ext/html/html",
                             "ext/browser/browser",
                             "ext/code/code", 
@@ -220,9 +222,9 @@
             <a:toolbar id="tbMain">
                 <a:menubar id="barMenu">
                     <a:button submenu="mnuFile">File</a:button>
-                    <a:button submenu="mnuExample">Example</a:button>
-                    <a:button submenu="mnuEditors">Editors</a:button>
-                    <a:button submenu="mnuCtxEditor">Context Menu</a:button>
+                    <a:button submenu="mnuEdit">Edit</a:button>
+                    <a:button submenu="mnuView">View</a:button>
+                    <a:button submenu="mnuPanels">Windows</a:button>
                     <a:dropdown right="1" top="1" id="ddModes"
                       onafterselect = "
                         var ext = require('core/ext');

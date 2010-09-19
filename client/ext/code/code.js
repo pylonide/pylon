@@ -41,6 +41,19 @@ return ext.register("ext/code/code", {
             //Add a panel to the statusbar showing the length of the document
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                caption : "Syntax Highlighting",
+                submenu : "mnuSyntax"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Column Mode",
+                onclick : function(){
+                    
+                }
             }))
         );
     },
@@ -62,9 +75,12 @@ return ext.register("ext/code/code", {
             item.destroy(true, true);
         });
 
-        if (self.barEditor)
+        if (self.barEditor) {
             barEditor.destroy(true, true);
-
+            barCodeTb.destroy(true, true);
+            mnuSyntax.destroy(true, true);
+        }
+        
         this.nodes = [];
     }
 });

@@ -100,7 +100,8 @@ return ext = {
                     type    : "radio",
                     caption : oExtension.name,
                     value   : oExtension.path,
-                    onclick   : function(){
+                    onclick : function(){
+                        debugger;
                         require('core/ext').switchEditor(this.value);
                     }
                 }));
@@ -315,6 +316,14 @@ return ext = {
 
         //Create ActionTracker
         var at    = fake.$at    = new apf.actiontracker();
+        at.addEventListener("afterchange", function(){
+            var val = (this.undolength ? 1 : undefined);
+            if (fake.changed != val) {
+                fake.changed = val;
+                fake.setAttribute("caption", filename + (val ? "*" : ""));
+                model.setQueryValue("@name", filename + (val ? "*" : ""));
+            }
+        });
 
         //Create Model
         var model = fake.$model = new apf.model();
