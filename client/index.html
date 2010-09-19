@@ -49,6 +49,7 @@
                 apf.onstart = function(){
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
                         var modules = [
+                            "ext/editors/editors",
                             (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
                             "ext/save/save",
                             "ext/undo/undo",
@@ -126,7 +127,7 @@
         
         <a:appsettings name="ide" debug="false"
           disable-space       = "true"
-          auto-hide-loading   = "false"
+          auto-hide-loading   = "true"
           allow-select        = "false"
           allow-blur          = "true"
           initdelay           = "false"
@@ -240,25 +241,12 @@
                 </a:bar>
             </a:toolbar>
             
-            <a:hbox padding="3" flex="1">
-                <a:vbox padding="3">
-                </a:vbox>
+            <a:hbox padding="4" flex="1">
+                <a:vbox padding="3" />
                 <a:splitter />
-                <a:vbox flex="1" padding="3">
-                    <a:tab id="tabEditors"
-                      flex           = "1"
-                      skin           = "session_tab"
-                      buttons        = "close"
-                      buttons2        = "close|scale"
-                      style          = "margin:0 auto;">
-                        <!-- empty -->
-                    </a:tab>
-                    <a:hbox id="barButtons" />
-                </a:vbox>
+                <a:vbox flex="1" padding="3" />
                 <a:splitter />
-                <a:vbox padding="3">
-                    
-                </a:vbox>
+                <a:vbox padding="3" />
             </a:hbox>
 
             <a:statusbar id="sbMain">

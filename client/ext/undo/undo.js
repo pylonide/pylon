@@ -18,12 +18,14 @@ return ext.register("ext/undo/undo", {
             //mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Undo",
+                hotkey  : "Ctrl-Z",
                 onclick : function(){
                     tabEditors.getPage().$at.undo();
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Redo",
+                hotkey  : "Ctrl-Y",
                 onclick : function(){
                     tabEditors.getPage().$at.redo();
                 }

@@ -19,7 +19,7 @@ return ext.register("ext/save/save", {
 
         function save(page){
             if (!page.$at)
-                page = ide.tabEditors.getPage();
+                page = tabEditors.getPage();
 
             if (!page)
                 return;
@@ -32,7 +32,7 @@ return ext.register("ext/save/save", {
             btnSaveYes.addEventListener("click", function(){
                 var page = winCloseConfirm.page;
                 save(page);
-                ide.tabEditors.remove(page);
+                tabEditors.remove(page);
 
                 delete winCloseConfirm.page;
                 winCloseConfirm.hide()
@@ -41,7 +41,7 @@ return ext.register("ext/save/save", {
                 var page = winCloseConfirm.page;
                 page.$at.undo(-1);
 
-                ide.tabEditors.remove(page);
+                tabEditors.remove(page);
                 delete winCloseConfirm.page;
                 winCloseConfirm.hide();
             });
@@ -50,7 +50,7 @@ return ext.register("ext/save/save", {
             });
         }
 
-        ide.tabEditors.addEventListener("close", this.$close = function(e){
+        tabEditors.addEventListener("close", this.$close = function(e){
             if (e.page.$at.undolength) {
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.show();
@@ -68,6 +68,7 @@ return ext.register("ext/save/save", {
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
+                hotkey  : "Ctrl-S",
                 onclick : save
             }), ide.mnuFile.firstChild)
             //ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.childNodes[1])
@@ -92,7 +93,7 @@ return ext.register("ext/save/save", {
         });
         this.nodes = [];
 
-        ide.tabEditors.removeEventListener("close", this.$close);
+        tabEditors.removeEventListener("close", this.$close);
     }
 });
 

@@ -43,7 +43,8 @@ return ext.register("ext/tree/tree", {
             if (node.tagName != 'file')
                 return;
 
-            ext.openEditor(trFiles.value, trFiles.selected);
+            //ext.openEditor(trFiles.value, trFiles.selected);
+            ide.dispatchEvent("openfile", {value: this.value, node: node});
 
             if (node.selectSingleNode("data"))
                 return;

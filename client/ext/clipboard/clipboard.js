@@ -18,16 +18,19 @@ return ext.register("ext/clipboard/clipboard", {
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Cut",
+                hotkey  : "Ctrl-X",
                 onclick : function(){
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
+                hotkey  : "Ctrl-C",
                 onclick : function(){
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
+                hotkey  : "Ctrl-V",
                 onclick : function(){
                 }
             }))

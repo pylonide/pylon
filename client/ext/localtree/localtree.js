@@ -30,7 +30,7 @@ return ext.register("ext/localtree/localtree", {
             if (node.tagName != 'file')
                 return;
 
-            ext.openEditor(this.value, node);
+            ide.dispatchEvent("openfile", {value: this.value, node: node});
         });
     },
     

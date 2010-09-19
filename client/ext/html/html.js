@@ -16,7 +16,7 @@ return ext.register("ext/html/html", {
 
     hook : function(){
         var _self = this;
-        ide.tabEditors.addEventListener("afterswitch", function(e){
+        tabEditors.addEventListener("afterswitch", function(e){
             var mime = e.nextPage.mimeType;
             if (mime == "text/html" || mime == "application/xhtml+xml") {
                 ext.initExtension(_self);
