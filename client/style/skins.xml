@@ -6942,57 +6942,67 @@
             </a:empty>
         </a:presentation>
     </a:tree>
-<a:splitter name="splitter">
-    <a:style><![CDATA[
-        .splitter{
-            position: absolute;
-            zIndex: 100;
-            overflow: hidden;
-            background: url(images/spacer.gif);
-            padding: 1px;
-        }
-
-        .splitterFocus{
-            border: 1px dotted black;
-            padding: 0;
-        }
-
-        .w-resize{
-            cursor: w-resize;
-        }
-
-        .n-resize{
-            cursor: n-resize;
-        }
-
-        .moving{
-            background-color: gray;
-        }
-
-        .horizontal div{
-            height: 2px;
-            width: 18px;
-            background : url(images/splitter_handle_horizontal.gif);
-            margin: 0 auto 0 auto;
-        }
-
-        .vertical div{
-            height: 18px;
-            width: 2px;
-            background : url(images/splitter_handle_vertical.gif);
-            position: relative;
-            top: 50%;
-            margin: -9px 0 0 0;
-        }
-
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main handle="." minwidth="3" minheight="3">
-            <div class='splitter'><div></div></div>
-        </a:main>
-    </a:presentation>
-</a:splitter>
+    <a:splitter name="splitter">
+        <a:style><![CDATA[
+            .splitter {
+                zIndex     : 100;
+                overflow   : hidden;
+                background : url(images/spacer.gif);
+                padding    : 1px;
+                position   : relative;
+            }
+            
+            .packager .splitter {
+                background-color : #dddddd;
+                margin-top       : 1px;
+            }
+            
+            .splitterFocus {
+                border  : 1px dotted black;
+                padding : 0;
+            }
+            
+            .w-resize {
+                cursor : w-resize;
+            }
+            
+            .n-resize {
+                cursor : n-resize;
+            }
+            
+            .splitterMoving {
+                background-color : gray;
+            }
+            
+            .splitterRealtime{
+                background : url(images/spacer.gif);
+            }
+            
+            .horizontal div {
+                height     : 2px;
+                width      : 18px;
+                background : url(images/splitter_handle_horizontal.gif);
+                margin     : 0 auto 0 auto;
+            }
+            
+            .vertical div {
+                height     : 18px;
+                width      : 2px;
+                background : url(images/splitter_handle_vertical.gif);
+                position   : relative;
+                top        : 50%;
+                margin     : -9px 0 0 0;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main handle=".">
+                <div class='splitter'>
+                    <div></div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:splitter>
 <!--
     * Please add an Error state - done
     * Please make this component sizable horizontally - done

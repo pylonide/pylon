@@ -13,7 +13,8 @@ if (!location.host)
         type    : ext.GENERAL,
         path    : "ext/tree/tree",
         init    : function(){},
-        destroy : function(){}
+        destroy : function(){},
+        saveFile : function(){}
     };
 
 return ext.register("ext/tree/tree", {

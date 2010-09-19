@@ -33,7 +33,7 @@ return ext.register("ext/localtree/localtree", {
             ext.openEditor(this.value, node);
         });
     },
-
+    
     enable : function(){
         trFiles.show();
         this.mnuItem.check();
