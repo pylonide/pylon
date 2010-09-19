@@ -33,6 +33,7 @@ return ext.register("ext/code/code", {
 
     init : function(amlPage){
         amlPage.appendChild(barEditor);
+        barEditor.show();
 
         //Append the button bar to the main toolbar
         var nodes = barCodeTb.childNodes;

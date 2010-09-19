@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:vbox id="barEditor" anchors="0 0 0 0">
+    <a:vbox id="barEditor" anchors="0 0 0 0" visible="false">
         <a:codeeditor id="ceEditor"
           flex   = "1" 
           value  = "[data]"

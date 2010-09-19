@@ -26,16 +26,18 @@ return ext.register("ext/docs/docs", {
     init : function(amlNode){
         //Append the docs window at the right of the editor
         ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDocViewer);
+        
+        var _self = this;
+        winDocViewer.addEventListener("show", function(){_self.mnuItem.check()})
+        winDocViewer.addEventListener("hide", function(){_self.mnuItem.uncheck()})
     },
 
     enable : function(){
         winDocViewer.show();
-        this.mnuItem.check();
     },
 
     disable : function(fromParent){
         winDocViewer.hide();
-        this.mnuItem.uncheck();
     },
 
     destroy : function(){
