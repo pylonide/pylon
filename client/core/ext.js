@@ -20,12 +20,19 @@ return ext = {
     GENERAL       : 1,
     defLength     : 1,
 
-    extHandlers   : {},
+    extHandlers   : {
+        1 : {
+            register : function(oExtension){
+                if (!oExtension.hook)
+                    ext.initExtension(oExtension);
+            },
+            unregister : function(oExtension){}
+        }
+    },
     extensions    : [],
     extLut        : {},
     typeLut       : {
-        1 : "General",
-        2 : "Layout"
+        1 : "General"
     },
 
     currentLayoutMode : null,
@@ -59,19 +66,7 @@ return ext = {
         oExtension.registered = true;
         oExtension.path       = path;
 
-        switch(oExtension.type) {
-            case this.GENERAL:
-                if (!oExtension.hook)
-                    this.initExtension(oExtension);
-
-                //@todo
-                //if (!this.currentEditor)
-                    //oExtension.disable();
-            break;
-            default:
-                this.extHandlers[oExtension.type].register(oExtension);
-            break;
-        }
+        this.extHandlers[oExtension.type].register(oExtension);
 
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
@@ -119,14 +114,7 @@ return ext = {
             }
         }
 
-        switch(oExtension.type) {
-            case this.GENERAL:
-
-            break;
-            default:
-                this.extHandlers[oExtension.type].unregister(oExtension);
-            break;
-        }
+        this.extHandlers[oExtension.type].unregister(oExtension);
 
         mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
