@@ -426,8 +426,11 @@ apf.vbox = function(struct, tagName){
                         //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
                         amlNode.$altExt.style.height = "100%";
                         amlNode.$altExt.style.lineHeight = 0;
+                        amlNode.$altExt.style.margin  = "-1px 0 0 0";
                         amlNode.$ext.style.width  = "100%";
                         amlNode.$ext.style.height  = "100%";
+                        amlNode.$ext.style.top = "2px";
+                        amlNode.$ext.style.position = "relative";
                     }
                     else {
                         amlNode.$altExt.style.display = apf.CSSPREFIX2 + "-box";
