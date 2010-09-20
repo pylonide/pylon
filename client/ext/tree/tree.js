@@ -77,6 +77,24 @@ return ext.register("ext/tree/tree", {
         davProject.exec("write", [id, data]);
     },
 
+    createDir: function(name) {
+        var node = trFiles.selected;
+        if (!node)
+            node = mdlFiles.selectSingleNode("//folder[1]");
+        if (node.getAttribute("type") != "folder")
+            node = node.parentNode;
+        davProject.exec("mkdir", [node.getAttribute("id"), name || "untitled folder", ""]);
+    },
+
+    createFile: function(name) {
+        var node = trFiles.selected;
+        if (!node)
+            node = mdlFiles.selectSingleNode("//folder[1]");
+        if (node.getAttribute("type") != "folder")
+            node = node.parentNode;
+        davProject.exec("create", [node.getAttribute("id"), name || "Newfile.txt", ""]);
+    },
+
     getSelectedPath: function() {
         return treeutil.getPath(this.trFiles.selected);
     },
