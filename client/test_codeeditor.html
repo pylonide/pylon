@@ -23,6 +23,7 @@
 
         <a:appsettings debug="0" />
 
+		<a:vbox anchors="0 0 0 0">
         <a:toolbar align="top" height="26">
             <a:bar>
                 <a:checkbox id="selectStyle" label="Full line selection" values="line|text" checked="true"/>
@@ -32,6 +33,7 @@
             </a:bar>
         </a:toolbar>
 
+		<a:hbox flex="1">
         <a:tree id="tree"
           model   = "mdlDocs"
           each    = "[doc|folder]"
@@ -42,8 +44,9 @@
           startcollapsed = "false"
         />
 
+		<a:vbox flex="1">
         <a:codeeditor id="ce"
-          align       = "right"
+          flex        = "1"
           model       = "{tree.selected}"
           value       = "[text()]"
           syntax      = "[@syntax]"
@@ -70,7 +73,10 @@
                 <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
             </a:bar>
         </a:toolbar>
-
+		</a:vbox>
+		</a:hbox>
+		</a:vbox>
+		
         <a:model id="mdlDocs">
             <docs>
                 <folder caption="Homepage" icon="folder.png">

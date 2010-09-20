@@ -6,6 +6,15 @@ return keys.onLoad({
             "quicksave": "Command-S",
             "saveas": "Command-Shift-S"
         },
+        "undo" : {
+            "undo": "Command-Z",
+            "redo": "Command-Y"
+        },
+        "clipboard" : {
+            "cut": "Command-X",
+            "copy": "Command-C",
+            "paste": "Command-V"
+        },
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
