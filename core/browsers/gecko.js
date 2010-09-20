@@ -36,7 +36,6 @@ apf.runGecko = function(){
     //XMLDocument.selectNodes
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
         try {
-            //FIRST_ORDERED_NODE_TYPE -> 9 to implement selectSingleNode
             var oResult = this.evaluate(sExpr, (contextNode || this),
                 this.createNSResolver(this.documentElement),
                 7, null); //XpathResult.ORDERED_NODE_ITERATOR_TYPE
@@ -63,8 +62,19 @@ apf.runGecko = function(){
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr + "[1]", contextNode || null);
-        return nodeList[0] || null;
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                9, null); //XpathResult.FIRST_ORDERED_NODE_TYPE
+        }
+        catch(ex) {
+            var msg = ex.message;
+            if (ex.code == ex.INVALID_EXPRESSION_ERR)
+                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
+            throw new Error(ex.lineNumber, "XPath error: " + msg);
+        }
+        
+        return oResult.singleNodeValue;
     };
     
     //Element.selectSingleNode
@@ -76,9 +86,9 @@ apf.runGecko = function(){
     // #endif
     
     var serializer = new XMLSerializer();
+    var o = document.createElement("div");
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var o    = document.createElement("div"),
-            frag = document.createDocumentFragment(),
+        var frag = document.createDocumentFragment(),
             i    = nodeList.length - 1,
             l, node;
         for (; i >= 0; i--) {
@@ -104,8 +114,6 @@ apf.runGecko = function(){
         if (htmlNode.nodeType != 11 && !htmlNode.style)
             return htmlNode.appendChild(xmlNode);
         
-        var o = document.createElement("div");
-
         if (!s) {
             s = apf.html_entity_decode(xmlNode.serialize
                 ? xmlNode.serialize(true)

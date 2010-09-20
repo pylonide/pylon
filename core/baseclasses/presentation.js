@@ -524,13 +524,13 @@ apf.Presentation = function(){
         if (!section)
             return htmlNode || apf.getFirstElement(node);
 
-        var textNode = node.selectSingleNode("@" + section);
+        var textNode = node.getAttribute(section);
         if (!textNode)
             return null;
 
         return (htmlNode
-            ? apf.queryNode(htmlNode, textNode.nodeValue)
-            : apf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
+            ? apf.queryNode(htmlNode, textNode)
+            : apf.getFirstElement(node).selectSingleNode(textNode));
     };
 
     this.$getOption = function(type, section){

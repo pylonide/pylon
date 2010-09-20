@@ -718,10 +718,11 @@ apf.MultiselectBinding = function(){
                 }
             }
 
-            result = this.$addNodes(xmlNode, (this.$getParentNode
+            result = this.$addNodes(xmlNode, null, true, false, null, null, "insert");//this.$isTreeArch??
+            
+            this.$fillParent = (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
-                : htmlNode), true, false);//this.$isTreeArch??
-
+                : htmlNode);
             this.$fill(result);
 
             // #ifdef __DEBUG
@@ -898,7 +899,7 @@ apf.MultiselectBinding = function(){
      * and check if it has representation. If it doesn't
      * representation is created via $add().
      */
-    this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth){
+    this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
         // #ifdef __DEBUG
         if (!this.each) {
             throw new Error(apf.formatErrorString(1060, this,
@@ -968,7 +969,7 @@ apf.MultiselectBinding = function(){
                         : (lastNode ? lastNode.nextSibling : null),//(parent || this.$container).firstChild);
                     parentNode = this.$add(nodes[i], Lid, isChild ? xmlNode.parentNode : xmlNode,
                         beforeNode ? parent || this.$container : parent, beforeNode,
-                        (!beforeNode && i == nodes.length - 1), depth);//Should use getTraverParent
+                        (!beforeNode && i == nodes.length - 1), depth, nodes[i + 1], action);//Should use getTraverParent
 
                 //Exit if component tells us its done with rendering
                 if (parentNode === false) {

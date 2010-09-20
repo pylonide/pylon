@@ -230,12 +230,12 @@ apf.BaseTree = function(){
         if (!xmlNode)
             xmlNode = this.selected;
         
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
         
         //We don't slide open elements without children.
-        if (!container.innerHTML && !this.getTraverseNodes(xmlNode).length)
+        if (!container.childNodes.length && !this.getTraverseNodes(xmlNode).length)
             return; 
 
         if (this.singleopen) {
@@ -251,7 +251,7 @@ apf.BaseTree = function(){
             container.style.display = "block";
 
         if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential") 
-          && !container.innerHTML) {
+          && !container.childNodes.length) {
             this.$extend(xmlNode, container, immediate);
             return;
         }
@@ -312,7 +312,7 @@ apf.BaseTree = function(){
         }
         
         if (!container) {
-            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
+            var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
             container = this.$findContainer(htmlNode);
         }
         
@@ -344,7 +344,7 @@ apf.BaseTree = function(){
     /**** Databinding Support ****/
 
     //@todo apf3.x refactor
-    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast, depth){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast, depth, nextNode, action){
         if (this.$isTreeArch && this.$needsDepth && typeof depth == "undefined") {
             var loopNode = xmlParentNode; depth = 0;
             while(loopNode != this.xmlRoot) {
@@ -391,17 +391,20 @@ apf.BaseTree = function(){
         }
 
         if ((!htmlParentNode || htmlParentNode == this.$container) 
-          && xmlParentNode == this.xmlRoot && !beforeNode) {
+          && xmlParentNode == this.xmlRoot && !beforeNode
+          || action == "insert") {
             this.$nodes.push(htmlNode);
             if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
                 this.$nodes.push(container);
             
-            this.$setStyleClass(htmlNode,  "root");
-            this.$setStyleClass(container, "root");
+            if (action != "insert") {
+                this.$setStyleClass(htmlNode,  "root");
+                this.$setStyleClass(container, "root");
+            }
         }
         else {
             if (!htmlParentNode) {
-                htmlParentNode = apf.xmldb.findHtmlNode(xmlNode.parentNode, this);
+                htmlParentNode = apf.xmldb.getHtmlNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.$container;
@@ -412,8 +415,9 @@ apf.BaseTree = function(){
                 this.$setStyleClass(container, "root");
             }
             
-            if (!beforeNode && this.getNextTraverse(xmlNode))
-                beforeNode = apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode), this);
+            var next;
+            if (!beforeNode && (next = this.getNextTraverse(xmlNode)))
+                beforeNode = apf.xmldb.getHtmlNode(next, this);
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
         
@@ -444,13 +448,14 @@ apf.BaseTree = function(){
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
-                //this.$fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.$fixItem(xmlParentNode, apf.xmldb.findHtmlNode(xmlParentNode, this));
-                if (this.getNextTraverse(xmlNode, true)) { //should use each here
-                    this.$fixItem(this.getNextTraverse(xmlNode, true), 
-                        apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
-                        this));
-                }
+                if (!this.$fillParent)
+                    this.$fillParent = xmlParentNode;
+                
+                var next = nextNode == undefined ? this.getNextTraverse(xmlNode, true) : nextNode;
+                
+                var html;
+                if (next && (html = apf.xmldb.getHtmlNode(next, this))) //should use each here
+                    this.$fixItem(next, html);
             }
         }
 
@@ -468,15 +473,15 @@ apf.BaseTree = function(){
         if (this.$useiframe)
             this.$pHtmlDoc = this.oDoc;
 
-        if (this.$useTable) {
-            apf.insertHtmlNodes(this.$nodes, this.$container, null,
-                 "<table class='records' cellpadding='0' cellspacing='0'><tbody>", 
-                 "</tbody></table>");
+        if (this.$nodes.length) {
+            apf.insertHtmlNodes(this.$nodes, this.$fillParent || this.$container);
+            this.$nodes.length = 0;
         }
-        else
-            apf.insertHtmlNodes(this.$nodes, this.$container);
-
-        this.$nodes.length = 0;
+        
+        if (this.$fillParent) {
+            this.$fixItem(this.$fillParent, apf.xmldb.getHtmlNode(this.$fillParent, this));
+            delete this.$fillParent;
+        }
     };
     
     this.$getParentNode = function(htmlNode){
@@ -492,13 +497,13 @@ apf.BaseTree = function(){
             //if isLast fix previousSibling
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
-                this.$fixItem(prevSib, this.$findHtmlNode(prevSib
+                this.$fixItem(prevSib, this.$getHtmlNode(prevSib
                     .getAttribute(apf.xmldb.xmlIdTag) + "|" 
                     + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.each).length == 1)
-                this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
+                this.$fixItem(xmlNode.parentNode, this.$getHtmlNode(
                     xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
                     + "|" + this.$uniqueId), null, false, true); 
         }
@@ -578,12 +583,12 @@ apf.BaseTree = function(){
         
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
-            pHtmlNode  = apf.xmldb.findHtmlNode(xmlNode.parentNode, this),
+            pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
         
             nSibling = this.getNextTraverse(xmlNode),
             beforeNode = nSibling
-                ? apf.xmldb.findHtmlNode(nSibling, this)
+                ? apf.xmldb.getHtmlNode(nSibling, this)
                 : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
@@ -613,12 +618,11 @@ apf.BaseTree = function(){
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
         
-        this.$fixItem(tParent, apf.xmldb.findHtmlNode(tParent, this));
-        this.$updateNode(oldXmlParent, apf.xmldb.findHtmlNode(oldXmlParent, this));
-        if (this.getNextTraverse(xmlNode, true)) { //should use each here
-            this.$fixItem(this.getNextTraverse(xmlNode, true),
-                apf.xmldb.findHtmlNode(this.getNextTraverse(xmlNode, true),
-                this));
+        this.$fixItem(tParent, apf.xmldb.getHtmlNode(tParent, this));
+        this.$updateNode(oldXmlParent, apf.xmldb.getHtmlNode(oldXmlParent, this));
+        var next;
+        if (next = this.getNextTraverse(xmlNode, true)) { //should use each here
+            this.$fixItem(next, apf.xmldb.getHtmlNode(next, this));
         }
     };
     
@@ -671,7 +675,7 @@ apf.BaseTree = function(){
         }
         else if (!this.prerender) {
             this.$setLoadStatus(xmlNode, "loaded");
-            this.$removeLoading(apf.xmldb.findHtmlNode(xmlNode, this));
+            this.$removeLoading(apf.xmldb.getHtmlNode(xmlNode, this));
             xmlUpdateHandler.call(this, {
                 action  : "insert", 
                 xmlNode : xmlNode, 
@@ -861,7 +865,7 @@ apf.BaseTree = function(){
                 else
                     return false;
                 
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
@@ -902,7 +906,7 @@ apf.BaseTree = function(){
                 else
                     return false;
 
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
@@ -922,7 +926,7 @@ apf.BaseTree = function(){
                 }
                 this.select(sNode);
                 
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
@@ -942,7 +946,7 @@ apf.BaseTree = function(){
                 }
                 this.select(sNode);
                 
-                selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight);
                 if (top > oExt.scrollTop + oExt.offsetHeight)
