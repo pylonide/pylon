@@ -81,7 +81,6 @@ apf.persist = function(struct, tagName){
 
 (function() {
     this.retryinterval = 1000;
-    this.retry         = apf.maxHttpRetries;
     
     this.PATHS = {
         login  : "/login",
@@ -184,7 +183,7 @@ apf.persist = function(struct, tagName){
                       || extra.status == 500);
 
                     if (state == apf.TIMEOUT || !knownError
-                      && extra.retries < _self.retry) {
+                      && extra.retries < (_self.maxretries || apf.maxHttpRetries)) {
                         setTimeout(function(){
                             extra.tpModule.retry(extra.id);
                         }, _self.retryinterval);
