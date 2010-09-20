@@ -729,7 +729,7 @@ apf.BaseTab = function(){
      * @param {String} [name]    the name of the page which is can be referenced by.
      * @return {page} the created page element.
      */
-    this.add = function(caption, name, type, before){
+    this.add = function(caption, name, type, before, callback){
         var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
         if (name)
             page.setAttribute("id", name);
@@ -737,6 +737,8 @@ apf.BaseTab = function(){
             page.setAttribute("type", type);
         if (caption)
             page.setAttribute("caption", caption);
+        
+        callback(page);
         this.insertBefore(page, before);
         
         // #ifdef __ENABLE_TABSCROLL

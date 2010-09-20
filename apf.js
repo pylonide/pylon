@@ -257,7 +257,7 @@ var apf = {
         * Newer versions have (typeof/./) = object
         * 
         */
-       if((typeof/./)[0]=='f' && parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) <= 2)
+       if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
            b = 0;
 
         /**

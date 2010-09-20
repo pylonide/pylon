@@ -287,7 +287,6 @@ apf.popup = {
             var o = apf.lookup(this.last);
             if (!o)
                 this.last = null;
-                
             else if (o.dispatchEvent("popuphide") !== false)
                 this.hide();
         }

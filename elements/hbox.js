@@ -178,7 +178,7 @@ apf.vbox = function(struct, tagName){
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
                 if (stretch && !node[size])
-                    node.$ext.style[size] = apf.isGecko && (this.flex && node.flex) ? "1px" : "auto";
+                    (node.$altExt || node.$ext).style[size] = apf.isGecko && (this.flex && node.flex) ? "1px" : "auto";
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -298,19 +298,20 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = value = parseInt(value);
                 if (value) {
-                    if (!this.$altExt) {
+                    if (apf.isGecko && !this.$altExt) {
                         var doc = this.$ext.ownerDocument;
                         var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
                         sp.appendChild(this.$ext);
                         
+                        this.$ext.style.height = "1px";
                         this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
                         sp.style.display  = apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box";
                         sp.style.position = "relative";
                         sp.style.overflow = "hidden";
                         if (!this.parentNode.$vbox)
                             sp.style["width"] = "0";
-                        else if (!apf.isWebkit) //stupid webkit isnt 90 degrees symmetrical
+                        else
                             sp.style["height"] = "0px";
                             
                         if (!this.parentNode.$vbox) //For firefox setting minHeight had the averse effect for non fixed heights

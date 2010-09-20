@@ -90,19 +90,19 @@ apf.splitter = function(struct, tagName){
         if (e.currentTarget != this)
             return;
         
-        if (e.$oldParent) {
+        /*if (e.$oldParent) {
             e.$oldParent.removeEventListener("DOMNodeInserted", this.$siblingChange);
             e.$oldParent.removeEventListener("DOMNodeRemoved", this.$siblingChange);
-        }
+        }*/
         
         this.init();
     });
     
-    this.$siblingChange = function(e){
+    /*this.$siblingChange = function(e){
         //if (e.currentTarget
         
         //this.init();
-    }
+    }*/
     
     this.update = function(newPos, finalPass){
         with (this.$info) {
@@ -132,10 +132,7 @@ apf.splitter = function(struct, tagName){
         apf.layout.forceResize(this.$ext.parentNode);
     };
     
-    this.init = function(size, refNode, oItem){
-        this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
-        this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
-        
+    this.$setSiblings = function(){
         this.$previous = this.previousSibling;
         while(this.$previous && (this.$previous.nodeType != 1 
           || this.$previous.visible === false 
@@ -146,6 +143,13 @@ apf.splitter = function(struct, tagName){
           || this.$next.visible === false 
           || this.$next.nodeFunc != apf.NODE_VISIBLE))
             this.$next = this.$next.nextSibling;
+    }
+    
+    this.init = function(size, refNode, oItem){
+        //this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
+        //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
+        
+        this.$setSiblings();
 
         this.$thickness = null;
         if (this.parentNode.$box) {
@@ -181,6 +185,8 @@ apf.splitter = function(struct, tagName){
         this.$ext.onmousedown = function(e){
             if (!e)
                 e = event;
+            
+            _self.$setSiblings();
             
             _self.parentNode.$int.style.position = "relative";
             

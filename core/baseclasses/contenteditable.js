@@ -55,7 +55,7 @@ apf.addEventListener("load", function(){
                 apf.document.execCommand("rename", false, key == 13);
                 
                 window.focus(); //@todo don't know why this is needed...
-                e.cancelBubble = true;
+                apf.stopPropagation(e);
                 return false;
             }
             else if (apf.hasContentEditableContainerBug && key == 8
@@ -491,8 +491,7 @@ apf.ContentEditable.$contextMenu = function(e){
         htmlEvent: e
     });
 
-    e.returnValue  = false;
-    e.cancelBubble = true;
+    apf.stopEvent(e)
     return false;
 };
 
