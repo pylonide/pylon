@@ -27,16 +27,10 @@ return ext.register("ext/keybindings/keybindings", {
         // fetch the default keybindings:
         // @todo fetch latest config from localStorage
         var _self = this;
-        apf.ajax("conf/keybindings/default_" + (apf.isMac ? "mac" : "win") + ".js", {
-            callback: function(data) {
-                if (data && data.indexOf("require.def(") > -1)
-                    eval(data);
-
-                ide.addEventListener("$event.keybindingschange", function(callback){
-                    callback(_self.current);
-                });
-            }
-        })
+        require(["ext/keybindings_default/default_" + (apf.isMac ? "mac" : "win")]);
+        ide.addEventListener("$event.keybindingschange", function(callback){
+            callback(_self.current);
+        });
     },
 
     onLoad : function(def) {
