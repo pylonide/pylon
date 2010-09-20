@@ -144,7 +144,7 @@ return ext.register("ext/editors/editors", {
         }
 
         var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
-        var editor = this.contentTypes[contentType][0] || this.contentTypes["default"];
+        var editor = this.contentTypes[contentType] && this.contentTypes[contentType][0] || this.contentTypes["default"];
 
         if (this.currentEditor)
             this.currentEditor.disable();
