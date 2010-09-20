@@ -14,6 +14,10 @@
  */
 require.def("core/ext", ["core/ide", "core/util"], function(ide, util) {
 
+ide.addEventListener("keybindingschange", function(e) {
+    ext.updateKeybindings(e.keybindings.ext);
+});
+
 var ext;
 return ext = {
     //Extension types
@@ -147,6 +151,31 @@ return ext = {
         }
     },
 
+    updateKeybindings: function(o) {
+        this.currentKeybindings = o;
+
+        var i, j, l, name, ext, hotkey, bindings, item, val;
+        for (i in this.extLut) {
+            name     = i.substr(i.lastIndexOf("/") + 1).toLowerCase();
+            bindings = o[name];
+            ext      = this.extLut[i];
+            if (!bindings || !ext.hotkeys) continue;
+            for (hotkey in ext.hotkeys) {
+                if ((val = ext.hotkeys[hotkey]) !== 1)
+                    apf.hotkeys.remove(val);
+                ext.hotkeys[hotkey] = bindings[hotkey];
+                for (j = 0, l = ext.hotitems.length; j < l; ++j) {
+                    item = ext.hotitems[i];
+                    if (item.hotkey == val)
+                        item.setAttribute("hotkey", bindings[hotkey]);
+                }
+                apf.hotkeys.register(bindings[hotkey], ext[hotkey]);
+            }
+            //if (typeof ext.onKeybindingsChange == "function")
+            //    ext.onKeybindingsChange(bindings[hotkey]);
+        }
+    },
+
     initExtension : function(oExtension, amlParent){
         if (oExtension.inited)
             return;
@@ -164,6 +193,13 @@ return ext = {
 
                 (dep.using || (dep.using = [])).pushUnique(oExtension);
             });
+        }
+
+        if (this.currentKeybindings) {
+            var name        = oExtension.path.substr(oExtension.path.lastIndexOf("/") + 1),
+                keyBindings = this.currentKeybindings[name];
+            if (keyBindings)
+                oExtension.currentKeybindings = keyBindings;
         }
 
         oExtension.init(amlParent);
