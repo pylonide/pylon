@@ -880,6 +880,7 @@ apf.http = function(){
         if ((amlNode || apf).dispatchEvent("error", apf.extend({
             error   : oError,
             state   : state,
+            extra   : extra,
             bubbles : true
         }, extra)) === false)
             return 2;
