@@ -18,9 +18,7 @@ var ext;
 return ext = {
     //Extension types
     GENERAL       : 1,
-    LAYOUT        : 2,
-    
-    defLength     : 2,
+    defLength     : 1,
 
     extHandlers   : {},
     extensions    : [],
@@ -69,12 +67,6 @@ return ext = {
                 //@todo
                 //if (!this.currentEditor)
                     //oExtension.disable();
-            break;
-            case this.LAYOUT:
-                oExtension.$layoutItem = ddModes.appendChild(new apf.item({
-                    value   : path,
-                    caption : oExtension.name
-                }));
             break;
             default:
                 this.extHandlers[oExtension.type].register(oExtension);
@@ -130,9 +122,6 @@ return ext = {
         switch(oExtension.type) {
             case this.GENERAL:
 
-            break;
-            case this.LAYOUT:
-                oExtension.$layoutItem.destroy(true, true);
             break;
             default:
                 this.extHandlers[oExtension.type].unregister(oExtension);
