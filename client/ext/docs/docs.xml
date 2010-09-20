@@ -1,0 +1,40 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlDocs" src="ext/docs/example.xml" />
+    
+    <a:window id="winDocViewer" skin="dockwin" title="Documentation" modal="false" flex="1" width="200" buttons="close">
+        <a:vbox anchors="0 0 0 0">
+            <a:toolbar>
+                <a:bar>
+                    <a:hbox edge="2" padding="3">
+                        <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
+                            onclick="pgDocs.set(0)" />
+                        <!--a:button icon="arrow_right.png" skin="toolbarbutton" /-->
+                        <a:textbox id="tbDocsSearch" realtime="true" initial-message="Search for keywords" flex="1" 
+                            onkeydown="if (event.keyCode == 13) pgDocs.set(0)"/>
+                    </a:hbox>
+                </a:bar>
+            </a:toolbar>
+            <a:pages id="pgDocs" flex="1" style="position:relative">
+                <a:page id="search">
+                    <a:datagrid model="mdlDocs"
+                      anchors   = "0 0 0 0"
+                      onafterchoose = "
+                        pgDocs.getPage(1).setAttribute('model', this.selected);
+                        pgDocs.set(1);
+                      ">
+                        <a:each match="[class[position() &lt; 20]]" filter="{tbDocsSearch.value}" filter-fields="@type,description">
+                            <a:column width="40%" value="[@type]" caption="Type" /> 
+                            <a:column width="60%" value="{[description].replace(/&lt;[^&gt;]*&gt;/g, '').substr(0,200)}" caption="Description" /> 
+                        </a:each>
+                    </a:datagrid>
+                </a:page>
+                <a:page trans-in="push-right" trans-out="push-right">
+                    <div id="lmParent" anchors="0 0 0 0" style="overflow:auto;padding:10px"><?lm
+                        <h1>[@type]</h1>
+                        <p>[description]</p>
+                    ?></div>
+                </a:page>
+            </a:pages>    
+        </a:vbox>
+    </a:window>
+</a:application>

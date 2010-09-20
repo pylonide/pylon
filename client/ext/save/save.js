@@ -6,33 +6,25 @@ require.def("ext/save/save",
     function(ide, ext, util, tree, markup) {
 
 return ext.register("ext/save/save", {
-    dev    : "Ajax.org",
-    name   : "Save",
-    alone  : true,
-    type   : ext.GENERAL,
-    markup : markup,
-    deps   : [tree],
+    dev     : "Ajax.org",
+    name    : "Save",
+    alone   : true,
+    type    : ext.GENERAL,
+    markup  : markup,
+    deps    : [tree],
+    hotkeys : {"quicksave":1, "saveas":1},
+    hotitems: [],
 
-    nodes : [],
+    nodes   : [],
 
     init : function(amlNode){
-
-        function save(page){
-            if (!page.$at)
-                page = ide.tabEditors.getPage();
-
-            if (!page)
-                return;
-
-            tree.saveFile(page.$model.data);
-            page.$at.reset();
-        }
+        var _self = this;
 
         winCloseConfirm.onafterrender = function(){
             btnSaveYes.addEventListener("click", function(){
                 var page = winCloseConfirm.page;
-                save(page);
-                ide.tabEditors.remove(page);
+                _self.quicksave(page);
+                tabEditors.remove(page);
 
                 delete winCloseConfirm.page;
                 winCloseConfirm.hide()
@@ -41,7 +33,7 @@ return ext.register("ext/save/save", {
                 var page = winCloseConfirm.page;
                 page.$at.undo(-1);
 
-                ide.tabEditors.remove(page);
+                tabEditors.remove(page);
                 delete winCloseConfirm.page;
                 winCloseConfirm.hide();
             });
@@ -50,7 +42,7 @@ return ext.register("ext/save/save", {
             });
         }
 
-        ide.tabEditors.addEventListener("close", this.$close = function(e){
+        tabEditors.addEventListener("close", this.$close = function(e){
             if (e.page.$at.undolength) {
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.show();
@@ -63,14 +55,33 @@ return ext.register("ext/save/save", {
             this.nodes.push(ide.barTools.appendChild(nodes[0]));
         }
 
-        btnSave.onclick = save;
-
+        btnSave.onclick = _self.quicksave;
+        
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                onclick : save
+                hotkey  : "Ctrl-S",
+                onclick : _self.quicksave
             }), ide.mnuFile.firstChild)
+            //ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.childNodes[1])
         );
+    },
+
+    quicksave : function(page) {
+        console.log("quicksave called...");
+        if (!page || !page.$at)
+            page = tabEditors.getPage();
+
+        if (!page)
+            return;
+
+        tree.saveFile(page.$model.data);
+        page.$at.reset();
+        return false;
+    },
+
+    saveas : function() {
+        console.log("saveas called...");
     },
 
     enable : function(){
@@ -91,7 +102,7 @@ return ext.register("ext/save/save", {
         });
         this.nodes = [];
 
-        ide.tabEditors.removeEventListener("close", this.$close);
+        tabEditors.removeEventListener("close", this.$close);
     }
 });
 

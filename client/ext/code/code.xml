@@ -1,15 +1,10 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:vbox id="barEditor" anchors="0 0 0 0">
-        <a:hbox>
-            <a:dropdown flex="1" />
-            <a:filler />
-            <a:dropdown flex="1" />
-        </a:hbox>
+    <a:vbox id="barEditor" anchors="0 0 0 0" visible="false">
         <a:codeeditor id="ceEditor"
-          flex="1" 
-          value="[data]"
-          syntax="{getSyntax(%[.])}"
-          showinvisibles="false"
+          flex   = "1" 
+          value  = "[data]"
+          syntax = "{getSyntax([@contenttype])}"
+          showinvisibles = "false"
         />
     </a:vbox>
     
@@ -21,18 +16,23 @@
         <a:button>Button 4</a:button>
     </a:bar>
     
+    <a:menu id="mnuSyntax" onitemclick="alert('@fabian, how should this be implemented?');">
+        <a:item value="text/plain">Plain Text</a:item>
+        <a:item value="application/javascript">JavaScript</a:item>
+    </a:menu>
+    
     <a:script><![CDATA[
 		SupportedModes = {
 			"application/javascript": "JavaScript",
 			"application/json": "JavaScript",
-			"text/css": "Css",
+			"text/css": "CSS",
 			"text/html": "Html",
 			"application/xhtml+xml": "Html",
 			"application/xml": "Xml"
 		}
 
-		function getSyntax(xmlNode) {
-             var mime = xmlNode.getAttribute('contenttype').split(";")[0];
+		function getSyntax(type) {
+             var mime = type.split(";")[0];
              return (SupportedModes[mime] || "Text");
 		}
 

@@ -8,11 +8,19 @@ require.def("ext/debugger/debugger",
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
     dev    : "Ajax.org",
-    type   : ext.LAYOUT,
+    type   : ext.GENERAL,
+    alone  : true,
     markup : markup,
     deps   : [log],
 
     nodes : [],
+
+    hook : function(){
+        this.$layoutItem = ddModes.appendChild(new apf.item({
+            value   : "ext/debugger/debugger",
+            caption : this.name
+        }));
+    },
 
     init : function(amlNode){
         this.nodes.push(
@@ -21,11 +29,11 @@ return ext.register("ext/debugger/debugger", {
             //Append the debug toolbar to the main toolbar
             ide.tbMain.appendChild(tbDebug),
 
-            //Append the watch window on the left below the file tree
-            ide.vbMain.selectSingleNode("a:hbox/a:vbox[1]").appendChild(winDbgWatch),
-
             //Append the stack window at the right
-            ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgStack)
+            ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgStack),
+            
+            //Append the watch window on the left below the file tree
+            ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgWatch)
         );
 
         log.enable();
@@ -36,7 +44,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.show)
                 item.show();
         });
-        log.enable();
+        log.enable(true);
     },
 
     disable : function(){
@@ -44,7 +52,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.hide)
                 item.hide();
         });
-        log.disable();
+        log.disable(true);
     },
 
     destroy : function(){
@@ -52,6 +60,7 @@ return ext.register("ext/debugger/debugger", {
             item.destroy(true, true);
         });
         winV8.destroy(true, true);
+        this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
     }

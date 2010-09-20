@@ -14,38 +14,41 @@
  */
 require.def("core/ext", ["core/ide", "core/util"], function(ide, util) {
 
-var ext;
-ide.addEventListener("load", function(){
-    ide.tabEditors.addEventListener("beforeswitch", function(e){
-        ext.beforeswitch(e);
-    });
-    ide.tabEditors.addEventListener("afterswitch", function(e){
-        ext.afterswitch(e);
-    });
-    ide.tabEditors.addEventListener("close", function(e){
-        ext.close(e.page);
-    });
+ide.addEventListener("keybindingschange", function(e) {
+    ext.updateKeybindings(e.keybindings.ext);
 });
 
+var ext;
 return ext = {
     //Extension types
     GENERAL       : 1,
-    LAYOUT        : 2,
-    EDITOR        : 3,
-    EDITOR_PLUGIN : 4,
+    defLength     : 1,
 
+    extHandlers   : {
+        1 : {
+            register : function(oExtension){
+                if (!oExtension.hook)
+                    ext.initExtension(oExtension);
+            },
+            unregister : function(oExtension){}
+        }
+    },
     extensions    : [],
     extLut        : {},
-    contentTypes  : {},
     typeLut       : {
-        1 : "General",
-        2 : "Layout",
-        3 : "Editor",
-        4 : "Editor Plugin"
+        1 : "General"
     },
 
     currentLayoutMode : null,
-    currentEditor     : null,
+    
+    addType : function(defName, regHandler, unregHandler){
+        this[defName.toUpperCase()] = ++this.defLength;
+        this.extHandlers[this.defLength] = {
+            register : regHandler,
+            unregister : unregHandler
+        };
+        this.typeLut[this.defLength] = defName;
+    },
 
     register : function(path, oExtension, force){
         if (oExtension.registered)
@@ -67,33 +70,7 @@ return ext = {
         oExtension.registered = true;
         oExtension.path       = path;
 
-        switch(oExtension.type) {
-            case this.GENERAL:
-                if (!oExtension.hook)
-                    this.initExtension(oExtension);
-
-                //@todo
-                //if (!this.currentEditor)
-                    //oExtension.disable();
-            break;
-            case this.LAYOUT:
-                oExtension.$layoutItem = ddModes.appendChild(new apf.item({
-                    value   : path,
-                    caption : oExtension.name
-                }));
-            break;
-            case this.EDITOR:
-                oExtension.contentTypes.each(function(mime){
-                    ext.contentTypes[mime] = oExtension;
-                });
-
-                if (!this.contentTypes["default"])
-                    this.contentTypes["default"] = oExtension;
-            break;
-            case this.EDITOR_PLUGIN:
-
-            break;
-        }
+        this.extHandlers[oExtension.type].register(oExtension);
 
         this.extLut[path] = oExtension;
         this.extensions.push(oExtension);
@@ -115,6 +92,7 @@ return ext = {
             }
 
             if (inUseBy.length) {
+                //@todo move this to outside this function
                 if (!silent)
                     util.alert(
                         "Could not disable extension",
@@ -140,38 +118,38 @@ return ext = {
             }
         }
 
-        switch(oExtension.type) {
-            case this.GENERAL:
-
-            break;
-            case this.LAYOUT:
-                oExtension.$layoutItem.destroy(true, true);
-            break;
-            case this.EDITOR:
-                var _self = this;
-                oExtension.contentTypes.each(function(fe){
-                    delete _self.contentTypes[fe];
-                });
-
-                if (this.contentTypes["default"] == oExtension) {
-                    delete this.contentTypes["default"];
-
-                    for (prop in this.contentTypes) {
-                        this.contentTypes["default"] = this.contentTypes[prop];
-                        break;
-                    }
-                }
-            break;
-            case this.EDITOR_PLUGIN:
-
-            break;
-        }
+        this.extHandlers[oExtension.type].unregister(oExtension);
 
         mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
         if (oExtension.inited) {
             oExtension.destroy();
             delete oExtension.inited;
+        }
+    },
+
+    updateKeybindings: function(o) {
+        this.currentKeybindings = o;
+
+        var i, j, l, name, ext, hotkey, bindings, item, val;
+        for (i in this.extLut) {
+            name     = i.substr(i.lastIndexOf("/") + 1).toLowerCase();
+            bindings = o[name];
+            ext      = this.extLut[i];
+            if (!bindings || !ext.hotkeys) continue;
+            for (hotkey in ext.hotkeys) {
+                if ((val = ext.hotkeys[hotkey]) !== 1)
+                    apf.hotkeys.remove(val);
+                ext.hotkeys[hotkey] = bindings[hotkey];
+                for (j = 0, l = ext.hotitems.length; j < l; ++j) {
+                    item = ext.hotitems[i];
+                    if (item.hotkey == val)
+                        item.setAttribute("hotkey", bindings[hotkey]);
+                }
+                apf.hotkeys.register(bindings[hotkey], ext[hotkey]);
+            }
+            //if (typeof ext.onKeybindingsChange == "function")
+            //    ext.onKeybindingsChange(bindings[hotkey]);
         }
     },
 
@@ -194,8 +172,19 @@ return ext = {
             });
         }
 
+        if (this.currentKeybindings) {
+            var name        = oExtension.path.substr(oExtension.path.lastIndexOf("/") + 1),
+                keyBindings = this.currentKeybindings[name];
+            if (keyBindings)
+                oExtension.currentKeybindings = keyBindings;
+        }
+
         oExtension.init(amlParent);
         oExtension.inited = true;
+        
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
+        });
     },
 
     setLayoutMode : function(mode){
@@ -213,122 +202,6 @@ return ext = {
 
         module.enable();
         this.currentLayoutMode = module;
-    },
-
-    openEditor : function(filename, xmlNode) {
-        var page = ide.tabEditors.getPage(filename);
-        if (page) {
-            ide.tabEditors.set(page);
-            return;
-        }
-
-        var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
-        var editor = this.contentTypes[contentType] || this.contentTypes["default"];
-
-        if (this.currentEditor)
-            this.currentEditor.disable();
-
-        if (!editor) {
-            util.alert(
-                "No editor is registered",
-                "Could you not find any editor to display content",
-                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
-            return;
-        }
-
-        if (!editor.inited) {
-            //Create Page Element
-            var editorPage = new apf.page({
-                id       : editor.path,
-                visible  : false,
-                realtime : false
-            });
-            ide.tabEditors.appendChild(editorPage);
-
-            //Initialize Content of the page
-            this.initExtension(editor, editorPage);
-        }
-        else
-            editorPage = ide.tabEditors.getPage(editor.path);
-
-        //Create Fake Page
-        var fake      = tabEditors.add(filename, filename, editor.path);
-        fake.mimeType = contentType;
-
-        //Create ActionTracker
-        var at    = fake.$at    = new apf.actiontracker();
-
-        //Create Model
-        var model = fake.$model = new apf.model();
-        model.load(xmlNode);
-
-        //Set active page
-        tabEditors.set(filename);
-
-        //Open tab, set as active and wait until opened
-        /*fake.addEventListener("afteropen", function(){
-
-        });*/
-
-        editor.enable();
-
-        this.currentEditor = editor;
-    },
-
-    close : function(page){
-        page.addEventListener("afterclose", function(){
-            app.session.$close(page);
-        });
-    },
-
-    $close : function(page) {
-        var handler    = this.extensions[page.type],
-            editorPage = tabEditors.getPage(page.type);
-
-        var at  = page.$at;
-        var mdl = page.$model;
-
-        //mdl.unshare();
-        mdl.destroy();
-
-        at.reset();
-        at.destroy();
-
-        //Destroy the app page if it has no application instance
-        //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
-            //editorPage.destroy(true, true);
-    },
-
-    beforeswitch: function(e) {
-        var page       = e.nextPage,
-            editorPage = tabEditors.getPage(page.type);
-        if (!editorPage) return;
-
-        if (editorPage.model != page.$model)
-            editorPage.setAttribute("model", page.$model);
-        if (editorPage.actiontracker != page.$at)
-            editorPage.setAttribute("actiontracker", page.$at);
-    },
-
-    afterswitch : function(e) {
-        var page = e.nextPage;
-        var fromHandler, toHandler = this.extLut[page.type];
-
-        if (e.previousPage && e.previousPage != e.nextPage)
-            fromHandler = this.extLut[e.previousPage.type];
-
-        if (fromHandler != toHandler) {
-            if (fromHandler)
-                fromHandler.disable();
-            toHandler.enable();
-        }
-
-        /*if (self.TESTING) {}
-            //do nothing
-        else if (page.appid)
-            app.navigateTo(page.appid + "/" + page.id);
-        else if (!page.id)
-            app.navigateTo(app.loc || (app.loc = "myhome"));*/
     }
 };
 

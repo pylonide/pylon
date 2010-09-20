@@ -1,17 +1,18 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
-      id        = "winExt"
-      title     = "Extension Manager"
+      id        = "winKeybindings"
+      title     = "Keybindings Manager"
       icon      = ""
       center    = "true"
+      render    = "runtime"
       resizable = "true"
       buttons   = "close"
       width     = "550"
       height    = "400">
         <a:vbox anchors="0 0 0 0" edge="10">
             <a:hbox align="center" edge="0 0 5 0" padding="5">
-                <a:textbox id="tbModuleName" flex="1" 
-                  required   = "true" 
+                <a:textbox id="tbModuleName" flex="1"
+                  required   = "true"
                   invalidmsg = "Missing module name;Please enter a module name" />
                 <a:button width="80"
                   default = "1"
@@ -20,8 +21,10 @@
                     if (tbModuleName.validate()) {
                         var name = tbModuleName.value;
                         tbModuleName.clear();
-                        
-                        require(\[name\]);
+
+                        require(\[name\], function(mod){
+                            require('core/ext').register(name, mod);
+                        });
                     }
                   " />
             </a:hbox>
@@ -29,15 +32,15 @@
               model = "mdlExt"
               each  = "[plugin]"
               eachvalue = "[@path]">
-                <a:column width="25%" value="[@name]" caption="Name" /> 
-                <a:column width="30%" value="[@path]" caption="Path" /> 
-                <a:column width="15%" value="[@type]" caption="Type" /> 
-                <a:column width="20%" value="[@dev]" caption="Developer" /> 
-                <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
+                <a:column width="20%" value="[@name]" caption="Name" />
+                <a:column width="30%" value="[@path]" caption="Path" />
+                <a:column width="15%" value="[@type]" caption="Type" />
+                <a:column width="25%" value="[@dev]" caption="Developer" />
+                <a:column width="10%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
             </a:datagrid>
             <a:hbox edge="10 0 0 0">
                 <a:button width="80"
-                  caption = "{[{dgExt.selected}::@enabled] == 1 ? 'Disable' : 'Enable'}" 
+                  caption = "{[{dgExt.selected}::@enabled] == 1 ? 'Disable' : 'Enable'}"
                   onclick = "
                     if ([{dgExt.selected}::@enabled] == 1)
                         require('core/ext').unregister(require(dgExt.value));

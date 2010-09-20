@@ -2,14 +2,8 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/code/code",
-    ["core/ide", "core/ext", "text!ext/code/code.xml"],
-    function(ide, ext, markup) {
-
-//Add a menu item to the list of editors
-ide.mnuEditors.appendChild(new apf.item({
-    caption : "Code Editor",
-    value   : "ext/code/code"
-}));
+    ["core/ide", "core/ext", "text!ext/code/code.xml", "text!ext/code/settings.xml"],
+    function(ide, ext, markup, settings) {
 
 return ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -28,9 +22,18 @@ return ext.register("ext/code/code", {
     markup  : markup,
 
     nodes : [],
+    
+    hook : function(){
+        //Settings Support
+        ide.addEventListener("init.ext/settings/settings", function(e){
+            var page = e.ext.addSection("Code Editor", "section[@name='Editor']");
+            page.insertMarkup(settings);
+        });
+    },
 
     init : function(amlPage){
         amlPage.appendChild(barEditor);
+        barEditor.show();
 
         //Append the button bar to the main toolbar
         var nodes = barCodeTb.childNodes;
@@ -47,8 +50,27 @@ return ext.register("ext/code/code", {
             //Add a panel to the statusbar showing the length of the document
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                caption : "Syntax Highlighting",
+                submenu : "mnuSyntax"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Column Mode",
+                onclick : function(){
+                    
+                }
             }))
         );
+
+        var _self = this;
+        ide.addEventListener("keybindingschange", function(e){
+            var bindings = e.ext.code;
+            ceEditor.$editor.keyBinding.setConfig(bindings);
+        })
     },
 
     enable : function() {
@@ -68,9 +90,12 @@ return ext.register("ext/code/code", {
             item.destroy(true, true);
         });
 
-        if (self.barEditor)
+        if (self.barEditor) {
             barEditor.destroy(true, true);
-
+            barCodeTb.destroy(true, true);
+            mnuSyntax.destroy(true, true);
+        }
+        
         this.nodes = [];
     }
 });

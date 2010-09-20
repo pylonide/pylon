@@ -5,18 +5,15 @@ require.def("ext/richtext/richtext",
     ["core/ide", "core/ext"],
     function(ide, ext) {
 
-//Add a menu item to the list of editors
-ide.mnuEditors.appendChild(new apf.item({
-    caption : "Rich Text Editor",
-    value   : "ext/richtext/richtext"
-}));
-
 return ext.register("ext/richtext/richtext", {
     name    : "Rich Text Editor",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
-    contentTypes : ["application/rtf"],
-    //markup  : "richtext.xml",
+    contentTypes : [
+        "text/html",
+        "application/xhtml+xml",
+        "application/rtf"
+    ],
 
     nodes : [],
 

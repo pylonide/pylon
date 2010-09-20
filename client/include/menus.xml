@@ -3,15 +3,26 @@
     <a:item>Exit</a:item>
 </a:menu>
 
-<a:menu id="mnuExample">
-    <a:item onclick="
-        var ext = require('core/ext');
-        ext.unregister(require('ext/refactor/refactor'));
-      ">Remove Search&amp;Replace Plugin</a:item>
-    <a:item onclick="
-        var ext = require('core/ext');
-        ext.register('ext/refactor/refactor', require('ext/refactor/refactor'));
-      ">Add Search&amp;Replace Plugin</a:item>
+<a:menu id="mnuEdit">
+</a:menu>
+
+<a:menu id="mnuView">
+    <a:item submenu="mnuEditors">Editors</a:item>
+</a:menu>
+
+<a:menu id="mnuPanels" 
+  onitemclick="
+    if (event.value == 'status')
+        sbMain.setProperty('visible', event.checked);
+    else if (event.value == 'toolbar')
+        barTools.setProperty('visible', event.checked);
+    else if (event.value == 'tab')
+        tabEditors.setProperty('visible', event.checked);
+  ">
+    <a:item type="check" value='status' checked="true">Statusbar</a:item>
+    <a:item type="check" value='toolbar' checked="true">Toolbar</a:item>
+    <a:item type="check" value='tab' checked="true">Tab Buttons</a:item>
+    <a:divider />
 </a:menu>
 
 <a:menu id="mnuEditors">

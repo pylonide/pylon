@@ -18,7 +18,6 @@ require.def("core/ide",
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
             this.ddModes      = ddModes;
-            this.tabEditors   = tabEditors;
 
             this.dispatchEvent("load");
 
@@ -93,13 +92,6 @@ require.def("core/ide",
                 e.stopPropagation();
                 return false;
             });*/
-
-            //Page Not Found Error
-            tabEditors.addEventListener("error", function(e){
-                //this.$setTabState("notfound");
-                e.stopPropagation();
-                return false;
-            });
 
             /**** Log in Flow ****/
 

@@ -1,0 +1,7 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:frame caption="Code Editor" anchors="0 0 0 0">
+        <a:table columns="100,144" padding="5">
+            <a:label>Font Size</a:label><a:slider value="[@fontsize]" min="8" max="72" mask="#" snap="1" />
+        </a:table>
+    </a:frame>
+</a:application>

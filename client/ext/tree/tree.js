@@ -4,6 +4,18 @@
 require.def("ext/tree/tree",
     ["core/ide", "core/ext", "ext/tree/treeutil", "text!ext/tree/tree.xml"],
     function(ide, ext, treeutil, markup) {
+        
+if (!location.host)
+    return {
+        name    : "Tree [Disabled - file://]",
+        dev     : "Ajax.org",
+        alone   : true,
+        type    : ext.GENERAL,
+        path    : "ext/tree/tree",
+        init    : function(){},
+        destroy : function(){},
+        saveFile : function(){}
+    };
 
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -15,13 +27,24 @@ return ext.register("ext/tree/tree", {
     init : function() {
         this.trFiles = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
+        
+        var _self = this;
+        this.mnuItem = mnuPanels.appendChild(new apf.item({
+            caption : this.name,
+            type    : "check",
+            checked : true,
+            onclick : function(){
+                this.checked ? _self.enable() : _self.disable();
+            }
+        }));
 
         trFiles.addEventListener("afterselect", this.$afterselect = function() {
             var node = this.selected;
             if (node.tagName != 'file')
                 return;
 
-            ext.openEditor(trFiles.value, trFiles.selected);
+            //ext.openEditor(trFiles.value, trFiles.selected);
+            ide.dispatchEvent("openfile", {value: this.value, node: node});
 
             if (node.selectSingleNode("data"))
                 return;
@@ -60,16 +83,19 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         trFiles.show();
+        this.mnuItem.check();
     },
 
     disable : function(){
         trFiles.hide();
+        this.mnuItem.uncheck();
     },
 
     destroy : function(){
         davProject.destroy(true, true);
         mdlFiles.destroy(true, true);
         trFiles.destroy(true, true);
+        this.mnuItem.destroy(true, true);
 
         trFiles.removeEventListener("afterselect", this.$afterselect);
     }

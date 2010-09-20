@@ -27,7 +27,7 @@
     
     <a:model id="mdlFiles" src="ext/localtree/files.xml" />
 
-	<a:tree id="trFiles" flex="1" autoselect="false" 
+	<a:tree id="trFiles" flex="3" autoselect="false" width="200"
 	  model     = "mdlFiles"
 	  each      = "[file|folder]">
         <a:bindings>
