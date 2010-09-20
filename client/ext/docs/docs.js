@@ -28,8 +28,17 @@ return ext.register("ext/docs/docs", {
         ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDocViewer);
         
         var _self = this;
-        winDocViewer.addEventListener("show", function(){_self.mnuItem.check()})
-        winDocViewer.addEventListener("hide", function(){_self.mnuItem.uncheck()})
+        winDocViewer.addEventListener("show", function(){
+            if (!this.parentNode.visible)
+                this.parentNode.show();
+            _self.mnuItem.check();
+        })
+        winDocViewer.addEventListener("hide", function(){
+            _self.mnuItem.uncheck();
+            if (!this.parentNode.selectSingleNode("node()[@visible='true']").length)
+                this.parentNode.hide();
+        })
+        winDocViewer.show();
     },
 
     enable : function(){

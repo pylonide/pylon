@@ -1,7 +1,6 @@
 <files>
  <file id="0" type="file" size="14449" name="client.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[var CONFIG = { debug: false
+  <data><![CDATA[var CONFIG = { debug: false
              , nick: "#"   // set in onConnect
              , id: null    // set in onConnect
              , last_message_time: 1
@@ -512,8 +511,7 @@ $(window).unload(function () {
   </data>
  </file>
  <file id="1" type="file" size="9800" name="fu.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[var createServer = require("http").createServer;
+  <data><![CDATA[var createServer = require("http").createServer;
 var readFile = require("fs").readFile;
 var sys = require("sys");
 var url = require("url");
@@ -783,8 +781,7 @@ fu.mime = {
   </data>
  </file>
  <file id="2" type="file" size="11725" name="index.html" contenttype="text/html; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[<html>
+  <data><![CDATA[<html>
   <head>
     <link rel="stylesheet" href="style.css" type="text/css"/>
     <script src="jquery-1.2.6.min.js" type="text/javascript"></script>
@@ -978,8 +975,7 @@ fu.mime = {
  </file>
  <file id="3" type="file" size="55786" name="jquery-1.2.6.min.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/>
  <file id="4" type="file" size="1075" name="LICENSE-MIT" contenttype="application/octet-stream" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[Copyright 2009,2010 Ryan Dahl <ry@tinyclouds.org>
+  <data><![CDATA[Copyright 2009,2010 Ryan Dahl <ry@tinyclouds.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -1002,8 +998,7 @@ IN THE SOFTWARE.
   </data>
  </file>
  <file id="5" type="file" size="84" name="README" contenttype="application/octet-stream" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[Demo for node.js http://tinyclouds.org/node
+  <data><![CDATA[Demo for node.js http://tinyclouds.org/node
 
 to run
 $ /usr/local/bin/node server.js
@@ -1011,8 +1006,7 @@ $ /usr/local/bin/node server.js
   </data>
  </file>
  <file id="6" type="file" size="5091" name="server.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[HOST = null; // localhost
+  <data><![CDATA[HOST = null; // localhost
 PORT = 8001;
 
 // when the daemon started
@@ -1225,8 +1219,7 @@ fu.get("/send", function (req, res) {
   </data>
  </file>
  <file id="7" type="file" size="1639" name="style.css" contenttype="text/css; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
-  <data>
-<![CDATA[body {
+  <data><![CDATA[body {
   padding: 0;
   margin: 0;
 }

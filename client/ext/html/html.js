@@ -12,12 +12,12 @@ return ext.register("ext/html/html", {
     alone   : true,
     deps    : [code],
     markup  : markup,
-    nodes : [],
+    nodes   : [],
 
     hook : function(){
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
-            var mime = e.nextPage.mimeType;
+            var mime = e.nextPage.contentType;
             if (mime == "text/html" || mime == "application/xhtml+xml") {
                 ext.initExtension(_self);
                 _self.page = e.nextPage;

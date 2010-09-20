@@ -120,6 +120,24 @@
         .same{cursor : not-allowed;}
     ]]></a:style>
 
+	<a:style condition="apf.isWebkit"><![CDATA[
+		.dockwin {
+			-webkit-box-orient: vertical;
+			display: -webkit-box;
+			padding: 0;
+		}
+		
+		.dockwin .docktitle {
+			margin: 0
+		}	
+
+		.dockwin .dockcontent {
+			margin: 0;
+			height: auto;
+			-webkit-box-flex: 1;
+		}	
+    ]]></a:style>
+	
     <a:presentation>
         <a:main 
           collapsed-height = "22"
@@ -4728,6 +4746,19 @@
         .tab .scroller span.disabled {
             background-position-y: -51px;
         }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+		.tab {
+			-webkit-box-orient: vertical;
+			display: -webkit-box;
+		}
+		
+		.tab .page {
+			height: auto;
+			-webkit-box-flex: 1;
+			overflow : hidden;
+			position : relative;
+		}	
     ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div[1]" scroller=".">
@@ -11466,8 +11497,6 @@
 <a:pages name="pages">
     <a:style><![CDATA[
         .pages{
-            width: 100px;
-            height: 100px;
             overflow : hidden;
             position : relative;
         }
@@ -11483,6 +11512,19 @@
         .pages .curpage{
             display: block;
         }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+		.pages {
+			-webkit-box-orient: vertical;
+			display: -webkit-box;
+		}
+		
+		.pages .page {
+			height: auto;
+			-webkit-box-flex: 1;
+			overflow : hidden;
+			position : relative;
+		}	
     ]]></a:style>
 
     <a:presentation>

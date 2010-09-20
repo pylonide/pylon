@@ -133,6 +133,8 @@ return ext.register("ext/editors/editors", {
         editor.$rbEditor.select();
 
         page.setAttribute("type", path);
+        
+        this.beforeswitch({nextPage: page});
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
@@ -163,12 +165,14 @@ return ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var fake      = tabEditors.add(filename, filename, editor.path);
-        fake.contentType = contentType;
+        var fake      = tabEditors.add(filename, filename, editor.path, null, function(page){
+            page.contentType = contentType;
+            page.$at         = new apf.actiontracker();
+            page.$model      = new apf.model();
+            page.$model.load(xmlNode);
+        });
 
-        //Create ActionTracker
-        var at    = fake.$at    = new apf.actiontracker();
-        at.addEventListener("afterchange", function(){
+        fake.$at.addEventListener("afterchange", function(){
             var val = (this.undolength ? 1 : undefined);
             if (fake.changed != val) {
                 fake.changed = val;
@@ -176,15 +180,12 @@ return ext.register("ext/editors/editors", {
                 model.setQueryValue("@name", filename + (val ? "*" : ""));
             }
         });
-
-        //Create Model
-        var model = fake.$model = new apf.model();
-        model.load(xmlNode);
-
+        
         //Set active page
         tabEditors.set(filename);
-        if (!editorPage.model)
-            this.beforeswitch({nextPage: fake});
+        
+        //if (editorPage.model != model)
+            //this.beforeswitch({nextPage: fake});
 
         //Open tab, set as active and wait until opened
         /*fake.addEventListener("afteropen", function(){

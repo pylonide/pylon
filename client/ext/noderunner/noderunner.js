@@ -5,13 +5,16 @@ require.def("ext/noderunner/noderunner",
     ["core/ide",
      "core/ext",
      "ext/tree/tree",
+     "ext/tree/treeutil",
      "ext/console/console",
      "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, tree, log, markup) {
+     "/socket.io/socket.io.js"], function(ide, ext, tree, treeutil, log, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
+    name   : "Node Runner",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
+    alone  : true,
     markup : markup,
     deps   : [tree, log],
 
@@ -70,8 +73,8 @@ return ext.register("ext/noderunner/noderunner", {
 
         console.log("running", file);
         var command = {
-            "command": "Run",
-            "file": tree.getPath(file)
+            "command" : "Run",
+            "file"    : treeutil.getPath(file)
         };
         this.socket.send(JSON.stringify(command));
         log.enable();
