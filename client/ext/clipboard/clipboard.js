@@ -10,6 +10,7 @@ return ext.register("ext/clipboard/clipboard", {
     name   : "Clipboard",
     alone  : true,
     type   : ext.GENERAL,
+    hotkeys: {"cut":1, "copy":1, "paste":1},
 
     nodes : [],
 
@@ -18,23 +19,26 @@ return ext.register("ext/clipboard/clipboard", {
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Cut",
-                hotkey  : "Ctrl-X",
                 onclick : function(){
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
-                hotkey  : "Ctrl-C",
                 onclick : function(){
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
-                hotkey  : "Ctrl-V",
                 onclick : function(){
                 }
             }))
         );
+
+        this.hotitems = {
+            "cut" : [this.nodes[1]],
+            "copy" : [this.nodes[2]],
+            "paste" : [this.nodes[3]]
+        };
     },
 
     enable : function(){

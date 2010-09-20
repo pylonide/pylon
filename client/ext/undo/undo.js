@@ -10,6 +10,7 @@ return ext.register("ext/undo/undo", {
     name   : "Undo",
     alone  : true,
     type   : ext.GENERAL,
+    hotkeys: {"undo":1, "redo":1},
 
     nodes : [],
 
@@ -18,19 +19,22 @@ return ext.register("ext/undo/undo", {
             //mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Undo",
-                hotkey  : "Ctrl-Z",
                 onclick : function(){
                     tabEditors.getPage().$at.undo();
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Redo",
-                hotkey  : "Ctrl-Y",
                 onclick : function(){
                     tabEditors.getPage().$at.redo();
                 }
             }))
         );
+
+        this.hotitems = {
+            "undo" : [this.nodes[0]],
+            "redo" : [this.nodes[1]]
+        };
     },
 
     enable : function(){
