@@ -69,7 +69,6 @@ return ext.register("ext/save/save", {
     },
 
     quicksave : function(page) {
-        console.log("quicksave called...");
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
@@ -82,7 +81,7 @@ return ext.register("ext/save/save", {
     },
 
     saveas : function() {
-        console.log("saveas called...");
+        //console.log("saveas called...");
     },
 
     enable : function(){
