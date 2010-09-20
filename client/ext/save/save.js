@@ -13,7 +13,7 @@ return ext.register("ext/save/save", {
     markup  : markup,
     deps    : [tree],
     hotkeys : {"quicksave":1, "saveas":1},
-    hotitems: [],
+    hotitems: {},
 
     nodes   : [],
 
@@ -60,15 +60,15 @@ return ext.register("ext/save/save", {
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                hotkey  : "Ctrl-S",
                 onclick : _self.quicksave
             }), ide.mnuFile.firstChild)
             //ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.childNodes[1])
         );
+
+        this.hotitems["quicksave"] = [this.nodes[this.nodes.length - 1]];
     },
 
     quicksave : function(page) {
-        console.log("quicksave called...");
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
@@ -81,7 +81,7 @@ return ext.register("ext/save/save", {
     },
 
     saveas : function() {
-        console.log("saveas called...");
+        //console.log("saveas called...");
     },
 
     enable : function(){
