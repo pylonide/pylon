@@ -304,15 +304,16 @@ apf.vbox = function(struct, tagName){
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
                         sp.appendChild(this.$ext);
                         
-                        this.$ext.style.height = "1px";
                         this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
                         sp.style.display  = apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box";
                         sp.style.position = "relative";
-                        sp.style.overflow = "hidden";
+                        //sp.style.overflow = "hidden"; //This line breaks worknets
                         if (!this.parentNode.$vbox)
                             sp.style["width"] = "0";
-                        else
+                        else {
+                            this.$ext.style.height = "1px"; //For flex with overflow:auto in fixed height structure
                             sp.style["height"] = "0px";
+                        }
                             
                         if (!this.parentNode.$vbox) //For firefox setting minHeight had the averse effect for non fixed heights
                             sp.style["minWidth"] = "100%"; //? "minHeight" : 
