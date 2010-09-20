@@ -4,19 +4,19 @@
 require.def("ext/editors/editors",
     ["core/ide", "core/ext"],
     function(ide, ext) {
-        
+
 return ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
     nodes   : [],
-    
+
     contentTypes  : {},
-    
+
     register : function(oExtension){
         var id = "rb" + oExtension.path.replace(/\//g, "_");
-    
+
         oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
             label     : oExtension.name,
@@ -36,7 +36,7 @@ return ext.register("ext/editors/editors", {
                 require('ext/editors/editors').switchEditor(this.value);
             }
         }));
-    
+
         var _self = this;
         oExtension.contentTypes.each(function(mime){
             (_self.contentTypes[mime] || (_self.contentTypes[mime] = [])).push(oExtension);
@@ -45,11 +45,11 @@ return ext.register("ext/editors/editors", {
         if (!this.contentTypes["default"])
             this.contentTypes["default"] = oExtension;
     },
-    
+
     unregister : function(oExtension){
         oExtension.$rbEditor.destroy(true, true);
         oExtension.$itmEditor.destroy(true, true);
-    
+
         var _self = this;
         oExtension.contentTypes.each(function(fe){
             _self.contentTypes[fe].remove(oExtension);
@@ -95,13 +95,13 @@ return ext.register("ext/editors/editors", {
             ]
         }));
     },
-    
+
     isEditorAvailable : function(page, path){
         var editor = ext.extLut[path];
         var contentTypes = editor.contentTypes;
         return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
     },
-    
+
     initEditor : function(editor){
         //Create Page Element
         var editorPage = new apf.page({
@@ -114,24 +114,24 @@ return ext.register("ext/editors/editors", {
 
         //Initialize Content of the page
         ext.initExtension(editor, editorPage);
-        
+
         return editorPage;
     },
-    
+
     switchEditor : function(path){
         var page = tabEditors.getPage();
         if (page.type == path)
             return;
-        
+
         var lastType = page.type;
-        
+
         var editor = ext.extLut[path];
         if (!editor.inited)
             this.initEditor(editor);
-        
+
         editor.$itmEditor.select();
         editor.$rbEditor.select();
-        
+
         page.setAttribute("type", path);
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
@@ -183,6 +183,8 @@ return ext.register("ext/editors/editors", {
 
         //Set active page
         tabEditors.set(filename);
+        if (!editorPage.model)
+            this.beforeswitch({nextPage: fake});
 
         //Open tab, set as active and wait until opened
         /*fake.addEventListener("afteropen", function(){
@@ -219,9 +221,9 @@ return ext.register("ext/editors/editors", {
         //if (!tabEditors.selectNodes("page[@type='" + page.type + "']").length && editorPage)
             //editorPage.destroy(true, true);
     },
-    
+
     switchfocus : function(e){
-        
+
     },
 
     beforeswitch : function(e) {
@@ -247,7 +249,7 @@ return ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-        
+
         toHandler.$itmEditor.select();
         toHandler.$rbEditor.select();
 
@@ -258,7 +260,7 @@ return ext.register("ext/editors/editors", {
         else if (!page.id)
             app.navigateTo(app.loc || (app.loc = "myhome"));*/
     },
-    
+
     /**** Init ****/
 
     init : function(){
@@ -268,11 +270,11 @@ return ext.register("ext/editors/editors", {
           }, function(oExtension){
             _self.unregister(oExtension);
           });
-        
+
         ide.addEventListener("openfile", function(e){
             _self.openEditor(e.value, e.node);
         });
-        
+
         this.hbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]")
             .appendChild(new apf.hbox({flex : 1}));
         this.nodes.push(this.addTabSection());
