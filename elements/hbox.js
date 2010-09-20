@@ -285,7 +285,7 @@ apf.vbox = function(struct, tagName){
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
-                    : "";
+                    : (apf.isGecko && this.flex && this.parentNode.$vbox ? "1px" : "");
             },
             
             "margin" : function(value){
@@ -298,7 +298,10 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = value = parseInt(value);
                 if (value) {
-                    if (apf.isGecko && !this.$altExt) {
+                    if (apf.isGecko && this.parentNode.$vbox)
+                        this.$ext.style.height = "1px";
+                    
+                    /*if (false && apf.isGecko && !this.$altExt) {
                         var doc = this.$ext.ownerDocument;
                         var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
@@ -328,7 +331,7 @@ apf.vbox = function(struct, tagName){
                         
                         if (!apf.isGecko)
                             this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-                    }
+                    }*/
                     (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {
