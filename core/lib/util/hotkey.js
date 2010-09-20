@@ -116,18 +116,16 @@ apf.hotkeys = {};
         if (!hashId && !key) //Hotkeys should always have one of the modifiers
             return;
 
-        var ret,
-            handler = (_self.$keys[hashId] || {})[(key
-                || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
+        var handler = (_self.$keys[hashId] || {})[(key
+            || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
         if (handler) {
-            ret = handler();
-            //eInfo.returnValue = false;
+            eInfo.returnValue = handler();
             // #ifdef __WITH_QUEUE
             apf.queue.empty();
             // #endif
         }
 
-        return ret;
+        return eInfo.returnValue;
     };
 
     /**
@@ -139,7 +137,7 @@ apf.hotkeys = {};
     };
 
     this.toMacNotation = function(hotkey, bHtml) {
-        var t, s,
+        var t,
             keys = hotkey.splitSafe("\\-"),
             i    = 0,
             l    = keys.length;
@@ -155,7 +153,7 @@ apf.hotkeys = {};
     apf.addEventListener("keydown", function(eInfo) {
         var e = eInfo.htmlEvent;
         //Hotkey
-        if (_self.$exec(eInfo) === false
+        if (/*!eInfo.isTextInput && */_self.$exec(eInfo) === false
           || eInfo.returnValue === false) {
             apf.stopEvent(e);
             if (apf.canDisableKeyCodes) {
