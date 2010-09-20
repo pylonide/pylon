@@ -430,7 +430,7 @@ apf.vbox = function(struct, tagName){
                         amlNode.$altExt.style.margin  = "-1px 0 0 0";
                         amlNode.$ext.style.width  = "100%";
                         amlNode.$ext.style.height  = "100%";
-                        amlNode.$ext.style.top = "2px";
+                        amlNode.$ext.style.top = "1px";
                         amlNode.$ext.style.position = "relative";
                     }
                     else {
