@@ -171,7 +171,7 @@ apf.BaseStateButtons = function(){
 
         //Closed state
         if (o.closed == this.visible) {//change detected
-            this.setProperty("visible", !o["closed"]);
+            this.setProperty("visible", !o["closed"], false, true);
             //@todo difference is, we're not clearing the other states, check the docking example
         }
 

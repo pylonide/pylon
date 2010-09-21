@@ -763,13 +763,13 @@ if (myProp == "planes") debugger;
                 //#endif
             }
 
+            if (setAttr)
+                this.setAttribute(prop, value, true);
+
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
             
             value = this[prop];
-            
-            if (setAttr)
-                this.setAttribute(prop, value, true);
         }
         
         //Optimized event calling

@@ -467,7 +467,7 @@ apf.XPath = {
             return sResult;
 
         for (var i = 0, l = sResult.length; i < l; i++) {
-            if (getNodeValue(sResult[i]) == match)
+            if (String(getNodeValue(sResult[i])) == match)
                 return [sResult[i]];
         }
 

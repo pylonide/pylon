@@ -470,7 +470,7 @@ apf.model = function(struct, tagName){
      */
     this.setQueryValues = function(xpath, value){
         if (!this.data)
-            return false;
+            return [];
         
         var nodes = this.data.selectNodes(xpath);
         for (var i = 0, l = nodes.length; i < l; i++)
@@ -500,7 +500,7 @@ apf.model = function(struct, tagName){
      */	
     this.queryValues = function(xpath){
         if (!this.data)
-            return false;
+            return [];
         
         return apf.queryValue(this.data, xpath);
     };
@@ -526,7 +526,7 @@ apf.model = function(struct, tagName){
      */
     this.queryNodes = function(xpath){
         if (!this.data)
-            return null;
+            return [];
         
         return this.data.selectNodes(xpath);
     };
