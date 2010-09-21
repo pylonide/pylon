@@ -30,7 +30,7 @@
     <a:webdav id="davProject" url="{location.protocol + '//' + location.host}/workspace" />
     <a:model id="mdlFiles" src="{davProject.getroot()}" />
 
-	<a:tree id="trFiles" flex="3" autoselect="false" width="200"
+	<a:tree id="trFiles" flex="3" autoselect="false"
 	  model     = "mdlFiles"
 	  each      = "[file|folder]">
         <a:bindings>

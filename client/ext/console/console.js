@@ -8,17 +8,18 @@ return ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
     type   : ext.GENERAL,
+    alone  : true,
     markup : markup,
 
     init : function(amlNode){
         //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox/a:vbox[2]").appendChild(winDbgConsole);
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
         
         var _self = this;
         this.mnuItem = mnuPanels.appendChild(new apf.item({
             caption : this.name,
             type    : "check",
-            checked : true,
+            //checked : true,
             onclick : function(){
                 this.checked ? _self.enable() : _self.disable();
             }
@@ -26,18 +27,24 @@ return ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
-        this.mnuItem.show();
-        if (!fromParent)
+        //this.mnuItem.show();
+        if (!fromParent || this.manualEnabled == undefined)
             this.mnuItem.check();
         if (this.mnuItem.checked)
             winDbgConsole.show();
+        if (!fromParent)
+            this.manualEnabled = true;
     },
 
     disable : function(fromParent){
-        winDbgConsole.hide();
-        fromParent
+        /*fromParent
             ? this.mnuItem.hide()
-            : this.mnuItem.uncheck();
+            : this.mnuItem.uncheck();*/
+        if (!fromParent || !this.manualEnabled) {
+            this.manualEnabled = false;
+            this.mnuItem.uncheck();
+            winDbgConsole.hide();
+        }
     },
 
     destroy : function(){

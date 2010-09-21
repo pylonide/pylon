@@ -4,6 +4,7 @@
           flex   = "1" 
           value  = "[data]"
           syntax = "{getSyntax([@contenttype])}"
+          contextmenu    = "mnuCtxEditor"
           showinvisibles = "false"
         />
     </a:vbox>
