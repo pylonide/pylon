@@ -412,6 +412,9 @@ apf.setModel = function(instruction, amlNode){
             }
         }
         
+        if (data.nodeFunc) //Assuming a model was passed -- data.localName == "model" && 
+            return data;
+        
         var model = apf.xmldb.findModel(data); //See if data is already loaded into a model
         if (model)
             model.register(amlNode, apf.xmlToXpath(data, model.data)); //@todo move function to xml library
