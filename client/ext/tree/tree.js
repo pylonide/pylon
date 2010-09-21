@@ -2,8 +2,10 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "ext/tree/treeutil", "ext/filesystem/filesystem", "text!ext/tree/tree.xml"],
-    function(ide, ext, treeutil, fs, markup) {
+    ["core/ide", "core/ext", "ext/tree/treeutil", 
+     "ext/filesystem/filesystem", "ext/settings/settings", 
+     "ext/panels/panels", "text!ext/tree/tree.xml"],
+    function(ide, ext, treeutil, fs, settings, panels, markup) {
         
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -11,22 +13,17 @@ return ext.register("ext/tree/tree", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
+    visible : true,
+    
+    hook : function(){
+        panels.register(this);
+    },
 
     init : function() {
-        this.trFiles = trFiles;
+        this.trFiles = this.panel = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
         trFiles.setAttribute("model", fs.model);
         
-        var _self = this;
-        this.mnuItem = mnuPanels.appendChild(new apf.item({
-            caption : this.name,
-            type    : "check",
-            checked : true,
-            onclick : function(){
-                this.checked ? _self.enable() : _self.disable();
-            }
-        }));
-
         trFiles.addEventListener("afterselect", this.$afterselect = function() {
             var node = this.selected;
             if (node.tagName != "file")
@@ -52,6 +49,45 @@ return ext.register("ext/tree/tree", {
                 apf.b(node).append(xml);
             });
         });
+
+        /**** Support for state preservation ****/
+        
+        var expandedList = {};
+        trFiles.addEventListener("expand", function(e){
+            expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
+        });
+        trFiles.addEventListener("collapse", function(e){
+            delete expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+        });
+
+        var currentSettings = [];
+        ide.addEventListener("loadsettings", function(e){
+            var strSettings = e.model.queryValue("auto/tree");
+            if (strSettings) {
+                currentSettings = apf.unserialize(strSettings);
+                trFiles.expandList(currentSettings);
+            }
+            trFiles.expandList(["project"]);
+        });
+
+        ide.addEventListener("savesettings", function(e){
+            var changed = false, 
+                xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
+
+            var path, id;
+            for (id in expandedList) {
+                path = apf.xmlToXpath(expandedList[id]);
+                if (currentSettings.indexOf(path) == -1) {
+                    currentSettings.push(path);
+                    changed = true;
+                }
+            }
+            
+            if (changed) {
+                xmlSettings.nodeValue = apf.serialize(currentSettings);
+                return true;
+            }
+        });
     },
 
     getSelectedPath: function() {
@@ -60,21 +96,20 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         trFiles.show();
-        this.mnuItem.check();
     },
 
     disable : function(){
         trFiles.hide();
-        this.mnuItem.uncheck();
     },
 
     destroy : function(){
         davProject.destroy(true, true);
         mdlFiles.destroy(true, true);
         trFiles.destroy(true, true);
-        this.mnuItem.destroy(true, true);
 
         trFiles.removeEventListener("afterselect", this.$afterselect);
+        
+        panels.unregister(this);
     }
 });
 

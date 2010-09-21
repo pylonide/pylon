@@ -27,24 +27,26 @@
         
     ]]></a:script>
     
-	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true"
-	  each      = "[file|folder]">
-            <a:insert match="[node()[@type='folder']]" get="{davProject.readdir([@id])}" />
-            <a:each match="[file|folder]" sort="[@name]" sort-method="filesort" />
+	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true">
+	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+            <a:insert match="[folder]" get="{location.host and davProject.readdir([@id])}" />
             <a:caption match="[@name]" />
-            <a:icon match="[folder]" value="folder.png" />
+            <a:icon match="[folder|project]" value="folder.png" />
             <a:icon match="[file]" value="{getIcon(%[.])}" />
-            <a:add type="folder" get="{davProject.mkdir([@id], 'New Folder')}" />
-            <a:add type="file" get="{davProject.create([@id], 'New File.txt', '')}" />
-            <a:rename set="{davProject.rename([@name], [@id])}"/>
-            <a:copy match="[.]" set="{davProject.copy([@id], [../@id])}"/>
-            <a:move match="[.]" set="{davProject.move([@id], [../@id])}"/>
-            <a:remove match="[.]" set="{davProject.remove([@id])}"/>
-            <!--a:dragdrop>
-                <a:allow-drag match="folder|file" />
-                <a:allow-drop match="folder|file" target="folder"
-                    operation="tree-append" copy-condition="event.ctrlKey" />
-            </a:dragdrop-->
+            <a:expanded match="[project]" />
+        </a:each>
+        
+        <a:add type="folder" get="{davProject.mkdir([@id], 'New Folder')}" />
+        <a:add type="file" get="{davProject.create([@id], 'New File.txt', '')}" />
+        <a:rename set="{davProject.rename([@name], [@id])}"/>
+        <a:copy match="[.]" set="{davProject.copy([@id], [../@id])}"/>
+        <a:move match="[.]" set="{davProject.move([@id], [../@id])}"/>
+        <a:remove match="[.]" set="{davProject.remove([@id])}"/>
+        <!--a:dragdrop>
+            <a:allow-drag match="folder|file" />
+            <a:allow-drop match="folder|file" target="folder"
+                operation="tree-append" copy-condition="event.ctrlKey" />
+        </a:dragdrop-->
 	</a:tree>  
     
 </a:application>

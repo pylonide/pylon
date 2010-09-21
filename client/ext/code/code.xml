@@ -1,4 +1,21 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:script><![CDATA[
+		SupportedModes = {
+			"application/javascript": "JavaScript",
+			"application/json": "JavaScript",
+			"text/css": "Css",
+			"text/html": "Html",
+			"application/xhtml+xml": "Html",
+			"application/xml": "Xml"
+		}
+
+		function getSyntax(type) {
+             var mime = type.split(";")[0];
+             return (SupportedModes[mime] || "Text");
+		}
+
+     ]]></a:script>
+    
     <a:vbox id="barEditor" anchors="0 0 0 0" visible="false">
         <a:codeeditor id="ceEditor"
           flex   = "1" 
@@ -21,21 +38,4 @@
         <a:item value="text/plain">Plain Text</a:item>
         <a:item value="application/javascript">JavaScript</a:item>
     </a:menu>
-    
-    <a:script><![CDATA[
-		SupportedModes = {
-			"application/javascript": "JavaScript",
-			"application/json": "JavaScript",
-			"text/css": "CSS",
-			"text/html": "Html",
-			"application/xhtml+xml": "Html",
-			"application/xml": "Xml"
-		}
-
-		function getSyntax(type) {
-             var mime = type.split(";")[0];
-             return (SupportedModes[mime] || "Text");
-		}
-
-     ]]></a:script>    
 </a:application>

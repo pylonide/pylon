@@ -1218,6 +1218,7 @@ fu.get("/send", function (req, res) {
 ]]>
   </data>
  </file>
+ <folder name="style">
  <file id="7" type="file" size="1639" name="style.css" contenttype="text/css; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false">
   <data><![CDATA[body {
   padding: 0;
@@ -1332,4 +1333,5 @@ a:hover { text-decoration: underline; color: #aaa; }
 ]]>
   </data>
  </file>
+ </folder>
 </files>
