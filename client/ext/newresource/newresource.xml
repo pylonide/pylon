@@ -1,0 +1,48 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winNewDir"
+      title     = "Create a new folder"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      width     = "350">
+        <a:vbox padding="10" edge="15 20 20 20">
+            <h3 class="wheader">Please enter the name of your new folder:</h3>
+            <a:textbox initial-message="Folder name" />
+        </a:vbox>
+
+        <a:vbox edge="0 0 4 0" padding="8">
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="0 10 5 10">
+                <a:button width="80" default="3" caption="OK" />
+                <a:button width="80">Cancel</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+
+    <a:window
+      id        = "winNewFile"
+      title     = "Create a new file"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      width     = "350">
+        <a:vbox padding="10" edge="15 20 20 20">
+            <h3 class="wheader">Please enter the name of your new file:</h3>
+            <a:textbox initial-message="Filename" />
+        </a:vbox>
+
+        <a:vbox edge="0 0 4 0" padding="8">
+            <a:divider skin="hordivider" />
+            <a:hbox pack="end" padding="7" edge="0 10 5 10">
+                <a:button width="80" default="3" caption="OK" />
+                <a:button width="80">Cancel</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+
+    <a:bar id="barNew" visible="false">
+        <a:divider />
+        <a:button id="btnNew" icon="page_white.gif">New...</a:button>
+    </a:bar>
+</a:application>

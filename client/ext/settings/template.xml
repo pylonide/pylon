@@ -1,0 +1,10 @@
+<settings>
+    <auto>
+        <files />
+        <panels />
+        <plugins />
+        <tree />
+    </auto>
+    <section name="General" page="pgSettingsGeneral" />
+    <section name="Editor" page="pgSettingsEditor" />
+</settings>
