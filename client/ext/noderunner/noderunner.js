@@ -27,16 +27,18 @@ return ext.register("ext/noderunner/noderunner", {
             this.nodes.push(button);
         }
 
-        this.nodes[0].onclick = this.run.bind(this);
-        this.nodes[1].onclick = this.kill.bind(this);
-
         var options = {
             transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
         };
-        this.socket = new io.Socket(null, options);
+        var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
         this.socket.on("connect", this.onConnect.bind(this));
         this.socket.connect();
+
+        dbgNode.addEventListener("onsocketfind", function() {
+            return socket;
+        });
+        dbg.attach(dbgNode);
     },
 
     onMessage : function(message) {
@@ -44,8 +46,12 @@ return ext.register("ext/noderunner/noderunner", {
 
         console.log("MSG:", message);
         switch(message.type) {
+            case "debug-ready":
+                ide.dispatchEvent("debugready");
+                break;
+
             case "node-exit":
-                stRunning.deactivate();
+                stProcessRunning.deactivate();
                 break;
 
             case "node-data":
@@ -56,12 +62,19 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     onConnect : function() {
-        console.log("connected");
-        stConnected.activate();
+        stServerConnected.activate();
+    },
+
+    debug : function() {
+        this.$run(true);
     },
 
     run : function() {
-        if (stRunning.active || !stConnected.active)
+        this.$run(false);
+    },
+
+    $run : function(debug) {
+        if (stProcessRunning.active || !stServerConnected.active)
             return;
 
         var file = tree.trFiles.selected;
@@ -71,18 +84,22 @@ return ext.register("ext/noderunner/noderunner", {
         if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0)
             return;
 
-        console.log("running", file);
         var command = {
-            "command" : "Run",
+            "command" : debug ? "RunDebug" : "Run",
             "file"    : treeutil.getPath(file)
         };
         this.socket.send(JSON.stringify(command));
-        log.enable();
-        stRunning.activate();
+
+        if (debug)
+            ext.setLayoutMode("ext/debugger/debugger");
+        else
+            log.enable();
+
+        stProcessRunning.activate();
     },
 
-    kill : function() {
-        if (!stRunning.active)
+    stop : function() {
+        if (!stProcessRunning.active)
             return
 
         this.socket.send(JSON.stringify({"command": "kill"}));

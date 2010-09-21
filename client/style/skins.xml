@@ -4354,7 +4354,7 @@
         }
         
         .ce .ace_line .ace_number {
-          color: rgb(0, 0, 205);
+          color: #2270b2;
         }
         
         .ce .ace_line .ace_xml_pe {

@@ -20,41 +20,20 @@ return ext.register("ext/newresource/newresource", {
     init : function(amlNode){
         var _self = this;
 
-        var nodes = barNew.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
-        }
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(tbNewResource);
 
-        btnNew.onclick = _self.newresdialog;
-
-        winNewFile.addEventListener("afterrender", function() {
-            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
-            buttons[0].onclick = _self.newfile.bind(_self);
-            buttons[1].onclick = function() {winNewFile.hide();};
-            _self.filetext = this.selectSingleNode("a:vbox[1]/a:textbox");
-        });
-
-        winNewDir.addEventListener("afterrender", function() {
-            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
-            buttons[0].onclick = _self.newdir.bind(_self);
-            buttons[1].onclick = function() {winNewDir.hide();};
-            _self.dirtext = this.selectSingleNode("a:vbox[1]/a:textbox");
-        });
+        btnNewFile.onclick   = this.newfile;
+        btnNewFolder.onclick = this.newfolder;
 
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "New Folder",
-                onclick : _self.newdirdialog
+                onclick : this.newfolder
             }), ide.mnuFile.firstChild),
 
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "New File",
-                onclick : _self.newfiledialog
-            }), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New...",
-                onclick : _self.newresdialog
+                onclick : this.newfile
             }), ide.mnuFile.firstChild)
         );
 
@@ -62,36 +41,14 @@ return ext.register("ext/newresource/newresource", {
         this.hotitems["newfile"] = [this.nodes[1]];
     },
 
-    newfiledialog: function() {
-        if (this.filetext)
-            this.filetext.setValue("");
-        winNewFile.show();
-    },
-
-    newdirdialog: function() {
-        if (this.dirtext)
-            this.dirtext.setValue("");
-        winNewDir.show();
-    },
-
-    newresdialog: function() {
-        //
-    },
-
     newfile: function() {
-        winNewFile.hide();
-        var name = this.filetext.getValue();
-        if (!name)
-            return;
-        fs.createFile(name);
+        fs.createFile();
+        return false;
     },
 
-    newdir: function() {
-        winNewDir.hide();
-        var name = this.dirtext.getValue();
-        if (!name)
-            return;
-        fs.createDir(name);
+    newfolder: function() {
+        fs.createFolder();
+        return false;
     },
 
     enable : function(){
