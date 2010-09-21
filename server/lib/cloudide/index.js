@@ -4,7 +4,7 @@ var IdeServer = require("cloudide/server");
 
 exports.main = function(projectDir, port) {
     server = connect.createServer(
-        connect.logger(),
+        //connect.logger(),
         connect.staticProvider(__dirname + "/../../../client"),
         connect.staticProvider(__dirname + "/../../../common")
     );
