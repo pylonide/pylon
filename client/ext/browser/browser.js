@@ -21,7 +21,7 @@ return ext.register("ext/browser/browser", {
         this.brView = amlPage.appendChild(new apf.vbox({
             anchors    : "0 0 0 0",
             childNodes : [new apf.browser({
-                src  : "{location.protocol + '//' + location.host + '/workspace/' + require('ext/tree/treeutil').getPath(%[.])}",
+                src  : "{location.protocol + '//' + location.host + '/workspace/' + [@path]}",
                 flex : 1
             })]
         }));

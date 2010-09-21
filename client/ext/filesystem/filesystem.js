@@ -11,17 +11,17 @@ return ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
     
-    readFile : function (id, callback){
+    readFile : function (path, callback){
         if (this.webdav) {
-            apf.getData('{davProject.read(id)}', {
-                id       : id,
+            apf.getData('{davProject.read(path)}', {
+                path     : path,
                 callback : callback
             });
         }
     },
     
     saveFile : function(fileEl) {
-        var id = fileEl.getAttribute("id");
+        var id = fileEl.getAttribute("path");
         var data = apf.queryValue(fileEl, "data");
         if (apf.queryValue(fileEl, "data/@newline") == "windows")
             data = data.replace(/\n/g, "\r\n");
@@ -39,7 +39,7 @@ return ext.register("ext/filesystem/filesystem", {
         
         if (this.webdav) {
             trFiles.focus();
-            this.webdav.exec("mkdir", [node.getAttribute("id"), "untitled folder"], function(data) {
+            this.webdav.exec("mkdir", [node.getAttribute("path"), "untitled folder"], function(data) {
                 // @todo: in case of error, show nice alert dialog
                 if (data instanceof Error)
                     throw Error;
@@ -65,8 +65,8 @@ return ext.register("ext/filesystem/filesystem", {
         if (this.webdav) {
             trFiles.focus();
             var _self = this;
-            this.webdav.exec("create", [node.getAttribute("id"), "untitled file.txt"], function(data) {
-                _self.webdav.exec("readdir", [node.getAttribute("id")], function(data) {
+            this.webdav.exec("create", [node.getAttribute("path"), "untitled file.txt"], function(data) {
+                _self.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
                     if (data.indexOf("<file") > -1) {
                         trFiles.insert(data, {
                             insertPoint: node,

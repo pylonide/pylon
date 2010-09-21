@@ -2,10 +2,10 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "ext/tree/treeutil", 
+    ["core/ide", "core/ext",
      "ext/filesystem/filesystem", "ext/settings/settings", 
      "ext/panels/panels", "text!ext/tree/tree.xml"],
-    function(ide, ext, treeutil, fs, settings, panels, markup) {
+    function(ide, ext, fs, settings, panels, markup) {
         
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -35,7 +35,7 @@ return ext.register("ext/tree/tree", {
             if (node.selectSingleNode("data"))
                 return;
 
-            fs.readFile(node.getAttribute("id"), function(data) {
+            fs.readFile(node.getAttribute("path"), function(data) {
                 var match = data.match(/^.*?(\r?\n)/m);
                 if (match && match[1] == "\r\n")
                     var nl = "windows";
@@ -91,7 +91,7 @@ return ext.register("ext/tree/tree", {
     },
 
     getSelectedPath: function() {
-        return treeutil.getPath(this.trFiles.selected);
+        return this.trFiles.selected.getAttribute("path");
     },
 
     enable : function(){

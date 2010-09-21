@@ -60,7 +60,7 @@ return ext.register("ext/editors/editors", {
         if (this.contentTypes["default"] == oExtension) {
             delete this.contentTypes["default"];
 
-            for (prop in this.contentTypes) {
+            for (var prop in this.contentTypes) {
                 this.contentTypes["default"] = this.contentTypes[prop][0];
                 break;
             }
@@ -163,15 +163,15 @@ return ext.register("ext/editors/editors", {
         }
 
         if (!editor.inited)
-            editorPage = this.initEditor(editor);
+            var editorPage = this.initEditor(editor);
         else
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var fake      = tabEditors.add(filename, filename, editor.path, null, function(page){
-            page.contentType = contentType;
-            page.$at         = new apf.actiontracker();
-            page.$model      = new apf.model();
+        var model, fake = tabEditors.add(filename, filename, editor.path, null, function(page){
+            page.contentType    = contentType;
+            page.$at            = new apf.actiontracker();
+            model = page.$model = new apf.model();
             page.$model.load(xmlNode);
         });
 
