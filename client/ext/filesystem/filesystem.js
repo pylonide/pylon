@@ -56,19 +56,24 @@ return ext.register("ext/filesystem/filesystem", {
 
     init : function(amlNode){
         this.model = new apf.model();
+        this.model.load("<data><project name='Project' /></data>");
         
+        var url;
         if (location.host) {
             this.webdav = new apf.webdav({
                 id  : "davProject",
                 url : location.protocol + "//" + location.host + "/workspace"
             });
-        
-            this.model.load("{davProject.getroot()}");
+            url = "{davProject.getroot()}";
         }
         else {
-            this.model.load("ext/filesystem/files.xml");
+            url = "ext/filesystem/files.xml";
             this.readFile = this.saveFile = apf.K;
         }
+        
+        this.model.insert(url, {
+            insertPoint : this.model.queryNode("project")
+        });
     },
 
     enable : function(){

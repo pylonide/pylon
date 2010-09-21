@@ -34,10 +34,14 @@ return ext.register("ext/settings/settings", {
                 model : _self.model
             }) === true)
                 _self.save();
-        }, 60000);
+        }, 6000); //60000
         
         ide.dispatchEvent("loadsettings", {
             model : this.model
+        });
+        
+        ide.addEventListener("$event.loadsettings", function(callback){
+            callback({model: _self.model});
         });
     },
     

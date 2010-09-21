@@ -2,8 +2,10 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "ext/tree/treeutil", "ext/filesystem/filesystem", "text!ext/tree/tree.xml"],
-    function(ide, ext, treeutil, fs, markup) {
+    ["core/ide", "core/ext", "ext/tree/treeutil", 
+     "ext/filesystem/filesystem", "ext/settings/settings", 
+     "text!ext/tree/tree.xml"],
+    function(ide, ext, treeutil, fs, settings, markup) {
         
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -51,6 +53,45 @@ return ext.register("ext/tree/tree", {
                 xml.setAttribute("newline", nl);
                 apf.b(node).append(xml);
             });
+        });
+
+        /**** Support for state preservation ****/
+        
+        var expandedList = {};
+        trFiles.addEventListener("expand", function(e){
+            expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
+        });
+        trFiles.addEventListener("collapse", function(e){
+            delete expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+        });
+
+        var currentSettings = [];
+        ide.addEventListener("loadsettings", function(e){
+            var strSettings = e.model.queryValue("auto/tree");
+            if (strSettings) {
+                currentSettings = apf.unserialize(strSettings);
+                trFiles.expandList(currentSettings);
+            }
+            trFiles.expandList(["project"]);
+        });
+
+        ide.addEventListener("savesettings", function(e){
+            var changed = false, 
+                xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
+
+            var path, id;
+            for (id in expandedList) {
+                path = apf.xmlToXpath(expandedList[id]);
+                if (currentSettings.indexOf(path) == -1) {
+                    currentSettings.push(path);
+                    changed = true;
+                }
+            }
+            
+            if (changed) {
+                xmlSettings.nodeValue = apf.serialize(currentSettings);
+                return true;
+            }
         });
     },
 
