@@ -3,19 +3,7 @@
     <head>
         <title>Socket.IO</title>
         <script src="/socket.io/socket.io.js"></script>
-        
-        <script type="text/javascript" src="ace/src/ace/lib/core.js"></script>
-        <script type="text/javascript" src="ace/src/ace/lib/oop.js"></script>
-        <script type="text/javascript" src="ace/src/ace/lib/lang.js"></script>
-        <script type="text/javascript" src="ace/src/ace/MEventEmitter.js"></script>
-        
-        <script type="text/javascript" src="ace/src/debug/O3Socket.js"></script>
-        <script type="text/javascript" src="ace/src/debug/WebSocketV8DebuggerService.js"></script>
-        <script type="text/javascript" src="ace/src/debug/V8Debugger.js"></script>
-        <script type="text/javascript" src="ace/src/debug/V8Message.js"></script>
-        <script type="text/javascript" src="ace/src/debug/DevToolsMessage.js"></script>
-        <script type="text/javascript" src="ace/src/debug/MessageReader.js"></script>
-                
+        <script src="require.js"></script>
     </head>
     <body>
     
@@ -25,7 +13,13 @@
     <input type="button" value="kill" id="kill">
     
     <script type="text/javascript" charset="utf-8">
-
+		require({paths: {
+				"debug": "common/ace/src/debug",
+				"ace": "common/ace/src/ace",
+			}},
+			["debug/WebSocketV8DebuggerService", "debug/V8Debugger"], 
+			function(WebSocketV8DebuggerService, V8Debugger) {
+    
 		var options = {
   			transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
 		};
@@ -85,7 +79,8 @@
         		});
         	});
         };
-        
+
+		});
     </script>
         
     </body>
