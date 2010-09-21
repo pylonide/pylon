@@ -143,6 +143,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
             var s = nodes[i].getAttribute(apf.xmldb.xmlListenTag).split(";");
             for (j = s.length - 1; j >= 0; j--) {
                 node = apf.all[s[j]];
+                if (!node) continue;
                 if (node.dataParent && node.dataParent.xpath)
                     node.dataParent.parent.signalXmlUpdate[node.$uniqueId] = true;
                 else if (node.$model)
