@@ -1,14 +1,15 @@
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
-    [], function() {
+    ["debug/Breakpoint"],
+    function(Breakpoint) {
 
 var V8Debugger = function(dbg, host) {
     this.$init();
-    
+
     this.$debugger = dbg;
     this.$host = host;
-    
+
     this.$breakpoints = {};
-    
+
     var self = this;
     dbg.addEventListener("changeRunning", function(e) {
         self.dispatchEvent("changeRunning", e);
@@ -19,7 +20,10 @@ var V8Debugger = function(dbg, host) {
     dbg.addEventListener("break", function(e) {
         self.dispatchEvent("break", e);
     });
-    
+    dbg.addEventListener("afterCompile", function(e) {
+        self.dispatchEvent("afterCompile", {script: apf.getXml(self.$getScriptXml(e.data.script))});
+    });
+
     this.setFrame(null);
 };
 
@@ -28,7 +32,7 @@ var V8Debugger = function(dbg, host) {
     this.isRunning = function() {
         return this.$debugger.isRunning();
     };
-    
+
     this.scripts = function(model, callback) {
         var self = this;
         this.$debugger.scripts(4, null, false, function(scripts) {
@@ -38,20 +42,24 @@ var V8Debugger = function(dbg, host) {
                 if (script.name && script.name.indexOf("chrome-extension://") == 0) {
                     continue;
                 }
-                xml.push("<file id='", script.id,
-                    "' name='", apf.escapeXML(script.name || "anonymous"),
-                    "' text='", apf.escapeXML(script.text || "anonymous"),
-                    "' lineoffset='", script.lineOffset,
-                    "' debug='true' />");
+                xml.push(self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
         });
     };
-    
+
+    this.$getScriptXml = function(script) {
+        return ["<file id='", script.id,
+            "' name='", apf.escapeXML(script.name || "anonymous"),
+            "' text='", apf.escapeXML(script.text || "anonymous"),
+            "' lineoffset='", script.lineOffset,
+            "' debug='true' />"].join("")
+    };
+
     this.backtrace = function(model) {
         var self = this;
         this.$debugger.backtrace(null, null, null, true, function(body, refs) {
-            
+
             function ref(id) {
                 for (var i=0; i<refs.length; i++) {
                     if (refs[i].handle == id) {
@@ -60,13 +68,13 @@ var V8Debugger = function(dbg, host) {
                 }
                 return {};
             }
-            
+
             var xml = [];
             var frames = body.frames;
             for (var i = 0; i < frames.length; i++) {
                 var frame = frames[i];
                 var script = ref(frame.script.ref);
-                xml.push("<frame index='", frame.index, 
+                xml.push("<frame index='", frame.index,
                     "' name='", apf.escapeXML(apf.escapeXML(self.$frameToString(frame))),
                     "' column='", frame.column,
                     "' line='", frame.line,
@@ -74,15 +82,15 @@ var V8Debugger = function(dbg, host) {
                     "' scriptid='", script.id,
                     "'>");
                 xml.push("<vars>");
-                
+
                 var receiver = {
                     name: "this",
-                    value: frame.receiver 
+                    value: frame.receiver
                 };
                 xml.push(self.$serializeVariable(receiver));
-                
+
                 for (var j=0; j<frame.arguments.length; j++) {
-                    if (frame.arguments[j].name) 
+                    if (frame.arguments[j].name)
                         xml.push(self.$serializeVariable(frame.arguments[j]));
                 }
                 for (var j=0; j<frame.locals.length; j++) {
@@ -90,7 +98,7 @@ var V8Debugger = function(dbg, host) {
                         xml.push(self.$serializeVariable(frame.locals[j]));
                 }
                 xml.push("</vars>");
-                
+
                 xml.push("<scopes>");
                 var scopes = frame.scopes;
                 for (var j=0; j<scopes.length; j++) {
@@ -98,14 +106,14 @@ var V8Debugger = function(dbg, host) {
                     xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
                 }
                 xml.push("</scopes>");
-                
+
                 xml.push("</frame>");
             }
             model.load("<frames>" + xml.join("") + "</frames>");
             self.setFrame(model.data.firstChild);
-        }); 
+        });
     };
-    
+
     this.loadScript = function(script, callback) {
         var id = script.getAttribute("id");
         var self = this;
@@ -138,22 +146,22 @@ var V8Debugger = function(dbg, host) {
             });
         });
     };
-    
+
     this.loadFrame = function(frame, callback) {
         //var xml = "<vars><item name='juhu' value='42' type='number'/></vars>"
         var scopes = frame.getElementsByTagName("scope");
-        
+
         var frameIndex = parseInt(frame.getAttribute("index"));
-        
+
         var self = this;
         var processed = 0;
         var expected = 0;
         var xml = ["<vars>"];
-        
+
         for (var i=0; i<scopes.length; i++) {
             var scope = scopes[i];
             var type = parseInt(scope.getAttribute("type"));
-            
+
             // ignore local and global scope
             if (type > 1) {
                 expected += 1;
@@ -167,24 +175,24 @@ var V8Debugger = function(dbg, host) {
                     if (processed == expected) {
                         xml.push("</vars>");
                         callback(xml.join(""));
-                    } 
+                    }
                 });
             }
         }
         if (expected == 0)
             return callback("<vars />");
     };
-    
+
     this.setFrame = function(frame) {
         this.$activeFrame = frame;
         this.dispatchEvent("changeFrame", {data: frame});
     };
-    
-    
+
+
     this.getActiveFrame = function() {
         return this.$activeFrame;
-    }; 
-    
+    };
+
     this.toggleBreakpoint = function(script, relativeRow, model) {
         var self = this;
 
@@ -221,7 +229,7 @@ var V8Debugger = function(dbg, host) {
             });
         }
     };
-    
+
     this.continueScript = function() {
         this.$debugger.continueScript();
     };
@@ -241,7 +249,7 @@ var V8Debugger = function(dbg, host) {
     this.suspend = function() {
         this.$debugger.suspend();
     };
-    
+
     this.$valueString = function(value) {
         switch (value.type) {
             case "undefined":
@@ -292,8 +300,8 @@ var V8Debugger = function(dbg, host) {
             hasChildren[item.value.type] ? "' children='true" : "",
             "' />");
         return str.join("");
-    }        
-    
+    }
+
 }).call(V8Debugger.prototype = new apf.Class());
 
 return V8Debugger;

@@ -292,8 +292,13 @@ apf.codeeditor = function(struct, tagName) {
             this.$debugger = value;
         }
 
+        if (!this.$debugger) {
+            this.$breakpoints = null;
+            this.$updateBreakpoints();
+            return;
+        }
+            
         this.$breakpoints = this.$debugger.$mdlBreakpoints;
-        this.$updateBreakpoints();
 
         var self = this;
         this.$breakpoints.addEventListener("update", function() {

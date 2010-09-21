@@ -62,6 +62,7 @@ apf.dbg = function(struct, tagName){
         host.$attach(this, tab, function(err, dbgImpl) {
             self.$host = host;
             self.$debugger = dbgImpl;
+            self.$debugger.addEventListener("afterCompile", self.$onAfterCompile.bind(self));
             
             self.$stAttached.activate();
             self.$stRunning.setProperty("active", dbgImpl.isRunning());
@@ -86,6 +87,14 @@ apf.dbg = function(struct, tagName){
     
     this.$onBreak = function() {
         this.$debugger.backtrace(this.$mdlStack);
+    };
+    
+    this.$onAfterCompile = function(e) {
+        var id = e.script.getAttribute("id");
+        var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
+        if (oldNode)
+            this.$mdlSources.removeXml(oldNode);
+        this.$mdlSources.appendXml(e.script);
     };
     
     this.$onDetach = function() {
