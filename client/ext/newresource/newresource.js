@@ -20,26 +20,33 @@ return ext.register("ext/newresource/newresource", {
     init : function(amlNode){
         var _self = this;
 
-        var nodes = barNew.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
-        }
+//        var nodes = barNew.childNodes;
+//        for (var i = nodes.length - 1; i >= 0; i--) {
+//            this.nodes.push(ide.barTools.appendChild(nodes[0]));
+//        }
+//
+//        btnNew.onclick = _self.newresdialog;
 
-        btnNew.onclick = _self.newresdialog;
+//        winNewFile.addEventListener("afterrender", function() {
+//            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
+//            buttons[0].onclick = _self.newfile.bind(_self);
+//            buttons[1].onclick = function() {winNewFile.hide();};
+//            _self.filetext = this.selectSingleNode("a:vbox[1]/a:textbox");
+//        });
+//
+//        winNewDir.addEventListener("afterrender", function() {
+//            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
+//            buttons[0].onclick = _self.newdir.bind(_self);
+//            buttons[1].onclick = function() {winNewDir.hide();};
+//            _self.dirtext = this.selectSingleNode("a:vbox[1]/a:textbox");
+//        });
 
-        winNewFile.addEventListener("afterrender", function() {
-            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
-            buttons[0].onclick = _self.newfile.bind(_self);
-            buttons[1].onclick = function() {winNewFile.hide();};
-            _self.filetext = this.selectSingleNode("a:vbox[1]/a:textbox");
-        });
 
-        winNewDir.addEventListener("afterrender", function() {
-            var buttons = this.selectNodes("a:vbox[2]/a:hbox[1]/a:button");
-            buttons[0].onclick = _self.newdir.bind(_self);
-            buttons[1].onclick = function() {winNewDir.hide();};
-            _self.dirtext = this.selectSingleNode("a:vbox[1]/a:textbox");
-        });
+
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(tbNewResource);
+
+        btnNewFile.onclick = this.newfile.bind(this);
+        btnNewFolder.onclick = this.newfolder.bind(this);
 
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({

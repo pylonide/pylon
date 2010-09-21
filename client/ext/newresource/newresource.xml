@@ -41,8 +41,10 @@
         </a:vbox>
     </a:window>
 
-    <a:bar id="barNew" visible="false">
-        <a:divider />
-        <a:button id="btnNew" icon="page_white.gif">New...</a:button>
-    </a:bar>
+    <a:toolbar id="tbNewResource" height="20">
+        <a:bar>
+            <a:button id="btnNewFile" icon="page_add.png" tooltip="New File" caption="New File" />
+            <a:button id="btnNewFolder" icon="folder_add.png" tooltip="New Folder" caption="New Folder" />
+        </a:bar>
+    </a:toolbar>
 </a:application>
