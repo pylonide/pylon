@@ -2,7 +2,8 @@
  * Console for the Ajax.org Cloud IDE
  */
 require.def("ext/console/console",
-    ["core/ide", "core/ext", "text!ext/console/console.xml"], function(ide, ext, markup) {
+    ["core/ide", "core/ext", "ext/panels/panels", "text!ext/console/console.xml"], 
+    function(ide, ext, panels, markup) {
 
 return ext.register("ext/console/console", {
     name   : "Console",
@@ -10,49 +11,6 @@ return ext.register("ext/console/console", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-
-    init : function(amlNode){
-        var _self = this;
-        this.mnuItem = mnuPanels.appendChild(new apf.item({
-            caption : this.name,
-            type    : "check",
-            //checked : true,
-            onclick : function(){
-                this.checked ? _self.enable() : _self.disable();
-            }
-        }));
-    },
-
-    enable : function(fromParent){
-        //@todo stupid hack, find out why its not below editors
-        
-        //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
-        
-        //this.mnuItem.show();
-        if (!fromParent || this.manualEnabled == undefined)
-            this.mnuItem.check();
-        if (this.mnuItem.checked)
-            winDbgConsole.show();
-        if (!fromParent)
-            this.manualEnabled = true;
-    },
-
-    disable : function(fromParent){
-        /*fromParent
-            ? this.mnuItem.hide()
-            : this.mnuItem.uncheck();*/
-        if (!fromParent || !this.manualEnabled) {
-            this.manualEnabled = false;
-            this.mnuItem.uncheck();
-            winDbgConsole.hide();
-        }
-    },
-
-    destroy : function(){
-        winDbgConsole.destroy(true, true);
-        this.mnuItem.destroy(true, true);
-    },
 
     clear : function() {
         txtConsole.clear();
@@ -88,6 +46,47 @@ return ext.register("ext/console/console", {
                 }) + "</span></div>");
         }
         txtConsole.addValue(log.join(""));
+    },
+    
+    /**** Init ****/
+
+    hook : function(){
+        panels.register(this);
+    },
+
+    init : function(amlNode){
+        this.panel = winDbgConsole;
+    },
+
+    enable : function(fromParent){
+        //@todo stupid hack, find out why its not below editors
+        
+        //Append the console window at the bottom below the tab
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+        
+        //this.mnuItem.show();
+        if (!fromParent || this.manualEnabled == undefined)
+            this.mnuItem.check();
+        if (this.mnuItem.checked)
+            winDbgConsole.show();
+        if (!fromParent)
+            this.manualEnabled = true;
+    },
+
+    disable : function(fromParent){
+        /*fromParent
+            ? this.mnuItem.hide()
+            : this.mnuItem.uncheck();*/
+        if (!fromParent || !this.manualEnabled) {
+            this.manualEnabled = false;
+            this.mnuItem.uncheck();
+            winDbgConsole.hide();
+        }
+    },
+
+    destroy : function(){
+        winDbgConsole.destroy(true, true);
+        panels.unregister(this);
     }
 });
 

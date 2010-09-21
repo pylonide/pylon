@@ -4,8 +4,8 @@
 require.def("ext/tree/tree",
     ["core/ide", "core/ext", "ext/tree/treeutil", 
      "ext/filesystem/filesystem", "ext/settings/settings", 
-     "text!ext/tree/tree.xml"],
-    function(ide, ext, treeutil, fs, settings, markup) {
+     "ext/panels/panels", "text!ext/tree/tree.xml"],
+    function(ide, ext, treeutil, fs, settings, panels, markup) {
         
 return ext.register("ext/tree/tree", {
     name    : "Tree",
@@ -13,22 +13,17 @@ return ext.register("ext/tree/tree", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
+    visible : true,
+    
+    hook : function(){
+        panels.register(this);
+    },
 
     init : function() {
-        this.trFiles = trFiles;
+        this.trFiles = this.panel = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
         trFiles.setAttribute("model", fs.model);
         
-        var _self = this;
-        this.mnuItem = mnuPanels.appendChild(new apf.item({
-            caption : this.name,
-            type    : "check",
-            checked : true,
-            onclick : function(){
-                this.checked ? _self.enable() : _self.disable();
-            }
-        }));
-
         trFiles.addEventListener("afterselect", this.$afterselect = function() {
             var node = this.selected;
             if (node.tagName != "file")
@@ -101,21 +96,20 @@ return ext.register("ext/tree/tree", {
 
     enable : function(){
         trFiles.show();
-        this.mnuItem.check();
     },
 
     disable : function(){
         trFiles.hide();
-        this.mnuItem.uncheck();
     },
 
     destroy : function(){
         davProject.destroy(true, true);
         mdlFiles.destroy(true, true);
         trFiles.destroy(true, true);
-        this.mnuItem.destroy(true, true);
 
         trFiles.removeEventListener("afterselect", this.$afterselect);
+        
+        panels.unregister(this);
     }
 });
 

@@ -2,8 +2,8 @@
  * Extension Manager for the Ajax.org Cloud IDE
  */
 require.def("ext/settings/settings",
-    ["core/ide", "core/ext", "core/util", "text!ext/settings/settings.xml"],
-    function(ide, ext, util, markup) {
+    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/settings/settings.xml"],
+    function(ide, ext, util, fs, markup) {
         
 return ext.register("ext/settings/settings", {
     name   : "Settings",
