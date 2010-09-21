@@ -305,7 +305,7 @@ apf.UndoData = function(settings, at){
         apf.saveData(dataInstruction, options);
     };
 
-    this.preparse = function(undo, at, multicall){
+    this.preparse = function(undo, at, multicall, callback){
         var dataInstruction;
         if (this.xmlActionNode) {
             dataInstruction = this.xmlActionNode.getAttribute(undo ? "undo" : "set");
