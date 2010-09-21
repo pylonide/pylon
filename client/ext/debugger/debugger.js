@@ -24,14 +24,12 @@ return ext.register("ext/debugger/debugger", {
 
     init : function(amlNode){
         this.nodes.push(
-            /*dbg, dbgNode,*/
-
             //Append the debug toolbar to the main toolbar
             ide.tbMain.appendChild(tbDebug),
 
             //Append the stack window at the right
             ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgStack),
-            
+
             //Append the watch window on the left below the file tree
             ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgWatch)
         );
