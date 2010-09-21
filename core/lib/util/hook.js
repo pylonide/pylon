@@ -112,15 +112,15 @@ apf.hookWrapAsync = function(inner){
 }
 
 apf.hookWrapSync = function(inner){
-	
     var outer = function() {
         if(outer._hooks){
         	
             var args = Array.prototype.slice.call(arguments)
 
             if(outer._pres){
-                for(var i = 0;i<outer._pres.length;i++)
+                for(var i = 0;i<outer._pres.length;i++){
                     args = outer._pres[i].call(this,outer,inner,args);
+                }
             }
             
             var results = inner.apply(this, arguments)

@@ -1063,7 +1063,7 @@ apf.xmldb = new (function(){
         if (!docId || docId == -1) {
             docId = this.$xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
             if (docEl)
-                docEl.setAttribute(this.xmlDocTag, docId);
+                docEl.setAttribute(this.xmlDocTag, String(docId));
         }
         //#ifdef __WITH_NAMESERVER
         if (model)
