@@ -59,29 +59,33 @@ return ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
+        if (!this.panel)
+            panels.initPanel(this);
+
         //@todo stupid hack, find out why its not below editors
         
         //Append the console window at the bottom below the tab
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
         
-        //this.mnuItem.show();
-        if (!fromParent || this.manualEnabled == undefined)
-            this.mnuItem.check();
-        if (this.mnuItem.checked)
-            winDbgConsole.show();
+        if (this.manual && fromParent)
+            return;
+        
         if (!fromParent)
-            this.manualEnabled = true;
+            this.manual = true;
+        
+        this.mnuItem.check();
+        winDbgConsole.show();
     },
 
     disable : function(fromParent){
-        /*fromParent
-            ? this.mnuItem.hide()
-            : this.mnuItem.uncheck();*/
-        if (!fromParent || !this.manualEnabled) {
-            this.manualEnabled = false;
-            this.mnuItem.uncheck();
-            winDbgConsole.hide();
-        }
+        if (this.manual && fromParent)
+            return;
+
+        if (!fromParent)
+            this.manual = true;
+
+        this.mnuItem.uncheck();
+        winDbgConsole.hide();
     },
 
     destroy : function(){

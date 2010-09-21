@@ -5,12 +5,9 @@
             sbMain.setProperty('visible', event.checked);
         else if (event.value == 'toolbar')
             barTools.setProperty('visible', event.checked);
-        else if (event.value == 'tab')
-            tabEditors.setProperty('visible', event.checked);
       ">
         <a:item type="check" value='status' checked="true">Statusbar</a:item>
         <a:item type="check" value='toolbar' checked="true">Toolbar</a:item>
-        <a:item type="check" value='tab' checked="true">Tab Buttons</a:item>
         <a:divider />
     </a:menu>
 </a:application>

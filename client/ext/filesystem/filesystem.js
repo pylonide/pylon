@@ -102,6 +102,28 @@ return ext.register("ext/filesystem/filesystem", {
         this.model.insert(url, {
             insertPoint : this.model.queryNode("project")
         });
+        
+        var fs = this;
+        ide.addEventListener("openfile", function(e){
+            var node = e.node;
+            
+            if (node.selectSingleNode("data"))
+                return;
+
+            fs.readFile(node.getAttribute("path"), function(data) {
+                var match = data.match(/^.*?(\r?\n)/m);
+                if (match && match[1] == "\r\n")
+                    var nl = "windows";
+                else
+                    nl = "unix";
+
+                var doc = node.ownerDocument;
+                var xml = doc.createElement("data");
+                xml.appendChild(doc.createTextNode(data));
+                xml.setAttribute("newline", nl);
+                apf.b(node).append(xml);
+            });
+        });
     },
 
     enable : function(){

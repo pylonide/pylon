@@ -2,8 +2,8 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/editors/editors",
-    ["core/ide", "core/ext"],
-    function(ide, ext) {
+    ["core/ide", "core/ext", "core/util", "ext/panels/panels"],
+    function(ide, ext, util, panels) {
 
 return ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -11,6 +11,7 @@ return ext.register("ext/editors/editors", {
     alone   : true,
     type    : ext.GENERAL,
     nodes   : [],
+    visible : true,
 
     contentTypes  : {},
 
@@ -267,6 +268,10 @@ return ext.register("ext/editors/editors", {
 
     /**** Init ****/
 
+    hook : function(){
+        panels.register(this);
+    },
+
     init : function(){
         var _self = this;
         ext.addType("Editor", function(oExtension){
@@ -282,6 +287,47 @@ return ext.register("ext/editors/editors", {
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
         this.hbox = vbox.insertBefore(new apf.hbox({flex : 1}), vbox.firstChild);
         this.nodes.push(this.addTabSection());
+        
+        this.panel = this.hbox;
+        
+        /**** Support for state preservation ****/
+        
+        this.$settings = {}, _self = this;
+        ide.addEventListener("loadsettings", function(e){
+            var model = e.model;
+            ide.addEventListener("extload", function(){
+                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloudide.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
+                var nodes = model.queryNodes("auto/files/file");
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    ide.dispatchEvent("openfile", {
+                        value : nodes[i].getAttribute("name"), 
+                        node  : nodes[i]
+                    });
+                }
+            });
+        });
+
+        ide.addEventListener("savesettings", function(e){
+            var changed = false, 
+                pNode   = e.model.data.selectSingleNode("auto/files"),
+                state   = pNode && pNode.xml,
+                pages   = tabEditors.getPages();
+
+            if (pNode) {
+                pNode.parentNode.removeChild(pNode);
+                pNode = null;
+            }
+            
+            if (pages.length) {
+                pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
+                for (var i = 0, l = pages.length; i < l; i++) {
+                    pNode.appendChild(apf.xmldb.cleanNode(pages[i].$model.data.cloneNode(false)));
+                }
+            }
+            
+            if (state != (pNode && pNode.xml))
+                return true;
+        });
     },
 
     enable : function(){
@@ -294,6 +340,7 @@ return ext.register("ext/editors/editors", {
 
     destroy : function(){
         this.hbox.destroy(true, true);
+        panels.unregister(this);
     }
 });
 

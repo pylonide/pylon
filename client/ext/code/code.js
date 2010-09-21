@@ -66,11 +66,11 @@ return ext.register("ext/code/code", {
             }))
         );
 
-        var _self = this;
+        /*var _self = this;
         ide.addEventListener("keybindingschange", function(e){
             var bindings = e.ext.code;
             ceEditor.$editor.keyBinding.setConfig(bindings);
-        })
+        })*/
     },
 
     enable : function() {

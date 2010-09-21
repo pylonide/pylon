@@ -75,7 +75,9 @@
                         
                         apf.addEventListener("load", function(){
                             //Load extensions
-                            require(modules);
+                            require(modules, function(){
+                                ide.dispatchEvent("extload", {modules: modules});
+                            });
                         });
                     });
                 }
