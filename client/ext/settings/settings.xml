@@ -8,21 +8,8 @@
       buttons   = "close"
       width     = "550"
       height    = "300">
-        <a:model id="mdlSettings">
-            <settings>
-                <auto>
-                    <files />
-                    <panels />
-                    <plugins />
-                    <tree />
-                </auto>
-                <section name="General" page="pgSettingsGeneral" />
-                <section name="Editor" page="pgSettingsEditor" />
-            </settings>
-        </a:model>
-      
         <a:vbox anchors="0 0 0 0" edge="10">
-            <a:hbox padding="4" model="mdlSettings" actiontracker="atSettings" flex="1">
+            <a:hbox padding="4" model="{require('ext/settings/settings').model}" actiontracker="atSettings" flex="1">
                 <a:vbox width="150" padding="5">
                     <a:textbox initial-message="Filter" />
                     <a:tree flex="1"

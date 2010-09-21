@@ -26,15 +26,18 @@ return ext.register("ext/settings/settings", {
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
         
+        this.model = new apf.model();
+        this.model.load("ext/settings/template.xml");
+        
         this.$timer = setInterval(function(){
             if (ide.dispatchEvent("savesettings", {
-                model : mdlSettings
+                model : _self.model
             }) === true)
                 _self.save();
         }, 60000);
         
         ide.dispatchEvent("loadsettings", {
-            model : mdlSettings
+            model : this.model;
         });
     },
     
