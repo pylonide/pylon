@@ -16,7 +16,7 @@ return ext.register("ext/tree/tree", {
     visible : true,
     
     getSelectedPath: function() {
-        return treeutil.getPath(this.trFiles.selected);
+        return this.trFiles.selected.getAttribute("path");
     },
     
     hook : function(){
