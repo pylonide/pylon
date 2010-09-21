@@ -738,7 +738,9 @@ apf.BaseTab = function(){
         if (caption)
             page.setAttribute("caption", caption);
         
-        callback(page);
+        if (callback)
+            callback(page);
+            
         this.insertBefore(page, before);
         
         // #ifdef __ENABLE_TABSCROLL
