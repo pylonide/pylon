@@ -9357,6 +9357,7 @@
             border: 1px solid #c3c3c3;
             background-color: white;
             cursor: default;
+            overflow : hidden;
 
             font-family: Tahoma;
             font-size: 8pt;
