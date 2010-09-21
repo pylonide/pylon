@@ -4321,7 +4321,7 @@
          }
         
         .ce .ace_line .ace_keyword {
-          color: blue;
+          color: #2270b2;
         }
         
         .ce .ace_line .ace_buildin-constant {
