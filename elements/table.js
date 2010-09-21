@@ -165,6 +165,7 @@ apf.table = function(struct, tagName){
     }
 
     this.$propHandlers["padding"] = function(value){
+        if (!this.$columns) return;
         var cells = this.$table.getElementsByTagName("td");
         var lastCol, lastRow, cell, lRow = this.$tbody.lastChild;
         for (var i = this.$columns.length, l = cells.length; i < l; i++) {
