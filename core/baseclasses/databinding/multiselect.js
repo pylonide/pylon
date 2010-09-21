@@ -720,9 +720,10 @@ apf.MultiselectBinding = function(){
 
             result = this.$addNodes(xmlNode, null, true, false, null, null, "insert");//this.$isTreeArch??
             
-            this.$fillParent = (this.$getParentNode
+            this.$fillParentHtml = (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
                 : htmlNode);
+            this.$fillParent = xmlNode;
             this.$fill(result);
 
             // #ifdef __DEBUG

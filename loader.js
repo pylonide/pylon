@@ -51,6 +51,7 @@ apf.$x = apf.$loader
         "core/crypto/md5.js",
 
         "core/lib/util/abstractevent.js",
+        "core/lib/util/async.js",
         "core/lib/util/utilities.js",
         "core/lib/util/color.js",
         "core/lib/util/cookie.js",
