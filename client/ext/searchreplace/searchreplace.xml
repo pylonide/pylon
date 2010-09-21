@@ -1,0 +1,17 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="300" height="200">
+        <a:vbox edge="10" padding="4 0 4 0">
+            <a:label height="15">Search</a:label>
+            <a:textbox />
+            <a:label height="15">Replace With</a:label>
+            <a:textbox />
+            <a:divider />
+            <a:hbox>
+                <a:button>Replace</a:button>
+                <a:button>Replace All</a:button>
+                <a:button>Close</a:button>
+                <a:button>Find</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

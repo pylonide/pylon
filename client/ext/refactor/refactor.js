@@ -23,7 +23,7 @@ return ext.register("ext/refactor/refactor", {
             //txtSearchWords.setValue(sel);
             
             //Open search window
-            winSearchReplace.show();
+            winRefactor.show();
         };
         
         this.nodes.push(

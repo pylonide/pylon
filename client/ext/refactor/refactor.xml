@@ -1,8 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window title="Refactor your project" buttons="close" id="winSearchReplace" modal="false" center="true" width="300" height="400">
+    <a:window title="Refactor your project" buttons="close" id="winRefactor" modal="false" center="true" width="300" height="400">
         <a:table cols="100,*">
             <a:label>Search</a:label>
-            <a:textbox id="txtSearchWords" />
+            <a:textbox id="txtRefactorWords" />
             <a:label>Replace</a:label>
             <a:textbox />
         </a:table>
