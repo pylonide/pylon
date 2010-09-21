@@ -2,21 +2,9 @@
  * Code Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/tree/tree",
-    ["core/ide", "core/ext", "ext/tree/treeutil", "text!ext/tree/tree.xml"],
-    function(ide, ext, treeutil, markup) {
+    ["core/ide", "core/ext", "ext/tree/treeutil", "ext/filesystem/filesystem", "text!ext/tree/tree.xml"],
+    function(ide, ext, treeutil, fs, markup) {
         
-if (!location.host)
-    return {
-        name    : "Tree [Disabled - file://]",
-        dev     : "Ajax.org",
-        alone   : true,
-        type    : ext.GENERAL,
-        path    : "ext/tree/tree",
-        init    : function(){},
-        destroy : function(){},
-        saveFile : function(){}
-    };
-
 return ext.register("ext/tree/tree", {
     name    : "Tree",
     dev     : "Ajax.org",
@@ -27,6 +15,7 @@ return ext.register("ext/tree/tree", {
     init : function() {
         this.trFiles = trFiles;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
+        trFiles.setAttribute("model", fs.model);
         
         var _self = this;
         this.mnuItem = mnuPanels.appendChild(new apf.item({
@@ -40,7 +29,7 @@ return ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterselect", this.$afterselect = function() {
             var node = this.selected;
-            if (node.tagName != 'file')
+            if (node.tagName != "file")
                 return;
 
             //ext.openEditor(trFiles.value, trFiles.selected);
@@ -49,50 +38,20 @@ return ext.register("ext/tree/tree", {
             if (node.selectSingleNode("data"))
                 return;
 
-            apf.getData('{davProject.read([@id])}', {
-                xmlNode : node,
-                callback: function(data) {
-                    var match = data.match(/^.*?(\r?\n)/m);
-                    if (match && match[1] == "\r\n")
-                        var nl = "windows";
-                    else
-                        nl = "unix";
+            fs.readFile(node.getAttribute("id"), function(data) {
+                var match = data.match(/^.*?(\r?\n)/m);
+                if (match && match[1] == "\r\n")
+                    var nl = "windows";
+                else
+                    nl = "unix";
 
-                    var doc = node.ownerDocument;
-                    var xml = doc.createElement("data");
-                    xml.appendChild(doc.createTextNode(data));
-                    xml.setAttribute("newline", nl);
-                    apf.b(node).append(xml);
-                }
+                var doc = node.ownerDocument;
+                var xml = doc.createElement("data");
+                xml.appendChild(doc.createTextNode(data));
+                xml.setAttribute("newline", nl);
+                apf.b(node).append(xml);
             });
         });
-    },
-
-    saveFile : function(fileEl) {
-        var id = fileEl.getAttribute("id");
-        var data = apf.queryValue(fileEl, "data");
-        if (apf.queryValue(fileEl, "data/@newline") == "windows")
-            data = data.replace(/\n/g, "\r\n");
-
-        davProject.exec("write", [id, data]);
-    },
-
-    createDir: function(name) {
-        var node = trFiles.selected;
-        if (!node)
-            node = mdlFiles.selectSingleNode("//folder[1]");
-        if (node.getAttribute("type") != "folder")
-            node = node.parentNode;
-        davProject.exec("mkdir", [node.getAttribute("id"), name || "untitled folder", ""]);
-    },
-
-    createFile: function(name) {
-        var node = trFiles.selected;
-        if (!node)
-            node = mdlFiles.selectSingleNode("//folder[1]");
-        if (node.getAttribute("type") != "folder")
-            node = node.parentNode;
-        davProject.exec("create", [node.getAttribute("id"), name || "Newfile.txt", ""]);
     },
 
     getSelectedPath: function() {

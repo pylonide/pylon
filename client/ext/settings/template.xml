@@ -1,12 +1,10 @@
-<a:model id="mdlSettings">
-    <settings>
-        <auto>
-            <files />
-            <panels />
-            <plugins />
-            <tree />
-        </auto>
-        <section name="General" page="pgSettingsGeneral" />
-        <section name="Editor" page="pgSettingsEditor" />
-    </settings>
-</a:model>
+<settings>
+    <auto>
+        <files />
+        <panels />
+        <plugins />
+        <tree />
+    </auto>
+    <section name="General" page="pgSettingsGeneral" />
+    <section name="Editor" page="pgSettingsEditor" />
+</settings>

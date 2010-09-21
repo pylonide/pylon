@@ -2,8 +2,8 @@
  * Refactor Module for the Ajax.org Cloud IDE
  */
 require.def("ext/save/save",
-    ["core/ide", "core/ext", "core/util", "ext/tree/tree", "text!ext/save/save.xml"],
-    function(ide, ext, util, tree, markup) {
+    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/save/save.xml"],
+    function(ide, ext, util, fs, markup) {
 
 return ext.register("ext/save/save", {
     dev     : "Ajax.org",
@@ -11,7 +11,7 @@ return ext.register("ext/save/save", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    deps    : [tree],
+    deps    : [fs],
     hotkeys : {"quicksave":1, "saveas":1},
     hotitems: {},
 
@@ -75,7 +75,7 @@ return ext.register("ext/save/save", {
         if (!page)
             return;
 
-        tree.saveFile(page.$model.data);
+        fs.saveFile(page.$model.data);
         page.$at.reset();
         return false;
     },

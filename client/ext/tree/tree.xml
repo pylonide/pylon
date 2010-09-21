@@ -27,11 +27,7 @@
         
     ]]></a:script>
     
-    <a:webdav id="davProject" url="{location.protocol + '//' + location.host}/workspace" />
-    <a:model id="mdlFiles" src="{davProject.getroot()}" />
-
 	<a:tree id="trFiles" flex="3" autoselect="false"
-	  model     = "mdlFiles"
 	  each      = "[file|folder]">
         <a:bindings>
             <a:insert match="[node()[@type='folder']]" get="{davProject.readdir([@id])}" />
