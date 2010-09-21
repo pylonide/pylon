@@ -47,6 +47,7 @@ return ext.register("ext/settings/settings", {
     
     save : function(){
         //@todo save to disk
+        apf.console.log("SAVING SETTINGS");
     },
     
     addSection : function(name, xpath){

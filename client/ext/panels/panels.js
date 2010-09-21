@@ -15,6 +15,11 @@ return ext.register("ext/panels/panels", {
     nodes : [],
     panels : {},
     
+    initPanel : function(panelExt){
+        ext.initExtension(panelExt);
+        this.$setEvents(panelExt);
+    },
+    
     register : function(panelExt){
         var _self = this;
         panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
@@ -22,16 +27,13 @@ return ext.register("ext/panels/panels", {
             type    : "check",
             checked : panelExt.visible || false,
             onclick : function(){
-                ext.initExtension(panelExt);
-                _self.$setEvents(panelExt);
+                _self.initPanel(panelExt);
                 this.checked ? panelExt.enable() : panelExt.disable();
             }
         }));
         
-        if (panelExt.visible) {
-            ext.initExtension(panelExt);
-            this.$setEvents(panelExt);
-        }
+        if (panelExt.visible)
+            _self.initPanel(panelExt);
         
         this.panels[panelExt.path] = panelExt;
     },
@@ -41,12 +43,12 @@ return ext.register("ext/panels/panels", {
             if (!this.parentNode.visible)
                 this.parentNode.show();
             panelExt.mnuItem.check();
-        })
+        });
         panelExt.panel.addEventListener("hide", function(){
             panelExt.mnuItem.uncheck();
-            if (!this.parentNode.selectSingleNode("node()[@visible='true']").length)
+            if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();
-        })
+        });
         //panelExt.panel.show();
         
         this.setPanelSettings(panelExt, this.$settings[panelExt.path]);
@@ -85,7 +87,8 @@ return ext.register("ext/panels/panels", {
         
         /**** Support for state preservation ****/
         
-        this.$settings = {}, _self = this;
+        var _self = this;
+        this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/panel");
             if (strSettings) {

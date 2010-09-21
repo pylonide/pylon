@@ -59,6 +59,9 @@ return ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
+        if (!this.panel)
+            panels.initPanel(this);
+        
         //@todo stupid hack, find out why its not below editors
         
         //Append the console window at the bottom below the tab

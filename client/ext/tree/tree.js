@@ -15,6 +15,10 @@ return ext.register("ext/tree/tree", {
     markup  : markup,
     visible : true,
     
+    getSelectedPath: function() {
+        return treeutil.getPath(this.trFiles.selected);
+    },
+    
     hook : function(){
         panels.register(this);
     },
@@ -29,25 +33,7 @@ return ext.register("ext/tree/tree", {
             if (node.tagName != "file")
                 return;
 
-            //ext.openEditor(trFiles.value, trFiles.selected);
             ide.dispatchEvent("openfile", {value: this.value, node: node});
-
-            if (node.selectSingleNode("data"))
-                return;
-
-            fs.readFile(node.getAttribute("id"), function(data) {
-                var match = data.match(/^.*?(\r?\n)/m);
-                if (match && match[1] == "\r\n")
-                    var nl = "windows";
-                else
-                    nl = "unix";
-
-                var doc = node.ownerDocument;
-                var xml = doc.createElement("data");
-                xml.appendChild(doc.createTextNode(data));
-                xml.setAttribute("newline", nl);
-                apf.b(node).append(xml);
-            });
         });
 
         /**** Support for state preservation ****/
@@ -88,10 +74,6 @@ return ext.register("ext/tree/tree", {
                 return true;
             }
         });
-    },
-
-    getSelectedPath: function() {
-        return treeutil.getPath(this.trFiles.selected);
     },
 
     enable : function(){
