@@ -461,20 +461,26 @@ apf.webdav = function(struct, tagName){
     /**
      * Creates a new directory resource on the WebDAV server.
      * 
-     * @param {String}   sPath    Path of the new directory on the WebDAV server
-     * @param {Function} callback Function to execute when the request was successful
+     * @param {String}   sPath      Path of the new directory on the WebDAV server
+     * @param {Boolean}  [bLock]    Whether to require a lock before copy
+     * @param {Function} [callback] Function to execute when the request was successful
      * @type  {void}
      */
-    this.mkdir = function(sPath, callback) {
-        var oLock = this.lock(sPath);
-        if (!oLock.token)
-            return updateLockedStack.call(this, oLock, "mkdir", arguments);
+    this.mkdir = function(sPath, bLock, callback) {
+        if (bLock) {
+            var oLock = this.lock(sPath);
+            if (!oLock.token)
+                return updateLockedStack.call(this, oLock, "mkdir", arguments);
+        }
+
+        var _self = this;
 
         this.method = "MKCOL";
         this.doRequest(function(data, state, extra) {
+            bLock && unregisterLock.call(this, sPath);
             var iStatus = parseInt(extra.status);
             if (iStatus == 201) { //Created
-                // TODO: refresh parent node...
+                _self.readDir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
             }
             else if (iStatus == 403 || iStatus == 405 || iStatus == 409
               || iStatus == 415 || iStatus == 507) {
@@ -485,12 +491,11 @@ apf.webdav = function(struct, tagName){
                     error   : oError,
                     bubbles : true
                   }) === false)
-                    throw oError;
+                    callback(oError);
             }
-            this.unlock(oLock);
-        }, sPath, null, oLock.token
+        }, sPath, null, bLock && oLock.token
             ? { "If": "<" + oLock.token + ">" }
-            : null, true, callback);
+            : null, true);
     };
 
     /**
@@ -984,9 +989,9 @@ apf.webdav = function(struct, tagName){
      */
     function parseItem(oNode) {
         var NS      = apf.webdav.NS,
-            sPath   = $xmlns(oNode, "href", NS.D)[0].firstChild
-                      .nodeValue.replace(/[\\\/]+$/, ""),
-            sName   = decodeURIComponent(sPath.split("/").pop()),
+            sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
+                      .nodeValue.replace(/[\\\/]+$/, "")),
+            sName   = sPath.split("/").pop(),
             bHidden = (sName.charAt(0) == ".");
 
         if (!this.$showHidden && bHidden)
@@ -1080,25 +1085,25 @@ apf.webdav = function(struct, tagName){
                 this.read(oItem.path, callback);
                 break;
             case "create":
-                this.write(oItem.path + "/" + args[1], args[2], args[3] || false, null, callback);
+                this.write((oItem ? oItem.path : "") + "/" + args[1], args[2], args[3] || false, callback);
                 break;
             case "write":
             case "store":
             case "save":
-                this.write(oItem.path, args[1], args[2] || false, null, callback);
+                this.write(oItem.path, args[1], args[2] || false, callback);
                 break;
             case "copy":
             case "cp":
                 var oItem2 = this.getItemById(args[1]);
-                this.copy(oItem.path, oItem2.path, args[2], args[3] || false, callback);
+                this.copy(oItem.path, oItem2.path, args[2] || true, args[3] || false, callback);
                 break;
             case "rename":
                 oItem = this.getItemById(args[1]);
                 if (!oItem) break;
     
-                var sBasepath = oItem.path.replace(oItem.name, '');
+                var sBasepath = oItem.path.replace(oItem.name, "");
                 //TODO: implement 'Overwrite' setting...
-                this.move(oItem.path, sBasepath + args[0], args[1] || false, args[2] || false, callback);
+                this.move(oItem.path, sBasepath + args[0], args[2] || false, args[3] || false, callback);
                 break;
             case "move":
             case "mv":
@@ -1111,14 +1116,15 @@ apf.webdav = function(struct, tagName){
             case "rm":
                 this.remove(oItem.path, args[1] || false, callback);
                 break;
-            case "scandir":
             case "readdir":
+            case "scandir":
                 this.readDir(oItem.path, callback);
                 break;
             case "getroot":
                 this.getProperties(this.$rootPath, 0, callback);
                 break;
             case "mkdir":
+                this.mkdir((oItem ? oItem.path : "") + "/" + args[1], args[2] || false, callback)
                 break;
             case "lock":
                 this.lock(oItem.path, null, null, null, callback);
