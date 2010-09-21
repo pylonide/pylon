@@ -6,6 +6,10 @@ return keys.onLoad({
             "quicksave": "Command-S",
             "saveas": "Command-Shift-S"
         },
+        "newresource": {
+            "newfile": "Command-N",
+            "newdir": "Command-Shift-N"
+        },
         "undo" : {
             "undo": "Command-Z",
             "redo": "Command-Y"
