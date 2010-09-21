@@ -194,7 +194,7 @@ apf.button  = function(struct, tagName){
     //this.$booleanProperties["default"] = true;
     this.$booleanProperties["state"]   = true;
     this.$supportedProperties.push("icon", "value", "tooltip", "state",
-        "color", "caption", "action", "target", "default", "submenu", "hotkye");
+        "color", "caption", "action", "target", "default", "submenu", "hotkey");
 
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
