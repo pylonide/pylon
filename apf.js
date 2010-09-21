@@ -218,6 +218,8 @@ var apf = {
     
     xPathAxis  : {"self":1, "following-sibling":1, "ancestor":1}, //@todo finish list
     
+    hasRequireJS : window.require && typeof require.def == "function",
+
     availHTTP  : [],
     /**
      * @private

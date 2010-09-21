@@ -36,7 +36,7 @@
  * @since       0.1
  */
 
-if (!window.require || typeof require.def != "function")
+if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     require.def("apf/elements/codeeditor",
@@ -135,19 +135,22 @@ apf.codeeditor = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        this.$getMode(this.syntax, function(mode) {
-            doc.setMode(mode);
-        });
-        doc.setTabSize(parseInt(this.tabsize));
-        doc.setUseSoftTabs(this.softtabs);
-
-        this.$removeDocListeners && this.$removeDocListeners();
-        this.$removeDocListeners = this.$addDocListeners(doc);
-
-        this.$updateMarker();
-        this.$updateBreakpoints(doc);
-
-        this.$editor.setDocument(doc);
+        var _self = this;
+        apf.queue.add("ce" + _self.$uniqueId, function() {
+            _self.$getMode(_self.syntax, function(mode) {
+                doc.setMode(mode);
+            });
+            doc.setTabSize(parseInt(_self.tabsize));
+            doc.setUseSoftTabs(_self.softtabs);
+            
+            _self.$removeDocListeners && _self.$removeDocListeners();
+            _self.$removeDocListeners = _self.$addDocListeners(doc);
+            
+            _self.$updateMarker();
+            _self.$updateBreakpoints(doc);
+            
+            _self.$editor.setDocument(doc);            
+        })
     };
 
     this.$addDocListeners = function(doc) {

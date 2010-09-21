@@ -1,14 +1,11 @@
-if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debughost",
-    ["debug/StandaloneV8DebuggerService",
+if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
+    ["debug/WebSocketV8DebuggerService",
      "debug/V8Debugger",
      "apf/elements/dbg/v8debugger"],
-    function(StandaloneV8DebuggerService, V8Debugger, APFV8Debugger) {
+    function(WebSocketV8DebuggerService, V8Debugger, APFV8Debugger) {
 
-var V8DebugHost = function(hostname, port, o3obj) {
-    this.$hostname = hostname;
-    this.$port = port;
-    this.$o3obj = o3obj;
-    
+var V8WebSocketDebugHost = function(socket) {
+    this.$socket = socket;
     this.$debugger = null;
     
     this.$init();
@@ -32,8 +29,7 @@ var V8DebugHost = function(hostname, port, o3obj) {
 
         this.state = "connecting";
         
-        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
-        this.$v8ds = new StandaloneV8DebuggerService(socket);
+        this.$v8ds = new WebSocketV8DebuggerService(this.$socket);
         
         this.state = "connected";
         this.dispatchEvent("connect");
@@ -71,7 +67,6 @@ var V8DebugHost = function(hostname, port, o3obj) {
         var self = this;
         this.$v8ds.detach(0, function(err) {
             dbg.dispatchEvent("detach");
-            self.$socket.close();
             self.dispatchEvent("disconnect", {});
             callback && callback(err);
         });                
@@ -81,8 +76,7 @@ var V8DebugHost = function(hostname, port, o3obj) {
         this.detach(this.$debugger, callback);
     };
     
-}).call(V8DebugHost.prototype = new apf.Class());
+}).call(V8WebSocketDebugHost.prototype = new apf.Class());
 
-return V8DebugHost;
-
+return V8WebSocketDebugHost;
 });

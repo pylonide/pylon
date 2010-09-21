@@ -444,7 +444,9 @@ apf.$x = apf.$loader
         else {
             if (window.require && typeof require.def == "function") {
                 require([
-                    "apf/elements/codeeditor"
+                    "apf/elements/codeeditor",
+                    "apf/elements/debugger",
+                    "apf/elements/debughost"
                 ], start);
             }
             else

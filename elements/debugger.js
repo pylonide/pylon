@@ -1,3 +1,5 @@
+if (apf.hasRequireJS) require.def("apf/elements/debugger",
+    [], function() {
 
 apf.dbg = function(struct, tagName){
     this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
@@ -66,10 +68,10 @@ apf.dbg = function(struct, tagName){
             
             self.$loadSources();
             
-            dbgImpl.addEventListener("changeRunning", ace.bind(self.$onChangeRunning, self));
-            dbgImpl.addEventListener("break", ace.bind(self.$onBreak, self));
-            dbgImpl.addEventListener("detach", ace.bind(self.$onDetach, self));
-            dbgImpl.addEventListener("changeFrame", ace.bind(self.$onChangeFrame, self));
+            dbgImpl.addEventListener("changeRunning", self.$onChangeRunning.bind(self));
+            dbgImpl.addEventListener("break", self.$onBreak.bind(self));
+            dbgImpl.addEventListener("detach", self.$onDetach.bind(self));
+            dbgImpl.addEventListener("changeFrame", self.$onChangeFrame.bind(self));
         });
     };
     
@@ -200,3 +202,6 @@ window.adbg = {
      }
  };
 (apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+
+return apf.dbg;
+});

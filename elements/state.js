@@ -181,7 +181,8 @@ apf.state = function(struct, tagName){
     /**** Properties and Attributes ****/
 
     this.$supportedProperties.push("active");
-
+    this.$booleanProperties["active"] = true;
+    
     /**
      * @attribute {Boolean} active whether this state is the active state
      */

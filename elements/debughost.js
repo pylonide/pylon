@@ -1,4 +1,9 @@
-
+if (apf.hasRequireJS) require.def("apf/elements/debughost",
+    ["apf/elements/dbg/chromedebughost",
+     "apf/elements/dbg/v8debughost", 
+     "apf/elements/dbg/v8websocketdebughost"],
+    function(ChromeDebugHost, V8DebugHost, V8WebSocketDebugHost) {
+    
 apf.debughost = function(struct, tagName){
     this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
 };
@@ -48,9 +53,8 @@ apf.debughost = function(struct, tagName){
             return;
         }
         
-        if (this.type == "chrome" || this.type == "v8") {
-            // TODO #IDE-52
-            if (!apf.debughost.$o3obj) {
+        if (this.type == "chrome" || this.type == "v8" || this.type == "v8-ws") {
+            if (!apf.debughost.$o3obj && this.type !== "v8-ws") {
                 apf.debughost.$o3obj = window.o3Obj || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
                     oninstallprompt: function() { alert("can't find o3 plugin"); },
                     product: "O3Demo"
@@ -58,9 +62,14 @@ apf.debughost = function(struct, tagName){
             }
 
             if (this.type == "chrome") {
-                this.$host = new apf.ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
+                this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
+            } else if (this.type == "v8") {
+                this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
             } else {
-                this.$host = new apf.V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new V8WebSocketDebugHost(socket);
             }
                 
             var self = this;
@@ -123,3 +132,6 @@ apf.debughost = function(struct, tagName){
 }).call(apf.debughost.prototype = new apf.AmlElement());
 
 apf.aml.setElement("debughost", apf.debughost);
+return apf.debughost;
+
+});

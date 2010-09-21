@@ -1,4 +1,12 @@
-apf.ChromeDebugHost = function(hostname, port, o3obj) {
+if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
+    ["debug/ChromeDebugMessageStream", 
+     "debug/DevToolsService", 
+     "debug/V8DebuggerService",
+     "debug/V8Debugger",
+     "apf/elements/dbg/v8debugger"],
+    function(ChromeDebugMessageStream, DevToolsService, V8DebuggerService, V8Debugger, APFV8Debugger) {
+
+var ChromeDebugHost = function(hostname, port, o3obj) {
     this.$hostname = hostname;
     this.$port = port;
     this.$o3obj = o3obj;
@@ -36,7 +44,7 @@ apf.ChromeDebugHost = function(hostname, port, o3obj) {
             self.state = "connected";
             self.dispatchEvent("connect");
             
-            window.onunload = ace.bind(self.disconnect, self);
+            window.onunload = self.disconnect.bind(self);
         });
 
         msgStream.connect();        
@@ -64,7 +72,7 @@ apf.ChromeDebugHost = function(hostname, port, o3obj) {
         var self = this;
         this.$connect(function() {
             self.$v8ds.attach(tabId, function() {
-                dbg = new apf.V8Debugger(new V8Debugger(tabId, self.$v8ds), this);
+                dbg = new APFV8Debugger(new V8Debugger(tabId, self.$v8ds), this);
                 self.$debuggers[tabId] = dbg;
                 callback(null, dbg);
             });
@@ -111,4 +119,8 @@ apf.ChromeDebugHost = function(hostname, port, o3obj) {
         detachNext();
     };
     
-}).call(apf.ChromeDebugHost.prototype = new apf.Class());
+}).call(ChromeDebugHost.prototype = new apf.Class());
+
+return ChromeDebugHost;
+
+});

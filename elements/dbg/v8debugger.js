@@ -1,4 +1,7 @@
-apf.V8Debugger = function(dbg, host) {
+if (apf.hasRequireJS) require.def("apf/elements/dbg/v8debugger",
+    [], function() {
+
+var V8Debugger = function(dbg, host) {
     this.$init();
     
     this.$debugger = dbg;
@@ -7,7 +10,7 @@ apf.V8Debugger = function(dbg, host) {
     this.$breakpoints = {};
     
     var self = this;
-    dbg.addEventListener("changeRunning", function(e) {      
+    dbg.addEventListener("changeRunning", function(e) {
         self.dispatchEvent("changeRunning", e);
         if (dbg.isRunning()) {
             self.setFrame(null);
@@ -291,4 +294,8 @@ apf.V8Debugger = function(dbg, host) {
         return str.join("");
     }        
     
-}).call(apf.V8Debugger.prototype = new apf.Class());
+}).call(V8Debugger.prototype = new apf.Class());
+
+return V8Debugger;
+
+});
