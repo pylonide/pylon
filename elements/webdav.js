@@ -212,7 +212,10 @@ apf.webdav = function(struct, tagName){
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
 
-                    throw oError;
+                    if (typeof fCallback == "function")
+                        fCallback(oError);
+                    else
+                        throw oError;
                 }
 
                 var iStatus = parseInt(extra.status);
@@ -233,7 +236,10 @@ apf.webdav = function(struct, tagName){
                         extra.data = data.documentElement;
                     }
                     catch(e) {
-                        throw WebDAVError.call(this, "Received invalid XML\n\n" + e.message);
+                        if (typeof fCallback == "function")
+                            fCallback(oError);
+                        else
+                            throw WebDAVError.call(this, "Received invalid XML\n\n" + e.message);
                     }
                 }
 
