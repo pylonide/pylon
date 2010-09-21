@@ -53,7 +53,6 @@ return ext.register("ext/tree/tree", {
                 currentSettings = apf.unserialize(strSettings);
                 trFiles.expandList(currentSettings);
             }
-            trFiles.expandList(["project"]);
         });
 
         ide.addEventListener("savesettings", function(e){
@@ -62,7 +61,7 @@ return ext.register("ext/tree/tree", {
 
             var path, id;
             for (id in expandedList) {
-                path = apf.xmlToXpath(expandedList[id]);
+                path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
                 if (currentSettings.indexOf(path) == -1) {
                     currentSettings.push(path);
                     changed = true;

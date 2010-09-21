@@ -47,7 +47,9 @@
                 };*/
 
                 apf.onstart = function(){
-                    require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
+                    require(["core/ide", "core/ext", "core/util", "text!/workspace/.settings.xml"], function(ide, ext, util, settings){
+                        ide.settings = settings;
+                        
                         var modules = [
                             "ext/filesystem/filesystem",
                             "ext/settings/settings",
