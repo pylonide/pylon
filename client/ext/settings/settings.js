@@ -25,6 +25,21 @@ return ext.register("ext/settings/settings", {
                 }
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
+        
+        this.$timer = setInterval(function(){
+            if (ide.dispatchEvent("savesettings", {
+                model : mdlSettings
+            }) === true)
+                _self.save();
+        }, 60000);
+        
+        ide.dispatchEvent("loadsettings", {
+            model : mdlSettings
+        });
+    },
+    
+    save : function(){
+        //@todo save to disk
     },
     
     addSection : function(name, xpath){

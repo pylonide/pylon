@@ -102,7 +102,8 @@ module.exports = IdeServer = function(projectDir, server) {
         if (this.child)
             return _self.error("Child process already running!", message);
 
-        var file = _self.projectDir + "/" + message.file;
+        var file = async.abspath(_self.projectDir + "/" + message.file);
+        
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.error("File does not exist: " + message.file, message);

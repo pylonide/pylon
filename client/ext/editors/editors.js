@@ -276,8 +276,8 @@ return ext.register("ext/editors/editors", {
             _self.openEditor(e.value, e.node);
         });
 
-        this.hbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]")
-            .appendChild(new apf.hbox({flex : 1}));
+        var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
+        this.hbox = vbox.insertBefore(new apf.hbox({flex : 1}), vbox.firstChild);
         this.nodes.push(this.addTabSection());
     },
 

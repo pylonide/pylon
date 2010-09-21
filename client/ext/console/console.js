@@ -12,9 +12,6 @@ return ext.register("ext/console/console", {
     markup : markup,
 
     init : function(amlNode){
-        //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
-        
         var _self = this;
         this.mnuItem = mnuPanels.appendChild(new apf.item({
             caption : this.name,
@@ -27,6 +24,11 @@ return ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
+        //@todo stupid hack, find out why its not below editors
+        
+        //Append the console window at the bottom below the tab
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+        
         //this.mnuItem.show();
         if (!fromParent || this.manualEnabled == undefined)
             this.mnuItem.check();
