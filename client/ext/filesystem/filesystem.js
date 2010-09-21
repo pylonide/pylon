@@ -30,26 +30,54 @@ return ext.register("ext/filesystem/filesystem", {
             this.webdav.exec("write", [id, data]);
     },
 
-    createDir: function(name) {
+    createFolder: function() {
         var node = trFiles.selected;
         if (!node)
-            node = mdlFiles.selectSingleNode("//folder[1]");
+            node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
         
-        if (this.webdav)
-            this.webdav.exec("mkdir", [node.getAttribute("id"), name || "untitled folder", ""]);
+        if (this.webdav) {
+            trFiles.focus();
+            this.webdav.exec("mkdir", [node.getAttribute("id"), "untitled folder"], function(data) {
+                // @todo: in case of error, show nice alert dialog
+                if (data instanceof Error)
+                    throw Error;
+                if (data.indexOf("<folder") > -1) {
+                    trFiles.insert(data, {
+                        insertPoint: node,
+                        clearContents: true
+                    });
+                }
+                trFiles.select(node.selectSingleNode("folder[@name='untitled folder']"));
+                trFiles.startRename();
+            });
+        }
     },
 
-    createFile: function(name) {
+    createFile: function() {
         var node = trFiles.selected;
         if (!node)
-            node = mdlFiles.selectSingleNode("//folder[1]");
+            node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
         
-        if (this.webdav)
-            this.webdav.exec("create", [node.getAttribute("id"), name || "Newfile.txt", ""]);
+        if (this.webdav) {
+            trFiles.focus();
+            var _self = this;
+            this.webdav.exec("create", [node.getAttribute("id"), "untitled file.txt"], function(data) {
+                _self.webdav.exec("readdir", [node.getAttribute("id")], function(data) {
+                    if (data.indexOf("<file") > -1) {
+                        trFiles.insert(data, {
+                            insertPoint: node,
+                            clearContents: true
+                        });
+                    }
+                    trFiles.select(node.selectSingleNode("file[@name='untitled file.txt']"));
+                    trFiles.startRename();
+                });
+            });
+        }
     },
 
     /**** Init ****/

@@ -15,6 +15,10 @@ return keys.onLoad({
             "copy": "Ctrl-C",
             "paste": "Ctrl-V"
         },
+        "newresource": {
+            "newfile": "Ctrl-N",
+            "newdir": "Ctrl-Shift-N"
+        },
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",
