@@ -167,6 +167,7 @@ apf.aml.setElement("auth", apf.auth);
 (function(){
     this.autostart     = true;
     this.authenticated = false;
+    this.enablequeue   = false;
     
     this.$retry      = true;
     this.loggedIn    = false;
@@ -193,7 +194,7 @@ apf.aml.setElement("auth", apf.auth);
 
     this.$supportedProperties.push("login", "logout", "fail-state", "error-state",
         "login-state", "logout-state", "waiting-state", "window", "autostart",
-        "remember", "authenticated");
+        "remember", "authenticated", "enablequeue");
 
     this.$propHandlers["login"]         = 
     this.$propHandlers["login-state"]   = function(value){
@@ -609,7 +610,7 @@ apf.aml.setElement("auth", apf.auth);
         this.loggedIn = false;
 
         if (result === false) {
-            if (options) //Add communication to queue for later processing
+            if (this.enablequeue && options) //Add communication to queue for later processing
                 this.$queue.push(options);
 
             return true; //cancels error state in protocol
