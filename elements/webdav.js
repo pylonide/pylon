@@ -1038,7 +1038,7 @@ apf.webdav = function(struct, tagName){
      * Instruction handler for WebDav protocols.
      */
     this.exec = function(method, args, callback){
-        var oItem = this.$fsCache[args[0]];
+        //var oItem = this.$fsCache[args[0]];
         // RULE for case aliases: first, topmost match is the preferred term for any
         //                        action and should be used in demos/ examples in
         //                        favor of other aliases.
@@ -1051,25 +1051,23 @@ apf.webdav = function(struct, tagName){
                 this.reset();
                 break;
             case "read":
-                this.read(oItem.path, callback);
+                this.read(args[0], callback);
                 break;
             case "create":
-                this.write((oItem ? oItem.path : "") + "/" + args[1], args[2], args[3] || false, callback);
+                this.write((args[0] ? args[0] : "") + "/" + args[1], args[2], args[3] || false, callback);
                 break;
             case "write":
             case "store":
             case "save":
-                this.write(oItem.path, args[1], args[2] || false, callback);
+                this.write(args[0], args[1], args[2] || false, callback);
                 break;
             case "copy":
             case "cp":
-                var oItem2 = this.$fsCache[args[1]];
-                this.copy(oItem.path, oItem2.path, args[2] || true, args[3] || false, callback);
+                this.copy(args[0], args[1], args[2] || true, args[3] || false, callback);
                 break;
             case "rename":
-                oItem = this.$fsCache[args[1]];
+                var oItem = this.$fsCache[args[1]];
                 if (!oItem) break;
-    
                 var sBasepath = oItem.path.replace(oItem.name, "");
                 //TODO: implement 'Overwrite' setting...
                 this.move(oItem.path, sBasepath + args[0], args[2] || false, args[3] || false, callback);
@@ -1077,29 +1075,29 @@ apf.webdav = function(struct, tagName){
             case "move":
             case "mv":
                 //TODO: implement 'Overwrite' setting...
-                this.move(oItem.path, args[1] + "/" + oItem.name,
+                this.move(args[0], args[1] + "/" + oItem.name,
                     args[2] || false, args[3] || false, callback);
                 break;
             case "remove":
             case "rmdir":
             case "rm":
-                this.remove(oItem.path, args[1] || false, callback);
+                this.remove(args[0], args[1] || false, callback);
                 break;
             case "readdir":
             case "scandir":
-                this.readDir(oItem.path, callback);
+                this.readDir(args[0], callback);
                 break;
             case "getroot":
                 this.getProperties(this.$rootPath, 0, callback);
                 break;
             case "mkdir":
-                this.mkdir((oItem ? oItem.path : "") + "/" + args[1], args[2] || false, callback)
+                this.mkdir((args[0] ? args[0] : "") + "/" + args[1], args[2] || false, callback)
                 break;
             case "lock":
-                this.lock(oItem.path, null, null, null, callback);
+                this.lock(args[0], null, null, null, callback);
                 break;
             case "unlock":
-                this.unlock(oItem.path, callback);
+                this.unlock(args[0], callback);
                 break;
             default:
                 //#ifdef __DEBUG
