@@ -46,24 +46,24 @@
  *  get="{myWebdav.authenticate([@username], [@password])}"
  *  get="{myWebdav.login(...alias for authenticate...)}"
  *  set="{myWebdav.logout()}"
- *  get="{myWebdav.read([@id])}"
- *  get="{myWebdav.create([@id], 'New File.txt', '')}"
- *  set="{myWebdav.write([@id], [@data])}"
+ *  get="{myWebdav.read([@path])}"
+ *  get="{myWebdav.create([@path], 'New File.txt', '')}"
+ *  set="{myWebdav.write([@path], [@data])}"
  *  set="{myWebdav.store(...alias for write...)}"
  *  set="{myWebdav.save(...alias for write...)}"
- *  set="{myWebdav.copy([@id], [../@id])}"
+ *  set="{myWebdav.copy([@path], [../@path])}"
  *  set="{myWebdav.cp(...alias for copy...)}"
- *  set="{myWebdav.rename([@name], [@id])}"
- *  set="{myWebdav.move([@id], [../@id])}"
+ *  set="{myWebdav.rename([@name], [@path])}"
+ *  set="{myWebdav.move([@path], [../@path])}"
  *  set="{myWebdav.mv(...alias for move...)}"
- *  set="{myWebdav.remove([@id])}"
+ *  set="{myWebdav.remove([@path])}"
  *  set="{myWebdav.rmdir(...alias for remove...)}"
  *  set="{myWebdav.rm(...alias for remove...)}"
- *  get="{myWebdav.readdir([@id])}"
+ *  get="{myWebdav.readdir([@path])}"
  *  get="{myWebdav.scandir(...alias for readdir...)}"
  *  load="{myWebdav.getroot()}"
- *  set="{myWebdav.lock([@id])}"
- *  set="{myWebdav.unlock([@id])}"
+ *  set="{myWebdav.lock([@path])}"
+ *  set="{myWebdav.unlock([@path])}"
  * </code>
  *
  * @event authfailure Fires when the authentication process failed or halted.
@@ -109,7 +109,7 @@ apf.webdav = function(struct, tagName){
     this.$lockedStack = [];
     this.$lockId      = 0;
     this.$serverVars  = {};
-    this.$fsCache     = [];
+    this.$fsCache     = {};
 };
 
 (function() {
@@ -646,7 +646,7 @@ apf.webdav = function(struct, tagName){
                     throw oError;
             }
             else { //success!!
-                getItemByPath.call(this, sFrom).path = sTo;
+                this.$fsCache[sFrom].path = sTo;
             }
             callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
@@ -996,19 +996,12 @@ apf.webdav = function(struct, tagName){
 
         if (!this.$showHidden && bHidden)
             return "";
-        
-        var t, iId,
-            oItem = getItemByPath.call(this, sPath);
-        if (oItem && typeof oItem.id == "number")
-            iId = oItem.id;
-        else
-            iId = this.$fsCache.length;
 
-        var sType  = $xmlns(oNode, "collection", NS.D).length > 0 ? "folder" : "file",
+        var t, oItem,
+            sType  = $xmlns(oNode, "collection", NS.D).length > 0 ? "folder" : "file",
             aCType = $xmlns(oNode, "getcontenttype", NS.D),
             aExec  = $xmlns(oNode, "executable", NS.lp2);
-        oItem = this.$fsCache[iId] = {
-            id          : iId,
+        oItem = this.$fsCache[sPath] = apf.extend(this.$fsCache[sPath] || {}, {
             path        : sPath,
             type        : sType,
             size        : parseInt(sType == "file"
@@ -1023,9 +1016,9 @@ apf.webdav = function(struct, tagName){
             etag        : (t = $xmlns(oNode, "getetag", NS.lp1)).length ? t[0].firstChild.nodeValue : "",
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
-        };
+        });
         
-        return oItem.xml = "<" + sType + " id='" + iId + "'  type='" + sType
+        return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
             + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
             + oItem.contentType + "' creationdate='" + oItem.creationDate
             + "' lockable='" + oItem.lockable.toString() + "' hidden='"
@@ -1033,43 +1026,13 @@ apf.webdav = function(struct, tagName){
             + "'/>";
     }
 
-    /*
-     * Retrieve a file or directory resource from cache by searching for a 
-     * matching path name.
-     * 
-     * @param {String} sPath Path pointing to a resource on the server
-     * @type  {Object}
-     * @private
-     */
-    function getItemByPath(sPath) {
-        for (var i = 0, j = this.$fsCache.length; i < j; i++) {
-            if (this.$fsCache[i].path == sPath)
-                return this.$fsCache[i];
-        }
-        return null;
-    }
-
-    /**
-     * Retrieve a file or directory resource from cache by searching for a 
-     * matching resource identifier.
-     * 
-     * @param {Number} iId WebDAV resource identifier pointing to a resource on the server
-     * @type  {Object}
-     * @private
-     */
-    this.getItemById = function(iId) {
-        if (typeof iId == "string")
-            iId = parseInt(iId);
-        return this.$fsCache[iId] || null;
-    };
-
     // #ifdef __WITH_DATA
 
     /**
      * Instruction handler for WebDav protocols.
      */
     this.exec = function(method, args, callback){
-        var oItem = this.getItemById(args[0]);
+        var oItem = this.$fsCache[args[0]];
         // RULE for case aliases: first, topmost match is the preferred term for any
         //                        action and should be used in demos/ examples in
         //                        favor of other aliases.
@@ -1094,11 +1057,11 @@ apf.webdav = function(struct, tagName){
                 break;
             case "copy":
             case "cp":
-                var oItem2 = this.getItemById(args[1]);
+                var oItem2 = this.$fsCache[args[1]];
                 this.copy(oItem.path, oItem2.path, args[2] || true, args[3] || false, callback);
                 break;
             case "rename":
-                oItem = this.getItemById(args[1]);
+                oItem = this.$fsCache[args[1]];
                 if (!oItem) break;
     
                 var sBasepath = oItem.path.replace(oItem.name, "");
@@ -1108,8 +1071,8 @@ apf.webdav = function(struct, tagName){
             case "move":
             case "mv":
                 //TODO: implement 'Overwrite' setting...
-                this.move(oItem.path, this.getItemById(args[1]).path + "/"
-                    + oItem.name, args[2] || false, args[3] || false, callback);
+                this.move(oItem.path, args[1] + "/" + oItem.name,
+                    args[2] || false, args[3] || false, callback);
                 break;
             case "remove":
             case "rmdir":
