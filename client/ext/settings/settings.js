@@ -37,7 +37,7 @@ return ext.register("ext/settings/settings", {
         }, 60000);
         
         ide.dispatchEvent("loadsettings", {
-            model : this.model;
+            model : this.model
         });
     },
     

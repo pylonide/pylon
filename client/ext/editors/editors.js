@@ -98,6 +98,9 @@ return ext.register("ext/editors/editors", {
 
     isEditorAvailable : function(page, path){
         var editor = ext.extLut[path];
+        if (!editor)
+            return false;
+        
         var contentTypes = editor.contentTypes;
         return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
     },

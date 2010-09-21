@@ -50,7 +50,8 @@
                     require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
                         var modules = [
                             "ext/editors/editors",
-                            (location.host ? "ext/tree/tree" : "ext/localtree/localtree"),
+                            "ext/filesystem/filesystem",
+                            "ext/tree/tree",
                             "ext/save/save",
                             "ext/newresource/newresource",
                             "ext/undo/undo",

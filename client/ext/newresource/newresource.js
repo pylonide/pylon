@@ -2,8 +2,8 @@
  * Refactor Module for the Ajax.org Cloud IDE
  */
 require.def("ext/newresource/newresource",
-    ["core/ide", "core/ext", "core/util", "ext/tree/tree", "text!ext/newresource/newresource.xml"],
-    function(ide, ext, util, tree, markup) {
+    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/newresource/newresource.xml"],
+    function(ide, ext, util, fs, markup) {
 
 return ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
@@ -11,7 +11,7 @@ return ext.register("ext/newresource/newresource", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    deps    : [tree],
+    deps    : [fs],
     hotkeys : {"newfile":1, "newdir":1},
     hotitems: {},
 
@@ -83,7 +83,7 @@ return ext.register("ext/newresource/newresource", {
         var name = this.filetext.getValue();
         if (!name)
             return;
-        tree.createFile(name);
+        fs.createFile(name);
     },
 
     newdir: function() {
@@ -91,7 +91,7 @@ return ext.register("ext/newresource/newresource", {
         var name = this.dirtext.getValue();
         if (!name)
             return;
-        tree.createDir(name);
+        fs.createDir(name);
     },
 
     enable : function(){
