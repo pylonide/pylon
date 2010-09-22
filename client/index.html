@@ -74,7 +74,7 @@
                             "ext/keybindings/keybindings"
                         ];
                         if (location.host)
-                            modules.unshift("ext/noderunner/noderunner");
+                            modules.push("ext/noderunner/noderunner");
                         
                         apf.addEventListener("load", function(){
                             //Load extensions

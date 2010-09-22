@@ -22,7 +22,7 @@ return ext.register("ext/settings/settings", {
     save : function(){
         //@todo save to disk
         //apf.console.log("SAVING SETTINGS");
-        //fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
+        fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
     },
     
     addSection : function(name, xpath){
