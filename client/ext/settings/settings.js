@@ -2,8 +2,9 @@
  * Extension Manager for the Ajax.org Cloud IDE
  */
 require.def("ext/settings/settings",
-    ["core/ide", "core/ext", "core/util", "text!ext/settings/settings.xml"],
-    function(ide, ext, util, markup) {
+    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", 
+     "text!ext/settings/settings.xml", "text!ext/settings/template.xml"],
+    function(ide, ext, util, fs, markup, template) {
         
 return ext.register("ext/settings/settings", {
     name   : "Settings",
@@ -11,8 +12,21 @@ return ext.register("ext/settings/settings", {
     alone  : true,
     type   : ext.GENERAL, 
     markup : markup,
+    file   : "/workspace/.settings.xml",
     
     nodes : [],
+    
+    save : function(){
+        //@todo save to disk
+        //apf.console.log("SAVING SETTINGS");
+        fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
+    },
+    
+    addSection : function(name, xpath){
+        var id = "pgSettings" + name.replace(/ /g, "_");
+        this.model.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
+        return pgSettings.add(name, id);
+    },
     
     hook : function(){
         var _self = this;
@@ -27,7 +41,23 @@ return ext.register("ext/settings/settings", {
         );
         
         this.model = new apf.model();
-        this.model.load("ext/settings/template.xml");
+        /*fs.readFile(_self.file, function(data, state, extra){
+            if (state != apf.SUCCESS)
+                _self.model.load(template);
+            else
+                _self.model.load(data);
+            
+            ide.dispatchEvent("loadsettings", {
+                model : _self.model
+            });
+        });*/
+        this.model.load(
+            ide.settings && ide.settings.indexOf("d:error") > -1
+              ? template
+              : ide.settings);
+        ide.dispatchEvent("loadsettings", {
+            model : _self.model
+        });
         
         this.$timer = setInterval(function(){
             if (ide.dispatchEvent("savesettings", {
@@ -36,23 +66,9 @@ return ext.register("ext/settings/settings", {
                 _self.save();
         }, 6000); //60000
         
-        ide.dispatchEvent("loadsettings", {
-            model : this.model
-        });
-        
         ide.addEventListener("$event.loadsettings", function(callback){
             callback({model: _self.model});
         });
-    },
-    
-    save : function(){
-        //@todo save to disk
-    },
-    
-    addSection : function(name, xpath){
-        var id = "pgSettings" + name.replace(/ /g, "_");
-        mdlSettings.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
-        return pgSettings.add(name, id);
     },
     
     init : function(amlNode){

@@ -1,0 +1,30 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="300" height="200">
+        <a:vbox edge="10" padding="4 0 4 0">
+            <a:hbox>
+                <a:label width="70">Search</a:label>
+                <a:textbox flex="1" />
+            </a:hbox>
+            <a:hbox>
+                <a:label width="70">Replace With</a:label>
+                <a:textbox flex="1" />
+            </a:hbox>
+            <a:divider />
+            <a:table columns="125,125">
+                <a:checkbox id="chkMatchCase" checked="true" label="Match Case" />
+                <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
+                <a:checkbox id="chkWholeWords" label="Whole Words" />
+                <a:checkbox id="chkSearchSelection" label="Search Selection" />
+                <a:checkbox id="chkRegEx" label="Regular Expressions" />
+                <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
+            </a:table>
+            <a:divider />
+            <a:hbox>
+                <a:button>Replace</a:button>
+                <a:button>Replace All</a:button>
+                <a:button>Close</a:button>
+                <a:button>Find</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

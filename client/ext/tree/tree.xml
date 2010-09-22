@@ -29,19 +29,19 @@
     
 	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true">
 	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-            <a:insert match="[folder]" get="{location.host and davProject.readdir([@id])}" />
+            <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
             <a:caption match="[@name]" />
             <a:icon match="[folder|project]" value="folder.png" />
             <a:icon match="[file]" value="{getIcon(%[.])}" />
             <a:expanded match="[project]" />
         </a:each>
         
-        <a:add type="folder" get="{davProject.mkdir([@id], 'New Folder')}" />
-        <a:add type="file" get="{davProject.create([@id], 'New File.txt', '')}" />
-        <a:rename set="{davProject.rename([@name], [@id])}"/>
-        <a:copy match="[.]" set="{davProject.copy([@id], [../@id])}"/>
-        <a:move match="[.]" set="{davProject.move([@id], [../@id])}"/>
-        <a:remove match="[.]" set="{davProject.remove([@id])}"/>
+        <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+        <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+        <a:rename set="{davProject.rename([@name], [@path])}"/>
+        <a:copy match="[.]" set="{davProject.copy([@path], [../@path])}"/>
+        <a:move match="[.]" set="{davProject.move([@path], [../@path])}"/>
+        <a:remove match="[.]" set="{davProject.remove([@path])}"/>
         <!--a:dragdrop>
             <a:allow-drag match="folder|file" />
             <a:allow-drop match="folder|file" target="folder"

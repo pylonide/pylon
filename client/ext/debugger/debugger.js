@@ -34,7 +34,7 @@ return ext.register("ext/debugger/debugger", {
             ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgWatch)
         );
 
-        log.enable();
+        log.enable(true);
     },
 
     enable : function(){

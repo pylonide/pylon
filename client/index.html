@@ -47,21 +47,25 @@
                 };*/
 
                 apf.onstart = function(){
-                    require(["core/ide", "core/ext", "core/util"], function(ide, ext, util){
+                    require(["core/ide", "core/ext", "core/util", "text!/workspace/.settings.xml"], function(ide, ext, util, settings){
+                        ide.settings = settings;
+                        
                         var modules = [
-                            "ext/editors/editors",
                             "ext/filesystem/filesystem",
+                            "ext/settings/settings",
+                            "ext/editors/editors",
+                            "ext/panels/panels",
                             "ext/tree/tree",
                             "ext/save/save",
                             "ext/newresource/newresource",
                             "ext/undo/undo",
                             "ext/clipboard/clipboard",
                             "ext/refactor/refactor",
+                            "ext/searchreplace/searchreplace",
                             "ext/html/html",
                             "ext/browser/browser",
                             "ext/code/code", 
                             "ext/extmgr/extmgr",
-                            "ext/settings/settings",
                             "ext/docs/docs",
                             "ext/richtext/richtext",
                             "ext/debugger/debugger",
@@ -73,7 +77,9 @@
                         
                         apf.addEventListener("load", function(){
                             //Load extensions
-                            require(modules);
+                            require(modules, function(){
+                                ide.dispatchEvent("extload", {modules: modules});
+                            });
                         });
                     });
                 }
@@ -233,7 +239,6 @@
                     <a:button submenu="mnuFile">File</a:button>
                     <a:button submenu="mnuEdit">Edit</a:button>
                     <a:button submenu="mnuView">View</a:button>
-                    <a:button submenu="mnuPanels">Windows</a:button>
                     <a:dropdown right="1" top="1" id="ddModes"
                       onafterselect = "
                         var ext = require('core/ext');

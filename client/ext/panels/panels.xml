@@ -1,0 +1,13 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:menu id="mnuPanels" 
+      onitemclick="
+        if (event.value == 'status')
+            sbMain.setProperty('visible', event.checked);
+        else if (event.value == 'toolbar')
+            barTools.setProperty('visible', event.checked);
+      ">
+        <a:item type="check" value='status' checked="true">Statusbar</a:item>
+        <a:item type="check" value='toolbar' checked="true">Toolbar</a:item>
+        <a:divider />
+    </a:menu>
+</a:application>

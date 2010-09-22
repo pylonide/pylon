@@ -2,8 +2,8 @@
  * HTML Editor for the Ajax.org Cloud IDE
  */
 require.def("ext/html/html",
-    ["core/ide", "core/ext", "ext/code/code", "ext/tree/treeutil", "text!ext/html/html.xml"],
-    function(ide, ext, code, treeutil, markup) {
+    ["core/ide", "core/ext", "ext/code/code", "text!ext/html/html.xml"],
+    function(ide, ext, code, markup) {
 
 return ext.register("ext/html/html", {
     name    : "HTML Editor",
@@ -42,7 +42,7 @@ return ext.register("ext/html/html", {
 
     onOpenPage : function() {
         var file = this.page.$model.data;
-        window.open(location.protocol + "//" + location.host + "/workspace/" + treeutil.getPath(file), "_blank");
+        window.open(location.protocol + "//" + location.host + "/workspace/" + file.getAttribute("path"), "_blank");
     },
 
     enable : function() {

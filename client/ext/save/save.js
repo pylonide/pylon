@@ -75,7 +75,13 @@ return ext.register("ext/save/save", {
         if (!page)
             return;
 
-        fs.saveFile(page.$model.data);
+        var node = page.$mode.data;
+        var path = node.getAttribute("path");
+        var data = apf.queryValue(node, "data");
+        if (apf.queryValue(node, "data/@newline") == "windows")
+            data = data.replace(/\n/g, "\r\n");
+
+        fs.saveFile(path, data);
         page.$at.reset();
         return false;
     },
