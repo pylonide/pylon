@@ -1,5 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-        
     <a:script><![CDATA[
         function filesort(value, args, xmlNode) {
             return (xmlNode.tagName == "folder" ? 0 : 1) + value;
@@ -39,14 +38,13 @@
         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
         <a:rename set="{davProject.rename([@name], [@path])}"/>
-        <a:copy match="[.]" set="{davProject.copy([@path], [../@path])}"/>
-        <a:move match="[.]" set="{davProject.move([@path], [../@path])}"/>
-        <a:remove match="[.]" set="{davProject.remove([@path])}"/>
-        <!--a:dragdrop>
-            <a:allow-drag match="folder|file" />
-            <a:allow-drop match="folder|file" target="folder"
-                operation="tree-append" copy-condition="event.ctrlKey" />
-        </a:dragdrop-->
+        <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+        <a:move match="[file|folder]" set="{davProject.move([@path], [../@path])}"/>
+        <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
+        
+        <a:drag match="[folder|file]" />
+        <a:drop match="[folder|file]" target="[folder]"
+            action="tree-append" copy="{event.ctrlKey}" />
 	</a:tree>  
     
 </a:application>
