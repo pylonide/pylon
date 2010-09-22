@@ -22,7 +22,7 @@ apf.debughost = function(struct, tagName){
     this.$booleanProperties["autostart"] = true;
     
     this.$supportedProperties.push("port", "server", "type", "autoinit",
-        "model-tabs", "state-connected");
+        "model-tabs", "state-connected", "strip");
 
     this.$propHandlers["model-tabs"] = function(value) {
         if (!value) return;
@@ -111,7 +111,11 @@ apf.debughost = function(struct, tagName){
             var id = null;
         }
         
-        this.$host.attach(id, callback);
+        var _self = this;
+        this.$host.attach(id, function(err, dbg) {
+            dbg.setStrip(_self.strip || "");
+            callback(err, dbg);
+        });
     };
 
     this.$detach = function(dbgImpl, callback) {

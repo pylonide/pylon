@@ -29,6 +29,22 @@ var V8Debugger = function(dbg, host) {
 
 (function() {
 
+    this.stripPrefix = "",
+    
+    this.setStrip = function(stripPrefix) {
+        this.stripPrefix = stripPrefix
+    };
+    
+    this.$strip = function(str) {
+        if (!this.stripPrefix)
+            return str;
+        
+        if (str.indexOf(this.stripPrefix) == 0)
+            return str.slice(this.stripPrefix.length)
+        else
+            return str;
+    };
+    
     this.isRunning = function() {
         return this.$debugger.isRunning();
     };
@@ -51,7 +67,7 @@ var V8Debugger = function(dbg, host) {
     this.$getScriptXml = function(script) {
         return ["<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
-            "' text='", apf.escapeXML(script.text || "anonymous"),
+            "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
             "' debug='true' />"].join("")
     };
@@ -78,7 +94,7 @@ var V8Debugger = function(dbg, host) {
                     "' name='", apf.escapeXML(apf.escapeXML(self.$frameToString(frame))),
                     "' column='", frame.column,
                     "' line='", frame.line,
-                    "' script='", script.name,
+                    "' script='", self.$strip(script.name),
                     "' scriptid='", script.id,
                     "'>");
                 xml.push("<vars>");
@@ -215,8 +231,8 @@ var V8Debugger = function(dbg, host) {
                 var xml = [];
                 xml.push("<breakpoint",
                     " id='", breakpoint.$id,
-                    "' text='", apf.escapeXML(name), ":", breakpoint.line,
-                    "' script='", apf.escapeXML(name),
+                    "' text='", self.$strip(apf.escapeXML(name)), ":", breakpoint.line,
+                    "' script='", self.$strip(apf.escapeXML(name)),
                     "' scriptid='", scriptId,
                     "' lineoffset='", lineOffset,
                     "' line='", breakpoint.line,
