@@ -534,6 +534,7 @@ apf.webdav = function(struct, tagName){
         }
 
         this.method = "PUT";
+        var _self = this;
         this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status);
             if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
@@ -547,7 +548,7 @@ apf.webdav = function(struct, tagName){
                 callback.call(this, data, apf.ERROR, extra);
             }
             else {
-                this.getProperties(sPath, 0, callback);
+                _self.getProperties(sPath, 0, callback);
             }
         }, sPath, sContent, bLock && oLock.token
             ? {"If": "<" + oLock.token + ">"}
