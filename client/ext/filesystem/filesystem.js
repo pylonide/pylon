@@ -24,7 +24,7 @@ return ext.register("ext/filesystem/filesystem", {
             this.webdav.write(path, data);
     },
 
-    createFolder: function() {
+    createFolder: function(name) {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
@@ -32,8 +32,9 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
         
         if (this.webdav) {
+            if (!name) name = "New Folder";
             trFiles.focus();
-            this.webdav.exec("mkdir", [node.getAttribute("path"), "untitled folder"], function(data) {
+            this.webdav.exec("mkdir", [node.getAttribute("path"), name], function(data) {
                 // @todo: in case of error, show nice alert dialog
                 if (data instanceof Error)
                     throw Error;
@@ -43,13 +44,13 @@ return ext.register("ext/filesystem/filesystem", {
                         clearContents: true
                     });
                 }
-                trFiles.select(node.selectSingleNode("folder[@name='untitled folder']"));
+                trFiles.select(node.selectSingleNode("folder[@name='" + name + "']"));
                 trFiles.startRename();
             });
         }
     },
 
-    createFile: function() {
+    createFile: function(filename) {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
@@ -57,9 +58,12 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
         
         if (this.webdav) {
+            if (!filename) 
+                filename = "Untitled.txt";
+            
             trFiles.focus();
             var _self = this;
-            this.webdav.exec("create", [node.getAttribute("path"), "untitled file.txt"], function(data) {
+            this.webdav.exec("create", [node.getAttribute("path"), filename], function(data) {
                 _self.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
                     if (data.indexOf("<file") > -1) {
                         trFiles.insert(data, {
@@ -67,7 +71,7 @@ return ext.register("ext/filesystem/filesystem", {
                             clearContents: true
                         });
                     }
-                    trFiles.select(node.selectSingleNode("file[@name='untitled file.txt']"));
+                    trFiles.select(node.selectSingleNode("file[@name='" + filename + "']"));
                     trFiles.startRename();
                 });
             });
