@@ -529,13 +529,13 @@ apf.BaseTree = function(){
             //if isLast fix previousSibling
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
-                this.$fixItem(prevSib, this.$getHtmlNode(prevSib
+                this.$fixItem(prevSib, this.$findHtmlNode(prevSib
                     .getAttribute(apf.xmldb.xmlIdTag) + "|" 
                     + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.each).length == 1)
-                this.$fixItem(xmlNode.parentNode, this.$getHtmlNode(
+                this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
                     xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
                     + "|" + this.$uniqueId), null, false, true); 
         }
