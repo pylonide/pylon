@@ -28,14 +28,6 @@
         />
     </a:vbox>
     
-    <a:bar id="barCodeTb" visible="false">
-        <a:divider />
-        <a:button>Button 1</a:button>
-        <a:button>Button 2</a:button>
-        <a:button>Button 3</a:button>
-        <a:button>Button 4</a:button>
-    </a:bar>
-    
     <a:menu id="mnuSyntax" onitemclick="alert('@fabian, how should this be implemented?');">
         <a:item value="text/plain">Plain Text</a:item>
         <a:item value="application/javascript">JavaScript</a:item>

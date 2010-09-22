@@ -38,12 +38,6 @@ return ext.register("ext/code/code", {
         amlPage.appendChild(barEditor);
         barEditor.show();
 
-        //Append the button bar to the main toolbar
-        var nodes = barCodeTb.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
-        }
-
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
@@ -100,7 +94,6 @@ return ext.register("ext/code/code", {
 
         if (self.barEditor) {
             barEditor.destroy(true, true);
-            barCodeTb.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
 

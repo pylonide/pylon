@@ -104,18 +104,28 @@ return ext.register("ext/filesystem/filesystem", {
             if (node.selectSingleNode("data"))
                 return;
 
-            fs.readFile(node.getAttribute("path"), function(data) {
-                var match = data.match(/^.*?(\r?\n)/m);
-                if (match && match[1] == "\r\n")
-                    var nl = "windows";
-                else
-                    nl = "unix";
-
-                var doc = node.ownerDocument;
-                var xml = doc.createElement("data");
-                xml.appendChild(doc.createTextNode(data));
-                xml.setAttribute("newline", nl);
-                apf.b(node).append(xml);
+            fs.readFile(node.getAttribute("path"), function(data, state, extra) {
+                if (state != apf.SUCCESS) {
+                    if (extra.status == 404) {
+                        ide.dispatchEvent("filenotfound", {
+                            node : node,
+                            path : extra.url
+                        });
+                    }
+                }
+                else {
+                    var match = data.match(/^.*?(\r?\n)/m);
+                    if (match && match[1] == "\r\n")
+                        var nl = "windows";
+                    else
+                        nl = "unix";
+    
+                    var doc = node.ownerDocument;
+                    var xml = doc.createElement("data");
+                    xml.appendChild(doc.createTextNode(data));
+                    xml.setAttribute("newline", nl);
+                    apf.b(node).append(xml);
+                }
             });
         });
     },
