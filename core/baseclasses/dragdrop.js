@@ -557,7 +557,7 @@ apf.DragDrop = function(){
             if (!apf.isIphone && _self.allowdeselect
               && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
               && _self.$getLayoutNode("item", "select", this) != this))
-                return _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
+                return; //This broke making a selection with the mouse in rename:  _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
                 
             //MultiSelect must have carret behaviour AND deselect at clicking white
             if (_self.$findValueNode)
