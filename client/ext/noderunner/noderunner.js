@@ -47,6 +47,7 @@ return ext.register("ext/noderunner/noderunner", {
         this.socket.on("disconnect", this.onDisconnect.bind(this));
         this.socket.connect();
 
+        var _self = this;
         dbgNode.addEventListener("onsocketfind", function() {
             return socket;
         });
@@ -115,7 +116,11 @@ return ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || !stServerConnected.active)
             return;
 
-        var file = tree.trFiles.selected;
+        page = tabEditors.getPage();
+        if (!page)
+            return;
+
+        var file = page.$model.data;
         if (!file)
             return;
 

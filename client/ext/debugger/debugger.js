@@ -39,15 +39,8 @@ return ext.register("ext/debugger/debugger", {
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
-
             //Append the watch window on the left below the file tree
-            this.rightPane.appendChild(winDbgWatch),
-
-            //Append the breakpoint window at the right
-            this.rightPane.appendChild(winDbgBreakpoints),
-
-            // Append the sources list below the file tree
-            ide.vbMain.selectSingleNode("a:hbox/a:vbox[1]").appendChild(winDbgSources)
+            this.rightPane.appendChild(winDbgWatch)
         );
 
         this.paths = {};
@@ -69,6 +62,9 @@ return ext.register("ext/debugger/debugger", {
         });
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.$showFile(e.data.getAttribute("scriptid"));
+        });
+        lstScripts.addEventListener("afterselect", function(e) {
+            e.selected && _self.$showFile(e.selected.getAttribute("scriptid"));
         });
 
         log.enable(true);
