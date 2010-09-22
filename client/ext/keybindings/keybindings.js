@@ -2,7 +2,7 @@
  * Keybindings Manager for the Ajax.org Cloud IDE
  */
 require.def("ext/keybindings/keybindings",
-    ["core/ide", "core/ext", "core/util", "text!ext/code/settings.xml"],
+    ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],
     function(ide, ext, util, settings) {
 
 return ext.register("ext/keybindings/keybindings", {
@@ -21,21 +21,13 @@ return ext.register("ext/keybindings/keybindings", {
             page.insertMarkup(settings);
         });
 
-        this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Keybindings",
-                onclick : function(){
-                    winKeybindings.show();
-                }
-            }), ide.mnuFile.childNodes[1])
-        );
-
         // fetch the default keybindings:
         // @todo fetch latest config from localStorage
         var _self = this;
         require(["ext/keybindings_default/default_" + (apf.isMac ? "mac" : "win")]);
         ide.addEventListener("$event.keybindingschange", function(callback){
-            callback(_self.current);
+            if (_self.current)
+                callback(_self.current);
         });
     },
 
