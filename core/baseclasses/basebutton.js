@@ -171,11 +171,15 @@ apf.BaseButton = function(){
         this.$ext.onmousedown = function(e) {
             e = e || window.event;
 
-            if (_self.disabled || _self.$notfromext && (e.srcElement || e.target) == this)
+            if (_self.$notfromext && (e.srcElement || e.target) == this)
                 return;
 
             _self.$refMouseDown = 1;
             _self.$mouseLeft    = false;
+            
+            if (_self.disabled)
+                return;
+            
             _self.$updateState(e, "mousedown");
             
             if (!apf.isIE && !_self.submenu) //Causes a focus problem for menus
@@ -209,14 +213,16 @@ apf.BaseButton = function(){
         };
 
         this.$ext.onmousemove = function(e) {
-            if (!_self.$mouseOver && !_self.disabled) {
+            if ((!_self.$mouseOver || _self.$mouseOver == 2)) {
                 e = e || window.event;
 
                 if (_self.$notfromext && (e.srcElement || e.target) == this)
                     return;
 
                 _self.$mouseOver = true;
-                _self.$updateState(e, "mouseover");
+                
+                if (!_self.disabled)
+                    _self.$updateState(e, "mouseover");
             }
         };
 
@@ -225,13 +231,15 @@ apf.BaseButton = function(){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (_self.disabled || this == tEl || apf.isChildOf(this, tEl))
+            if (this == tEl || apf.isChildOf(this, tEl))
                 return;
 
             _self.$mouseOver    = false;
             _self.$refMouseDown = 0;
             _self.$mouseLeft    = true;
-            _self.$updateState(e, "mouseout");
+            
+            if (!_self.disabled)
+                _self.$updateState(e, "mouseout");
         };
 
         // #ifdef __SUPPORT_IPHONE
@@ -291,8 +299,8 @@ apf.BaseButton = function(){
     this.addEventListener("prop.disabled", function(e){
         this.$refKeyDown   =   
         this.$refMouseDown = 0;
-        this.$mouseOver    =   
-        this.$mouseLeft    = false;
+        //this.$mouseOver    =   
+        //this.$mouseLeft    = false;
     });
 
     /*** Clearing potential memory leaks ****/

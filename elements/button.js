@@ -150,11 +150,13 @@ apf.button  = function(struct, tagName){
                 if (apf.document.activeElement)
                     apf.document.activeElement.focus(true);
             }
-            if (this.state && this.value) {
+            
+            if (this.state && this.value)
                 this.$setState("Down", {});
-            }
-    
-            this.$doBgSwitch(1);
+            else if (this.$mouseOver)
+                this.$updateState({}, "mouseover");
+            else
+                this.$doBgSwitch(1);
         };
     
         this.$disable = function(){

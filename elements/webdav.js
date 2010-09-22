@@ -970,7 +970,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
-        if (parseInt(extra.status) == 403) {
+        if (parseInt(extra.status) == 403 || !oXml) {
             // TODO: dispatch onerror event
             return;
         }

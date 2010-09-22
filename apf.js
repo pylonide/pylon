@@ -2370,7 +2370,7 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
             return xmlNode.selectNodes(".//" + (prefix ? prefix + ":" : "") + tag);
         }
     }
-    
+    if (!xmlNode.getElementsByTagNameNS) debugger;
     return xmlNode.getElementsByTagNameNS(xmlns, tag);
 };
 
