@@ -66,6 +66,10 @@ return ext.register("ext/code/code", {
             }))
         );
 
+        ide.addEventListeners("clearfilecache", function(e){
+            
+        });
+
         ide.addEventListener("keybindingschange", function(e){
             if (!e.ext)
                 return;

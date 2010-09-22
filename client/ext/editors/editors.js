@@ -204,18 +204,17 @@ return ext.register("ext/editors/editors", {
     },
 
     close : function(page){
-        page.addEventListener("afterclose", function(){
-            app.session.$close(page);
-        });
+        page.addEventListener("afterclose", this.$close);
     },
 
-    $close : function(page) {
-        var handler    = this.extensions[page.type],
-            editorPage = tabEditors.getPage(page.type);
+    $close : function() {
+        var page = this;
+        var at   = page.$at;
+        var mdl  = page.$model;
 
-        var at  = page.$at;
-        var mdl = page.$model;
-
+        mdl.removeXml("data");
+        ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
+        
         //mdl.unshare();
         mdl.destroy();
 

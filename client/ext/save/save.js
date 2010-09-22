@@ -46,7 +46,7 @@ return ext.register("ext/save/save", {
             if (e.page.$at.undolength) {
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.show();
-                return false;
+                e.preventDefault();
             }
         });
 
@@ -75,7 +75,7 @@ return ext.register("ext/save/save", {
         if (!page)
             return;
 
-        var node = page.$mode.data;
+        var node = page.$model.data;
         var path = node.getAttribute("path");
         var data = apf.queryValue(node, "data");
         if (apf.queryValue(node, "data/@newline") == "windows")
