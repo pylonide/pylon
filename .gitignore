@@ -3,3 +3,5 @@ common/apf
 client/icons/Thumbs.db
 client/common
 .settings.xml
+.project
+.settings
