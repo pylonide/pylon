@@ -49,8 +49,8 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$getScriptXml = function(script) {
-        return ["<file id='", script.id,
-            "' name='", apf.escapeXML(script.name || "anonymous"),
+ç        return ["<file scriptid='", script.id,
+            "' scriptname='", apf.escapeXML(script.name || "anonymous"),
             "' text='", apf.escapeXML(script.text || "anonymous"),
             "' lineoffset='", script.lineOffset,
             "' debug='true' />"].join("")
@@ -115,7 +115,7 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.loadScript = function(script, callback) {
-        var id = script.getAttribute("id");
+        var id = script.getAttribute("scriptid");
         var self = this;
         this.$debugger.scripts(4, [id], true, function(scripts) {
             if (scripts.length) {
@@ -196,7 +196,7 @@ var V8Debugger = function(dbg, host) {
     this.toggleBreakpoint = function(script, relativeRow, model) {
         var self = this;
 
-        var scriptId = script.getAttribute("id");
+        var scriptId = script.getAttribute("scriptid");
 
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = lineOffset + relativeRow;
@@ -209,7 +209,7 @@ var V8Debugger = function(dbg, host) {
                 model.removeXml(model.queryNode("breakpoint[@id=" + breakpoint.$id + "]"));
             });
         } else {
-            var name = script.getAttribute("name");
+            var name = script.getAttribute("scriptname");
             breakpoint = this.$breakpoints[id] = new Breakpoint(name, row);
             breakpoint.attach(this.$debugger, function() {
                 var xml = [];
