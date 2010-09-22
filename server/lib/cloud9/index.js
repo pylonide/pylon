@@ -4,7 +4,7 @@
  */
 require("../../../common/paths");
 var connect = require("connect");
-var IdeServer = require("cloudide/server");
+var IdeServer = require("cloud9/server");
 
 exports.main = function(projectDir, port) {
     server = connect.createServer(
