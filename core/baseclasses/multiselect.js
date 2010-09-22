@@ -809,12 +809,13 @@ apf.MultiSelect = function(){
         if (this.delayedselect && (typeof ctrlKey == "boolean")){
             var _self = this;
             $setTimeout(function(){
-                _self.dispatchEvent("afterselect", {
-                    selection   : _self.$valueList,
-                    selected    : xmlNode,
-                    caret       : _self.caret,
-                    captureOnly : noEvent
-                });
+                if (_self.selected == xmlNode)
+                    _self.dispatchEvent("afterselect", {
+                        selection   : _self.$valueList,
+                        selected    : xmlNode,
+                        caret       : _self.caret,
+                        captureOnly : noEvent
+                    });
             }, 10);
         }
         else {
@@ -1776,7 +1777,8 @@ apf.MultiSelect = function(){
                 var _self = this;
                 $setTimeout(function(){
                     //#ifdef __WITH_PROPERTY_BINDING
-                    _self.setProperty("selected", combinedvalue || e.selected);
+                    if (_self.selected == e.selected)
+                        _self.setProperty("selected", combinedvalue || e.selected);
                     //#endif
                     delete _self.$chained;
                 }, 10);
