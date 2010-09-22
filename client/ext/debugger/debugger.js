@@ -1,5 +1,8 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/debugger/debugger",
     ["core/ide", "core/ext", "ext/console/console", "text!ext/debugger/debugger.xml"],

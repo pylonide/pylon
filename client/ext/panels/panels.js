@@ -1,5 +1,8 @@
 /**
  * Extension Manager for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/panels/panels",
     ["core/ide", "core/ext", "ext/settings/settings", "text!ext/panels/panels.xml"],

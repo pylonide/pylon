@@ -1,5 +1,8 @@
 /**
  * richtext Editor for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/richtext/richtext",
     ["core/ide", "core/ext"],

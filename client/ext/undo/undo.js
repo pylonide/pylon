@@ -1,5 +1,8 @@
 /**
  * Refactor Module for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/undo/undo",
     ["core/ide", "core/ext"],

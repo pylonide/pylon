@@ -1,3 +1,7 @@
+/**
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 var dav = require("jsdav");
 var io = require("socket.io");
 var async = require("async");

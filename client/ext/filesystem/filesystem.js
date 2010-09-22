@@ -1,5 +1,8 @@
 /**
  * Node Runner Module for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/filesystem/filesystem",
     ["core/ide", "core/ext"], function(ide, ext, localFiles) {
