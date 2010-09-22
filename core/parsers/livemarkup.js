@@ -392,7 +392,7 @@ apf.lm = new (function(){
         cc_async_c     = "}catch(_e){if(_e.x)return;throw(_e);}\n",
         //cc_async_o     = "(_a=_a||{}).i=0;",
         //cc_async_c     = "",
-        cc_pc_o        = "(_a=_a||{}).i=0;try{_pc(_w);",
+        cc_pc_o        = "(_a=_a||{}).i=0;try{_precall(_w);",
         cc_pc_c        = "}catch(_e){if(_e.x)return;throw(_e);}",
         cc_opt_o       = "with(_w){",
         cc_opt_c       = "}",
@@ -2326,7 +2326,7 @@ apf.lm_exec = new (function(){
         });
     }
 
-    function _pc(_w){ // precall
+    function _precall(_w){ // precall
         var o;
         if (typeof(o = _w._pc) != "object" || !o)
             return;

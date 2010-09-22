@@ -143,7 +143,7 @@ apf.Rename = function(){
         this.renameTimer = $setTimeout('apf.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
-
+    
     /**
      * Starts the rename process by displaying an input box at the position
      * of the item that can be renamed by the user.

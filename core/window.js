@@ -1036,7 +1036,7 @@ apf.window = function(){
                 && amlNode.$isTextInput(e) && amlNode.disabled < 1;
 
             //(!amlNode.canHaveChildren || !apf.isChildOf(amlNode.$int, e.srcElement))
-            if (!apf.config.allowSelect || !isTextInput
+            if (!apf.config.allowSelect && !isTextInput
               && amlNode.nodeType != amlNode.NODE_PROCESSING_INSTRUCTION 
               && !amlNode.textselect) //&& (!amlNode.$int || amlNode.$focussable) //getElementsByTagNameNS(apf.ns.xhtml, "*").length
                 canSelect = false;
@@ -1046,10 +1046,10 @@ apf.window = function(){
             if (e.preventDefault)
                 e.preventDefault();
            
-	    try{  
+	        try{  
                 if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
                     document.activeElement.blur();
-	    }catch(e){}
+    	    }catch(e){}
         }
     });
 

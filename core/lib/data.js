@@ -192,8 +192,10 @@ apf.getData = function(instruction, options){
           })
         : {str: instruction, type: 2}); 
 
-    if (options.precall)
+    if (options.precall && !options._pc) {
         options.asyncs = fParsed.asyncs;
+        options._pc    = 1;
+    }
 
     //@todo hack because we're not using compileNode.. an imperfection..
     if (fParsed.type == 3){
