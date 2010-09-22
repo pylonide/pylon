@@ -49,7 +49,9 @@
 	</a:tree>
 	
 	<a:menu id="mnuCtxTree">
-        <a:item class="strong">Open</a:item>
+        <a:item match="[file]" class="strong" onclick="
+            require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
+        ">Edit</a:item>
         <a:divider />
         <a:item onclick="trFiles.startRename()">Rename</a:item>
         <a:item match="[file|folder]" onclick="trFiles.remove()">Remove</a:item>
