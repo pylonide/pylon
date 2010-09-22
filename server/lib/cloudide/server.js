@@ -11,7 +11,7 @@ var DebugProxy = require("cloudide/debugproxy");
 
 module.exports = IdeServer = function(workspaceDir, server) {
 
-    this.workspaceDir = async.abspath(workspaceDir);
+    this.workspaceDir = async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
 
     this.davPrefix = "/workspace/";

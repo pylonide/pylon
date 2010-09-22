@@ -4,10 +4,9 @@
       state-running     = "stRunning"
       state-attached    = "stAttached"
       model-sources     = "mdlDbgSources"
-      model-stack       = "mdDbgStack"
+      model-stack       = "mdlDbgStack"
       model-breakpoints = "mdlDbgBreakpoints" 
       onbreak           = ""
-      onchangeframe     = "if (event.data) lstScripts.setProperty('selected', mdlDbgSources.queryNode('file[@id=' + event.data.getAttribute('scriptid') +']'));"
       oncontinue        = "" />
     
     <a:debughost id="dbgNode"

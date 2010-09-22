@@ -43,12 +43,13 @@ return ext.register("ext/noderunner/noderunner", {
         var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
         this.socket.on("connect", this.onConnect.bind(this));
+        this.socket.on("connect", this.onConnect.bind(this));
+        this.socket.on("disconnect", this.onDisconnect.bind(this));
         this.socket.connect();
 
         dbgNode.addEventListener("onsocketfind", function() {
             return socket;
         });
-        dbg.attach(dbgNode);
     },
 
     onMessage : function(message) {
@@ -67,6 +68,7 @@ return ext.register("ext/noderunner/noderunner", {
             case "node-exit":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
+                dbg.detach();
                 break;
 
             case "state":
@@ -84,7 +86,22 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     onConnect : function() {
+        console.log("connect")
+        clearTimeout(this.$retryTimer);
         stServerConnected.activate();
+    },
+
+    onDisconnect : function() {
+        console.log("disconnect")
+        stProcessRunning.deactivate();
+        stDebugProcessRunning.deactivate();
+        dbg.detach();
+
+        clearTimeout(this.$retryTimer);
+        var _self = this;
+        this.$retryTimer = setTimeout(function() {
+            _self.socket.connect();
+        }, 2000);
     },
 
     debug : function() {
@@ -108,11 +125,12 @@ return ext.register("ext/noderunner/noderunner", {
 
         var command = {
             "command" : debug ? "RunDebug" : "Run",
-            "file"    : file.getAttribute("path").splice(this.davPrefix.length)
+            "file"    : file.getAttribute("path").slice(this.davPrefix.length)
         };
         this.socket.send(JSON.stringify(command));
 
         if (debug) {
+            dbg.attach(dbgNode);
             stDebugProcessRunning.activate();
             ext.setLayoutMode("ext/debugger/debugger");
         }
