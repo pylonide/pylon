@@ -5,12 +5,12 @@ var Path = require("path");
 var spawn = require("child_process").spawn;
 var DebugProxy = require("cloudide/debugproxy");
 
-module.exports = IdeServer = function(projectDir, server) {
+module.exports = IdeServer = function(workspaceDir, server) {
 
-    this.projectDir = projectDir;
+    this.workspaceDir = async.abspath(workspaceDir);
     this.server = server;
 
-    dav.mount(async.abspath(projectDir), "/workspace", server);
+    dav.mount(this.workspaceDir, "/workspace", server);
 
     var _self = this;
     var options = {
@@ -43,6 +43,8 @@ module.exports = IdeServer = function(projectDir, server) {
         client.on("disconnect", function() {
             delete _self.client;
         });
+
+        this.commandState({});
     };
 
     this.onClientMessage = function(message) {
@@ -74,6 +76,16 @@ module.exports = IdeServer = function(projectDir, server) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     };
 
+    this.commandState = function(message) {
+        var state = {
+            "type": "state",
+            "workspaceDir": this.workspaceDir,
+            "processRunning": !!this.child,
+            "debugClient": !!this.debugClient
+        };
+        this.client.send(JSON.stringify(state));
+    };
+
     this.commandRunDebug = function(message) {
         message.preArgs = ["--debug=" + this.DEBUG_PORT];
         message.debug = true;
@@ -102,13 +114,13 @@ module.exports = IdeServer = function(projectDir, server) {
         if (this.child)
             return _self.error("Child process already running!", message);
 
-        var file = async.abspath(_self.projectDir + "/" + message.file);
-        
+        var file = _self.workspaceDir + "/" + message.file;
+
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.error("File does not exist: " + message.file, message);
 
-           var cwd = _self.projectDir + "/" + (message.cwd || "");
+           var cwd = _self.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.error("cwd does not exist: " + message.cwd, message);

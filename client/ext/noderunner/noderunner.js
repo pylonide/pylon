@@ -27,7 +27,15 @@ return ext.register("ext/noderunner/noderunner", {
         }
 
         var options = {
-            transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+            transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
+            transportOptions: {
+                'xhr-polling': {
+                    timeout: 30000
+                },
+                'jsonp-polling': {
+                    timeout: 30000
+                }
+            }
         };
         var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
@@ -41,9 +49,13 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     onMessage : function(message) {
-        var message = JSON.parse(message);
+        try {
+            message = JSON.parse(message);
+        } catch(e) {
+            return;
+        }
 
-        console.log("MSG:", message);
+        //console.log("MSG:", message);
         switch(message.type) {
             case "debug-ready":
                 ide.dispatchEvent("debugready");
@@ -51,6 +63,13 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "node-exit":
                 stProcessRunning.deactivate();
+                stDebugProcessRunning.deactivate();
+                break;
+
+            case "state":
+                stProcessRunning.setProperty("active", message.processRunning);
+                stDebugProcessRunning.setProperty("active", message.debugClient);
+                this.workspaceDir = message.workspaceDir;
                 break;
 
             case "node-data":
@@ -89,8 +108,10 @@ return ext.register("ext/noderunner/noderunner", {
         };
         this.socket.send(JSON.stringify(command));
 
-        if (debug)
+        if (debug) {
+            stDebugProcessRunning.activate();
             ext.setLayoutMode("ext/debugger/debugger");
+        }
         else
             log.enable();
 

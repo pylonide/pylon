@@ -4296,7 +4296,7 @@
         }
         
        .ce .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
-          background-image: url("icons/ide/brkp_obj.gif");
+          background-image: url("icons/debugger/brkp_obj.gif");
           background-repeat: no-repeat;
           background-position: center right;
         }
