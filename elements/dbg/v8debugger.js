@@ -49,7 +49,7 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.$getScriptXml = function(script) {
-ç        return ["<file scriptid='", script.id,
+        return ["<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
             "' text='", apf.escapeXML(script.text || "anonymous"),
             "' lineoffset='", script.lineOffset,
