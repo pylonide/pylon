@@ -5,8 +5,9 @@ require.def("ext/searchreplace/searchreplace",
     ["core/ide",
      "core/ext",
      "ace/PluginManager",
+     "ace/Search",
      "text!ext/searchreplace/searchreplace.xml"],
-    function(ide, ext, plugins, markup) {
+    function(ide, ext, plugins, search, markup) {
 
 return ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
@@ -32,12 +33,12 @@ return ext.register("ext/searchreplace/searchreplace", {
 
         var _self = this;
 
-        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:textbox[1]");
+        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
         this.txtFind.addEventListener("keydown", function(e) {
             if (e.keyCode == 13)
                 _self.findNext();
         });
-        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:textbox[2]");
+        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
         this.txtReplace.addEventListener("keydown", function(e) {
             if (e.keyCode == 13)
                 _self.replace();
@@ -67,34 +68,57 @@ return ext.register("ext/searchreplace/searchreplace", {
         return false;
     },
 
+    getOptions: function() {
+        return {
+            backwards: chkSearchBackwards.checked,
+            wrap: chkWrapAround.checked,
+            caseSensitive: !chkMatchCase.checked,
+            wholeWord: chkWholeWords.checked,
+            regExp: chkRegEx.checked,
+            scope: chkSearchSelection.checked ? search.SELECTION : search.ALL
+        };
+    },
+
     findNext: function() {
         if (!this.$editor)
             return;
         var txt = this.txtFind.getValue();
-        console.log("trying to search for text: " + txt);
         if (!txt)
             return;
+        var options = this.getOptions();
+
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
-            this.$editor.find(txt);
+            // structure of the options:
+            // {
+            //     needle: "",
+            //     backwards: false,
+            //     wrap: false,
+            //     caseSensitive: false,
+            //     wholeWord: false,
+            //     regExp: false
+            // }
+            this.$editor.find(txt, options);
         }
         else {
-            this.$editor.findNext();
+            this.$editor.findNext(options);
         }
     },
 
     replace: function() {
         if (!this.$editor)
             return;
-        this.$editor.replace(this.txtReplace.getValue() || "");
-        this.$editor.find(this.$crtSearch);
+        var options = this.getOptions();
+        this.$editor.replace(this.txtReplace.getValue() || "", options);
+        this.$editor.find(this.$crtSearch, options);
     },
 
     replaceAll: function() {
         if (!this.editor)
             return;
         this.$crtSearch = null;
-        this.$editor.replaceAll(this.txtReplace.getValue() || "");
+        var options = this.getOptions();
+        this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
     },
     
     enable : function(){
