@@ -213,7 +213,7 @@ return ext.register("ext/editors/editors", {
         var mdl  = page.$model;
 
         mdl.removeXml("data");
-        debugger;
+        ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
         
         //mdl.unshare();
         mdl.destroy();
