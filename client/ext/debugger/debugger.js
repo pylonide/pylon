@@ -5,8 +5,14 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/debugger/debugger",
-    ["core/ide", "core/ext", "ext/console/console", "text!ext/debugger/debugger.xml"],
-    function(ide, ext, log, markup) {
+    ["core/ide",
+     "core/ext",
+     "ext/console/console",
+     "ext/filesystem/filesystem",
+     "ext/noderunner/noderunner",
+     "ext/tree/treeutil",
+     "text!ext/debugger/debugger.xml"],
+    function(ide, ext, log, fs, noderunner, treeutil, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -14,7 +20,7 @@ return ext.register("ext/debugger/debugger", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    deps   : [log],
+    deps   : [log, fs],
 
     nodes : [],
 
@@ -26,18 +32,69 @@ return ext.register("ext/debugger/debugger", {
     },
 
     init : function(amlNode){
+        this.rightPane = ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]");
         this.nodes.push(
             //Append the debug toolbar to the main toolbar
             ide.tbMain.appendChild(tbDebug),
 
             //Append the stack window at the right
-            ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgStack),
+            this.rightPane.appendChild(winDbgStack),
 
             //Append the watch window on the left below the file tree
-            ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]").appendChild(winDbgWatch)
+            this.rightPane.appendChild(winDbgWatch),
+
+            // Append the sources list below the file tree
+            ide.vbMain.selectSingleNode("a:hbox/a:vbox[1]").appendChild(winDbgSources)
         );
 
+        this.paths = {};
+        var _self = this;
+        mdlDbgSources.addEventListener("afterload", function() {
+            _self.$syncTree();
+        });
+        mdlDbgSources.addEventListener("update", function(e) {
+            if (_self.inSync || e.action != "add")
+                return;
+            // TODO: optimize this!
+            _self.$syncTree();
+        });
+        fs.model.addEventListener("update", function(e) {
+            if (_self.inSync || e.action != "insert")
+                return;
+            // TODO: optimize this!
+            _self.$syncTree();
+        });
+
         log.enable(true);
+    },
+
+    $syncTree : function() {
+        this.inSync = true;
+        var dbgFiles = mdlDbgSources.data.childNodes;
+
+        var workspaceDir = noderunner.workspaceDir;
+        for (var i=0,l=dbgFiles.length; i<l; i++) {
+            var dbgFile = dbgFiles[i];
+            var name = dbgFile.getAttribute("scriptname");
+            if (name.indexOf(workspaceDir) != 0)
+                continue;
+            var path = name.slice(workspaceDir.length+1);
+            this.paths[path] = dbgFile;
+        }
+        var files = fs.model.data.getElementsByTagName("file");
+
+        for (var i=0,l=files.length; i<l; i++) {
+            var file = files[i];
+            var path = treeutil.getPath(file);
+
+            var dbgFile = this.paths[path];
+            if (dbgFile) {
+                file.setAttribute("scriptid", dbgFile.getAttribute("scriptid"));
+                file.setAttribute("scriptname", dbgFile.getAttribute("scriptname"));
+                file.setAttribute("lineoffset", "0");
+            }
+        }
+        this.inSync = false;
     },
 
     enable : function(){
@@ -45,6 +102,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.show)
                 item.show();
         });
+        this.rightPane.setProperty("visible", true);
         log.enable(true);
     },
 
@@ -53,6 +111,7 @@ return ext.register("ext/debugger/debugger", {
             if (item.hide)
                 item.hide();
         });
+        this.rightPane.setProperty("visible", false);
         log.disable(true);
     },
 

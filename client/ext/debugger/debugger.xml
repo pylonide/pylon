@@ -1,18 +1,72 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     
-    <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" flex="1" width="200" />
-    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1" width="250"/>
+    <a:window id="winDbgSources" skin="dockwin" title="Sources" modal="false" flex="1" width="200">
+        <a:list id="lstScripts"
+          model="mdlDbgSources"
+          anchors="0 0 0 0"
+          each="[file]"
+          caption="[@text]"
+          icon="file_obj.gif">
+        	<a:actions />
+        </a:list>
+    </a:window>
+
+    <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" flex="1" width="200">
+		<a:datagrid id="dgWatch"
+          anchors    = "0 0 0 0" 
+          options    = "size|move"
+          prerender  = "false"
+          model      = "[{dgStack.selected}::vars]"
+          loading-message = "Calculating...">
+          	<a:load get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+               <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
+            <a:column caption="Value" value="[@value]" width="100%" />
+            <a:column caption="Type" value="[@type]" width="80"/>
+            <a:each match="[item]" sort="[@name]" />
+        </a:datagrid>		
+    </a:window>
+
+    <a:window id="winDbgBreakpoints" skin="dockwin" title="Breakpoints" modal="false" flex="1" width="200">
+		<a:list
+		  id="lstBreakpoints"
+		  anchors="0 0 0 0"
+		  model="mdlDbgBreakpoints"
+		  each="[breakpoint]"
+		  caption="[@text]"
+		  icon="debugger/brkp_obj.gif">
+		    <a:actions />
+		</a:list>
+    </a:window>
+
+    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1" width="250">
+        <a:datagrid
+          id         = "dgStack"
+          anchors    = "0 0 0 0" 
+          options    = "size|move"
+          caching    = "false"
+          prerender  = "false"
+          model      = "mdDbgStack"
+          selected   = "{dbg.activeframe}">
+       	    <a:actions />        	    
+            <a:column caption="Function" value="[@name]" width="60%" icon="stckframe_obj.gif" />
+            <a:column caption="Script" value="[@script]" width="40%" />
+            <a:column caption="Ln" value="[@line]" width="25"/>
+            <a:column caption="Col" value="[@column]" width="25"/>
+            <a:each match="[frame]" />
+        </a:datagrid>    
+    </a:window>
     
     <a:toolbar id="tbDebug" height="26">
         <a:bar>
 	        <a:button
 	          icon="debugger/resume_co{this.disabled ? '_disabled' : ''}.gif"
 	          onclick="dbg.continueScript();"
-	          disabled="{stRunning.active or !stDebuggerConnected.active}" />
+	          disabled="{!stDebugProcessRunning.active or stRunning.active}" />
 	       	<a:button
 	          icon="debugger/suspend_co{this.disabled ? '_disabled' : ''}.gif"
 	          onclick="dbg.suspend();"
-	          disabled="{!stRunning.active or !stDebuggerConnected.active}"/>
+	          disabled="{!stDebugProcessRunning.active or !stRunning.active}"/>
 	       	<!-- a:button
 	      	  icon="debugger/disconnect_co{this.disabled ? '_disabled' : ''}.gif"
 	       	  onclick="dbgNode.disconnect();"
@@ -21,15 +75,15 @@
 	       	<a:button
 	       	  icon="debugger/stepinto_co{this.disabled ? '_disabled' : ''}.gif" 
 	       	  onclick="dbg.stepInto();" 
-	       	  disabled="{!stDebuggerConnected.active or stRunning.active}" />
+	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
 	       	<a:button
 	       	  icon="debugger/stepover_co{this.disabled ? '_disabled' : ''}.gif"
 	       	  onclick="dbg.stepNext();"
-	       	  disabled="{!stDebuggerConnected.active or stRunning.active}" />
+	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
 	       	<a:button
 	       	  icon="debugger/stepreturn_co{this.disabled ? '_disabled' : ''}.gif" 
 	       	  onclick="dbg.stepOut();"
-	       	  disabled="{!stDebuggerConnected.active or stRunning.active}" />
+	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
     	</a:bar>
     </a:toolbar>
 </a:application>
