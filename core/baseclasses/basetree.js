@@ -777,7 +777,7 @@ apf.BaseTree = function(){
             selHtml  = this.$caret || this.$selected,
             pos, top, el, node, nodes, sNode, pNode, container;
 
-        if (!selHtml || this.renaming) 
+        if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
             return;
 
         var selXml = this.caret || this.selected,
@@ -1043,16 +1043,20 @@ apf.BaseTree = function(){
     // #endif
     
     /**** Selection Support ****/
-    
+    /*
+        nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
+                ? this.xmlRoot.selectNodes(this.$isTreeArch 
+                    ? this.each
+                    : ".//" + this.each.split('|').join('|.//'))
+                : 
+    */
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r     = [],
             f     = false,
             i     = 0,
-            nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
-                ? this.xmlRoot.selectNodes(this.$isTreeArch 
-                    ? this.each
-                    : ".//" + this.each.split('|').join('|.//'))
-                : this.getTraverseNodes();
+            pNodeStart = this.getTraverseParent(xmlStartNode),
+            pNodeEnd   = this.getTraverseParent(xmlEndNode),
+            nodes      = this.getTraverseNodes(pNodeStart);
 
         for (; i < nodes.length; i++) {
             if (nodes[i] == xmlStartNode)

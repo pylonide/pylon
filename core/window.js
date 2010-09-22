@@ -1532,6 +1532,9 @@ apf.window = new apf.window();
  * @private
  */
 apf.sanitizeTextbox = function(oTxt){
+    if (!apf.hasFocusBug)
+        return;
+    
     oTxt.onfocus = function(){
         if (apf.window)
             apf.window.$focusfix2();

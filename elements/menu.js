@@ -94,11 +94,13 @@ apf.menu = function(struct, tagName){
 
     /**** Properties and Attributes ****/
     
-    this.zindex  = 10000000;
-    this.visible = false;
+    this.zindex    = 10000000;
+    this.visible   = false;
+    this.matchhide = false;
 
     this.$booleanProperties["animate"]  = true;
     this.$booleanProperties["autohide"] = true;
+    this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
         if (value) {
@@ -227,9 +229,12 @@ apf.menu = function(struct, tagName){
                 })))(xmlNode)
     
                 if (result) {
-                    node.show();
+                    if (this.matchhide)
+                        node.show();
+                    else
+                        node.enable();
     
-                    if (node.localName == "divider") {
+                    if (node.localName == "divider" && this.matchhide) {
                         last = node;
                         if (c == 0)
                             node.hide();
@@ -238,7 +243,10 @@ apf.menu = function(struct, tagName){
                     else c++;
                 }
                 else {
-                    node.hide();
+                    if (this.matchhide)
+                        node.hide();
+                    else
+                        node.disable();
     
                     if (!node.nextSibling && c == 0)
                         last.hide();

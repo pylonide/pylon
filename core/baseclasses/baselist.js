@@ -192,7 +192,7 @@ apf.BaseList = function(){
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
-            selHtml  = this.$selected || this.$caret;
+            selHtml  = this.$caret || this.$selected;
 
         if (e.returnValue == -1 || !selHtml || this.renaming) //@todo how about allowdeselect?
             return;

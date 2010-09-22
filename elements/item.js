@@ -330,24 +330,6 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "", ["disabled"]);
     }
 
-    /**** Public Methods ****/
-
-    /**
-     * @private
-     */
-    this.enable = function(list){
-        apf.setStyleClass(this.$ext,
-            this.parentNode.$baseCSSname + "Disabled");
-    };
-
-    /**
-     * @private
-     */
-    this.disable = function(list){
-        apf.setStyleClass(this.$ext, null,
-            [this.parentNode.$baseCSSname + "Disabled"]);
-    };
-
     /**** Dom Hooks ****/
 
     //@todo apf3.0

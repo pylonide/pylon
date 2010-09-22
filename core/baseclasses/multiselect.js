@@ -639,9 +639,16 @@ apf.MultiSelect = function(){
         if (!this.selectable || userAction && this.disabled) 
             return;
 
-        if (fakeselect == -1) {
-	      	fakeselect = false;
-	      	userAction = true;
+        if (parseInt(fakeselect) == fakeselect) {
+            //Don't select on context menu
+            if (fakeselect == 2) {
+                fakeselect = true;
+    	      	userAction = true;
+            }
+            else {
+    	      	fakeselect = false;
+    	      	userAction = true;
+    	    }
         }
 
         if (this.$skipSelect) {

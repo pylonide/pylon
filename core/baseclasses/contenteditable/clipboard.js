@@ -19,16 +19,60 @@
  *
  */
 
-//#ifdef __WITH_CONTENTEDITABLE
+//#ifdef __WITH_CLIPBOARD
 
-apf.clipboard = {
-    store : null,
-    put : function(item){
-        this.store = item;
-    },
-    get : function(){
-        return this.store;
-    }
+apf.clipboard = new apf.Class().$init();
+apf.clipboard.store = null;
+apf.clipboard.empty = true;
+apf.clipboard.put = function(item){
+    this.store = item;
+    this.setProperty("empty", item ? false : true);
 };
+apf.clipboard.clear = function(){
+    this.setProperty("empty", true);
+}
+apf.clipboard.get = function(){
+    return this.store;
+};
+
+//#ifdef __WITH_CLIPBOARD_SELECTION
+apf.clipboard.$highlightSelection = function(amlNode, nodes, unset){
+    for (var i = 0, l = nodes.length; i < l; i++) {
+        apf.setStyleClass(apf.xmldb.getHtmlNode(nodes[i], amlNode), (unset ? '' : 'cut'), ['cut']);
+    }
+}
+apf.clipboard.copySelection = function(amlNode){
+    var nodes = this.get() || [];
+    this.$highlightSelection(amlNode, nodes, true);
+    this.put(amlNode.getSelection());
+};
+apf.clipboard.cutSelection = function(amlNode){
+    var nodes = this.get() || [];
+    this.$highlightSelection(amlNode, nodes, true);
+    apf.clipboard.put(nodes = amlNode.getSelection());
+    this.$highlightSelection(amlNode, nodes);
+};
+apf.clipboard.pasteSelection = function(amlNode, selected){
+    var nodes = this.get();
+    if (!nodes) return;
+
+    if (!selected)
+        selected = amlNode.selected || amlNode.getFirstTraverseNode();
+
+    if (nodes[0].parentNode) {
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            apf.xmldb.moveNode(selected, nodes[i]);
+        }
+    }
+    else {
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            apf.xmldb.appendChild(selected, nodes[i]);
+        }
+    }
+    
+    this.$highlightSelection(amlNode, nodes, true);
+    amlNode.selectList(nodes);
+};
+//#endif
 
 //#endif

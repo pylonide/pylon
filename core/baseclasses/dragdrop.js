@@ -268,7 +268,7 @@ apf.DragDrop = function(){
     this.move = function(nodeList, pNode, beforeNode){
         return this.copy(nodeList, pNode, beforeNode, true);
     };
-
+    
     /**
      * Determines whether the user is allowed to drag the passed 
      * {@link term.datanode data node}. The decision is made based on the 
