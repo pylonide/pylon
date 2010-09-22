@@ -46,53 +46,53 @@ require.def("core/ide",
                     });
                     return true;
                 };
-            }
 
-            //Catch all APF Routed errors
-            apf.addEventListener("error", function(e){
-                apf.ajax("/debug", {
-                    method      : "POST",
-                    contentType : "application/json",
-                    data        : apf.serialize({
-                        agent   : navigator.userAgent,
-                        uid     : ide.userId,
-                        creds   : self.auth && auth.getCredentials()[0],
-                        loc     : ide.loc,
-                        type    : "APF Error",
-                        message : e.message,
-                        tgt     : e.currentTarget && e.currentTarget.serialize(),
-                        url     : e.url,
-                        state   : e.state,
-                        e       : e.error,
-                        log     : apf.console.debugInfo.join("\n")
-                    })
+                //Catch all APF Routed errors
+                apf.addEventListener("error", function(e){
+                    apf.ajax("/debug", {
+                        method      : "POST",
+                        contentType : "application/json",
+                        data        : apf.serialize({
+                            agent   : navigator.userAgent,
+                            uid     : ide.userId,
+                            creds   : self.auth && auth.getCredentials()[0],
+                            loc     : ide.loc,
+                            type    : "APF Error",
+                            message : e.message,
+                            tgt     : e.currentTarget && e.currentTarget.serialize(),
+                            url     : e.url,
+                            state   : e.state,
+                            e       : e.error,
+                            log     : apf.console.debugInfo.join("\n")
+                        })
+                    });
                 });
-            });
-
-            //Connection Error
-            /*pWorknets.addEventListener("error", function(e){
-                if (e.status == 403) {
-                    ide.util.alert("Permission Denied",
-                        "Permission Denied Accessing This Page",
-                        "You are not allowed to view the page you clicked on.");
-                    ide.loader.hide();
-
+    
+                //Connection Error
+                /*pWorknets.addEventListener("error", function(e){
+                    if (e.status == 403) {
+                        ide.util.alert("Permission Denied",
+                            "Permission Denied Accessing This Page",
+                            "You are not allowed to view the page you clicked on.");
+                        ide.loader.hide();
+    
+                        e.stopPropagation();
+                        return false;
+                    }
+    
+                    setTimeout(function(){
+                        if (apf.isDestroying)
+                            return;
+    
+                        ide.redirectPage = ide.objId;
+                        auth.authRequired(null, true);
+                    });
+    
                     e.stopPropagation();
                     return false;
-                }
-
-                setTimeout(function(){
-                    if (apf.isDestroying)
-                        return;
-
-                    ide.redirectPage = ide.objId;
-                    auth.authRequired(null, true);
-                });
-
-                e.stopPropagation();
-                return false;
-            });*/
-
+                });*/
+            }
+            
             /**** Log in Flow ****/
 
             /*auth.addEventListener("loginsuccess", function(e){

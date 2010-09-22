@@ -94,10 +94,10 @@ return ext.register("ext/panels/panels", {
             if (strSettings) {
                 _self.$settings = apf.unserialize(strSettings);
                 
-                var panel;
+                var panelExt;
                 for (var path in _self.$settings) {
-                    if (_self.panels[path] && (panel = _self.panels[path].panel))
-                        _self.setPanelSettings(panel, _self.$settings[path]);
+                    if ((panelExt = _self.panels[path]) && panelExt.panel)
+                        _self.setPanelSettings(panelExt, _self.$settings[path]);
                 }
             }
         });

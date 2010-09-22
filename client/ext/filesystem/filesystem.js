@@ -12,22 +12,13 @@ return ext.register("ext/filesystem/filesystem", {
     deps   : [],
     
     readFile : function (path, callback){
-        if (this.webdav) {
-            apf.getData('{davProject.read(path)}', {
-                path     : path,
-                callback : callback
-            });
-        }
+        if (this.webdav)
+            this.webdav.read(path, callback);
     },
     
-    saveFile : function(fileEl) {
-        var id = fileEl.getAttribute("path");
-        var data = apf.queryValue(fileEl, "data");
-        if (apf.queryValue(fileEl, "data/@newline") == "windows")
-            data = data.replace(/\n/g, "\r\n");
-
+    saveFile : function(path, data) {
         if (this.webdav)
-            this.webdav.exec("write", [id, data]);
+            this.webdav.write(path, data);
     },
 
     createFolder: function() {
