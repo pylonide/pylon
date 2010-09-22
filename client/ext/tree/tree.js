@@ -31,9 +31,9 @@ return ext.register("ext/tree/tree", {
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterselect", this.$afterselect = function() {
+        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
-            if (node.tagName != "file")
+            if (!node || node.tagName != "file" || this.selection.length > 1)
                 return;
 
             ide.dispatchEvent("openfile", {node: node});

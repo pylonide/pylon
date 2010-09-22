@@ -26,7 +26,8 @@
         
     ]]></a:script>
     
-	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true" contextmenu="mnuCtxTree">
+	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true" 
+	  contextmenu="mnuCtxTree" multiselect="true">
 	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
             <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
             <a:caption match="[@name]" />
@@ -50,23 +51,35 @@
 	<a:menu id="mnuCtxTree">
         <a:item class="strong">Open</a:item>
         <a:divider />
-        <a:item>Rename</a:item>
-        <a:item match="[file|folder]">Remove</a:item>
+        <a:item onclick="trFiles.startRename()">Rename</a:item>
+        <a:item match="[file|folder]" onclick="trFiles.remove()">Remove</a:item>
         <a:divider />
-        <a:item match="[file|folder]">Cut</a:item>
-        <a:item match="[file|folder]">Copy</a:item>
-        <a:item match="[folder|project]">Paste</a:item>
+        <a:item match="[file|folder]" onclick="
+            apf.clipboard.cutSelection(trFiles);
+        ">Cut</a:item>
+        <a:item match="[file|folder]" onclick="
+            apf.clipboard.copySelection(trFiles);
+        ">Copy</a:item>
+        <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
+            apf.clipboard.pasteSelection(trFiles);
+        ">Paste</a:item>
         <a:divider />
-        <a:item match="[project|folder]" submenu="mnuNew">New</a:item>
+        <a:item submenu="mnuNew">New</a:item>
     </a:menu>
     
-    <a:menu id="mnuNew">
-        <a:item icon="folder.png">Folder</a:item>
+    <a:menu id="mnuNew" onitemclick="
+        var fs = require('ext/filesystem/filesystem');
+        if (event.value == 'folder')
+            fs.createFolder();
+        else 
+            fs.createFile('Untitled.' + event.value);
+      ">
+        <a:item value="folder" icon="folder.png">Folder</a:item>
         <a:divider />
-        <a:item icon="page_white_text.png">Text file</a:item>
-        <a:item icon="page_white_code.png">JavaScript file</a:item>
-        <a:item icon="html.png">HTML file</a:item>
-        <a:item icon="xml.png">XML file</a:item>
-        <a:item icon="css.png">CSS file</a:item>
+        <a:item value="txt" icon="page_white_text.png">Text file</a:item>
+        <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
+        <a:item value="html" icon="html.png">HTML file</a:item>
+        <a:item value="xml" icon="xml.png">XML file</a:item>
+        <a:item value="css" icon="css.png">CSS file</a:item>
     </a:menu>
 </a:application>

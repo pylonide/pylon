@@ -55,7 +55,7 @@ return ext.register("ext/settings/settings", {
             });
         });*/
         this.model.load(
-            ide.settings && ide.settings.indexOf("d:error") > -1
+            !ide.settings || ide.settings.indexOf("d:error") > -1
               ? template
               : ide.settings);
         ide.dispatchEvent("loadsettings", {

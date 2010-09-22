@@ -18,3 +18,7 @@ BODY {
 .strong{
     font-weight : bold;
 }
+
+.cut{
+    opacity : 0.5;
+}

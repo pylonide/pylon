@@ -23,8 +23,8 @@
           syntax = "{getSyntax([@contenttype])}"
           contextmenu    = "mnuCtxEditor"
           showinvisibles = "false"
-          debugger       = "{stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
-          readonly       = "{stDebugProcessRunning.active and [@scriptid]}"
+          debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
+          readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
         />
     </a:vbox>
     
