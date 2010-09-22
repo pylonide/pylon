@@ -301,7 +301,7 @@ return ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             ide.addEventListener("extload", function(){
-                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloudide.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
+                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloud9.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
                 var nodes = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
