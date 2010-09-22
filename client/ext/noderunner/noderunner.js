@@ -75,6 +75,7 @@ return ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.setProperty("active", message.processRunning);
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
+                dbgNode.setProperty("strip", message.workspaceDir + "/");
                 this.davPrefix = message.davPrefix;
                 break;
 
@@ -86,13 +87,11 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     onConnect : function() {
-        console.log("connect")
         clearTimeout(this.$retryTimer);
         stServerConnected.activate();
     },
 
     onDisconnect : function() {
-        console.log("disconnect")
         stProcessRunning.deactivate();
         stDebugProcessRunning.deactivate();
         dbg.detach();

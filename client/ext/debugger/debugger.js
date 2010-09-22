@@ -75,8 +75,6 @@ return ext.register("ext/debugger/debugger", {
     },
 
     $showFile : function(scriptId) {
-
-
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
         if (file) {
             ide.dispatchEvent("openfile", {
@@ -89,6 +87,7 @@ return ext.register("ext/debugger/debugger", {
             var chunks = name.split("/");
             var value = chunks[chunks.length-1];
 
+            // TODO this has to be refactored to support multiple tabs
             var page = tabEditors.getPage(value);
             if (page) {
                 tabEditors.set(page);
@@ -103,10 +102,7 @@ return ext.register("ext/debugger/debugger", {
                     .attr("scriptname", script.getAttribute("scriptname"))
                     .attr("lineoffset", "0").node();
 
-                ide.dispatchEvent("openfile", {
-                    node: node,
-                    value: value
-                });
+                ide.dispatchEvent("openfile", { node: node });
             }
             else {
                 var node = apf.n("<file />")
@@ -118,25 +114,14 @@ return ext.register("ext/debugger/debugger", {
                     .attr("debug", "1")
                     .attr("lineoffset", "0").node();
 
-                if (script.childNodes.length > 0) {
-                    ide.dispatchEvent("openfile", {
-                        node: node,
-                        value: value
-                    });
-                }
-                else {
-                    dbg.loadScript(script, function(source) {
-                        var doc = node.ownerDocument;
-                        var data = doc.createElement("data");
-                        data.appendChild(doc.createTextNode(source));
-                        node.appendChild(data);
+                dbg.loadScript(script, function(source) {
+                    var doc = node.ownerDocument;
+                    var data = doc.createElement("data");
+                    data.appendChild(doc.createTextNode(source));
+                    node.appendChild(data);
 
-                        ide.dispatchEvent("openfile", {
-                            node: node,
-                            value: value
-                        });
-                    });
-                }
+                    ide.dispatchEvent("openfile", { node: node });
+                });
             }
         }
     },
