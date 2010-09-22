@@ -774,16 +774,19 @@ apf.BaseTab = function(){
                 page.destroy(true, true);
             });
         }
-        else  {
+        else 
+        // #endif
+        {
             //page.removeNode();
             page.destroy(true, true);
+            page.dispatchEvent("afterclose");
 
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild
             //this.setScrollerState();
             // #endif
         }
-        // #endif
+        
         return page;
     };
 
@@ -1244,7 +1247,11 @@ apf.BaseTab = function(){
         //#ifdef __ENABLE_TAB_SCALE
         if (this.$scale) 
             this.$scaleinit(amlNode, "add");
+        else 
         //#endif
+        {
+            amlNode.dispatchEvent("afteropen");
+        }
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.setProperty("length", this.childNodes.length);
