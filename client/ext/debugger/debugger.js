@@ -39,8 +39,12 @@ return ext.register("ext/debugger/debugger", {
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
+
             //Append the watch window on the left below the file tree
             this.rightPane.appendChild(winDbgWatch),
+
+            //Append the breakpoint window at the right
+            this.rightPane.appendChild(winDbgBreakpoints),
 
             // Append the sources list below the file tree
             ide.vbMain.selectSingleNode("a:hbox/a:vbox[1]").appendChild(winDbgSources)
@@ -52,23 +56,81 @@ return ext.register("ext/debugger/debugger", {
             _self.$syncTree();
         });
         mdlDbgSources.addEventListener("update", function(e) {
-            if (_self.inSync || e.action != "add")
+            if (e.action != "add")
                 return;
             // TODO: optimize this!
             _self.$syncTree();
         });
         fs.model.addEventListener("update", function(e) {
-            if (_self.inSync || e.action != "insert")
+            if (e.action != "insert")
                 return;
             // TODO: optimize this!
             _self.$syncTree();
+        });
+        dbg.addEventListener("changeframe", function(e) {
+            e.data && _self.$showFile(e.data.getAttribute("scriptid"));
         });
 
         log.enable(true);
     },
 
+    $showFile : function(scriptId) {
+        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+        if (file) {
+            ide.dispatchEvent("openfile", {
+                node: file,
+                value: file.getAttribute("name")
+            });
+        } else {
+            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+            var name = script.getAttribute("scriptname");
+            var chunks = name.split("/");
+            var value = chunks[chunks.length-1];
+
+            // TODO this has to be refactored to support multiple tabs
+            var page = tabEditors.getPage(value);
+            if (page) {
+                tabEditors.set(page);
+            }
+            else if (name.indexOf(noderunner.workspaceDir) == 0) {
+                var path = noderunner.davPrefix + "/" + name.slice(noderunner.workspaceDir.length);
+                var node = apf.n("<file />")
+                    .attr("name", name)
+                    .attr("path", path)
+                    .attr("contenttype", "application/javascript")
+                    .attr("scriptid", script.getAttribute("scriptid"))
+                    .attr("scriptname", script.getAttribute("scriptname"))
+                    .attr("lineoffset", "0").node();
+
+                ide.dispatchEvent("openfile", { node: node });
+            }
+            else {
+                var node = apf.n("<file />")
+                    .attr("name", value)
+                    .attr("path", name)
+                    .attr("contenttype", "application/javascript")
+                    .attr("scriptid", script.getAttribute("scriptid"))
+                    .attr("scriptname", script.getAttribute("scriptname"))
+                    .attr("debug", "1")
+                    .attr("lineoffset", "0").node();
+
+                dbg.loadScript(script, function(source) {
+                    var doc = node.ownerDocument;
+                    var data = doc.createElement("data");
+                    data.appendChild(doc.createTextNode(source));
+                    node.appendChild(data);
+
+                    ide.dispatchEvent("openfile", { node: node });
+                });
+            }
+        }
+    },
+
+    count : 0,
     $syncTree : function() {
+        if (this.inSync) return
         this.inSync = true;
+
         var dbgFiles = mdlDbgSources.data.childNodes;
 
         var workspaceDir = noderunner.workspaceDir;
@@ -82,15 +144,17 @@ return ext.register("ext/debugger/debugger", {
         }
         var files = fs.model.data.getElementsByTagName("file");
 
+        var davPrefix = noderunner.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {
             var file = files[i];
-            var path = file.getAttribute("path")
+            var path = file.getAttribute("path").slice(davPrefix.length);
 
             var dbgFile = this.paths[path];
             if (dbgFile) {
-                file.setAttribute("scriptid", dbgFile.getAttribute("scriptid"));
-                file.setAttribute("scriptname", dbgFile.getAttribute("scriptname"));
-                file.setAttribute("lineoffset", "0");
+                apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
+                apf.n(file)
+                    .attr("scriptname", dbgFile.getAttribute("scriptname"))
+                    .attr("lineoffset", "0");
             }
         }
         this.inSync = false;
