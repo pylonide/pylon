@@ -864,11 +864,14 @@ apf.xmldb = new (function(){
     this.notifyQueued = function(){
         this.$hasQueue = false;
 
+        var myQueue = notifyQueue;
+        notifyQueue = {};
+        
         clearTimeout(notifyTimer);
-        for (var uId in notifyQueue) {
+        for (var uId in myQueue) {
             if (!uId) continue;
 
-            var q       = notifyQueue[uId];
+            var q       = myQueue[uId];
             var func    = this.$listeners[uId];
             //!amlNode ||
             if (!q || !func)
@@ -885,7 +888,7 @@ apf.xmldb = new (function(){
             }
         }
 
-        notifyQueue = {}; // update shouldn't add anything to the queue
+        
     }
 
     /**
