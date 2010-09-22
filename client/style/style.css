@@ -14,3 +14,7 @@ BODY {
 .noscript{
     display: none;
 }
+
+.strong{
+    font-weight : bold;
+}

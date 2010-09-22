@@ -28,6 +28,17 @@
         />
     </a:vbox>
     
+    <a:menu id="mnuCtxEditor" render="runtime">
+        <a:item>Undo</a:item>
+        <a:item>Redo</a:item>
+        <a:divider />
+        <a:item>Cut</a:item>
+        <a:item>Copy</a:item>
+        <a:item>Paste</a:item>
+        <a:divider />
+        <a:item>Select All</a:item>
+    </a:menu>
+    
     <a:menu id="mnuSyntax" onitemclick="alert('@fabian, how should this be implemented?');">
         <a:item value="text/plain">Plain Text</a:item>
         <a:item value="application/javascript">JavaScript</a:item>

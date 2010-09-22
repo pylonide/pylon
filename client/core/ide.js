@@ -13,7 +13,6 @@ require.def("core/ide",
 
             //Set references to global elements - aka extension points
             this.tbMain       = tbMain;
-            this.mnuCtxEditor = mnuCtxEditor;
             this.mnuFile      = mnuFile;
             this.barMenu      = barMenu;
             this.barTools     = barTools;

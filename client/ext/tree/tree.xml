@@ -26,7 +26,7 @@
         
     ]]></a:script>
     
-	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true">
+	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true" contextmenu="mnuCtxTree">
 	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
             <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
             <a:caption match="[@name]" />
@@ -45,6 +45,28 @@
         <a:drag match="[folder|file]" />
         <a:drop match="[folder|file]" target="[folder]"
             action="tree-append" copy="{event.ctrlKey}" />
-	</a:tree>  
+	</a:tree>
+	
+	<a:menu id="mnuCtxTree">
+        <a:item class="strong">Open</a:item>
+        <a:divider />
+        <a:item>Rename</a:item>
+        <a:item>Remove</a:item>
+        <a:divider />
+        <a:item>Cut</a:item>
+        <a:item>Copy</a:item>
+        <a:item>Paste</a:item>
+        <a:divider />
+        <a:item submenu="mnuNew">New</a:item>
+    </a:menu>
     
+    <a:menu id="mnuNew">
+        <a:item icon="folder.png">Folder</a:item>
+        <a:divider />
+        <a:item icon="page_white_text.png">Text file</a:item>
+        <a:item icon="page_white_code.png">JavaScript file</a:item>
+        <a:item icon="html.png">HTML file</a:item>
+        <a:item icon="xml.png">XML file</a:item>
+        <a:item icon="css.png">CSS file</a:item>
+    </a:menu>
 </a:application>
