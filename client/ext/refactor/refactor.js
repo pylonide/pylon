@@ -1,5 +1,8 @@
 /**
  * Refactor Module for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/refactor/refactor",
     ["core/ide", "core/ext", "text!ext/refactor/refactor.xml"],

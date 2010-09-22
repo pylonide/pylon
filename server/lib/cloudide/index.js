@@ -1,3 +1,7 @@
+/**
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 require("../../../common/paths");
 var connect = require("connect");
 var IdeServer = require("cloudide/server");

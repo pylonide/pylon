@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+/**
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 
 function usage() {
     console.log("USAGE: cloudide [-w WORKSPACE_DIR ('.')] [-p PORT (3000)]")

@@ -1,5 +1,8 @@
 /**
  * HTML Editor for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/html/html",
     ["core/ide", "core/ext", "ext/code/code", "text!ext/html/html.xml"],

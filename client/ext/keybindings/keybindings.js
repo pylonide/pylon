@@ -1,5 +1,8 @@
 /**
  * Keybindings Manager for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/keybindings/keybindings",
     ["core/ide", "core/ext", "core/util", "text!ext/keybindings/settings.xml"],

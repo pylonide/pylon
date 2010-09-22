@@ -1,5 +1,8 @@
 /**
  * Console for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/console/console",
     ["core/ide", "core/ext", "ext/panels/panels", "text!ext/console/console.xml"], 

@@ -1,5 +1,8 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/browser/browser",
     ["core/ide", "core/ext", "text!ext/browser/browser.xml"],

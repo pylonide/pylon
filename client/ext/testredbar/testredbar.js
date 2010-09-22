@@ -1,5 +1,8 @@
 /**
  * Test module that turns the menubar red when enabled
+ *
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/testredbar/testredbar",
     ["core/ide", "core/ext"], function(ide, ext) {

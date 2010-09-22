@@ -1,3 +1,7 @@
+/**
+ * @copyright 2010, Ajax.org Services B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 require.def("conf/keybindings/default_win", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
 
 return keys.onLoad({
