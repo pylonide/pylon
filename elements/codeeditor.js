@@ -80,14 +80,33 @@ apf.codeeditor = function(struct, tagName) {
     this.$booleanProperties["showinvisibles"]   = true;
     this.$booleanProperties["showprintmargin"]  = true;
     this.$booleanProperties["overwrite"]        = true;
-    this.$booleanProperties["readonly"]         = true;
     this.$booleanProperties["softtabs"]         = true;
 
     this.$supportedProperties.push("value", "syntax",
         "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
-        "showprintmargin", "printmargincolumn", "overwrite", "readonly",
+        "showprintmargin", "printmargincolumn", "overwrite",
         "tabsize", "softtabs", "debugger");
 
+    this.$getCacheKey = function(value) {
+        if (typeof value == "string")
+            key = this.xmlRoot
+                ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
+                : value;
+        else
+            key = value.getAttribute(apf.xmldb.xmlIdTag);
+        
+        return key;
+    }
+    
+    this.clearCacheItem = function(xmlNode) {
+        if (!this.caching)
+            return;
+        
+        var key = this.$getCacheKey(xmlNode);
+        if (key)
+            delete this.$cache[key];
+    }
+    
     /**
      * @attribute {String} value the text of this element
      * @todo apf3.0 check use of this.$propHandlers["value"].call
@@ -95,12 +114,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
         var doc, key;
         if (this.caching) {
-            if (typeof value == "string")
-                key = this.xmlRoot
-                    ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
-                    : value;
-            else
-                key = value.getAttribute(apf.xmldb.xmlIdTag);
+            var key = this.$getCacheKey(value);
         }
         //Assuming document
         else if (value instanceof Document){
@@ -184,7 +198,7 @@ apf.codeeditor = function(struct, tagName) {
             return;
 
         var script = this.xmlRoot;
-        if (script.getAttribute("id") !== frame.getAttribute("scriptid"))
+        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
             return;
 
 
@@ -205,7 +219,7 @@ apf.codeeditor = function(struct, tagName) {
         }
 
         if (this.xmlRoot) {
-            var scriptId = this.xmlRoot.getAttribute("id");
+            var scriptId = this.xmlRoot.getAttribute("scriptid");
             if (!scriptId)
                 return;
 
@@ -354,6 +368,14 @@ apf.codeeditor = function(struct, tagName) {
         return this.$editor.getDocument().toString(); //@todo very inefficient
     };
 
+    this.getDocument = function() {
+        return this.$editor.getDocument();        
+    };
+
+    this.getSelection = function() {
+        return this.$editor.getDocument().getSelection();        
+    };
+    
     //#endif
 
     /**
