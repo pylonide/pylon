@@ -59,7 +59,7 @@ return ext.register("ext/save/save", {
         }
 
         btnSave.onclick = _self.quicksave;
-        
+
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
@@ -79,6 +79,9 @@ return ext.register("ext/save/save", {
             return;
 
         var node = page.$model.data;
+        if (node.getAttribute("debug"))
+            return;
+
         var path = node.getAttribute("path");
         var data = apf.queryValue(node, "data");
         if (apf.queryValue(node, "data/@newline") == "windows")

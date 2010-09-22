@@ -104,7 +104,7 @@ return ext.register("ext/editors/editors", {
         var editor = ext.extLut[path];
         if (!editor)
             return false;
-        
+
         var contentTypes = editor.contentTypes;
         return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
     },
@@ -140,7 +140,7 @@ return ext.register("ext/editors/editors", {
         editor.$rbEditor.select();
 
         page.setAttribute("type", path);
-        
+
         this.beforeswitch({nextPage: page});
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
@@ -187,10 +187,10 @@ return ext.register("ext/editors/editors", {
                 model.setQueryValue("@name", filename + (val ? "*" : ""));
             }
         });
-        
+
         //Set active page
         tabEditors.set(filepath);
-        
+
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
 
@@ -217,7 +217,7 @@ return ext.register("ext/editors/editors", {
 
         mdl.removeXml("data");
         ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
-        
+
         //mdl.unshare();
         mdl.destroy();
 
@@ -284,19 +284,19 @@ return ext.register("ext/editors/editors", {
 
         ide.addEventListener("openfile", function(e){
             _self.openEditor(
-                e.node.getAttribute("name"), 
-                e.node.getAttribute("path"), 
+                e.node.getAttribute("name"),
+                e.node.getAttribute("path"),
                 e.node);
         });
 
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
         this.hbox = vbox.insertBefore(new apf.hbox({flex : 1}), vbox.firstChild);
         this.nodes.push(this.addTabSection());
-        
+
         this.panel = this.hbox;
-        
+
         /**** Support for state preservation ****/
-        
+
         this.$settings = {}, _self = this;
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
@@ -312,7 +312,7 @@ return ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false, 
+            var changed = false,
                 pNode   = e.model.data.selectSingleNode("auto/files"),
                 state   = pNode && pNode.xml,
                 pages   = tabEditors.getPages();
@@ -321,14 +321,17 @@ return ext.register("ext/editors/editors", {
                 pNode.parentNode.removeChild(pNode);
                 pNode = null;
             }
-            
+
             if (pages.length) {
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
-                    pNode.appendChild(apf.xmldb.cleanNode(pages[i].$model.data.cloneNode(false)));
+                    var file = pages[i].$model.data;
+                    if (file.getAttribute("debug"))
+                        continue;
+                    pNode.appendChild(apf.xmldb.cleanNode(file.cloneNode(false)));
                 }
             }
-            
+
             if (state != (pNode && pNode.xml))
                 return true;
         });
