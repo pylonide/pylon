@@ -48,7 +48,11 @@
                 };*/
 
                 apf.onstart = function(){
-                    require(["core/ide", "core/ext", "core/util", "text!/workspace/.settings.xml"], function(ide, ext, util, settings){
+                    var list = ["core/ide", "core/ext", "core/util"];
+                    if (location.host)
+                        list.push("text!/workspace/.settings.xml");
+                    
+                    require(list, function(ide, ext, util, settings){
                         ide.settings = settings;
                         
                         var modules = [
@@ -69,12 +73,13 @@
                             "ext/extmgr/extmgr",
                             "ext/docs/docs",
                             "ext/richtext/richtext",
-                            "ext/debugger/debugger",
                             "ext/console/console",
                             "ext/keybindings/keybindings"
                         ];
                         if (location.host)
-                            modules.push("ext/noderunner/noderunner");
+                            modules.push(
+                                "ext/debugger/debugger", 
+                                "ext/noderunner/noderunner");
                         
                         apf.addEventListener("load", function(){
                             //Load extensions

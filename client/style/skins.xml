@@ -5097,6 +5097,10 @@
 
         .menu div.disabled{
             color: gray;
+            /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
+        }
+        .menu div.disabled span{
+            display : none;
         }
 
         .menu u{

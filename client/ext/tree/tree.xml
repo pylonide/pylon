@@ -51,13 +51,13 @@
         <a:item class="strong">Open</a:item>
         <a:divider />
         <a:item>Rename</a:item>
-        <a:item>Remove</a:item>
+        <a:item match="[file|folder]">Remove</a:item>
         <a:divider />
-        <a:item>Cut</a:item>
-        <a:item>Copy</a:item>
-        <a:item>Paste</a:item>
+        <a:item match="[file|folder]">Cut</a:item>
+        <a:item match="[file|folder]">Copy</a:item>
+        <a:item match="[folder|project]">Paste</a:item>
         <a:divider />
-        <a:item submenu="mnuNew">New</a:item>
+        <a:item match="[project|folder]" submenu="mnuNew">New</a:item>
     </a:menu>
     
     <a:menu id="mnuNew">
