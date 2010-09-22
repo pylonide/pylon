@@ -82,7 +82,9 @@ return ext.register("ext/save/save", {
         var path = node.getAttribute("path");
         var data = apf.queryValue(node, "data");
         if (apf.queryValue(node, "data/@newline") == "windows")
-            data = data.replace(/\n/g, "\r\n");
+            data = data.replace(/\r?\n/g, "\r\n");
+        else
+            data = data.replace(/\r?\n/g, "\n");
 
         fs.saveFile(path, data);
         page.$at.reset();
