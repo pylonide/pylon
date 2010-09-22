@@ -7,9 +7,8 @@ require.def("ext/debugger/debugger",
      "ext/console/console",
      "ext/filesystem/filesystem",
      "ext/noderunner/noderunner",
-     "ext/tree/treeutil",
      "text!ext/debugger/debugger.xml"],
-    function(ide, ext, log, fs, noderunner, treeutil, markup) {
+    function(ide, ext, log, fs, noderunner, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -82,7 +81,7 @@ return ext.register("ext/debugger/debugger", {
 
         for (var i=0,l=files.length; i<l; i++) {
             var file = files[i];
-            var path = treeutil.getPath(file);
+            var path = file.getAttribute("path")
 
             var dbgFile = this.paths[path];
             if (dbgFile) {

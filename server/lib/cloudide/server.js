@@ -10,7 +10,8 @@ module.exports = IdeServer = function(workspaceDir, server) {
     this.workspaceDir = async.abspath(workspaceDir);
     this.server = server;
 
-    dav.mount(this.workspaceDir, "/workspace", server);
+    this.davPrefix = "/workspace/";
+    dav.mount(this.workspaceDir, this.davPrefix, server);
 
     var _self = this;
     var options = {
@@ -81,7 +82,8 @@ module.exports = IdeServer = function(workspaceDir, server) {
             "type": "state",
             "workspaceDir": this.workspaceDir,
             "processRunning": !!this.child,
-            "debugClient": !!this.debugClient
+            "debugClient": !!this.debugClient,
+            "davPrefix": this.davPrefix
         };
         this.client.send(JSON.stringify(state));
     };

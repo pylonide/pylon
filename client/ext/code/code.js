@@ -22,7 +22,7 @@ return ext.register("ext/code/code", {
     markup  : markup,
 
     nodes : [],
-    
+
     hook : function(){
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
@@ -51,23 +51,23 @@ return ext.register("ext/code/code", {
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
             })),
-            
+
             mnuView.appendChild(new apf.item({
                 caption : "Syntax Highlighting",
                 submenu : "mnuSyntax"
             })),
-            
+
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Column Mode",
                 onclick : function(){
-                    
+
                 }
             }))
         );
 
-        ide.addEventListeners("clearfilecache", function(e){
-            
+        ide.addEventListener("clearfilecache", function(e){
+
         });
 
         ide.addEventListener("keybindingschange", function(e){
@@ -100,7 +100,7 @@ return ext.register("ext/code/code", {
             barCodeTb.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
-        
+
         this.nodes = [];
     }
 });

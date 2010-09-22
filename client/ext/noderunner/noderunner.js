@@ -70,6 +70,7 @@ return ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.setProperty("active", message.processRunning);
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
+                this.davPrefix = message.davPrefix;
                 break;
 
             case "node-data":
@@ -104,7 +105,7 @@ return ext.register("ext/noderunner/noderunner", {
 
         var command = {
             "command" : debug ? "RunDebug" : "Run",
-            "file"    : file.getAttribute("path")
+            "file"    : file.getAttribute("path").splice(this.davPrefix.length)
         };
         this.socket.send(JSON.stringify(command));
 
