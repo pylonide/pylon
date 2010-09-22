@@ -63,7 +63,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
-    this.$isTextInput       = true;
+    this.$isTextInput      = true;
 
     this.syntax            = "Text";
     this.tabsize           = 4;
@@ -309,6 +309,7 @@ apf.codeeditor = function(struct, tagName) {
         if (!this.$debugger) {
             this.$breakpoints = null;
             this.$updateBreakpoints();
+            this.$updateMarker();
             return;
         }
             
