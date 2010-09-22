@@ -20,6 +20,7 @@
     <a:state id="stDebugProcessRunning" active="false" />
 
 	<a:toolbar id="tbNoderunner">
+	    <a:divider />
 		<a:button
 		  icon="debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
 		  caption="debug"

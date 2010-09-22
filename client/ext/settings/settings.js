@@ -1,7 +1,7 @@
 /**
  * Extension Manager for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/settings/settings",
@@ -62,12 +62,14 @@ return ext.register("ext/settings/settings", {
             model : _self.model
         });
         
-        this.$timer = setInterval(function(){
+        var checkSave = function(){
             if (ide.dispatchEvent("savesettings", {
                 model : _self.model
             }) === true)
                 _self.save();
-        }, 6000); //60000
+        };
+        this.$timer = setInterval(checkSave, 6000); //60000
+        apf.addEventListener("exit", checkSave);
         
         ide.addEventListener("$event.loadsettings", function(callback){
             callback({model: _self.model});

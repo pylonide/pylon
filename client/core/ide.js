@@ -1,7 +1,7 @@
 /**
  * Main IDE object for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("core/ide",
@@ -13,7 +13,6 @@ require.def("core/ide",
 
             //Set references to global elements - aka extension points
             this.tbMain       = tbMain;
-            this.mnuCtxEditor = mnuCtxEditor;
             this.mnuFile      = mnuFile;
             this.barMenu      = barMenu;
             this.barTools     = barTools;

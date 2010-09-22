@@ -1,7 +1,7 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/editors/editors",
@@ -145,8 +145,8 @@ return ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(filename, xmlNode) {
-        var page = tabEditors.getPage(filename);
+    openEditor : function(filename, filepath, xmlNode) {
+        var page = tabEditors.getPage(filepath);
         if (page) {
             tabEditors.set(page);
             return;
@@ -172,7 +172,7 @@ return ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var model, fake = tabEditors.add(filename, filename, editor.path, null, function(page){
+        var model, fake = tabEditors.add(filename, filepath, editor.path, null, function(page){
             page.contentType    = contentType;
             page.$at            = new apf.actiontracker();
             model = page.$model = new apf.model();
@@ -189,7 +189,7 @@ return ext.register("ext/editors/editors", {
         });
         
         //Set active page
-        tabEditors.set(filename);
+        tabEditors.set(filepath);
         
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
@@ -283,7 +283,10 @@ return ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.value, e.node);
+            _self.openEditor(
+                e.node.getAttribute("name"), 
+                e.node.getAttribute("path"), 
+                e.node);
         });
 
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
@@ -298,12 +301,11 @@ return ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             ide.addEventListener("extload", function(){
-                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloudide.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
+                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloud9.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
                 var nodes = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
-                        value : nodes[i].getAttribute("name"), 
-                        node  : nodes[i]
+                        node : nodes[i]
                     });
                 }
             });

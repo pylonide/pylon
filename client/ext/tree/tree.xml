@@ -1,5 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-        
     <a:script><![CDATA[
         function filesort(value, args, xmlNode) {
             return (xmlNode.tagName == "folder" ? 0 : 1) + value;
@@ -27,7 +26,7 @@
         
     ]]></a:script>
     
-	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true">
+	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true" contextmenu="mnuCtxTree">
 	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
             <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
             <a:caption match="[@name]" />
@@ -39,14 +38,35 @@
         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
         <a:rename set="{davProject.rename([@name], [@path])}"/>
-        <a:copy match="[.]" set="{davProject.copy([@path], [../@path])}"/>
-        <a:move match="[.]" set="{davProject.move([@path], [../@path])}"/>
-        <a:remove match="[.]" set="{davProject.remove([@path])}"/>
-        <!--a:dragdrop>
-            <a:allow-drag match="folder|file" />
-            <a:allow-drop match="folder|file" target="folder"
-                operation="tree-append" copy-condition="event.ctrlKey" />
-        </a:dragdrop-->
-	</a:tree>  
+        <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+        <a:move match="[file|folder]" set="{davProject.move([@path], [../@path])}"/>
+        <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
+        
+        <a:drag match="[folder|file]" />
+        <a:drop match="[folder|file]" target="[folder]"
+            action="tree-append" copy="{event.ctrlKey}" />
+	</a:tree>
+	
+	<a:menu id="mnuCtxTree">
+        <a:item class="strong">Open</a:item>
+        <a:divider />
+        <a:item>Rename</a:item>
+        <a:item match="[file|folder]">Remove</a:item>
+        <a:divider />
+        <a:item match="[file|folder]">Cut</a:item>
+        <a:item match="[file|folder]">Copy</a:item>
+        <a:item match="[folder|project]">Paste</a:item>
+        <a:divider />
+        <a:item match="[project|folder]" submenu="mnuNew">New</a:item>
+    </a:menu>
     
+    <a:menu id="mnuNew">
+        <a:item icon="folder.png">Folder</a:item>
+        <a:divider />
+        <a:item icon="page_white_text.png">Text file</a:item>
+        <a:item icon="page_white_code.png">JavaScript file</a:item>
+        <a:item icon="html.png">HTML file</a:item>
+        <a:item icon="xml.png">XML file</a:item>
+        <a:item icon="css.png">CSS file</a:item>
+    </a:menu>
 </a:application>

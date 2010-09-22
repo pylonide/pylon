@@ -12,9 +12,3 @@
 
 <a:menu id="mnuEditors">
 </a:menu>
-
-<a:menu id="mnuCtxEditor">
-    <a:item>Cut</a:item>
-    <a:item>Copy</a:item>
-    <a:item>Paste</a:item>
-</a:menu>
