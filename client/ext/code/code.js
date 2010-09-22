@@ -70,7 +70,7 @@ return ext.register("ext/code/code", {
         );
 
         ide.addEventListener("clearfilecache", function(e){
-
+            ceEditor.clearCacheItem(e.xmlNode);
         });
 
         ide.addEventListener("keybindingschange", function(e){

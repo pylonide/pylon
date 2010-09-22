@@ -36,7 +36,7 @@ return ext.register("ext/tree/tree", {
             if (node.tagName != "file")
                 return;
 
-            ide.dispatchEvent("openfile", {value: this.value, node: node});
+            ide.dispatchEvent("openfile", {node: node});
         });
 
         /**** Support for state preservation ****/
