@@ -101,10 +101,9 @@ return ext.register("ext/filesystem/filesystem", {
     afterMove: function(data, state, extra) {
         var selected = trFiles.selected ? trFiles.selected.getAttribute("path") : null;
         if (state == apf.SUCCESS)
-            var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArguments[1] + "']")
+            var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[1] + "']")
         else
-            node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArguments[0] + "']");
-        console.log("after moving a file: ", selected, node);
+            node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[0] + "']");
         if (!node)
             return;
         this.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
