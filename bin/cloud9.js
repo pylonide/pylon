@@ -32,9 +32,11 @@ function parseArguments(argv) {
                 break;
 	    default:
 		if(arg.indexOf('-a')==0){
-			opts.autostart = arg.slice(2);
+			var args = arg.slice(2).split(' ');
+			opts.start = args.shift();
+			opts.startargs = args;
 		}else
-	                return usage();
+			return usage();
 
         }
     }
@@ -50,8 +52,9 @@ require("../server/lib/cloud9").main(options.workspace, options.port);
 console.log("ajax.org Cloud9 IDE");
 console.log("Project root is: " + options.workspace);
 var url = "http://localhost:" + options.port;
-if(options.autostart){
+if(options.start){
 	console.log("Trying to start your browser in: "+url);
-	require("child_process").spawn(options.autostart,[url]); 
+	options.startargs.push(url);
+	require("child_process").spawn(options.start,options.startargs); 
 }else
 	console.log("Point you browser to "+url);
