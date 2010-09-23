@@ -108,12 +108,12 @@ var V8Debugger = function(dbg, host) {
         
         var vars = xmlFrame.selectNodes("vars/item");
         var fVars = frame.arguments;
-        for (var i = 0, j = 0; j < fVars.length; j++, i++) {
+        for (var i = 1, j = 0; j < fVars.length; j++, i++) { //i = 1 to skin this
             if (fVars[j].name)
                 this.$updateVar(vars[i], fVars[j]);
         }
         var fVars = frame.locals;
-        for (var j=0; j<frame.locals.length; j++, i++) {
+        for (var j = 0; j < frame.locals.length; j++, i++) {
             if (fVars[j].name !== ".arguments")
                 this.$updateVar(vars[i], fVars[j]);
         }
@@ -134,6 +134,7 @@ var V8Debugger = function(dbg, host) {
             "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
             "' column='", frame.column,
             "' id='", getId(frame),
+            "' ref='", frame.ref,
             "' line='", frame.line,
             "' script='", this.$strip(script.name),
             "' scriptid='", frame.func.scriptId, //script.id,
@@ -146,11 +147,11 @@ var V8Debugger = function(dbg, host) {
         };
         xml.push(this.$serializeVariable(receiver));
 
-        for (var j=0; j<frame.arguments.length; j++) {
+        for (var j = 0; j < frame.arguments.length; j++) {
             if (frame.arguments[j].name)
                 xml.push(this.$serializeVariable(frame.arguments[j]));
         }
-        for (var j=0; j<frame.locals.length; j++) {
+        for (var j = 0; j < frame.locals.length; j++) {
             if (frame.locals[j].name !== ".arguments")
                 xml.push(this.$serializeVariable(frame.locals[j]));
         }
@@ -159,7 +160,7 @@ var V8Debugger = function(dbg, host) {
 
         xml.push("<scopes>");
         var scopes = frame.scopes;
-        for (var j=0; j<scopes.length; j++) {
+        for (var j = 0; j < scopes.length; j++) {
             var scope = scopes[j];
             xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
         }
@@ -333,6 +334,10 @@ var V8Debugger = function(dbg, host) {
 
     this.suspend = function() {
         this.$debugger.suspend();
+    };
+    
+    this.evaluate = function(expression, frame, global, disableBreak, callback){
+        this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
     };
 
     this.$valueString = function(value) {
