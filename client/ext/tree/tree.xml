@@ -5,9 +5,9 @@
         }
         
         SupportedIcons = {
-        	"application/xhtml+xml":'html',
-        	"text/css": "css",
-        	"text/html":'html',
+            "application/xhtml+xml":'html',
+            "text/css": "css",
+            "text/html":'html',
             "application/pdf":'pdf',
             "image":'image',
             "application/x-shockwave-flash":'swf',
@@ -26,29 +26,29 @@
         
     ]]></a:script>
     
-	<a:tree id="trFiles" flex="3" autoselect="false" canrename="true" 
-	  contextmenu="mnuCtxTree" multiselect="true">
-	    <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+    <a:tree id="trFiles" flex="3" autoselect="false" canrename="true"
+      contextmenu="mnuCtxTree" multiselect="true">
+        <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
             <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
             <a:caption match="[@name]" />
             <a:icon match="[folder|project]" value="folder.png" />
             <a:icon match="[file]" value="{getIcon(%[.])}" />
             <a:expanded match="[project]" />
         </a:each>
-        
+
         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-        <a:rename set="{davProject.rename([@name], [@path])}"/>
+        <a:rename set="{davProject.rename([@name], [@path], require('ext/filesystem/filesystem').afterRename)}"/>
         <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-        <a:move match="[file|folder]" set="{davProject.move([@path], [../@path])}"/>
+        <a:move set="{davProject.move([@path], [../@path])}"/>
         <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
-        
+
         <a:drag match="[folder|file]" />
         <a:drop match="[folder|file]" target="[folder]"
             action="tree-append" copy="{event.ctrlKey}" />
-	</a:tree>
-	
-	<a:menu id="mnuCtxTree">
+    </a:tree>
+
+    <a:menu id="mnuCtxTree">
         <a:item match="[file]" class="strong" onclick="
             require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
         ">Edit</a:item>
