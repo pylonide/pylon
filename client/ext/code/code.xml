@@ -23,18 +23,21 @@
           syntax = "{getSyntax([@contenttype])}"
           contextmenu    = "mnuCtxEditor"
           showinvisibles = "false"
-          debugger       = "{stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
-          readonly       = "{stDebugProcessRunning.active and [@scriptid]}"
+          debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
+          readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
         />
     </a:vbox>
     
-    <a:bar id="barCodeTb" visible="false">
+    <a:menu id="mnuCtxEditor" render="runtime">
+        <a:item>Undo</a:item>
+        <a:item>Redo</a:item>
         <a:divider />
-        <a:button>Button 1</a:button>
-        <a:button>Button 2</a:button>
-        <a:button>Button 3</a:button>
-        <a:button>Button 4</a:button>
-    </a:bar>
+        <a:item>Cut</a:item>
+        <a:item>Copy</a:item>
+        <a:item>Paste</a:item>
+        <a:divider />
+        <a:item>Select All</a:item>
+    </a:menu>
     
     <a:menu id="mnuSyntax" onitemclick="alert('@fabian, how should this be implemented?');">
         <a:item value="text/plain">Plain Text</a:item>

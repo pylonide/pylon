@@ -1,7 +1,7 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/editors/editors",
@@ -104,7 +104,7 @@ return ext.register("ext/editors/editors", {
         var editor = ext.extLut[path];
         if (!editor)
             return false;
-        
+
         var contentTypes = editor.contentTypes;
         return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
     },
@@ -140,7 +140,7 @@ return ext.register("ext/editors/editors", {
         editor.$rbEditor.select();
 
         page.setAttribute("type", path);
-        
+
         this.beforeswitch({nextPage: page});
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
@@ -187,10 +187,10 @@ return ext.register("ext/editors/editors", {
                 model.setQueryValue("@name", filename + (val ? "*" : ""));
             }
         });
-        
+
         //Set active page
         tabEditors.set(filepath);
-        
+
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
 
@@ -217,7 +217,7 @@ return ext.register("ext/editors/editors", {
 
         mdl.removeXml("data");
         ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
-        
+
         //mdl.unshare();
         mdl.destroy();
 
@@ -284,24 +284,24 @@ return ext.register("ext/editors/editors", {
 
         ide.addEventListener("openfile", function(e){
             _self.openEditor(
-                e.node.getAttribute("name"), 
-                e.node.getAttribute("path"), 
+                e.node.getAttribute("name"),
+                e.node.getAttribute("path"),
                 e.node);
         });
 
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
         this.hbox = vbox.insertBefore(new apf.hbox({flex : 1}), vbox.firstChild);
         this.nodes.push(this.addTabSection());
-        
+
         this.panel = this.hbox;
-        
+
         /**** Support for state preservation ****/
-        
+
         this.$settings = {}, _self = this;
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             ide.addEventListener("extload", function(){
-                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloudide.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
+                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloud9.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
                 var nodes = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
@@ -312,7 +312,7 @@ return ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false, 
+            var changed = false,
                 pNode   = e.model.data.selectSingleNode("auto/files"),
                 state   = pNode && pNode.xml,
                 pages   = tabEditors.getPages();
@@ -321,14 +321,17 @@ return ext.register("ext/editors/editors", {
                 pNode.parentNode.removeChild(pNode);
                 pNode = null;
             }
-            
+
             if (pages.length) {
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
-                    pNode.appendChild(apf.xmldb.cleanNode(pages[i].$model.data.cloneNode(false)));
+                    var file = pages[i].$model.data;
+                    if (file.getAttribute("debug"))
+                        continue;
+                    pNode.appendChild(apf.xmldb.cleanNode(file.cloneNode(false)));
                 }
             }
-            
+
             if (state != (pNode && pNode.xml))
                 return true;
         });

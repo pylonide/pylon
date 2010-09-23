@@ -1,7 +1,7 @@
 /**
  * Node Runner Module for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/filesystem/filesystem",
@@ -24,7 +24,7 @@ return ext.register("ext/filesystem/filesystem", {
             this.webdav.write(path, data);
     },
 
-    createFolder: function() {
+    createFolder: function(name) {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
@@ -32,8 +32,9 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
         
         if (this.webdav) {
+            if (!name) name = "New Folder";
             trFiles.focus();
-            this.webdav.exec("mkdir", [node.getAttribute("path"), "untitled folder"], function(data) {
+            this.webdav.exec("mkdir", [node.getAttribute("path"), name], function(data) {
                 // @todo: in case of error, show nice alert dialog
                 if (data instanceof Error)
                     throw Error;
@@ -43,13 +44,13 @@ return ext.register("ext/filesystem/filesystem", {
                         clearContents: true
                     });
                 }
-                trFiles.select(node.selectSingleNode("folder[@name='untitled folder']"));
+                trFiles.select(node.selectSingleNode("folder[@name='" + name + "']"));
                 trFiles.startRename();
             });
         }
     },
 
-    createFile: function() {
+    createFile: function(filename) {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
@@ -57,9 +58,12 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
         
         if (this.webdav) {
+            if (!filename) 
+                filename = "Untitled.txt";
+            
             trFiles.focus();
             var _self = this;
-            this.webdav.exec("create", [node.getAttribute("path"), "untitled file.txt"], function(data) {
+            this.webdav.exec("create", [node.getAttribute("path"), filename], function(data) {
                 _self.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
                     if (data.indexOf("<file") > -1) {
                         trFiles.insert(data, {
@@ -67,7 +71,7 @@ return ext.register("ext/filesystem/filesystem", {
                             clearContents: true
                         });
                     }
-                    trFiles.select(node.selectSingleNode("file[@name='untitled file.txt']"));
+                    trFiles.select(node.selectSingleNode("file[@name='" + filename + "']"));
                     trFiles.startRename();
                 });
             });
@@ -104,18 +108,28 @@ return ext.register("ext/filesystem/filesystem", {
             if (node.selectSingleNode("data"))
                 return;
 
-            fs.readFile(node.getAttribute("path"), function(data) {
-                var match = data.match(/^.*?(\r?\n)/m);
-                if (match && match[1] == "\r\n")
-                    var nl = "windows";
-                else
-                    nl = "unix";
-
-                var doc = node.ownerDocument;
-                var xml = doc.createElement("data");
-                xml.appendChild(doc.createTextNode(data));
-                xml.setAttribute("newline", nl);
-                apf.b(node).append(xml);
+            fs.readFile(node.getAttribute("path"), function(data, state, extra) {
+                if (state != apf.SUCCESS) {
+                    if (extra.status == 404) {
+                        ide.dispatchEvent("filenotfound", {
+                            node : node,
+                            path : extra.url
+                        });
+                    }
+                }
+                else {
+                    var match = data.match(/^.*?(\r?\n)/m);
+                    if (match && match[1] == "\r\n")
+                        var nl = "windows";
+                    else
+                        nl = "unix";
+    
+                    var doc = node.ownerDocument;
+                    var xml = doc.createElement("data");
+                    xml.appendChild(doc.createTextNode(data));
+                    xml.setAttribute("newline", nl);
+                    apf.b(node).append(xml);
+                }
             });
         });
     },

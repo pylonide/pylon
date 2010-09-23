@@ -14,6 +14,14 @@ BODY {
 .noscript{
     display: none;
 }
+.strong{
+    font-weight : bold;
+}
+
+.cut{
+    opacity : 0.5;
+}
+
 #logo {
     background: url(images/logo.png) no-repeat 0 0;
     width: 161px;

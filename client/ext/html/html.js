@@ -1,7 +1,7 @@
 /**
  * HTML Editor for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/html/html",
@@ -45,7 +45,7 @@ return ext.register("ext/html/html", {
 
     onOpenPage : function() {
         var file = this.page.$model.data;
-        window.open(location.protocol + "//" + location.host + "/workspace/" + file.getAttribute("path"), "_blank");
+        window.open(location.protocol + "//" + location.host + "/" + file.getAttribute("path"), "_blank");
     },
 
     enable : function() {

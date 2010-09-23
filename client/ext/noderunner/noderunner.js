@@ -1,7 +1,7 @@
 /**
  * Node Runner Module for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/noderunner/noderunner",
@@ -43,12 +43,14 @@ return ext.register("ext/noderunner/noderunner", {
         var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
         this.socket.on("connect", this.onConnect.bind(this));
+        this.socket.on("connect", this.onConnect.bind(this));
+        this.socket.on("disconnect", this.onDisconnect.bind(this));
         this.socket.connect();
 
+        var _self = this;
         dbgNode.addEventListener("onsocketfind", function() {
             return socket;
         });
-        dbg.attach(dbgNode);
     },
 
     onMessage : function(message) {
@@ -67,12 +69,14 @@ return ext.register("ext/noderunner/noderunner", {
             case "node-exit":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
+                dbg.detach();
                 break;
 
             case "state":
                 stProcessRunning.setProperty("active", message.processRunning);
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
+                dbgNode.setProperty("strip", message.workspaceDir + "/");
                 this.davPrefix = message.davPrefix;
                 break;
 
@@ -84,7 +88,20 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     onConnect : function() {
+        clearTimeout(this.$retryTimer);
         stServerConnected.activate();
+    },
+
+    onDisconnect : function() {
+        stProcessRunning.deactivate();
+        stDebugProcessRunning.deactivate();
+        dbg.detach();
+
+        clearTimeout(this.$retryTimer);
+        var _self = this;
+        this.$retryTimer = setTimeout(function() {
+            _self.socket.connect();
+        }, 2000);
     },
 
     debug : function() {
@@ -99,7 +116,11 @@ return ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || !stServerConnected.active)
             return;
 
-        var file = tree.trFiles.selected;
+        page = tabEditors.getPage();
+        if (!page)
+            return;
+
+        var file = page.$model.data;
         if (!file)
             return;
 
@@ -108,11 +129,12 @@ return ext.register("ext/noderunner/noderunner", {
 
         var command = {
             "command" : debug ? "RunDebug" : "Run",
-            "file"    : file.getAttribute("path").splice(this.davPrefix.length)
+            "file"    : file.getAttribute("path").slice(this.davPrefix.length)
         };
         this.socket.send(JSON.stringify(command));
 
         if (debug) {
+            dbg.attach(dbgNode);
             stDebugProcessRunning.activate();
             ext.setLayoutMode("ext/debugger/debugger");
         }

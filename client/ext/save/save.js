@@ -1,7 +1,7 @@
 /**
  * Refactor Module for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/save/save",
@@ -59,7 +59,7 @@ return ext.register("ext/save/save", {
         }
 
         btnSave.onclick = _self.quicksave;
-        
+
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
@@ -79,10 +79,15 @@ return ext.register("ext/save/save", {
             return;
 
         var node = page.$model.data;
+        if (node.getAttribute("debug"))
+            return;
+
         var path = node.getAttribute("path");
         var data = apf.queryValue(node, "data");
         if (apf.queryValue(node, "data/@newline") == "windows")
-            data = data.replace(/\n/g, "\r\n");
+            data = data.replace(/\r?\n/g, "\r\n");
+        else
+            data = data.replace(/\r?\n/g, "\n");
 
         fs.saveFile(path, data);
         page.$at.reset();

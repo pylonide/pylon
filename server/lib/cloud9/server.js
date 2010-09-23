@@ -7,11 +7,11 @@ var io = require("socket.io");
 var async = require("async");
 var Path = require("path");
 var spawn = require("child_process").spawn;
-var DebugProxy = require("cloudide/debugproxy");
+var DebugProxy = require("cloud9/debugproxy");
 
 module.exports = IdeServer = function(workspaceDir, server) {
 
-    this.workspaceDir = async.abspath(workspaceDir);
+    this.workspaceDir = async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
 
     this.davPrefix = "/workspace/";

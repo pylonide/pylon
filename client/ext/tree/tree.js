@@ -1,7 +1,7 @@
 /**
  * Code Editor for the Ajax.org Cloud IDE
  *
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/tree/tree",
@@ -31,9 +31,9 @@ return ext.register("ext/tree/tree", {
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterselect", this.$afterselect = function() {
+        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
-            if (node.tagName != "file")
+            if (!node || node.tagName != "file" || this.selection.length > 1)
                 return;
 
             ide.dispatchEvent("openfile", {node: node});

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * @copyright 2010, Ajax.org Services B.V.
+ * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 function usage() {
-    console.log("USAGE: cloudide [-w WORKSPACE_DIR ('.')] [-p PORT (3000)]")
+    console.log("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-p PORT (3000)]")
     process.exit(0)
 }
 
@@ -44,7 +44,7 @@ function parseArguments(argv) {
 
 var options = parseArguments(process.argv.slice(2));
 
-require("../server/lib/cloudide").main(options.workspace, options.port);
-console.log("ajax.org Cloud IDE");
+require("../server/lib/cloud9").main(options.workspace, options.port);
+console.log("ajax.org Cloud9 IDE");
 console.log("Project root is: " + options.workspace);
 console.log("Point you browser to http://localhost:" + options.port);
