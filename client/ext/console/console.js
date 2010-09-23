@@ -38,7 +38,7 @@ return ext.register("ext/console/console", {
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;
             
-            log.push("<div><span style='" + style + "'>" + lines[i]
+            log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "black");
@@ -53,13 +53,30 @@ return ext.register("ext/console/console", {
         txtConsole.addValue(log.join(""));
     },
     
-    evaluate : function(expression){
-        try {
-            var obj = self.parent.eval('0,' + this.value);
-        }catch(e){
-            obj = e.message;
+    log : function(msg, type, pre, post){
+        msg = apf.htmlentities(msg);
+        /*
+        code.replace(/ /g, "&nbsp;")
+                  .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/\n/g, "\n<br />") */
+        
+        if (!type) 
+            type = "log";
+        else if (type == "command") {
+            msg = "<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
+                + msg + "</div></span>";
         }
-        require('ext/console/console').showObject(obj, null, this.value);
+        
+        txtConsole.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
+    },
+    
+    evaluate : function(expression, callback){
+        var _self = this;
+        var frame = dgStack && dgStack.selected && dgStack.selected.getAttribute("ref") || null;
+        dbg.evaluate(expression, frame, null, null, callback || function(xmlNode){
+            _self.showObject(xmlNode);
+        });
     },
     
     checkChange : function(xmlNode){
@@ -121,37 +138,118 @@ return ext.register("ext/console/console", {
     },
     
     consoleTextHandler: function(e) {
-        if (e.keyCode == 9 && e.currentTarget == txtCode) {
-            txtCode.focus();
+        if (e.keyCode == 9 && e.currentTarget == txtConsole) {
+            txtConsole.focus();
             e.cancelBubble = true;
             return false;
         }
         else if(e.keyCode == 13 && e.ctrlKey) {
-            apf.$debugwin.jRunCode(txtCode.value, codetype.value, txtModel.value);
+            var _self = this;
+            var expression = txtCode.value;
+            
+            this.log(expression, "command");
+            this.evaluate(expression, function(xmlNode, body, refs, error){
+                if (error)
+                    _self.log(error.message, "error");
+                else {
+                    var type = body.type, value = body.value || body.text, ref = body.handle, className = body.className;
+                    if (className == "Function") {
+                        var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(null, [" 
+                            + body.scriptId + ", " + body.line + ", " + body.position + ", " 
+                            + body.handler + ",\"" + (body.name || body.inferredName) + "\"], \"" 
+                            + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
+                        var post = "</a>";
+                        var name = body.name || body.inferredName || "function";
+                        _self.log(name + "()", "log", pre, post);
+                    }
+                    else if (className == "Array") {
+                        var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                            + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", " 
+                            + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
+                        var post = " }</a>";
+                        
+                        _self.log("Array { length: " 
+                            + (body.properties && body.properties.length - 1), "log", pre, post);
+                    }
+                    else if (type == "object") {
+                        var refs = [], props = body.properties;
+                        for (var i = 0, l = body.properties.length; i < l; i++) {
+                            refs.push(props[i].ref);
+                        }
+                        
+                        var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
+                            + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", " 
+                            + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
+                        var post = " }</a>";
+
+                        dbg.$debugger.$debugger.lookup(refs, false, function(body) {
+                            var out = [className || value, "{"];
+                            for (var item, t = 0, i = 0; i < l; i++) {
+                                item = body[refs[i]];
+                                if (item.className == "Function" || item.className == "Object")
+                                    continue;
+                                if (t == 5) {
+                                    out.push("more...");
+                                    break;
+                                }
+                                var name = props[i].name || (props[i].inferredName || "Unknown").split(".").pop();
+                                out.push(name + "=" + item.value, ", ");
+                                t++;
+                            }
+                            out.pop();
+
+                            _self.log(out.join(" "), "log", pre, post);
+                        });
+                    }
+                    else
+                        _self.log(value, "log");
+                }
+            });
+            
+            require("ext/settings/settings").save();
             return false;
         }
     },
     
-    /*showObject : function(obj, id, name){
-        tabDebug.set(1);
-        pgBrowse.set(2);
-
-        if (!name && obj && obj.$regbase) {
-            name = obj.getAttribute("id") || "Aml Node";
-            id   = this.apf.$debugwin.cache.push(obj) - 1;
+    showObject : function(xmlNode, ref, expression){
+        if (ref && ref.dataType == apf.ARRAY) {
+            require("ext/debugger/debugger").$showFile(ref[0]);
+            ide.addEventListener("openfile", function(e){
+                if (e.node.getAttribute("scriptid") == ref[0]) {
+                    ceEditor.$editor.gotoLine(ref[1] + 1);
+                    if (ref[4])
+                        ceEditor.$editor.find(ref[4]);
+                    ceEditor.focus();
+                    ide.removeEventListener("openfile", arguments.callee);
+                }
+            });
         }
+        else {
+            tabConsole.set(1);
+            
+            if (xmlNode && typeof xmlNode == "string")
+                xmlNode = apf.getXml(xmlNode);
+            
+            var name = xmlNode && xmlNode.getAttribute("name") || expression;
+            txtCurObject.setValue(name);
+            dgWatch.clear("loading");
 
-        txtCurObject.setValue(name);
-        trObject.clear("loading");
-
-        var _self = this;
-        setTimeout(function(){
-            if (!id && id !== 0)
-                $apf_ide_mdlObject.load(_self.analyze(obj, name, name));
-            else
-                $apf_ide_mdlObject.load(_self.analyze(_self.apf.$debugwin.cache[id], 
-                    "apf.$debugwin.cache[" + id + "]", name));
-        }, 10);
+            if (xmlNode) {
+                setTimeout(function(){
+                    var model = dgWatch.getModel();
+                    var root  = apf.getXml("<data />");
+                    apf.xmldb.appendChild(root, xmlNode);
+                    model.load(root);
+                    //model.appendXml(xmlNode);
+                }, 10);
+            }
+            else if (ref) {
+                
+            }
+            else {
+                this.evaluate(expression);
+            }
+        }
     },
     
     types : ["Object", "Number", "Boolean", "String", "Array", "Date", "RegExp", "Function", "Object"],
@@ -186,7 +284,7 @@ return ext.register("ext/console/console", {
         if (path[0].charAt(0) == "[")
             path[0] = path[0].substr(2, path[0].length - 4);
         return path.join(".").replace(/\.\[/g, "[");
-    },*/
+    },
     
     /**** Init ****/
 
@@ -198,7 +296,7 @@ return ext.register("ext/console/console", {
         this.panel = winDbgConsole;
         
         lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && _self.$showFile(e.selected.getAttribute("scriptid"));
+            e.selected && require("ext/debugger/debugger").$showFile(e.selected.getAttribute("scriptid"));
         });
         
         apf.importCssString(".console_date{display:inline}");

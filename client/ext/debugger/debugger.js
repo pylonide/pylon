@@ -72,8 +72,7 @@ return ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
         if (file) {
             ide.dispatchEvent("openfile", {
-                node: file,
-                value: file.getAttribute("name")
+                node: file
             });
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");

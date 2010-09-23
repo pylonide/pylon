@@ -12242,9 +12242,11 @@
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
             font-size : 9px;
+            /*font-size : 11px;
+            font-family : Monaco,"Courier New",monospace;*/
         }
         
-        .apf_console div{
+        .apf_console .item{
             min-height : 13px;
             padding : 2px 2px 2px 2px;
             line-height : 13px;
@@ -12278,6 +12280,13 @@
         .apf_console .console_repeat{
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
             color      : #AAA;
+        }
+        
+        .apf_console .item a{
+            text-decoration : none;
+        }
+        .apf_console .item a:hover{
+            text-decoration : underline;
         }
     ]]></a:style>
 
