@@ -10,24 +10,28 @@ var V8Debugger = function(dbg, host) {
 
     this.$breakpoints = {};
 
-    var self = this;
+    var _self = this;
     dbg.addEventListener("changeRunning", function(e) {
-        self.dispatchEvent("changeRunning", e);
+        _self.dispatchEvent("changeRunning", e);
         if (dbg.isRunning()) {
-            self.setFrame(null);
+            _self.setFrame(null);
         }
     });
     dbg.addEventListener("break", function(e) {
-        self.dispatchEvent("break", e);
+        _self.dispatchEvent("break", e);
     });
     dbg.addEventListener("afterCompile", function(e) {
-        self.dispatchEvent("afterCompile", {script: apf.getXml(self.$getScriptXml(e.data.script))});
+        _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
     });
 
     this.setFrame(null);
 };
 
 (function() {
+    var hasChildren = {
+        "object": 8,
+        "function": 4
+    };
 
     this.stripPrefix = "",
     
@@ -50,7 +54,7 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.scripts = function(model, callback) {
-        var self = this;
+        var _self = this;
         this.$debugger.scripts(4, null, false, function(scripts) {
             var xml = [];
             for (var i = 0; i < scripts.length; i++) {
@@ -58,7 +62,7 @@ var V8Debugger = function(dbg, host) {
                 if (script.name && script.name.indexOf("chrome-extension://") == 0) {
                     continue;
                 }
-                xml.push(self.$getScriptXml(script));
+                xml.push(_self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
         });
@@ -72,10 +76,101 @@ var V8Debugger = function(dbg, host) {
             "' debug='true' />"].join("")
     };
 
-    this.backtrace = function(model) {
-        var self = this;
-        this.$debugger.backtrace(null, null, null, true, function(body, refs) {
+    function getId(frame){
+        return (frame.func.name || frame.func.inferredName || (frame.line + frame.position));
+    }
 
+    this.$isEqual = function(xmlFrameSet, frameSet){
+        if (xmlFrameSet.length != frameSet.length)
+            return false;
+        
+        var xmlFirst = xmlFrameSet[0];
+        var first    = frameSet[0];
+        if (xmlFirst.getAttribute("scriptid") != first.func.scriptId)
+            return false;
+        if (xmlFirst.getAttribute("id") != getId(first))
+            return false;
+
+        //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
+        return true;
+    }
+
+    /**
+     * Assumptions:
+     *  - .index stays the same
+     *  - sequence in the array stays the same
+     *  - ref stays the same when stepping in the same context
+     */
+    this.$updateFrame = function(xmlFrame, frame){
+        //With code insertion, line/column might change??
+        xmlFrame.setAttribute("line", frame.line);
+        xmlFrame.setAttribute("column", frame.column);
+        
+        var vars = xmlFrame.selectNodes("vars/item");
+        var fVars = frame.arguments;
+        for (var i = 0, j = 0; j < fVars.length; j++, i++) {
+            if (fVars[j].name)
+                this.$updateVar(vars[i], fVars[j]);
+        }
+        var fVars = frame.locals;
+        for (var j=0; j<frame.locals.length; j++, i++) {
+            if (fVars[j].name !== ".arguments")
+                this.$updateVar(vars[i], fVars[j]);
+        }
+        
+        //@todo not caring about globals/scopes right now
+    },
+    
+    this.$updateVar = function(xmlVar, fVar){
+        xmlVar.setAttribute("value", this.$valueString(fVar.value));
+        xmlVar.setAttribute("type", fVar.value.type);
+        xmlVar.setAttribute("ref", fVar.value.ref);
+        apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
+    }
+    
+    this.$buildFrame = function(frame, ref, xml){
+        var script = ref(frame.script.ref);
+        xml.push("<frame index='", frame.index,
+            "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
+            "' column='", frame.column,
+            "' id='", getId(frame),
+            "' line='", frame.line,
+            "' script='", this.$strip(script.name),
+            "' scriptid='", frame.func.scriptId, //script.id,
+            "'>");
+        xml.push("<vars>");
+
+        var receiver = {
+            name: "this",
+            value: frame.receiver
+        };
+        xml.push(this.$serializeVariable(receiver));
+
+        for (var j=0; j<frame.arguments.length; j++) {
+            if (frame.arguments[j].name)
+                xml.push(this.$serializeVariable(frame.arguments[j]));
+        }
+        for (var j=0; j<frame.locals.length; j++) {
+            if (frame.locals[j].name !== ".arguments")
+                xml.push(this.$serializeVariable(frame.locals[j]));
+        }
+        xml.push("<globals />");
+        xml.push("</vars>");
+
+        xml.push("<scopes>");
+        var scopes = frame.scopes;
+        for (var j=0; j<scopes.length; j++) {
+            var scope = scopes[j];
+            xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
+        }
+        xml.push("</scopes>");
+
+        xml.push("</frame>");
+    }
+
+    this.backtrace = function(model) {
+        var _self = this;
+        this.$debugger.backtrace(null, null, null, true, function(body, refs) {
             function ref(id) {
                 for (var i=0; i<refs.length; i++) {
                     if (refs[i].handle == id) {
@@ -85,54 +180,28 @@ var V8Debugger = function(dbg, host) {
                 return {};
             }
 
-            var xml = [];
-            var frames = body.frames;
-            for (var i = 0; i < frames.length; i++) {
-                var frame = frames[i];
-                var script = ref(frame.script.ref);
-                xml.push("<frame index='", frame.index,
-                    "' name='", apf.escapeXML(apf.escapeXML(self.$frameToString(frame))),
-                    "' column='", frame.column,
-                    "' line='", frame.line,
-                    "' script='", self.$strip(script.name),
-                    "' scriptid='", script.id,
-                    "'>");
-                xml.push("<vars>");
-
-                var receiver = {
-                    name: "this",
-                    value: frame.receiver
-                };
-                xml.push(self.$serializeVariable(receiver));
-
-                for (var j=0; j<frame.arguments.length; j++) {
-                    if (frame.arguments[j].name)
-                        xml.push(self.$serializeVariable(frame.arguments[j]));
+            var frames    = body.frames;
+            var xmlFrames = model.queryNodes("frame");
+            if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
+                for (var i = 0; i < frames.length; i++) {
+                    _self.$updateFrame(xmlFrames[i], frames[i]);
                 }
-                for (var j=0; j<frame.locals.length; j++) {
-                    if (frame.locals[j].name !== ".arguments")
-                        xml.push(self.$serializeVariable(frame.locals[j]));
-                }
-                xml.push("</vars>");
-
-                xml.push("<scopes>");
-                var scopes = frame.scopes;
-                for (var j=0; j<scopes.length; j++) {
-                    var scope = scopes[j];
-                    xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
-                }
-                xml.push("</scopes>");
-
-                xml.push("</frame>");
+                _self.setFrame(xmlFrames[0]);
             }
-            model.load("<frames>" + xml.join("") + "</frames>");
-            self.setFrame(model.data.firstChild);
+            else {
+                var xml = [];
+                for (var i = 0; i < frames.length; i++) {
+                    _self.$buildFrame(frames[i], ref, xml);
+                }
+                model.load("<frames>" + xml.join("") + "</frames>");
+                _self.setFrame(model.data.firstChild);
+            }
         });
     };
 
     this.loadScript = function(script, callback) {
         var id = script.getAttribute("scriptid");
-        var self = this;
+        var _self = this;
         this.$debugger.scripts(4, [id], true, function(scripts) {
             if (scripts.length) {
                 var script = scripts[0];
@@ -143,7 +212,7 @@ var V8Debugger = function(dbg, host) {
 
     this.loadObjects = function(item, callback) {
         var ref = item.getAttribute("ref");
-        var self = this;
+        var _self = this;
         this.$debugger.lookup([ref], false, function(body) {
             var refs = [];
             var props = body[ref].properties;
@@ -151,11 +220,11 @@ var V8Debugger = function(dbg, host) {
                 refs.push(props[i].ref);
             }
 
-            self.$debugger.lookup(refs, false, function(body) {
+            _self.$debugger.lookup(refs, false, function(body) {
                 var xml = ["<item>"];
                 for (var i=0; i<props.length; i++) {
                     props[i].value = body[props[i].ref];
-                    xml.push(self.$serializeVariable(props[i]));
+                    xml.push(_self.$serializeVariable(props[i]));
                 }
                 xml.push("</item>");
                 callback(xml.join(""));
@@ -169,7 +238,7 @@ var V8Debugger = function(dbg, host) {
 
         var frameIndex = parseInt(frame.getAttribute("index"));
 
-        var self = this;
+        var _self = this;
         var processed = 0;
         var expected = 0;
         var xml = ["<vars>"];
@@ -185,7 +254,7 @@ var V8Debugger = function(dbg, host) {
                 this.$debugger.scope(index, frameIndex, true, function(body) {
                     var props = body.object.properties;
                     for (j=0; j<props.length; j++) {
-                        xml.push(self.$serializeVariable(props[j]))
+                        xml.push(_self.$serializeVariable(props[j]))
                     }
                     processed += 1;
                     if (processed == expected) {
@@ -210,7 +279,7 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.toggleBreakpoint = function(script, relativeRow, model) {
-        var self = this;
+        var _self = this;
 
         var scriptId = script.getAttribute("scriptid");
 
@@ -231,8 +300,8 @@ var V8Debugger = function(dbg, host) {
                 var xml = [];
                 xml.push("<breakpoint",
                     " id='", breakpoint.$id,
-                    "' text='", self.$strip(apf.escapeXML(name)), ":", breakpoint.line,
-                    "' script='", self.$strip(apf.escapeXML(name)),
+                    "' text='", _self.$strip(apf.escapeXML(name)), ":", breakpoint.line,
+                    "' script='", _self.$strip(apf.escapeXML(name)),
                     "' scriptid='", scriptId,
                     "' lineoffset='", lineOffset,
                     "' line='", breakpoint.line,
@@ -290,7 +359,7 @@ var V8Debugger = function(dbg, host) {
 
     this.$frameToString = function(frame) {
         var str = [];
-        str.push(frame.func.name || frame.func.inferredName, "(");
+        str.push(frame.func.name || frame.func.inferredName || "Anonymous", "(");
         var args = frame.arguments;
         var argsStr = [];
         for (var i=0; i<args.length; i++) {
@@ -305,10 +374,6 @@ var V8Debugger = function(dbg, host) {
 
     this.$serializeVariable = function(item, name) {
         var str = [];
-        var hasChildren = {
-            "object": 8,
-            "function": 4
-        };
         str.push("<item name='", apf.escapeXML(name || item.name),
             "' value='", apf.escapeXML(this.$valueString(item.value)),
             "' type='", item.value.type,

@@ -547,6 +547,11 @@ apf.DataBinding = function(){
             //#endif
             return;
         }
+        
+        // If reloading current document, and caching is disabled, exit
+        if (!this.caching && !forceNoCache && xmlNode 
+          && !this.$loadqueue && xmlNode == this.xmlRoot)
+            return;
 
         var disabled = this.disabled;
         this.disabled = false;
@@ -561,11 +566,6 @@ apf.DataBinding = function(){
             ? this.localName + "[" + (this.name || '') + "]"
             : this.nodeName));
         //#endif
-
-        // If reloading current document, and caching is disabled, exit
-        if (this.caching && !forceNoCache && xmlNode 
-          && !this.$loadqueue && xmlNode == this.xmlRoot)
-            return;
 
         this.clear(true, true);
 

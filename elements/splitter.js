@@ -129,7 +129,8 @@ apf.splitter = function(struct, tagName){
             }
         }
         
-        apf.layout.forceResize(this.$ext.parentNode);
+        if (apf.isGecko)
+            apf.layout.forceResize(this.$ext.parentNode);
     };
     
     this.$setSiblings = function(){

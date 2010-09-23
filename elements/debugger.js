@@ -80,9 +80,9 @@ apf.dbg = function(struct, tagName){
         var isRunning = this.$debugger.isRunning();
         this.$stRunning.setProperty("active", isRunning);
         
-        if (isRunning) {
+        /*if (isRunning) {
             this.$mdlStack.load("<frames />");
-        }
+        }*/
     };
     
     this.$onBreak = function() {
