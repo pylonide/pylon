@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/filesystem/filesystem",
-    ["core/ide", "core/ext"], function(ide, ext, localFiles) {
+    ["core/ide", "core/ext"], function(ide, ext) {
 
 return ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -32,9 +32,15 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
         
         if (this.webdav) {
-            if (!name) name = "New Folder";
+            if (!name)
+                name = "New Folder";
+            var path = node.getAttribute("path");
+            if (!path) {
+                path = require("ext/noderunner/noderunner").davPrefix;
+                node.setAttribute("path", path);
+            }
             trFiles.focus();
-            this.webdav.exec("mkdir", [node.getAttribute("path"), name], function(data) {
+            this.webdav.exec("mkdir", [path, name], function(data) {
                 // @todo: in case of error, show nice alert dialog
                 if (data instanceof Error)
                     throw Error;
@@ -62,9 +68,14 @@ return ext.register("ext/filesystem/filesystem", {
                 filename = "Untitled.txt";
             
             trFiles.focus();
-            var _self = this;
-            this.webdav.exec("create", [node.getAttribute("path"), filename], function(data) {
-                _self.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
+            var _self = this,
+                path  = node.getAttribute("path");
+            if (!path) {
+                path = require("ext/noderunner/noderunner").davPrefix;
+                node.setAttribute("path", path);
+            }
+            this.webdav.exec("create", [path, filename], function(data) {
+                _self.webdav.exec("readdir", [path], function(data) {
                     if (data.indexOf("<file") > -1) {
                         trFiles.insert(data, {
                             insertPoint: node,
@@ -78,11 +89,17 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
+    afterRename: function(data, state, extra) {
+        var node = trFiles.xmlRoot.selectSingleNode("//node()[@path='" + extra.originalArgs[1] + "']"),
+            base = extra.originalArgs[1].substr(0, extra.originalArgs[1].lastIndexOf("/") + 1);
+        apf.xmldb.setAttribute(node, "path", base + extra.originalArgs[0]);
+    },
+
     /**** Init ****/
 
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><project name='Project' /></data>");
+        this.model.load("<data><folder name='Project' /></data>");
         
         var url;
         if (location.host) {
@@ -98,7 +115,7 @@ return ext.register("ext/filesystem/filesystem", {
         }
         
         this.model.insert(url, {
-            insertPoint : this.model.queryNode("project")
+            insertPoint : this.model.queryNode("folder[@name='Project']")
         });
         
         var fs = this;
