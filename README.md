@@ -62,6 +62,8 @@ Main projects that we use as building blocks:
   * [jsDAV] by [mikedeboer]
   * [connect] by [senchalabs](http://github,com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
+  * [ace](http://github.com/ajaxorg/editor) by [Ajax.org]
+  * [Ajax.org Platform (apf)](http://www.ajax.org) by [Ajax.org]
   * and of course [Node.JS]!
   
 Thanks to all developers and contributors of these projects! 
@@ -78,4 +80,4 @@ Thanks to all developers and contributors of these projects!
 
 ## License
 
-The GPL version 3, read it at http://www.gnu.org/licenses/gpl.txt
+The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.gnu.org/licenses/gpl.txt)
