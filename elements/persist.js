@@ -302,10 +302,13 @@ apf.persist = function(struct, tagName){
     this.login   = 
     this.connect = function(username, password, redirect, token, callback) {
         var _self = this;
-        if (this.listening)
-            return this.disconnect(function(){
+        if (this.listening) {
+            this.$stopListen();
+            _self.dispatchEvent("disconnect");
+            /*return this.disconnect(function(){
                 _self.connect(username, password, redirect, token, callback);
-            })
+            })*/
+        }
 
         this.contentType = "application/x-www-form-urlencoded";
         this.get(this.host + this.PATHS.login, {
