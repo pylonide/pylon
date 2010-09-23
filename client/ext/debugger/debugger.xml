@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     
-    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1" width="250">
+    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1">
         <a:datagrid
           id         = "dgStack"
           anchors    = "0 0 0 0" 
@@ -12,15 +12,15 @@
           selected   = "{dbg.activeframe}">
        	    <a:actions />
        	    <a:each match="[frame]">
-                <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
-                <a:column caption="Script" value="[@script]" width="40%" />
+                <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
+                <a:column caption="Script" value="[@script]" width="50" />
                 <a:column caption="Ln" value="[@line]" width="25"/>
                 <a:column caption="Col" value="[@column]" width="25"/>
             </a:each>
         </a:datagrid>    
     </a:window>
     
-    <a:window id="winDbgVariables" skin="dockwin" title="Variables" modal="false" flex="1" width="200">
+    <a:window id="winDbgVariables" skin="dockwin" title="Variables" modal="false" flex="1">
 		<a:datagrid id="dgVars"
           anchors    = "0 0 0 0" 
           options    = "size|move"
@@ -33,15 +33,15 @@
             <a:each match="[item|globals]" sort="[@name]">
               	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
                 <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
-                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon2="debugger/genericvariable_obj.gif" tree="true" />
-                <a:column caption="Value" value="[@value]" width="100%" />
-                <a:column caption="Type" value="[@type]" width="80"/>
+                <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon2="debugger/genericvariable_obj.gif" tree="true" />
+                <a:column caption="Value" value="[@value]" width="60%" />
+                <a:column caption="Type" value="[@type]" width="50"/>
             </a:each>
         </a:datagrid>		
     </a:window>
     
     <!-- Copy the implementation from the console -->
-    <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" flex="1" width="200">
+    <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" flex="1">
 		<a:datagrid id="dgWatch"
           anchors    = "0 0 0 0" 
           options    = "size|move"
