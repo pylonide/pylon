@@ -59,7 +59,7 @@
                           onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
                           realtime  = "true"
                           border    = "1 0 0 1" 
-                          disabled  = "{stRunning.active}"
+                          disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
                           model     = "{require('ext/settings/settings').model}" 
                           value     = "[auto/console/input]" />
                     </a:hbox>
@@ -71,7 +71,7 @@
                             margin    = "5" 
                             height    = "19" 
                             realtime  = "true"
-                            disabled  = "{stRunning.active}"
+                            disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
                             initial-message = "Enter an expression"
                             onclear   = "
                                 dgWatch.clear();
@@ -92,7 +92,7 @@
                           options    = "size|move"
                           prerender  = "false"
                           caching    = "false"
-                          disabled   = "{stRunning.active}"
+                          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
                           empty-message   = "Inspect an object by typing a javascript expression above and pressing enter."
                           loading-message = "Calculating..."
                           onafterselect   = "

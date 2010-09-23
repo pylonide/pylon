@@ -58,7 +58,7 @@
             <div class="alertWarn" margin="0 10 0 10"/>
             <a:vbox flex="1" padding="5">
                 <h3 id="winAlertHeader"></h3>
-                <div id="winAlertMsg" class="alertMsg"></div>
+                <div id="winAlertMsg" class="alertMsg">sadfasdf</div>
             </a:vbox>
         </a:hbox>
         <a:divider skin="hordivider" />

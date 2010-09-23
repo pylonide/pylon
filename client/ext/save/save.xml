@@ -24,6 +24,6 @@
     
     <a:bar id="barSave" visible="false">
         <a:divider />
-        <a:button id="btnSave" icon="debugger/save_edit{this.disabled ? '_disbled' : ''}.gif">Save file</a:button>
+        <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disbled' : ''}.png">Save file</a:button>
     </a:bar>
 </a:application>

@@ -75,9 +75,11 @@ return ext.register("ext/editors/editors", {
         var _self = this;
         return this.hbox.appendChild(new apf.vbox({
             flex       : 1,
+            edge       : "5 0 0 0",
             childNodes : [
                 new apf.tab({
                     id      : "tabEditors",
+                    skin    : "editor_tab",
                     flex    : 1,
                     buttons : "close", //scale
                     onfocus : function(e){

@@ -8,7 +8,7 @@
           caching    = "false"
           prerender  = "false"
           model      = "mdlDbgStack"
-          disabled   = "{stRunning.active}"
+          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
           selected   = "{dbg.activeframe}">
        	    <a:actions />
        	    <a:each match="[frame]">
@@ -27,7 +27,7 @@
           prerender  = "false"
           caching    = "false"
           model      = "[{dgStack.selected}::vars]"
-          disabled   = "{stRunning.active}"
+          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
           loading-message = "Calculating...">
             <a:actions />
             <a:each match="[item|globals]" sort="[@name]">
