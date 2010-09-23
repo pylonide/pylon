@@ -40,7 +40,7 @@
         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
         <a:rename set="{davProject.rename([@name], [@path], require('ext/filesystem/filesystem').afterRename)}"/>
         <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-        <a:move set="{davProject.move([@path], [../@path])}"/>
+        <a:move set="{davProject.move([@path], [../@path], require('ext/filesystem/filesystem').afterMove)}"/>
         <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
 
         <a:drag match="[folder|file]" />

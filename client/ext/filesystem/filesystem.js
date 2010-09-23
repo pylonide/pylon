@@ -25,6 +25,7 @@ return ext.register("ext/filesystem/filesystem", {
     },
 
     createFolder: function(name) {
+        debugger;
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
@@ -90,16 +91,39 @@ return ext.register("ext/filesystem/filesystem", {
     },
 
     afterRename: function(data, state, extra) {
+        if (state !== apf.SUCCESS)
+            return;
         var node = trFiles.xmlRoot.selectSingleNode("//node()[@path='" + extra.originalArgs[1] + "']"),
             base = extra.originalArgs[1].substr(0, extra.originalArgs[1].lastIndexOf("/") + 1);
         apf.xmldb.setAttribute(node, "path", base + extra.originalArgs[0]);
+    },
+
+    afterMove: function(data, state, extra) {
+        var selected = trFiles.selected ? trFiles.selected.getAttribute("path") : null;
+        if (state == apf.SUCCESS)
+            var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArguments[1] + "']")
+        else
+            node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArguments[0] + "']");
+        console.log("after moving a file: ", selected, node);
+        if (!node)
+            return;
+        this.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
+            if (data.indexOf("<folder") > -1) {
+                trFiles.insert(data, {
+                    insertPoint: node,
+                    clearContents: true
+                });
+            }
+            if (selected)
+                trFiles.select(node.selectSingleNode("//node()[@path='" + selected + "']"));
+        });
     },
 
     /**** Init ****/
 
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder name='Project' /></data>");
+        this.model.load("<data><folder type='folder' name='Project' /></data>");
         
         var url;
         if (location.host) {
