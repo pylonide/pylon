@@ -39,7 +39,10 @@ return ext.register("ext/debugger/debugger", {
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
-            //Append the watch window on the left below the file tree
+            //Append the variable window on the right
+            this.rightPane.appendChild(winDbgVariables),
+            
+            //Append the watch window on the right
             this.rightPane.appendChild(winDbgWatch)
         );
 

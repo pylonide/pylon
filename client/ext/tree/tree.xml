@@ -5,9 +5,9 @@
         }
         
         SupportedIcons = {
-        	"application/xhtml+xml":'html',
-        	"text/css": "css",
-        	"text/html":'html',
+           "application/xhtml+xml":'html',
+           "text/css": "css",
+           "text/html":'html',
             "application/pdf":'page_white_acrobat',
             "image":'image',
             //"application/x-shockwave-flash":'swf',
@@ -46,10 +46,10 @@
         <a:drag match="[folder|file]" />
         <a:drop match="[folder|file]" target="[folder]"
             action="tree-append" copy="{event.ctrlKey}" />
-	</a:tree>
-	
-	<a:menu id="mnuCtxTree">
-        <a:item class="strong">Open</a:item>
+    <a:menu id="mnuCtxTree">
+        <a:item match="[file]" class="strong" onclick="
+            require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
+        ">Edit</a:item>
         <a:divider />
         <a:item onclick="trFiles.startRename()">Rename</a:item>
         <a:item match="[file|folder]" onclick="trFiles.remove()">Remove</a:item>
