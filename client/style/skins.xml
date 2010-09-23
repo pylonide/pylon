@@ -1985,254 +1985,200 @@
         </a:ending>
     </a:presentation>
 </a:accordion>
-<a:modalwindow name="modalwindow">
-    <a:alias>window</a:alias>
+<a:modalwindow name="change_photo">
     <a:style><![CDATA[
-        .north{cursor: url(cursor/n-point.cur);}
-        .west{cursor: url(cursor/w-point.cur);}
-        .east{cursor: url(cursor/e-point.cur);}
-        .south{cursor: url(cursor/s-point.cur);}
-        .same{cursor: not-allowed;}
-
-        .window {
-            font-family: Tahoma;
-            font-size: 11px;
-            padding : 26px 0 5px 0;
-        }
-
-        .window .topLeft {
-            float: left;
-            background: url("images/window_lt.png") no-repeat top left;
-            width: 6px;
-            height: 27px;
-            margin: 0;
-            padding: 0;
-            border: 0;
-            margin-top : -26px;
-            _margin-right: -6px; /* IE6 bug fix */
-        }
-
-        .windowFocus{
-
-        }
-
-        .window .topRight {
-            float: right;
-            background: url("images/window_rt.png") no-repeat top left;
-            width: 5px;
-            height: 27px;
-            margin: 0;
-            padding: 0;
-            border: 0;
-            margin-top : -26px;
-            _margin-left: -5px; /* IE6 bug fix */
-        }
-
-        .window .title {
-            background: url("images/window_mt.png") repeat-x top left;
-            height: 21px;
-            color: #eeeeee;
-            position: relative;
-            margin: 0 5px 0 6px;
-            padding: 6px 0 0 20px;
-            border: 0;
-            font-weight: bold;
-            margin-top : -26px;
-            cursor : default;
-        }
-
-        .window .title img{
-            margin: -1px 3px 0 -1px;
-            position : absolute;
-            left : 2px;
-        }
-
-        .window .content {
-            background : #f5f5f5;
-            margin-left: 3px;
-            margin-right: 3px;
+        .wn_cp_window {
             position : relative;
-            height : 100%;
-            background:#f5f5f5 url(images/page_bt.png) repeat-x top left;
-    	    border-right: 1px solid #dcd8d8;
-    	    border-top: 1px solid #dcd8d8;
-    	    border : 0; /* changed by ruben */
-    	    overflow : hidden;
-        }
-
-        .windowMin .content{
+            width    : 498px;
             overflow : hidden;
+            padding  : 42px 11px 15px 11px;
+            z-index  : 100000;
         }
 
-        .window .borderRight{
-            background: url("images/window_border.png") repeat-y top right;
-            overflow : hidden;
-            width : 3px;
-            float : right;
-            height : 100%;
-            _margin-left: -3px; /* IE6 bug fix */
+        .wn_cp_window .wn_cp_corner_tl,
+        .wn_cp_window .wn_cp_corner_tr,
+        .wn_cp_window .wn_cp_corner_bl,
+        .wn_cp_window .wn_cp_corner_br {
+            position          : absolute;
+            background-repeat : no-repeat;
         }
 
-        .window .borderLeft {
-            background: url("images/window_border.png") repeat-y top left;
-            overflow: hidden;
-            height : 100%;
-            float : left;
-            width : 3px;
-            _margin-right: -3px; /* IE6 bug fix */
+        .wn_cp_window .wn_cp_corner_tl {
+            width               : 15px;
+            height              : 42px;
+            top                 : 0;
+            left                : 0;
+            background-image    : url(images/sprite_boxes_hor.png);
+            background-position : 0 0;
         }
 
-        .window .bottomLeft {
-            float: left;
-            background: url("images/window_lb_small.png") no-repeat top left;
-            width: 3px;
-            height: 4px;
-            _margin-right: -3px; /* IE6 bug fix */
-	        margin-top: -1px;
+        .wn_cp_window .wn_cp_corner_tr {
+            width               : 15px;
+            height              : 42px;
+            top                 : 0;
+            right               : 0;
+            background-image    : url(images/sprite_boxes_hor.png);
+            background-position : 0 -42px;
         }
 
-        .window .bottomRight {
-            float: right;
-            background: url("images/window_rb_small.png") no-repeat top left;
-            width: 3px;
-            height: 4px;
-            _margin-left: -3px; /* IE6 bug fix */
-	        margin-top: -1px;
+        .wn_cp_window .wn_cp_corner_bl {
+            width               : 15px;
+            height              : 15px;
+            bottom              : 0;
+            left                : 0;
+            background-image    : url(images/sprite_boxes_hor.png);
+            background-position : 0 -84px;
         }
 
-        .window .bottomBar {
-            background: url("images/window_mb_small.png") repeat-x top left;
-            height: 4px;
-            color: #FFFFFF;
-            position: relative;
-            margin: -2px 3px 0 3px;
-	        border-top: 1px solid #dcd8d8;
+        .wn_cp_window .wn_cp_corner_br {
+            width               : 15px;
+            height              : 15px;
+            bottom              : 0;
+            right               : 0;
+            background-image    : url(images/sprite_boxes_hor.png);
+            background-position : 0 -99px;
         }
 
-        .window .bottom{
+        .wn_cp_window .wn_cp_border_t,
+        .wn_cp_window .wn_cp_border_l,
+        .wn_cp_window .wn_cp_border_r,
+        .wn_cp_window .wn_cp_border_b {
             position : absolute;
-            bottom : 0;
-            width : 100%;
+            overflow : hidden;
         }
 
-        .cover{
-            /*background: url(images/spacer.gif);*/
-            background: white;
-            opacity: 0.3;
-            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
-
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            height: expression(document.documentElement.offsetHeight);
-            z-index: 10000;
+        .wn_cp_window .wn_cp_border_t {
+            height            : 42px;
+            top               : 0;
+            left              : 15px;
+            right             : 15px;
+            background-repeat : repeat-x;
+            background-image  : url(images/sprite_boxes_hor.png);
+            background-position : 0 -114px;
         }
 
-        .window .title blockquote{
-            margin: 0;
-            width: 56px;
-            height: 21px;
-            position: absolute;
-            padding: 4px 4px 2px 2px;
-            top: 0;
-            right: 0;
-            /*background: url(images/title.gif) repeat-x;*/
+        .wn_cp_window .wn_cp_border_b {
+            height            : 15px;
+            bottom            : 0;
+            left              : 15px;
+            right             : 15px;
+            background-repeat : repeat-x;
+            background-image  : url(images/sprite_boxes_hor.png);
+            background-position : 0 -156px;
         }
 
-        .window .title blockquote div{
-            width: 10px;
-            height: 9px;
-            float: right;
-            padding: 3px;
-            background: no-repeat 3px 3px;
-            cursor: default;
-            _overflow: hidden; /* IE6 bug fix */
+        .wn_cp_window .wn_cp_border_l {
+            width             : 11px;
+            bottom            : 15px;
+            top               : 42px;
+            left              : 0;
+            background-repeat : repeat-y;
+            background-image  : url(images/sprite_boxes_ver.png);
+            background-position : 0 0;
         }
 
-        .window .title blockquote div.hover{
-            border : 1px solid white;
-            padding : 2px;
-            background-position : 2px -10px;
-            height : 10px;
-            background-color : transparent;
-        }
-        .window .title blockquote div.down{
-            background-color : black;
-        }
-
-        .window .title .max{
-            background-image: url(images/win_max.gif);
-        }
-        .windowMax .title .max{
-            background-image: url(images/win_restore.gif);
-        }
-        .window .title .min{
-            background-image: url(images/win_min.gif);
-        }
-        .windowMin .title .min{
-            background-image: url(images/win_restore.gif);
-        }
-        .window .title .close{
-            width: 11px;
-            background-image: url(images/win_x.gif);
-        }
-        .window .title span{
-            width: 16px;
-            height: 16px;
-            display: block;
+        .wn_cp_window .wn_cp_border_r {
+            width             : 11px;
+            bottom            : 15px;
+            top               : 42px;
+            right             : 0;
+            background-repeat : repeat-y;
+            background-image  : url(images/sprite_boxes_ver.png);
+            background-position : -11px 0;
         }
 
-        #apf_outline{
-
+        .wn_cp_window .wn_cp_border_t .wn_cp_title {
+            font-size   : 15px;
+            color       : #747475;
+            font-weight : bold;
+            font-family : Trebuchet MS;
+            text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+            height      : 28px;
+            padding     : 14px 0 0 6px;
+            position    : relative;
+            top         : 0;
+            left        : 0;
+            cursor      : default;
         }
 
-        #apf_outline.drag{
-            border: 2px solid black;
-            /*background: #CCC;*/
-            opacity: 0.4;
-            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons {
+            display : none;
         }
 
-        #apf_outline.resize{
-            border: 3px solid black;
-            background: #CCC;
-            opacity: 0.3;
-            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+        .wn_cp_window .wn_cp_content {
+            position            : relative;
+            width               : 100%;
+            height              : 100%;
+            background-image    : url(images/change_photo_win_backg.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+            background-color    : #eff1f4;
+            color               : #222222;
+            font-size           : 13px;
+            font-family         : Trebuchet MS;
+        }
+
+        .wn_cp_window .wn_cp_content > H3 {
+            font-size   : 18px;
+            color       : #333333;
+            font-family : Trebuchet MS;
+            font-weight : bold;
+            margin      : 0;
+            display:block;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .wn_cp_window .wn_cp_content H3.wheader {
+            font-size   : 18px;
+            color       : #333333;
+            font-family : Trebuchet MS;
+            font-weight : bold;
+            margin      : 0;
+            display:block;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .wn_cp_window .wn_cp_content > H4 {
+            font-size   : 13px;
+            color       : #222222;
+            font-family : Trebuchet MS;
+            font-weight : bold;
+            margin      : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit">
-        .window .content {
-            margin : 0;
-        }
-    </a:style>
 
     <a:presentation>
-        <a:main collapsed-height="30"
-          min-width="150" min-height="80"
-          container="div[6]" drag="div[3]" title="div[3]/text()"
-          icon="div[3]/img" buttons="div[3]/blockquote">
-            <div class="window">
-                <div class="topLeft"> </div>
-                <div class="topRight"> </div>
-                <div class="title"><img src="" />-<blockquote> </blockquote></div>
+        <a:main
+          collapsed-height = "26"
+          minheight        = "150"
+          minwidth         = "150"
+          container        = "div[1]"
+          drag             = "div[6]"
+          title            = "div[6]/div[2]/text()"
+          icon             = "div[6]/div[1]"
+          buttons          = "div[6]/div[3]">
+            <div class="wn_cp_window">
+                <div class="wn_cp_content"></div>
+                <div class="wn_cp_corner_tl"></div>
+                <div class="wn_cp_corner_tr"></div>
+                <div class="wn_cp_corner_bl"></div>
+                <div class="wn_cp_corner_br"></div>
 
-                <div class="borderLeft"> </div>
-                <div class="borderRight"> </div>
-                <div class="content"> </div>
-
-                <div class="bottomLeft"> </div>
-                <div class="bottomRight"> </div>
-                <div class="bottomBar"> </div>
+                <div class="wn_cp_border_t">
+                    <div class="wn_cp_icon"></div>
+                    <div class="wn_cp_title">-</div>
+                    <div class="wn_cp_buttons"></div>
+                </div>
+                <div class="wn_cp_border_b"></div>
+                <div class="wn_cp_border_l"></div>
+                <div class="wn_cp_border_r"></div>
             </div>
         </a:main>
         <a:button>
             <div> </div>
         </a:button>
-        <a:cover>
-            <div class='cover'> </div>
-        </a:cover>
     </a:presentation>
 </a:modalwindow>
 
@@ -3832,141 +3778,482 @@
     </a:presentation>
 </a:bar>
 <a:button name="button">
-    <a:alias>submit</a:alias>
-    <a:alias>reset</a:alias>
     <a:style><![CDATA[
-        .apf_btn{
-            color: #333;
-            font-family: Tahoma;
-            font-size: 8pt;
-            height: 25px;
-            min-width : 30px;
-            min-height : 25px;
-            max-height : 25px;
-            overflow: hidden;
-            cursor : default;
-/*            margin : 0 -5px -2px 0; */
-	    }
-
-        .apf_btn .left{
-            float: left;
-            width: 8px;
-            height: 25px;
-            _margin-right: -3px; /* IE6 bug fix */
+        .btn {
+            height             : 27px;
+            overflow           : hidden;
+            cursor             : pointer;
+            position           : relative;
+            -moz-user-select   : none;
+            -khtml-user-select : none;
+            user-select        : none;
+            line-height        : 17px;
         }
 
-        .apf_btn .lbl{
-            height: 20px;
-            padding-top: 5px;
-            text-align: center;
-/*            margin : 0 9px 0 8px; */
-            margin: 0;
-            _margin: 0; /* IE6 fix */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .btn.smallbtn {
+            height             : 23px;
         }
 
-        .apf_btn .right{
-            float: right;
-            width: 9px;
-            height: 25px;
-	       _margin-left: -3px; /* IE6 bug fix */
+        .btn .left {
+            float               : left;
+            width               : 4px;
+            height              : 27px;
+            background-color    : transparent;
+            background-image    : url("images/sprite-rounded-vert.png");
+            background-repeat   : no-repeat;
+            background-position : -16px 0;
         }
 
-        .apf_btn .left{
-            background: url("images/button_left.png") no-repeat 0 -25px;
+        .btn.smallbtn .left {
+            height              : 23px;
+            background-position : -16px -6717px;
         }
 
-        .apf_btn .lbl{
-            background: url("images/button_middle.png") repeat-x 0 -25px;
+        .btn .lbl {
+            height              : 23px;
+            padding             : 4px 8px 0 8px;
+            margin              : 0 4px;
+            white-space         : nowrap;
+            overflow            : hidden;
+            background-color    : transparent;
+            background-image    : url("images/sprite-rounded-vert.png");
+            background-repeat   : repeat-x;
+            background-position : 0 -27px;
+            position            : relative;
+            text-align          : center;
+            color               : #474747;
+            text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+            font-family         : Trebuchet MS;
+            font-size           : 14px;
+            font-weight         : bold;
         }
 
-        .apf_btn .right{
-            background: url("images/button_right.png") no-repeat 0 -25px;
+        .btn.smallbtn .lbl {
+            height              : 20px;
+            padding             : 3px 3px 0 3px;
+            background-position : 0 -6740px;
+            font-size           : 12px;
         }
 
-        .apf_btnDefault .left {
-            background: url("images/button_left.png") no-repeat top left;
+        .label_small .lbl {
+            padding-left: 2px;
         }
 
-        .apf_btnDefault .lbl {
-            background: url("images/button_middle.png") repeat-x top left;
+        .btn .right {
+            float               : right;
+            width               : 4px;
+            height              : 27px;
+            background-color    : transparent;
+            background-image    : url("images/sprite-rounded-vert.png");
+            background-repeat   : no-repeat;
+            background-position : 0 -54px;
         }
 
-        .apf_btnDefault .right {
-            background: url("images/button_right.png") no-repeat top left;
+        .btn.smallbtn .right {
+            height              : 23px;
+            background-position : 0 -6763px;
         }
 
-        .apf_btn span{
-            padding : 1px 3px 1px 3px;
-            border: 1px solid transparent;
-            position : relative;
-            _border: 0;
-            _padding: 2px 4px 2px 4px;
-            _margin: 0;
+        .btn .lbl .btnArrow {
+            display             : none;
+            position            : relative;
+            right               : 0;
+            width               : 5px;
+            height              : 3px;
+            vertical-align      : middle;
         }
 
-        .apf_btnDisabled  {
-            color: #bebebe;
+        .btnIcon .lbl {
+            overflow : visible;
         }
 
-        .apf_btnDisabled .left {
-    	    background: url("images/button_left.png") no-repeat 0 -50px;
-    	}
-
-    	.apf_btnDisabled .lbl {
-    	    background: url("images/button_middle.png") repeat-x 0 -50px;
-    	}
-
-    	.apf_btnDisabled .right {
-    	    background: url("images/button_right.png") no-repeat 0 -50px;
-    	}
-    	.apf_btnFocus {
+        .btnIcon .lbl SPAN {
+            width               : 23px;
+            height              : 23px;
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+            position            : absolute;
+            top                 : 1px;
+            left                : 0;
         }
 
-        .apf_btnFocus span{
-            border: 1px dotted #BBB;
-            padding : 1px 3px 1px 3px;
+        .btnIcon.iconOnTheRight .lbl {
+            padding : 4px 12px 0 0;
         }
 
-        .apf_btnDown .left {
-	        background: url("images/button_left.png") no-repeat 0 -75px;
+        .btnIcon.iconOnTheRight .lbl SPAN {
+            left  : auto;
+            right : 0;
         }
 
-    	.apf_btnDown .lbl {
-    	    background: url("images/button_middle.png") repeat-x 0 -75px;
-    	}
+        .btnOver .left      {background-position : -16px -81px}
+        .btnOver .lbl       {background-position : 0 -108px}
+        .btnOver .right     {background-position : 0 -135px}
+        .btnFocus .left     {background-position : -16px -243px}
+        .btnFocus .lbl      {background-position : 0 -270px}
+        .btnFocus .right    {background-position : 0 -297px}
+        .btnDown .left      {background-position : -16px -162px}
+        .btnDown .lbl       {background-position : 0 -189px}
+        .btnDown .right     {background-position : 0 -216px}
+        .btnDisabled .left  {background-position : -16px -324px}
+        .btnDisabled .lbl   {
+            background-position : 0 -351px;
+            color               : #b8bbbf;
+            text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .btnDisabled .right {background-position : 0 -378px}
 
-    	.apf_btnDown .right {
-    	    background: url("images/button_right.png") no-repeat 0 -75px;
-    	}
+        /* small */
+        .btnOver.smallbtn .left      {background-position : -16px -6786px}
+        .btnOver.smallbtn .lbl       {background-position : 0 -6809px}
+        .btnOver.smallbtn .right     {background-position : 0 -6832px}
+        .btnFocus.smallbtn .left     {background-position : -16px -6924px}
+        .btnFocus.smallbtn .lbl      {background-position : 0 -6947px}
+        .btnFocus.smallbtn .right    {background-position : 0 -6970px}
+        .btnDown.smallbtn .left      {background-position : -16px -6855px}
+        .btnDown.smallbtn .lbl       {background-position : 0 -6878px}
+        .btnDown.smallbtn .right     {background-position : 0 -6901px}
+        .btnDisabled.smallbtn .left  {background-position : -16px -6993px}
+        .btnDisabled.smallbtn .lbl   {
+            background-position : 0 -7016px;
+            color               : #b8bbbf;
+            text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .btnDisabled.smallbtn .right {background-position : 0 -7039px}
 
-        .apf_btnOver {
+
+        /* Additional styles - DARKGREEN */
+        .ui-btn-greenfont {
+            color               : #37a700;
+        }
+
+        /* Additional styles - DARKGREEN */
+        .ui-btn-darkgreen .left {
+            background-position : -16px -1620px;
+        }
+        .ui-btn-darkgreen .lbl {
+            background-position : 0 -1647px;
+            color            : #4d8110;
+            text-shadow      : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-darkgreen .right {
+            background-position : 0 -1674px;
+        }
+        .ui-btn-darkgreen.btnOver .left  {background-position : -16px -1701px;}
+        .ui-btn-darkgreen.btnOver .lbl   {background-position : 0 -1728px;}
+        .ui-btn-darkgreen.btnOver .right {background-position : 0 -1755px;}
+        .ui-btn-darkgreen.btnFocus .left   {background-position : -16px -1863px;}
+        .ui-btn-darkgreen.btnFocus .lbl    {background-position : 0 -1890px;}
+        .ui-btn-darkgreen.btnFocus .right  {background-position : 0 -1917px;}
+        .ui-btn-darkgreen.btnDown .left   {background-position : -16px -1782px;}
+        .ui-btn-darkgreen.btnDown .lbl    {background-position : 0 -1809px;}
+        .ui-btn-darkgreen.btnDown .right  {background-position : 0 -1836px;}
+
+        /* Additional styles - GREEN */
+        .ui-btn-green .left {
+            background-position : -16px -405px;
+        }
+        .ui-btn-green .lbl {
+            background-position : 0 -432px;
+            color            : #4d8110;
+            text-shadow      : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-green .right {
+            background-position : 0 -459px;
+        }
+        .ui-btn-green.btnOver .left   {background-position : -16px -486px}
+        .ui-btn-green.btnOver .lbl    {background-position : 0 -513px}
+        .ui-btn-green.btnOver .right  {background-position : 0 -540px}
+        .ui-btn-green.btnFocus .left  {background-position : -16px -648px}
+        .ui-btn-green.btnFocus .lbl   {background-position : 0 -675px}
+        .ui-btn-green.btnFocus .right {background-position : 0 -702px}
+        .ui-btn-green.btnDown .left   {background-position : -16px -567px}
+        .ui-btn-green.btnDown .lbl    {background-position : 0 -594px}
+        .ui-btn-green.btnDown .right  {background-position : 0 -621px}
+        .ui-btn-green.btnDisabled .left   {background-position : -16px -729px}
+        .ui-btn-green.btnDisabled .lbl    {
+            background-position : 0 -756px;
+            color               : #91ba63;
+            text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-green.btnDisabled .right  {background-position : 0 -783px}
+
+        /* smallbtn */
+        .ui-btn-green.smallbtn .left {
+            background-position : -16px -5889px;
+        }
+        .ui-btn-green.smallbtn .lbl {
+            background-position : 0 -5912px;
+            color            : #4d8110;
+            text-shadow      : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-green.smallbtn .right {
+            background-position : 0 -5935px;
+        }
+        .ui-btn-green.btnOver.smallbtn .left   {background-position : -16px -5958px}
+        .ui-btn-green.btnOver.smallbtn .lbl    {background-position : 0 -5981px}
+        .ui-btn-green.btnOver.smallbtn .right  {background-position : 0 -6004px}
+        .ui-btn-green.btnFocus.smallbtn .left  {background-position : -16px -6096px}
+        .ui-btn-green.btnFocus.smallbtn .lbl   {background-position : 0 -6119px}
+        .ui-btn-green.btnFocus.smallbtn .right {background-position : 0 -6142px}
+        .ui-btn-green.btnDown.smallbtn .left   {background-position : -16px -6027px}
+        .ui-btn-green.btnDown.smallbtn .lbl    {background-position : 0 -6050px}
+        .ui-btn-green.btnDown.smallbtn .right  {background-position : 0 -6073px}
+        .ui-btn-green.btnDisabled.smallbtn .left   {background-position : -16px -6165px}
+        .ui-btn-green.btnDisabled.smallbtn .lbl    {
+            background-position : 0 -6188px;
+            color               : #91ba63;
+            text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-green.btnDisabled.smallbtn .right  {background-position : 0 -6211px}
+
+        /* Additional styles - RED */
+        .ui-btn-red .left {
+            background-position : -16px -810px
+        }
+        .ui-btn-red .lbl {
+            background-position : 0 -837px;
+            color            : white;
+            text-shadow      : rgba(209, 2, 0, .71) 0px 1px 0px;
+        }
+        .ui-btn-red .right {
+            background-position : 0 -864px
+        }
+        .ui-btn-red.btnOver .left   {background-position : -16px -891px}
+        .ui-btn-red.btnOver .lbl    {background-position : 0 -918px}
+        .ui-btn-red.btnOver .right  {background-position : 0 -945px}
+        .ui-btn-red.btnFocus .left  {background-position : -16px -1053px}
+        .ui-btn-red.btnFocus .lbl   {background-position : 0 -1080px}
+        .ui-btn-red.btnFocus .right {background-position : 0 -1107px}
+        .ui-btn-red.btnDown .left   {background-position : -16px -972px}
+        .ui-btn-red.btnDown .lbl    {background-position : 0 -999px}
+        .ui-btn-red.btnDown .right  {background-position : 0 -1026px}
+        .ui-btn-red.btnDisabled .left   {background-position : -16px -1134px}
+        .ui-btn-red.btnDisabled .lbl    {
+            background-position : 0 -1161px;
+            color               : #bd0502;
+            text-shadow         : rgba(255, 255, 255, .31) 0px 1px 0px;
+        }
+        .ui-btn-red.btnDisabled .right  {background-position : 0 -1188px}
+
+        /* small */
+        .ui-btn-red.smallbtn .left {
+            background-position : -16px -6303px
+        }
+        .ui-btn-red.smallbtn .lbl {
+            background-position : 0 -6326px;
+            color            : white;
+            text-shadow      : rgba(209, 2, 0, .71) 0px 1px 0px;
+        }
+        .ui-btn-red.smallbtn .right {
+            background-position : 0 -6349px
+        }
+        .ui-btn-red.btnOver.smallbtn .left   {background-position : -16px -6372px}
+        .ui-btn-red.btnOver.smallbtn .lbl    {background-position : 0 -6395px}
+        .ui-btn-red.btnOver.smallbtn .right  {background-position : 0 -6418px}
+        .ui-btn-red.btnFocus.smallbtn .left  {background-position : -16px -6510px}
+        .ui-btn-red.btnFocus.smallbtn .lbl   {background-position : 0 -6533px}
+        .ui-btn-red.btnFocus.smallbtn .right {background-position : 0 -6556px}
+        .ui-btn-red.btnDown.smallbtn .left   {background-position : -16px -6441px}
+        .ui-btn-red.btnDown.smallbtn .lbl    {background-position : 0 -6464px}
+        .ui-btn-red.btnDown.smallbtn .right  {background-position : 0 -6487px}
+        .ui-btn-red.btnDisabled.smallbtn .left   {background-position : -16px -6579px}
+        .ui-btn-red.btnDisabled.smallbtn .lbl    {
+            background-position : 0 -6602px;
+            color               : #bd0502;
+            text-shadow         : rgba(255, 255, 255, .31) 0px 1px 0px;
+        }
+        .ui-btn-red.btnDisabled.smallbtn .right  {background-position : 0 -6625px}
+
+        /* Additional styles - BLUE */
+        .ui-btn-blue .left {
+            background-position : -16px -1215px
+        }
+        .ui-btn-blue .lbl {
+            background-position : 0 -1242px;
+            color            : #1f78a7;
+            text-shadow      : rgba(205, 243, 255, .71) 0px 1px 0px
+        }
+        .ui-btn-blue .right {
+            background-position : 0 -1269px
+        }
+        .ui-btn-blue.btnOver .left   {background-position : -16px -1296px}
+        .ui-btn-blue.btnOver .lbl    {background-position : 0 -1323px}
+        .ui-btn-blue.btnOver .right  {background-position : 0 -1350px}
+        .ui-btn-blue.btnFocus .lbl   {background-position : 0 -1485px}
+        .ui-btn-blue.btnFocus .right {background-position : 0 -1512px}
+        .ui-btn-blue.btnFocus .left  {background-position : -16px -1458px}
+        .ui-btn-blue.btnDown .left   {background-position : -16px -1377px}
+        .ui-btn-blue.btnDown .lbl    {background-position : 0 -1404px}
+        .ui-btn-blue.btnDown .right  {background-position : 0 -1431px}
+        .ui-btn-blue.btnDisabled .left   {background-position : -16px -1539px}
+        .ui-btn-blue.btnDisabled .lbl    {
+            background-position : 0 -1566px;
+            color               : #33a3d6;
+            text-shadow         : rgba(205, 243, 255, .71) 0px 1px 0px;
+        }
+        .ui-btn-blue.btnDisabled .right  {background-position : 0 -1593px}
+
+        /* Additional styles - BLUE2 */
+        .ui-btn-blue2 .left {
+            background-position : -16px -3945px
+        }
+        .ui-btn-blue2 .lbl {
+            background-position : 0 -3972px;
+            color            : #00536f;
+            text-shadow      : #18c8fe 0px 1px 0px
+        }
+        .ui-btn-blue2 .right {
+            background-position : 0 -3999px
+        }
+        .ui-btn-blue2.btnOver .left   {background-position : -16px -4026px}
+        .ui-btn-blue2.btnOver .lbl    {background-position : 0 -4053px}
+        .ui-btn-blue2.btnOver .right  {background-position : 0 -4080px}
+        .ui-btn-blue2.btnFocus .left  {background-position : -16px -4188px}
+        .ui-btn-blue2.btnFocus .lbl   {background-position : 0 -4215px}
+        .ui-btn-blue2.btnFocus .right {background-position : 0 -4242px}
+        .ui-btn-blue2.btnDown .left   {background-position : -16px -4107px}
+        .ui-btn-blue2.btnDown .lbl    {background-position : 0 -4134px}
+        .ui-btn-blue2.btnDown .right  {background-position : 0 -4161px}
+        .ui-btn-blue2.btnDisabled .left   {background-position : -16px -4269px}
+        .ui-btn-blue2.btnDisabled .lbl    {
+            background-position : 0 -4296px;
+            color               : #36a3d6;
+            text-shadow         : #7bdfff 0px 1px 0px;
+        }
+        .ui-btn-blue2.btnDisabled .right  {background-position : 0 -4323px}
+
+        /* Additional styles - BLUE3 */
+        .ui-btn-blue3 .left {
+            background-position : -16px -3945px
+        }
+        .ui-btn-blue3 .lbl {
+            background-position : 0 -3972px;
+            color               : white;
+            text-shadow         : rgba(3, 156, 208, 1) 0px 1px 0px;
+        }
+        .ui-btn-blue3 .right {
+            background-position : 0 -3999px
+        }
+        .ui-btn-blue3.btnOver .left   {background-position : -16px -4026px}
+        .ui-btn-blue3.btnOver .lbl    {background-position : 0 -4053px}
+        .ui-btn-blue3.btnOver .right  {background-position : 0 -4080px}
+        .ui-btn-blue3.btnFocus .left  {background-position : -16px -4188px}
+        .ui-btn-blue3.btnFocus .lbl   {background-position : 0 -4215px}
+        .ui-btn-blue3.btnFocus .right {background-position : 0 -4242px}
+        .ui-btn-blue3.btnDown .left   {background-position : -16px -4107px}
+        .ui-btn-blue3.btnDown .lbl    {background-position : 0 -4134px}
+        .ui-btn-blue3.btnDown .right  {background-position : 0 -4161px}
+        .ui-btn-blue3.btnDisabled .left   {background-position : -16px -4269px}
+        .ui-btn-blue3.btnDisabled .lbl    {
+            background-position : 0 -4296px;
+            color               : #36a3d6;
+            text-shadow         : #7bdfff 0px 1px 0px;
+        }
+        .ui-btn-blue3.btnDisabled .right  {background-position : 0 -4323px}
+
+
+        /* Additional styles - ORANGE */
+        .ui-btn-orange .left {
+            background-position : -16px -4350px
+        }
+        .ui-btn-orange .lbl {
+            background-position : 0 -4377px;
+            color            : #8a4106;
+            text-shadow      : #ffb639 0px 1px 0px
+        }
+        .ui-btn-orange .right {
+            background-position : 0 -4404px
+        }
+        .ui-btn-orange.btnOver .left   {background-position : -16px -4431px}
+        .ui-btn-orange.btnOver .lbl    {background-position : 0 -4458px}
+        .ui-btn-orange.btnOver .right  {background-position : 0 -4485px}
+        .ui-btn-orange.btnFocus .left  {background-position : -16px -4593px}
+        .ui-btn-orange.btnFocus .lbl   {background-position : 0 -4620px}
+        .ui-btn-orange.btnFocus .right {background-position : 0 -4647px}
+        .ui-btn-orange.btnDown .left   {background-position : -16px -4512px}
+        .ui-btn-orange.btnDown .lbl    {background-position : 0 -4539px}
+        .ui-btn-orange.btnDown .right  {background-position : 0 -4566px}
+        .ui-btn-orange.btnDisabled .left   {background-position : -16px -4674px}
+        .ui-btn-orange.btnDisabled .lbl    {
+            background-position : 0 -4701px;
+            color               : #c47806;
+            text-shadow         : #ffb639 0px 1px 0px;
+        }
+        .ui-btn-orange.btnDisabled .right  {background-position : 0 -4728px}
+
+        /* Additional styles - YELLOW */
+        .ui-btn-yellow .left {
+            background-position : -16px -4755px
+        }
+        .ui-btn-yellow .lbl {
+            background-position : 0 -4782px;
+            color            : #8a5000;
+            text-shadow      : #ffe082 0px 1px 0px
+        }
+        .ui-btn-yellow .right {
+            background-position : 0 -4809px
+        }
+        .ui-btn-yellow.btnOver .left   {background-position : -16px -4836px}
+        .ui-btn-yellow.btnOver .lbl    {background-position : 0 -4863px}
+        .ui-btn-yellow.btnOver .right  {background-position : 0 -4890px}
+        .ui-btn-yellow.btnFocus .left  {background-position : -16px -4998px}
+        .ui-btn-yellow.btnFocus .lbl   {background-position : 0 -5025px}
+        .ui-btn-yellow.btnFocus .right {background-position : 0 -5052px}
+        .ui-btn-yellow.btnDown .left   {background-position : -16px -4917px}
+        .ui-btn-yellow.btnDown .lbl    {background-position : 0 -4944px}
+        .ui-btn-yellow.btnDown .right  {background-position : 0 -4971px}
+        .ui-btn-yellow.btnDisabled .left   {background-position : -16px -5079px}
+        .ui-btn-yellow.btnDisabled .lbl    {
+            background-position : 0 -5106px;
+            color               : #c39658;
+            text-shadow         : #ffe082 0px 1px 0px;
+        }
+        .ui-btn-yellow.btnDisabled .right  {background-position : 0 -5133px}
+
+        .btn.btnDisabled {
+            cursor: default;
+        }
+
+        .submenu .lbl .btnArrow {
+            display             : inline-block;
+            background-image    : url("images/arrow_small.png");
+            background-repeat   : no-repeat;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE7">
-    	.apf_btn .right {
-    	    margin: 0;
-    	}
+    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+        .btn .lbl {
+            margin : 0;
+        }
 
-    	.apf_btn .left {
-    	    margin: 0;
-    	}
-    </a:style>
+        .btnIcon .lbl {
+            overflow : hidden;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE"><![CDATA[
+        .btn .lbl {
+            line-height : 19px;
+        }
 
+        .btn.smallbtn .lbl {
+            line-height : 17px;
+        }
+    ]]></a:style>
     <a:presentation>
-        <a:main 
-          caption    = "div[3]/span" 
-          label      = "div[3]/span"
+        <a:main
+          caption    = "div[3]/text()"
+          label      = "div[3]/text()"
           background = "."
-          minheight  = "25" 
-          minwidth   = "30"
-          maxheight  = "25">
-            <div class="apf_btn">
+          icon       = "div[3]/span"
+          minwidth   = "30">
+            <div class="btn">
                 <div class="left"> </div>
                 <div class="right"> </div>
-                <div class="lbl"><span>-</span></div>
+                <div class="lbl">-
+                    <span></span>
+                    <div class="btnArrow"> </div>
+                </div>
+
              </div>
         </a:main>
     </a:presentation>
@@ -5205,19 +5492,20 @@
     <a:style><![CDATA[
         .toolbar .menubar {
             background: url(images/menubar_row.png) repeat-x top left;
-            height: 21px;
+            height: 22px;
+            z-index: 1;
             font-family: Verdana;
             font-size: 11px;
-            border-bottom: 1px solid #c3c3c3;
             position: relative;
         }
 
         .toolbar .subbar {
-            background: url(images/toolbar_row.png) repeat-x top left;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
+            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
             height: 25px;
             font-family: Verdana;
             font-size: 11px;
-            border-bottom: 1px solid #c3c3c3;
+            border-bottom: 1px solid #b2b2b2;
             position: relative;
             padding: 0;
             width : 100%;
@@ -5276,19 +5564,25 @@
             height: 18px;
             float: left;
             cursor: default;
-            padding: 4px 8px 0 8px;
+            padding: 3px 8px 0 8px;
+            margin-top: 2px;
             line-height: 13px;
             text-decoration: none;
-            color: #000000;
+            color: #e8e8e8;
         }
 
-        .menubar .toolbarbuttonOver, .menubar .toolbarbuttonDown {
-            background : #45b3e8 url(images/menu_over.gif);
+        .menubar .toolbarbuttonOver {
+            cursor: pointer;
             color : #ffffff;
         }
 
-        .menubar .toolbarbuttonDown, .menubar .toolbarbuttonDown {
-            background : #45b3e8 url(images/menu_down.gif);
+        .menubar .toolbarbuttonOver {
+            border-radius: 4px 4px 0px 0px;
+            -moz-border-radius: 4px 4px 0px 0px;
+            -webkit-border-bottom-right-radius: 0px;
+            -webkit-border-bottom-left-radius: 0px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : #ffffff;
         }
 
@@ -14329,6 +14623,30 @@
         </a:main>
     </a:presentation>
 </a:bar>
+
+<a:bar name="headerbar">
+    <a:style><![CDATA[
+        .headerbar{
+            position : relative;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,127,189)),color-stop(0.9, rgb(63,144,215)),color-stop(1, rgb(38,118,188)));
+            background: -moz-linear-gradient(center bottom,rgb(51,127,189) 0%,rgb(63,144,215) 90%,rgb(38,118,188) 100%);
+            border-bottom: 1px solid #3f8fd5;
+            -webkit-box-shadow: 0px -1px 1px;
+            -moz-box-shadow: 0px -1px 1px;
+            box-shadow: 0px -1px 1px;
+            height: 27px;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="headerbar">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+
 <a:caldropdown name="caldropdown">
     <a:style><![CDATA[
         .caldropdown {

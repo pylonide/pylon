@@ -14,3 +14,19 @@ BODY {
 .noscript{
     display: none;
 }
+#logo {
+    background: url(images/logo.png) no-repeat 0 0;
+    width: 161px;
+    height: 22px;
+    display: block;
+    text-indent: -800em;
+    margin-left:5px;
+    margin-top:3px;
+}
+
+.alertMsg {
+    font-size   : 14px;
+    color       : #333333;
+    font-family : Trebuchet MS;
+    line-height : 16px;
+}
