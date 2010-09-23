@@ -2,59 +2,63 @@
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
 <a:modalwindow name="dockwin">
     <a:alias>panel</a:alias>
-    
+
     <a:style><![CDATA[
         .dockwin {
             font-family : "Trebuchet MS";
             font-size   : 11px;
-            padding     : 15px 0 1px 0;
+            padding     : 19px 0 1px 0;
             position    : relative;
             overflow    : hidden;
         }
-    
+
         .dockwinFocus {
-        
+
         }
-        
+
         .dockwin .docktitle {
             background   : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(0.93, rgb(64,145,216)),color-stop(1, rgb(55,120,176)));
             background   : -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 93%,rgb(55,120,176) 100%);
             height       : 17px;
             color        : white;
-            position     : relative;
+            position     : absolute;
             margin       : 0;
             padding      : 1px 0 0 7px;
+            top          : 0;
+            left         : 0;
+            right        : 0;
             font-weight  : bold;
-            margin-top   : -15px;
+            margin-top   : 0;
             cursor       : default;
             white-space  : nowrap;
             overflow     : hidden;
             text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
             border-bottom : 1px solid #1d3a55;
             border-radius : 4px 4px 0 0;
+            text-transform:uppercase;
             -moz-border-radius: 4px 4px 0 0;
             -webkit-border-top-right-radius: 4px;
             -webkit-border-top-left-radius: 4px;
         }
-        
+
         .dockwin .dockcontent {
             background   : #f5f5f5;
             overflow     : hidden;
             position     : relative;
             height       : 100%;
             border       : 1px solid #8C8C8C;
-            border-width : 0 1px 1px 1px; 
+            border-width : 0 1px 1px 1px;
         }
-        
+
         .noborder .dockcontent {
             border-width : 0;
         }
-        
+
         .dockwinMin .dockcontent {
             overflow : hidden;
             position : relative;
         }
-        
+
         .dockwin .docktitle blockquote {
             margin     : 0;
             width      : 49px;
@@ -63,57 +67,60 @@
             top        : 0;
             right      : 0;
         }
-    
+
         .dockwin .docktitle blockquote div {
             width      : 10px;
-            height     : 9px;
+            height     : 6px;
             float      : right;
-            padding    : 3px;
-            background : no-repeat 3px 3px;
-            cursor     : default;
+            margin-top:5px;
+            padding-bottom:3px;
+            padding-left:3px;
+            padding-right:2px;
+            background : no-repeat 0 0;
+            background-color    : transparent;
+            cursor     : pointer;
             _overflow  : hidden; /* IE6 bug fix */
         }
-        
+
         .dockwin .docktitle blockquote div.hover {
-            background-position : 2px -10px;
-            background-color    : transparent;
+            background-position : 0 -9px;
         }
-        
+
         .dockwin .docktitle blockquote div.down {
-            background-color : black;
+            background-position : 0 -18px;
         }
-        
+
         .dockwin .docktitle .max {
             background-image : url(images/win_max.gif);
         }
-        
+
         .dockwinMax .docktitle .max {
             background-image : url(images/win_restore.gif);
         }
-        
+
         .dockwin .docktitle .min {
             background-image : url(images/win_min.gif);
         }
-        
+
         .dockwinMin .docktitle .min {
             background-image : url(images/win_restore.gif);
         }
-        
+
         .dockwin .docktitle .close {
             width            : 11px;
-            background-image : url(images/win_x.gif);
+            background-image : url(images/win_x.png);
         }
-        
+
         .dockwin .docktitle span {
             width   : 16px;
             height  : 16px;
             display : block;
         }
-        
+
         body .whitebg .content {
             background : white;
         }
-        
+
         .north{cursor : url(images/cursor/n-point.cur);}
         .west{cursor : url(images/cursor/w-point.cur);}
         .east{cursor : url(images/cursor/e-point.cur);}
@@ -127,27 +134,27 @@
 			display: -webkit-box;
 			padding: 0;
 		}
-		
+
 		.dockwin .docktitle {
 			margin: 0
-		}	
+		}
 
 		.dockwin .dockcontent {
 			margin: 0;
 			height: auto;
 			-webkit-box-flex: 1;
-		}	
+		}
     ]]></a:style>
-	
+
     <a:presentation>
-        <a:main 
+        <a:main
           collapsed-height = "22"
-          min-width        = "150" 
-          min-height       = "80" 
+          min-width        = "150"
+          min-height       = "80"
           caption          = "div[1]/text()"
-          container        = "div[2]" 
+          container        = "div[2]"
           drag             = "div[1]"
-          title            = "div[1]/text()" 
+          title            = "div[1]/text()"
           buttons          = "div[1]/blockquote">
             <div class="dockwin">
                 <div class="docktitle">-
@@ -171,7 +178,7 @@
             position : relative;
             overflow : visible;
         }
-        
+
         .tslider .button {
             width               : 17px;
             height              : 19px;
@@ -183,25 +190,25 @@
             top                 : 0;
             right               : 0;
         }
-        
+
         .tsliderFocus .button {
             background-position : 0 -19px;
         }
-        
+
         .tsliderDown .button {
             background-position : 0 -38px;
         }
-        
+
         .tsliderError .button {
             background-position : 0 -57px;
         }
-        
-        /* 
+
+        /*
         ===========================
         ======== TEXTBOX ==========
         ===========================
         */
-        
+
         .tslider .fixdiv {
             position     : absolute;
             left         : 0;
@@ -230,37 +237,37 @@
             position      : relative;
             overflow      : hidden;
         }
-    
+
         .tsliderFocus .fixdiv {
             border : 1px solid #327fbd;
             border-right:0;
         }
-        
+
         .tsliderDisabled .fixdiv {
             border       : 1px solid #c3c3c3;
             border-right : 0;
         }
-    
+
         .tsliderDisabled .fixdiv .tb {
             color  : #bebebe;
         }
-    
+
         .tsliderError .fixdiv {
             border       : 2px solid #ffb500;
             border-right : 0;
             margin       : -1px 0 0 -1px;
         }
-    
+
         .tsliderInitial .fixdiv .tb {
             color : gray;
         }
 
-        /* 
+        /*
         ===========================
         ========= SLIDER ==========
         ===========================
         */
-        
+
         .tslider_container {
             position         : absolute;
             background-color : #ebebeb;
@@ -284,26 +291,26 @@
             top         : 2px;
             left        : 2px;
         }
-        
+
         .tslider_containerDisabled .slider {
             background-position : right -8px;
         }
-        
+
         .tslider_container .slider .left {
             background   : url("images/bar_left.png") no-repeat top left;
             height       : 8px;
             overflow     : hidden;
             margin-right : 4px;
         }
-        
+
         .tslider_containerDisabled .slider .left {
             background-position : left -8px;
         }
-        
+
         .tslider_containerDisabled .slider .filledbar {
             background-position : 0 -8px;
         }
-        
+
         .tslider_container .slider .grabber {
             background : url("images/slider.png") no-repeat top left;
             width      : 20px;
@@ -312,7 +319,7 @@
             position   : absolute;
             z-index    : 10;
         }
-        
+
         .tslider_containerDisabled .slider .grabber {
             background-position : left -8px;
         }
@@ -345,9 +352,9 @@
             padding : 1px 0 1px 0;
         }
     ]]></a:style>
-    
+
     <a:presentation>
-        <a:main 
+        <a:main
           container = "."
           button    = "div[1]"
           status    = "div[2]/input"
@@ -364,9 +371,9 @@
         </a:main>
         <a:container
           container = "."
-          slider    = "div" 
+          slider    = "div"
           grabber   = "div/div[1]"
-          markers   = "div/div[2]"> 
+          markers   = "div/div[2]">
             <div class="tslider_container">
                     <div class="slider">
                         <div class="grabber"> </div>
@@ -546,11 +553,11 @@
         .debugmarkup .plus>span, .debugmarkup .pluslast>span{
             display : none;
         }
-        
+
         .debugmarkup .anynode{
             padding : 1px 1px 1px 16px;
         }
-        
+
         .debugmarkup .anynode strong{
             margin : 0 0 0 10px;
             cursor : text;
@@ -570,30 +577,30 @@
         .debugmarkup .anynode #txt_rename p{
             margin : 0;
         }
-        
+
         .debugmarkup .open strong{
             width : auto;
             overflow : visible;
             display : block;
             height : auto;
         }
-        
+
         .debugmarkup .comment{
             color : green;
         }
-        
+
         .debugmarkup .cdata{
             color : gray;
         }
-        
+
         .debugmarkup .procinstr{
             color : orange;
         }
-        
+
         .debugmarkup .procinstr strong, .debugmarkup .cdata strong{
             color : #333;
         }
-        
+
         .debugmarkup .textnode{
             padding : 3px 1px 3px 16px;
             color : #333;
@@ -614,14 +621,14 @@
                 <blockquote> </blockquote>
             </div>
         </a:main>
-        <a:item 
-          class      = "dl" 
-          begintag   = "dl/dt" 
-          begintail  = "dl/span" 
-          endtag     = "span" 
-          attributes = "dl" 
-          openclose  = "i" 
-          select     = "dl" 
+        <a:item
+          class      = "dl"
+          begintag   = "dl/dt"
+          begintail  = "dl/span"
+          endtag     = "span"
+          attributes = "dl"
+          openclose  = "i"
+          select     = "dl"
           container  = "blockquote">
             <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span><i> </i></div>
         </a:item>
@@ -653,7 +660,7 @@
             margin : 10px 0 10px 0;
             cursor : default;
         }
-        
+
         .hbox .divider, .vdivider{
             width : 0;
             margin : 0 10px 0 10px;
@@ -661,7 +668,7 @@
             border-width : 0 1px 0 1px;
             height: 17px;
         }
-        
+
         .divider span{
             color : #333;
             background : #f5f5f5;
@@ -671,12 +678,12 @@
             display : none;
             font-size : 8pt;
         }
-        
+
         .table .divider, .vbox .divider, .hbox .divider{
             margin : 0;
         }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main container="." caption="span" minheight="2" minwidth="2">
             <div class='divider'><span> </span> </div>
@@ -690,7 +697,7 @@
             position : relative;
             clear : both;
         }
-        
+
         .portal .column{
             height : 100%;
             width : 33.33%;
@@ -698,17 +705,17 @@
             vertical-align : top;
             min-height : 100px;
         }
-        
+
         .portal .collast .position_holder,
         .portal .collast .docklet{
             margin-right : 0;
         }
-        
+
         .portal .position_holder{
             border : 2px dashed #3b5998;
             margin : 0 10px 10px 0;
         }
-        
+
         .portal .message{
             position : absolute;
             padding: 8px 10px 0 0;
@@ -726,11 +733,11 @@
             float : left;
         }
     ]]></a:style>
-    
+
     <a:presentation>
         <a:main container=".">
-            <div class='portal'> 
-                
+            <div class='portal'>
+
             <br clear="all" /></div>
         </a:main>
         <a:column>
@@ -754,17 +761,17 @@
             margin : 0 10px 10px 0;
             position : relative;
         }
-        
+
         .docklet .loading{
             padding: 5px 0 5px 8px;
             color: #AAA;
             font-weight : normal;
         }
-    
+
         .dockletFocus{
-        
+
         }
-        
+
         .docklet .docktitle {
             background: url("images/window_mt.png") repeat-x left 50%;
             height: 17px;
@@ -780,33 +787,33 @@
             white-space : nowrap;
             overflow : hidden;
         }
-        
+
         .docklet .content {
             position : relative;
         }
-        
+
         .docklet .dockcontent {
             margin-top : -32px;
             background : #f5f5f5;
             overflow : hidden;
             position : relative;
     	    border : 1px solid #c3c3c3;
-    	    border-width : 0 1px 1px 1px; 
+    	    border-width : 0 1px 1px 1px;
     	    padding : 5px;
         }
-        
+
         .dockletMin .dockcontent{
             overflow : hidden;
         }
-        
+
         .dockletMax{
             position : absolute;
         }
-        
+
         .dockletMax .dockcontent, .fixed .dockcontent{
             height : 100%;
         }
-        
+
         .docklet .docktitle blockquote{
             margin: 0;
             width: 69px;
@@ -826,14 +833,14 @@
             cursor: default;
             _overflow: hidden; /* IE6 bug fix */
         }
-        
+
         .dockletEdit .docktitle .edit{
             background-position : 2px -10px;
             position : relative;
             top : 1px;
             left : 1px;
         }
-        
+
         .docklet .docktitle blockquote div.hover{
             border : 1px solid white;
             padding : 2px;
@@ -845,7 +852,7 @@
         .docklet .docktitle blockquote div.down{
             background-color : black;
         }
-        
+
         .docklet .docktitle .edit{
             background-image : url(images/win_edit.png);
         }
@@ -877,7 +884,7 @@
             overflow : hidden;
             position : relative;
     	    border : 1px solid #c3c3c3;
-    	    border-width : 0 1px 1px 1px; 
+    	    border-width : 0 1px 1px 1px;
     	    padding : 5px;
         }
         .dockletEdit .docksettings{
@@ -886,25 +893,25 @@
         .dockletEdit .dockcontent{
             margin : 0;
         }
-        
+
         .dockletMin .docksettings, .dockletMin .dockcontent{
             display : none;
         }
-        
+
         body .whitebg .content{
             background : white;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main collapsed-height="22" 
-          min-width="150" min-height="80" caption="div[1]/text()" 
-          container="div[2]" drag="div[1]" title="div[1]/text()" 
+        <a:main collapsed-height="22"
+          min-width="150" min-height="80" caption="div[1]/text()"
+          container="div[2]" drag="div[1]" title="div[1]/text()"
           buttons="div[1]/blockquote">
             <div class="docklet">
                 <div class="docktitle">-<blockquote> </blockquote></div>
                 <div class="content">
-                    
+
                 </div>
             </div>
         </a:main>
@@ -931,13 +938,13 @@
             overflow : hidden;
             word-wrap : break-word;
         }
-        
+
         .dockblank .loading{
             padding: 5px 0 5px 8px;
             color: #AAA;
             font-weight : normal;
         }
-        
+
         .dockblank blockquote{
             margin: 0;
             width: 69px;
@@ -956,14 +963,14 @@
             cursor: default;
             _overflow: hidden; /* IE6 bug fix */
         }
-        
+
         .dockblankEdit blockquote .edit{
             background-position : 2px -10px;
             position : relative;
             top : 1px;
             left : 1px;
         }
-        
+
         .dockblank blockquote div.hover{
             border : 1px solid gray;
             padding : 2px;
@@ -971,11 +978,11 @@
             height : 10px;
             position : static;
         }
-        
+
         .dockblank blockquote div.down{
             background-color : black;
         }
-        
+
         .dockblank blockquote .edit{
             background-image : url(images/win_edit.png);
         }
@@ -983,7 +990,7 @@
             width: 11px;
             background-image: url(images/win_x.gif);
         }
-        
+
         .dockblank .dockblankgrab{
             width : 20px;
             height : 20px;
@@ -994,7 +1001,7 @@
             bottom : 0;
             display : none;
         }
-        
+
         .owner .dockblankgrab{
             display : block;
         }
@@ -1006,7 +1013,7 @@
                 <blockquote> </blockquote>
                 <div class="dockblankgrab"> </div>
                 <div>
-                    
+
                 </div>
             </div>
         </a:main>
@@ -4395,7 +4402,7 @@
         }
 
         .tbFocus {
-            
+
         }
 
         .tbDisabled {
@@ -4460,41 +4467,41 @@
         height : 30px;
         padding-left : 10px;
     }
-    
+
     ul.toc li{
         float : left;
         display : inline;
         margin : 0 0 10px -10px;
-        
+
         font-size : 8pt;
         font-weight : bold;
-        
+
         cursor : hand;
         cursor : pointer;
         text-align : center;
         list-style-item : none;
     }
-    
+
     ul.toc li span{
         display : block;
         padding : 8px 15px 8px 5px;
         margin-left : 10px;
     }
-    
+
     ul.toc li.past{
         color : white;
         background : red;
     }
     ul.toc li.past span {
     }
-    
+
     ul.toc li.present{
         color : white;
         background : blue;
     }
     ul.toc li.present span {
     }
-    
+
     ul.toc li.future{
         color : #cccccc;
         background : gray;
@@ -4502,16 +4509,16 @@
 
     ul.toc li.future span {
     }
-    
+
     ul.toc li.hover {
         color : white;
         background : url(images/TocLiBgHover.png) no-repeat left;
     }
-    
+
     ul.toc li.hover span {
         background-color : #099be0;
     }
-    
+
     ul.tocDisabled li {
         cursor : default;
     }
@@ -4535,82 +4542,83 @@
           position: relative;
           overflow: hidden;
         }
-        
+
         .ace_scroller {
           position: absolute;
           overflow-x: scroll;
-          overflow-y: hidden;     
+          overflow-y: hidden;
+          background-color: #fafbfc;
         }
-        
+
         .ace_gutter {
           position: absolute;
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
         }
-        
+
         .ace_editor .ace_sb {
           position: absolute;
           overflow-x: hidden;
           overflow-y: scroll;
           right: 0;
         }
-        
+
         .ace_editor .ace_sb div {
           position: absolute;
           width: 1px;
           left: 0px;
         }
-        
+
         .ace_editor .ace_printMargin {
           position: absolute;
           height: 100%;
         }
-        
+
         .ace_layer {
           z-index: 0;
           position: absolute;
-          overflow: hidden;  
+          overflow: hidden;
           white-space: nowrap;
           height: 100%;
         }
-        
+
         .ace_text-layer {
           font-family: Monaco, "Courier New", monospace;
           color: black;
         }
-        
+
         .ace_cursor-layer {
           cursor: text;
         }
-        
+
         .ace_cursor {
           z-index: 3;
           position: absolute;
         }
-        
+
         .ace_line {
           white-space: nowrap;
         }
-        
+
         .ace_marker-layer {
         }
-        
+
         .ace_marker-layer .ace_step {
           position: absolute;
           z-index: 2;
         }
-        
+
         .ace_marker-layer .ace_selection {
           position: absolute;
           z-index: 3;
         }
-        
+
         .ace_marker-layer .ace_bracket {
           position: absolute;
           z-index: 4;
         }
-        
+
         .ace_marker-layer .ace_active_line {
           position: absolute;
           z-index: 1;
@@ -4626,57 +4634,57 @@
             border: 1px solid #ffb500;
             padding : 5px;
         }
-        
+
         /*** TM ***/
-        
+
         .ce {
           border: 1px solid #c3c3c3;
           -moz-box-sizing: border-box;
           -webkit-box-sizing: border-box;
           box-sizing: border-box;
         }
-        
+
         .ce .ace_gutter {
           width: 40px;
-          background: #ebebeb; 
-          border-right: 1px solid #d7d7d7;  
+          background: #ebebeb;
+          border-right: 1px solid #d7d7d7;
           color: #333;
           font-family: Monaco, "Courier New";
-          font-size: 12px;  
+          font-size: 12px;
           overflow : hidden;
         }
-        
+
         .ceFocus .ace_gutter{
-            background: #ebebeb; 
+            background: #ebebeb;
             border-right : 1px solid #d7d7d7;
         }
-        
+
         .ceFocus{
             /*background : #f2f9ff;*/
             border-color : #b2b2b2;
         }
-        
+
         .ce .ace_gutter-layer {
           right: 0px;
           text-align: right;
         }
-        
+
         .ce .ace_gutter-layer .ace_gutter-cell {
           padding-right: 15px;
         }
-        
+
        .ce .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.gif");
           background-repeat: no-repeat;
           background-position: center right;
         }
-                
+
         .ce .ace_text-layer {
           font-family: Monaco, "Courier New", monospace;
           font-size: 12px;
           cursor: text;
         }
-        
+
         .ce .ace_cursor {
           border-left: 2px solid black;
         }
@@ -4685,67 +4693,67 @@
           border-left: 0px;
           border-bottom: 1px solid black;
         }
-        
+
         .ce .ace_line .ace_invisible {
           color: rgb(191, 191, 191);
          }
-        
+
         .ce .ace_line .ace_keyword {
           color: #2270b2;
         }
-        
+
         .ce .ace_line .ace_buildin-constant {
           color: rgb(88, 72, 246);
         }
-        
+
         .ce .ace_line .ace_library-constant {
           color: rgb(6, 150, 14);
         }
-        
+
         .ce .ace_line .ace_buildin-function {
           color: rgb(60, 76, 114);
         }
-        
+
         .ce .ace_line .ace_string {
           color: rgb(3, 106, 7);
         }
-        
+
         .ce .ace_line .ace_comment {
           font-style: italic;
           color: rgb(76, 136, 107);
         }
-        
+
         .ce .ace_line .ace_doc-comment {
           color: rgb(0, 102, 255);
         }
-        
+
         .ce .ace_line .ace_doc-comment-tag {
           color: rgb(128, 159, 191);
         }
-        
+
         .ce .ace_line .ace_number {
           color: #2270b2;
         }
-        
+
         .ce .ace_line .ace_xml_pe {
           color: rgb(104, 104, 91);
         }
-        
+
         .ce .ace_marker-layer .ace_selection {
           background: rgb(181, 213, 255);
           /*color: white;
           background-color: #2582d1;*/
         }
-        
+
         .ce .ace_marker-layer .ace_step {
           background: rgb(198, 219, 174);
         }
-        
+
         .ce .ace_marker-layer .ace_bracket {
           margin: -1px 0 0 -1px;
           border: 1px solid rgb(192, 192, 192);
         }
-        
+
         .ce .ace_marker-layer .ace_active_line {
           background: rgb(232, 242, 254);
         }
@@ -4801,12 +4809,15 @@
         .editor_tab {
             padding : 0 0 0 0;
             margin : 0 auto;
+            overflow: hidden;
+            position:relative;
+            padding-top: 31px;
+            border-bottom: 1px solid #8C8C8C;
         }
 
         .editor_tab .btnsesssioncontainer{
-            margin: 0;
-            padding : 5px 16px 0 0;
-            position : relative;
+            padding : 5px 0 0 0;
+            position : absolute;
             z-index : 100;
             height: 25px;
             overflow: visible;
@@ -4821,6 +4832,8 @@
             -moz-border-radius: 4px 4px 0 0;
             -webkit-border-top-right-radius: 4px;
             -webkit-border-top-left-radius: 4px;
+            margin-top : -31px;
+            width : 100%;
         }
 
         .editor_tab .btnsesssioncontainer>div {
@@ -4870,6 +4883,13 @@
 
         .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
             margin-right : 15px;
+        }
+
+        .editor_tab .scale .session_btn .sessiontab_title{
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
         }
 
         .editor_tab .btnsesssioncontainer .tab_left,
@@ -4930,7 +4950,7 @@
             white-space : nowrap;
         }
 
-        .tabFocus .curbtn{
+        .editor_tabFocus .curbtn{
         }
 
         .editor_tab .btnsesssioncontainer .btnclose strong {
@@ -4967,6 +4987,47 @@
             background-position : -28px 0;
         }
 
+        .editor_tab .editor_bg {
+            height : 100%;
+            position : absolute;
+            margin: 0 auto;
+            background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
+            border-bottom: 1px solid #8c8c8c;
+            border-left: 1px solid #8c8c8c;
+            border-right: 1px solid #8c8c8c;
+            overflow: hidden;
+            clear: both;
+            width: 100%;
+        }
+
+        .editor_tab .editor_bg .editor_bg_content {
+            width: 315px;
+            margin: 80px auto 0;
+            background: url(images/empty_editor_icon.png) no-repeat center 0;
+            padding-top: 138px;
+            text-align: center;
+            color: #333333;
+            text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
+            font-size: 18px;
+        }
+
+        .editor_tab .editor_bg .editor_bg_content .editor_bg_message{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
+            -webkit-box-shadow: 1px 1px 3px #aaaaaa;
+            -moz-box-shadow: 1px 1px 3px #aaaaaa;
+            box-shadow: 1px 1px 1px #aaaaaa;
+            padding: 15px 20px;
+            margin-top: 21px;
+            color: #2270b2;
+            font-size: 11px;
+            text-transform:uppercase;
+            border-radius : 4px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -webkit-border-radius: 4px;
+        }
+
         .editor_tab .session_page {
             display : none;
             height : 100%;
@@ -4976,7 +5037,8 @@
             border-bottom: 1px solid #8c8c8c;
             border-left: 1px solid #8c8c8c;
             border-right: 1px solid #8c8c8c;
-            /*overflow: hidden;*/
+            overflow: hidden;
+            clear: both;
         }
 
         .editor_tab .session_page.curpage{
@@ -4988,6 +5050,15 @@
         <a:main pages="." buttons="div[1]">
             <div class="editor_tab">
                 <div class="btnsesssioncontainer"> </div>
+                <div class="editor_bg">
+                    <div class="editor_bg_content">
+                        No files opened yet...
+                        <div class="editor_bg_message">
+                            To get started double-click a supported file
+                            from the Files-panel on the left...
+                        </div>
+                    </div>
+                </div>
             </div>
         </a:main>
         <a:button
@@ -5026,14 +5097,14 @@
            position : relative;
            z-index : 100;
         }
-        
+
         .demos_tab .demobtn{
             padding-left: 0;
             margin-top : -19px;
             position : absolute;
             z-index : 100;
         }
-        
+
         .demos_tab .demobtn div {
             cursor: default;
             display: block;
@@ -5041,12 +5112,12 @@
             margin: 0 3px 0 0;
             padding: 0;
         }
-        
+
         .demos_tab .demobtn div {
             background: url(images/tab_but_topleft.png) no-repeat 0 0;
             height: 20px;
         }
-  
+
         .demos_tab .demobtn div.curbtn {
             _position: relative;
             margin-top: -4px;
@@ -5055,17 +5126,17 @@
             height: 24px;
             color: #327fbd;
         }
-                
+
         .demos_tabFocus .curbtn{
         }
-        
+
         .demos_tabFocus .curbtn span{
             border: 1px dotted gray;
             padding: 0px 3px 2px 3px;
             margin : -1px -4px 0 -4px;
             display: block;
         }
-        
+
         .demos_tab .demobtn div div {
             height: 16px;
             margin: 0 -4px 0 0;
@@ -5093,7 +5164,7 @@
             position : relative;
             z-index: 99;
         }
-        
+
         .demos_tab .demos_tabpage.curpage{
             display : block;
         }
@@ -5111,7 +5182,7 @@
             <a:main pages="." buttons="div">
                 <div class="demos_tab">
                     <div class="demobtn">
-                    
+
                     </div>
                 </div>
             </a:main>
@@ -5183,7 +5254,7 @@
             height: 23px;
             color: #327fbd;
         }
-        
+
         .tab .scale .btn span{
             display : block;
             overflow : hidden;
@@ -5339,13 +5410,13 @@
 			-webkit-box-orient: vertical;
 			display: -webkit-box;
 		}
-		
+
 		.tab .page {
 			height: auto;
 			-webkit-box-flex: 1;
 			overflow : hidden;
 			position : relative;
-		}	
+		}
     ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div[1]" scroller=".">
@@ -5465,7 +5536,7 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
-<a:radiobutton name="radiobutton">
+<!--<a:radiobutton name="radiobutton">
     <a:style><![CDATA[
         .rbcontainer {
             padding: 2px 2px 2px 2px;
@@ -5538,6 +5609,60 @@
             </div>
         </a:main>
     </a:presentation>
+</a:radiobutton>-->
+<a:radiobutton name="radiobutton">
+    <a:style><![CDATA[
+        .rbcontainer {
+            border-color:#8C8C8C;
+            border-right:1px solid #8C8C8C;
+            border-style:none solid solid;
+            border-width:medium 1px 1px;
+            color: #f5f5f5;
+            cursor: pointer;
+            font-family: "Trebuchet MS";
+            font-size:12px;
+            min-height:13px;
+            padding: 2px 18px;
+            position:relative;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+            text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(71,73,77)),color-stop(1, rgb(49,52,55)));
+            background: -moz-linear-gradient(center bottom,rgb(71,73,77) 0%,rgb(49,52,55) 100%);
+        }
+
+        .rbcontainerChecked {
+            color:#000000;
+            text-shadow: none;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(232,232,232)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 0%,rgb(232,232,232) 100%);
+        }
+
+        .rbcontainerOver {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(105,107,109)),color-stop(1, rgb(92,93,96)));
+            background: -moz-linear-gradient(center bottom,rgb(105,107,109) 0%,rgb(92,93,96) 100%);
+        }
+
+        .rbcontainerFocus {
+        }
+
+        .rbcontainerDisabled {
+            color: #bebebe;
+        }
+
+        .rbcontainerError {
+            background-color : #ffb500;
+            color: #fbfbfb;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label=".">
+            <div class="rbcontainer">
+            </div>
+        </a:main>
+    </a:presentation>
 </a:radiobutton>
 <a:radiobutton name="toolbarradio">
     <a:style><![CDATA[
@@ -5605,17 +5730,20 @@
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
-            background: #FFFFFF url("images/menu_context_left.gif") repeat-y top left;
-            margin: -1px 0 0 0;
-            _margin: 0 0 0 0;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(245,245,245)),color-stop(0.2, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(245,245,245) 0%,rgb(255,255,255) 20%);
+            margin: 0 0 0 0;
             padding: 0;
             z-index: 10000;
             position: absolute;
             font-family: Tahoma;
             font-size: 11px;
             color : #333;
-            border : 1px solid #c3c3c3;
+            border : 1px solid #999999;
             display : none;
+            -webkit-box-shadow: 0px 5px 15px #444444;
+            -moz-box-shadow: 0px 5px 15px #444444;
+            box-shadow: 0px 5px 15px #444444;
         }
 
         .menu blockquote {
@@ -5623,7 +5751,6 @@
             margin: 0;
             padding: 0;
             border: 0;
-            background: url("images/menu_context_right.gif") repeat-y top right;
         }
 
         .menu div{
@@ -5635,7 +5762,8 @@
             height: 13px;
         }
         .menu div.hover{
-            background: #25a8e7 url(images/menu_context_left_over.gif) repeat-y top left;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
 
@@ -5713,75 +5841,13 @@
         .menu div.hover u{
             background-position : 0 -16px;
         }
-
-        .menu div.menuShadowTop {
-            position: absolute;
-            left: 0;
-            top: -2px;
-            margin: 0;
-            padding: 0 4px 0 0;
-            width: 100%;
-            height: 2px;
-            overflow: hidden;
-            z-index: -10;
-            background: url("images/menu_context_shtb.png") no-repeat top right;
-        }
-
-        .menu div.menuShadowRight {
-            position: absolute;
-            right: -4px;
-            bottom: -4px;
-            margin: 0;
-            padding: 0 0 4px 0;
-            width: 4px;
-            height: 100%;
-            overflow: hidden;
-            z-index: -10;
-            background: url("images/menu_context_shlr.png") no-repeat bottom right;
-        }
-
-        .menu div.menuShadowBottom {
-            position: absolute;
-            bottom: -4px;
-	        right: 0;
-            margin: 0;
-            padding: 0 0 0 3px;
-            width: 100%;
-            height: 4px;
-            overflow: hidden;
-            z-index: -10;
-            background: url("images/menu_context_shtb.png") no-repeat bottom left;
-	}
-
-        .menu div.menuShadowLeft {
-            position: absolute;
-            left: -3px;
-            bottom: 0;
-            margin: 0;
-            padding: 2px 0 0 0;
-            width: 3px;
-            height: 100%;
-            overflow: hidden;
-            z-index: -10;
-            background: url("images/menu_context_shlr.png") no-repeat top left;
-        }
-
     ]]></a:style>
-    <a:style condition="apf.isIE6">
-    	.menu div.menuShadowTop, .menu div.menuShadowRight, .menu div.menuShadowLeft, .menu div.menuShadowBottom {
-    	   display: none;
-    	}
-    </a:style>
     <a:presentation>
         <a:main container="blockquote" overlay="strong">
             <blockquote class='menu'>
                 <blockquote>
 
                 </blockquote>
-                <div class="menuShadowTop"> </div>
-                <div class="menuShadowRight"> </div>
-                <div class="menuShadowBottom"> </div>
-                <div class="menuShadowLeft"> </div>
             </blockquote>
         </a:main>
         <a:item caption="text()" icon="u" hotkey="span" inherit="true">
@@ -5814,13 +5880,13 @@
             padding: 0;
             width : 100%;
         }
-        
+
         .toolbar>.subbar>*{
             display : inline-block;
             float : left;
             margin : 2px;
         }
-        
+
         .toolbar>.subbar>.hbox, .toolbar>.subbar>.vbox, .toolbar>.subbar>.table{
             display : block;
             float : none;
@@ -5865,10 +5931,10 @@
     <a:style><![CDATA[
         .menubar .toolbarbutton {
             display: block;
-            height: 16px;
+            height: 17px;
             float: left;
             cursor: default;
-            padding: 3px 8px 0 8px;
+            padding: 2px 8px 0 8px;
             margin-top: 2px;
             line-height: 13px;
             text-decoration: none;
@@ -5929,7 +5995,7 @@
         }
 
         .toolbar .subbar .toolbarbuttonOver div {
-            
+
         }
 
         .toolbar .subbar .toolbarbuttonDown {
@@ -5945,7 +6011,7 @@
         }
 
         .toolbar .subbar .toolbarbuttonDown div {
-            
+
         }
 
         .toolbar .subbar .toolbarbuttonChecked {
@@ -6171,11 +6237,11 @@
             padding : 3px;
             position : relative;
         }
-        
+
         .dragthumb_caption{
             opacity : 0.7;
         }
-        
+
         .thumbs_caption, .dragthumb_caption{
             font-family: Tahoma;
             font-size: 11px;
@@ -6198,7 +6264,7 @@
 
             background: white no-repeat 50% 50%;
         }
-        
+
         .thumbs_caption .selected blockquote, .dragthumb_caption blockquote{
             border: 3px solid #dcdcdc;
             margin: 0 0 0 0;
@@ -6229,7 +6295,7 @@
             border-width : 0;
             overflow: hidden;
         }
-        
+
         .thumbs_caption .selected label{
             background-color: #dcdcdc;
             color: black;
@@ -6251,20 +6317,20 @@
             color: #333;
             word-break: keep-all;
             overflow: visible;
-            cursor: text; 
+            cursor: text;
         }
-        
+
         .thumbs_caption input#txt_rename{
             padding : 1px;
             outline: none;
             text-align : center;
             width : 88px;
         }
-        
+
         .thumbs_captionDrop{
             border : 1px solid #25a8e7;
         }
-        
+
         .dragthumb_caption_multiple{
             border : 2px solid black;
             width : 10px;
@@ -6272,7 +6338,7 @@
             padding : 0;
             background : none;
         }
-        
+
         .dragthumb_caption_multiple blockquote{
             display : none;
         }
@@ -6283,8 +6349,8 @@
         }
     </a:style>
     <a:presentation>
-        <a:main 
-          container    = "." 
+        <a:main
+          container    = "."
           thumbclass   = ".thumbs_caption blockquote, .dragthumb_caption blockquote">
             <div class='thumbs_caption'>
             </div>
@@ -6703,11 +6769,11 @@
         .clist .checked b {
             background-position : 0 -24px;
         }
-        
+
         .clist .partial b {
             background-position : 0 -48px;
         }
-        
+
         .clistDisabled .checked b {
             background-position : 0 -0px;
         }
@@ -6845,7 +6911,7 @@
             left : 0;
             top : 0;
         }
-        
+
         .checklistDisabled .selected u, .checklistDisabled u{
             color : gray;
         }
@@ -7237,7 +7303,7 @@
 
     .docutree DIV.pluslast SPAN,
     .docutree DIV.plus SPAN{background-image:url(images/plus.png)}
-    
+
     .docutree DIV.minlast SPAN,
     .docutree DIV.min SPAN{background-image:url(images/min.png)}
 
@@ -7253,11 +7319,11 @@
         white-space : nowrap;
         text-overflow : ellipsis;
         overflow : hidden;
-        
+
         font-family: Tahoma, Arial;
         font-size: 8.5pt;
     }
-    
+
     .docutree .focusbug{
         padding : 0;
         height : auto;
@@ -7266,12 +7332,12 @@
         margin : 0;
         overflow : visible;
     }
-    
+
     .docutreeFocus div.indicate{
         padding: 5px 3px 1px 5px;
         border : 1px dotted gray;
     }
-    
+
     .docutree blockquote div, .dragdoctree{
         background : #f1f5f9 no-repeat 12px;
         color : #333;
@@ -7281,21 +7347,21 @@
         margin : 0;
         cursor : default;
     }
-    
+
     .dragdoctree{
         /*opacity : 0.8;
         filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);*/
     }
-    
+
     .docutree blockquote div.hover{
         background-color : #d4e0ea;
     }
-    
+
     .docutree blockquote div.indicate, .dragdoctree{
         color: white;
         background-color: #25a8e7;
     }
-    
+
     .docutreeFocus blockquote div.indicate{
         background-color : #2582d1;
         background-position : 12px;
@@ -7303,11 +7369,11 @@
         border : 0;
         color: white;
     }
-    
+
     .docutree blockquote div span{
         display : none;
     }
-    
+
     .docutree BLOCKQUOTE{
         margin: 0;
         display: none;
@@ -7315,7 +7381,7 @@
         overflow: hidden;
         background: repeat-y 0px center;
     }
-    
+
     .docutree .message{
         text-align: center;
         padding: 8px 10px 0 0;
@@ -7394,7 +7460,7 @@
         .tree DIV.plus SPAN{
             background-image:url(images/plus.png);
         }
-        
+
         .tree DIV.minlast SPAN,
         .tree DIV.min SPAN{
             background-image:url(images/min.png);
@@ -7409,18 +7475,18 @@
             font-family: Tahoma, Arial;
             font-size: 8.5pt;
         }
-        
+
         .tree .focusbug{
             padding-left : 0;
             overflow : visible;
         }
-        
+
         .dragtree{
             opacity : 0.5;
             filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
             background : none;
         }
-        
+
         /*.tree DIV.root{
             padding: 0;
         }*/
@@ -7435,12 +7501,12 @@
             float: left;
             margin-top: -18px;
         }
-        
-        
-        
+
+
+
 
         .tree DIV.loading LABEL{
-            
+
         }
         .tree DIV.loading SPAN{
             background: no-repeat 0px 0px;
@@ -7448,24 +7514,24 @@
 
         .tree U, .dragtree U{
             text-decoration: none;
-            color: black;
+            color: #333333;
             cursor: default;
             display: inline !important; display: block;
             padding: 2px 4px 2px 2px;
         }
 
-        
+
         .treeFocus .indicate U{
             border: 1px dotted #BBB;/*#25a8e7;*/
             padding: 1px 3px 1px 1px;
             color : black;
         }
-        
+
         .tree .selected U{
             background-color: #f0f0f0;
             color: black;
         }
-        
+
         .treeFocus .selected U, .tree .dragAppend U, .dragtree U{
             color: white;
             background-color: #25a8e7;
@@ -7516,29 +7582,29 @@
             margin-top : -20px;
             background-position : 1px 0;
         }*/
-        
+
         .tree .empty, .tree .offline, .tree .loading{
             padding: 4px 0 2px 0;
             color: #AAA;
             font-weight : normal;
         }
-        
+
         .tree .loading{
             text-align : left;
         }
-        
+
         .tree .message{
             text-align: center;
         }
-        
+
         .tree .root{
             position : relative;
         }
-        
+
         .treeDrop{
             border : 1px solid #25a8e7;
         }
-        
+
         blockquote.dragInsert{
             background : #f6f6f6;
         }
@@ -7601,40 +7667,40 @@
                 padding    : 1px;
                 position   : relative;
             }
-            
+
             .packager .splitter {
                 background-color : #dddddd;
                 margin-top       : 1px;
             }
-            
+
             .splitterFocus {
                 border  : 1px dotted black;
                 padding : 0;
             }
-            
+
             .w-resize {
                 cursor : w-resize;
             }
-            
+
             .n-resize {
                 cursor : n-resize;
             }
-            
+
             .splitterMoving {
                 background-color : gray;
             }
-            
+
             .splitterRealtime{
                 background : url(images/spacer.gif);
             }
-            
+
             .horizontal div {
                 height     : 2px;
                 width      : 18px;
                 background : url(images/splitter_handle_horizontal.gif);
                 margin     : 0 auto 0 auto;
             }
-            
+
             .vertical div {
                 height     : 18px;
                 width      : 2px;
@@ -7644,7 +7710,7 @@
                 margin     : -9px 0 0 0;
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main handle=".">
                 <div class='splitter'>
@@ -7733,7 +7799,7 @@
         .dropdownFocus .dropdownLeftBorder{
             background-position: 0 -19px;
         }
-        
+
         .dropdownInitial .dropdownlabel{
             color : #999;
         }
@@ -7742,12 +7808,12 @@
             background-color: #25a8e7;
             color: #ffffff;
         }
-        
+
         .dropdownDown .dropdownlabel{
             color : #333;
             background-color : white;
         }
-        
+
         .dropdownDown .dropdownLeftBorder {
             background-position: 0 -38px;
         }
@@ -7830,7 +7896,7 @@
             line-height : 1.2em;
             cursor : default;
         }
-        
+
         .ddinlinelabel{
             background : url(images/arrow_down_black.png) no-repeat right 50%;
             padding : 0 10px 0 0;
@@ -7845,11 +7911,11 @@
         }
 
         .ddinlineFocus {
-            
+
         }
 
         .ddinlineOver {
-            
+
         }
 
         .ddinlineDown {
@@ -7906,7 +7972,7 @@
         <a:main label="div" button="." width-diff="-1" item-height="20">
             <div class='ddinline'>
                 <div class="ddinlinelabel">
-                    
+
                 </div>
             </div>
         </a:main>
@@ -8128,7 +8194,7 @@
 <a:slider name="slider">
     <a:alias>range</a:alias>
     <a:alias>horizontal</a:alias>
-    
+
     <a:style><![CDATA[
         .slider {
             background: url("images/bar_right.png") no-repeat top right;
@@ -8139,26 +8205,26 @@
             font-size : 9px;
             text-align : center;
         }
-        
+
         .sliderDisabled {
             background-position: right -8px;
         }
-        
+
         .slider .left{
             background: url("images/bar_left.png") no-repeat top left;
             height: 8px;
             overflow: hidden;
             margin-right : 4px;
         }
-        
+
         .sliderDisabled .left{
             background-position: left -8px;
         }
-        
+
         .sliderDisabled .filledbar {
             background-position: 0 -8px;
         }
-        
+
         .slider .grabber {
             background: url("images/slider.png") no-repeat top left;
             width: 20px;
@@ -8167,7 +8233,7 @@
             position: absolute;
             z-index : 10;
         }
-        
+
         .sliderDisabled .grabber {
             background-position: left -8px;
         }
@@ -8182,7 +8248,7 @@
             width : 1px;
             margin-left : 10px;
         }
-        
+
         .slider .balloon {
             background : url(images/ballon_middle.png) no-repeat top right;
             height     : 16px;
@@ -8193,7 +8259,7 @@
             z-index    : 12000;
             display    : none;
         }
-        
+
         .slider .balloon .balleft {
             width      : 3px;
             background : url(images/ballon_left.png) no-repeat 0 0;
@@ -8203,9 +8269,9 @@
             top        : 0;
         }
     ]]></a:style>
-    
+
     <a:presentation>
-        <a:main slider="div[1]" container="." status="div[3]/text()" 
+        <a:main slider="div[1]" container="." status="div[3]/text()"
           markers="div[2]" direction="horizontal" balloon="div[3]"
           minheight="8" maxheight="8">
             <div class="slider">
@@ -10079,7 +10145,7 @@
             border-width : 1px 1px 0 0;
             white-space : nowrap;
         }
-        
+
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -10090,7 +10156,7 @@
             background : white no-repeat 0 50%;
             border-bottom : 1px solid #d6d6d6;
         }
-        
+
         .datagrid .records .row span u{
             padding : 2px 3px 2px 4px;
             height : 15px;
@@ -10125,7 +10191,7 @@
             padding : 0;
             color : #333;
         }
-        
+
         .datagridFocus .records .indicate span u{
         }
 
@@ -10177,7 +10243,7 @@
             /*text-align : center;*/
             border-bottom : 1px solid #eee;
         }
-        
+
         .datagrid .message label{
             padding : 2px 0 0 4px;
             height : 14px;
@@ -10185,19 +10251,19 @@
             position : relative;
             top : -3px;
         }
-        
+
         /*.datagrid .message span{
             background : url(icons/cog.png) no-repeat left bottom;
             width : 16px;
             height : 16px;
             display : inline-block;
         }*/
-        
+
         .datagrid .loading, .datagrid .empty, .datagrid .offline{
             padding : 5px;
             margin : 0;
         }
-        
+
         .datagrid .loading span, .datagrid .empty span, .datagrid .offline span{
             background : white;
             display : inline;
@@ -10249,7 +10315,7 @@
             margin-bottom : 0;
             background-position : 0 0;
         }
-        
+
         .datagrid blockquote{
             padding : 0;
             margin : 0;
@@ -10258,14 +10324,14 @@
             overflow: hidden;
             background: repeat-y 0px center;
         }
-        
+
         .datagrid .records span.treecell u{
             text-decoration : none;
             display : inline-block;
             padding : 1px 2px 3px 2px;
             border : 0;
         }
-        
+
         .datagrid .treecell strong{
             width : 9px;
             height : 9px;
@@ -10274,21 +10340,21 @@
             top : -5px;
             display : inline-block;
         }
-        
+
         .datagrid .plus>.treecell strong,
         .datagrid .pluslast>.treecell strong{
             background-image:url(images/plus.png);
         }
-        
+
         .datagrid .min>.treecell strong,
         .datagrid .minlast>.treecell strong{
             background-image:url(images/min.png);
         }
-        
+
         .datagrid .slider{
             margin : 5px 5px 0 3px;
         }
-        
+
         .datagrid .tb{
             border : 0;
             padding : 2px 0 4px 4px;
@@ -10299,7 +10365,7 @@
             position : relative;
             top : -6px;
         }
-        
+
         .datagrid .treecell .tb{
             padding : 1px 0 0 0;
             top : 0;
@@ -10374,7 +10440,7 @@
         </a:dragindicator>
 
         <a:cell caption="u"><span><u>-</u></span></a:cell>
-        
+
         <a:treecell caption="u" openclose="strong"><span class="treecell"><strong> </strong><u>-</u></span></a:treecell>
 
         <a:container container=".">
@@ -12154,13 +12220,13 @@
 			-webkit-box-orient: vertical;
 			display: -webkit-box;
 		}
-		
+
 		.pages .page {
 			height: auto;
 			-webkit-box-flex: 1;
 			overflow : hidden;
 			position : relative;
-		}	
+		}
     ]]></a:style>
 
     <a:presentation>
@@ -12863,7 +12929,7 @@
             color : #ccc;
             text-align : center;
         }
-        
+
         .textFocus{
         }
     ]]></a:style>
@@ -13106,7 +13172,7 @@
             -moz-border-bottom-colors: black gray;
             -moz-border-right-colors: black gray;
         }
-        
+
         .scrollbar img{
             visibility : hidden;
         }
@@ -13119,7 +13185,7 @@
             border: 1px solid gray;
             padding: 1px 1px 1px 1px;
         }
-        
+
         body .scrollbar .btnupdown span, body .scrollbar .btndowndown span{
             margin : -1px 0 0 -3px;
         }
@@ -13141,7 +13207,7 @@
             position: absolute;
             bottom: 0px;
         }
-        
+
         .scrollbar .btndown span{
             background: #D4D0C8 url(images/scrolldown.gif) no-repeat;
         }
@@ -13169,7 +13235,7 @@
             display: none;
             overflow: hidden;
         }
-        
+
         .scrollbarDisabled .btnup span{
             background: #D4D0C8 url(images/scrollupdisabled.gif) no-repeat;
             width : 8px;
@@ -14814,9 +14880,9 @@
             cursor              : pointer;
         }
 
-        .slideshow .ssconsole .ssplay:hover, 
+        .slideshow .ssconsole .ssplay:hover,
         .slideshow .ssconsole .ssstop:hover,
-        .slideshow .ssconsole .ssnext:hover, 
+        .slideshow .ssconsole .ssnext:hover,
         .slideshow .ssconsole .ssprevious:hover {
             background-position : 0 48px;
         }
@@ -15698,24 +15764,24 @@
         .propedit blockquote blockquote{
             margin : -1px 0 -1px 0;
         }
-        
+
         .propedit .heading>.row{
             margin-left : 15px;
         }
-        
+
         .propedit .row .row>span{
             background : url(images/cell.gif) white;
             min-height : 19px;
         }
-        
+
         .propedit .row .row>span dl{
             background : white;
         }
-        
+
         /*.propedit .row .row .row{
             margin-top : -1px;
         }*/
-        
+
         .propedit .row .selected>span dl{
             background-color: #f0f0f0;
             color: black;
@@ -15727,7 +15793,7 @@
             position : relative;
             z-index : 10000;
         }
-        
+
         .propedit .row>u{
             display : block;
             float : left;
@@ -15742,52 +15808,52 @@
         .propedit .row>u.plus{
             background-image:url(images/plus.png);
         }
-        
+
         .propedit .headings{
             padding-left:15px;
         }
-        
+
         .propedit .headings .first b{
             border-left : 0;
         }
-        
+
         .propedit .heading>u{
             position : absolute;
             margin-left : 0;
         }
-        
+
         .propedit .heading{
             width : 100%;
             background : #CCC;
         }
-        
+
         .propedit .heading>span{
             width : 100%;
             border : 0;
         }
-        
+
         .propedit .heading>span dl{
             border : 0;
             background : #CCC;
             font-weight : bold;
             padding : 2px 0 2px 17px;
         }
-        
+
         .propedit .tb{
             padding-left : 3px;
             color : black;
         }
-        
+
         .propedit .cbcontainer{
             border : 1px solid #c3c3c3;
             padding-bottom : 2px;
             background : white;
         }
-        
+
         .propeditFocus .cbcontainer{
             border : 1px solid #327fbd;
         }
-        
+
         .propedit .slider{
             margin : 5px 5px 0 3px;
         }
@@ -15820,9 +15886,9 @@
         <a:row class="." container=".">
             <div class="row"></div>
         </a:row>
-        
+
         <a:cell caption="dl"><span><dl> </dl></span></a:cell>
-        
+
         <a:heading
             caption   = "span/dl"
             container = "."
@@ -16267,7 +16333,7 @@
             border-width : 1px 1px 0 0;
             white-space : nowrap;
         }
-        
+
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -16280,7 +16346,7 @@
             background : white no-repeat 0 50%;
             border-bottom : 1px solid #eee;
         }
-        
+
         .dgnoscroll .records .row span u{
             padding : 2px 3px 2px 4px;
             height : 15px;
@@ -16315,7 +16381,7 @@
             padding : 0;
             color : #333;
         }
-        
+
         .dgnoscrollFocus .records .indicate span u{
         }
 
@@ -16367,7 +16433,7 @@
             /*text-align : center;*/
             border-bottom : 1px solid #eee;
         }
-        
+
         .dgnoscroll .message label{
             padding : 2px 0 0 4px;
             height : 14px;
@@ -16375,19 +16441,19 @@
             position : relative;
             top : -3px;
         }
-        
+
         /*.dgnoscroll .message span{
             background : url(icons/cog.png) no-repeat left bottom;
             width : 16px;
             height : 16px;
             display : inline-block;
         }*/
-        
+
         .dgnoscroll .loading, .dgnoscroll .empty, .dgnoscroll .offline{
             padding : 5px;
             margin : 0;
         }
-        
+
         .dgnoscroll .loading span, .dgnoscroll .empty span, .dgnoscroll .offline span{
             background : white;
             display : inline;
@@ -16439,7 +16505,7 @@
             margin-bottom : 0;
             background-position : 0 0;
         }
-        
+
         .dgnoscroll blockquote{
             padding : 0;
             margin : 0;
@@ -16448,14 +16514,14 @@
             overflow: hidden;
             background: repeat-y 0px center;
         }
-        
+
         .dgnoscroll .records span.treecell u{
             text-decoration : none;
             display : inline-block;
             padding : 1px 2px 3px 2px;
             border : 0;
         }
-        
+
         .dgnoscroll .treecell strong{
             width : 9px;
             height : 9px;
@@ -16464,21 +16530,21 @@
             top : -5px;
             display : inline-block;
         }
-        
+
         .dgnoscroll .plus>.treecell strong,
         .dgnoscroll .pluslast>.treecell strong{
             background-image:url(images/plus.png);
         }
-        
+
         .dgnoscroll .min>.treecell strong,
         .dgnoscroll .minlast>.treecell strong{
             background-image:url(images/min.png);
         }
-        
+
         .dgnoscroll .slider{
             margin : 5px 5px 0 3px;
         }
-        
+
         .dgnoscroll .tb{
             border : 0;
             padding : 2px 0 4px 4px;
@@ -16489,7 +16555,7 @@
             position : relative;
             top : -6px;
         }
-        
+
         .dgnoscroll .treecell .tb{
             padding : 1px 0 0 0;
             top : 0;
@@ -16564,7 +16630,7 @@
         </a:dragindicator>
 
         <a:cell caption="u"><span><u>-</u></span></a:cell>
-        
+
         <a:treecell caption="u" openclose="strong"><span class="treecell"><strong> </strong><u>-</u></span></a:treecell>
 
         <a:container container=".">
@@ -16671,7 +16737,7 @@
             border-width : 1px 1px 0 0;
             white-space : nowrap;
         }
-        
+
         .noscrollbar .records{
             overflow-y : hidden;
         }
@@ -16684,7 +16750,7 @@
             background : white no-repeat 0 50%;
             border-bottom : 1px solid #eee;
         }
-        
+
         .dgcheck .records .row span u{
             padding : 2px 3px 2px 4px;
             height : 15px;
@@ -16719,7 +16785,7 @@
             padding : 0;
             color : #333;
         }
-        
+
         .dgcheckFocus .records .indicate span u{
         }
 
@@ -16771,7 +16837,7 @@
             /*text-align : center;*/
             border-bottom : 1px solid #eee;
         }
-        
+
         .dgcheck .message label{
             padding : 2px 0 0 4px;
             height : 14px;
@@ -16779,19 +16845,19 @@
             position : relative;
             top : -3px;
         }
-        
+
         /*.dgcheck .message span{
             background : url(icons/cog.png) no-repeat left bottom;
             width : 16px;
             height : 16px;
             display : inline-block;
         }*/
-        
+
         .dgcheck .loading, .dgcheck .empty, .dgcheck .offline{
             padding : 5px;
             margin : 0;
         }
-        
+
         .dgcheck .loading span, .dgcheck .empty span, .dgcheck .offline span{
             background : white;
             display : inline;
@@ -16843,7 +16909,7 @@
             margin-bottom : 0;
             background-position : 0 0;
         }
-        
+
         .dgcheck blockquote{
             padding : 0;
             margin : 0;
@@ -16852,14 +16918,14 @@
             overflow: hidden;
             background: repeat-y 0px center;
         }
-        
+
         .dgcheck .records span.treecell u{
             text-decoration : none;
             display : inline-block;
             padding : 1px 2px 3px 2px;
             border : 0;
         }
-        
+
         .dgcheck .treecell strong{
             width : 9px;
             height : 9px;
@@ -16868,21 +16934,21 @@
             top : -5px;
             display : inline-block;
         }
-        
+
         .dgcheck .plus>.treecell strong,
         .dgcheck .pluslast>.treecell strong{
             background-image:url(images/plus.png);
         }
-        
+
         .dgcheck .min>.treecell strong,
         .dgcheck .minlast>.treecell strong{
             background-image:url(images/min.png);
         }
-        
+
         .dgcheck .slider{
             margin : 5px 5px 0 3px;
         }
-        
+
         .dgcheck .tb{
             border : 0;
             padding : 2px 0 4px 4px;
@@ -16893,14 +16959,14 @@
             position : relative;
             top : -6px;
         }
-        
+
         .dgcheck .treecell .tb{
             padding : 1px 0 0 0;
             top : 0;
             border : 0;
             border-bottom : 1px solid #eee;
         }
-        
+
         .dgcheck b {
             overflow    : hidden;
             margin      : 2px;
@@ -16909,22 +16975,22 @@
             background  : url("images/tree_checkbox.png") no-repeat 0 -12px;
             float       : left;
         }
-        
+
         .dgcheck .treecell b {
             margin-left : -31px;
         }
-        
+
         .dgcheck .checkcell{
         }
-        
+
         .dgcheck .checked b {
             background-position : 0 -24px;
         }
-        
+
         .dgcheck .partial b {
             background-position : 0 -48px;
         }
-        
+
         .dgcheckDisabled .checked b {
             background-position : 0 -0px;
         }
@@ -16996,9 +17062,9 @@
         </a:dragindicator>
 
         <a:cell caption="u"><span><u>-</u></span></a:cell>
-        
+
         <a:checkcell caption="u" check="b"><span class="checkcell"><b> </b><u>-</u></span></a:checkcell>
-        
+
         <a:treecell caption="u" check="b" openclose="strong"><span class="treecell"><strong> </strong><b> </b><u>-</u></span></a:treecell>
 
         <a:container container=".">
