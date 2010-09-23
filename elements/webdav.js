@@ -1043,61 +1043,76 @@ apf.webdav = function(struct, tagName){
      * Instruction handler for WebDav protocols.
      */
     this.exec = function(method, args, callback){
+        var cb = function(data, state, extra) {
+            extra.originalArgs = args
+            if (typeof args[args.length - 1] == "function")
+                args[args.length - 1](data, state, extra);
+            callback(data, state, extra);
+        };
         // RULE for case aliases: first, topmost match is the preferred term for any
         //                        action and should be used in demos/ examples in
         //                        favor of other aliases.
         switch (method) {
             case "login":
             case "authenticate":
-                this.authenticate(args[0], args[1], callback);
+                this.authenticate(args[0], args[1], cb);
                 break;
             case "logout":
                 this.reset();
                 break;
             case "read":
-                this.readFile(args[0], callback);
+                this.readFile(args[0], cb);
                 break;
             case "create":
-                this.writeFile((args[0] ? args[0] : "") + "/" + args[1], args[2], args[3] || false, callback);
+                var path = args[0] ? args[0] : "";
+                if (path.charAt(path.length - 1) != "/")
+                    path = path + "/";
+                this.writeFile(path + args[1], args[2], args[3] || false, cb);
                 break;
             case "write":
             case "store":
             case "save":
-                this.writeFile(args[0], args[1], args[2] || false, callback);
+                this.writeFile(args[0], args[1], args[2] || false, cb);
                 break;
             case "copy":
             case "cp":
-                this.copy(args[0], args[1], args[2] || true, args[3] || false, callback);
+                this.copy(args[0], args[1], args[2] || true, args[3] || false, cb);
                 break;
             case "rename":
                 var sBasepath = args[1].substr(0, args[1].lastIndexOf("/") + 1);
-                this.rename(args[1], sBasepath + args[0], args[2] || false, args[3] || false, callback);
+                this.rename(args[1], sBasepath + args[0], args[2] || false, args[3] || false, cb);
                 break;
             case "move":
             case "mv":
-                this.rename(args[0], args[1] + "/" + args[0].substr(args[0].lastIndexOf("/") + 1),
-                    args[2] || false, args[3] || false, callback);
+                path = args[1];
+                if (path.charAt(path.length - 1) != "/")
+                    path = path + "/";
+                this.rename(args[0], path + args[0].substr(args[0].lastIndexOf("/") + 1),
+                    args[2] || false, args[3] || false, cb);
                 break;
             case "remove":
             case "rmdir":
             case "rm":
-                this.remove(args[0], args[1] || false, callback);
+                this.remove(args[0], args[1] || false, cb);
                 break;
             case "readdir":
             case "scandir":
-                this.readdir(args[0], callback);
+                this.readdir(args[0], cb);
                 break;
             case "getroot":
-                this.getProperties(this.$rootPath, 0, callback);
+                this.getProperties(this.$rootPath, 0, cb);
                 break;
             case "mkdir":
-                this.mkdir((args[0] ? args[0] : "") + "/" + args[1], args[2] || false, callback)
+                path = args[0] ? args[0] : "";
+                if (path.charAt(path.length - 1) != "/")
+                    path = path + "/";
+                this.mkdir(path + args[1], args[2] || false, cb)
                 break;
             case "lock":
-                this.lock(args[0], null, null, null, callback);
+                this.lock(args[0], null, null, null, cb);
                 break;
             case "unlock":
-                this.unlock(args[0], callback);
+                this.unlock(args[0], cb);
                 break;
             default:
                 //#ifdef __DEBUG
