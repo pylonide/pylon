@@ -8,12 +8,12 @@
         	"application/xhtml+xml":'html',
         	"text/css": "css",
         	"text/html":'html',
-            "application/pdf":'pdf',
+            "application/pdf":'page_white_acrobat',
             "image":'image',
-            "application/x-shockwave-flash":'swf',
-            "application/xml":'xml',
-            "video":'movie',
-            "audio": 'audio',
+            //"application/x-shockwave-flash":'swf',
+            "application/xml":'page_white_code_red',
+            //"video":'movie',
+            //"audio": 'audio',
             "text/plain": 'page_white_text',
             "application/javascript": 'page_white_code'
         };

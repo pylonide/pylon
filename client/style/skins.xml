@@ -4267,7 +4267,7 @@
         }
         
         .ce .ace_gutter {
-          width: 40px;
+          width: 60px;
           background: #ebebeb; 
           border-right: 1px solid #d7d7d7;  
           color: #333;
