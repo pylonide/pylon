@@ -1,6 +1,6 @@
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project developed by the skilled developers Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [Ajax.org], built on top of [Node.JS].
+The Cloud9 IDE is an open source project developed by the skilled developers Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
 
 This Integrated Development Environment aim to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
 As its main focus is on Javascript development, it is able to set a new standard for client and server development integration.
@@ -62,8 +62,8 @@ Main projects that we use as building blocks:
   * [jsDAV] by [mikedeboer]
   * [connect] by [senchalabs](http://github,com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
-  * [ace](http://github.com/ajaxorg/editor) by [Ajax.org]
-  * [Ajax.org Platform (apf)](http://www.ajax.org) by [Ajax.org]
+  * [ace](http://github.com/ajaxorg/editor) by [fjakobs] / [ajax.org]
+  * [apf](http://www.ajax.org) by [ajax.org]
   * and of course [Node.JS]!
   
 Thanks to all developers and contributors of these projects! 
@@ -71,7 +71,7 @@ Thanks to all developers and contributors of these projects!
 [fjakobs]: http://github.com/fjakobs
 [javruben]: http://github.com/javruben
 [mikedeboer]: http://github.com/mikedeboer
-[Ajax.org]: http://www.ajax.org/
+[ajax.org]: http://www.ajax.org/
 [async.js]: http://github.com/fjakobs/async.js
 [jsDAV]: http://github.com/mikedeboer/jsdav
 [connect]: http://github.com/senchalabs/connect
