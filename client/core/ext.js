@@ -139,6 +139,7 @@ return ext = {
         var deps = oExtension.deps;
         if (deps) {
             deps.each(function(dep){
+                if (!dep) debugger;
                 if (!dep.registered)
                     ext.register(dep.path, dep, true);
 
