@@ -177,8 +177,8 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
-                if (stretch && !node[size])
-                    (node.$altExt || node.$ext).style[size] = apf.isGecko && (this.flex && node.flex) ? "1px" : "auto";
+                if (stretch && !node[size]) //(node.$altExt || 
+                    node.$ext.style[size] = apf.isGecko ? "1px" : "auto"; // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -301,7 +301,7 @@ apf.vbox = function(struct, tagName){
                     if (apf.isGecko && this.parentNode.$vbox)
                         this.$ext.style.height = "1px";
                     
-                    /*if (false && apf.isGecko && !this.$altExt) {
+                    if (!this.$altExt) { //false && apf.isGecko && 
                         var doc = this.$ext.ownerDocument;
                         var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
@@ -331,7 +331,7 @@ apf.vbox = function(struct, tagName){
                         
                         if (!apf.isGecko)
                             this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-                    }*/
+                    }
                     (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {

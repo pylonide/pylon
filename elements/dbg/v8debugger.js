@@ -90,6 +90,8 @@ var V8Debugger = function(dbg, host) {
             return false;
         if (xmlFirst.getAttribute("id") != getId(first))
             return false;
+        //if (xmlFirst.selectNodes("vars/item").length != (1 + first.arguments.length + first.locals.length))
+            //return false;
 
         //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
         return true;
@@ -108,14 +110,14 @@ var V8Debugger = function(dbg, host) {
         
         var vars = xmlFrame.selectNodes("vars/item");
         var fVars = frame.arguments;
-        for (var i = 1, j = 0; j < fVars.length; j++, i++) { //i = 1 to skin this
+        for (var i = 1, j = 0; j < fVars.length; j++) { //i = 1 to skin this
             if (fVars[j].name)
-                this.$updateVar(vars[i], fVars[j]);
+                this.$updateVar(vars[i++], fVars[j]);
         }
         var fVars = frame.locals;
-        for (var j = 0; j < frame.locals.length; j++, i++) {
+        for (var j = 0; j < frame.locals.length; j++) {
             if (fVars[j].name !== ".arguments")
-                this.$updateVar(vars[i], fVars[j]);
+                this.$updateVar(vars[i++], fVars[j]);
         }
         
         //@todo not caring about globals/scopes right now
@@ -337,7 +339,25 @@ var V8Debugger = function(dbg, host) {
     };
     
     this.evaluate = function(expression, frame, global, disableBreak, callback){
-        this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
+        this.$debugger.evaluate(expression, frame, global, disableBreak, function(body, refs, error){
+            var str = [];
+            var name = expression.trim().split(/;|\n/).pop().trim().replace(/"/g, "&quot;");
+            if (error) {
+                str.push("<item type='.error' name=\"", apf.escapeXml(name),
+                    "\" value='", error.message, "' />");
+            }
+            else {
+                str.push("<item name=\"", apf.escapeXML(name),
+                  "\" value='", apf.escapeXML(body.text), //body.value || 
+                  "' type='", body.type,
+                  "' ref='", body.handle,
+                  body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
+                  body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
+                  body.properties && body.properties.length ? "' children='true" : "",
+                  "' />");
+            }
+            callback(apf.getXml(str.join("")), body, refs, error);
+        });
     };
 
     this.$valueString = function(value) {
@@ -364,7 +384,7 @@ var V8Debugger = function(dbg, host) {
 
     this.$frameToString = function(frame) {
         var str = [];
-        str.push(frame.func.name || frame.func.inferredName || "Anonymous", "(");
+        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
         var args = frame.arguments;
         var argsStr = [];
         for (var i=0; i<args.length; i++) {

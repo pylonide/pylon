@@ -2,7 +2,7 @@ if (apf.hasRequireJS) require.def("apf/elements/debugger",
     [], function() {
 
 apf.dbg = function(struct, tagName){
-    this.$init(tagName || "debughost", apf.NODE_HIDDEN, struct);
+    this.$init(tagName || "debugger", apf.NODE_HIDDEN, struct);
 };
 
 (function(){

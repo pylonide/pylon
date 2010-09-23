@@ -508,6 +508,7 @@ apf.BaseTree = function(){
         if (this.$nodes.length) {
             apf.insertHtmlNodes(this.$nodes, this.$fillParentHtml || this.$container);
             this.$nodes.length = 0;
+            delete this.$fillParentHtml;
         }
         
         if (this.$fillParent) {
