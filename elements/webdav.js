@@ -445,8 +445,8 @@ apf.webdav = function(struct, tagName){
             }
             else {
                 callback
-                    ? callback.call(this, data, state, extra)
-                    : this.dispatchEvent('onfilecontents', {data: data});
+                    ? callback.call(this, extra.http.responseText, state, extra)
+                    : this.dispatchEvent('onfilecontents', {data: extra.http.responseTex});
             }
         }, sPath);
     };
