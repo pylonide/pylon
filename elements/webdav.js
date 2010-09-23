@@ -35,7 +35,7 @@
  *     
  *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'
- *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
+ *      myWebDAV.writeFile('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
  *  </a:script>
  * </code>
  *
@@ -59,6 +59,7 @@
  *  set="{myWebdav.remove([@path])}"
  *  set="{myWebdav.rmdir(...alias for remove...)}"
  *  set="{myWebdav.rm(...alias for remove...)}"
+ *  set="{myWebdav.mkdir([@path])}"
  *  get="{myWebdav.readdir([@path])}"
  *  get="{myWebdav.scandir(...alias for readdir...)}"
  *  load="{myWebdav.getroot()}"
@@ -428,6 +429,7 @@ apf.webdav = function(struct, tagName){
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
+    this.readFile =
     this.read = function(sPath, callback) {
         this.method = "GET";
         this.doRequest(function(data, state, extra) {
@@ -458,7 +460,7 @@ apf.webdav = function(struct, tagName){
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
-    this.readDir = function(sPath, callback) {
+    this.readdir = function(sPath, callback) {
         if (sPath.charAt(sPath.length - 1) != "/")
             sPath += "/";
         return this.getProperties(sPath, 1, callback);
@@ -486,7 +488,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sPath);
             var iStatus = parseInt(extra.status);
             if (iStatus == 201) { //Created
-                _self.readDir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
+                _self.readdir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
             }
             else if (iStatus == 403 || iStatus == 405 || iStatus == 409
               || iStatus == 415 || iStatus == 507) {
@@ -500,7 +502,7 @@ apf.webdav = function(struct, tagName){
                     callback(oError);
             }
         }, sPath, null, bLock && oLock.token
-            ? { "If": "<" + oLock.token + ">" }
+            ? {"If": "<" + oLock.token + ">"}
             : null, true);
     };
 
@@ -526,6 +528,7 @@ apf.webdav = function(struct, tagName){
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
+    this.writeFile =
     this.write = function(sPath, sContent, bLock, callback) {
         if (bLock) {
             var oLock = this.lock(sPath);
@@ -619,6 +622,7 @@ apf.webdav = function(struct, tagName){
      * @param {Function} callback     Function to execute when the request was successful
      * @type  {void}
      */
+    this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo) return;
         
@@ -690,7 +694,7 @@ apf.webdav = function(struct, tagName){
             }
             callback.call(this, data, state, extra);
         }, sPath, null, bLock && oLock.token
-            ? { "If": "<" + oLock.token + ">" }
+            ? {"If": "<" + oLock.token + ">"}
             : null);
     };
 
@@ -1039,7 +1043,6 @@ apf.webdav = function(struct, tagName){
      * Instruction handler for WebDav protocols.
      */
     this.exec = function(method, args, callback){
-        //var oItem = this.$fsCache[args[0]];
         // RULE for case aliases: first, topmost match is the preferred term for any
         //                        action and should be used in demos/ examples in
         //                        favor of other aliases.
@@ -1052,31 +1055,27 @@ apf.webdav = function(struct, tagName){
                 this.reset();
                 break;
             case "read":
-                this.read(args[0], callback);
+                this.readFile(args[0], callback);
                 break;
             case "create":
-                this.write((args[0] ? args[0] : "") + "/" + args[1], args[2], args[3] || false, callback);
+                this.writeFile((args[0] ? args[0] : "") + "/" + args[1], args[2], args[3] || false, callback);
                 break;
             case "write":
             case "store":
             case "save":
-                this.write(args[0], args[1], args[2] || false, callback);
+                this.writeFile(args[0], args[1], args[2] || false, callback);
                 break;
             case "copy":
             case "cp":
                 this.copy(args[0], args[1], args[2] || true, args[3] || false, callback);
                 break;
             case "rename":
-                var oItem = this.$fsCache[args[1]];
-                if (!oItem) break;
-                var sBasepath = oItem.path.replace(oItem.name, "");
-                //TODO: implement 'Overwrite' setting...
-                this.move(oItem.path, sBasepath + args[0], args[2] || false, args[3] || false, callback);
+                var sBasepath = args[1].substr(0, args[1].lastIndexOf("/") + 1);
+                this.rename(args[1], sBasepath + args[0], args[2] || false, args[3] || false, callback);
                 break;
             case "move":
             case "mv":
-                //TODO: implement 'Overwrite' setting...
-                this.move(args[0], args[1] + "/" + oItem.name,
+                this.rename(args[0], args[1] + "/" + args[0].substr(args[0].lastIndexOf("/") + 1),
                     args[2] || false, args[3] || false, callback);
                 break;
             case "remove":
@@ -1086,7 +1085,7 @@ apf.webdav = function(struct, tagName){
                 break;
             case "readdir":
             case "scandir":
-                this.readDir(args[0], callback);
+                this.readdir(args[0], callback);
                 break;
             case "getroot":
                 this.getProperties(this.$rootPath, 0, callback);
