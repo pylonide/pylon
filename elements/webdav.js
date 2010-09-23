@@ -657,7 +657,11 @@ apf.webdav = function(struct, tagName){
                     throw oError;
             }
             else { //success!!
-                this.$fsCache[sFrom].path = sTo;
+                if (this.$fsCache[sFrom]) {
+                    this.$fsCache[sTo] = this.$fsCache[sFrom];
+                    this.$fsCache[sTo].path = sTo;
+                    delete this.$fsCache[sFrom];
+                }
             }
             callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
