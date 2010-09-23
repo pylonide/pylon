@@ -38,7 +38,7 @@
 
         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-        <a:rename set="{davProject.rename([@name], [@path])}"/>
+        <a:rename set="{davProject.rename([@name], [@path], require('ext/filesystem/filesystem').afterRename)}"/>
         <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
         <a:move set="{davProject.move([@path], [../@path])}"/>
         <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
@@ -49,7 +49,9 @@
     </a:tree>
 
     <a:menu id="mnuCtxTree">
-        <a:item class="strong">Open</a:item>
+        <a:item match="[file]" class="strong" onclick="
+            require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
+        ">Edit</a:item>
         <a:divider />
         <a:item onclick="trFiles.startRename()">Rename</a:item>
         <a:item match="[file|folder]" onclick="trFiles.remove()">Remove</a:item>
