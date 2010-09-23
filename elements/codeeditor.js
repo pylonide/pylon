@@ -205,7 +205,7 @@ apf.codeeditor = function(struct, tagName) {
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         range = new Range(row, 0, row+1, 0);
-        this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "text");
+        this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
 
         this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
     };
