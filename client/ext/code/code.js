@@ -27,10 +27,14 @@ return ext.register("ext/code/code", {
     nodes : [],
 
     getSelection : function(){
+        if (typeof ceEditor == "undefined")
+            return null;
         return ceEditor.getSelection();
     },
     
     getDocument : function(){
+        if (typeof ceEditor == "undefined")
+            return null;
         return ceEditor.getDocument();
     },
 
@@ -122,12 +126,16 @@ return ext.register("ext/code/code", {
             // Show print margin (showprintmargin)
         );
 
+        mnuSyntax.onitemclick = function(e) {
+            ceEditor.setAttribute("syntax", e.relatedNode.value);
+        };
+
         ide.addEventListener("clearfilecache", function(e){
             ceEditor.clearCacheItem(e.xmlNode);
         });
 
         ide.addEventListener("keybindingschange", function(e){
-            if (!e.ext)
+            if (!e.ext || typeof ceEditor == "undefined")
                 return;
             var bindings = e.ext.code;
             ceEditor.$editor.keyBinding.setConfig(bindings);
@@ -140,6 +148,8 @@ return ext.register("ext/code/code", {
     },
 
     toggleSetting: function(name) {
+        if (typeof ceEditor == "undefined")
+            return;
         if (name == "selectstyle") {
             ceEditor.setAttribute("selectstyle", ceEditor.selectstyle == "line" ? "text" : "line");
         }
