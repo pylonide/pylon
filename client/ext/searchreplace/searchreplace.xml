@@ -10,7 +10,7 @@
                 <a:textbox flex="1" />
             </a:hbox>
             <a:divider />
-            <a:table columns="125,125" edge="10">
+            <a:table columns="150,150" edge="10">
                 <a:checkbox id="chkMatchCase" checked="true" label="Match Case" />
                 <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
                 <a:checkbox id="chkWholeWords" label="Whole Words" />
