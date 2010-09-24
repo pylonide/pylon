@@ -31,7 +31,7 @@ return ext.register("ext/code/code", {
             return null;
         return ceEditor.getSelection();
     },
-    
+
     getDocument : function(){
         if (typeof ceEditor == "undefined")
             return null;
@@ -50,11 +50,11 @@ return ext.register("ext/code/code", {
     init : function(amlPage){
         amlPage.appendChild(barEditor);
         barEditor.show();
-        
+
         this.ceEditor = ceEditor;
 
         var _self = this;
-        
+
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
@@ -143,7 +143,7 @@ return ext.register("ext/code/code", {
     },
 
     onCommit: function() {
-        console.log("commit func called!")
+        //console.log("commit func called!")
         //todo
     },
 
