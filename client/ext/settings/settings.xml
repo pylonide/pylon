@@ -8,8 +8,8 @@
       buttons   = "close"
       width     = "550"
       height    = "300">
-        <a:vbox anchors="0 0 0 0" edge="10">
-            <a:hbox padding="4" model="{require('ext/settings/settings').model}" actiontracker="atSettings" flex="1">
+        <a:vbox anchors="0 0 0 0">
+            <a:hbox padding="4" edge="10" model="{require('ext/settings/settings').model}" actiontracker="atSettings" flex="1">
                 <a:vbox width="150" padding="5">
                     <a:textbox initial-message="Filter" />
                     <a:tree flex="1"
@@ -35,7 +35,7 @@
                     </a:page>
                 </a:pages>
             </a:hbox>
-            <a:hbox pack="end" edge="10 0 0 0" padding="5">
+            <a:hbox pack="end" edge="10 10 5 10" padding="5">
                 <a:button width="80">OK</a:button>
                 <a:button width="80" onclick="winSettings.hide();">Cancel</a:button>
                 <a:button width="80" disabled="{!atSettings.undolength}">Apply</a:button>

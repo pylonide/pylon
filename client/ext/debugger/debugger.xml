@@ -36,7 +36,7 @@
                 <a:column caption="Value" value="[@value]" width="60%" />
                 <a:column caption="Type" value="[@type]" width="50"/>
             </a:each>
-        </a:datagrid>		
+        </a:datagrid>
     </a:window>
     
     <!-- a:window id="winDbgBreakpoints" skin="dockwin" title="Breakpoints" modal="false" flex="1" width="200">

@@ -4,8 +4,10 @@
       title     = "Format JSON"
       icon      = ""
       center    = "true"
+      modal     = "false"
       resizable = "true"
       buttons   = "close"
+      kbclose   = "true"
       width     = "200">
         <a:vbox>
             <a:hbox padding="5" edge="10">
@@ -17,9 +19,8 @@
                 <a:button class="ui-btn-green" default="2" caption="Format" 
                   onclick = "
                     require('ext/formatjson/formatjson').format(spIndent.value);
-                    winFormat.hide()
                   "/>
-                <a:button onclick="winFormat.hide()">Cancel</a:button>
+                <a:button onclick="winFormat.hide()">Done</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>
