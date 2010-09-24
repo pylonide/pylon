@@ -2,10 +2,13 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
 var net = require("net");
 var sys = require("sys");
 var NodeSocket = require("debug/NodeSocket");
-var StandaloneV8DebuggerService = require("debug/StandaloneV8DebuggerService");
+var ChromeDebugMessageStream = require("debug/ChromeDebugMessageStream");
+var DevToolsMessage = require("debug/DevToolsMessage");
+
 
 module.exports = DebugProxy = function(port) {
     process.EventEmitter.call(this);
@@ -13,19 +16,23 @@ module.exports = DebugProxy = function(port) {
 
     this.connected = false;
 
-    var socket = new NodeSocket("localhost", port);
+    var socket = new NodeSocket("127.0.0.1", port);
     socket.onend = function() {
         this.connected = false;
         _self.emit("end");
     };
-    this.service = new StandaloneV8DebuggerService(socket);
 
-    this.service.addEventListener('connect', function() {
+    this.stream = new ChromeDebugMessageStream(socket);
+
+    this.stream.addEventListener('connect', function(msg) {
+        console.log("CONNECT")
         _self.connected = true;
         _self.emit("connection");
     });
-    this.service.addEventListener('debugger_command_0', function(msg) {
-        _self.emit("message", msg.data);
+
+    this.stream.addEventListener('message', function(msg) {
+        console.log("message " + msg)
+        _self.emit("message", msg.data.getContent());
     });
 };
 
@@ -34,11 +41,11 @@ sys.inherits(DebugProxy, process.EventEmitter);
 (function() {
 
     this.connect = function() {
-        this.service.attach(0, function() {});
+        this.stream.connect();
     };
 
     this.send = function(msgJson) {
-        this.service.debuggerCommand(0, JSON.stringify(msgJson));
+        this.service.sendRequest(DevToolsMessage.fromString(JSON.stringify(msgJson)));
     };
 
 }).call(DebugProxy.prototype);

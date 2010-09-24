@@ -34,7 +34,8 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
 (function () {
 
-    this.DEBUG_PORT = 5858;
+    this.NODE_DEBUG_PORT = 5858;
+    this.CHROME_DEBUG_PORT = 9222;
 
     this.onClientConnection = function(client) {
         // we allow only one client at the moment
@@ -94,7 +95,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebug = function(message) {
-        message.preArgs = ["--debug=" + this.DEBUG_PORT];
+        message.preArgs = ["--debug=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -105,7 +106,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebugBrk = function(message) {
-        message.preArgs = ["--debug-brk=" + this.DEBUG_PORT];
+        message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -187,7 +188,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
         if (this.nodeDebugProxy)
             return this.error("Debug session already running", message);
 
-        this.nodeDebugProxy = new NodeDebugProxy(this.DEBUG_PORT++);
+        this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT++);
         this.nodeDebugProxy.on("message", function(body) {
             if (!_self.client) return;
 
@@ -217,6 +218,21 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
         this.nodeDebugProxy.send(message.body);
     };
+
+    this.commandRunDebugChrome = function(message) {
+        if (this.chromeDebugProxy)
+            return this.error("Chrome debugger already running!", message);
+
+        this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
+        this.chromeDebugProxy.connect();
+
+        var _self = this;
+        this.chromeDebugProxy.addEventListener("connection", function() {
+            _self.client && _self.client.send('{"type": "chrome-debug-ready"}');
+        });
+    };
+
+
 
 }).call(IdeServer.prototype);
 
