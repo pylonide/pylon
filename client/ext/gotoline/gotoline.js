@@ -23,18 +23,25 @@ return ext.register("ext/gotoline/gotoline", {
     
     nodes   : [],
     
-    init : function(amlNode){
+    hook : function(){
+        var _self = this;
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Go to Line",
-                onclick : this.toggleDialog.bind(this)
+                onclick : function(){
+                    _self.toggleDialog();
+                }
             }))
         );
-
+        
+        plugins.registerCommand("gotoline", function(editor, selection) {
+            _self.setEditor(editor, selection).toggleDialog(true);
+        });
+    },
+    
+    init : function(amlNode){
         this.hotitems["gotoline"] = [this.nodes[1]];
-
-        var _self = this;
 
         this.txtLinenr = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
         //buttons
@@ -42,13 +49,11 @@ return ext.register("ext/gotoline/gotoline", {
         this.btnGo.onclick = this.gotoLine.bind(this);
         this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
         this.btnClose.onclick = this.toggleDialog.bind(this);
-
-        plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog(true);
-        });
     },
 
     toggleDialog: function(forceShow) {
+        ext.initExtension(this);
+        
         if (!winGotoLine.visible || forceShow)
             winGotoLine.show();
         else

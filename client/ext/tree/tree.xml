@@ -26,8 +26,8 @@
         
     ]]></a:script>
 
-    <a:window id="winFilesViewer" skin="dockwin" title="Files" modal="false" flex="1" visible="true">
-        <a:tree id="trFiles" flex="3" autoselect="false" canrename="true"
+    <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close">
+        <a:tree id="trFiles" autoselect="false" canrename="true" anchors="0 0 0 0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true">
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
