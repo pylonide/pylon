@@ -935,6 +935,8 @@
           requires="__ENABLE_INTERACTIVE_CANCEL">
             <p:define name="__WITH_AMLSELECTION" />
             <p:define name="__WITH_AMLRANGE" />
+            <p:define name="__WITH_CLIPBOARD" />
+            <p:define name="__WITH_CLIPBOARD_SELECTION" />
         </p:define>
         <p:define name="__WITH_MARKUPEDIT"
           match=""

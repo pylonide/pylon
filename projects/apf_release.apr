@@ -5,7 +5,7 @@
       verbose  = "2"
       version  = "3.0.{buildnr}.Beta"
       name     = "apf_{version.replace(/\./g, '_')}"
-      cwd      = "{__dirname}/../../"
+      cwd      = "{__dirname}/build"
       tmp      = "/tmp"
       platform = "/var/lib/platform"
       release  = "~">
@@ -16,7 +16,7 @@
           type     = "script"
           defines  = "1"
           group    = "apf"
-          out      = "{cwd}/www/js/apf_release.js"
+          out      = "{cwd}/apf_release.js"
           filehead = "1" />
 
         <p:compress
@@ -68,7 +68,6 @@
                         <p:node path="richtext.js" />
                     </p:node>
                     <p:node path="anchoring.js" />
-                    <p:node path="alignment.js" />
                     <p:node path="contenteditable.js" />
                     <p:node path="guielement.js" />
                     <p:node path="presentation.js" />
@@ -90,26 +89,9 @@
             <p:node path="processinginstructions" />
             <p:node path="jpack_end.js" />
         </p:node>
-
-        <p:node path="{cwd}/www/js/app.js" group="apf" />
-        <p:node path="{cwd}/www/js/connections.js" group="apf" />
-        <p:node path="{cwd}/www/js/create.js" group="apf" />
-        <p:node path="{cwd}/www/js/editmode.js" group="apf" />
-        <p:node path="{cwd}/www/js/feed.js" group="apf" />
-        <p:node path="{cwd}/www/js/geo.js" group="apf" />
-        <p:node path="{cwd}/www/js/messages.js" group="apf" />
-        <p:node path="{cwd}/www/js/scrollfixed.js" group="apf" />
-        <p:node path="{cwd}/www/js/search.js" group="apf" />
-        <p:node path="{cwd}/www/js/security.js" group="apf" />
-        <p:node path="{cwd}/www/js/session.js" group="apf" />
-        <p:node path="{cwd}/www/js/spinner.js" group="apf" />
-        <p:node path="{cwd}/www/js/loader.js" group="apf" />
-        <p:node path="{cwd}/www/js/util.js" group="apf" />
-        <p:node path="{cwd}/www/js/widgetpanel.js" group="apf" />
-        <p:node path="{cwd}/www/js/feedbackbtn.js" group="apf" />
     </p:files>
 
-    <p:defines defaults="defines_3.0.xml">
+    <p:defines defaults="defines.xml">
         <p:define name="__APFVERSION" value="{version}"/>
         <p:define name="__WITH_CDN" value="0" />
         <p:define name="__DEBUG" value="1" />
@@ -351,6 +333,8 @@
         <p:define name="__WITH_XFORMS" value="0" />
         <p:define name="__WITH_XSD" value="1" />
         <p:define name="__WITH_CONTENTEDITABLE" value="1" />
+        <p:define name="__WITH_CLIPBOARD" value="1" />
+        <p:define name="__WITH_CLIPBOARD_SELECTION" value="1" />
         <p:define name="__WITH_MARKUPEDIT" value="1" />
         <p:define name="__WITH_CONTENTEDITABLE2" value="1" />
         <p:define name="__WITH_COMMENT" value="1" />

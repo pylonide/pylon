@@ -172,7 +172,7 @@
         </p:node>
     </p:files-->
 
-    <p:defines defaults="defines_3.0.xml">
+    <p:defines defaults="defines.xml">
         <p:define name="__APFVERSION" value="{version}"/>
         <p:define name="__WITH_CDN" value="0" />
         <p:define name="__DEBUG" value="1" />
