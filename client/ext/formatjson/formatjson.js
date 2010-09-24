@@ -34,7 +34,7 @@ return ext.register("ext/formatjson/formatjson", {
         }
         catch(e){
             util.alert(
-                "Invalid Json", 
+                "Invalid JSON", 
                 "The selection contains an invalid or incomplete JSON string",
                 "Please correct the JSON and try again");
             return;

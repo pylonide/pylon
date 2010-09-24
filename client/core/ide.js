@@ -27,9 +27,9 @@ require.def("core/ide",
 
             //Catch all unhandled errors
             var loc = location.href;
-            if (location.protocol != "file:"
+            if (false && location.protocol != "file:"
               && loc.indexOf("dev") == -1
-              && loc.indexOf("worknets.com") > -1) {
+              && loc.indexOf("cloud9ide.com") > -1) {
                 window.onerror = function(m, u, l) {
                     if (self.console)
                         console.log("An error occurred, the worknets system admin has been notified.")

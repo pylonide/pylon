@@ -22,15 +22,11 @@ return ext.register("ext/undo/undo", {
             //mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Undo",
-                onclick : function(){
-                    tabEditors.getPage().$at.undo();
-                }
+                onclick : this.undo
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Redo",
-                onclick : function(){
-                    tabEditors.getPage().$at.redo();
-                }
+                onclick : this.redo
             }))
         );
 
@@ -38,6 +34,14 @@ return ext.register("ext/undo/undo", {
             "undo" : [this.nodes[0]],
             "redo" : [this.nodes[1]]
         };
+    },
+
+    undo: function() {
+        tabEditors.getPage().$at.undo();
+    },
+
+    redo: function() {
+        tabEditors.getPage().$at.redo();
     },
 
     enable : function(){

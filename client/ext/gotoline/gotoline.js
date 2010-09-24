@@ -32,38 +32,42 @@ return ext.register("ext/gotoline/gotoline", {
             }))
         );
 
-        this.hotitems["gotoline"] = this.nodes[1];
+        this.hotitems["gotoline"] = [this.nodes[1]];
 
         var _self = this;
 
         this.txtLinenr = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
-        this.txtLinenr.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.gotoLine();
-        });
         //buttons
-        this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
-        this.btnGo = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
+        this.btnGo = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnGo.onclick = this.gotoLine.bind(this);
+        this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
+        this.btnClose.onclick = this.toggleDialog.bind(this);
 
         plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.$editor = editor;
-            _self.$selection = selection;
-            _self.toggleDialog();
+            _self.setEditor(editor, selection).toggleDialog(true);
         });
     },
 
-    toggleDialog: function() {
-        if (!winGotoLine.visible)
+    toggleDialog: function(forceShow) {
+        if (!winGotoLine.visible || forceShow)
             winGotoLine.show();
         else
             winGotoLine.hide();
         return false;
     },
 
+    setEditor: function(editor, selection) {
+        if (typeof ceEditor == "undefined")
+            return this;
+        this.$editor = editor || ceEditor.$editor;
+        this.$selection = selection || this.$editor.getSelection();
+        return this;
+    },
+
     gotoLine: function() {
-        if (!this.editor)
+        if (!this.$editor)
+            this.setEditor();
+        if (!this.$editor)
             return;
         this.$editor.gotoLine(parseInt(this.txtLinenr.getValue()) || 0);
     },

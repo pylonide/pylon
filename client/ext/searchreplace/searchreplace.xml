@@ -1,16 +1,16 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="350">
-        <a:vbox edge="10" padding="4 0 4 0">
-            <a:hbox>
+    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="350" kbclose="true">
+        <a:vbox>
+            <a:hbox edge="10">
                 <a:label width="70">Search</a:label>
                 <a:textbox flex="1" />
             </a:hbox>
-            <a:hbox>
+            <a:hbox edge="10">
                 <a:label width="70">Replace With</a:label>
                 <a:textbox flex="1" />
             </a:hbox>
             <a:divider />
-            <a:table columns="125,125">
+            <a:table columns="150,150" edge="10">
                 <a:checkbox id="chkMatchCase" checked="true" label="Match Case" />
                 <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
                 <a:checkbox id="chkWholeWords" label="Whole Words" />
@@ -19,11 +19,11 @@
                 <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
             </a:table>
             <a:divider />
-            <a:hbox padding="5">
+            <a:hbox padding="5" pack="end" edge="10">
                 <a:button>Replace</a:button>
                 <a:button>Replace All</a:button>
+                <a:button default="2" class="ui-btn-green">Find</a:button>
                 <a:button>Close</a:button>
-                <a:button>Find</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>

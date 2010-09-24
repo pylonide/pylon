@@ -51,6 +51,10 @@ return ext.register("ext/panels/panels", {
             panelExt.mnuItem.uncheck();
             if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();
+            
+            //Quick Fix
+            if (apf.isGecko)
+                apf.layout.forceResize(ide.vbMain.$ext);
         });
         //panelExt.panel.show();
         

@@ -22,18 +22,15 @@ return ext.register("ext/clipboard/clipboard", {
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Cut",
-                onclick : function(){
-                }
+                onclick : this.cut
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
-                onclick : function(){
-                }
+                onclick : this.copy
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
-                onclick : function(){
-                }
+                onclick : this.paste
             }))
         );
 
@@ -43,6 +40,12 @@ return ext.register("ext/clipboard/clipboard", {
             "paste" : [this.nodes[3]]
         };
     },
+
+    cut: function() {},
+
+    copy: function() {},
+
+    paste: function() {},
 
     enable : function(){
         this.nodes.each(function(item){

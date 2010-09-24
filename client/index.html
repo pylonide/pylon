@@ -25,11 +25,11 @@
                 : "js/apf_" + VERSION + ".js";
 
             var config = {
-      			paths: {
-				    "ace": "common/ace/src/ace",
-				    "debug": "common/ace/src/debug",
+                paths: {
+                    "ace": "common/ace/src/ace",
+                    "debug": "common/ace/src/debug",
                     "apf": "common/apf"
-				}
+                }
             }
             require(config, [apfLoc], function(){
                 /*apf.onstart = function(){
@@ -69,6 +69,7 @@
                             "ext/clipboard/clipboard",
                             "ext/refactor/refactor",
                             "ext/searchreplace/searchreplace",
+                            "ext/gotoline/gotoline",
                             "ext/html/html",
                             "ext/browser/browser",
                             "ext/code/code",
@@ -92,6 +93,8 @@
                         });
                     });
                 }
+                if (apf.started)
+                    apf.onstart();
             });
         //--></script>
     </head>
@@ -258,11 +261,11 @@
             </a:toolbar>
 
             <a:hbox padding="4" flex="1">
-                <a:vbox padding="3" width="200" edge="8 2 8 8"/>
+                <a:vbox padding="3" width="200" edge="8 2 7 8"/>
                 <a:splitter />
                 <a:vbox flex="1" padding="3" edge="8 2 2 3"/>
                 <a:splitter />
-                <a:vbox padding="3" width="300" visible="false" edge="8 2 8 3"/>
+                <a:vbox padding="3" width="300" visible="false" edge="8 2 7 3"/>
             </a:hbox>
 
             <a:statusbar id="sbMain">

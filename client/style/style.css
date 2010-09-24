@@ -1,10 +1,9 @@
 HTML {
     overflow : hidden;
 }
-
 BODY {
     background-color : #fefefe;
-    font-family      : Trebuchet MS;
+    font-family      : "Trebuchet MS";
     color            : #222222;
     margin           : 0;
     padding          : 0 ;
@@ -38,5 +37,3 @@ BODY {
     font-family : Trebuchet MS;
     line-height : 16px;
 }
-
-/*-- home page style --*/

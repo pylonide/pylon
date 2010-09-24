@@ -18,57 +18,86 @@ return ext.register("ext/searchreplace/searchreplace", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"searchreplace":1},
+    hotkeys : {"search":1, "searchreplace":1},
     hotitems: {},
     
     nodes   : [],
     
     init : function(amlNode){
+        var _self = this;
+
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
+                caption : "Search",
+                onclick : function() {
+                    _self.toggleDialog(false);
+                }
+            })),
+            mnuEdit.appendChild(new apf.item({
                 caption : "Search & Replace",
-                onclick : this.toggleDialog.bind(this)
+                onclick : function() {
+                    _self.toggleDialog(true);
+                }
             }))
         );
 
-        this.hotitems["searchreplace"] = this.nodes[1];
+        this.hotitems["search"] = [this.nodes[1]];
+        this.hotitems["searchreplace"] = [this.nodes[2]];
 
-        var _self = this;
-
-        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
-        this.txtFind.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.findNext();
-        });
-        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
-        this.txtReplace.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.replace();
-        });
+        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
+        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
+        //bars
+        this.barReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
         this.btnReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnReplace.onclick = this.replace.bind(this);
         this.btnReplaceAll = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[2]");
         this.btnReplaceAll.onclick = this.replaceAll.bind(this);
-        this.btnClose      = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
-        this.btnFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[4]");
+        this.btnFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.findNext.bind(this);
+        this.btnClose      = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[4]");
+        this.btnClose.onclick = this.toggleDialog.bind(this);
 
         plugins.registerCommand("find", function(editor, selection) {
-            _self.$editor = editor;
-            _self.$selection = selection;
-            _self.toggleDialog();
+            _self.setEditor(editor, selection).toggleDialog(false, true);
+        });
+        plugins.registerCommand("replace", function(editor, selection) {
+            _self.setEditor(editor, selection).toggleDialog(true, true);
         });
     },
 
-    toggleDialog: function() {
-        if (!winSearchReplace.visible)
+    toggleDialog: function(isReplace, forceShow) {
+        this.setupDialog(isReplace);
+        if (!winSearchReplace.visible || forceShow)
             winSearchReplace.show();
         else
             winSearchReplace.hide();
         return false;
+    },
+
+    search: function() {
+        return this.setEditor().toggleDialog(false, true);
+    },
+
+    searchreplace: function() {
+        return this.setEditor().toggleDialog(true, true);
+    },
+
+    setupDialog: function(isReplace) {
+        // hide all 'replace' features
+        this.barReplace.setProperty("visible", isReplace);
+        this.btnReplace.setProperty("visible", isReplace);
+        this.btnReplaceAll.setProperty("visible", isReplace);
+        return this;
+    },
+
+    setEditor: function(editor, selection) {
+        if (typeof ceEditor == "undefined")
+            return;
+        this.$editor = editor || ceEditor.$editor;
+        this.$selection = selection || this.$editor.getSelection();
+        return this;
     },
 
     getOptions: function() {
@@ -83,6 +112,8 @@ return ext.register("ext/searchreplace/searchreplace", {
     },
 
     findNext: function() {
+        if (!this.$editor)
+            this.setEditor();
         if (!this.$editor)
             return;
         var txt = this.txtFind.getValue();
@@ -110,6 +141,10 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     replace: function() {
         if (!this.$editor)
+            this.setEditor();
+        if (!this.$editor)
+            return;
+        if (!this.barReplace.visible)
             return;
         var options = this.getOptions();
         this.$editor.replace(this.txtReplace.getValue() || "", options);
@@ -118,6 +153,8 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     replaceAll: function() {
         if (!this.editor)
+            this.setEditor();
+        if (!this.$editor)
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
