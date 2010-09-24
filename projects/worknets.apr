@@ -1,0 +1,47 @@
+<p:project name="Ajax.org PlatForm" xmlns:p="http://ajax.org/2008/project">
+    <p:settings
+      buildnr  = "{String(parseInt(Fs.readFileSync(__dirname + '/../buildnr', 'utf8').toString())+1).pad('0', 4) || ''}"
+      verbose  = "2"
+      version  = "3.0.{buildnr}.Beta"
+      name     = "apf_{version.replace(/\./g, '_')}"
+      out      = "/var/run/{name}"
+      cwd      = "{__dirname}/../../"
+      tmp      = "/tmp"
+      platform = "{cwd}/www/js2/trunk"
+      release  = "~">
+    </p:settings>
+
+    <p:process>
+        <p:combine
+          type   = "xml"
+          root   = "skins"
+          prefix = "a"
+          xmlns  = "http://ajax.org/2005/aml"
+          group  = "skin"
+          out    = "{cwd}/www/style/skins/skins.xml" />
+
+       <p:inline
+          type = "html"
+          in   = "{cwd}/www/index.html"
+          out  = "{cwd}/www/index_inline.html" />
+
+        <!--p:copy
+          group    = "resources"
+          output   = "{out}/{filename}" /-->
+    </p:process>
+
+    <p:files>
+        <p:node path="{cwd}/www/style/skins" group="skin" mask="([^_]+)*.xml" />
+
+        <p:node path="{platform}" group="resources" recursive="false">
+            <p:node path="core/lib/offline/network_check.txt" />
+            <p:node path="core/lib/storage/jpfStorage.swf" />
+            <p:node path="elements/audio/null.mp3" />
+            <p:node path="elements/audio/soundmanager2.swf" />
+            <p:node path="elements/audio/soundmanager2_flash9.swf" />
+            <p:node path="elements/video/ClearOverPlayMute.swf" />
+            <p:node path="elements/video/FAVideo.swf" />
+            <p:node path="elements/video/wmvplayer.xaml" />
+        </p:node>
+    </p:files>
+</p:project>
