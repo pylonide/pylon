@@ -21,7 +21,7 @@ module.exports = DebugProxy = function(port) {
         _self.onData(data);
     });
 
-    this.stream.addListener('end', function (data) {
+    this.stream.addListener('end', function () {
         _self.stream.end();
         this.connected = false;
         _self.emit("end");
@@ -34,7 +34,7 @@ sys.inherits(DebugProxy, process.EventEmitter);
 
     this.connect = function() {
         if (!this.connected)
-            return this.stream.connect(this.port, "127.0.0.1");
+            return this.stream.connect(this.port, "localhost");
     };
 
     this.send = function(msgJson) {
@@ -60,7 +60,7 @@ sys.inherits(DebugProxy, process.EventEmitter);
                 var msgParts = fullResponse.split("\r\n\r\n");
                 var headers = msgParts[0];
                 var body = JSON.parse(msgParts[1] || "{}");
-                this.emit("message", body, headers);
+                this.emit("message", body);
             }
         }
     };

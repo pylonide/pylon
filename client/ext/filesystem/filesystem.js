@@ -13,12 +13,12 @@ return ext.register("ext/filesystem/filesystem", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
-    
+
     readFile : function (path, callback){
         if (this.webdav)
             this.webdav.read(path, callback);
     },
-    
+
     saveFile : function(path, data) {
         if (this.webdav)
             this.webdav.write(path, data);
@@ -30,7 +30,7 @@ return ext.register("ext/filesystem/filesystem", {
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
-        
+
         if (this.webdav) {
             if (!name)
                 name = "New Folder";
@@ -62,11 +62,11 @@ return ext.register("ext/filesystem/filesystem", {
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
-        
+
         if (this.webdav) {
-            if (!filename) 
+            if (!filename)
                 filename = "Untitled.txt";
-            
+
             trFiles.focus();
             var _self = this,
                 path  = node.getAttribute("path");
@@ -134,7 +134,7 @@ return ext.register("ext/filesystem/filesystem", {
     init : function(amlNode){
         this.model = new apf.model();
         this.model.load("<data><folder type='folder' name='Project' /></data>");
-        
+
         var url;
         if (location.host) {
             this.webdav = new apf.webdav({
@@ -147,15 +147,15 @@ return ext.register("ext/filesystem/filesystem", {
             url = "ext/filesystem/files.xml";
             this.readFile = this.saveFile = apf.K;
         }
-        
+
         this.model.insert(url, {
             insertPoint : this.model.queryNode("folder[@name='Project']")
         });
-        
+
         var fs = this;
         ide.addEventListener("openfile", function(e){
             var node = e.node;
-            
+
             if (node.selectSingleNode("data"))
                 return;
 
@@ -174,7 +174,7 @@ return ext.register("ext/filesystem/filesystem", {
                         var nl = "windows";
                     else
                         nl = "unix";
-    
+
                     var doc = node.ownerDocument;
                     var xml = doc.createElement("data");
                     xml.appendChild(doc.createTextNode(data));

@@ -20,9 +20,9 @@ return ext.register("ext/searchreplace/searchreplace", {
     markup  : markup,
     hotkeys : {"search":1, "searchreplace":1},
     hotitems: {},
-    
+
     nodes   : [],
-    
+
     init : function(amlNode){
         var _self = this;
 
@@ -160,19 +160,19 @@ return ext.register("ext/searchreplace/searchreplace", {
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
     },
-    
+
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);
@@ -181,5 +181,4 @@ return ext.register("ext/searchreplace/searchreplace", {
     }
 });
 
-    }
-);
+});

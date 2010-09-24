@@ -7,7 +7,8 @@ var io = require("socket.io");
 var async = require("async");
 var Path = require("path");
 var spawn = require("child_process").spawn;
-var DebugProxy = require("cloud9/debugproxy");
+var NodeDebugProxy = require("cloud9/nodedebugproxy");
+var ChromeDebugProxy = require("cloud9/chromedebugproxy");
 
 module.exports = IdeServer = function(workspaceDir, server) {
 
@@ -33,7 +34,8 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
 (function () {
 
-    this.DEBUG_PORT = 5858;
+    this.NODE_DEBUG_PORT = 5858;
+    this.CHROME_DEBUG_PORT = 9222;
 
     this.onClientConnection = function(client) {
         // we allow only one client at the moment
@@ -93,7 +95,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebug = function(message) {
-        message.preArgs = ["--debug=" + this.DEBUG_PORT];
+        message.preArgs = ["--debug=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -104,7 +106,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebugBrk = function(message) {
-        message.preArgs = ["--debug-brk=" + this.DEBUG_PORT];
+        message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -171,7 +173,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
             _self.debugClient = false;
             delete _self.child;
-            delete _self.debugProxy;
+            delete _self.nodeDebugProxy;
         });
 
         return child;
@@ -183,39 +185,54 @@ module.exports = IdeServer = function(workspaceDir, server) {
         if (!this.debugClient)
             return this.error("No debuggable application running", message);
 
-        if (this.debugProxy)
+        if (this.nodeDebugProxy)
             return this.error("Debug session already running", message);
 
-        this.debugProxy = new DebugProxy(this.DEBUG_PORT++);
-        this.debugProxy.on("message", function(body, headers) {
+        this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT++);
+        this.nodeDebugProxy.on("message", function(body) {
             if (!_self.client) return;
 
             var msg = {
-                "type": "debug",
+                "type": "node-debug",
                 "body": body
             };
             _self.client.send(JSON.stringify(msg));
         });
 
-        this.debugProxy.on("connection", function() {
-            _self.client && _self.client.send('{"type": "debug-ready"}');
+        this.nodeDebugProxy.on("connection", function() {
+            _self.client && _self.client.send('{"type": "node-debug-ready"}');
         });
 
-        this.debugProxy.on("end", function() {
-            if (_self.debugProxy == this) {
-                delete _self.debugProxy;
+        this.nodeDebugProxy.on("end", function() {
+            if (_self.nodeDebugProxy == this) {
+                delete _self.nodeDebugProxy;
             }
         });
 
-        this.debugProxy.connect();
+        this.nodeDebugProxy.connect();
     };
 
-    this.commandDebug = function(message) {
-        if (!this.debugProxy)
+    this.commandDebugNode = function(message) {
+        if (!this.nodeDebugProxy)
             return this.error("No debug session running!", message);
 
-        this.debugProxy.send(message.body);
+        this.nodeDebugProxy.send(message.body);
     };
+
+    this.commandRunDebugChrome = function(message) {
+        if (this.chromeDebugProxy)
+            return this.error("Chrome debugger already running!", message);
+
+        this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
+        this.chromeDebugProxy.connect();
+
+        var _self = this;
+        this.chromeDebugProxy.addEventListener("connection", function() {
+            _self.client && _self.client.send('{"type": "chrome-debug-ready"}');
+        });
+    };
+
+
 
 }).call(IdeServer.prototype);
 

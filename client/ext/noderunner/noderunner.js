@@ -60,9 +60,15 @@ return ext.register("ext/noderunner/noderunner", {
             return;
         }
 
-        //console.log("MSG:", message);
         switch(message.type) {
-            case "debug-ready":
+            case "node-debug-ready":
+                ide.dispatchEvent("debugready");
+                break;
+
+            case "chrome-debug-ready":
+                alert("READY")
+                winTab.show();
+                dbgChrome.loadTabs();
                 ide.dispatchEvent("debugready");
                 break;
 
@@ -102,6 +108,14 @@ return ext.register("ext/noderunner/noderunner", {
         this.$retryTimer = setTimeout(function() {
             _self.socket.connect();
         }, 2000);
+    },
+
+    debugChrome : function() {
+        var command = {
+            "command" : "RunDebugChrome",
+            "file"    : ""
+        };
+        this.socket.send(JSON.stringify(command));
     },
 
     debug : function() {

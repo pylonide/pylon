@@ -4654,6 +4654,8 @@
         .ace_editor .ace_printMargin {
           position: absolute;
           height: 100%;
+          width: 1px;
+          background-color: rgb(191, 191, 191);
         }
 
         .ace_layer {

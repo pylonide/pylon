@@ -25,7 +25,7 @@ return keys.onLoad({
         },
         "searchreplace" : {
             "search": "Command-F",
-            "searchreplace": "Command-R"
+            "searchreplace": "Shift-Command-R"
         },
         "code" : {
             "selectall": "Command-A",

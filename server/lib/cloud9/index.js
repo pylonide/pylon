@@ -18,7 +18,7 @@ exports.main = function(projectDir, port) {
             else {
                 next();
             }
-        }
+        };
     })();
     server = connect.createServer(
         //connect.logger(),
