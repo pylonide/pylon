@@ -337,12 +337,12 @@ apf.BaseTab = function(){
         if (!type)
             return scalersz.call(this);
         
-        if (this.$control && this.$control.type != "remove")
+        if (this.$control && this.$control.type != "remove" && this.$control.stop)
             this.$control.stop();
 
         var _self = this;
         var anim  = {
-            steps    : apf.isIE ? 10 : 20,
+            steps    : type == "remove" ? 8 : 8,
             control  : this.$control = {},
             anim     : apf.tween.EASEOUT,
             interval : 10,
@@ -354,6 +354,15 @@ apf.BaseTab = function(){
 
                 if (type == "add")
                     node.dispatchEvent("afteropen");
+            },
+            onstop    : function(){
+                if (!node)
+                    return;
+
+                if (type == "add")
+                    node.dispatchEvent("afteropen");
+                else if (type == "remove")
+                    node.dispatchEvent("afterclose");
             }
             //oneach   : function(){alert(1);}
         };
@@ -362,8 +371,10 @@ apf.BaseTab = function(){
         if (type == "add") {
             var htmlNode = node.$button;
             htmlNode.style.width = this.$minBtnWidth + "px";
-            scalersz.call(this, null, node);
-            this.$buildScaleAnim(anim, pg, null, true);
+            if (pg.length) {
+                scalersz.call(this, null, node);
+                this.$buildScaleAnim(anim, pg, null, true);
+            }
         }
         else if (type == "sync") {
             this.$buildScaleAnim(anim, pg);
@@ -457,6 +468,9 @@ apf.BaseTab = function(){
             pg = pg.slice();
             pg.remove(excl);
         }
+        if (!pg.length)
+            return;
+        
         var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons);//apf.getHtmlInnerWidth(this.$ext);
         var l  = pg.length;
         var bw = Math.min(cw/l, this.$maxBtnWidth);
@@ -496,6 +510,8 @@ apf.BaseTab = function(){
         var pg = this.getPages();
         if (excl)
             pg.remove(excl);
+        if (!pg.length)
+            return;
 
         var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) 
             - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
@@ -1245,7 +1261,7 @@ apf.BaseTab = function(){
             this.set(amlNode);
         
         //#ifdef __ENABLE_TAB_SCALE
-        if (this.$scale) 
+        if (this.$scale && amlNode.visible) 
             this.$scaleinit(amlNode, "add");
         else 
         //#endif
