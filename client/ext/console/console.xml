@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winDbgConsole" skin="dockwin" title="Debug" modal="false" height="200" visible="false">
+    <a:window id="winDbgConsole" skin="dockwin" title="Debug" modal="false" height="200" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar id="tbDebug" height="26">
                 <a:bar border="0">

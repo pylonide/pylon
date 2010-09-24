@@ -52,6 +52,7 @@
   icon      = ""
   center    = "true"
   render    = "runtime"
+  kbclose   = "true"
   width     = "512" skin="change_photo">
     <a:vbox width="100%">
         <a:hbox edge="15 10 20 10" padding="10">
