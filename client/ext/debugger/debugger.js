@@ -24,7 +24,7 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = ddModes.appendChild(new apf.item({
+        this.$layoutItem = mnuModes.appendChild(new apf.item({
             value   : "ext/debugger/debugger",
             caption : this.name
         }));

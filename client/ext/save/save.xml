@@ -9,13 +9,13 @@
       skin      = "change_photo">
         <a:vbox padding="10" edge="15 20 20 20">
             <h3 class="wheader">Save this file?</h3>
-            <div>This file has unsaved changes. Would you like to save the file before closing it?</div>
+            <div>This file has unsaved changes. Would you like to save the file before closing?</div>
         </a:vbox>
     
         <a:vbox edge="0 0 4 0" padding="8">
             <a:divider skin="hordivider" />
             <a:hbox pack="end" padding="7" edge="0 10 0 10">
-                <a:button id="btnSaveYes" width="80" default="3" class="ui-btn-red" caption="Yes" />
+                <a:button id="btnSaveYes" width="80" default="3" class="ui-btn-green" caption="Yes" />
                 <a:button id="btnSaveNo" width="80" class="ui-btn-red" caption="No" />
                 <a:button id="btnSaveCancel" width="80">Cancel</a:button>
             </a:hbox>

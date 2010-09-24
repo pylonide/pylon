@@ -31,7 +31,7 @@
         	       	<a:divider visible="{tabConsole.activepagenr==0}" />
         	       	<a:button 
         	       	  visible  = "{tabConsole.activepagenr == 0}" 
-        	       	  disabled = "{!txtCode.value}"
+        	       	  disabled = "{!txtConsole.value}"
         	       	  onclick  = "txtConsole.clear()">Clear Log</a:button>
         	       	
               	    <a:dropdown id="lstScripts"

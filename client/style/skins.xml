@@ -2161,8 +2161,8 @@
     <a:presentation>
         <a:main
           collapsed-height = "26"
-          minheight        = "150"
-          minwidth         = "150"
+          minheight        = "50"
+          minwidth         = "50"
           container        = "div[1]"
           drag             = "div[6]"
           title            = "div[6]/div[2]/text()"
