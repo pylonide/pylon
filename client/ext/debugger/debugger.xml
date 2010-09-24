@@ -12,7 +12,7 @@
           selected   = "{dbg.activeframe}">
        	    <a:actions />
        	    <a:each match="[frame]">
-                <a:column caption="Function" value="[@name]" width="100%" icon="debugger/stckframe_obj.gif" />
+                <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
                 <a:column caption="Script" value="[@script]" width="50" />
                 <a:column caption="Ln" value="[@line]" width="25"/>
                 <a:column caption="Col" value="[@column]" width="25"/>
