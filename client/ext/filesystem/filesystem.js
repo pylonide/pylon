@@ -25,7 +25,6 @@ return ext.register("ext/filesystem/filesystem", {
     },
 
     createFolder: function(name) {
-        debugger;
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("//folder[1]");

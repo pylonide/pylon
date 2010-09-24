@@ -21,7 +21,6 @@
           value  = "[data]"
           syntax = "{getSyntax([@contenttype])}"
           contextmenu    = "mnuCtxEditor"
-          showinvisibles = "[{require('ext/settings/settings').model}::section[@name='Editor']/section[@name='Code Editor']/@showinvisibles]"
           debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
           readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
         />
@@ -38,8 +37,11 @@
         <a:item>Select All</a:item>
     </a:menu>
     
-    <a:menu id="mnuSyntax" onitemclick="alert('@fabian, how should this be implemented?');">
-        <a:item value="text/plain">Plain Text</a:item>
-        <a:item value="application/javascript">JavaScript</a:item>
+    <a:menu id="mnuSyntax">
+        <a:item value="Text">Plain Text</a:item>
+        <a:item value="JavaScript">JavaScript</a:item>
+        <a:item value="Css">CSS</a:item>
+        <a:item value="Html">(X)HTML</a:item>
+        <a:item value="Xml">XML</a:item>
     </a:menu>
 </a:application>
