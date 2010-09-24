@@ -26,6 +26,14 @@ return ext.register("ext/code/code", {
 
     nodes : [],
 
+    getSelection : function(){
+        return ceEditor.getSelection();
+    },
+    
+    getDocument : function(){
+        return ceEditor.getDocument();
+    },
+
     hook : function(){
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
