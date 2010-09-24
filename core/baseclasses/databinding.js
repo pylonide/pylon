@@ -1483,10 +1483,9 @@ apf.DataBinding = function(){
                 
                 //#ifdef __DEBUG
                 if (model.queryNode(xpath) != value) {
-                    debugger;
                     throw new Error("xml data node is not attached to model (" 
                         + xpath + ") : " + value + ":" + (value && value.xml));
-                    }
+                }
                 //#endif
                 
                 model.register(this, xpath);
