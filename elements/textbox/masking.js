@@ -171,14 +171,14 @@ apf.textbox.masking = function(){
         ///this.keyHandler = this._keyHandler;
         this.$keyHandler = null; //temp solution
         masking = true;
-        
-        this.$int[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
+
+        this.$ext[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;
         };
         
-        this.$int.onpaste = function(e){
+        this.$ext.onpaste = function(e){
             e = e || window.event;
             e.returnValue = false;
             this.host.setValue(window.clipboardData.getData("Text") || "");
@@ -190,9 +190,9 @@ apf.textbox.masking = function(){
         
         this.getValue = function(){
             if (this.includeNonTypedChars)
-                return initial == this.$int.value 
+                return initial == this.$ext.value
                     ? "" 
-                    : this.$int.value.replace(new RegExp(replaceChar, "g"), "");
+                    : this.$ext.value.replace(new RegExp(replaceChar, "g"), "");
             else
                 return myvalue.join("");
         };
@@ -250,7 +250,7 @@ apf.textbox.masking = function(){
                 visual += chr;
         }
 
-        this.$int.value = visual;
+        this.$ext.value = visual;
         initial         = visual;
         //pos = pos;
         myvalue = [];
@@ -312,7 +312,7 @@ apf.textbox.masking = function(){
     }
     
     function setCharacter(chr){
-        if (pos[lastPos] == null) return false;
+        if (pos.length && pos[lastPos] == null) return false;
         
         chr = checkChar(chr, lastPos);
         if (chr == _FALSE_) return false;
