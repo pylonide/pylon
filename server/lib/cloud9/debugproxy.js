@@ -34,7 +34,7 @@ sys.inherits(DebugProxy, process.EventEmitter);
 
     this.connect = function() {
         if (!this.connected)
-            return this.stream.connect(this.port, "localhost");
+            return this.stream.connect(this.port, "127.0.0.1");
     };
 
     this.send = function(msgJson) {

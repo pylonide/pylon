@@ -4816,8 +4816,8 @@
         }
 
         .editor_tab .btnsesssioncontainer{
-            padding : 5px 0 0 0;
-            position : absolute;
+            padding : 5px 20px 0 0;
+            /*position : absolute;*/
             z-index : 100;
             height: 25px;
             overflow: visible;
@@ -4833,7 +4833,7 @@
             -webkit-border-top-right-radius: 4px;
             -webkit-border-top-left-radius: 4px;
             margin-top : -31px;
-            width : 100%;
+            width : auto;
         }
 
         .editor_tab .btnsesssioncontainer>div {
@@ -5065,7 +5065,7 @@
           caption   = "div[1]/div[2]/text()"
           container = "div"
           icon      = "div[1]/div"
-          maxwidth  = "80"
+          maxwidth  = "150"
           minwidth  = "0">
             <div class="session_btn">
                 <div class="tab_middle">
@@ -5096,6 +5096,7 @@
            padding : 27px 0 1px 0;
            position : relative;
            z-index : 100;
+           overflow : hidden;
         }
 
         .demos_tab .demobtn{
@@ -12381,6 +12382,7 @@
             font-family: Tahoma;
             font-size: 8pt;
             padding: 0 0 28px 0;
+            overflow : hidden;
         }
 
         .lowtab .btncontainer{
@@ -12931,6 +12933,57 @@
         }
 
         .textFocus{
+        }
+        
+        .apf_console{
+            border : 1px solid #c3c3c3;
+            border-width : 0 1px 0 0;
+            font-size : 9px;
+            /*font-size : 11px;
+            font-family : Monaco,"Courier New",monospace;*/
+        }
+        
+        .apf_console .item{
+            min-height : 13px;
+            padding : 2px 2px 2px 2px;
+            line-height : 13px;
+            border-bottom : 1px solid #EEE;
+            word-wrap : break-word;
+        }
+        
+        .apf_console .console_time{
+            background : url(resources/time.png) no-repeat 2px 2px;
+        }
+        
+        .apf_console .console_log{
+            color : black;
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+        }
+        
+        .apf_console .console_custom{
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+        }
+        
+        .apf_console .console_warn{
+            background : url(resources/error.png) no-repeat 2px 2px;
+            color      : green;
+        }
+        
+        .apf_console .console_error{
+            background : url(resources/exclamation.png) no-repeat 2px 2px;
+            color      : red;
+        }
+        
+        .apf_console .console_repeat{
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+            color      : #AAA;
+        }
+        
+        .apf_console .item a{
+            text-decoration : none;
+        }
+        .apf_console .item a:hover{
+            text-decoration : underline;
         }
     ]]></a:style>
 

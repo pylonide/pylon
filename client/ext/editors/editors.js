@@ -81,7 +81,7 @@ return ext.register("ext/editors/editors", {
                     id      : "tabEditors",
                     skin    : "editor_tab",
                     flex    : 1,
-                    buttons : "close", //scale
+                    buttons : "close,scale",
                     onfocus : function(e){
                         _self.switchfocus(e);
                     },
@@ -292,7 +292,7 @@ return ext.register("ext/editors/editors", {
         });
 
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
-        this.hbox     = vbox.appendChild(new apf.hbox({flex : 1}));
+        this.hbox     = vbox.appendChild(new apf.hbox({flex : 1, padding : 5}));
         this.splitter = vbox.appendChild(new apf.splitter());
         this.nodes.push(this.addTabSection());
 
