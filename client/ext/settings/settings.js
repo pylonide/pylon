@@ -10,12 +10,14 @@ require.def("ext/settings/settings",
     function(ide, ext, util, fs, markup, template) {
 
 return ext.register("ext/settings/settings", {
-    name   : "Settings",
-    dev    : "Ajax.org",
-    alone  : true,
-    type   : ext.GENERAL,
-    markup : markup,
-    file   : "/workspace/.settings.xml",
+    name    : "Settings",
+    dev     : "Ajax.org",
+    alone   : true,
+    type    : ext.GENERAL,
+    markup  : markup,
+    file    : "/workspace/.settings.xml",
+    hotkeys : {"settings":1},
+    hotitems: {},
 
     nodes : [],
 
@@ -24,7 +26,27 @@ return ext.register("ext/settings/settings", {
         fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
     },
 
-    addSection : function(name, xpath){
+    doSave: function() {
+        var pages   = pgSettings.getPages(),
+            i       = 0,
+            l       = pages.length,
+            changed = false;
+        for (; i < l; ++i) {
+            if (!pages[i].$at) continue;
+            if (pages[i].$at.undolength > 0) {
+                pages[i].$commit(pages[i]);
+                changed = true;
+            }
+        }
+        if (changed) {
+            if (ide.dispatchEvent("savesettings", {
+                model : this.model
+            }) === true)
+                this.save();
+        }
+    },
+
+    addSection : function(name, xpath, cbCommit){
         var id = "pgSettings" + name.replace(/ /g, "_"),
             page = pgSettings.getPage(id);
         if (page)
@@ -32,7 +54,8 @@ return ext.register("ext/settings/settings", {
         if (!this.model.data.selectSingleNode(xpath + "/section[@page='" + id + "']"))
             this.model.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
         page = pgSettings.add(name, id);
-        // @todo set actiontracker
+        page.$at = new apf.actiontracker();
+        page.$commit = cbCommit || apf.K;
         return page;
     },
 
@@ -47,6 +70,7 @@ return ext.register("ext/settings/settings", {
                 }
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
+        this.hotitems["settings"] = this.nodes[0];
 
         this.model = new apf.model();
         /*fs.readFile(_self.file, function(data, state, extra){
@@ -82,7 +106,32 @@ return ext.register("ext/settings/settings", {
     },
 
     init : function(amlNode){
+        this.btnOK = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[1]");
+        this.btnOK.onclick = this.saveSettings.bind(this);
+        this.btnCancel = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[2]");
+        this.btnCancel.onclick = this.cancelSettings;
+        this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
+        this.btnApply.onclick = this.applySettings.bind(this);
+    },
 
+    saveSettings: function() {
+        winSettings.hide();
+        this.doSave();
+    },
+
+    applySettings: function() {
+        this.doSave();
+    },
+
+    cancelSettings: function() {
+        winSettings.hide();
+        var pages = pgSettings.getPages(),
+            i     = 0,
+            l     = pages.length;
+        for (; i < l; ++i) {
+            if (!pages[i].$at) continue;
+            pages[i].$at.undo(-1);
+        }
     },
 
     enable : function(){
