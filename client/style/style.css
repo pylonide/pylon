@@ -4,7 +4,7 @@ HTML {
 
 BODY {
     background-color : #fefefe;
-    font-family      : Trebuchet MS;
+    font-family      : "Trebuchet MS";
     color            : #222222;
     margin           : 0;
     padding          : 0 ;
@@ -40,3 +40,44 @@ BODY {
 }
 
 /*-- home page style --*/
+.hp_header {
+    background: url(images/hp_header_bg.png) repeat-x 0 0;
+    height: 280px;
+}
+.hp_header_content {
+    background: url(images/hp_header_content_bg.png) repeat-x 0 0;
+    margin: 0 auto;
+    width: 1074px;
+    display: block;
+    text-indent: -800em;
+    display: block;
+    height: 280px;
+}
+#hp_logo {
+    
+}
+.hp_body {
+    background: url(images/hp_body_bg.png) repeat-x 0 0;
+    
+}
+.hp_body h2 {
+    color: #063658;
+    font-family: "Trebuchet MS";
+    font-size: 22px;
+    border-bottom: 3px solid #dddddd;
+    padding-bottom: 10px;
+    margin: 10px 0;
+}
+.hp_body h3 {
+    color: #4a9c2e;
+    font-family: Arial;
+    font-size: 13px;
+    margin: 0 0 7px;
+}
+.hp_body p {
+    margin: 10px 0;
+    font-family: Arial;
+    color: #222222;
+    font-size: 13px;
+}
+/*---------------------*/

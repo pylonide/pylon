@@ -4696,7 +4696,6 @@
 
         .ace_line {
           white-space: nowrap;
-          margin-left: 10px;
         }
 
         .ace_marker-layer {

@@ -32,7 +32,7 @@ return ext.register("ext/gotoline/gotoline", {
             }))
         );
 
-        this.hotitems["gotoline"] = this.nodes[1];
+        this.hotitems["gotoline"] = [this.nodes[1]];
 
         var _self = this;
 
@@ -48,9 +48,7 @@ return ext.register("ext/gotoline/gotoline", {
         this.btnGo.onclick = this.gotoLine.bind(this);
 
         plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.$editor = editor;
-            _self.$selection = selection;
-            _self.toggleDialog();
+            _self.setEditor(editor, selection).toggleDialog();
         });
     },
 
@@ -62,9 +60,15 @@ return ext.register("ext/gotoline/gotoline", {
         return false;
     },
 
+    setEditor: function(editor, selection) {
+        this.$editor = editor || ceEditor.$editor;
+        this.$selection = selection || this.$editor.getSelection();
+        return this;
+    },
+
     gotoLine: function() {
-        if (!this.editor)
-            return;
+        if (!this.$editor)
+            this.setEditor();
         this.$editor.gotoLine(parseInt(this.txtLinenr.getValue()) || 0);
     },
     

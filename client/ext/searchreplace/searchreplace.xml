@@ -19,7 +19,7 @@
                 <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
             </a:table>
             <a:divider />
-            <a:hbox padding="5">
+            <a:hbox padding="5" pack="end">
                 <a:button>Replace</a:button>
                 <a:button>Replace All</a:button>
                 <a:button>Close</a:button>
