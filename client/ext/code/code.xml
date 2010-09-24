@@ -22,7 +22,7 @@
           value  = "[data]"
           syntax = "{getSyntax([@contenttype])}"
           contextmenu    = "mnuCtxEditor"
-          showinvisibles = "false"
+          showinvisibles = "[{require('ext/settings/settings').model}::section[@name='Editor']/section[@name='Code Editor']/@showinvisibles]"
           debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
           readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
         />
