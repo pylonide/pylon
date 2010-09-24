@@ -1,8 +1,8 @@
 if (apf.hasRequireJS) require.def("apf/elements/dbg/v8websocketdebughost",
-    ["debug/WebSocketV8DebuggerService",
+    ["debug/WSV8DebuggerService",
      "debug/V8Debugger",
      "apf/elements/dbg/v8debugger"],
-    function(WebSocketV8DebuggerService, V8Debugger, APFV8Debugger) {
+    function(WSV8DebuggerService, V8Debugger, APFV8Debugger) {
 
 var V8WebSocketDebugHost = function(socket) {
     this.$socket = socket;
@@ -29,7 +29,7 @@ var V8WebSocketDebugHost = function(socket) {
 
         this.state = "connecting";
         
-        this.$v8ds = new WebSocketV8DebuggerService(this.$socket);
+        this.$v8ds = new WSV8DebuggerService(this.$socket);
         
         this.state = "connected";
         this.dispatchEvent("connect");

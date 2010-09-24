@@ -65,11 +65,16 @@ apf.debughost = function(struct, tagName){
                 this.$host = new ChromeDebugHost(this.server, this.port, apf.debughost.$o3obj);
             } else if (this.type == "v8") {
                 this.$host = new V8DebugHost(this.server, this.port, apf.debughost.$o3obj);
-            } else {
+            } else if (this.type == "v8-ws") {
                 var socket = this.dispatchEvent("socketfind");
                 if (!socket)
                     throw new Error("no socket found!")
                 this.$host = new V8WebSocketDebugHost(socket);
+            } else if (this.type == "chrome-ws") {
+                var socket = this.dispatchEvent("socketfind");
+                if (!socket)
+                    throw new Error("no socket found!")
+                this.$host = new ChromeDebugHost(null, null, null, socket);
             }
                 
             var self = this;

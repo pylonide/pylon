@@ -1,15 +1,17 @@
 if (apf.hasRequireJS) require.def("apf/elements/dbg/chromedebughost",
     ["debug/ChromeDebugMessageStream", 
+     "debug/WSChromeDebugMessageStream", 
      "debug/DevToolsService", 
      "debug/V8DebuggerService",
      "debug/V8Debugger",
      "apf/elements/dbg/v8debugger"],
-    function(ChromeDebugMessageStream, DevToolsService, V8DebuggerService, V8Debugger, APFV8Debugger) {
+    function(ChromeDebugMessageStream, WSChromeDebugMessageStream, DevToolsService, V8DebuggerService, V8Debugger, APFV8Debugger) {
 
-var ChromeDebugHost = function(hostname, port, o3obj) {
+var ChromeDebugHost = function(hostname, port, o3obj, ws) {
     this.$hostname = hostname;
     this.$port = port;
     this.$o3obj = o3obj;
+    this.$ws = ws;
 
     this.$debuggers = {};
     
@@ -35,8 +37,12 @@ var ChromeDebugHost = function(hostname, port, o3obj) {
 
         this.state = "connecting";
 
-        var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
-        var msgStream = new ChromeDebugMessageStream(socket);
+        if (!this.$ws) {
+            var socket = this.$socket = new O3Socket(this.$hostname, this.$port, this.$o3obj);
+            var msgStream = new ChromeDebugMessageStream(socket);
+        } else {
+            var msgStream = new WSChromeDebugMessageStream(this.$ws);            
+        }
 
         msgStream.addEventListener("connect", function() {
             self.$dts = new DevToolsService(msgStream);
