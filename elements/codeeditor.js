@@ -259,6 +259,10 @@ apf.codeeditor = function(struct, tagName) {
 
         var _self = this;
         require([syntax], function(ModeClass) {
+            // #ifdef __DEBUG
+            if (typeof ModeClass != "function")
+                return apf.console.error("Unkown sytax type: '" + syntax + "'");
+            // #endif
             _self.$modes[syntax] = new ModeClass();
             callback(_self.$modes[syntax]);
         });
