@@ -9,7 +9,7 @@
                         <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
                             onclick="pgDocs.set(0)" />
                         <!--a:button icon="arrow_right.png" skin="toolbarbutton" /-->
-                        <a:textbox id="tbDocsSearch" realtime="true" initial-message="Search for keywords" flex="1" 
+                        <a:textbox id="tbDocsSearch" skin="searchbox_textbox" realtime="true" initial-message="Search for keywords" flex="1"
                             onkeydown="if (event.keyCode == 13) pgDocs.set(0)"/>
                     </a:hbox>
                 </a:bar>
