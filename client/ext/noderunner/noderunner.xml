@@ -27,11 +27,11 @@
 
 	<a:toolbar id="tbNoderunner">
 	    <a:divider />
-       	<a:button
+       	<!--a:button
        	  icon="chromium_16.png"
        	  caption="Debug Chrome"
        	  onclick="require('ext/noderunner/noderunner').debugChrome()"
-       	  disabled="{stConnected.active}" />
+       	  disabled="{stConnected.active}" /-->
 		<a:button
 		  icon="debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
 		  caption="debug"
