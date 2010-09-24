@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="300" height="200">
+    <a:window title="Search &amp; Replace" buttons="close" id="winSearchReplace" modal="false" center="true" width="350">
         <a:vbox edge="10" padding="4 0 4 0">
             <a:hbox>
                 <a:label width="70">Search</a:label>
@@ -19,7 +19,7 @@
                 <a:checkbox id="chkSearchBackwards" label="Search Backwards" />
             </a:table>
             <a:divider />
-            <a:hbox>
+            <a:hbox padding="5">
                 <a:button>Replace</a:button>
                 <a:button>Replace All</a:button>
                 <a:button>Close</a:button>
