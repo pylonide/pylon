@@ -3,6 +3,7 @@
         <a:datagrid
           id         = "dgStack"
           anchors    = "0 0 0 0" 
+          border     = "0"
           options    = "size|move"
           caching    = "false"
           prerender  = "false"
@@ -11,7 +12,7 @@
           selected   = "{dbg.activeframe}">
        	    <a:actions />
        	    <a:each match="[frame]">
-                <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
+                <a:column caption="Function" value="[@name]" width="100%" icon="debugger/stckframe_obj.gif" />
                 <a:column caption="Script" value="[@script]" width="50" />
                 <a:column caption="Ln" value="[@line]" width="25"/>
                 <a:column caption="Col" value="[@column]" width="25"/>
@@ -22,6 +23,7 @@
     <a:window id="winDbgVariables" skin="dockwin" title="Variables" modal="false" flex="1" buttons="close">
 		<a:datagrid id="dgVars"
           anchors    = "0 0 0 0" 
+          border     = "0"
           options    = "size|move"
           prerender  = "false"
           caching    = "false"
@@ -32,7 +34,7 @@
             <a:each match="[item|globals]" sort="[@name]">
               	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
                 <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
-                <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon2="debugger/genericvariable_obj.gif" tree="true" />
+                <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                 <a:column caption="Value" value="[@value]" width="60%" />
                 <a:column caption="Type" value="[@type]" width="50"/>
             </a:each>

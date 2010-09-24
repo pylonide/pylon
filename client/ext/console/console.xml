@@ -1,8 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgConsole" skin="dockwin" title="Debug" modal="false" height="200" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">
-            <a:toolbar id="tbDebug" height="26">
-                <a:bar border="0">
+            <a:toolbar id="tbDebug">
+                <a:bar>
         	        <a:button tooltip="Resume"
         	          icon="debugger/resume_co{this.disabled ? '_disabled' : ''}.gif"
         	          onclick="dbg.continueScript();"
@@ -35,8 +35,8 @@
         	       	  onclick  = "txtConsole.clear()">Clear Log</a:button>
         	       	
               	    <a:dropdown id="lstScripts"
-              	      right      = "1"
-              	      top        = "1"
+              	      right      = "2"
+              	      top        = "2"
         		      model      = "mdlDbgSources"
         		      each       = "[file]"
         		      caption    = "[@text]"
@@ -45,24 +45,29 @@
             	</a:bar>
             </a:toolbar>
             
-            <a:tab id="tabConsole" skin="lowtab" flex="1">
+            <a:tab id="tabConsole" skin="lowtab" flex="1" border="0">
                 <a:page caption="Console">
-                    <a:hbox anchors="0 0 0 0" padding="5">
+                    <a:hbox anchors="0 0 0 0" padding="4">
                         <a:text id="txtConsole"
-                          flex       = "4"
+                          flex       = "5"
                           scrolldown = "true" 
                           focussable = "true"
                           class      = "apf_console" />
-                        <a:splitter />
+                        <!--a:splitter /-->
                         <a:textarea id="txtCode" 
                           flex      = "1"
                           onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
                           realtime  = "true"
-                          border    = "1 0 0 1" 
+                          border    = "0 0 0 1" 
                           disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
                           model     = "{require('ext/settings/settings').model}" 
                           value     = "[auto/console/input]" />
                     </a:hbox>
+                    <a:button width="80" right="8" bottom="8"
+                      disabled = "{!txtCode.value.trim()}"
+                      onclick = "
+                        require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
+                      ">Evaluate</a:button>
                 </a:page>
                 <a:page caption="Quick Watch" render="runtime">
                     <a:vbox anchors="0 0 0 0">
@@ -109,7 +114,7 @@
                             <a:each match="[item|globals]" sort="[@name]">
                                 <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
                                 <a:expanded match="[node()[@expand]]" />
-                                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon2="debugger/genericvariable_obj.gif" tree="true" />
+                                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon="debugger/genericvariable_obj.gif" tree="true" />
                                 <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
                                 <a:column caption="Type" value="[@type]" width="80"/>
                             </a:each>

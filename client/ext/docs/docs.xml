@@ -5,11 +5,11 @@
         <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar>
-                    <a:hbox edge="2" padding="3">
+                    <a:hbox edge="0" padding="3">
                         <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
                             onclick="pgDocs.set(0)" />
                         <!--a:button icon="arrow_right.png" skin="toolbarbutton" /-->
-                        <a:textbox id="tbDocsSearch" skin="searchbox_textbox" realtime="true" initial-message="Search for keywords" flex="1"
+                        <a:textbox id="tbDocsSearch" margin="4" skin="searchbox_textbox" realtime="true" initial-message="Search for keywords" flex="1"
                             onkeydown="if (event.keyCode == 13) pgDocs.set(0)"/>
                     </a:hbox>
                 </a:bar>

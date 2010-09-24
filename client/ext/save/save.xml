@@ -23,7 +23,6 @@
     </a:window>
     
     <a:bar id="barSave" visible="false">
-        <a:divider />
         <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disbled' : ''}.png">Save file</a:button>
     </a:bar>
 </a:application>

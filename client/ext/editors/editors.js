@@ -98,7 +98,7 @@ return ext.register("ext/editors/editors", {
                     id : "barButtons",
                     edge: "0 0 0 6",
                     padding: "-1",
-                    margin: "-1 0 0 0"
+                    margin: "-2 0 0 0"
                 })
             ]
         }));
