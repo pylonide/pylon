@@ -69,10 +69,15 @@ apf.codeeditor = function(struct, tagName) {
     this.tabsize           = 4;
     this.softtabs          = true;
     this.value             = "";
-    this.overwrite         = false;
+    this.selectstyle       = "line";
     this.multiline         = true;
+    this.activeline        = true;
     this.caching           = true;
+    this.readonly          = false;
     this.showinvisibles    = true;
+    this.showprintmargin   = false;
+    this.overwrite         = false;
+    this.softtabs          = false;
 
     this.$booleanProperties["activeline"]       = true;
     this.$booleanProperties["caching"]          = true;
@@ -89,7 +94,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string")
-            key = this.xmlRoot
+            var key = this.xmlRoot
                 ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
                 : value;
         else
@@ -112,10 +117,11 @@ apf.codeeditor = function(struct, tagName) {
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
-        var doc, key;
-        if (this.caching) {
-            var key = this.$getCacheKey(value);
-        }
+        var doc, key,
+            _self = this;
+
+        if (this.caching)
+            key = this.$getCacheKey(value);
         //Assuming document
         else if (value instanceof Document){
             doc = value;
@@ -136,7 +142,6 @@ apf.codeeditor = function(struct, tagName) {
                     ? value.nodeValue
                     : value.firstChild && value.firstChild.nodeValue || ""));
 
-            var _self = this;
             doc.setUndoManager(new UndoManager());
 
             if (key)
@@ -149,7 +154,6 @@ apf.codeeditor = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        var _self = this;
         apf.queue.add("ce" + _self.$uniqueId, function() {
             _self.$getMode(_self.syntax, function(mode) {
                 doc.setMode(mode);
@@ -204,14 +208,14 @@ apf.codeeditor = function(struct, tagName) {
 
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
-        range = new Range(row, 0, row+1, 0);
+        var range = new Range(row, 0, row+1, 0);
         this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
 
         this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
     };
 
     this.$updateBreakpoints = function(doc) {
-        var doc = doc || this.$editor.getDocument();
+        doc = doc || this.$editor.getDocument();
 
         doc.setBreakpoints([]);
         if (!this.$breakpoints)
@@ -247,7 +251,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$modes = {};
 
     this.$getMode = function(syntax, callback) {
-        var syntax = syntax || "Text";
+        syntax = syntax || "Text";
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
         if (this.$modes[syntax])
