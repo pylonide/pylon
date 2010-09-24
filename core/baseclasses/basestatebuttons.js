@@ -149,6 +149,9 @@ apf.BaseStateButtons = function(){
             return;
         }
 
+        if (value == 0)
+            value = "normal";
+
         var i, pNode, position, l, t,
             o          = {},
             s          = value.split("|"),
