@@ -160,6 +160,10 @@ return ext.register("ext/debugger/debugger", {
         });
         this.rightPane.setProperty("visible", true);
         log.enable(true);
+        
+        //Quick Fix
+        if (apf.isGecko)
+            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     disable : function(){
@@ -169,6 +173,10 @@ return ext.register("ext/debugger/debugger", {
         });
         this.rightPane.setProperty("visible", false);
         log.disable(true);
+        
+        //Quick Fix
+        if (apf.isGecko)
+            apf.layout.forceResize(ide.vbMain.$ext);
     },
 
     destroy : function(){
