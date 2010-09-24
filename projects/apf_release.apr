@@ -5,7 +5,7 @@
       verbose  = "2"
       version  = "3.0.{buildnr}.Beta"
       name     = "apf_{version.replace(/\./g, '_')}"
-      cwd      = "{__dirname}/build"
+      cwd      = "{__dirname}/.."
       tmp      = "/tmp"
       platform = "/var/lib/platform"
       release  = "~">
@@ -16,13 +16,13 @@
           type     = "script"
           defines  = "1"
           group    = "apf"
-          out      = "{cwd}/apf_release.js"
+          out      = "{cwd}/build/apf_release.js"
           filehead = "1" />
 
         <p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/www/js/apf_release.js"
-          out      = "{cwd}/www/js/apf_release.js" />
+          in       = "{cwd}/build/apf_release.js"
+          out      = "{cwd}/build/apf_release.js" />
     </p:process>
     
     <p:files>
