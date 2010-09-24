@@ -3,16 +3,16 @@
 	url = http://github.com/LearnBoost/Socket.IO-node.git
 [submodule "common/ace"]
 	path = common/ace
-	url = git@github.com:ajaxorg/editor.git
+	url = http://github.com/ajaxorg/editor.git
 [submodule "common/connect"]
 	path = common/connect
-	url = git://github.com/senchalabs/connect.git
+	url = http://github.com/senchalabs/connect.git
 [submodule "common/async"]
 	path = common/async
-	url = git@github.com:ajaxorg/async.js.git
+	url = http://github.com/ajaxorg/async.js.git
 [submodule "common/jsdav"]
 	path = common/jsdav
-	url = git@github.com:ajaxorg/jsDAV.git
+	url = http://github.com/ajaxorg/jsDAV.git
 [submodule "common/nodebuilds"]
 	path = common/nodebuilds
-	url = git://github.com/ajaxorg/nodebuilds.git
+	url = http://github.com/ajaxorg/nodebuilds.git

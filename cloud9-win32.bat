@@ -2,17 +2,19 @@
 
 IF EXIST common\ace\LICENSE goto skip
 
-echo ----- Please wait, initializing submodules for first launch -----
+echo --- Initializing submodules for first launch, this can take a few minutes ---
 
-git submodule update --init --recursive
+cmd /c git submodule update --init --recursive
 
-IF %ERRORLEVEL% NEQ 0 goto error
+IF %ERRORLEVEL% NEQ 0 goto exit
 
 echo ------ Submodules installed ----
 
 :skip
-PATH=%PATH%:common\nodebuilds\win32\node;
-common\nodebuilds\win32\node bin/cloud9.js -a"cmd /c start"
+echo ------ Starting Cloud9 server ------
+
+start common\nodebuilds\win32\node bin/cloud9.js -a"cmd /c start"
+
 IF %ERRORLEVEL% EQ 0 goto exit
 
 :error
