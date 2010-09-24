@@ -946,6 +946,14 @@ apf.MultiselectBinding = function(){
         }
         //#endif
 
+        if (this.$isTreeArch && depth === null && action == "insert") {
+            depth = 0, loopNode = xmlNode;
+            while(loopNode && loopNode != this.xmlRoot) {
+                depth++;
+                loopNode = this.getTraverseParent(loopNode);
+            }
+        }
+
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) {
                 //#ifdef __WITH_MARKUPEDIT
