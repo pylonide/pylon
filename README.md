@@ -2,8 +2,8 @@
 
 The Cloud9 IDE is an open source project developed by the skilled developers Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
 
-This Integrated Development Environment aim to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
-As its main focus is on Javascript development, it is able to set a new standard for client and server development integration.
+This Integrated Development Environment aims to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
+Cloud9's main focus is on Javascript development, it is able to set a new standard for client and server development integration.
 
 And if you find that functionality is missing? Just write a plugin and patch it yourself!
 
@@ -13,6 +13,7 @@ Written in Javascript, for Javascripters.
 
   * High performance text editor with bundled syntax highlighting support for JS, HTML, CSS and mixed modes.
   * Integrated debugger for [Node.JS] applications which can started, paused and stopped from within the IDE
+  * Integrated debugger for the Google Chrome browser which can started, paused and stopped from within the IDE
   * Local filesystem is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
   * Highly extensible through the plugin system
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo

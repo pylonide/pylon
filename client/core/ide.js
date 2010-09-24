@@ -14,12 +14,12 @@ require.def("core/ide",
             //Set references to global elements - aka extension points
             this.tbMain       = tbMain;
             this.mnuFile      = mnuFile;
+            this.mnuEdit      = mnuEdit;
             this.barMenu      = barMenu;
             this.barTools     = barTools;
             this.mnuEditors   = mnuEditors;
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
-            this.ddModes      = ddModes;
 
             this.dispatchEvent("load");
 

@@ -6,6 +6,8 @@
         else if (event.value == 'toolbar')
             barTools.setProperty('visible', event.checked);
       ">
+        <a:item submenu="mnuModes">Layout</a:item>
+        <a:divider />
         <a:item type="check" value='status' checked="true">Statusbar</a:item>
         <a:item type="check" value='toolbar' checked="true">Toolbar</a:item>
         <a:divider />

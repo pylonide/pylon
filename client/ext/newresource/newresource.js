@@ -23,10 +23,10 @@ return ext.register("ext/newresource/newresource", {
     init : function(amlNode){
         var _self = this;
 
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(tbNewResource);
+        //ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(tbNewResource);
 
-        btnNewFile.onclick   = this.newfile;
-        btnNewFolder.onclick = this.newfolder;
+        //btnNewFile.onclick   = this.newfile;
+        //btnNewFolder.onclick = this.newfolder;
 
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({

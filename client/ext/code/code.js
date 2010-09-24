@@ -37,7 +37,9 @@ return ext.register("ext/code/code", {
     init : function(amlPage){
         amlPage.appendChild(barEditor);
         barEditor.show();
-
+        
+        this.ceEditor = ceEditor;
+        
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
