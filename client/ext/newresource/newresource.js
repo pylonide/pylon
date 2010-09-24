@@ -10,12 +10,12 @@ require.def("ext/newresource/newresource",
 
 return ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
-    name    : "Save",
+    name    : "Newresource",
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],
-    hotkeys : {"newfile":1, "newdir":1},
+    hotkeys : {"newfile":1, "newfolder":1},
     hotitems: {},
 
     nodes   : [],
@@ -40,7 +40,7 @@ return ext.register("ext/newresource/newresource", {
             }), ide.mnuFile.firstChild)
         );
 
-        this.hotitems["newdir"]  = [this.nodes[0]];
+        this.hotitems["newfolder"] = [this.nodes[0]];
         this.hotitems["newfile"] = [this.nodes[1]];
     },
 

@@ -56,7 +56,13 @@ return ext.register("ext/keybindings/keybindings", {
                         item.setAttribute("hotkey", bindings[hotkey]);
                     }
                 }
-                apf.hotkeys.register(bindings[hotkey], oExt[hotkey]);
+                if (typeof oExt[hotkey] != "function") {
+                    apf.console.error("Please implement the '" + hotkey 
+                        + "' function on plugin '" + oExt.name + "' for the keybindings to work");
+                }
+                else {
+                    apf.hotkeys.register(bindings[hotkey], oExt[hotkey].bind(oExt));
+                }
             }
         }
 

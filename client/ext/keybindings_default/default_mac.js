@@ -2,7 +2,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("conf/keybindings/default_mac", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
+require.def("ext/keybindings_default/default_mac", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
 
 return keys.onLoad({
     "ext" : {
@@ -12,7 +12,7 @@ return keys.onLoad({
         },
         "newresource": {
             "newfile": "Command-N",
-            "newdir": "Command-Shift-N"
+            "newfolder": "Command-Shift-N"
         },
         "undo" : {
             "undo": "Command-Z",
@@ -23,6 +23,10 @@ return keys.onLoad({
             "copy": "Command-C",
             "paste": "Command-V"
         },
+        "searchreplace" : {
+            "search": "Command-F",
+            "searchreplace": "Command-R"
+        },
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
@@ -31,6 +35,7 @@ return keys.onLoad({
             "findnext": "Command-K",
             "findprevious": "Command-Shift-K",
             "find": "Command-F",
+            "replace": "Command-R",
             "undo": "Command-Z",
             "redo": "Command-Shift-Z|Command-Y",
             "overwrite": "Insert",

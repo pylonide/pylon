@@ -18,34 +18,45 @@ return ext.register("ext/searchreplace/searchreplace", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"searchreplace":1},
+    hotkeys : {"search":1, "searchreplace":1},
     hotitems: {},
     
     nodes   : [],
     
     init : function(amlNode){
+        var _self = this;
+
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
+                caption : "Search",
+                onclick : function() {
+                    _self.toggleDialog(false);
+                }
+            })),
+            mnuEdit.appendChild(new apf.item({
                 caption : "Search & Replace",
-                onclick : this.toggleDialog.bind(this)
+                onclick : function() {
+                    _self.toggleDialog(true);
+                }
             }))
         );
 
-        this.hotitems["searchreplace"] = this.nodes[1];
+        this.hotitems["search"] = [this.nodes[1]];
+        this.hotitems["searchreplace"] = [this.nodes[2]];
 
-        var _self = this;
-
-        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
+        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtFind.addEventListener("keydown", function(e) {
             if (e.keyCode == 13)
                 _self.findNext();
         });
-        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
+        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace.addEventListener("keydown", function(e) {
             if (e.keyCode == 13)
                 _self.replace();
         });
+        //bars
+        this.barReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
         this.btnReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnReplace.onclick = this.replace.bind(this);
@@ -57,18 +68,42 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.btnFind.onclick = this.findNext.bind(this);
 
         plugins.registerCommand("find", function(editor, selection) {
-            _self.$editor = editor;
-            _self.$selection = selection;
-            _self.toggleDialog();
+            _self.setEditor(editor, selection).toggleDialog(false);
+        });
+        plugins.registerCommand("replace", function(editor, selection) {
+            _self.setEditor(editor, selection).toggleDialog(true);
         });
     },
 
-    toggleDialog: function() {
+    toggleDialog: function(isReplace) {
+        this.setupDialog(isReplace);
         if (!winSearchReplace.visible)
             winSearchReplace.show();
         else
             winSearchReplace.hide();
         return false;
+    },
+
+    search: function() {
+        return this.setEditor().toggleDialog(false);
+    },
+
+    searchreplace: function() {
+        return this.setEditor().toggleDialog(true);
+    },
+
+    setupDialog: function(isReplace) {
+        // hide all 'replace' features
+        this.barReplace.setProperty("visible", isReplace);
+        this.btnReplace.setProperty("visible", isReplace);
+        this.btnReplaceAll.setProperty("visible", isReplace);
+        return this;
+    },
+
+    setEditor: function(editor, selection) {
+        this.$editor = editor || ceEditor.$editor;
+        this.$selection = selection || this.$editor.getSelection();
+        return this;
     },
 
     getOptions: function() {
@@ -84,7 +119,7 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     findNext: function() {
         if (!this.$editor)
-            return;
+            this.setEditor();
         var txt = this.txtFind.getValue();
         if (!txt)
             return;
@@ -110,7 +145,7 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     replace: function() {
         if (!this.$editor)
-            return;
+            this.setEditor();
         var options = this.getOptions();
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         this.$editor.find(this.$crtSearch, options);
@@ -118,7 +153,7 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     replaceAll: function() {
         if (!this.editor)
-            return;
+            this.setEditor();
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);

@@ -2,7 +2,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("conf/keybindings/default_win", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
+require.def("ext/keybindings_default/default_win", ["core/ide", "ext/keybindings/keybindings"], function(ide, keys) {
 
 return keys.onLoad({
     "ext" : {
@@ -21,7 +21,11 @@ return keys.onLoad({
         },
         "newresource": {
             "newfile": "Ctrl-N",
-            "newdir": "Ctrl-Shift-N"
+            "newfolder": "Ctrl-Shift-N"
+        },
+        "searchreplace" : {
+            "search": "Ctrl-F",
+            "searchreplace": "Ctrl-R"
         },
         "code" : {
             "selectall": "Ctrl-A",
@@ -31,6 +35,7 @@ return keys.onLoad({
             "findnext": "Ctrl-K",
             "findprevious": "Ctrl-Shift-K",
             "find": "Ctrl-F",
+            "replace": "Ctrl-R",
             "undo": "Ctrl-Z",
             "redo": "Ctrl-Shift=Z|Ctrl-Y",
             "overwrite": "Insert",

@@ -25,11 +25,11 @@
                 : "js/apf_" + VERSION + ".js";
 
             var config = {
-      			paths: {
-				    "ace": "common/ace/src/ace",
-				    "debug": "common/ace/src/debug",
+                paths: {
+                    "ace": "common/ace/src/ace",
+                    "debug": "common/ace/src/debug",
                     "apf": "common/apf"
-				}
+                }
             }
             require(config, [apfLoc], function(){
                 /*apf.onstart = function(){
@@ -69,6 +69,7 @@
                             "ext/clipboard/clipboard",
                             "ext/refactor/refactor",
                             "ext/searchreplace/searchreplace",
+                            "ext/gotoline/gotoline",
                             "ext/html/html",
                             "ext/browser/browser",
                             "ext/code/code",
