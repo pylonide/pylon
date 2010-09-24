@@ -172,13 +172,25 @@ apf.vbox = function(struct, tagName){
             var stretch = !value || value == "stretch";
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
+            
+            if (apf.isGecko) {
+                var isInFixed = false;
+                var node = this.parentNode;
+                while(node) {
+                    if (node.flex && node.$vbox != this.$vbox || node[size]) {
+                        isInFixed = true;
+                        break;
+                    }
+                    node = node.parentNode;
+                }
+            }
+            
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
                     continue;
 
-                //node.$ext.style.overflow = stretch && !this[size]? "visible" : "";
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko ? "1px" : "auto"; // && (this.flex && node.flex)
+                    node.$ext.style[size] = apf.isGecko && isInFixed ? "1px" : "auto"; // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
