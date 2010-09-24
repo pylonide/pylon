@@ -4388,7 +4388,6 @@
         .tb_textbox {
             position : relative;
             height   : 25px;
-            padding  : 0 4px;
         }
 
         .tb_textbox .sbtb_middle {
@@ -4396,8 +4395,8 @@
             padding          : 2px 5px;
 
 
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
-            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
             border: 1px solid #afafaf;
             margin: 0;
@@ -4424,6 +4423,16 @@
         .tb_textboxInitial .sbtb_middle INPUT {
             color : #777777;
         }
+        
+        .tb_textboxDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+        
+        .tb_textboxDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4442,7 +4451,6 @@
         .searchbox_textbox {
             position : relative;
             height   : 25px;
-            padding  : 0 4px;
         }
 
         .searchbox_textbox .sbtb_middle {
@@ -4450,8 +4458,8 @@
             padding          : 2px 25px 2px 25px;
 
 
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
-            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
             border: 1px solid #afafaf;
             margin: 0;
@@ -4615,7 +4623,7 @@
           position: absolute;
           overflow-x: scroll;
           overflow-y: hidden;
-          background-color: #fafbfc;
+          background-color: #fbfbfb;
           -webkit-border-top-left-radius: 6px;
           -moz-border-radius-topleft: 6px;
           border-top-left-radius: 6px;
@@ -4722,7 +4730,7 @@
 
         .ce .ace_gutter {
           width: 60px;
-          background: #ebebeb;
+          background: #e8e8e8;
           color: #333;
           font-family: Monaco, "Courier New";
           font-size: 12px;
@@ -4853,7 +4861,6 @@
         }
 
         .taFocus{
-            border-color : #327fbd;
         }
 
         .taDisabled{
@@ -4884,8 +4891,8 @@
             margin : 0 auto;
             overflow: hidden;
             position:relative;
-            padding-top: 31px;
-            border-bottom: 1px solid #8C8C8C;
+            padding-top: 32px;
+            border-bottom: 1px solid white;
         }
 
         .editor_tab .btnsesssioncontainer{
@@ -4905,7 +4912,7 @@
             -moz-border-radius: 4px 4px 0 0;
             -webkit-border-top-right-radius: 4px;
             -webkit-border-top-left-radius: 4px;
-            margin-top : -31px;
+            margin-top : -32px;
             width : auto;
         }
 
@@ -5110,6 +5117,7 @@
             background-color: #e8e8e8;
             border-left: 1px solid #8c8c8c;
             border-right: 1px solid #8c8c8c;
+            border-bottom: 1px solid #8C8C8C;
             overflow: hidden;
             clear: both;
         }
@@ -5687,16 +5695,11 @@
 <a:radiobutton name="radiobutton">
     <a:style><![CDATA[
         .rbcontainer {
-            border-color:#8C8C8C;
-            border-right:1px solid #8C8C8C;
-            border-style:none solid solid;
-            border-width:medium 1px 1px;
+            border: 1px solid #8C8C8C;
             color: #f5f5f5;
             cursor: pointer;
             font-family: "Trebuchet MS";
-            font-size:12px;
-            min-height:13px;
-            padding: 2px 18px;
+            font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
@@ -5704,20 +5707,24 @@
             text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(71,73,77)),color-stop(1, rgb(49,52,55)));
             background: -moz-linear-gradient(center bottom,rgb(71,73,77) 0%,rgb(49,52,55) 100%);
-        }
-
-        .rbcontainerChecked {
-            color:#000000;
-            text-shadow: none;
-            margin-top: -1px;
-            padding-top: 3px;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(232,232,232)));
-            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 0%,rgb(232,232,232) 100%);
+            text-align : center;
+            width : 91px;
+            height : 15px;
+            padding: 2px 0 2px 0;
         }
 
         .rbcontainerOver {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(105,107,109)),color-stop(1, rgb(92,93,96)));
             background: -moz-linear-gradient(center bottom,rgb(105,107,109) 0%,rgb(92,93,96) 100%);
+        }
+        
+        .rbcontainerChecked {
+            color:#000000;
+            text-shadow: none;
+            border-top : 0;
+            padding-top: 3px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(232,232,232)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 0%,rgb(232,232,232) 100%);
         }
 
         .rbcontainerFocus {
@@ -5734,8 +5741,11 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main label=".">
+        <a:main label="div">
             <div class="rbcontainer">
+                <div>
+                    
+                </div>
             </div>
         </a:main>
     </a:presentation>
@@ -5955,11 +5965,6 @@
             position: relative;
             padding: 0;
             width : 100%;
-        }
-
-        .dockcontent .toolbar .subbar {
-            height: auto;
-            padding: 4px 0;
         }
 
         .toolbar>.subbar>*{
@@ -7505,8 +7510,8 @@
 <a:tree name="tree">
         <a:style><![CDATA[
         .tree{
-            border: 1px solid #c3c3c3;
-            background-color: white;
+            padding : 3px;
+            background-color: #fdfdfd;
             overflow: hidden;
             cursor : default;
             position : relative;
@@ -7777,7 +7782,7 @@
                 background : url(images/spacer.gif);
             }
 
-            .horizontal div {
+            /*.horizontal div {
                 height     : 2px;
                 width      : 18px;
                 background : url(images/splitter_handle_horizontal.gif);
@@ -7791,7 +7796,7 @@
                 position   : relative;
                 top        : 50%;
                 margin     : -9px 0 0 0;
-            }
+            }*/
         ]]></a:style>
 
         <a:presentation>
@@ -10145,7 +10150,7 @@
             font-family: Tahoma;
             font-size: 8pt;
 
-            padding: 21px 0 0 0;
+            padding: 19px 0 0 0;
             color : #333;
         }
 
@@ -10153,11 +10158,11 @@
             position : relative;
             top : 0;
             left : 0;
-            height : 17px;
+            height : 20px;
             z-index : 10;
             /*padding-left : 5px;*/
             background-color : #e6e6e6;
-            margin : -21px 17px 0 0;
+            margin : -20px 17px 0 0;
             white-space : nowrap;
         }
 
@@ -10170,7 +10175,6 @@
 
         .datagrid .headings div{
             display : inline-block;
-            height : 17px;
             background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
             background: -moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
             overflow : hidden;
@@ -10179,15 +10183,13 @@
             border-bottom: 1px solid #BFBFBF;
         }
         .datagrid .headings div u{
-            padding : 1px 4px 1px 3px;
+            padding : 2px 4px 1px 3px;
             display : block;
             height : 15px;
             text-decoration : none;
             border-left : 1px solid white;
             border-right : 1px solid #bfbfbf;
-
-
-
+            border-top : 1px solid white;
         }
 
         .datagrid .headings div.hover,
@@ -10241,7 +10243,7 @@
             display : inline-block;
             height : 18px;
             background : white no-repeat 0 50%;
-            border-bottom : 1px solid #d6d6d6;
+            /*border-bottom : 1px solid #d6d6d6;*/
         }
 
         .datagrid .records .row span u{
@@ -10253,6 +10255,7 @@
             white-space : nowrap;
             overflow : hidden;
             border-right:1px solid #D6D6D6;
+            border-left : 1px solid white;
         }
 
         .noscrollbar .datagrid .records .row span{
@@ -10260,7 +10263,7 @@
         }
 
         .datagrid .records .row{
-            height : 19px;
+            height : 18px;
             padding-left : 0;
         }
 
@@ -10286,15 +10289,13 @@
         }
 
         .datagrid .row:nth-child(4n-1) span{
-            background: #eaeaea;
+            background: #f0f0f0;
         }
         .datagrid .row:nth-child(4n+1) span{
-            background: #f6f6f6;
+            background: #fdfdfd;
         }
 
         .datagrid .records .selected, .datagrid .records .selected span{
-            background-color: #f0f0f0;
-            color : #333;
         }
         .datagridFocus .records .selected, .datagridFocus .records .selected span{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
@@ -10304,6 +10305,9 @@
         .datagrid .records .editing, .datagrid .records .editing span{
             background-color : white;
             color : #333;
+        }
+        .datagridFocus .records .selected span u{
+            border-left : 1px solid #8bc0ed;
         }
 
         .datagrid .move_pointer{
@@ -12482,64 +12486,59 @@
     <a:style><![CDATA[
         .lowtab{
             position: relative;
-            color: #333;
-            font-family: Tahoma;
-            font-size: 8pt;
-            padding: 0 0 28px 0;
+            padding: 0 0 25px 0;
             overflow : hidden;
         }
 
         .lowtab .btncontainer{
             position : absolute;
-            bottom: 2px;
-        /*    _bottom: 1px;*/
+            bottom: 0;
             left: 10px;
             cursor: default;
             z-index : 1;
+            margin-top : -1px;
         }
 
-        .lowtab .btncontainer div{
-            cursor: default;
-            display: block;
-            float: left;
-            margin: 0 3px 0 0;
-            /*_margin: 0 0 0 0;*/
-            padding: 0;
-            background: url(images/tab_but_bottomleft.png) no-repeat 0 0;
-            height: 20px;
-
+        .lowtab .btncontainer .btn {
+            border: 1px solid #8C8C8C;
+            color: #f5f5f5;
+            cursor: pointer;
+            font-family: "Trebuchet MS";
+            font-size:11px;
+            position:relative;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+            text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(71,73,77)),color-stop(1, rgb(49,52,55)));
+            background: -moz-linear-gradient(center bottom,rgb(71,73,77) 0%,rgb(49,52,55) 100%);
+            text-align : center;
+            width : 91px;
+            height : 15px;
+            padding: 2px 0 2px 0;
+            display : inline-block;
+            margin-right : -1px;
+            line-height : 15px;
+        }
+        
+        .lowtab .btncontainer .over {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(105,107,109)),color-stop(1, rgb(92,93,96)));
+            background: -moz-linear-gradient(center bottom,rgb(105,107,109) 0%,rgb(92,93,96) 100%);
         }
 
-        .lowtab .btncontainer .curbtn{
-            background-position: 0 -20px;
-            height: 25px;
-            color: #327fbd;
-            position: relative;
+        .lowtab .btncontainer .curbtn {
+            color:#000000;
+            text-shadow: none;
+            border-top : 0;
+            padding-top: 3px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(232,232,232)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 0%,rgb(232,232,232) 100%);
         }
 
-
-        .lowtab .btncontainer div div {
-            margin: 0 -4px 0 0;
-            /*_margin: 0 0 0 0;*/
-            padding : 2px 8px 0 8px;
-            height: 17px;
-            border-top: 1px solid #c3c3c3;
-            background: url(images/tab_but_bottomright.png) no-repeat right -1px;
-        }
-
-        .lowtab .btncontainer .curbtn div {
-            padding-top: 6px;
-            height: 19px;
-            border: 0;
-            background: url(images/tab_but_bottomright.png) no-repeat right -20px;
-        }
 
         .lowtab .page{
-            background-color:#FAFBFC ;
-            border-left: 1px solid #C3C3C3;
-            border-right: 1px solid #C3C3C3;
-            border-top: 1px solid #D7D7DF;
-            border-bottom: 1px solid #D7D7DF;
+            background-color:#e8e8e8;
+            border-bottom: 1px solid #8C8C8C;
             clear:both;
             display:none;
             height:100%;

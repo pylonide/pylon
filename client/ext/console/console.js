@@ -149,6 +149,8 @@ return ext.register("ext/console/console", {
         else if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
             var expression = txtCode.value;
+            if (!expression.trim()) 
+                return;
             
             this.log(expression, "command");
             this.evaluate(expression, function(xmlNode, body, refs, error){
