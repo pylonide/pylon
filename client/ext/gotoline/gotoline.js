@@ -37,15 +37,11 @@ return ext.register("ext/gotoline/gotoline", {
         var _self = this;
 
         this.txtLinenr = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
-        this.txtLinenr.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.gotoLine();
-        });
         //buttons
-        this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
-        this.btnGo = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
+        this.btnGo = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnGo.onclick = this.gotoLine.bind(this);
+        this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
+        this.btnClose.onclick = this.toggleDialog.bind(this);
 
         plugins.registerCommand("gotoline", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(true);
@@ -61,6 +57,8 @@ return ext.register("ext/gotoline/gotoline", {
     },
 
     setEditor: function(editor, selection) {
+        if (typeof ceEditor == "undefined")
+            return this;
         this.$editor = editor || ceEditor.$editor;
         this.$selection = selection || this.$editor.getSelection();
         return this;
@@ -69,6 +67,8 @@ return ext.register("ext/gotoline/gotoline", {
     gotoLine: function() {
         if (!this.$editor)
             this.setEditor();
+        if (!this.$editor)
+            return;
         this.$editor.gotoLine(parseInt(this.txtLinenr.getValue()) || 0);
     },
     
