@@ -75,7 +75,6 @@ return ext.register("ext/editors/editors", {
         var _self = this;
         return this.hbox.appendChild(new apf.vbox({
             flex       : 1,
-            edge       : "5 0 0 0",
             childNodes : [
                 new apf.tab({
                     id      : "tabEditors",
@@ -96,7 +95,8 @@ return ext.register("ext/editors/editors", {
                     }
                 }),
                 new apf.hbox({
-                    id : "barButtons"
+                    id : "barButtons",
+                    edge: "0 0 0 6"
                 })
             ]
         }));

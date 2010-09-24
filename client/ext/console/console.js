@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/console/console",
-    ["core/ide", "core/ext", "ext/panels/panels", "text!ext/console/console.xml"], 
+    ["core/ide", "core/ext", "ext/panels/panels", "text!ext/console/console.xml"],
     function(ide, ext, panels, markup) {
 
 return ext.register("ext/console/console", {
@@ -16,7 +16,7 @@ return ext.register("ext/console/console", {
     markup : markup,
 
     clear : function() {
-        txtConsole.clear();
+        this.inited && txtConsole.clear();
     },
 
     logNodeStream : function(data, stream) {
@@ -40,6 +40,9 @@ return ext.register("ext/console/console", {
             
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
+                .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, function(m, url) {
+                     return "<a href='" + url + "' target='_blank'>" + url + "</a>";
+                 })
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "black");
                     if (extra == 1) {
@@ -307,22 +310,22 @@ return ext.register("ext/console/console", {
             panels.initPanel(this);
 
         //@todo stupid hack, find out why its not below editors
-        
+
         //Append the console window at the bottom below the tab
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
 
         if (this.manual && fromParent)
             return;
-        
+
         if (!fromParent)
             this.manual = true;
-        
+
         this.mnuItem.check();
         winDbgConsole.show();
     },
 
     disable : function(fromParent){
-        if (this.manual && fromParent)
+        if (this.manual && fromParent || !this.inited)
             return;
 
         if (!fromParent)

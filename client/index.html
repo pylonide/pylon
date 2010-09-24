@@ -5,21 +5,23 @@
         <title>Ajax.org Cloud IDE</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
-        
+
+        <link rel="icon" type="image/gif" href="favicon.ico" />
+
         <link rel="stylesheet" type="text/css" href="style/style.css" />
-        
+
         <script type="text/javascript" src="require.js"></script>
         <script type="text/javascript">//<!--
             var RELEASE = "release";
             var DEBUG   = "debug";
             var FILES   = "files";
-            
+
             var HOST    = "http://dev1.ajax.org";
             var TESTING = false; //Load data from test models
             var VERSION = FILES; //Change the version you want to use here
 
-            var apfLoc = VERSION == FILES 
-                ? "common/apf/apf.js" 
+            var apfLoc = VERSION == FILES
+                ? "common/apf/apf.js"
                 : "js/apf_" + VERSION + ".js";
 
             var config = {
@@ -37,7 +39,7 @@
                         vSafari = apf.isSafari && apf.versionSafari < 4,
                         vChrome = apf.isChrome && apf.versionChrome < 4,
                         vOpera  = apf.isOpera && apf.versionOpera < 10;
-                    
+
                     if (vIE || vFF || vSafari || vChrome || vOpera) {
                         //Display proper message to user
                         document.body.innerHTML = document.getElementById("noscript").innerHTML;
@@ -51,10 +53,10 @@
                     var list = ["core/ide", "core/ext", "core/util"];
                     if (location.host)
                         list.push("text!/workspace/.settings.xml");
-                    
+
                     require(list, function(ide, ext, util, settings){
                         ide.settings = settings;
-                        
+
                         var modules = [
                             "ext/filesystem/filesystem",
                             "ext/settings/settings",
@@ -67,10 +69,9 @@
                             "ext/clipboard/clipboard",
                             "ext/refactor/refactor",
                             "ext/searchreplace/searchreplace",
-                            "ext/gotoline/gotoline",
                             "ext/html/html",
                             "ext/browser/browser",
-                            "ext/code/code", 
+                            "ext/code/code",
                             "ext/extmgr/extmgr",
                             "ext/docs/docs",
                             "ext/richtext/richtext",
@@ -79,9 +80,9 @@
                         ];
                         if (location.host)
                             modules.push(
-                                "ext/debugger/debugger", 
+                                "ext/debugger/debugger",
                                 "ext/noderunner/noderunner");
-                        
+
                         apf.addEventListener("load", function(){
                             //Load extensions
                             require(modules, function(){
@@ -135,12 +136,12 @@
                 </div>
             </div>
         </div>
-        
-        <a:skin 
-          src        = "style/skins.xml" 
-          media-path = "style/images/" 
+
+        <a:skin
+          src        = "style/skins.xml"
+          media-path = "style/images/"
           icon-path  = "style/icons/" />
-        
+
         <a:appsettings name="ide" debug="false"
           disable-space       = "true"
           auto-hide-loading   = "true"
@@ -149,10 +150,10 @@
           initdelay           = "false"
           storage             = "cookie"
           baseurl             = "{apf.host ? apf.host : ''}" />
-        
+
         <!-- default model -->
         <a:model />
-        
+
         <!--a:auth id="auth"
           login           = "{pWorknets.login(username, password, app.getRedirectPage(), app.getInviteToken())}"
           logout          = "{pWorknets.logout()}"
@@ -163,8 +164,8 @@
           error-state     = "stError"
           logout-state    = "stLoggedOut"
           authreq-state   = "stAuthReq" />
-        
-        <a:persist id="pWorknets" 
+
+        <a:persist id="pWorknets"
           host = "{apf.host ? apf.host : HOST}" />
 
         <a:remote id="rmtWorknets" transport="pWorknets" />
@@ -218,7 +219,7 @@
               sni_btn1.disabled     = "true" />
             <a:state id="stAuthReq"
               loginError.value      = ""
-              loginError.visible    = "false" 
+              loginError.visible    = "false"
               winPwStatus.visible   = "false"
               winPassword.disabled  = "false"
               onactivate            = "
@@ -235,11 +236,11 @@
                 <div>Loading...</div>
             </div>
         </a:loader>
-        
+
         <a:include src="include/models.xml" />
         <a:include src="include/menus.xml" />
         <a:include src="include/windows.xml" />
-        
+
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="headerbar">
                 <a id="logo" href="#" title="cloud9 ide">cloud9</a>
@@ -258,16 +259,16 @@
                     </a:dropdown>
                 </a:menubar>
                 <a:bar id="barTools">
-                    
+
                 </a:bar>
             </a:toolbar>
-            
+
             <a:hbox padding="4" flex="1">
-                <a:vbox padding="4" width="200" />
+                <a:vbox padding="3" width="200" edge="8 2 8 8"/>
                 <a:splitter />
-                <a:vbox flex="1" padding="4" />
+                <a:vbox flex="1" padding="3" edge="8 2 2 3"/>
                 <a:splitter />
-                <a:vbox padding="4" width="300" visible="false"/>
+                <a:vbox padding="3" width="300" visible="false" edge="8 2 8 3"/>
             </a:hbox>
 
             <a:statusbar id="sbMain">
