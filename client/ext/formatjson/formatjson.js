@@ -24,10 +24,9 @@ return ext.register("ext/formatjson/formatjson", {
     
     format : function(indent){
         var editor = editors.currentEditor;
-        var amlEditor = editor.ceEditor;
 
-        var sel   = amlEditor.getSelection();
-        var doc   = amlEditor.getDocument();
+        var sel   = editor.getSelection();
+        var doc   = editor.getDocument();
         var range = sel.getRange();
         var value = doc.getTextRange(range);
         try{
