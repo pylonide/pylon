@@ -135,7 +135,6 @@ apf.xmldb = new (function(){
      *
      */
     this.findModel = function(xmlNode){
-        if (!xmlNode) debugger;
         //#ifdef __WITH_NAMESERVER
         return apf.nameserver.get("model", xmlNode.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag));

@@ -381,7 +381,6 @@ apf.Class.prototype = new (function(){
         if (bRecip) {
             eventName = PROP + bProp;
             var _self = this;
-if (myProp == "planes") debugger;
             // add bidirectional binding to funcHandlers for visualconnect
             //#ifdef __WITH_CONTENTEDITABLE
             if (!this.$funcHandlers[bProp])

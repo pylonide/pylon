@@ -285,7 +285,6 @@ apf.DataBinding = function(){
     var afterloadUpdate;
     this.addEventListener("afterload", afterloadUpdate = function(){
         var queue;
-        //if (this.id == "lstMsgPreview") debugger;
         if (!this.$amlBindQueue 
           || !(queue = this.$amlBindQueue.caption || this.$amlBindQueue.column))
             return;
@@ -1453,10 +1452,6 @@ apf.DataBinding = function(){
             
             this.$modelParsed = null;
         }
-        
-        //#ifdef __DEBUG
-        if (!value) debugger;
-        //#endif
 
         //Analyze the data
         var model;
