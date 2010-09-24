@@ -10425,6 +10425,16 @@
             border : 0;
         }
 
+        .datagrid .records span.treecell u {
+            background-repeat: no-repeat;
+            padding-left:20px;
+        }
+
+        .datagrid.noicon .records span.treecell u {
+            padding-left: 0;
+        }
+
+
         .datagrid .treecell strong{
             width : 9px;
             height : 9px;
