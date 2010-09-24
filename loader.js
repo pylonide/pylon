@@ -27,14 +27,6 @@
  */
 
 // #ifndef __PACKAGED
-if (location.protocol != "file:") {
-    apf.console.warn("You are serving multiple files from a (local) "
-           + "webserver - please consider\nusing the file:// protocol to "
-           + "load your files, because that will make your\napplication "
-           + "load several times faster.\n"
-           + "On a webserver, we recommend using a release or debug build "
-           + "of Ajax.org Platform.");
-}
 apf.$loader
     .setGlobalDefaults({
         BasePath: apf.basePath,

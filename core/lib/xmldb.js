@@ -1062,6 +1062,11 @@ apf.xmldb = new (function(){
         var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag)
             || this.$xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
 
+        if (model && apf.nameserver.get("model", docId) != model) {
+            docId = null;
+            docEl = xmlNode;
+        }
+
         if (!docId || docId == -1) {
             docId = this.$xmlDocLut.push(docEl || xmlNode.ownerDocument || xmlNode) - 1;
             if (docEl)
