@@ -4633,7 +4633,6 @@
         .ace_editor {
           position: relative;
           overflow: hidden;
-          padding-top: 5px;
         }
 
         .ace_scroller {
@@ -4644,8 +4643,8 @@
           -webkit-border-top-left-radius: 6px;
           -moz-border-radius-topleft: 6px;
           border-top-left-radius: 6px;
-          
-          padding-top:15px;
+          top: 0;
+          bottom: 0
         }
 
         .ace_gutter {
@@ -4653,7 +4652,6 @@
           overflow-x: scroll;
           overflow-y: hidden;
           height: 100%;
-          padding-top: 15px;
         }
 
         .ace_editor .ace_sb {
@@ -4680,7 +4678,6 @@
           overflow: hidden;
           white-space: nowrap;
           height: 100%;
-          padding-left: 10px;
         }
 
         .ace_text-layer {
