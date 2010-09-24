@@ -68,16 +68,16 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.btnFind.onclick = this.findNext.bind(this);
 
         plugins.registerCommand("find", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog(false);
+            _self.setEditor(editor, selection).toggleDialog(false, true);
         });
         plugins.registerCommand("replace", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog(true);
+            _self.setEditor(editor, selection).toggleDialog(true, true);
         });
     },
 
-    toggleDialog: function(isReplace) {
+    toggleDialog: function(isReplace, forceShow) {
         this.setupDialog(isReplace);
-        if (!winSearchReplace.visible)
+        if (!winSearchReplace.visible || forceShow)
             winSearchReplace.show();
         else
             winSearchReplace.hide();
@@ -85,11 +85,11 @@ return ext.register("ext/searchreplace/searchreplace", {
     },
 
     search: function() {
-        return this.setEditor().toggleDialog(false);
+        return this.setEditor().toggleDialog(false, true);
     },
 
     searchreplace: function() {
-        return this.setEditor().toggleDialog(true);
+        return this.setEditor().toggleDialog(true, true);
     },
 
     setupDialog: function(isReplace) {

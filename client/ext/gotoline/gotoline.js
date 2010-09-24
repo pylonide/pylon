@@ -48,12 +48,12 @@ return ext.register("ext/gotoline/gotoline", {
         this.btnGo.onclick = this.gotoLine.bind(this);
 
         plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.setEditor(editor, selection).toggleDialog();
+            _self.setEditor(editor, selection).toggleDialog(true);
         });
     },
 
-    toggleDialog: function() {
-        if (!winGotoLine.visible)
+    toggleDialog: function(forceShow) {
+        if (!winGotoLine.visible || forceShow)
             winGotoLine.show();
         else
             winGotoLine.hide();
