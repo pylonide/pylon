@@ -485,7 +485,7 @@ apf.vbox = function(struct, tagName){
                     if (fontSize == "0px") {
                         amlNode.$ext.style.fontSize = "";
                         var pNode = this.$int.parentNode;
-                        while(pNode.style.fontSize == "0px") {
+                        while(apf.getStyle(pNode, "fontSize") == "0px") {
                             pNode = pNode.parentNode;
                         }
                         fontSize = apf.getStyle(pNode, "fontSize");
