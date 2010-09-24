@@ -46,6 +46,8 @@
         <a:drag match="[folder|file]" />
         <a:drop match="[folder|file]" target="[folder]"
             action="tree-append" copy="{event.ctrlKey}" />
+    </a:tree>
+    
     <a:menu id="mnuCtxTree">
         <a:item match="[file]" class="strong" onclick="
             require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
@@ -79,7 +81,7 @@
         <a:item value="txt" icon="page_white_text.png">Text file</a:item>
         <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
         <a:item value="html" icon="html.png">HTML file</a:item>
-        <a:item value="xml" icon="xml.png">XML file</a:item>
+        <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
         <a:item value="css" icon="css.png">CSS file</a:item>
     </a:menu>
 </a:application>

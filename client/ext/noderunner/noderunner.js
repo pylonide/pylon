@@ -133,6 +133,7 @@ return ext.register("ext/noderunner/noderunner", {
         };
         this.socket.send(JSON.stringify(command));
 
+        log.clear();
         if (debug) {
             dbg.attach(dbgNode);
             stDebugProcessRunning.activate();
@@ -148,6 +149,7 @@ return ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return
 
+        ext.setLayoutMode("default");
         this.socket.send(JSON.stringify({"command": "kill"}));
     },
 
