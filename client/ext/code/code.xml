@@ -17,7 +17,8 @@
     
     <a:vbox id="barEditor" anchors="0 0 0 0" visible="false">
         <a:codeeditor id="ceEditor"
-          flex   = "1" 
+          flex   = "1"
+          margin = "6 0 0 0"
           value  = "[data]"
           syntax = "{getSyntax([@contenttype])}"
           contextmenu    = "mnuCtxEditor"

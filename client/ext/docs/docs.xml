@@ -18,6 +18,7 @@
                 <a:page id="search">
                     <a:datagrid model="mdlDocs"
                       anchors   = "0 0 0 0"
+                      style="border:none;"
                       onafterchoose = "
                         pgDocs.getPage(1).setAttribute('model', this.selected);
                         pgDocs.set(1);

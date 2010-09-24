@@ -96,7 +96,9 @@ return ext.register("ext/editors/editors", {
                 }),
                 new apf.hbox({
                     id : "barButtons",
-                    edge: "0 0 0 6"
+                    edge: "0 0 0 6",
+                    padding: "-1",
+                    margin: "-1 0 0 0"
                 })
             ]
         }));
