@@ -60,9 +60,8 @@ return ext.register("ext/noderunner/noderunner", {
             return;
         }
 
-        //console.log("MSG:", message);
         switch(message.type) {
-            case "debug-ready":
+            case "node-debug-ready":
                 ide.dispatchEvent("debugready");
                 break;
 
