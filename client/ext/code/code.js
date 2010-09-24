@@ -35,9 +35,10 @@ return ext.register("ext/code/code", {
     },
 
     hook : function(){
+        var commitFunc = this.onCommit.bind(this);
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("Code Editor", "section[@name='Editor']");
+            var page = e.ext.addSection("Code Editor", "section[@name='Editor']", commitFunc);
             page.insertMarkup(settings);
         });
     },
@@ -47,6 +48,8 @@ return ext.register("ext/code/code", {
         barEditor.show();
         
         this.ceEditor = ceEditor;
+
+        var _self = this;
         
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
@@ -70,7 +73,53 @@ return ext.register("ext/code/code", {
                 onclick : function(){
 
                 }
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Overwrite Mode",
+                checked : "{ceEditor.overwrite}"
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Select Full Line",
+                checked : "{ceEditor.selectstyle == 'line'}",
+                onclick : function(){
+                    _self.toggleSetting("selectstyle");
+                }
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Read Only",
+                checked : "{ceEditor.readonly}"
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Highlight Active Line",
+                checked : "{ceEditor.activeline}"
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Show Invisibles",
+                checked : "{ceEditor.showinvisibles}"
+            })),
+
+            mnuView.appendChild(new apf.item({
+                type    : "check",
+                caption : "Show Print Margin",
+                checked : "{ceEditor.showprintmargin}"
             }))
+            // Wrap Lines (none),
+            // Overwrite mode (overwrite),
+            // Full line selection (selectstyle),
+            // Read only (readonly),
+            // Highlight active line (activeline),
+            // Show invisibles (showinvisibles),
+            // Show print margin (showprintmargin)
         );
 
         ide.addEventListener("clearfilecache", function(e){
@@ -83,6 +132,17 @@ return ext.register("ext/code/code", {
             var bindings = e.ext.code;
             ceEditor.$editor.keyBinding.setConfig(bindings);
         })
+    },
+
+    onCommit: function() {
+        console.log("commit func called!")
+        //todo
+    },
+
+    toggleSetting: function(name) {
+        if (name == "selectstyle") {
+            ceEditor.setAttribute("selectstyle", ceEditor.selectstyle == "line" ? "text" : "line");
+        }
     },
 
     enable : function() {
