@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     
-    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1" width="250">
+    <a:window id="winDbgStack" skin="dockwin" title="Call Stack" modal="false" flex="1">
         <a:datagrid
           id         = "dgStack"
           anchors    = "0 0 0 0" 
@@ -8,60 +8,38 @@
           caching    = "false"
           prerender  = "false"
           model      = "mdlDbgStack"
-          disabled   = "{stRunning.active}"
+          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
           selected   = "{dbg.activeframe}">
        	    <a:actions />
        	    <a:each match="[frame]">
-                <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
-                <a:column caption="Script" value="[@script]" width="40%" />
+                <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
+                <a:column caption="Script" value="[@script]" width="50" />
                 <a:column caption="Ln" value="[@line]" width="25"/>
                 <a:column caption="Col" value="[@column]" width="25"/>
             </a:each>
         </a:datagrid>    
     </a:window>
     
-    <a:window id="winDbgVariables" skin="dockwin" title="Variables" modal="false" flex="1" width="200">
+    <a:window id="winDbgVariables" skin="dockwin" title="Variables" modal="false" flex="1">
 		<a:datagrid id="dgVars"
           anchors    = "0 0 0 0" 
           options    = "size|move"
           prerender  = "false"
           caching    = "false"
           model      = "[{dgStack.selected}::vars]"
-          disabled   = "{stRunning.active}"
+          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
           loading-message = "Calculating...">
             <a:actions />
             <a:each match="[item|globals]" sort="[@name]">
               	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
                 <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
-                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon2="debugger/genericvariable_obj.gif" tree="true" />
-                <a:column caption="Value" value="[@value]" width="100%" />
-                <a:column caption="Type" value="[@type]" width="80"/>
+                <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon2="debugger/genericvariable_obj.gif" tree="true" />
+                <a:column caption="Value" value="[@value]" width="60%" />
+                <a:column caption="Type" value="[@type]" width="50"/>
             </a:each>
         </a:datagrid>		
     </a:window>
     
-    <!-- Copy the implementation from the console -->
-    <a:window id="winDbgWatch" skin="dockwin" title="Watches" modal="false" flex="1" width="200">
-		<a:datagrid id="dgWatch"
-          anchors    = "0 0 0 0" 
-          options    = "size|move"
-          prerender  = "false"
-          caching    = "false"
-          disabled   = "{stRunning.active}"
-          loading-message = "Calculating...">
-            <a:model>
-                <vars />
-            </a:model>
-            <a:actions />
-            <a:each match="[item|globals]" sort="[@name]">
-                <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
-                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon2="debugger/genericvariable_obj.gif" tree="true" />
-                <a:column caption="Value" value="[@value]" width="100%" />
-                <a:column caption="Type" value="[@type]" width="80"/>
-            </a:each>
-        </a:datagrid>		
-    </a:window>
-
     <!-- a:window id="winDbgBreakpoints" skin="dockwin" title="Breakpoints" modal="false" flex="1" width="200">
 		<a:list
 		  id="lstBreakpoints"
@@ -73,43 +51,4 @@
 		    <a:actions />
 		</a:list>
     </a:window-->
-
-    <a:toolbar id="tbDebug" height="26">
-        <a:bar>
-	        <a:button
-	          icon="debugger/resume_co{this.disabled ? '_disabled' : ''}.gif"
-	          onclick="dbg.continueScript();"
-	          disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-	       	<a:button
-	          icon="debugger/suspend_co{this.disabled ? '_disabled' : ''}.gif"
-	          onclick="dbg.suspend();"
-	          disabled="{!stDebugProcessRunning.active or !stRunning.active}"/>
-	       	<!-- a:button
-	      	  icon="debugger/disconnect_co{this.disabled ? '_disabled' : ''}.gif"
-	       	  onclick="dbgNode.disconnect();"
-	       	  disabled="{!stDebuggerConnected.active}" /-->
-			<a:divider />
-	       	<a:button
-	       	  icon="debugger/stepinto_co{this.disabled ? '_disabled' : ''}.gif" 
-	       	  onclick="dbg.stepInto();" 
-	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-	       	<a:button
-	       	  icon="debugger/stepover_co{this.disabled ? '_disabled' : ''}.gif"
-	       	  onclick="dbg.stepNext();"
-	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-	       	<a:button
-	       	  icon="debugger/stepreturn_co{this.disabled ? '_disabled' : ''}.gif" 
-	       	  onclick="dbg.stepOut();"
-	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-      	    <a:dropdown id="lstScripts"
-		      model="mdlDbgSources"
-		      each="[file]"
-		      caption="[@text]"
-		      autoselect="false"
-		      icon="debugger/file_obj.gif">
-		    	<a:actions />
-		    </a:dropdown>
-	       	  
-    	</a:bar>
-    </a:toolbar>
 </a:application>

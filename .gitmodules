@@ -13,3 +13,6 @@
 [submodule "common/jsdav"]
 	path = common/jsdav
 	url = git@github.com:ajaxorg/jsDAV.git
+[submodule "common/nodebuilds"]
+	path = common/nodebuilds
+	url = git://github.com/ajaxorg/nodebuilds.git

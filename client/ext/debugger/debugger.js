@@ -34,16 +34,13 @@ return ext.register("ext/debugger/debugger", {
         this.rightPane = ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]");
         this.nodes.push(
             //Append the debug toolbar to the main toolbar
-            ide.tbMain.appendChild(tbDebug),
+            //winDbgConsole.insertBefore(tbDebug, winDbgConsole.firstChild),
 
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
             //Append the variable window on the right
-            this.rightPane.appendChild(winDbgVariables),
-            
-            //Append the watch window on the right
-            this.rightPane.appendChild(winDbgWatch)
+            this.rightPane.appendChild(winDbgVariables)
         );
 
         this.paths = {};
@@ -63,11 +60,9 @@ return ext.register("ext/debugger/debugger", {
             // TODO: optimize this!
             _self.$syncTree();
         });
+        //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.$showFile(e.data.getAttribute("scriptid"));
-        });
-        lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && _self.$showFile(e.selected.getAttribute("scriptid"));
         });
 
         log.enable(true);
@@ -77,8 +72,7 @@ return ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
         if (file) {
             ide.dispatchEvent("openfile", {
-                node: file,
-                value: file.getAttribute("name")
+                node: file
             });
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
