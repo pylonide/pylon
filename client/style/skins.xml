@@ -4380,18 +4380,27 @@
         </a:item>
     </a:presentation>
 </a:textbox>
+  
 <a:textbox name="textbox">
     <a:alias>input</a:alias>
     <a:alias>secret</a:alias>
     <a:style><![CDATA[
-        .tb {
+        .tb_textbox {
+            position : relative;
+            height   : 25px;
+            padding  : 0 4px;
+        }
+
+        .tb_textbox .sbtb_middle {
+            height           : 19px;
+            padding          : 2px 5px;
+
+
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
-            height: 15px;
-            color: #333;
+            color: #333333;
             border: 1px solid #afafaf;
             margin: 0;
-            padding: 2px 0 0 2px;
             outline: none;
             font-family: Tahoma;
             font-size: 12px;
@@ -4401,63 +4410,30 @@
             box-shadow: 0px 1px 0px #ffffff;
         }
 
-        .tbFocus {
-
+        .tb_textbox .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 12px;
+            color            : #333333;
+            font-family      : Trebuchet MS;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
         }
 
-        .tbDisabled {
-            border: 1px solid #c3c3c3;
-            color: #bebebe;
-        }
-
-        .tbError {
-            border: 2px solid #ffb500;
-            margin : -1px 0 0 -1px;
-        }
-
-        .tbInitial{
-            color : #a3a3a3;
-        }
-
-        .tbautoc{
-            border: 1px solid gray;
-            width: 250px;
-            overflow-y: auto;
-            z-index: 10000000;
-
-            position: absolute;
-            background-color: white;
-            margin: 23px 0 0 0;
-
-            white-space: nowrap;
-            display: none;
-        }
-
-        .tbautoc div{
-            padding: 1px 5px 1px 3px;
-            cursor: default;
-            margin: 0px;
-            color: black;
-            font-family: Tahoma;
-            font-size: 11px;
-        }
-
-        .tbautoc div.hover{
-            background-color: #25a8e7;
-            color: white;
+        .tb_textboxInitial .sbtb_middle INPUT {
+            color : #777777;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="." minheight="19" maxheight="19">
-            <input type='text' class="tb" />
+        <a:main input="div[1]/input">
+            <div class="tb_textbox">
+                <div class="sbtb_middle">
+                    <input type="text" />
+                </div>
+            </div>
         </a:main>
-        <a:container>
-            <div class="tbautoc"> </div>
-        </a:container>
-        <a:item caption=".">
-            <div>-</div>
-        </a:item>
     </a:presentation>
 </a:textbox>
 
@@ -4466,12 +4442,12 @@
         .searchbox_textbox {
             position : relative;
             height   : 25px;
-            padding  : 0;
+            padding  : 0 4px;
         }
 
         .searchbox_textbox .sbtb_middle {
-            height           : 17px;
-            padding          : 3px 25px 3px 25px;
+            height           : 19px;
+            padding          : 2px 25px 2px 25px;
 
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
@@ -4512,7 +4488,7 @@
             height              : 18px;
             position            : absolute;
             top                 : 4px;
-            left                : 5px;
+            left                : 9px;
             background-image    : url(images/searchbox_textbox_icon.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
@@ -4524,7 +4500,7 @@
 
         .searchbox_textboxFocus .btnclose {
             position : absolute;
-            right : 7px;
+            right : 11px;
             top : 5px;
             width : 14px;
             height : 14px;
@@ -4735,7 +4711,7 @@
         /*** TM ***/
 
         .ce {
-          border: 1px solid #c3c3c3;
+          border: none;
           border-bottom: none;
           -moz-box-sizing: border-box;
           -webkit-box-sizing: border-box;
@@ -4757,7 +4733,6 @@
 
         .ceFocus{
             /*background : #f2f9ff;*/
-            border-color : #b2b2b2;
         }
 
         .ce .ace_gutter-layer {
@@ -5982,6 +5957,7 @@
 
         .dockcontent .toolbar .subbar {
             height: auto;
+            padding: 4px 0;
         }
 
         .toolbar>.subbar>*{
@@ -6044,7 +6020,7 @@
             color: #e8e8e8;
         }
 
-        .menubar .toolbarbuttonOver {
+        .menubar .toolbarbuttonOver, .menubar .toolbarbuttonDown {
             cursor: pointer;
             border-radius: 4px 4px 0px 0px;
             -moz-border-radius: 4px 4px 0px 0px;
@@ -7145,7 +7121,8 @@
             border-top: 1px solid #b2b2b2;
             overflow: hidden;
             color: #333;
-            background : url(images/statusbar.gif);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
+            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
             height: 21px;
             width: 100%;
             overflow: hidden;
@@ -7533,6 +7510,11 @@
             position : relative;
             overflow: auto;
         }
+
+        .dockcontent .tree{
+            border: none;
+        }
+
         .trDefines {
             background: none;
             border-bottom: 1px solid #c3c3c3;
@@ -7572,7 +7554,7 @@
             overflow : hidden;
 
             font-family: Tahoma, Arial;
-            font-size: 8.5pt;
+            font-size: 11px;
         }
 
         .tree .focusbug{
@@ -9086,8 +9068,6 @@
     </a:presentation>
 </a:errorbox-->
 
-
-
 <!--
     * Please optimize this skin (at least 2 elements less) - big problems with ie6 if I optimize
 -->
@@ -10176,11 +10156,9 @@
             /*padding-left : 5px;*/
             background-color : #e6e6e6;
             margin : -21px 17px 0 0;
-            border : 1px solid white;
-            border-left : 0;
-            border-right : 0px solid white;
             white-space : nowrap;
         }
+
         .noscrollbar .headings {
 		    margin : -21px 1px 0 0;
 		}
@@ -10196,38 +10174,45 @@
             overflow : hidden;
             text-overflow : ellipsis;
             color: #515A61;
-            border-left: 1px solid #BFBFBF;
             border-bottom: 1px solid #BFBFBF;
-            border-top: 1px solid #BFBFBF;
         }
         .datagrid .headings div u{
             padding : 1px 4px 1px 3px;
-            display : inline-block;
+            display : block;
             height : 15px;
             text-decoration : none;
             border-left : 1px solid white;
+            border-right : 1px solid #bfbfbf;
+
+
+
         }
 
-        .datagrid .headings div.hover{
-            background-color: #DDD;
-        }
-
-        .datagrid .headings div.down, .datagrid .headings div.drag{
-            color: white;
-            background-color: #25a8e7;
+        .datagrid .headings div.hover,
+        .datagrid .headings div.down,
+        .datagrid .headings div.drag{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
         }
 
         .datagrid .headings div.drag{
             border : 1px solid white;
         }
 
-        .datagrid .headings div.ascending{
+        .datagrid .headings div.down u,
+        .datagrid .headings div.hover u {
+            border-left: 1px solid transparent;
+        }
+
+        .datagrid .headings div.ascending u{
             background-image : url(images/sort_asc.gif);
             background-repeat : no-repeat;
             background-position : right 6px;
         }
 
-        .datagrid .headings div.descending{
+
+        .datagrid .headings div.descending u {
             background-image : url(images/sort_desc.gif);
             background-repeat : no-repeat;
             background-position : right 6px;
@@ -10240,9 +10225,10 @@
             padding : 18px 0 0 0;
             position : relative;
             top : -19px;
-            border : 1px solid white;
-            border-width : 1px 1px 0 0;
             white-space : nowrap;
+            border-color:white;
+            border-style:solid;
+            border-width:1px 0 0;
         }
 
         .noscrollbar .records{
@@ -10259,12 +10245,12 @@
         .datagrid .records .row span u{
             padding : 2px 3px 2px 4px;
             height : 15px;
-            display : inline-block;
+            display : block;
             text-decoration : none;
-            border-left : 1px solid #d6d6d6;
             text-overflow : ellipsis;
             white-space : nowrap;
             overflow : hidden;
+            border-right:1px solid #D6D6D6;
         }
 
         .noscrollbar .datagrid .records .row span{
@@ -10297,13 +10283,21 @@
         .datagridFocus .records .row span{
         }
 
+        .datagrid .row:nth-child(4n-1) span{
+            background: #eaeaea;
+        }
+        .datagrid .row:nth-child(4n+1) span{
+            background: #f6f6f6;
+        }
+
         .datagrid .records .selected, .datagrid .records .selected span{
             background-color: #f0f0f0;
             color : #333;
         }
         .datagridFocus .records .selected, .datagridFocus .records .selected span{
-            color: white;
-            background-color: #25a8e7;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
         }
         .datagrid .records .editing, .datagrid .records .editing span{
             background-color : white;

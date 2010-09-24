@@ -27,8 +27,8 @@ return ext.register("ext/tree/tree", {
     },
 
     init : function() {
-        this.trFiles = this.panel = trFiles;
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(trFiles);
+        this.trFiles = this.panel = winFilesViewer;
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(winFilesViewer);
         trFiles.setAttribute("model", fs.model);
         
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
