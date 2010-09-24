@@ -93,16 +93,28 @@ return ext.register("ext/filesystem/filesystem", {
         if (state !== apf.SUCCESS)
             return;
         var node = trFiles.xmlRoot.selectSingleNode("//node()[@path='" + extra.originalArgs[1] + "']"),
-            base = extra.originalArgs[1].substr(0, extra.originalArgs[1].lastIndexOf("/") + 1);
+            base = extra.originalArgs[1].substr(0, extra.originalArgs[1].lastIndexOf("/") + 1),
+            page = tabEditors.getPage(extra.originalArgs[1]);
         apf.xmldb.setAttribute(node, "path", base + extra.originalArgs[0]);
+        if (page) {
+            page.setAttribute("caption", node.getAttribute("name"));
+            page.setAttribute("id", base + extra.originalArgs[0]);
+        }
     },
 
     afterMove: function(data, state, extra) {
         var selected = trFiles.selected ? trFiles.selected.getAttribute("path") : null;
-        if (state == apf.SUCCESS)
-            var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[1] + "']")
-        else
+        if (state == apf.SUCCESS) {
+            var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[1] + "']"),
+                page = tabEditors.getPage(extra.originalArgs[0]);
+            if (page) {
+                page.setAttribute("caption", node.getAttribute("name"));
+                page.setAttribute("id", extra.originalArgs[1]);
+            }
+        }
+        else {
             node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[0] + "']");
+        }
         if (!node)
             return;
         this.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
