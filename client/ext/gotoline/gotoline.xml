@@ -1,14 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window title="Go to Line" buttons="close" id="winGotoLine" modal="false" center="true" width="250">
-        <a:vbox edge="10" padding="4 0 4 0">
-            <a:hbox>
+    <a:window title="Go to Line" buttons="close" id="winGotoLine" modal="false" center="true" width="250" kbclose="true">
+        <a:vbox>
+            <a:hbox edge="10 10 0 10">
                 <a:label width="70">Line number</a:label>
                 <a:textbox flex="1" mask="99999;;_" />
             </a:hbox>
             <a:divider />
-            <a:hbox padding="5" pack="end">
+            <a:hbox edge="5 10 5 10" padding="5" pack="end">
+                <a:button default="2" class="ui-btn-green">Go</a:button>
                 <a:button>Close</a:button>
-                <a:button>Go</a:button>
             </a:hbox>
         </a:vbox>
     </a:window>

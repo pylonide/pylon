@@ -46,15 +46,7 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.hotitems["searchreplace"] = [this.nodes[2]];
 
         this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        this.txtFind.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.findNext();
-        });
         this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        this.txtReplace.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13)
-                _self.replace();
-        });
         //bars
         this.barReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
@@ -62,10 +54,10 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.btnReplace.onclick = this.replace.bind(this);
         this.btnReplaceAll = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[2]");
         this.btnReplaceAll.onclick = this.replaceAll.bind(this);
-        this.btnClose      = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
-        this.btnFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[4]");
+        this.btnFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.findNext.bind(this);
+        this.btnClose      = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[4]");
+        this.btnClose.onclick = this.toggleDialog.bind(this);
 
         plugins.registerCommand("find", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(false, true);
@@ -101,6 +93,8 @@ return ext.register("ext/searchreplace/searchreplace", {
     },
 
     setEditor: function(editor, selection) {
+        if (typeof ceEditor == "undefined")
+            return;
         this.$editor = editor || ceEditor.$editor;
         this.$selection = selection || this.$editor.getSelection();
         return this;
@@ -120,6 +114,8 @@ return ext.register("ext/searchreplace/searchreplace", {
     findNext: function() {
         if (!this.$editor)
             this.setEditor();
+        if (!this.$editor)
+            return;
         var txt = this.txtFind.getValue();
         if (!txt)
             return;
@@ -146,6 +142,10 @@ return ext.register("ext/searchreplace/searchreplace", {
     replace: function() {
         if (!this.$editor)
             this.setEditor();
+        if (!this.$editor)
+            return;
+        if (!this.barReplace.visible)
+            return;
         var options = this.getOptions();
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         this.$editor.find(this.$crtSearch, options);
@@ -154,6 +154,8 @@ return ext.register("ext/searchreplace/searchreplace", {
     replaceAll: function() {
         if (!this.editor)
             this.setEditor();
+        if (!this.$editor)
+            return;
         this.$crtSearch = null;
         var options = this.getOptions();
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
