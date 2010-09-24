@@ -152,6 +152,7 @@ apf.text = function(struct, tagName){
         
         if (forceAdd) {
             this.$container.insertAdjacentHTML("beforeend", value);
+            if (!this.value) this.value = "";
             this.value += value;
         }
         else
@@ -170,6 +171,11 @@ apf.text = function(struct, tagName){
         this.$attrExcludePropBind.value = value ? 2 : 0;
     }
     this.addEventListener("prop.each", this.$eachHandler);
+    
+    this.addEventListener("$clear", function(){
+        this.value = "";
+        this.dispatchEvent("prop.value", {value: ""});
+    });
 
     // @todo replace this stub with something that does something
     this.$moveNode = function() {};
@@ -180,6 +186,7 @@ apf.text = function(struct, tagName){
 
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
+        this.dispatchEvent("prop.value", {value: value});
     }
 
     /**
