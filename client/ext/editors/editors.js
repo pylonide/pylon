@@ -81,7 +81,7 @@ return ext.register("ext/editors/editors", {
                     id      : "tabEditors",
                     skin    : "editor_tab",
                     flex    : 1,
-                    buttons : "close", //scale
+                    buttons : "close,scale",
                     onfocus : function(e){
                         _self.switchfocus(e);
                     },
