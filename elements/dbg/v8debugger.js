@@ -34,21 +34,21 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.stripPrefix = "",
-    
+
     this.setStrip = function(stripPrefix) {
         this.stripPrefix = stripPrefix
     };
-    
+
     this.$strip = function(str) {
         if (!this.stripPrefix)
             return str;
-        
+
         if (str.indexOf(this.stripPrefix) == 0)
             return str.slice(this.stripPrefix.length)
         else
             return str;
     };
-    
+
     this.isRunning = function() {
         return this.$debugger.isRunning();
     };
@@ -83,7 +83,7 @@ var V8Debugger = function(dbg, host) {
     this.$isEqual = function(xmlFrameSet, frameSet){
         if (xmlFrameSet.length != frameSet.length)
             return false;
-        
+
         var xmlFirst = xmlFrameSet[0];
         var first    = frameSet[0];
         if (xmlFirst.getAttribute("scriptid") != first.func.scriptId)
@@ -107,7 +107,7 @@ var V8Debugger = function(dbg, host) {
         //With code insertion, line/column might change??
         xmlFrame.setAttribute("line", frame.line);
         xmlFrame.setAttribute("column", frame.column);
-        
+
         var vars = xmlFrame.selectNodes("vars/item");
         var fVars = frame.arguments;
         for (var i = 1, j = 0; j < fVars.length; j++) { //i = 1 to skin this
@@ -119,17 +119,17 @@ var V8Debugger = function(dbg, host) {
             if (fVars[j].name !== ".arguments")
                 this.$updateVar(vars[i++], fVars[j]);
         }
-        
+
         //@todo not caring about globals/scopes right now
     },
-    
+
     this.$updateVar = function(xmlVar, fVar){
         xmlVar.setAttribute("value", this.$valueString(fVar.value));
         xmlVar.setAttribute("type", fVar.value.type);
         xmlVar.setAttribute("ref", fVar.value.ref);
         apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
     }
-    
+
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
         xml.push("<frame index='", frame.index,
@@ -337,18 +337,18 @@ var V8Debugger = function(dbg, host) {
     this.suspend = function() {
         this.$debugger.suspend();
     };
-    
+
     this.evaluate = function(expression, frame, global, disableBreak, callback){
         this.$debugger.evaluate(expression, frame, global, disableBreak, function(body, refs, error){
             var str = [];
             var name = expression.trim().split(/;|\n/).pop().trim().replace(/"/g, "&quot;");
             if (error) {
-                str.push("<item type='.error' name=\"", apf.escapeXml(name),
+                str.push("<item type='.error' name=\"", apf.escapeXML(name),
                     "\" value='", error.message, "' />");
             }
             else {
                 str.push("<item name=\"", apf.escapeXML(name),
-                  "\" value='", apf.escapeXML(body.text), //body.value || 
+                  "\" value='", apf.escapeXML(body.text), //body.value ||
                   "' type='", body.type,
                   "' ref='", body.handle,
                   body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",

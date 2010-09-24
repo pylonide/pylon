@@ -160,10 +160,10 @@ apf.codeeditor = function(struct, tagName) {
             _self.$removeDocListeners && _self.$removeDocListeners();
             _self.$removeDocListeners = _self.$addDocListeners(doc);
             
+            _self.$editor.setDocument(doc);            
+
             _self.$updateMarker();
             _self.$updateBreakpoints(doc);
-            
-            _self.$editor.setDocument(doc);            
         })
     };
 
@@ -213,10 +213,9 @@ apf.codeeditor = function(struct, tagName) {
     this.$updateBreakpoints = function(doc) {
         var doc = doc || this.$editor.getDocument();
 
-        if (!this.$breakpoints) {
-            doc.setBreakpoints([]);
+        doc.setBreakpoints([]);
+        if (!this.$breakpoints)
             return;
-        }
 
         if (this.xmlRoot) {
             var scriptId = this.xmlRoot.getAttribute("scriptid");
@@ -225,12 +224,12 @@ apf.codeeditor = function(struct, tagName) {
 
             var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@scriptid = " + scriptId + "]");
 
-            var doc = this.$editor.getDocument();
             var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
                 rows.push(parseInt(breakpoints[i].getAttribute("line")) - parseInt(breakpoints[i].getAttribute("lineoffset")));
             }
-            doc.setBreakpoints(rows);
+            if (rows.length)
+                doc.setBreakpoints(rows);
         }
     };
 
@@ -316,6 +315,7 @@ apf.codeeditor = function(struct, tagName) {
         this.$breakpoints = this.$debugger.$mdlBreakpoints;
 
         var self = this;
+        self.$updateBreakpoints();
         this.$breakpoints.addEventListener("update", function() {
             self.$updateBreakpoints();
         });
