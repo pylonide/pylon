@@ -1,7 +1,16 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:frame caption="Code Editor" anchors="0 0 0 0">
-        <a:table columns="100,144" padding="5">
-            <a:label>Font Size</a:label><a:slider value="[@fontsize]" min="8" max="72" mask="#" snap="1" />
+        <a:table columns="150,150">
+            <a:checkbox label="Wrap Lines" value="[@wrap]" />
+            <a:checkbox label="Overwrite mode" value="[@overwrite]" checked="false" />
+            <a:checkbox label="Full line selection" value="[@selstyle]" values="line|text" checked="true"/>
+            <a:checkbox label="Read only" value="[@readonly]" checked="false" />
+            <a:checkbox label="Highlight active line" value="[@hlactiveline]" checked="true"/>
+            <a:checkbox label="Show invisibles" value="[@showinvisibles]" checked="true"/>
+            <a:checkbox label="Show print margin" value="[@showprint]" checked="true" />
+            <a:spinner label="Show print margin" value="[@printmargin]" realtime="true" min="1" max="200" width="50" />
+            <a:label>Font Size</a:label>
+            <a:spinner label="Font Size" value="[@fontsize]" realtime="true" min="8" max="72" width="50" />
         </a:table>
     </a:frame>
 </a:application>

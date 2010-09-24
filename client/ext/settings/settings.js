@@ -25,9 +25,15 @@ return ext.register("ext/settings/settings", {
     },
 
     addSection : function(name, xpath){
-        var id = "pgSettings" + name.replace(/ /g, "_");
-        this.model.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
-        return pgSettings.add(name, id);
+        var id = "pgSettings" + name.replace(/ /g, "_"),
+            page = pgSettings.getPage(id);
+        if (page)
+            return page;
+        if (!this.model.data.selectSingleNode(xpath + "/section[@page='" + id + "']"))
+            this.model.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
+        page = pgSettings.add(name, id);
+        // @todo set actiontracker
+        return page;
     },
 
     hook : function(){

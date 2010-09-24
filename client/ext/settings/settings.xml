@@ -31,9 +31,7 @@
                         </a:frame>
                     </a:page>
                     <a:page id="pgSettingsEditor" render="runtime">
-                        <a:frame caption="Editor" anchors="0 0 0 0">
-                            <a:checkbox value="[@wrap]">Wrap Lines</a:checkbox>
-                        </a:frame>
+                        <a:frame caption="Editor" anchors="0 0 0 0"></a:frame>
                     </a:page>
                 </a:pages>
             </a:hbox>

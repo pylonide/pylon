@@ -12,3 +12,8 @@
 
 <a:menu id="mnuEditors">
 </a:menu>
+
+<a:menu id="mnuModes"
+  onitemclick = "require('core/ext').setLayoutMode(event.value);">
+    <a:item value="default" caption="Default" />
+</a:menu>

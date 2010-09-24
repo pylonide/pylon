@@ -40,11 +40,4 @@
             </a:hbox>
         </a:vbox>
     </a:window>
-
-    <a:toolbar id="tbNewResource" height="20">
-        <a:bar>
-            <a:button id="btnNewFile" icon="page_add.png" tooltip="New File" caption="New File" />
-            <a:button id="btnNewFolder" icon="folder_add.png" tooltip="New Folder" caption="New Folder" />
-        </a:bar>
-    </a:toolbar>
 </a:application>

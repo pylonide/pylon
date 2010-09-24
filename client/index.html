@@ -73,6 +73,7 @@
                             "ext/browser/browser",
                             "ext/code/code",
                             "ext/extmgr/extmgr",
+                            "ext/formatjson/formatjson",
                             "ext/docs/docs",
                             "ext/richtext/richtext",
                             "ext/console/console",
@@ -250,13 +251,6 @@
                     <a:button submenu="mnuFile">File</a:button>
                     <a:button submenu="mnuEdit">Edit</a:button>
                     <a:button submenu="mnuView">View</a:button>
-                    <a:dropdown right="1" top="1" id="ddModes"
-                      onafterselect = "
-                        var ext = require('core/ext');
-                        ext.setLayoutMode(this.value);
-                      ">
-                        <a:item value="default" caption="Default" />
-                    </a:dropdown>
                 </a:menubar>
                 <a:bar id="barTools">
 
