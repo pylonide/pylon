@@ -89,8 +89,8 @@ return ext.register("ext/save/save", {
         else
             data = data.replace(/\r?\n/g, "\n");
 
-        this.disable();
-        var _self = this;
+        var _self = this, panel = sbMain.firstChild;
+        panel.setAttribute("caption", "Saving file " + path);
         fs.saveFile(path, data, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
@@ -102,7 +102,11 @@ return ext.register("ext/save/save", {
                             : "The error reported was " + e.message));
             }
             
-            _self.enable();
+            panel.setAttribute("caption", "Saved file " + path);
+            setTimeout(function(){
+                if (panel.caption == "Saved file " + path)
+                    panel.removeAttribute("caption");
+            }, 500);
         });
         
         page.$at.reset(); //@todo this sucks... please fix

@@ -21,7 +21,7 @@ return ext.register("ext/filesystem/filesystem", {
 
     saveFile : function(path, data, callback) {
         if (this.webdav)
-            this.webdav.write(path, data, callback);
+            this.webdav.write(path, data, null, callback);
     },
 
     createFolder: function(name) {
