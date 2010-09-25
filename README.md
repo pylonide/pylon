@@ -1,6 +1,3 @@
-# NOTE
-We are developing on firefox and this is a development repo, other browsers are expected to have issues until a release
-
 # Cloud9 IDE
 
 The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
@@ -20,6 +17,9 @@ Written in Javascript, for Javascripters.
   * Local filesystem is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
   * Highly extensible through the plugin system
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
+
+## Browser Support
+We are developing on firefox and this is a development repo, other browsers might be less stable until a proper release.
 
 ## Usage
 
