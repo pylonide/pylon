@@ -25,7 +25,7 @@ return keys.onLoad({
         },
         "searchreplace" : {
             "search": "Command-F",
-            "searchreplace": "Shift-Command-R"
+            "searchreplace": "Command-Shift-R"
         },
         "code" : {
             "selectall": "Command-A",
@@ -35,7 +35,7 @@ return keys.onLoad({
             "findnext": "Command-K",
             "findprevious": "Command-Shift-K",
             "find": "Command-F",
-            "replace": "Command-R",
+            "replace": "Command-Shift-R",
             "undo": "Command-Z",
             "redo": "Command-Shift-Z|Command-Y",
             "overwrite": "Insert",
