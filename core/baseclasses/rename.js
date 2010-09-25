@@ -368,9 +368,14 @@ apf.Rename.initEditableArea = function(){
             (e || event).cancelBubble = true;
         };
     
-        this.$txt.onmouseover = this.$txt.onmouseout = this.$txt.oncontextmenu =
+        this.$txt.onmouseover = 
+        this.$txt.onmouseout  = 
+        this.$txt.oncontextmenu =
         //this.$txt.onkeydown   = 
-        this.$txt.onmousedown = function(e){ (e || event).cancelBubble = true; };
+        this.$txt.onmouseup   = 
+        this.$txt.onmousedown = function(e){ 
+            apf.stopPropagation(e || event)
+        };
     
         this.$txt.onkeyup = function(e){
             //(e || event).cancelBubble = true;

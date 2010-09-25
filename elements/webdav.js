@@ -776,7 +776,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function newLock(sPath) {
-        return this.locks[sPath] = {
+        return this.$locks[sPath] = {
             path : sPath,
             id   : this.$lockId++,
             token: null
