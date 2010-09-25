@@ -1,0 +1,12 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winTemplate"
+      title     = ""
+      center    = "true"
+      modal     = "false"
+      buttons   = "close"
+      kbclose   = "true"
+      width     = "500">
+        
+    </a:window>
+</a:application>

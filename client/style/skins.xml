@@ -5069,7 +5069,9 @@
         }
 
         .editor_tab .editor_bg {
-            height : 100%;
+		    top : 32px;
+		    bottom : 0px;
+		    height : auto;
             position : absolute;
             margin: 0 auto;
             background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
@@ -5138,12 +5140,6 @@
 			-webkit-box-flex: 1;
 			overflow : hidden;
 			position : relative;
-		}
-		
-		.editor_tab .editor_bg{
-		    top : 32px;
-		    bottom : 0px;
-		    height : auto;
 		}
     ]]></a:style>
 
@@ -7688,12 +7684,13 @@
         }*/
 
         .tree .empty, .tree .offline, .tree .loading{
-            padding: 4px 0 2px 0;
+            padding: 0 0 0px 0;
             color: #AAA;
             font-weight : normal;
+            height : 0;
         }
 
-        .tree .loading{
+        .tree div.loading{
             text-align : left;
         }
 
@@ -10366,7 +10363,7 @@
             position : relative;
             top : -3px;
         }
-
+        
         /*.datagrid .message span{
             background : url(icons/cog.png) no-repeat left bottom;
             width : 16px;
@@ -10383,6 +10380,19 @@
         .datagrid .loading span, .datagrid .empty span, .datagrid .offline span{
             background : white;
             display : inline;
+        }
+        
+        .datagrid .root .message{
+            padding : 0;
+            margin : 0;
+            border-bottom : 0;
+            height : 0;
+        }
+        .datagrid .root .message label{
+            top : 0;
+            padding : 0;
+            height : 0;
+            overflow : hidden;
         }
 
         .pointer{
