@@ -987,7 +987,7 @@ apf.webdav = function(struct, tagName){
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-        for (var i = aResp.length > 1 ? 1 : 0, j = aResp.length; i < j; i++)
+        for (var i = 0, j = aResp.length; i < j; i++) //aResp.length > 1 ? 1 : 
             aOut.push(parseItem.call(this, aResp[i]));
 
         if (callback)
