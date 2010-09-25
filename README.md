@@ -18,15 +18,20 @@ Written in Javascript, for Javascripters.
   * Highly extensible through the plugin system
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
 
+## Browser Support
+We are developing on firefox and this is a development repo, other browsers might be less stable until a proper release.
+
 ## Usage
 
 After a Git checkout of the project or download (see Installation section), the command you need to run the IDE locally is the following:
 
 To start cloud9 and install all submodules you can use the quickstart options for your platform on the console or from your explorer/finder and opens it in your default browser:
 
-$ bin/cloud9-osx64
-$ bin/cloud9-lin32
-> bin\cloud9-win32.bat
+    $ bin/cloud9-osx64
+    $ bin/cloud9-lin32
+    > bin\cloud9-win32.bat
+
+Note you'll need a git version 1.7 or higher to use the stock shell script provided.
 
 If you want to start it manually try:
 

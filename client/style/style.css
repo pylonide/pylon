@@ -38,3 +38,15 @@ BODY {
     font-family : Trebuchet MS;
     line-height : 16px;
 }
+
+#loadscreen{
+    background : white;
+    padding : 10px;
+    position : absolute;
+    left : 0;
+    top : 0; 
+    right : 0;
+    bottom : 0;
+    z-index : 100;
+    color : #666;
+}
