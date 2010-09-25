@@ -136,7 +136,8 @@
 		}
 
 		.dockwin .docktitle {
-			margin: 0
+			margin: 0;
+			position : relative;
 		}
 
 		.dockwin .dockcontent {
@@ -5125,6 +5126,25 @@
         .editor_tab .session_page.curpage{
             display : block;
         }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+		.editor_tab {
+			-webkit-box-orient: vertical;
+			display: -webkit-box;
+		}
+
+		.editor_tab .session_page{
+			height: auto;
+			-webkit-box-flex: 1;
+			overflow : hidden;
+			position : relative;
+		}
+		
+		.editor_tab .editor_bg{
+		    top : 32px;
+		    bottom : 0px;
+		    height : auto;
+		}
     ]]></a:style>
 
     <a:presentation>
@@ -12550,16 +12570,29 @@
 
     ]]></a:style>
     <a:style condition="apf.isIE6">
-	.lowtab .btncontainer{
-            bottom: 1px;
-	}
-	.lowtab .btncontainer div{
-	    margin: 0 0 0 0;
-	}
- 	.lowtab .btncontainer div div {
-	    margin: 0 0 0 0;
-	}
+    	.lowtab .btncontainer{
+                bottom: 1px;
+    	}
+    	.lowtab .btncontainer div{
+    	    margin: 0 0 0 0;
+    	}
+     	.lowtab .btncontainer div div {
+    	    margin: 0 0 0 0;
+    	}
     </a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+		.lowtab {
+			-webkit-box-orient: vertical;
+			display: -webkit-box;
+		}
+
+		.lowtab .page {
+			height: auto;
+			-webkit-box-flex: 1;
+			overflow : hidden;
+			position : relative;
+		}
+    ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div">
             <div class='lowtab'>
