@@ -187,6 +187,12 @@ apf.BaseTree = function(){
                     var lastNode = root.selectSingleNode(paths.shift());
                     apf.asyncForEach(paths, 
                         function(part, next2) {
+                            if (!lastNode) {//Can't find node returning
+                                next2(true);
+                                next();
+                                return;
+                            }
+                            
                             var xmlNode = lastNode.selectSingleNode(part);
                             if (xmlNode) 
                                 _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, next2);

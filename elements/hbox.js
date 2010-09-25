@@ -325,7 +325,7 @@ apf.vbox = function(struct, tagName){
                         //sp.style.overflow = "hidden"; //This line breaks worknets
                         if (!this.parentNode.$vbox)
                             sp.style["width"] = "0";
-                        else {
+                        else if (apf.isGecko) {
                             this.$ext.style.height = "1px"; //For flex with overflow:auto in fixed height structure
                             sp.style["height"] = "0px";
                         }
