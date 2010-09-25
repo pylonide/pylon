@@ -5958,7 +5958,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            font-family: Tahoma;
+            font-family: Trebuchet MS;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;
@@ -6128,7 +6128,7 @@
             float:left;
             width: 16px;
             height: 16px;
-            margin: 0 4px 0 0;
+            margin: -1px 4px 0 0;
         }
 
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonOver span{
@@ -6139,7 +6139,7 @@
         }
 
         .toolbar .subbar .toolbarbuttonEmpty span{
-            margin: -1px 3px 0 0;
+            margin: -2px 3px 0 0;
         }
     ]]></a:style>
 

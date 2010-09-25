@@ -89,8 +89,23 @@ return ext.register("ext/save/save", {
         else
             data = data.replace(/\r?\n/g, "\n");
 
-        fs.saveFile(path, data);
-        page.$at.reset();
+        this.disable();
+        var _self = this;
+        fs.saveFile(path, data, function(data, state, extra){
+            if (state != apf.SUCCESS) {
+                util.alert(
+                    "Could not save document",
+                    "An error occurred while saving this document",
+                    "Please see if your internet connection is available and try again. "
+                        + (state == apf.TIMEOUT
+                            ? "The connection timed out."
+                            : "The error reported was " + e.message));
+            }
+            
+            _self.enable();
+        });
+        
+        page.$at.reset(); //@todo this sucks... please fix
         return false;
     },
 

@@ -71,20 +71,14 @@ return ext.register("ext/code/code", {
                 submenu : "mnuSyntax"
             })),
 
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Column Mode",
-                onclick : function(){
-
-                }
-            })),
-
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Overwrite Mode",
                 checked : "{ceEditor.overwrite}"
-            })),
-
+            })),*/
+            
+            mnuView.appendChild(new apf.divider()),
+            
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
@@ -94,17 +88,19 @@ return ext.register("ext/code/code", {
                 }
             })),
 
-            mnuView.appendChild(new apf.item({
+            /*mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Read Only",
                 checked : "{ceEditor.readonly}"
-            })),
+            })),*/
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Highlight Active Line",
                 checked : "{ceEditor.activeline}"
             })),
+            
+            mnuView.appendChild(new apf.divider()),
 
             mnuView.appendChild(new apf.item({
                 type    : "check",
