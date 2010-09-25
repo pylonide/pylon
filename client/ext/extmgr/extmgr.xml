@@ -11,8 +11,7 @@
         <a:vbox anchors="0 0 0 0" edge="10 10 5 10">
             <a:hbox align="center" edge="0 0 5 0" padding="5">
                 <a:textbox id="tbModuleName" flex="1" 
-                  required   = "true" 
-                  invalidmsg = "Missing module name;Please enter a module name" />
+                  realtime   = "true" />
                 <a:button width="80"
                   default = "1"
                   caption = "Add"

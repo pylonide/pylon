@@ -2,10 +2,8 @@
     <a:window
       id        = "winFormat"
       title     = "Format JSON"
-      icon      = ""
       center    = "true"
       modal     = "false"
-      resizable = "true"
       buttons   = "close"
       kbclose   = "true"
       width     = "200">

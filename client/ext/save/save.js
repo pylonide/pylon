@@ -83,7 +83,14 @@ return ext.register("ext/save/save", {
             return;
 
         var path = node.getAttribute("path");
-        var data = apf.queryValue(node, "data");
+        
+        //@todo big hack!!
+        var data, editor = require('ext/editors/editors').currentEditor;
+        if (editor.ceEditor)
+            data = editor.ceEditor.getValue();
+        else
+            data = apf.queryValue(node, "data");
+            
         if (apf.queryValue(node, "data/@newline") == "windows")
             data = data.replace(/\r?\n/g, "\r\n");
         else
