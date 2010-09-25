@@ -21,6 +21,8 @@
           margin = "6 0 4 0"
           value  = "[data]"
           syntax = "{getSyntax([@contenttype])}"
+          showinvisibles = "false"
+          softtabs       = "true"
           contextmenu    = "mnuCtxEditor"
           debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
           readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
