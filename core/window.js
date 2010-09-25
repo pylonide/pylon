@@ -1434,6 +1434,9 @@ apf.window = function(){
                     apf.loaded = true;
                     $setTimeout(function() {
                         apf.dispatchEvent("load");
+                        apf.addEventListener("$event.load", function(cb){
+                            cb();
+                        });
                     });
                 }
         
