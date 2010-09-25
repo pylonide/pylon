@@ -35,25 +35,23 @@ return ext.register("ext/gotoline/gotoline", {
             }))
         );
         
+        this.hotitems["gotoline"] = [this.nodes[1]];
+        
         plugins.registerCommand("gotoline", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(true);
         });
     },
     
     init : function(amlNode){
-        this.hotitems["gotoline"] = [this.nodes[1]];
-
-        this.txtLinenr = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
+        this.txtLinenr = txtLineNr;//winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
         //buttons
-        this.btnGo = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
+        this.btnGo = btnLinGo;//winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnGo.onclick = this.gotoLine.bind(this);
-        this.btnClose = winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[2]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
     },
 
     toggleDialog: function(forceShow) {
         ext.initExtension(this);
-        
+
         if (!winGotoLine.visible || forceShow)
             winGotoLine.show();
         else

@@ -9,8 +9,9 @@ require.def("ext/searchreplace/searchreplace",
      "core/ext",
      "ace/PluginManager",
      "ace/Search",
+     "ext/editors/editors", 
      "text!ext/searchreplace/searchreplace.xml"],
-    function(ide, ext, plugins, search, markup) {
+    function(ide, ext, plugins, search, editors, markup) {
 
 return ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
@@ -23,7 +24,7 @@ return ext.register("ext/searchreplace/searchreplace", {
 
     nodes   : [],
 
-    init : function(amlNode){
+    hook : function(){
         var _self = this;
 
         this.nodes.push(
@@ -41,24 +42,10 @@ return ext.register("ext/searchreplace/searchreplace", {
                 }
             }))
         );
-
+        
         this.hotitems["search"] = [this.nodes[1]];
         this.hotitems["searchreplace"] = [this.nodes[2]];
-
-        this.txtFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        this.txtReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        //bars
-        this.barReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
-        //buttons
-        this.btnReplace    = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
-        this.btnReplace.onclick = this.replace.bind(this);
-        this.btnReplaceAll = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[2]");
-        this.btnReplaceAll.onclick = this.replaceAll.bind(this);
-        this.btnFind       = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnFind.onclick = this.findNext.bind(this);
-        this.btnClose      = winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[4]");
-        this.btnClose.onclick = this.toggleDialog.bind(this);
-
+        
         plugins.registerCommand("find", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(false, true);
         });
@@ -67,10 +54,36 @@ return ext.register("ext/searchreplace/searchreplace", {
         });
     },
 
+    init : function(amlNode){
+        this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
+        this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
+        //bars
+        this.barReplace    = barReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
+        //buttons
+        this.btnReplace    = btnReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
+        this.btnReplace.onclick = this.replace.bind(this);
+        this.btnReplaceAll = btnReplaceAll;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[2]");
+        this.btnReplaceAll.onclick = this.replaceAll.bind(this);
+        this.btnFind       = btnFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
+        this.btnFind.onclick = this.findNext.bind(this);
+    },
+
     toggleDialog: function(isReplace, forceShow) {
-        this.setupDialog(isReplace);
-        if (!winSearchReplace.visible || forceShow)
+        ext.initExtension(this);
+        
+        if (!winSearchReplace.visible || forceShow || this.$lastState != isReplace) {
+            this.setupDialog(isReplace);
+            
+            var editor = editors.currentEditor;
+            var sel   = editor.getSelection();
+            var doc   = editor.getDocument();
+            var range = sel.getRange();
+            var value = doc.getTextRange(range);
+            if (value)
+                this.txtFind.setValue(value);
+
             winSearchReplace.show();
+        }
         else
             winSearchReplace.hide();
         return false;
@@ -85,6 +98,8 @@ return ext.register("ext/searchreplace/searchreplace", {
     },
 
     setupDialog: function(isReplace) {
+        this.$lastState = isReplace;
+        
         // hide all 'replace' features
         this.barReplace.setProperty("visible", isReplace);
         this.btnReplace.setProperty("visible", isReplace);

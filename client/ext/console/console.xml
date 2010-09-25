@@ -64,7 +64,7 @@
                           value     = "[auto/console/input]" />
                     </a:hbox>
                     <a:button width="80" right="8" bottom="8"
-                      disabled = "{!txtCode.value.trim()}"
+                      disabled = "{!txtCode.value.trim() or !stDebugProcessRunning.active or stRunning.active}"
                       onclick = "
                         require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
                       ">Evaluate</a:button>

@@ -657,7 +657,6 @@
             border-width : 1px 0 1px 0;
             border-color : #c3c3c3 white white #c3c3c3;
             line-height : 0;
-            margin : 10px 0 10px 0;
             cursor : default;
         }
 
@@ -4276,6 +4275,7 @@
             cursor: default;
             color : #333;
             padding : 2px;
+            white-space : nowrap;
         }
 
         .labelDisabled{
@@ -4496,7 +4496,7 @@
             height              : 18px;
             position            : absolute;
             top                 : 4px;
-            left                : 9px;
+            left                : 5px;
             background-image    : url(images/searchbox_textbox_icon.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
@@ -5958,8 +5958,7 @@
         .toolbar .subbar {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
             background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
-            height: 27px;
-            font-family: Tahoma;
+            font-family: Trebuchet MS;
             font-size: 12px;
             border-bottom: 1px solid #b2b2b2;
             position: relative;
@@ -5992,7 +5991,7 @@
         <a:main container=".">
             <div class="toolbar"> </div>
         </a:main>
-        <a:bar container="." inherit="true">
+        <a:bar container="." inherit="true" minheight="28">
             <div class="subbar"> </div>
         </a:bar>
         <a:menubar container="." inherit="true">
@@ -6129,7 +6128,7 @@
             float:left;
             width: 16px;
             height: 16px;
-            margin: 0 4px 0 0;
+            margin: -1px 4px 0 0;
         }
 
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonOver span{
@@ -6140,7 +6139,7 @@
         }
 
         .toolbar .subbar .toolbarbuttonEmpty span{
-            margin: -1px 3px 0 0;
+            margin: -2px 3px 0 0;
         }
     ]]></a:style>
 
@@ -7510,16 +7509,13 @@
 <a:tree name="tree">
         <a:style><![CDATA[
         .tree{
+            border : 1px solid #AFAFAF;
             padding : 3px;
             background-color: #fdfdfd;
             overflow: hidden;
             cursor : default;
             position : relative;
             overflow: auto;
-        }
-
-        .dockcontent .tree{
-            border: none;
         }
 
         .trDefines {
@@ -10361,6 +10357,7 @@
         .datagrid .loading, .datagrid .empty, .datagrid .offline{
             padding : 5px;
             margin : 0;
+            white-space : normal;
         }
 
         .datagrid .loading span, .datagrid .empty span, .datagrid .offline span{
