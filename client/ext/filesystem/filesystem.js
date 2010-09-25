@@ -27,7 +27,7 @@ return ext.register("ext/filesystem/filesystem", {
     createFolder: function(name) {
         var node = trFiles.selected;
         if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
+            node = trFiles.xmlRoot.selectSingleNode("folder");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
 
@@ -59,7 +59,7 @@ return ext.register("ext/filesystem/filesystem", {
     createFile: function(filename) {
         var node = trFiles.selected;
         if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("//folder[1]");
+            node = trFiles.xmlRoot.selectSingleNode("folder");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
 
@@ -133,7 +133,7 @@ return ext.register("ext/filesystem/filesystem", {
 
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='Project' /></data>");
+        this.model.load("<data><folder type='folder' name='Project' path='/workspace' /></data>");
 
         var url;
         if (location.host) {
