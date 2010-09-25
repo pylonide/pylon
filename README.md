@@ -31,6 +31,8 @@ To start cloud9 and install all submodules you can use the quickstart options fo
     $ bin/cloud9-lin32
     > bin\cloud9-win32.bat
 
+Note you'll need a git version higher than 1.6.1 to use the stock shell script provided.
+
 If you want to start it manually try:
 
     $ node bin/cloud9.js
