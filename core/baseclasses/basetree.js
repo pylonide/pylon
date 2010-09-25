@@ -293,7 +293,7 @@ apf.BaseTree = function(){
             this.$extend(xmlNode, container, immediate, callback);
             return;
         }
-        
+
         if (immediate || container.scrollHeight > 1000) {
             if (!this.nocollapse) {
                 container.style.height = "auto";
@@ -305,10 +305,17 @@ apf.BaseTree = function(){
         }
 
         var _self = this;
+        var prevHeight = container.style.height;
+        container.style.overflow = "visible";
+        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+        var height = container.scrollHeight;
+        container.style.overflow = "hidden";
+        container.style.height = prevHeight;
+        
         apf.tween.single(container, {
             type    : 'scrollheight', 
-            from    : 0, 
-            to      : container.scrollHeight, 
+            from    : container.offsetHeight, 
+            to      : height, 
             anim    : this.$animType, 
             steps   : this.$animOpenStep,
             interval: this.$animSpeed,
