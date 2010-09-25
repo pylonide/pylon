@@ -1,6 +1,6 @@
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project developed by the skilled developers Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
+The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
 
 This Integrated Development Environment aims to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
 Cloud9's main focus is on Javascript development, it is able to set a new standard for client and server development integration.
@@ -21,6 +21,14 @@ Written in Javascript, for Javascripters.
 ## Usage
 
 After a Git checkout of the project or download (see Installation section), the command you need to run the IDE locally is the following:
+
+To start cloud9 and install all submodules you can use the quickstart options for your platform on the console or from your explorer/finder and opens it in your default browser:
+
+$ bin/cloud9-osx64
+$ bin/cloud9-lin32
+> bin\cloud9-win32.bat
+
+If you want to start it manually try:
 
     $ node bin/cloud9.js
 
