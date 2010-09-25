@@ -554,11 +554,13 @@ apf.DragDrop = function(){
                 return;
             _self.dragging = 0;
 
-            if (!apf.isIphone && _self.allowdeselect
-              && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
-              && _self.$getLayoutNode("item", "select", this) != this))
-                return; //This broke making a selection with the mouse in rename:  _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
-                
+            try{ //Firefox can crash here because of some chrome permission issue 
+                if (!apf.isIphone && _self.allowdeselect
+                  && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
+                  && _self.$getLayoutNode("item", "select", this) != this))
+                    return; //This broke making a selection with the mouse in rename:  _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
+            }catch(e) {return;}
+
             //MultiSelect must have carret behaviour AND deselect at clicking white
             if (_self.$findValueNode)
                 fEl = _self.$findValueNode(srcEl);
