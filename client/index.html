@@ -12,6 +12,15 @@
 
         <script type="text/javascript" src="require.js"></script>
         <script type="text/javascript">//<!--
+
+        	if (!window.console || !(typeof console.log == "function"))
+              	window.console = { 
+                    log: function() {},
+                    warn: function() {},
+                    error: function() {},
+                    debug: function() {}
+     	 	    };
+        	
             var RELEASE = "release";
             var DEBUG   = "debug";
             var FILES   = "files";
