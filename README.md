@@ -29,7 +29,7 @@ To start cloud9 and install all submodules you can use the quickstart options fo
 
 $ bin/cloud9-osx64
 $ bin/cloud9-lin32
-> bin\cloud9-win32.bat
+> cd bin& cloud9-win32.bat
 
 If you want to start it manually try:
 
