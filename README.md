@@ -1,3 +1,6 @@
+# NOTE
+We are developing on firefox and this is a development repo, other browsers are expected to have issues until a release
+
 # Cloud9 IDE
 
 The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]) and Mike de Boer ([mikedeboer]) from [ajax.org], built on top of [Node.JS].
