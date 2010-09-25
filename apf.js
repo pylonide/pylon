@@ -259,8 +259,11 @@ var apf = {
         * Newer versions have (typeof/./) = object
         * 
         */
-       if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
-           b = 0;
+        if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
+            b = 0;
+
+        if (b == 2 && sAgent.indexOf("safari") > -1) 
+            b = 3;
 
         /**
          * Specifies whether the application is running in the Opera browser.

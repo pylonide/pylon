@@ -405,7 +405,8 @@ apf.http = function(){
             //#ifdef __DEBUG
             //#ifndef __SUPPORT_GWT
             try {
-                netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+                if (apf.isGecko)
+                    netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
             }
             catch (e) {
             //#endif
