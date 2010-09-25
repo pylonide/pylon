@@ -7,10 +7,10 @@
             <a:checkbox label="Read only" value="[@readonly]" checked="false" />
             <a:checkbox label="Highlight active line" value="[@hlactiveline]" checked="true"/>
             <a:checkbox label="Show invisibles" value="[@showinvisibles]" checked="true"/>
-            <a:checkbox label="Show print margin" value="[@showprint]" checked="true" />
-            <a:spinner label="Show print margin" value="[@printmargin]" realtime="true" min="1" max="200" width="50" />
-            <a:label>Font Size</a:label>
-            <a:spinner label="Font Size" value="[@fontsize]" realtime="true" min="8" max="72" width="50" />
         </a:table>
+        <a:hbox edge="10 0 0 0">
+            <a:checkbox label="Show print margin" value="[@showprint]" checked="true" width="115" />
+            <a:spinner label="Show print margin" value="[@printmargin]" realtime="true" min="1" max="200" width="50" />
+        </a:hbox>
     </a:frame>
 </a:application>
