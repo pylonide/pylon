@@ -187,6 +187,7 @@ return ext.register("ext/editors/editors", {
             var val = (this.undolength ? 1 : undefined);
             if (fake.changed != val) {
                 fake.changed = val;
+                var filename = apf.getFilename(model.data.getAttribute("path"));
                 fake.setAttribute("caption", filename + (val ? "*" : ""));
                 model.setQueryValue("@name", filename + (val ? "*" : ""));
             }
