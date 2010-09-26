@@ -313,7 +313,7 @@ apf.vbox = function(struct, tagName){
                     if (apf.isGecko && this.parentNode.$vbox)
                         this.$ext.style.height = "1px";
                     
-                    if (!this.$altExt) { //false && apf.isGecko && 
+                    if (false && !this.$altExt) { //false && apf.isGecko && 
                         var doc = this.$ext.ownerDocument;
                         var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);

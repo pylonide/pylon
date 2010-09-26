@@ -262,7 +262,7 @@ var apf = {
         if((typeof/./)[0]=='f' && parseFloat((sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i) || {})[1]) <= 2)
             b = 0;
 
-        if (b == 2 && sAgent.indexOf("safari") > -1) 
+        if (b == 2 && sAgent.indexOf("chrome") == -1) 
             b = 3;
 
         /**
@@ -329,7 +329,7 @@ var apf = {
         this.isGecko3      = this.isGecko;// && (function x(){})[-5] == "x";
         this.isGecko35     = this.isGecko && (/a/[-1] && Object.getPrototypeOf) ? true : false;
         this.versionGecko  = this.isGecko ? parseFloat(sAgent.match(/(?:gecko)\/([\d\.]+)/i)[1]) : -1;
-        this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox|minefield)\/([\d\.]+)/i)[1]) : -1;
+        this.versionFF     = this.isGecko ? parseFloat(sAgent.match(/(?:firefox(-[\d.]+)?|minefield)\/([\d.]+)/i)[2]) : -1;
         this.versionSafari = this.isSafari ? parseFloat(sAgent.match(/(?:version)\/([\d\.]+)/i)[1]) : -1;
         this.versionChrome = this.isChrome ? parseFloat(sAgent.match(/(?:chrome)\/([\d\.]+)/i)[1]) : -1;
         this.versionOpera  = this.isOpera 
