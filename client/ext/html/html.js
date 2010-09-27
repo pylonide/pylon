@@ -45,7 +45,7 @@ return ext.register("ext/html/html", {
 
     onOpenPage : function() {
         var file = this.page.$model.data;
-        window.open(location.protocol + "//" + location.host + "/" + file.getAttribute("path"), "_blank");
+        window.open(location.protocol + "//" + location.host + file.getAttribute("path"), "_blank");
     },
 
     enable : function() {
