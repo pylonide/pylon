@@ -131,7 +131,7 @@ return ext.register("ext/editors/editors", {
 
     switchEditor : function(path){
         var page = tabEditors.getPage();
-        if (page.type == path)
+        if (!page || page.type == path)
             return;
 
         var lastType = page.type;
