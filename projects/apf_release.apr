@@ -12,6 +12,11 @@
     </p:settings>
 
     <p:process>
+        <!--p:vcs
+          type       = "svn"
+          cmd        = "update"
+          repository = "{platform}" /-->
+
         <p:combine
           type     = "script"
           defines  = "1"
@@ -178,6 +183,7 @@
         <p:define name="__WITH_UTILITIES" value="1" />
         <p:define name="__WITH_SYNTAX" value="1" />
         <p:define name="__WITH_VECTOR" value="0" />
+        <p:define name="__WITH_ASYNC" value="1" />
         <!-- include all available AML Core objects -->
         <p:define name="__WITH_ACTIONTRACKER" value="1" />
         <p:define name="__ENABLE_ACTIONTRACKER_TRANSACTIONS" value="1" />

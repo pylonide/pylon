@@ -10,6 +10,7 @@ require("proc/compress");
 require("proc/encoder");
 require("proc/inline");
 require("proc/docgen");
+require("proc/vcs");
 
 var Sys   = require("sys"),
     Fs    = require("fs");

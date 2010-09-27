@@ -12,14 +12,14 @@
           short=""
           desc="" />
     </p:define>
+    <p:define name="__WITH_ASYNC"
+      match=""
+      short=""
+      desc="" />
     <p:define name="__SUPPORT_NODE"
       match=""
       short=""
       desc="Run with Node">
-        <p:define name="__WITH_ASYNC"
-          match=""
-          short=""
-          desc="" />
         <p:define name="__WITH_WRAP"
           match=""
           short=""
