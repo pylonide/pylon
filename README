@@ -16,7 +16,7 @@ this distribution for details.
   Size of Runtime
   ===============
   
-  Javeline Platform comes in two flavors. Debug and Release. These contain all
+  Ajax.org Platform comes in two flavors. Debug and Release. These contain all
 that is APF. For a project you only need a subset of APF. Usually resulting in
 a zipped download of 100KB or less. The up and coming packager application will 
 help packaging APF for your project.
@@ -38,4 +38,4 @@ help packaging APF for your project.
   References:
   ===========
 
-  [1] Ajax.org Platform; http://www.javeline.com or http://www.ajax.org
+  [1] Ajax.org Platform; http://www.ajax.org
