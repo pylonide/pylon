@@ -32,7 +32,7 @@ exports.XMLHttpRequest = function() {
     // Set some default headers
     var defaultHeaders = {
         "User-Agent": "node.js",
-        "Accept": "*/*",
+        "Accept": "*/*"
     };
     
     var headers = defaultHeaders;
