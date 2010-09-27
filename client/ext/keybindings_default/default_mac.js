@@ -19,7 +19,7 @@ return keys.onLoad({
             "redo": "Command-Y"
         },
         "clipboard" : {
-            "cut": "Command-X",
+            "cut": "Shift-Command-X",
             "copy": "Command-C",
             "paste": "Command-V"
         },
