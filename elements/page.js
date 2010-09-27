@@ -453,7 +453,7 @@ apf.page = function(struct, tagName){
                         "apf.cancelBubble(event, apf.lookup(" + this.$uniqueId + "));");
                     elBtnClose.setAttribute("onclick",
                         'var page = apf.lookup(' + this.$uniqueId + ');\
-                         page.parentNode.remove(page);');
+                         page.parentNode.remove(page, event);');
                          
                     btncontainer.appendChild(elBtnClose);
                 }
