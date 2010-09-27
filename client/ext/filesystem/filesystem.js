@@ -129,6 +129,16 @@ return ext.register("ext/filesystem/filesystem", {
         });
     },
 
+    remove: function(path) {
+        var page = tabEditors.getPage(page);
+        if (page)
+            tabEditors.remove(page);
+
+        davProject.remove(path, false, function() {
+            console.log("deleted", path);
+        });
+    },
+
     /**** Init ****/
 
     init : function(amlNode){
