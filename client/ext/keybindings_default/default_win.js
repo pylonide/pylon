@@ -25,7 +25,7 @@ return keys.onLoad({
         },
         "searchreplace" : {
             "search": "Ctrl-F",
-            "searchreplace": "Ctrl-R"
+            "searchreplace": "Ctrl-Shift-R"
         },
         "code" : {
             "selectall": "Ctrl-A",
@@ -35,7 +35,7 @@ return keys.onLoad({
             "findnext": "Ctrl-K",
             "findprevious": "Ctrl-Shift-K",
             "find": "Ctrl-F",
-            "replace": "Ctrl-R",
+            "replace": "Ctrl-Shift-R",
             "undo": "Ctrl-Z",
             "redo": "Ctrl-Shift=Z|Ctrl-Y",
             "overwrite": "Insert",
