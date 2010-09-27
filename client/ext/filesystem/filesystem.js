@@ -159,12 +159,14 @@ return ext.register("ext/filesystem/filesystem", {
             if (node.selectSingleNode("data"))
                 return;
 
-            fs.readFile(node.getAttribute("path"), function(data, state, extra) {
+            var path = node.getAttribute("path");
+            fs.readFile(path, function(data, state, extra) {
                 if (state != apf.SUCCESS) {
                     if (extra.status == 404) {
                         ide.dispatchEvent("filenotfound", {
                             node : node,
-                            path : extra.url
+                            url  : extra.url,
+                            path : path
                         });
                     }
                 }

@@ -294,6 +294,12 @@ return ext.register("ext/editors/editors", {
                 e.node);
         });
 
+        ide.addEventListener("filenotfound", function(e) {
+            var page = tabEditors.getPage(e.path);
+            if (page)
+                tabEditors.remove(page);
+        });
+
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
         this.hbox     = vbox.appendChild(new apf.hbox({flex : 1, padding : 5}));
         this.splitter = vbox.appendChild(new apf.splitter());
