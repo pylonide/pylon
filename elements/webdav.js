@@ -987,7 +987,8 @@ apf.webdav = function(struct, tagName){
             aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-        for (var i = 0, j = aResp.length; i < j; i++) //aResp.length > 1 ? 1 : 
+        // start from 1 (one), because the first element contains PROP info on the path
+        for (var i = 1, j = aResp.length; i < j; i++)
             aOut.push(parseItem.call(this, aResp[i]));
 
         if (callback)
