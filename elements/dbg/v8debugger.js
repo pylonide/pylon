@@ -281,6 +281,13 @@ var V8Debugger = function(dbg, host) {
         return this.$activeFrame;
     };
 
+    this.setBreakpoints = function(model) {
+        var breakpoints = model.queryNodes("breakpoint");
+        this.$debugger.listbreakpoints(function(v8Breakpoints) {
+            //console.log(breakpoints, v8Breakpoints, model.data.xml)
+        });
+    };
+    
     this.toggleBreakpoint = function(script, relativeRow, model) {
         var _self = this;
 
@@ -407,7 +414,7 @@ var V8Debugger = function(dbg, host) {
             "' />");
         return str.join("");
     }
-
+    
 }).call(V8Debugger.prototype = new apf.Class());
 
 return V8Debugger;

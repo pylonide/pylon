@@ -56,13 +56,14 @@ apf.dbg = function(struct, tagName){
         }
         this.dispatchEvent("changeframe", {data: value});
     };
-    
+
     this.attach = function(host, tab) {
         var self = this;
+
         host.$attach(this, tab, function(err, dbgImpl) {
             self.$host = host;
             self.$debugger = dbgImpl;
-            self.$debugger.addEventListener("afterCompile", self.$onAfterCompile.bind(self));
+            dbgImpl.addEventListener("afterCompile", self.$onAfterCompile.bind(self));
             
             self.$stAttached.activate();
             self.$stRunning.setProperty("active", dbgImpl.isRunning());
@@ -73,6 +74,8 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("break", self.$onBreak.bind(self));
             dbgImpl.addEventListener("detach", self.$onDetach.bind(self));
             dbgImpl.addEventListener("changeFrame", self.$onChangeFrame.bind(self));
+            
+            dbgImpl.setBreakpoints(self.$mdlBreakpoints); 
         });
     };
     
@@ -98,12 +101,13 @@ apf.dbg = function(struct, tagName){
     };
     
     this.$onDetach = function() {
-        this.$host = null;
+        this.$debugger.destroy();
         this.$debugger = null;
+        
+        this.$host = null;
         
         this.$mdlSources.load("<sources />");
         this.$mdlStack.load("<frames />");
-        this.$mdlBreakpoints.load("<breakpoints />");
         this.$stAttached.deactivate();
     };   
 

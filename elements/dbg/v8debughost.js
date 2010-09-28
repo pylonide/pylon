@@ -50,7 +50,7 @@ var V8DebugHost = function(hostname, port, o3obj) {
         var dbg = this.$debugger;
         
         if (dbg)
-            callback(null, dbg)
+            return callback(null, dbg)
 
         var self = this;
         this.$connect(function() {

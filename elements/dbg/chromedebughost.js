@@ -73,7 +73,7 @@ var ChromeDebugHost = function(hostname, port, o3obj, ws) {
         var dbg;
         
         if (dbg = this.$debuggers[tabId])
-            callback(null, dbg)
+            return callback(null, dbg)
 
         var self = this;
         this.$connect(function() {
