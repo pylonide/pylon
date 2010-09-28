@@ -5691,7 +5691,7 @@
             background: -moz-linear-gradient(center bottom,rgb(71,73,77) 0%,rgb(49,52,55) 100%);
             text-align : center;
             width : 91px;
-            height : 15px;
+            height : 22px;
             padding: 2px 0 2px 0;
         }
 
@@ -12474,11 +12474,12 @@
 
         .lowtab .btncontainer{
             position : absolute;
-            bottom: 0;
+            bottom: 4px;
             left: 10px;
             cursor: default;
             z-index : 1;
             margin-top : -1px;
+            line-height : 0;
         }
 
         .lowtab .btncontainer .btn {

@@ -74,7 +74,6 @@
                         <a:textbox id="txtCurObject" 
                             skin      = "tbempty" 
                             margin    = "5" 
-                            height    = "19" 
                             realtime  = "true"
                             disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
                             initial-message = "Enter an expression"
