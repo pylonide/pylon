@@ -80,7 +80,7 @@ return ext.register("ext/editors/editors", {
                 new apf.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
-                    zindex  : 10,
+                    zindex  : 1000,
                     class   : "relative",
                     padding : "-1",
                     margin  : "-2 0 0 0"
@@ -92,7 +92,6 @@ return ext.register("ext/editors/editors", {
             id       : "tabEditors",
             skin     : "editor_tab",
             htmlNode : document.body,
-            optimize : true,
             style    : "position:absolute;",
             buttons  : "close,scale",
             onfocus  : function(e){
