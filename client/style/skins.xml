@@ -4928,7 +4928,7 @@
         .editor_tab .btnsesssioncontainer .session_btn .tab_middle {
             background-image    : url(images/editor_tab.png);
             background-position : 0 -104px;
-            height              : 21px;
+            height              : 20px;
             position            : relative;
             overflow            : hidden;
             padding             : 5px 0 0 0;
@@ -4961,7 +4961,7 @@
         .editor_tab .btnsesssioncontainer .tab_left,
         .editor_tab .btnsesssioncontainer .tab_right {
             position            : absolute;
-            height              : 26px;
+            height              : 25px;
             width               : 20px;
             background-image    : url(images/editor_tab.png);
             background-repeat   : no-repeat;
