@@ -3,15 +3,15 @@
     "description": "Ajax.org Cloud9 IDE",
     "version": "0.0.3",
     "homepage" : "http://github.com/ajaxorg/cloud9",
-    "engines": {"node": ">= 0.1.102"},
+    "engines": {"node": ">= 0.2.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
     "main": "bin/cloud9",
     "repository" : {
         "type" : "git",
          "url" : "http://github.com/ajaxorg/cloud9.git"
     },
-    "bin" : {
-        "cloud9" : "./bin/cloud9-npm.js"
+    "directories": {
+        "bin": "./bin"
     },
     "licenses": [{
         "type": "GPLv3",
