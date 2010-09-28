@@ -161,9 +161,8 @@ return ext.register("ext/noderunner/noderunner", {
         log.clear();
         if (debug)
             stDebugProcessRunning.activate();
-        else
-            log.enable();
 
+        log.enable();
         stProcessRunning.activate();
     },
 

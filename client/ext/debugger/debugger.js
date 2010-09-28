@@ -33,14 +33,14 @@ return ext.register("ext/debugger/debugger", {
     init : function(amlNode){
         this.rightPane = ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]");
         this.nodes.push(
-            //Append the debug toolbar to the main toolbar
-            //winDbgConsole.insertBefore(tbDebug, winDbgConsole.firstChild),
-
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
             //Append the variable window on the right
-            this.rightPane.appendChild(winDbgVariables)
+            this.rightPane.appendChild(winDbgVariables),
+
+            //Append the variable window on the right
+            this.rightPane.appendChild(winDbgBreakpoints)
         );
 
         this.paths = {};
@@ -65,11 +65,32 @@ return ext.register("ext/debugger/debugger", {
             e.data && _self.$showFile(e.data.getAttribute("scriptid"));
         });
 
+        lstBreakpoints.addEventListener("afterselect", function(e) {
+            if (e.selected && e.selected.getAttribute("scriptid"))
+                _self.$showFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
+            // TODO sometimes we don't have a scriptID
+        });
+
         log.enable(true);
     },
 
-    $showFile : function(scriptId) {
+    $showFile : function(scriptId, line, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+
+        if (line !== undefined) {
+            ide.addEventListener("afteropenfile", function(e) {
+                if (e.node.getAttribute("scriptid") == scriptId) {
+                    ide.removeEventListener("afteropenfile", arguments.callee);
+                    setTimeout(function() {
+                        ceEditor.$editor.gotoLine(line);
+                        if (text)
+                            ceEditor.$editor.find(text);
+                        ceEditor.focus();
+                    }, 30);
+                }
+            });
+        }
+
         if (file) {
             ide.dispatchEvent("openfile", {
                 node: file

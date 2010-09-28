@@ -73,36 +73,51 @@ return ext.register("ext/editors/editors", {
 
     addTabSection : function(){
         var _self = this;
-        return this.hbox.appendChild(new apf.vbox({
+        var vbox = this.hbox.appendChild(new apf.vbox({
             flex       : 1,
             childNodes : [
-                new apf.tab({
-                    id       : "tabEditors",
-                    skin     : "editor_tab",
-                    optimize : true,
-                    flex     : 1,
-                    buttons  : "close,scale",
-                    onfocus  : function(e){
-                        _self.switchfocus(e);
-                    },
-                    onbeforeswitch : function(e){
-                        _self.beforeswitch(e);
-                    },
-                    onafterswitch : function(e){
-                        _self.afterswitch(e);
-                    },
-                    onclose : function(e){
-                        _self.close(e.page);
-                    }
-                }),
+                new apf.bar({id:"tabPlaceholder",flex:1,skin:"basic"}),
                 new apf.hbox({
-                    id : "barButtons",
-                    edge: "0 0 0 6",
-                    padding: "-1",
-                    margin: "-2 0 0 0"
+                    id      : "barButtons",
+                    edge    : "0 0 0 6",
+                    zindex  : 1000,
+                    class   : "relative",
+                    padding : "-1",
+                    margin  : "-2 0 0 0"
                 })
             ]
         }));
+
+        var tab = new apf.tab({
+            id       : "tabEditors",
+            skin     : "editor_tab",
+            htmlNode : document.body,
+            style    : "position:absolute;",
+            buttons  : "close,scale",
+            onfocus  : function(e){
+                _self.switchfocus(e);
+            },
+            onbeforeswitch : function(e){
+                _self.beforeswitch(e);
+            },
+            onafterswitch : function(e){
+                _self.afterswitch(e);
+            },
+            onclose : function(e){
+                _self.close(e.page);
+            }
+        });
+        tabPlaceholder.addEventListener("resize", function(e){
+            var ext = tab.$ext, ph;
+            var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
+            ext.style.left = pos[0] + "px";
+            ext.style.top  = pos[1] + "px";
+            var d = apf.getDiff(ext);
+            ext.style.width = (ph.offsetWidth - d[0]) + "px";
+            ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        });
+        
+        return vbox;
     },
 
     isEditorAvailable : function(page, path){

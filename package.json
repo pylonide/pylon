@@ -1,11 +1,10 @@
 {
     "name": "cloud9",
     "description": "Ajax.org Cloud9 IDE",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "homepage" : "http://github.com/ajaxorg/cloud9",
-    "engines": {"node": ">= 0.1.102"},
+    "engines": {"node": ">= 0.2.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
-    "scripts": {"run": "node bin/cloud9.js"},
     "main": "bin/cloud9",
     "repository" : {
         "type" : "git",

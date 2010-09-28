@@ -50,3 +50,7 @@ BODY {
     z-index : 100;
     color : #666;
 }
+
+.relative{
+    position : relative;
+}
