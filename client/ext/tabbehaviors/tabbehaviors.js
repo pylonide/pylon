@@ -86,7 +86,8 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             pages = tabs.getPages(),
             i     = pages.length - 1;
         for (; i >= 0; --i) {
-            tabEditors.remove(pages[i], true);
+            this.removeItem(pages[i]);
+            tabs.remove(pages[i], true);
         }
         return false;
     },
@@ -98,6 +99,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             i     = pages.length - 1;
         for (; i >= 0; --i) {
             if (pages[i] == page) continue;
+            this.removeItem(pages[i]);
             tabs.remove(pages[i], true);
         }
         return false;
@@ -186,7 +188,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     updateState: function(force) {
-        var len = this.nodes.length;
+        var len = this.nodes.length - 4;
         if (this.sep && !len) {
             this.sep.destroy(true, true);
             this.sep = null;
@@ -198,7 +200,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.sep = mnuPanels.appendChild(new apf.divider());
         }
 
-        if (len < (force ? 9 : 10) + 4) { // we already have 4 other menu items
+        if (len < (force ? 9 : 10)) { // we already have 4 other menu items
             if (this.more) {
                 this.more.destroy(true, true);
                 this.more = null;
