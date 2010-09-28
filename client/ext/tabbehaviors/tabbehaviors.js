@@ -34,15 +34,15 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuPanels.appendChild(new apf.divider()),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close Tab",
-                onclick : this.closetab
+                onclick : this.closetab.bind(this)
             })),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close All Tabs",
-                onclick : this.closealltabs
+                onclick : this.closealltabs.bind(this)
             })),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
-                onclick : this.closeallbutme
+                onclick : this.closeallbutme.bind(this)
             }))
         );
 
