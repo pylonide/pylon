@@ -42,7 +42,7 @@
             <a:rename set="{davProject.rename([@name], [@path], require('ext/filesystem/filesystem').afterRename)}"/>
             <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
             <a:move set="{davProject.move([@path], [../@path], require('ext/filesystem/filesystem').afterMove)}"/>
-            <a:remove match="[file|folder]" set="{davProject.remove([@path])}"/>
+            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
 
             <a:drag match="[folder|file]" />
             <a:drop match="[folder|file]" target="[folder]"
@@ -55,7 +55,7 @@
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="trFiles.startRename()">Rename</a:item>
-            <a:item match="[file|folder]" onclick="trFiles.remove()">Remove</a:item>
+            <a:item match="[file|folder]" onclick="trFiles.remove()">Delete</a:item>
             <a:divider />
             <a:item match="[file|folder]" onclick="
                 apf.clipboard.cutSelection(trFiles);

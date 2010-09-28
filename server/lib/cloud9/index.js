@@ -7,7 +7,7 @@ var connect = require("connect");
 var IdeServer = require("cloud9/server");
 
 exports.main = function(projectDir, port) {
-    var commonProvider = (function() {
+    var commonProvider = function() {
         var common = connect.staticProvider(__dirname + "/../../../common");
         return function(req, resp, next) {
             var path = require("url").parse(req.url).pathname;
@@ -19,11 +19,13 @@ exports.main = function(projectDir, port) {
                 next();
             }
         };
-    })();
+    };
     server = connect.createServer(
         //connect.logger(),
+        connect.conditionalGet(),
+        connect.gzip(),
         connect.staticProvider(__dirname + "/../../../client"),
-        commonProvider
+        commonProvider()
     );
 
     server.listen(port);

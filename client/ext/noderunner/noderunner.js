@@ -51,6 +51,18 @@ return ext.register("ext/noderunner/noderunner", {
         dbgNode.addEventListener("onsocketfind", function() {
             return socket;
         });
+
+        stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
+        stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
+    },
+
+    $onDebugProcessActivate : function() {
+        dbg.attach(dbgNode, 0);
+        ext.setLayoutMode("ext/debugger/debugger");
+    },
+
+    $onDebugProcessDeactivate : function() {
+        dbg.detach();
     },
 
     onMessage : function(message) {
@@ -59,6 +71,7 @@ return ext.register("ext/noderunner/noderunner", {
         } catch(e) {
             return;
         }
+//        console.log("MSG", message)
 
         switch(message.type) {
             case "node-debug-ready":
@@ -75,7 +88,6 @@ return ext.register("ext/noderunner/noderunner", {
             case "node-exit":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
-                dbg.detach();
                 break;
 
             case "state":
@@ -101,7 +113,6 @@ return ext.register("ext/noderunner/noderunner", {
     onDisconnect : function() {
         stProcessRunning.deactivate();
         stDebugProcessRunning.deactivate();
-        dbg.detach();
 
         clearTimeout(this.$retryTimer);
         var _self = this;
@@ -148,11 +159,8 @@ return ext.register("ext/noderunner/noderunner", {
         this.socket.send(JSON.stringify(command));
 
         log.clear();
-        if (debug) {
-            dbg.attach(dbgNode);
+        if (debug)
             stDebugProcessRunning.activate();
-            ext.setLayoutMode("ext/debugger/debugger");
-        }
         else
             log.enable();
 
@@ -164,6 +172,8 @@ return ext.register("ext/noderunner/noderunner", {
             return
 
         ext.setLayoutMode("default");
+        log.disable();
+
         this.socket.send(JSON.stringify({"command": "kill"}));
     },
 

@@ -135,7 +135,11 @@ return ext.register("ext/debugger/debugger", {
             var path = name.slice(workspaceDir.length+1);
             this.paths[path] = dbgFile;
         }
-        var files = fs.model.data.getElementsByTagName("file");
+        var treeFiles = fs.model.data.getElementsByTagName("file");
+        var tabFiles = tabEditors.getPages().map(function(page) {
+            return page.$model.data;
+        });
+        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
 
         var davPrefix = noderunner.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {
@@ -160,7 +164,7 @@ return ext.register("ext/debugger/debugger", {
         });
         this.rightPane.setProperty("visible", true);
         log.enable(true);
-        
+
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(ide.vbMain.$ext);
@@ -173,7 +177,7 @@ return ext.register("ext/debugger/debugger", {
         });
         this.rightPane.setProperty("visible", false);
         log.disable(true);
-        
+
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(ide.vbMain.$ext);
