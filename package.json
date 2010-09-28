@@ -10,8 +10,8 @@
         "type" : "git",
          "url" : "http://github.com/ajaxorg/cloud9.git"
     },
-    "directories": {
-        "bin": "./bin"
+    "bin" : {
+        "cloud9" : "./bin/cloud9-npm.js"
     },
     "licenses": [{
         "type": "GPLv3",

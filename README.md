@@ -29,7 +29,7 @@ To start cloud9 and install all submodules you can use the quickstart options fo
 
 Linux and OSX:
 
-    $ bin/cloud9
+    $ bin/cloud9.sh
 
 Windows:
 
