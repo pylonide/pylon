@@ -116,10 +116,10 @@ apf.splitter = function(struct, tagName){
             if ((this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
                 if (!finalPass && !this.realtime) 
                     newPos -= this.$ext[offsetSize];
-                var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
+
+                //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
                 this.$previous[method]("flex", newPos);
-                this.$next[method]("flex", totalFlex - newPos);
-                console.log(newPos + ":" + (totalFlex - newPos));
+                this.$next[method]("flex", this.$totalFlex - newPos);
             }
             //Fixed
             else {
@@ -196,6 +196,7 @@ apf.splitter = function(struct, tagName){
                 changedPosition = true;
             }
             
+            _self.$totalFlex = 0;
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
                 var min = posPrev[d1] || 0;
@@ -217,6 +218,7 @@ apf.splitter = function(struct, tagName){
                                     ? 2 * _self.parentNode.padding : 0));
                     }
                     for (var i = 0, l = set.length; i < l; i+=2) {
+                        _self.$totalFlex += set[i+1];
                         set[i].setAttribute("flex", set[i+1]);
                     }
                 }
@@ -225,7 +227,7 @@ apf.splitter = function(struct, tagName){
                 if (apf.hasFlexibleBox) {
                     var coords = apf.getAbsolutePosition(this);
                     startPos = e[clientPos] - coords[d1];
-                    
+
                     if (!_self.realtime) {
                         if (apf.hasFlexibleBox) {
                             if (_self.$previous.flex && !_self.$next.flex) {
