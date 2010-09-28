@@ -27,8 +27,12 @@ After a Git checkout of the project or download (see Installation section), the 
 
 To start cloud9 and install all submodules you can use the quickstart options for your platform on the console or from your explorer/finder and opens it in your default browser:
 
-    $ bin/cloud9-osx64
-    $ bin/cloud9-lin32
+Linux and OSX:
+
+    $ bin/cloud9
+
+Windows:
+
     > bin\cloud9-win32.bat
 
 Note you'll need a git version 1.7 or higher to use the stock shell script provided.
