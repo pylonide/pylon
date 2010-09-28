@@ -53,7 +53,7 @@
                           scrolldown = "true" 
                           focussable = "true"
                           class      = "apf_console" />
-                        <!--a:splitter /-->
+                        <a:splitter />
                         <a:textarea id="txtCode" 
                           flex      = "1"
                           onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 

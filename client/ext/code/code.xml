@@ -15,19 +15,18 @@
         }
      ]]></a:script>
     
-    <a:vbox id="barEditor" anchors="0 0 0 0" visible="false">
-        <a:codeeditor id="ceEditor"
-          flex   = "1"
-          margin = "6 0 4 0"
-          value  = "[data]"
-          syntax = "{getSyntax([@contenttype])}"
-          showinvisibles = "false"
-          softtabs       = "true"
-          contextmenu    = "mnuCtxEditor"
-          debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
-          readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
-        />
-    </a:vbox>
+    <a:codeeditor id="ceEditor"
+      flex    = "1"
+      anchors = "6 0 4 0"
+      visible = "false"
+      value   = "[data]"
+      syntax  = "{getSyntax([@contenttype])}"
+      showinvisibles = "false"
+      softtabs       = "true"
+      contextmenu    = "mnuCtxEditor"
+      debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
+      readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
+    />
     
     <a:menu id="mnuCtxEditor" render="runtime">
         <a:item>Undo</a:item>

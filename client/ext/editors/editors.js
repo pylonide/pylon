@@ -77,11 +77,12 @@ return ext.register("ext/editors/editors", {
             flex       : 1,
             childNodes : [
                 new apf.tab({
-                    id      : "tabEditors",
-                    skin    : "editor_tab",
-                    flex    : 1,
-                    buttons : "close,scale",
-                    onfocus : function(e){
+                    id       : "tabEditors",
+                    skin     : "editor_tab",
+                    optimize : true,
+                    flex     : 1,
+                    buttons  : "close,scale",
+                    onfocus  : function(e){
                         _self.switchfocus(e);
                     },
                     onbeforeswitch : function(e){

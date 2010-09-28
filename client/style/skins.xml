@@ -45,9 +45,13 @@
             background   : #f5f5f5;
             overflow     : hidden;
             position     : relative;
-            height       : 100%;
             border       : 1px solid #8C8C8C;
             border-width : 0 1px 1px 1px;
+            position : absolute;
+            top : 19px;
+            right : 0;
+            left : 0;
+            bottom : 1px;
         }
 
         .noborder .dockcontent {
@@ -126,25 +130,6 @@
         .east{cursor : url(images/cursor/e-point.cur);}
         .south{cursor : url(images/cursor/s-point.cur);}
         .same{cursor : not-allowed;}
-    ]]></a:style>
-
-	<a:style condition="apf.isWebkit"><![CDATA[
-		.dockwin {
-			-webkit-box-orient: vertical;
-			display: -webkit-box;
-			padding: 0;
-		}
-
-		.dockwin .docktitle {
-			margin: 0;
-			position : relative;
-		}
-
-		.dockwin .dockcontent {
-			margin: 0;
-			height: auto;
-			-webkit-box-flex: 1;
-		}
     ]]></a:style>
 
     <a:presentation>
@@ -5114,8 +5099,12 @@
 
         .editor_tab .session_page {
             display : none;
-            height : 100%;
-            position : relative;
+            position : absolute;
+            top : 32px;
+            bottom : 0;
+            left : 0;
+            right : 0;
+            z-index : 10;
             margin: 0 auto;
             background-color: #e8e8e8;
             border-left: 1px solid #8c8c8c;
@@ -5128,19 +5117,6 @@
         .editor_tab .session_page.curpage{
             display : block;
         }
-    ]]></a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
-		.editor_tab {
-			-webkit-box-orient: vertical;
-			display: -webkit-box;
-		}
-
-		.editor_tab .session_page{
-			height: auto;
-			-webkit-box-flex: 1;
-			overflow : hidden;
-			position : relative;
-		}
     ]]></a:style>
 
     <a:presentation>
@@ -5398,8 +5374,11 @@
             padding: 7px;
             overflow: hidden;
             display : none;
-            height : 100%;
-            position : relative;
+            position : absolute;
+            left : 0;
+            top : 23px;
+            bottom : 26px;
+            right : 0;
         }
 
         .tab .page.curpage{
@@ -5502,19 +5481,6 @@
         .tab .scroller span.disabled {
             background-position-y: -51px;
         }
-    ]]></a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
-		.tab {
-			-webkit-box-orient: vertical;
-			display: -webkit-box;
-		}
-
-		.tab .page {
-			height: auto;
-			-webkit-box-flex: 1;
-			overflow : hidden;
-			position : relative;
-		}
     ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div[1]" scroller=".">
@@ -12342,27 +12308,16 @@
         .pages .page{
             display: none;
 
-            width: 100%;
-            height: 100%;
-            position : relative;
+            position : absolute;
+            left : 0;
+            top : 0;
+            right : 0;
+            bottom : 0;
         }
 
         .pages .curpage{
             display: block;
         }
-    ]]></a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
-		.pages {
-			-webkit-box-orient: vertical;
-			display: -webkit-box;
-		}
-
-		.pages .page {
-			height: auto;
-			-webkit-box-flex: 1;
-			overflow : hidden;
-			position : relative;
-		}
     ]]></a:style>
 
     <a:presentation>
@@ -12568,10 +12523,13 @@
             border-bottom: 1px solid #8C8C8C;
             clear:both;
             display:none;
-            height:100%;
             overflow:hidden;
             padding:0;
-            position : relative;
+            position : absolute;
+            top : 0;
+            bottom : 24px;
+            left : 0;
+            right : 0;
         }
 
         .lowtab .page.curpage{
@@ -12590,19 +12548,6 @@
     	    margin: 0 0 0 0;
     	}
     </a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
-		.lowtab {
-			-webkit-box-orient: vertical;
-			display: -webkit-box;
-		}
-
-		.lowtab .page {
-			height: auto;
-			-webkit-box-flex: 1;
-			overflow : hidden;
-			position : relative;
-		}
-    ]]></a:style>
     <a:presentation>
         <a:main pages="." buttons="div">
             <div class='lowtab'>

@@ -48,8 +48,8 @@ return ext.register("ext/code/code", {
     },
 
     init : function(amlPage){
-        amlPage.appendChild(barEditor);
-        barEditor.show();
+        amlPage.appendChild(ceEditor);
+        ceEditor.show();
 
         this.ceEditor = ceEditor;
 
@@ -168,8 +168,8 @@ return ext.register("ext/code/code", {
             item.destroy(true, true);
         });
 
-        if (self.barEditor) {
-            barEditor.destroy(true, true);
+        if (self.ceEditor) {
+            ceEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
 
