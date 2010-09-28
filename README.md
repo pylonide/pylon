@@ -90,6 +90,7 @@ Thanks to all developers and contributors of these projects!
 [jsDAV]: http://github.com/mikedeboer/jsdav
 [connect]: http://github.com/senchalabs/connect
 [socket.io]: http://github.com/LearnBoost/Socket.IO-node.git
+[requireJS]: http://requirejs.org/
 [Node.JS]: http://nodejs.org/
 
 ## License
