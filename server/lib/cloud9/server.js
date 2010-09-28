@@ -219,6 +219,11 @@ module.exports = IdeServer = function(workspaceDir, server) {
         this.nodeDebugProxy.send(message.body);
     };
 
+    this.commandDebugAttachNode = function(message) {
+        if (this.nodeDebugProxy)
+            this.client.send('{"type": "node-debug-ready"}');
+    };
+
     this.commandRunDebugChrome = function(message) {
         if (this.chromeDebugProxy)
             return this.error("Chrome debugger already running!", message);
