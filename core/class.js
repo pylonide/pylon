@@ -271,7 +271,7 @@ apf.Class.prototype = new (function(){
         delete realAddEventListener;
         delete this.$initStack;
         delete this.$bufferEvents;
-        
+
         if (struct && (struct.htmlNode || this.nodeFunc == apf.NODE_HIDDEN)) {
             this.$pHtmlNode = struct.htmlNode;
             

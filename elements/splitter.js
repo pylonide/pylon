@@ -113,12 +113,13 @@ apf.splitter = function(struct, tagName){
                 newPos -= apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1];
 
             //Both flex
-            if (this.$previous.flex && this.$next.flex) {
+            if ((this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
                 if (!finalPass && !this.realtime) 
                     newPos -= this.$ext[offsetSize];
                 var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
                 this.$previous[method]("flex", newPos);
                 this.$next[method]("flex", totalFlex - newPos);
+                console.log(newPos + ":" + (totalFlex - newPos));
             }
             //Fixed
             else {
@@ -129,7 +130,7 @@ apf.splitter = function(struct, tagName){
             }
         }
         
-        if (apf.isGecko)
+        if (apf.hasSingleResizeEvent)
             apf.layout.forceResize(this.$ext.parentNode);
     };
     
