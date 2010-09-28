@@ -163,9 +163,10 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
 
         var keyId = "tab" + (no - 3 == 10 ? 0 : no - 3);
         this.hotitems[keyId] = [this.nodes[no]];
-        if (this.hotkeys[keyId] !== 1)
+        if (this.hotkeys[keyId] !== 1) {
             apf.hotkeys.register(this.hotkeys[keyId], this[keyId].bind(this));
-        //item.setAttribute("hotkey", bindings[hotkey]);
+            this.nodes[no].setAttribute("hotkey", this.hotkeys[keyId]);
+        }
     },
 
     removeItem: function(page) {
@@ -213,7 +214,16 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         }
 
         // update hotkeys and hotitems:
-        
+        var keyId,
+            aItems = this.nodes.slice(4),
+            i      = 0,
+            l      = aItems.length;
+        for (; i < l; ++i) {
+            keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
+            this.hotitems[keyId] = [aItems[i]];
+            if (this.hotkeys[keyId] !== 1)
+                aItems[i].setProperty("hotkey", this.hotkeys[keyId]);
+        }
     },
 
     enable : function(){
