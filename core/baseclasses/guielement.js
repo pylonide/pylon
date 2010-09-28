@@ -417,6 +417,13 @@ apf.GuiElement = function(){
             this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
+            
+            if (this.$altExt && apf.isGecko) {
+                this.$altExt.style.minHeight = this.$ext.style.minHeight;
+                this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
+                this.$altExt.style.minWidth = this.$ext.style.minWidth;
+                this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
+            }
             //#endif
         }
         
