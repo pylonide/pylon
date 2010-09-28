@@ -169,30 +169,19 @@ apf.vbox = function(struct, tagName){
             if (apf.isGecko)
                 this.$int.style.overflow = "visible";
 
+            //@todo this should probably be reinstated
             var stretch = !value || value == "stretch";
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
-            
-            /*if (apf.isGecko) {
-                var isInFixed = false;
-                var node = this.parentNode;
-                while(node) {
-                    if (node.flex && node.$vbox != this.$vbox || node[size]) {
-                        isInFixed = true;
-                        break;
-                    }
-                    node = node.parentNode;
-                }
-            }*/
             
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
                     continue;
 
-                /*if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "1px" : "auto";//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                if (stretch && !node[size]) //(node.$altExt || 
+                    node.$ext.style[size] = apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto";//apf.isGecko && (this.flex || node.flex) ? "1px" : "auto";//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
-                    handlers["true"][size].call(node, node[size]);*/
+                    handlers["true"][size].call(node, node[size]);
             }
         }
         else if (this.$amlLoaded) {
@@ -426,7 +415,7 @@ apf.vbox = function(struct, tagName){
                     //amlNode.$ext.style.display = MOZSTACK; //@todo visible toggle
                 
                 //input elements are not handled correctly by firefox and webkit
-                if (input[amlNode.$ext.tagName]) {
+                if (amlNode.$ext.tagName == "INPUT" || apf.isWebkit && input[amlNode.$ext.tagName]) {
                     var doc = amlNode.$ext.ownerDocument;
                     amlNode.$altExt = doc.createElement("div");
                     amlNode.parentNode.$int.replaceChild(amlNode.$altExt, amlNode.$ext);
@@ -437,6 +426,7 @@ apf.vbox = function(struct, tagName){
                         var d = apf.getDiff(amlNode.$ext);
                         //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
                         amlNode.$altExt.style.height = "100%";
+                        amlNode.$altExt.style.width = "0";
                         amlNode.$altExt.style.lineHeight = 0;
                         amlNode.$altExt.style.margin  = "-1px 0 0 0";
                         amlNode.$ext.style.width  = "100%";

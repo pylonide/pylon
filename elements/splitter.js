@@ -189,8 +189,12 @@ apf.splitter = function(struct, tagName){
                 e = event;
             
             _self.$setSiblings();
-            
-            _self.parentNode.$int.style.position = "relative";
+
+            var changedPosition, pHtml = _self.parentNode.$int;
+            if ("absolute|fixed|relative".indexOf(apf.getStyle(pHtml, "position")) == -1) {
+                pHtml.style.position = "relative";
+                changedPosition = true;
+            }
             
             with (_self.$info) {
                 var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
@@ -199,7 +203,8 @@ apf.splitter = function(struct, tagName){
                 var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
             
                 //Set flex to pixel sizes
-                if (_self.$previous.flex && _self.$next.flex) {
+                if ((_self.$previous.flex || _self.$previous.flex === 0) 
+                  && (_self.$next.flex || _self.$next.flex === 0)) {
                     var set = [], nodes = _self.parentNode.childNodes, padding = 0;
                     for (var node, i = 0, l = nodes.length; i < l; i++) {
                         if ((node = nodes[i]).visible === false 
@@ -286,7 +291,8 @@ apf.splitter = function(struct, tagName){
                 _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
                 _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
                 
-                _self.parentNode.$int.style.position = "";
+                if (changedPosition)
+                    pHtml.style.position = "";
                 
                 if (apf.hasFlexibleBox && !_self.realtime)
                     (_self.$previous.flex && !_self.$next.flex
