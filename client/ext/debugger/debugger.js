@@ -67,7 +67,7 @@ return ext.register("ext/debugger/debugger", {
 
         lstBreakpoints.addEventListener("afterselect", function(e) {
             if (e.selected && e.selected.getAttribute("scriptid"))
-                _self.$showFile(e.selected.getAttribute("scriptid"), e.selected.getAttribute("line"));
+                _self.$showFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
             // TODO sometimes we don't have a scriptID
         });
 
