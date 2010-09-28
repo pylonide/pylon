@@ -179,7 +179,7 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto";//apf.isGecko && (this.flex || node.flex) ? "1px" : "auto";//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "1px" : (apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto");//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -319,6 +319,7 @@ apf.vbox = function(struct, tagName){
                             this.$altExt.style.overflow = "hidden"; //Gecko
                             if (apf.getStyle(this.$ext, "overflow") == "visible")
                                 this.$ext.style.overflow = "hidden"; //Gecko
+                            this.$ext.style[size] = "1px";
                         
                             this.$altExt.style.minHeight = this.$ext.style.minHeight;
                             this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
