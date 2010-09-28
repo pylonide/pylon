@@ -171,7 +171,7 @@ var V8Debugger = function(dbg, host) {
         xml.push("</frame>");
     }
 
-    this.backtrace = function(model) {
+    this.backtrace = function(model, callback) {
         var _self = this;
         this.$debugger.backtrace(null, null, null, true, function(body, refs) {
             function ref(id) {
@@ -199,6 +199,7 @@ var V8Debugger = function(dbg, host) {
                 model.load("<frames>" + xml.join("") + "</frames>");
                 _self.setFrame(model.data.firstChild);
             }
+            callback();
         });
     };
 
@@ -348,7 +349,7 @@ var V8Debugger = function(dbg, host) {
             " id='", breakpoint.$id,
             "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
             "' script='", apf.escapeXML(breakpoint.source),
-            scriptId ? "' scriptId='" + scriptId : "",
+            scriptId ? "' scriptid='" + scriptId : "",
             "' lineoffset='", lineOffset || 0,
             "' line='", breakpoint.line,
             "' condition='", apf.escapeXML(breakpoint.condition || ""),

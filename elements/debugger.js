@@ -81,15 +81,20 @@ apf.dbg = function(struct, tagName){
     
     this.$onChangeRunning = function() {
         var isRunning = this.$debugger.isRunning();
+        if (this.$stRunning.active && !isRunning)
+            this.$onBreak();
+        
         this.$stRunning.setProperty("active", isRunning);
         
-        /*if (isRunning) {
+        if (isRunning)
             this.$mdlStack.load("<frames />");
-        }*/
     };
     
     this.$onBreak = function() {
-        this.$debugger.backtrace(this.$mdlStack);
+        var _self = this;
+        this.$debugger.backtrace(this.$mdlStack, function() {
+            _self.dispatchEvent("break");
+        });
     };
     
     this.$onAfterCompile = function(e) {
