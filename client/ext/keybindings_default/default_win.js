@@ -27,6 +27,23 @@ return keys.onLoad({
             "search": "Ctrl-F",
             "searchreplace": "Ctrl-Shift-R"
         },
+        "tabbehaviors" : {
+            "closetab": "Ctrl-W",
+            "closealltabs": "Ctrl-Shift-W",
+            "closeallbutme": "Ctrl-Alt-W",
+            "gototabright": "Ctrl-Shift-]",
+            "gototableft": "Ctrl-Shift-[",
+            "tab1": "Ctrl-1",
+            "tab2": "Ctrl-2",
+            "tab3": "Ctrl-3",
+            "tab4": "Ctrl-4",
+            "tab5": "Ctrl-5",
+            "tab6": "Ctrl-6",
+            "tab7": "Ctrl-7",
+            "tab8": "Ctrl-8",
+            "tab9": "Ctrl-9",
+            "tab0": "Ctrl-0"
+        },
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",

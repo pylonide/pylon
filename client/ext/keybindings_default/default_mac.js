@@ -27,6 +27,23 @@ return keys.onLoad({
             "search": "Command-F",
             "searchreplace": "Command-Shift-R"
         },
+        "tabbehaviors" : {
+            "closetab": "Command-W",
+            "closealltabs": "Command-Shift-W",
+            "closeallbutme": "Command-Option-W",
+            "gototabright": "Command-Shift-]",
+            "gototableft": "Command-Shift-[",
+            "tab1": "Command-1",
+            "tab2": "Command-2",
+            "tab3": "Command-3",
+            "tab4": "Command-4",
+            "tab5": "Command-5",
+            "tab6": "Command-6",
+            "tab7": "Command-7",
+            "tab8": "Command-8",
+            "tab9": "Command-9",
+            "tab0": "Command-0"
+        },
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
