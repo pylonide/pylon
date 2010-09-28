@@ -282,20 +282,51 @@ var V8Debugger = function(dbg, host) {
     };
 
     this.setBreakpoints = function(model) {
+        var _self = this;
         var breakpoints = model.queryNodes("breakpoint");
-        this.$debugger.listbreakpoints(function(v8Breakpoints) {
-            //console.log(breakpoints, v8Breakpoints, model.data.xml)
+        _self.$debugger.listbreakpoints(function(v8Breakpoints) {
+            if (!v8Breakpoints.breakpoints)
+                return;
+
+            for (var id in _self.$breakpoints)
+                _self.$breakpoints[id].destroy();
+            _self.$breakpoints = {};
+            
+            for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
+                var id = breakpoint.source + "|" + breakpoint.line;
+                
+                _self.$breakpoints[id] = breakpoint;
+                
+                model.removeXml("breakpoint[@script='" + breakpoint.script + "' and @line='" + breakpoint.line + "']");
+                model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+            }
+
+            var modelBps = model.queryNodes("breakpoint");
+            for (var i=modelBps.length-1; i>=0; i--) {
+                var modelBp = modelBps[i];
+                var script = modelBp.getAttribute("script");
+                var line = modelBp.getAttribute("line");
+                var id = script + "|" + line;
+                if (!_self.$breakpoints[id]) {
+                    var bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
+                    bp.condition = modelBp.getAttribute("condition");
+                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount"));
+                    bp.enabled = modelBp.getAttribute("enabled") == "true";
+                    bp.attach(_self.$debugger, function() {});
+                }
+            }
         });
     };
     
     this.toggleBreakpoint = function(script, relativeRow, model) {
         var _self = this;
 
-        var scriptId = script.getAttribute("scriptid");
+        var name = script.getAttribute("scriptname");
 
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = lineOffset + relativeRow;
-        var id = scriptId + "|" + row;
+        var id = name + "|" + row;
 
         var breakpoint = this.$breakpoints[id];
         if (breakpoint) {
@@ -304,25 +335,28 @@ var V8Debugger = function(dbg, host) {
                 model.removeXml(model.queryNode("breakpoint[@id=" + breakpoint.$id + "]"));
             });
         } else {
-            var name = script.getAttribute("scriptname");
             breakpoint = this.$breakpoints[id] = new Breakpoint(name, row);
             breakpoint.attach(this.$debugger, function() {
-                var xml = [];
-                xml.push("<breakpoint",
-                    " id='", breakpoint.$id,
-                    "' text='", _self.$strip(apf.escapeXML(name)), ":", breakpoint.line,
-                    "' script='", _self.$strip(apf.escapeXML(name)),
-                    "' scriptid='", scriptId,
-                    "' lineoffset='", lineOffset,
-                    "' line='", breakpoint.line,
-                    "' condition='", apf.escapeXML(breakpoint.condition || ""),
-                    "' ignorecount='", breakpoint.ignoreCount || 0,
-                    "' enabled='", breakpoint.enabled,
-                    "' />")
-
-                model.appendXml(xml.join(""));
+                model.appendXml(_self.$getBreakpointXml(breakpoint, lineOffset, script.getAttribute("scriptid")));
             });
         }
+    };
+    
+    this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {
+        var xml = [];
+        xml.push("<breakpoint",
+            " id='", breakpoint.$id,
+            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", breakpoint.line,
+            "' script='", apf.escapeXML(breakpoint.source),
+            scriptId ? "' scriptId='" + scriptId : "",
+            "' lineoffset='", lineOffset || 0,
+            "' line='", breakpoint.line,
+            "' condition='", apf.escapeXML(breakpoint.condition || ""),
+            "' ignorecount='", breakpoint.ignoreCount || 0,
+            "' enabled='", breakpoint.enabled,
+            "' />")
+
+        return(xml.join(""));
     };
 
     this.continueScript = function() {

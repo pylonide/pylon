@@ -222,11 +222,11 @@ apf.codeeditor = function(struct, tagName) {
             return;
 
         if (this.xmlRoot) {
-            var scriptId = this.xmlRoot.getAttribute("scriptid");
-            if (!scriptId)
+            var scriptName = this.xmlRoot.getAttribute("scriptname");
+            if (!scriptName)
                 return;
 
-            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@scriptid = " + scriptId + "]");
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
 
             var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
