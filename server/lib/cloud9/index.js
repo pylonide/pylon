@@ -23,7 +23,7 @@ exports.main = function(projectDir, port) {
     server = connect.createServer(
         //connect.logger(),
         connect.conditionalGet(),
-        connect.gzip(),
+//        connect.gzip(),
         connect.staticProvider(__dirname + "/../../../client"),
         commonProvider()
     );

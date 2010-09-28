@@ -166,8 +166,10 @@ return ext.register("ext/filesystem/filesystem", {
         ide.addEventListener("openfile", function(e){
             var node = e.node;
 
-            if (node.selectSingleNode("data"))
+            if (node.selectSingleNode("data")) {
+                ide.dispatchEvent("afteropenfile", {node: node});
                 return;
+            }
 
             var path = node.getAttribute("path");
             fs.readFile(path, function(data, state, extra) {
@@ -192,6 +194,8 @@ return ext.register("ext/filesystem/filesystem", {
                     xml.appendChild(doc.createTextNode(data));
                     xml.setAttribute("newline", nl);
                     apf.b(node).append(xml);
+
+                    ide.dispatchEvent("afteropenfile", {node: node});
                 }
             });
         });

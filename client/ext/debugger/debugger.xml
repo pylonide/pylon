@@ -41,15 +41,15 @@
         </a:datagrid>
     </a:window>
     
-    <!-- a:window id="winDbgBreakpoints" skin="dockwin" title="Breakpoints" modal="false" flex="1" width="200">
-		<a:list
-		  id="lstBreakpoints"
-		  anchors="0 0 0 0"
-		  model="mdlDbgBreakpoints"
-		  each="[breakpoint]"
-		  caption="[@text]"
-		  icon="debugger/brkp_obj.gif">
+    <a:window id="winDbgBreakpoints" skin="dockwin" title="Breakpoints" modal="false" flex="1" buttons="close">
+		<a:list id="lstBreakpoints"
+		  autoselect = "false"
+		  anchors    = "0 0 0 0"
+		  model      = "mdlDbgBreakpoints"
+		  each       = "[breakpoint]"
+		  caption    = "[@text]"
+		  icon       = "debugger/brkp_obj.gif">
 		    <a:actions />
 		</a:list>
-    </a:window-->
+    </a:window>
 </a:application>
