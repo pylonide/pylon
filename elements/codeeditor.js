@@ -205,7 +205,6 @@ apf.codeeditor = function(struct, tagName) {
         if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
             return;
 
-
         var lineOffset = parseInt(script.getAttribute("lineoffset"));
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
@@ -222,11 +221,11 @@ apf.codeeditor = function(struct, tagName) {
             return;
 
         if (this.xmlRoot) {
-            var scriptId = this.xmlRoot.getAttribute("scriptid");
-            if (!scriptId)
+            var scriptName = this.xmlRoot.getAttribute("scriptname");
+            if (!scriptName)
                 return;
 
-            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@scriptid = " + scriptId + "]");
+            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']"); 
 
             var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
@@ -305,6 +304,12 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {           
+            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+            this.$debugger.removeEventListener("prop.activeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+        }
+        
         if (typeof value === "string") {
             //#ifdef __WITH_NAMESERVER
             this.$debugger = apf.nameserver.get("debugger", value);
@@ -324,14 +329,17 @@ apf.codeeditor = function(struct, tagName) {
 
         var self = this;
         self.$updateBreakpoints();
-        this.$breakpoints.addEventListener("update", function() {
+        this.$onBreakpoint = function() {
             self.$updateBreakpoints();
-        });
+        }
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
 
         this.$updateMarker();
-        this.$debugger.addEventListener("prop.activeframe", function() {
+        this.$onChangeActiveFrame = function() {
             self.$updateMarker();
-        })
+        }
+        this.$debugger.addEventListener("prop.activeframe", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
     };
 
     var propModelHandler = this.$propHandlers["model"];

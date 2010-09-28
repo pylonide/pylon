@@ -92,7 +92,7 @@ apf.debughost = function(struct, tagName){
     };
     
     this.loadTabs = function() {
-        if (!this.host)
+        if (!this.$host)
             this.init();
         
         var self = this;

@@ -521,8 +521,10 @@ apf.BaseTab = function(){
         for (var s, i = 0; i < l - 1; i++) {
             s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
             cw -= s;
+            if (!pg[i].$button) continue;
             pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
         }
+        if (!pg[l - 1].$button) return;
         pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
             Math.min(cw, this.$maxBtnWidth)) 
               - this.$btnMargin 
@@ -780,7 +782,13 @@ apf.BaseTab = function(){
         if (!page)
             return false;
 
-        if (!force && this.dispatchEvent("close", {page: page}) === false)
+        var e = {page: page};
+        if (typeof force == "object") {
+            e.htmlEvent = force;
+            force = false;
+        }
+
+        if (!force && this.dispatchEvent("close", e) === false)
             return;
 
         //#ifdef __ENABLE_TAB_SCALE

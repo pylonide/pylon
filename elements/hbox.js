@@ -169,28 +169,17 @@ apf.vbox = function(struct, tagName){
             if (apf.isGecko)
                 this.$int.style.overflow = "visible";
 
+            //@todo this should probably be reinstated
             var stretch = !value || value == "stretch";
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
-            
-            /*if (apf.isGecko) {
-                var isInFixed = false;
-                var node = this.parentNode;
-                while(node) {
-                    if (node.flex && node.$vbox != this.$vbox || node[size]) {
-                        isInFixed = true;
-                        break;
-                    }
-                    node = node.parentNode;
-                }
-            }*/
             
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
                     continue;
 
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "1px" : "auto"; // && (this.flex && node.flex)
+                    node.$ext.style[size] = apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto";//apf.isGecko && (this.flex || node.flex) ? "1px" : "auto";//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -276,6 +265,10 @@ apf.vbox = function(struct, tagName){
     var handlers = {
         //Handlers for flexible box layout
         "true" : {
+            "optimize" : function(value){
+                this.optimize = apf.isTrue(value);
+            },
+            
             "width" : function(value){
                 //@todo this should check the largest and only allow that one
                 //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
@@ -310,45 +303,37 @@ apf.vbox = function(struct, tagName){
             "flex" : function(value){
                 this.flex = value = parseInt(value);
                 if (value) {
-                    if (apf.isGecko && this.parentNode.$vbox)
-                        this.$ext.style.height = "1px";
-                    
-                    if (false && !this.$altExt) { //false && apf.isGecko && 
-                        var doc = this.$ext.ownerDocument;
-                        var sp = (this.$altExt = doc.createElement("div")).appendChild(doc.createElement("span"));
+                    if (!this.optimize && !this.$altExt) {
+                        this.$altExt = this.$ext.ownerDocument.createElement("div");
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
-                        sp.appendChild(this.$ext);
-                        
+                        this.$altExt.appendChild(this.$ext);
+                        this.$altExt.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
                         this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
-                        sp.style.display  = apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box";
-                        sp.style.position = "relative";
-                        //sp.style.overflow = "hidden"; //This line breaks worknets
-                        if (!this.parentNode.$vbox)
-                            sp.style["width"] = "0";
-                        else if (apf.isGecko) {
-                            this.$ext.style.height = "1px"; //For flex with overflow:auto in fixed height structure
-                            sp.style["height"] = "0px";
-                        }
-                            
-                        if (!this.parentNode.$vbox) //For firefox setting minHeight had the averse effect for non fixed heights
-                            sp.style["minWidth"] = "100%"; //? "minHeight" : 
-                        else if (!this.parentNode.height 
-                          && !this.parentNode.parentNode.$layout) {
-                            //@todo remove this again
-                            this.parentNode.$ext.style.height = "100%"; //added this for vboxes with children width flex that are inside an element that scales itself
-                        }
-                            
-                        sp.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
-                        sp.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
+                        this.$altExt.style[apf.CSSPREFIX + "BoxOrient"] = "vertical";
+                        this.$ext.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
+                        var size = this.parentNode.$vbox ? "height" : "width";
+                        //var osize = this.parentNode.$vbox ? "width" : "height";
+                        this.$altExt.style[size] = "0px";
                         
-                        if (!apf.isGecko)
-                            this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+                        if (apf.isGecko) {
+                            this.$altExt.style.overflow = "hidden"; //Gecko
+                            if (apf.getStyle(this.$ext, "overflow") == "visible")
+                                this.$ext.style.overflow = "hidden"; //Gecko
+                        
+                            this.$altExt.style.minHeight = this.$ext.style.minHeight;
+                            this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
+                            this.$altExt.style.minWidth = this.$ext.style.minWidth;
+                            this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
+                        }
                     }
+                    
                     (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {
                     this.parentNode.$int.replaceChild(this.$ext, this.$altExt);
                     this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = "";
+                    if (apf.isGecko)
+                        this.$ext.style.overflow = "";
                     delete this.$altExt;
                 }
             }
@@ -430,7 +415,7 @@ apf.vbox = function(struct, tagName){
                     //amlNode.$ext.style.display = MOZSTACK; //@todo visible toggle
                 
                 //input elements are not handled correctly by firefox and webkit
-                if (input[amlNode.$ext.tagName]) {
+                if (amlNode.$ext.tagName == "INPUT" || apf.isWebkit && input[amlNode.$ext.tagName]) {
                     var doc = amlNode.$ext.ownerDocument;
                     amlNode.$altExt = doc.createElement("div");
                     amlNode.parentNode.$int.replaceChild(amlNode.$altExt, amlNode.$ext);
@@ -441,6 +426,7 @@ apf.vbox = function(struct, tagName){
                         var d = apf.getDiff(amlNode.$ext);
                         //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
                         amlNode.$altExt.style.height = "100%";
+                        amlNode.$altExt.style.width = "0";
                         amlNode.$altExt.style.lineHeight = 0;
                         amlNode.$altExt.style.margin  = "-1px 0 0 0";
                         amlNode.$ext.style.width  = "100%";

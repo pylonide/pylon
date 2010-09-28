@@ -41,7 +41,9 @@ apf.hotkeys = {};
         "120": "F9",
         "121": "F10",
         "122": "F11",
-        "123": "F12"
+        "123": "F12",
+        "219" : "[",
+        "221" : "]"
     };
 
     var macUnicode = {
@@ -134,7 +136,7 @@ apf.hotkeys = {};
      * Removes a registered hotkey.
      * @param {String} hotkey the hotkey combination.
      */
-    apf.removeHotkey = this.remove = function(hotkey) {
+    apf.removeHotkey = this.remove = this.unregister = function(hotkey) {
         _self.register(hotkey, null);
     };
 
@@ -182,7 +184,7 @@ apf.hotkeys = {};
             keys.push(_self.keyNames[e.keyCode]);
 
         if (keys.length) {
-            if (e.keyCode > 46)
+            if (e.keyCode > 46 && !_self.keyNames[e.keyCode])
                 keys.push(String.fromCharCode(e.keyCode));
             apf.setProperty("hotkey", keys.join("-"));
         }

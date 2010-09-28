@@ -14,27 +14,11 @@ var V8WebSocketDebugHost = function(socket) {
 (function() {
      
     this.$connect = function(callback) {
-        var self = this;
-        
-        if (this.state == "connected") {
-            return callback.call(this);
-        } else {
-            this.addEventListener("connect", function() {
-                self.removeEventListener("connect", arguments.callee);
-                callback.call(self);
-            });
-        }
-        if (this.state == "connecting")
-            return;
-
-        this.state = "connecting";
-        
-        this.$v8ds = new WSV8DebuggerService(this.$socket);
+        if (this.state != "connected")
+            this.$v8ds = new WSV8DebuggerService(this.$socket);
         
         this.state = "connected";
         this.dispatchEvent("connect");
-            
-        window.onunload = this.disconnect.bind(this);
         callback.call(this);
     };
     
@@ -46,7 +30,7 @@ var V8WebSocketDebugHost = function(socket) {
         var dbg = this.$debugger;
         
         if (dbg)
-            callback(null, dbg)
+            return callback(null, dbg)
 
         var self = this;
         this.$connect(function() {
