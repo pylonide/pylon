@@ -49,7 +49,7 @@ apf.codeeditor = function(struct, tagName) {
     this.documents = [];
     this.$cache    = {};
 
-    this.setProperty("overwrite", false);
+    //this.setProperty("overwrite", false);
     this.setProperty("line", 1);
     this.setProperty("col", 1)
 };
@@ -65,40 +65,31 @@ apf.codeeditor = function(struct, tagName) {
     this.$childProperty    = "value";
     this.$isTextInput      = true;
 
-    this.syntax            = "Text";
-    this.tabsize           = 4;
-    this.softtabs          = true;
     this.value             = "";
-    this.selectstyle       = "line";
     this.multiline         = true;
-    this.activeline        = true;
     this.caching           = true;
-    this.readonly          = false;
-    this.showinvisibles    = false;
-    this.showprintmargin   = false;
-    this.overwrite         = false;
-    this.softtabs          = false;
 
-    this.$booleanProperties["activeline"]       = true;
-    this.$booleanProperties["caching"]          = true;
-    this.$booleanProperties["readonly"]         = true;
-    this.$booleanProperties["showinvisibles"]   = true;
-    this.$booleanProperties["showprintmargin"]  = true;
-    this.$booleanProperties["overwrite"]        = true;
-    this.$booleanProperties["softtabs"]         = true;
+    this.$booleanProperties["activeline"]      = true;
+    this.$booleanProperties["caching"]         = true;
+    this.$booleanProperties["readonly"]        = true;
+    this.$booleanProperties["showinvisibles"]  = true;
+    this.$booleanProperties["showprintmargin"] = true;
+    this.$booleanProperties["overwrite"]       = true;
+    this.$booleanProperties["softtabs"]        = true;
 
-    this.$supportedProperties.push("value", "syntax",
-        "activeline", "selectstyle", "caching", "readonly", "showinvisibles",
-        "showprintmargin", "printmargincolumn", "overwrite",
-        "tabsize", "softtabs", "debugger");
+    this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
+        "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
+        "overwrite", "tabsize", "softtabs", "debugger");
 
     this.$getCacheKey = function(value) {
-        if (typeof value == "string")
+        if (typeof value == "string") {
             var key = this.xmlRoot
                 ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
                 : value;
-        else
+        }
+        else {
             key = value.getAttribute(apf.xmldb.xmlIdTag);
+        }
         
         return key;
     }
@@ -172,11 +163,11 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.$addDocListeners = function(doc) {
-        var self = this;
+        var _self = this;
         var onCursorChange = function() {
             var cursor = doc.getSelection().getCursor();
-            self.setProperty("line", cursor.row+1);
-            self.setProperty("col", cursor.column+1);
+            _self.setProperty("line", cursor.row+1);
+            _self.setProperty("col", cursor.column+1);
         };
 
         doc.getSelection().addEventListener("changeCursor", onCursorChange);
@@ -327,16 +318,16 @@ apf.codeeditor = function(struct, tagName) {
             
         this.$breakpoints = this.$debugger.$mdlBreakpoints;
 
-        var self = this;
-        self.$updateBreakpoints();
+        var _self = this;
+        _self.$updateBreakpoints();
         this.$onBreakpoint = function() {
-            self.$updateBreakpoints();
+            _self.$updateBreakpoints();
         }
         this.$breakpoints.addEventListener("update", this.$onBreakpoint);
 
         this.$updateMarker();
         this.$onChangeActiveFrame = function() {
-            self.$updateMarker();
+            _self.$updateMarker();
         }
         this.$debugger.addEventListener("prop.activeframe", this.$onChangeActiveFrame);
         this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
@@ -409,9 +400,11 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.clearSelection();
     };
 
-    this.scrollTo = function(){
+    this.scrollTo = function(){ };
 
-    }
+    this.getDefaults = function() {
+        return this.$defaults;
+    };
 
     /**** Private Methods *****/
 
@@ -456,24 +449,40 @@ apf.codeeditor = function(struct, tagName) {
         });
 
         this.$editor = new Editor(new VirtualRenderer(this.$input));
+        // read defaults...
+        var ed  = this.$editor,
+            doc = ed.getDocument();
+        this.$defaults = {
+            syntax            : "Text",//doc.getMode(),
+            tabsize           : doc.getTabSize(),//4,
+            softtabs          : doc.getUseSoftTabs(),//true,
+            selectstyle       : ed.getSelectionStyle(),//"line",
+            activeline        : ed.getHighlightActiveLine(),//true,
+            readonly          : ed.getReadOnly(),//false,
+            showinvisibles    : ed.getShowInvisibles(),//false,
+            showprintmargin   : ed.getShowPrintMargin(),//false,
+            printmargincolumn : ed.getPrintMarginColumn(),//80,
+            overwrite         : ed.getOverwrite()//false
+        };
+        apf.extend(this, this.$defaults);
 
-        var self = this;
-        this.$editor.addEventListener("changeOverwrite", function(e) {
-            self.setProperty("overwrite", e.data);
+        var _self = this;
+        ed.addEventListener("changeOverwrite", function(e) {
+            _self.setProperty("overwrite", e.data);
         });
 
-        this.$editor.addEventListener("gutterclick", function(e) {
-            self.dispatchEvent("gutterclick", e);
+        ed.addEventListener("gutterclick", function(e) {
+            _self.dispatchEvent("gutterclick", e);
         });
 
-        this.$editor.addEventListener("gutterdblclick", function(e) {
-            self.dispatchEvent("gutterdblclick", e);
-            if (self.$debugger) {
-                self.$toggleBreakpoint(e.row);
+        ed.addEventListener("gutterdblclick", function(e) {
+            _self.dispatchEvent("gutterdblclick", e);
+            if (_self.$debugger) {
+                _self.$toggleBreakpoint(e.row);
             }
         });
 
-        apf.sanitizeTextbox(this.$editor.renderer.container.getElementsByTagName("textarea")[0]);
+        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
     };
 
 // #ifdef __WITH_DATABINDING
