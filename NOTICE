@@ -73,10 +73,15 @@ The Easing Equations, version 2.0, is copyrighted by 2003 Robert Penner
 (http://www.robertpenner.com/easing_terms_of_use.html) and licensed under a
 permissive, non-standard license.
 
-The node-XMLHttpRequest library is copyrighted by from Dan DeFelippi
+The node-XMLHttpRequest library is copyrighted by Dan DeFelippi
 <dan@driverdan.com> 2010. We use the fork by Mark Hansen
 <http://github.com/chihchun/node-XMLHttpRequest>. Licensed under the MIT 
 license.
+
+Portions of the geo-location-javascript library, version 0.4.3, are used, which
+is copyrighted by Stan Wiechers 2009
+<http://code.google.com/p/geo-location-javascript/>.
+Licensed under the MIT license.
 
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the
