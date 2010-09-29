@@ -13,7 +13,7 @@
                 <a:vbox width="150" padding="5">
                     <a:textbox initial-message="Filter" />
                     <a:tree flex="1"
-                      each      = "[section]"
+                      each      = "[node()[local-name() and not(local-name() = 'auto')]]"
                       eachvalue = "[@page]"
                       caption   = "[@name]"
                       icon      = "{[@icon] || 'folder.png'}" 

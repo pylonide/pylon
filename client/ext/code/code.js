@@ -42,7 +42,7 @@ return ext.register("ext/code/code", {
         var commitFunc = this.onCommit.bind(this);
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("Code Editor", "section[@name='Editor']", commitFunc);
+            var page = e.ext.addSection("code", "Code Editor", "editors", commitFunc);
             page.insertMarkup(settings);
         });
     },
@@ -105,7 +105,7 @@ return ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Show Invisibles",
-                checked : "{ceEditor.showinvisibles}"
+                checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
             })),
 
             mnuView.appendChild(new apf.item({

@@ -26,7 +26,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     init : function(amlNode){
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("Tab Behaviors", "section[@name='General']");
+            var page = e.ext.addSection("tab", "Tab Behaviors", "general");
             page.insertMarkup(settings);
         });
 

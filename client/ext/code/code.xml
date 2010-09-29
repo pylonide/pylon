@@ -21,7 +21,7 @@
       visible = "false"
       value   = "[data]"
       syntax  = "{getSyntax([@contenttype])}"
-      showinvisibles = "false"
+      showinvisibles = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
       softtabs       = "true"
       contextmenu    = "mnuCtxEditor"
       debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
