@@ -735,14 +735,15 @@ apf.Class.prototype = new (function(){
             
             if (!forceOnMe) { //Recursion protection
                 //Check if this property is bound to data
-                if (this.xmlRoot && typeof value != OBJ
+                if (typeof value != OBJ //this.xmlRoot &&
                   && (!(s = this.$attrExcludePropBind[prop]))// || s == 2
                   && (r = (this.$attrBindings && this.$attrBindings[prop] 
-                  || prop != VALUE && this.$bindings[prop] && this.$bindings[prop][0]))) {
+                  || prop != VALUE && this.xmlRoot && this.$bindings[prop] 
+                  && this.$bindings[prop][0]))) {
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
-                        //Set the xml value
+                        //Set the xml value - this should probably use execProperty
                         return apf.setNodeValue(
                             this.$getDataNode(prop.toLowerCase(), this.xmlRoot, true),
                             value, true);
