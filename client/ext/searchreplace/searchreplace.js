@@ -66,6 +66,9 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.btnReplaceAll.onclick = this.replaceAll.bind(this);
         this.btnFind       = btnFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.findNext.bind(this);
+        winSearchReplace.onclose = function() {
+            ceEditor.focus();
+        }
     },
 
     toggleDialog: function(isReplace, forceShow) {
@@ -87,6 +90,12 @@ return ext.register("ext/searchreplace/searchreplace", {
         else
             winSearchReplace.hide();
         return false;
+    },
+
+    onHide : function() {
+        var editor = require('ext/editors/editors').currentEditor;
+        if (editor && editor.ceEditor)
+            editor.ceEditor.focus();
     },
 
     search: function() {
