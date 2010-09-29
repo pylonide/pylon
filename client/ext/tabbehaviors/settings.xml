@@ -1,7 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:frame caption="Tab Behaviors" anchors="0 0 0 0">
-        <a:table columns="100,144" padding="5">
-            
-        </a:table>
-    </a:frame>
-</a:application>
