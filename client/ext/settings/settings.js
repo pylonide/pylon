@@ -16,7 +16,7 @@ return ext.register("ext/settings/settings", {
     type    : ext.GENERAL,
     markup  : markup,
     file    : "/workspace/.settings.xml",
-    hotkeys : {"settings":1},
+    hotkeys : {"showsettings":1},
     hotitems: {},
 
     nodes : [],
@@ -46,13 +46,13 @@ return ext.register("ext/settings/settings", {
         }
     },
 
-    addSection : function(name, xpath, cbCommit){
+    addSection : function(tagName, name, xpath, cbCommit){
         var id = "pgSettings" + name.replace(/ /g, "_"),
             page = pgSettings.getPage(id);
         if (page)
             return page;
-        if (!this.model.data.selectSingleNode(xpath + "/section[@page='" + id + "']"))
-            this.model.appendXml('<section name="' + name +'" page="' + id + '" />', xpath);
+        if (!this.model.data.selectSingleNode(xpath + "/" + tagName))
+            this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
         page = pgSettings.add(name, id);
         page.$at = new apf.actiontracker();
         page.$commit = cbCommit || apf.K;
@@ -64,13 +64,10 @@ return ext.register("ext/settings/settings", {
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Settings",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    winSettings.show();
-                }
+                onclick : this.showsettings.bind(this)
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
-        this.hotitems["settings"] = this.nodes[0];
+        this.hotitems["showsettings"] = [this.nodes[0]];
 
         this.model = new apf.model();
         /*fs.readFile(_self.file, function(data, state, extra){
@@ -112,6 +109,12 @@ return ext.register("ext/settings/settings", {
         this.btnCancel.onclick = this.cancelSettings;
         this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
         this.btnApply.onclick = this.applySettings.bind(this);
+    },
+
+    showsettings: function() {
+        ext.initExtension(this);
+        winSettings.show();
+        return false;
     },
 
     saveSettings: function() {

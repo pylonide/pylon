@@ -20,7 +20,7 @@ return ext.register("ext/keybindings/keybindings", {
     init : function(amlNode){
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("Keybindings", "section[@name='General']");
+            var page = e.ext.addSection("keybindings", "Keybindings", "general");
             page.insertMarkup(settings);
         });
 

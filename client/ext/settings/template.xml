@@ -1,5 +1,5 @@
-<settings>
+<settings version="0.0.2">
     <auto />
-    <section name="General" page="pgSettingsGeneral" />
-    <section name="Editor" page="pgSettingsEditor" />
+    <general name="General" page="pgSettingsGeneral" />
+    <editors name="Editor" page="pgSettingsEditors" />
 </settings>
