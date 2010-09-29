@@ -244,7 +244,9 @@ apf.xmldb = new (function(){
      * @private
      * @todo this is cleanup hell! Listeners should be completely rearchitected
      */
-    this.$listeners = [];
+    
+    // make sure that "0" is never a listener index
+    this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
         // #ifdef __DEBUG
         if (!o || (!o.$xmlUpdate && !o.setProperty))
