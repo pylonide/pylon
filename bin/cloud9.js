@@ -35,6 +35,7 @@ function parseArguments(argv) {
         	var ip = argv.shift();
         	if (!ip) return usage();
         	opts.ip = ip;
+        	break;
 	    default:
 		if(arg.indexOf('-a')==0){
 			var args = arg.slice(2).split(' ');
