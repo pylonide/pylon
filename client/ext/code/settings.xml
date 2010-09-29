@@ -4,7 +4,6 @@
             <a:checkbox label="Wrap Lines" value="[@wrap]" />
             <a:checkbox label="Overwrite mode" value="[@overwrite]" checked="false" />
             <a:checkbox label="Full line selection" value="[@selectstyle]" values="line|text" checked="true"/>
-            <a:checkbox label="Read only" value="[@readonly]" checked="false" />
             <a:checkbox label="Highlight active line" value="[@activeline]" checked="true"/>
             <a:checkbox label="Show invisibles" value="[@showinvisibles]" checked="true"/>
         </a:table>

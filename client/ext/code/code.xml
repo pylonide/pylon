@@ -14,18 +14,24 @@
             return (SupportedModes[mime] || "Text");
         }
      ]]></a:script>
-    
+
     <a:codeeditor id="ceEditor"
-      flex    = "1"
-      anchors = "6 0 4 0"
-      visible = "false"
-      value   = "[data]"
-      syntax  = "{getSyntax([@contenttype])}"
-      showinvisibles = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-      softtabs       = "true"
-      contextmenu    = "mnuCtxEditor"
-      debugger       = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
-      readonly       = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
+      flex              = "1"
+      anchors           = "6 0 4 0"
+      visible           = "false"
+      value             = "[data]"
+      syntax            = "{getSyntax([@contenttype])}"
+      overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+      selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+      activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
+      showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+      showprintmargin   = "[{require('ext/settings/settings').model}::editors/code/@showprintmargin]"
+      printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
+      softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+      tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+      contextmenu       = "mnuCtxEditor"
+      debugger          = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
+      readonly          = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
     />
     
     <a:menu id="mnuCtxEditor" render="runtime">

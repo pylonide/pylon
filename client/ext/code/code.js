@@ -39,15 +39,31 @@ return ext.register("ext/code/code", {
     },
 
     hook : function(){
-        var commitFunc = this.onCommit.bind(this);
+        var commitFunc = this.onCommit.bind(this),
+            name       = this.name;
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("code", "Code Editor", "editors", commitFunc);
+            var page = e.ext.addSection("code", name, "editors", commitFunc);
             page.insertMarkup(settings);
         });
     },
 
     init : function(amlPage){
+        var def = ceEditor.getDefaults();
+        //check default settings...
+        var settings = require("ext/settings/settings"),
+            model    = settings.model,
+            base     = model.data.selectSingleNode("editors/code");
+        if (!base)
+            base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
+        // go through all default settings and append them to the XML if they're not there yet
+        for (var prop in def) {
+            if (!prop) continue;
+            if (!base.getAttribute(prop))
+                base.setAttribute(prop, def[prop]);
+        }
+        apf.xmldb.applyChanges("synchronize", base);
+
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
@@ -82,7 +98,7 @@ return ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
-                checked : "{ceEditor.selectstyle == 'line'}",
+                checked : "{[{require('ext/settings/settings').model}::editors/code/@selectstyle] == 'line'}",
                 onclick : function(){
                     _self.toggleSetting("selectstyle");
                 }
@@ -97,7 +113,7 @@ return ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Highlight Active Line",
-                checked : "{ceEditor.activeline}"
+                checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
             })),
             
             mnuView.appendChild(new apf.divider()),
@@ -111,7 +127,7 @@ return ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Show Print Margin",
-                checked : "{ceEditor.showprintmargin}"
+                checked : "[{require('ext/settings/settings').model}::editors/code/@showprintmargin]"
             }))
             // Wrap Lines (none),
             // Overwrite mode (overwrite),

@@ -41,13 +41,17 @@ return ext.register("ext/settings/settings", {
         if (changed) {
             if (ide.dispatchEvent("savesettings", {
                 model : this.model
-            }) === true)
+            }) !== false)
                 this.save();
         }
     },
 
+    getSectionId: function(part) {
+        return "pgSettings" + part.replace(/ /g, "_");
+    },
+
     addSection : function(tagName, name, xpath, cbCommit){
-        var id = "pgSettings" + name.replace(/ /g, "_"),
+        var id = this.getSectionId(name),
             page = pgSettings.getPage(id);
         if (page)
             return page;
