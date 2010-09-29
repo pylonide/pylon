@@ -28,7 +28,9 @@ exports.main = function(projectDir, port, ip) {
         commonProvider()
     );
 
-    if(ip === "all" || ip === "0.0.0.0") ip = null;
+    if (ip === "all" || ip === "0.0.0.0")
+        ip = null;
+
     server.listen(port, ip);
     new IdeServer(projectDir, server);
 };
