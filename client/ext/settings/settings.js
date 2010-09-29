@@ -16,7 +16,7 @@ return ext.register("ext/settings/settings", {
     type    : ext.GENERAL,
     markup  : markup,
     file    : "/workspace/.settings.xml",
-    hotkeys : {"settings":1},
+    hotkeys : {"showsettings":1},
     hotitems: {},
 
     nodes : [],
@@ -64,13 +64,10 @@ return ext.register("ext/settings/settings", {
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Settings",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    winSettings.show();
-                }
+                onclick : this.showsettings.bind(this)
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
-        this.hotitems["settings"] = this.nodes[0];
+        this.hotitems["showsettings"] = [this.nodes[0]];
 
         this.model = new apf.model();
         /*fs.readFile(_self.file, function(data, state, extra){
@@ -112,6 +109,12 @@ return ext.register("ext/settings/settings", {
         this.btnCancel.onclick = this.cancelSettings;
         this.btnApply = winSettings.selectSingleNode("a:vbox/a:hbox[2]/a:button[3]");
         this.btnApply.onclick = this.applySettings.bind(this);
+    },
+
+    showsettings: function() {
+        ext.initExtension(this);
+        winSettings.show();
+        return false;
     },
 
     saveSettings: function() {

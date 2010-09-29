@@ -5,6 +5,7 @@
       icon      = ""
       center    = "true"
       buttons   = "close"
+      kbclose   = "true"
       width     = "550"
       height    = "300">
         <a:vbox anchors="0 0 0 0">

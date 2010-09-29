@@ -27,6 +27,9 @@ return keys.onLoad({
             "search": "Command-F",
             "searchreplace": "Command-Shift-R"
         },
+        "settings": {
+            "showsettings": "Command-,"
+        },
         "tabbehaviors" : {
             "closetab": "Command-W",
             "closealltabs": "Command-Shift-W",
