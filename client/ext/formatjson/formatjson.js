@@ -14,11 +14,13 @@ require.def("ext/formatjson/formatjson",
     function(ide, ext, util, editors, Range, markup) {
         
 return ext.register("ext/formatjson/formatjson", {
-    name   : "JSON Formatter",
-    dev    : "Ajax.org",
-    alone  : true,
-    type   : ext.GENERAL,
-    markup : markup,
+    name     : "JSON Formatter",
+    dev      : "Ajax.org",
+    alone    : true,
+    type     : ext.GENERAL,
+    markup   : markup,
+    hotkeys  : {"format":1},
+    hotitems : {},
     
     nodes : [],
     
@@ -55,6 +57,8 @@ return ext.register("ext/formatjson/formatjson", {
                 }
             }))
         );
+        
+        this.hotitems["format"] = [this.nodes[0]];
     },
     
     init : function(amlNode){

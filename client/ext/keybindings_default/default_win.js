@@ -27,6 +27,9 @@ return keys.onLoad({
             "search": "Ctrl-F",
             "searchreplace": "Ctrl-Shift-R"
         },
+        "formatjson" : {
+            "format" : "Ctrl-Shift-J"
+        },
         "tabbehaviors" : {
             "closetab": "Ctrl-W",
             "closealltabs": "Ctrl-Shift-W",
