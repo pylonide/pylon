@@ -216,9 +216,9 @@ apf.runO3 = function(){
     };
     
     apf.getXmlDom = function(message, noError){
-        var xmlParser = o3.xml;
+        var xmlParser = require('xml');//o3.xml;
         xmlParser     = xmlParser.parseFromString(message, "text/xml");
-
+        
         if (!noError)
             this.xmlParseError(xmlParser);
         
