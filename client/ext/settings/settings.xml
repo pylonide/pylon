@@ -19,7 +19,9 @@
                       icon      = "{[@icon] || 'folder.png'}" 
                       startcollapsed = "false"
                       onafterselect  = "
-                        pgSettings.getPage(this.value).setAttribute('model', this.selected);
+                        var page = pgSettings.getPage(this.value);
+                        if (!page) return;
+                        page.setAttribute('model', this.selected);
                         pgSettings.set(this.value);
                       "/>
                 </a:vbox>

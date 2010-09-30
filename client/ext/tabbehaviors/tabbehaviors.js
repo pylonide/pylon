@@ -5,8 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/tabbehaviors/tabbehaviors",
-    ["core/ide", "core/ext", "core/util", "text!ext/tabbehaviors/settings.xml"],
-    function(ide, ext, util, settings) {
+    ["core/ide", "core/ext", "core/util"],
+    function(ide, ext, util) {
 
 return ext.register("ext/tabbehaviors/tabbehaviors", {
     name    : "Tab Behaviors",
@@ -24,12 +24,6 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     nodes   : [],
 
     init : function(amlNode){
-        //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
-            var page = e.ext.addSection("tab", "Tab Behaviors", "general");
-            page.insertMarkup(settings);
-        });
-
         this.nodes.push(
             mnuPanels.appendChild(new apf.divider()),
             mnuPanels.appendChild(new apf.item({
