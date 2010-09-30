@@ -84,15 +84,14 @@ return ext.register("ext/settings/settings", {
                 model : _self.model
             });
         });*/
-        this.model.load(
-            !ide.settings || ide.settings.indexOf("d:error") > -1
-              ? template
-              : ide.settings);
+
+        this.model.load(this.convertOrBackup() ? template : ide.settings);
+
         ide.dispatchEvent("loadsettings", {
             model : _self.model
         });
 
-        var checkSave = function(){
+        var checkSave = function() {
             if (ide.dispatchEvent("savesettings", {
                 model : _self.model
             }) === true)
@@ -101,9 +100,38 @@ return ext.register("ext/settings/settings", {
         this.$timer = setInterval(checkSave, 6000); //60000
         apf.addEventListener("exit", checkSave);
 
-        ide.addEventListener("$event.loadsettings", function(callback){
+        ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});
         });
+    },
+
+    convertOrBackup: function() {
+        if (!ide.settings || ide.settings.indexOf("d:error") > -1)
+            return true;
+        // <section> elements are from version < 0.0.3 (deprecated)...
+        if (ide.settings.indexOf("<section") > -1) {
+            // move file to /workspace/.settings.xml.old
+            var moved = false,
+                _self = this;
+            apf.asyncWhile(function() {
+                return !moved;
+            },
+            function(iter, next) {
+                //move = function(sFrom, sTo, bOverwrite, bLock, callback)
+                var newfile = _self.file + ".old" + (iter === 0 ? "" : iter);
+                fs.webdav.move(_self.file, newfile, false, null, function(data, state, extra) {
+                    var iStatus = parseInt(extra.status);
+                    if (iStatus != 403 && iStatus != 409 && iStatus != 412
+                      && iStatus != 423 && iStatus != 424 && iStatus != 502 && iStatus != 500) {
+                        moved = true;
+                    }
+                    next();
+                });
+            });
+            return true;
+        }
+
+        return false;
     },
 
     init : function(amlNode){
