@@ -143,13 +143,14 @@ return ext.register("ext/filesystem/filesystem", {
 
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='Project' path='/workspace' /></data>");
+        this.model.load("<data><folder type='folder' name='Project' path='workspace' /></data>");
 
         var url;
         if (location.host) {
+	    var dav_url = location.href.replace(location.hash, '');
             this.webdav = new apf.webdav({
                 id  : "davProject",
-                url : location.protocol + "//" + location.host + "/workspace"
+                url : dav_url+"workspace"
             });
             url = "{davProject.getroot()}";
         }

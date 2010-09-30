@@ -21,6 +21,7 @@ return ext.register("ext/noderunner/noderunner", {
 
     init : function(amlNode){
         var options = {
+    	    resource: location.pathname  ? location.pathname.replace('/',"") + "socket.io" : null,
             transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
             transportOptions: {
                 'xhr-polling': {
@@ -87,7 +88,7 @@ return ext.register("ext/noderunner/noderunner", {
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
-                this.davPrefix = message.davPrefix;
+                this.davPrefix = location.pathname+message.davPrefix;
                 break;
 
             case "node-data":
