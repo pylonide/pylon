@@ -1,0 +1,3 @@
+[submodule "vendor/o3node"]
+	path = vendor/o3node
+	url = http://github.com/ajaxorg/o3node.git
