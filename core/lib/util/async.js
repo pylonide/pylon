@@ -57,6 +57,29 @@ apf.asyncForEach = function(list, async, callback) {
     });
 };
 
+/**
+ * Perform an async function in serial while the function 'condition' (first 
+ * argument) evaluates to true.
+ * 
+ * @param {Function} condition function that returns a Boolean, which determines
+ *                             if the loop should continue
+ * @param {Function} async     async function of the form function(iteration_no, callback)
+ * @param {Function} callback  function of the form function(error), which is
+ *                             called after all items have been processed
+ */
+apf.asyncWhile = function(condition, async, callback) {
+    var i = 0;
+    async(i, function handler(err) {
+        if (err)
+            return callback ? callback(err, i) : null;
+
+        ++i;
+        if (condition(i))
+            async(i, handler);
+        else
+            callback && callback(null, i);
+    });
+};
 
 /**
  * Map each element from the list to the result returned by the async mapper

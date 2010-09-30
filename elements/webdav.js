@@ -208,13 +208,13 @@ apf.webdav = function(struct, tagName){
                 if (state != apf.SUCCESS) {
                     var oError;
 
-                    oError = WebDAVError.call(this, "Url: " + extra.url + "\nInfo: " + extra.message);
+                    oError = WebDAVError.call(_self, "Url: " + extra.url + "\nInfo: " + extra.message);
 
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
 
                     if (fCallback)
-                        fCallback(data, state, extra);
+                        return fCallback.call(_self, data, state, extra);
                     else
                         throw oError;
                 }
@@ -238,9 +238,9 @@ apf.webdav = function(struct, tagName){
                     }
                     catch(e) {
                         if (fCallback)
-                            fCallback(data, state, extra);
+                            return fCallback.call(_self, data, state, extra);
                         else
-                            throw WebDAVError.call(this, "Received invalid XML\n\n" + e.message);
+                            throw WebDAVError.call(_self, "Received invalid XML\n\n" + e.message);
                     }
                 }
 
@@ -646,7 +646,7 @@ apf.webdav = function(struct, tagName){
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412
-              || iStatus == 423 || iStatus == 424 || iStatus == 502) {
+              || iStatus == 423 || iStatus == 424 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
