@@ -1,9 +1,6 @@
 [submodule "vendor/o3node"]
 	path = vendor/o3node
 	url = http://github.com/ajaxorg/o3node.git
-[submodule "vendor/nodebuilds"]
-	path = vendor/nodebuilds
-	url = http://github.com/ajaxorg/nodebuilds.git
 [submodule "vendor/async.js"]
 	path = vendor/async.js
 	url = http://github.com/ajaxorg/async.js.git
