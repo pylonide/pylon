@@ -1,5 +1,6 @@
 require.paths.unshift(__dirname);
 require.paths.unshift(__dirname + "/lib");
 
+require.paths.unshift(__dirname + "/vendor/apf");
 require.paths.unshift(__dirname + "/vendor/async.js/lib");
-require.paths.unshift(__dirname + "/vendor/o3");
+require.paths.unshift(__dirname + "/vendor/o3node");

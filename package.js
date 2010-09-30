@@ -1,5 +1,5 @@
 require("./paths");
-require("apf");
+require("apfinclude");
 
 require("proc");
 require("files");
@@ -10,7 +10,7 @@ require("proc/compress");
 require("proc/encoder");
 require("proc/inline");
 require("proc/docgen");
-require("proc/vcs");
+//require("proc/vcs");
 
 var Sys   = require("sys"),
     Fs    = require("fs");

@@ -7,7 +7,7 @@
       name     = "apf_{version.replace(/\./g, '_')}"
       cwd      = "{__dirname}/.."
       tmp      = "/tmp"
-      platform = "/var/lib/platform"
+      platform = "{__dirname}/../vendor/apf"
       release  = "~">
     </p:settings>
 
