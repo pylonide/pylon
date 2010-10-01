@@ -1,5 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window title="Go to Line" buttons="close" id="winGotoLine" modal="false" center="true" width="250" kbclose="true">
+    <a:window 
+      title="Go to Line" 
+      onhide="require('ext/gotoline/gotoline').onHide()"
+      buttons="close" 
+      id="winGotoLine" 
+      modal="false" 
+      center="true" 
+      width="250" 
+      kbclose="true"
+    >
         <a:vbox>
             <a:hbox edge="10" align="center">
                 <a:label width="70">Line number</a:label>

@@ -76,6 +76,12 @@ return ext.register("ext/gotoline/gotoline", {
         winGotoLine.hide();
     },
     
+    onHide : function() {
+        var editor = require('ext/editors/editors').currentEditor;
+        if (editor && editor.ceEditor)
+            editor.ceEditor.focus();
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
