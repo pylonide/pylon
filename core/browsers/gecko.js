@@ -56,12 +56,14 @@ apf.runGecko = function(){
     
     //Element.selectNodes
     Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
     Element.prototype.selectNodes = function(sExpr){
        return this.ownerDocument.selectNodes(sExpr, this);
     };
     
     //XMLDocument.selectSingleNode
-    HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+    HTMLDocument.prototype.selectSingleNode = 
+    XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
         try {
             var oResult = this.evaluate(sExpr, (contextNode || this),
                 this.createNSResolver(this.documentElement),
@@ -79,6 +81,7 @@ apf.runGecko = function(){
     
     //Element.selectSingleNode
     Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
     Element.prototype.selectSingleNode = function(sExpr){
         return this.ownerDocument.selectSingleNode(sExpr, this);
     };
