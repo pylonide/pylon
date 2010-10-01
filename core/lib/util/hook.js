@@ -34,7 +34,7 @@
 apf.asyncCheck = 1;
 apf.asyncCheckError = 1;
 apf.asyncCheckIgnore = 0;
-apf.asyncCheckTimeout = 1;
+apf.asyncCheckTimeout = 0;
 
 apf.hookWrapAsync = function(inner){
     var outer = function() {
@@ -93,10 +93,10 @@ apf.hookWrapAsync = function(inner){
                         clearTimeout(timeout);
                         var cb = oldcb; oldcb = null;
                         if(cb){
-                            apf.console.log("Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")" + inner.toString());
+                            apf.console.log("Hook Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")" + inner.toString());
                             //cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
                         }
-                    },1000);
+                    },3000);
                 }
                 return inner.apply(this, args);
             }
