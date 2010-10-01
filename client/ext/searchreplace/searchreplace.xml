@@ -17,7 +17,7 @@
                 <a:textbox id="txtReplace" flex="1" />
             </a:hbox>
             <a:table columns="150,150" edge="10 10 0 10">
-                <a:checkbox id="chkMatchCase" checked="true" label="Match Case" />
+                <a:checkbox id="chkMatchCase" checked="false" label="Match Case" />
                 <a:checkbox id="chkWrapAround" checked="true" label="Wrap Around" />
                 <a:checkbox id="chkWholeWords" label="Whole Words" />
                 <a:checkbox id="chkSearchSelection" label="Search Selection" />
