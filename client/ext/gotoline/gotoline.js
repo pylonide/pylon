@@ -102,5 +102,4 @@ return ext.register("ext/gotoline/gotoline", {
     }
 });
 
-    }
-);
+});

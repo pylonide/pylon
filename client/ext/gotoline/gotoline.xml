@@ -12,7 +12,7 @@
         <a:vbox>
             <a:hbox edge="10" align="center">
                 <a:label width="70">Line number</a:label>
-                <a:spinner id="txtLineNr" flex="1" min="0" max="10000000" />
+                <a:textbox id="txtLineNr" flex="1" focusselect="true" initial-message="line number"/>
             </a:hbox>
             <a:divider />
             <a:hbox edge="5 10 5 10" padding="5" pack="end">
