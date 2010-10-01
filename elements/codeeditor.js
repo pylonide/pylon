@@ -389,6 +389,10 @@ apf.codeeditor = function(struct, tagName) {
         return this.$editor.getDocument().getSelection();        
     };
     
+    this.getLastSearchOptions = function() {
+        return this.$editor.getLastSearchOptions();
+    };
+    
     //#endif
 
     /**
