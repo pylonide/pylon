@@ -81,7 +81,7 @@ return ext.register("ext/editors/editors", {
                     id      : "barButtons",
                     edge    : "0 0 0 6",
                     zindex  : 1000,
-                    class   : "relative",
+                    "class" : "relative",
                     padding : "-1",
                     margin  : "-2 0 0 0"
                 })
