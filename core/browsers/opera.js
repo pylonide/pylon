@@ -63,6 +63,7 @@ apf.runOpera = function (){
     
     //Element.selectNodes
     Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
     Element.prototype.selectNodes = function(sExpr){
         var doc = this.ownerDocument;
         if (!doc.selectSingleNode) {
@@ -88,6 +89,7 @@ apf.runOpera = function (){
     
     //Element.selectSingleNode
     Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
     Element.prototype.selectSingleNode = function(sExpr){
         var doc = this.ownerDocument;
         if (!doc.selectSingleNode) {

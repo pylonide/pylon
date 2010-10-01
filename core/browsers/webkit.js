@@ -64,6 +64,7 @@ apf.runWebkit = function(){
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = 
         Text.prototype.selectNodes         =
+        Attr.prototype.selectNodes         =
         Element.prototype.selectNodes      = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this);
         };
@@ -72,6 +73,7 @@ apf.runWebkit = function(){
         HTMLDocument.prototype.selectSingleNode =
         XMLDocument.prototype.selectSingleNode  = 
         Text.prototype.selectSingleNode         =
+        Attr.prototype.selectSingleNode         =
         Element.prototype.selectSingleNode      = function(sExpr, contextNode){
             return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
@@ -110,6 +112,7 @@ apf.runWebkit = function(){
     
     //Element.selectNodes
     Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
     Element.prototype.selectNodes = function(sExpr){
        return this.ownerDocument.selectNodes(sExpr, this);
     };
@@ -122,6 +125,7 @@ apf.runWebkit = function(){
     
     //Element.selectSingleNode
     Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
     Element.prototype.selectSingleNode = function(sExpr){
         return this.ownerDocument.selectSingleNode(sExpr, this);
     };
