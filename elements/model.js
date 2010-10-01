@@ -276,6 +276,8 @@ apf.model = function(struct, tagName){
         var list = amlNode.$propsUsingMainModel;
         for (var prop in list)
             this.$unbindXmlProperty(amlNode, prop);
+            
+        amlNode.dispatchEvent("unloadmodel");
     };
 
     /**

@@ -100,8 +100,12 @@ apf.codeeditor = function(struct, tagName) {
         
         var key = this.$getCacheKey(xmlNode);
         if (key)
-            delete this.$cache[key];
+            delete this.$cache[key];                    
     }
+    
+    this.addEventListener("unloadmodel", function(e) {
+        this.$changeValue();
+    });
     
     /**
      * @attribute {String} value the text of this element
@@ -133,6 +137,7 @@ apf.codeeditor = function(struct, tagName) {
                     ? value.nodeValue
                     : value.firstChild && value.firstChild.nodeValue || ""));
 
+            doc.cacheId = key;
             doc.setUndoManager(new UndoManager());
 
             if (key)
@@ -417,13 +422,21 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.focus();
     };
 
-    this.$blur = function(e){
+    this.$changeValue = function() {
+        var doc = this.$editor.getDocument();
+        if (doc.cacheId == this.$getCacheKey(this.value)) {
+            var value = this.getValue();
+            if (this.value != value)
+                this.change(value);
+        }
+    };
+
+    this.$blur = function(e) {
         if (!this.$ext)
             return;
 
-        if (this.value != this.getValue())
-            this.change(this.getValue());
-
+        this.$changeValue();
+    
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
     };
@@ -448,7 +461,7 @@ apf.codeeditor = function(struct, tagName) {
             this.$editor.resize();
         });
 
-        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        this.$editor = new Editor(new VirtualRenderer(this.$input, {cssClass: "ce"}));
         // read defaults...
         var ed  = this.$editor,
             doc = ed.getDocument();

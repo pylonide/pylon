@@ -1,7 +1,6 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
 <a:codeeditor name="codeeditor">
-    <a:style src="../elements/editor/css/editor.css" />
     <a:style><![CDATA[
         .ceDisabled {
             border: 1px solid #c3c3c3;
