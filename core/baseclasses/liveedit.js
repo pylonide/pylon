@@ -72,13 +72,13 @@ apf.LiveEdit = function() {
                 apf.GuiElement.propHandlers.focussable.call(this, true);
             }
             
-            if (!this.$mouseOver)
+            if (!this.$leMouseOver)
                 this.$setMouseEvents();
 
-            apf.addListener(this.$ext, "mouseup",   this.$mouseUp);
-            apf.addListener(this.$ext, "mousedown", this.$mouseDown);
-            apf.addListener(this.$ext, "mouseout",  this.$mouseOut);
-            apf.addListener(this.$ext, "mouseover", this.$mouseOver);
+            apf.addListener(this.$ext, "mouseup",   this.$leMouseUp);
+            apf.addListener(this.$ext, "mousedown", this.$leMouseDown);
+            apf.addListener(this.$ext, "mouseout",  this.$leMouseOut);
+            apf.addListener(this.$ext, "mouseover", this.$leMouseOver);
             
             this.addEventListener("keydown",   keydownHandler, true);
             this.addEventListener("blur",      blurHandler);
@@ -92,17 +92,17 @@ apf.LiveEdit = function() {
             else
                 this.addEventListener("xmlupdate", xmlupdateHandler);
         }
-        else if (this.$mouseOver) {
+        else if (this.$leMouseOver) {
             if (this.$unFocussable) {
                 this.$focussable = this.$unFocussable[0];
                 apf.GuiElement.propHandlers.focussable.call(this, this.$unFocussable[1]);
                 delete this.$unFocussable;
             }
             
-            apf.removeListener(this.$ext, "mouseover", this.$mouseOver);
-            apf.removeListener(this.$ext, "mouseout",  this.$mouseOut);
-            apf.removeListener(this.$ext, "mousedown", this.$mouseDown);
-            apf.removeListener(this.$ext, "mouseup",   this.$mouseUp);
+            apf.removeListener(this.$ext, "mouseover", this.$leMouseOver);
+            apf.removeListener(this.$ext, "mouseout",  this.$leMouseOut);
+            apf.removeListener(this.$ext, "mousedown", this.$leMouseDown);
+            apf.removeListener(this.$ext, "mouseup",   this.$leMouseUp);
 
             this.$activeNode     = null;
             this.$lastActiveNode = null;
@@ -150,7 +150,7 @@ apf.LiveEdit = function() {
                 removeHandler.call(moEditor);
         }
         
-        this.$mouseOver = function(e) {
+        this.$leMouseOver = function(e) {
             var el = e.srcElement || e.target;
             if (!el) return;
             while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
@@ -171,7 +171,7 @@ apf.LiveEdit = function() {
             else
                 apf.setStyleClass(el, "liveEditOver");
         };
-        this.$mouseOut = function(e) {
+        this.$leMouseOut = function(e) {
             var el = e.srcElement || e.target;
             if (!el) return;
             while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
@@ -181,7 +181,7 @@ apf.LiveEdit = function() {
 
             apf.setStyleClass(el, null, ["liveEditOver"]);
         };
-        this.$mouseDown = function(e, preventPropagation) {
+        this.$leMouseDown = function(e, preventPropagation) {
             if (!preventPropagation)
                 apf.cancelBubble(e);
 
@@ -218,7 +218,7 @@ apf.LiveEdit = function() {
 
             return false;
         };
-        this.$mouseUp = function(e) {
+        this.$leMouseUp = function(e) {
             var el = e.srcElement || e.target;
             if (_self.$activeNode && _self.$selection && apf.isChildOf(_self.$activeNode, el, true))
                 _self.$selection.cache();
