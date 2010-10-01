@@ -31,7 +31,7 @@
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true">
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
-                <a:caption match="[@name]" />
+                <a:caption match="[@name]" value="{[.] + ([../@changed] == 1 ? '*' : '')}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{getIcon(%[.])}" />
                 <a:expanded match="[project]" />

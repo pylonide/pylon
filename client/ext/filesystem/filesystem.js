@@ -97,7 +97,7 @@ return ext.register("ext/filesystem/filesystem", {
             page = tabEditors.getPage(extra.originalArgs[1]);
         apf.xmldb.setAttribute(node, "path", base + extra.originalArgs[0]);
         if (page) {
-            page.setAttribute("caption", node.getAttribute("name"));
+            //page.setAttribute("caption", node.getAttribute("name"));
             page.setAttribute("id", base + extra.originalArgs[0]);
         }
     },
@@ -108,7 +108,7 @@ return ext.register("ext/filesystem/filesystem", {
             var node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[1] + "']"),
                 page = tabEditors.getPage(extra.originalArgs[0]);
             if (page) {
-                page.setAttribute("caption", node.getAttribute("name"));
+                //page.setAttribute("caption", node.getAttribute("name"));
                 page.setAttribute("id", extra.originalArgs[1]);
             }
         }

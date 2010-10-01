@@ -192,7 +192,7 @@ return ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var model, fake = tabEditors.add(filename, filepath, editor.path, null, function(page){
+        var model, fake = tabEditors.add("{[@name] + ([@changed] == 1 ? '*' : '')}", filepath, editor.path, null, function(page){
             page.contentType    = contentType;
             page.$at            = new apf.actiontracker();
             model = page.$model = new apf.model();
@@ -203,9 +203,7 @@ return ext.register("ext/editors/editors", {
             var val = (this.undolength ? 1 : undefined);
             if (fake.changed != val) {
                 fake.changed = val;
-                var filename = apf.getFilename(model.data.getAttribute("path"));
-                fake.setAttribute("caption", filename + (val ? "*" : ""));
-                model.setQueryValue("@name", filename + (val ? "*" : ""));
+                model.setQueryValue("@changed", (val ? "1" : "0"));
             }
         });
 
@@ -356,7 +354,10 @@ return ext.register("ext/editors/editors", {
                     var file = pages[i].$model.data;
                     if (file.getAttribute("debug"))
                         continue;
-                    pNode.appendChild(apf.xmldb.cleanNode(file.cloneNode(false)));
+                    
+                    var copy = apf.xmldb.cleanNode(file.cloneNode(false));
+                    copy.removeAttribute("changed");
+                    pNode.appendChild(copy);
                 }
             }
 
