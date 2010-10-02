@@ -316,7 +316,9 @@ apf.vbox = function(struct, tagName){
                         this.$altExt.style[size] = "0px";
                         
                         if (apf.isGecko) {
-                            this.$altExt.style.overflow = "hidden"; //Gecko
+                            //Possible hack to not do this for $box elements 
+                            if (!this.$box)
+                                this.$altExt.style.overflow = "hidden"; //Gecko
                             if (apf.getStyle(this.$ext, "overflow") == "visible")
                                 this.$ext.style.overflow = "hidden"; //Gecko
                             this.$ext.style[size] = "1px";
