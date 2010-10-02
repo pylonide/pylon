@@ -179,7 +179,7 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "1px" : (apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto");//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "auto" : (apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto");//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -290,7 +290,7 @@ apf.vbox = function(struct, tagName){
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
-                    : (apf.isGecko && this.flex && this.parentNode.$vbox ? "1px" : "");
+                    : (apf.isGecko && this.flex && this.parentNode.$vbox ? "auto" : "");
             },
             
             "margin" : function(value){
