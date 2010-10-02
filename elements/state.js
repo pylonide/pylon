@@ -45,7 +45,7 @@ apf.StateServer = {
             this.groups[name] = [];
 
             var pState = new apf.state({
-                id : name,
+                id : name
             });
             pState.parentNode = pNode;
             //pState.implement(apf.AmlNode);

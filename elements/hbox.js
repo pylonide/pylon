@@ -214,6 +214,9 @@ apf.vbox = function(struct, tagName){
                     if (node.visible !== false) {
                         node.$ext.style.display   = value == "stretch" ? "block" : apf.INLINE;
                         node.$br.style.display    = value == "stretch" ? "none" : "";
+                        
+                        if (apf.needZoomForLayout)
+                            node.$ext.style.zoom = 1;
                     }
                     node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
                 }
@@ -241,6 +244,8 @@ apf.vbox = function(struct, tagName){
         if (e.value) {
             this.$ext.style.display    = this.parentNode.$vbox 
                 && this.parentNode.align == "stretch" ? "block" : apf.INLINE;
+            if (apf.needZoomForLayout)
+                this.$ext.style.zoom = 1;
             if (this.$br)
                 this.$br.style.display = this.parentNode.align == "stretch" ? "none" : "";
         }
@@ -472,8 +477,11 @@ apf.vbox = function(struct, tagName){
                         amlNode.$br.style.display = "none";
                 }
                 else {
-                    if (amlNode.visible !== false)
+                    if (amlNode.visible !== false) {
                         amlNode.$ext.style.display = apf.INLINE;
+                        if (apf.needZoomForLayout)
+                            amlNode.$ext.style.zoom = 1;
+                    }
                     this.$int.style.whiteSpace = "";
                     amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
@@ -658,6 +666,8 @@ apf.vbox = function(struct, tagName){
         }
         else if (!apf.hasFlexibleBox && this.$vbox) {
             this.$int.style.display = apf.INLINE;
+            if (apf.needZoomForLayout)
+                this.$int.style.zoom = 1;
             this.$int.style.width   = "100%";
         }
         
@@ -682,6 +692,8 @@ apf.vbox = function(struct, tagName){
                             .appendChild(doc.createElement("strong"));
             spacer.style.height        = "100%";
             spacer.style.display       = apf.INLINE;
+            if (apf.needZoomForLayout)
+                spacer.style.zoom = 1;
             //spacer.style.marginLeft    = "-4px";
             spacer.style.verticalAlign = "middle";
             

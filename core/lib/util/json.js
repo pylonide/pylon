@@ -242,64 +242,64 @@ if (!self["JSON"]) {
             s = p + s;
             return s.substring(s.length - p.length);
         },
-        jsonSerialize   = {
-            //Object
-            0: function(o){
-                //XML support - NOTICE: Ajax.org Platform specific
-                if (o.nodeType && o.ownerDocument && o.cloneNode(true)) // was o.nodeType && o.cloneNode
-                    return "apf.xmldb.getXml("
-                        + JSON.stringify(apf.getXmlString(o)) + ")"; // was this.string()
-
-                //Normal JS object support
-                var str = [];
-                for (var prop in o) {
-                    str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
-                        + JSON.stringify(o[prop]));
-                }
-
-                return "{" + str.join(", ") + "}";
-            },
+        jsonSerialize   = {};
             
-            //String
-            5: function(s){
-                s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
-                return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
-            },
+        //Object
+        jsonSerialize[0] = function(o){
+            //XML support - NOTICE: Ajax.org Platform specific
+            if (o.nodeType && o.ownerDocument && o.cloneNode(true)) // was o.nodeType && o.cloneNode
+                return "apf.xmldb.getXml("
+                    + JSON.stringify(apf.getXmlString(o)) + ")"; // was this.string()
 
-            //Number
-            2: function(i){
-                return i.toString();
-            },
-
-            //Boolean
-            4: function(b){
-                return b.toString();
-            },
-
-            //Date
-            3: function(d){
-                return '{"jsonclass":["sys.ISODate", ["'
-                    + padd(d.getUTCFullYear(), "0000")
-                    + padd(d.getUTCMonth() + 1, "00") 
-                    + padd(d.getUTCDate(), "00") + "T" 
-                    + padd(d.getUTCHours(), "00") + ":" 
-                    + padd(d.getUTCMinutes(), "00") + ":" 
-                    + padd(d.getUTCSeconds(), "00")
-                    + '"]]}';
-            },
-
-            //Array
-            1: function(a){
-                for (var q = [], i = 0; i < a.length; i++)
-                    q.push(JSON.stringify(a[i]));
-
-                return "[" + q.join(", ") + "]";
-            },
-            
-            // Method
-            7: function(f){
-                return;
+            //Normal JS object support
+            var str = [];
+            for (var prop in o) {
+                str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
+                    + JSON.stringify(o[prop]));
             }
+
+            return "{" + str.join(", ") + "}";
+        };
+        
+        //String
+        jsonSerialize[apf.STRING] = function(s){
+            s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
+            return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
+        };
+
+        //Number
+        jsonSerialize[apf.NUMBER] = function(i){
+            return i.toString();
+        };
+
+        //Boolean
+        jsonSerialize[apf.BOOLEAN] = function(b){
+            return b.toString();
+        },
+
+        //Date
+        jsonSerialize[apf.DATE] = function(d){
+            return '{"jsonclass":["sys.ISODate", ["'
+                + padd(d.getUTCFullYear(), "0000")
+                + padd(d.getUTCMonth() + 1, "00") 
+                + padd(d.getUTCDate(), "00") + "T" 
+                + padd(d.getUTCHours(), "00") + ":" 
+                + padd(d.getUTCMinutes(), "00") + ":" 
+                + padd(d.getUTCSeconds(), "00")
+                + '"]]}';
+        };
+
+        //Array
+        jsonSerialize[apf.ARRAY] = function(a){
+            for (var q = [], i = 0; i < a.length; i++)
+                q.push(JSON.stringify(a[i]));
+
+            return "[" + q.join(", ") + "]";
+        };
+        
+        // Method
+        jsonSerialize[apf.FUNCTION] = function(f){
+            return;
         };
 
 

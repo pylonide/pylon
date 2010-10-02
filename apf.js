@@ -549,6 +549,7 @@ var apf = {
         this.CSSPREFIX   = apf.isGecko ? "Moz" : (apf.isWebkit ? "webkit" : "");
         this.CSSPREFIX2  = apf.isGecko ? "-moz" : (apf.isWebkit ? "-webkit" : "");
         this.INLINE      = apf.isIE && apf.isIE < 8 ? "inline" : "inline-block";
+        this.needZoomForLayout = apf.isIE && apf.isIE < 8;
 
         //Other settings
         this.maxHttpRetries = apf.isOpera ? 0 : 3;

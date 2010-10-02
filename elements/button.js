@@ -138,7 +138,7 @@ apf.button  = function(struct, tagName){
             if (ml && ml != "optional" && e.keyCode == 13
               && e.ctrlKey || (!ml || ml == "optional")
               && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-                e.htmlEvent.preventDefault();
+                apf.preventDefault(e.htmlEvent);
                 _self.$ext.onmouseup(e.htmlEvent, true);
             }
         }
