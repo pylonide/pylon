@@ -438,8 +438,11 @@ apf.scrollbar = function(struct, tagName){
         this.$scrollPos  = this.horizontal ? "scrollLeft" : "scrollTop";
         this.$getDiff    = this.horizontal ? "getWidthDiff" : "getHeightDiff";
         this.$getInner   = this.horizontal ? "getHtmlInnerWidth" : "getHtmlInnerHeight"; 
-        this.$eventDir   = this.horizontal ? (apf.isIE ? "offsetX" : "layerX") : (apf.isIE ? "offsetY" : "layerY");
+        this.$eventDir   = this.horizontal 
+            ? (apf.isIE || apf.isWebkit ? "offsetX" : "layerX") 
+            : (apf.isIE || apf.isWebkit ? "offsetY" : "layerY");
         this.$clientDir  = this.horizontal ? "clientX" : "clientY";
+        this.$posIndex   = this.horizontal ? 0 : 1;
         
         this.$startPos    = false;
         
@@ -521,7 +524,14 @@ apf.scrollbar = function(struct, tagName){
 
             if (!e) 
                 e = event;
-            _self.$startPos = e[_self.$eventDir] + 
+            
+            var tgt = e.target || e.srcElement;
+            var pos = tgt != this
+                ? [tgt.offsetLeft, tgt.offsetTop] //Could be improved
+                : [0, 0];
+            
+            var relDelta = e[_self.$eventDir] + pos[_self.$posIndex];
+            _self.$startPos = relDelta + 
                 (_self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0);
 
             if (this.setCapture)
@@ -550,7 +560,6 @@ apf.scrollbar = function(struct, tagName){
                 //_self.$caret.style.top = next + "px"
 
                 _self.$curValue = (next - min) / (max - min);
-                console.log(_self.$curValue);
                 _self.setScroll(true);
             };
             
