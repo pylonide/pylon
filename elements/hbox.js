@@ -179,7 +179,13 @@ apf.vbox = function(struct, tagName){
                     continue;
 
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) ? "auto" : (apf.isWebkit && input[node.$ext.tagName] ? "100%" : "auto");//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) 
+                        ? "auto" 
+                        : (apf.isWebkit && input[node.$ext.tagName] 
+                            ? "100%" 
+                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                                ? "0px"
+                                : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -313,9 +319,14 @@ apf.vbox = function(struct, tagName){
                         this.$ext.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
                         var size = this.parentNode.$vbox ? "height" : "width";
                         //var osize = this.parentNode.$vbox ? "width" : "height";
-                        this.$altExt.style[size] = "0px";
                         
-                        if (apf.isGecko) {
+                        if (apf.isWebkit) {
+                            if (!this.preventforcezero)
+                                this.$altExt.style[size] = "0px";
+                        }
+                        else if (apf.isGecko) {
+                            this.$altExt.style[size] = "0px";
+                            
                             //Possible hack to not do this for $box elements 
                             if (!this.$box)
                                 this.$altExt.style.overflow = "hidden"; //Gecko
