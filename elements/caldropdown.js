@@ -762,19 +762,22 @@ apf.caldropdown = function(struct, tagName){
      */
     this.nextDay = function() {
         var c = this.$calVars;
-        this.change(new Date(c.year, c.month, c.day + 1, 0, 0, 0).format(this.outputFormat));
+        //this.change(
+        this.$propHandlers["value"].call(this, new Date(c.year, c.month, c.day + 1, 0, 0, 0).format(this.outputFormat));
     };
     
     this.previousDay = function() {
         var c = this.$calVars;
-        this.change(new Date(c.year, c.month, c.day - 1, 0, 0, 0).format(this.outputFormat));
+        //this.change(
+        this.$propHandlers["value"].call(this, new Date(c.year, c.month, c.day - 1, 0, 0, 0).format(this.outputFormat));
     };
 
     /**
      * Select today's date in calendar component
      */
     this.today = function() {
-        this.change(new Date().format(this.outputFormat));
+        //this.change
+        this.$propHandlers["value"].call(this, new Date().format(this.outputFormat));
     };
 
     /**** Init ****/
@@ -932,7 +935,8 @@ apf.caldropdown = function(struct, tagName){
         if (typeof this.value == "undefined") {
             switch(this["default"]) {
                 case "today":
-                    this.setProperty("value", new Date().format(this.outputFormat));
+                    //this.setProperty("value", 
+                    this.$propHandlers["value"].call(this, new Date().format(this.outputFormat));
                     break;
                 default :
                     date =  new Date();
@@ -952,7 +956,8 @@ apf.caldropdown = function(struct, tagName){
             c.year  = date.getFullYear();
 
             if (c.day && c.month && c.year) {
-                this.setProperty("value", new Date(c.year, c.month, c.day, c.hours,
+                //this.setProperty("value", 
+                this.$propHandlers["value"].call(this, new Date(c.year, c.month, c.day, c.hours,
                     c.minutes, c.seconds).format(this.outputFormat));
             }
         }

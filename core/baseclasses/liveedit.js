@@ -847,7 +847,7 @@ apf.LiveEdit.mousedown = function(oHtml, event){
         var lm      = amlNode.ownerDocument.$parentNode;
         if (!lm.hasFocus())
             lm.focus();
-        lm.$mouseDown(event, true);
+        lm.$leMouseDown(event, true);
         apf.stopPropagation(event);
     }
 }
