@@ -157,8 +157,8 @@ apf.upload.html4.isSupported = function() {
             oForm.appendChild(oIframe);
 
             // Change iframe name
-            if (apf.isIE)
-                window.frames[oIframe.id].name = oIframe.name;
+            //if (apf.isIE)
+                //window.frames[oIframe.id].name = oIframe.name;
 
             // Create container for iframe
             inputContainer = document.createElement("div");

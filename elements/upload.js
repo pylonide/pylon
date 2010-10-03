@@ -27,30 +27,6 @@
  * {@link term.propertybinding property binding} to update those elements with
  * the state of the upload element.
  * 
- * Example:
- * This example shows an upload element that pushes an image to the server. The
- * asp script returns an xml string which is added to the list of images on a
- * successfull upload.
- * <code>
- *  <a:list id="lstImages" smartbinding="..." model="..." />
- *
- *  <a:upload id="uplMain"
- *    target    = "../api/UploadPicture.asp"
- *    ontimeout = "alert('It seems the server went away')"
- *    oncancel  = "alert('Could not upload logo')"
- *    onuploaded = "lstImages.add(arguments[0])" />
- *
- *  <a:button caption="Browse file..." onclick="uplMain.browse()" 
- *    disabled="{uplMain.uploading}" />
- *  <a:button caption="{uplMain.uploading ? 'Cancel' : 'Send'}" 
- *    disabled="{!uplMain.value}" onclick="
- *      if (uplMain.uploading)
- *          uplMain.cancel();
- *      else
- *          uplMain.upload();
- *    " />
- * </code>
- *
  * @attribute {Number}  state        the current state of the element.
  *   Possible values:
  *   apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
@@ -268,21 +244,24 @@ apf.upload.ERROR_CODES = {
         }
         //#endif
 
-        if (!this.$button.visible) {
-            var f, _self = this;
-            this.$button.addEventListener("prop.visible", f = function(e) {
-                if (!e.value) return; //visible = false --> no drawing yet...
-                if (_self.$method.refresh)
-                    _self.$method.refresh();
-                _self.$button.removeEventListener("prop.visible", f);
+        if (!this.$method.refresh)
+            return;
+
+        var _self = this;
+        if (!this.$button.$amlLoaded) {
+            this.$button.addEventListener("DOMNodeInsertedIntoDocument", function(){
+                if (_self.button == value)
+                    _self.$propHandlers["button"].call(_self, value);
             });
+            return;
         }
-        //RLD: Apparently the button is not created in the draw function. 
-        //This is obviously wrong. by checking for $amlLoaded we've created a temporary workaround.
-        else if (this.$button.$amlLoaded) {
-            if (this.$method.refresh)
-                this.$method.refresh();
-        }
+
+        if (!apf.window.vManager.check(this.$button, this.$uniqueId, function(){
+            _self.$method.refresh();
+        }))
+            return;
+
+        this.$method.refresh();
     };
 
     this.$propHandlers["model"] = function(value) {

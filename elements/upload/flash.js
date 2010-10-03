@@ -47,7 +47,7 @@ apf.upload.flash = function(oUpload) {
 };
 
 apf.upload.flash.isSupported = function() {
-    return apf.flash.isAvailable("9.0.0");
+    return !apf.isIE && apf.flash.isAvailable("9.0.0");
 };
 
 (function() {
