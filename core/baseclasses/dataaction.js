@@ -445,7 +445,7 @@ apf.DataAction = function(){
         }
 
         var compiled;
-        ["valuematch", "match", "value"].each(function(type){
+        ["valuematch", "value", "match"].each(function(type){
             if (!rule[type] || compiled)
                 return;
             

@@ -240,18 +240,26 @@ apf.ruleList.prototype = {
             rule = rules[i];
             
             func = rule.cvaluematch;
-            if (!func) { //@todo apf3.0 cleanup
-                /*if (rule.match && rule.value)
-                    rule.valuematch = "{_n = " + rule.match + "; %[child::" 
-                        + rule.value.substr(1, rule.value.length - 2)
-                            .split("|").join("|child::") + "]}";
-                else*/
-                    rule.valuematch = rule.match || rule.value;
-                
-                func = rule.$compile("valuematch", {
-                    xpathmode  : multiple ? 4 : 3, 
-                    injectself : rule.match ? true : false
+            if (!func) { 
+                var func;
+                ["value", "match"].each(function(type){
+                    if (!rule[type] || func)
+                        return;
+                    
+                    rule.valuematch = rule[type];
+                    func = rule.$compile("valuematch", {
+                        xpathmode  : multiple ? 4 : 3, 
+                        injectself : type == "match" ? true : false
+                    });
+                    
+                    if (func.type != 3)
+                        func = null;
                 });
+                
+                //#ifdef __DEBUG
+                if (!func)
+                    throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
+                //#endif
             }
             
             if (func && (node = func(xmlNode, createNode))) {
