@@ -120,8 +120,8 @@ package
             ExternalInterface.addCallback('initialize', xInitialize);
             ExternalInterface.addCallback('setOptions', xSetOptions);
             
-            ExternalInterface.addCallback('start', xStart);
-            ExternalInterface.addCallback('stop', xStop);
+            ExternalInterface.addCallback('startUpload', xStart);
+            ExternalInterface.addCallback('stopUpload', xStop);
             ExternalInterface.addCallback('remove', xRemove);
             
             ExternalInterface.addCallback('setEnabled', xSetEnabled);
