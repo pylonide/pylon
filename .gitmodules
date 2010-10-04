@@ -1,6 +1,7 @@
-[submodule "vendor/async.js"]
-	path = vendor/async.js
+
+[submodule "support/async.js"]
+	path = support/async.js
 	url = http://github.com/ajaxorg/async.js.git
-[submodule "vendor/node-o3-xml"]
-	path = vendor/node-o3-xml
+[submodule "support/node-o3-xml"]
+	path = support/node-o3-xml
 	url = http://github.com/ajaxorg/node-o3-xml.git
