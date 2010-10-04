@@ -81,7 +81,7 @@ apf.AmlElement = function(struct, tagName){
             //Attributes
             for (prop in struct){ 
                 if (prop == "htmlNode") continue;
-                
+
                 this.attributes.push(new apf.AmlAttr(this, prop, struct[prop]));
             }
             

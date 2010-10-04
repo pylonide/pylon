@@ -72,6 +72,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$booleanProperties["activeline"]      = true;
     this.$booleanProperties["caching"]         = true;
     this.$booleanProperties["readonly"]        = true;
+    this.$booleanProperties["activeline"]      = true;
     this.$booleanProperties["showinvisibles"]  = true;
     this.$booleanProperties["showprintmargin"] = true;
     this.$booleanProperties["overwrite"]       = true;
