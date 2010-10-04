@@ -71,8 +71,15 @@ return ext.register("ext/gotoline/gotoline", {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
-            return;
+            return;            
         this.$editor.gotoLine(parseInt(this.txtLinenr.getValue()) || 0);
+        winGotoLine.hide();
+    },
+    
+    onHide : function() {
+        var editor = require('ext/editors/editors').currentEditor;
+        if (editor && editor.ceEditor)
+            editor.ceEditor.focus();
     },
     
     enable : function(){
@@ -95,5 +102,4 @@ return ext.register("ext/gotoline/gotoline", {
     }
 });
 
-    }
-);
+});

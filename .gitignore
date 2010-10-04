@@ -6,3 +6,4 @@ client/common
 .project
 .settings
 /demo
+.settings.xml.old

@@ -76,12 +76,17 @@ return ext.register("ext/searchreplace/searchreplace", {
         
         if (!winSearchReplace.visible || forceShow || this.$lastState != isReplace) {
             this.setupDialog(isReplace);
-            
+
             var editor = editors.currentEditor;
-            var sel   = editor.getSelection();
-            var doc   = editor.getDocument();
-            var range = sel.getRange();
-            var value = doc.getTextRange(range);
+            if (editor.ceEditor)
+                var value = editor.ceEditor.getLastSearchOptions().needle;
+    
+            if (!value) {
+                var sel   = editor.getSelection();
+                var doc   = editor.getDocument();
+                var range = sel.getRange();
+                var value = doc.getTextRange(range);
+            }
             if (value)
                 this.txtFind.setValue(value);
 

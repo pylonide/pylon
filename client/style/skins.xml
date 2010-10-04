@@ -23,7 +23,7 @@
             color        : white;
             position     : absolute;
             margin       : 0;
-            padding      : 1px 0 0 7px;
+            padding      : 2px 0 0 7px;
             top          : 0;
             left         : 0;
             right        : 0;
