@@ -380,7 +380,7 @@ Array.prototype.search = function(){
 Array.prototype.each =
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
-        fn.call(this, this[i], i, this);
+        fn.call(this, this[i], i, this) === false
     return this;
 }
 

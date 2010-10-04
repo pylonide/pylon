@@ -241,11 +241,11 @@ apf.ruleList.prototype = {
             
             func = rule.cvaluematch;
             if (!func) { //@todo apf3.0 cleanup
-                if (rule.match && rule.value)
+                /*if (rule.match && rule.value)
                     rule.valuematch = "{_n = " + rule.match + "; %[child::" 
                         + rule.value.substr(1, rule.value.length - 2)
                             .split("|").join("|child::") + "]}";
-                else
+                else*/
                     rule.valuematch = rule.match || rule.value;
                 
                 func = rule.$compile("valuematch", {

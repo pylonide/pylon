@@ -161,7 +161,7 @@ apf.persist = function(struct, tagName){
     
     this.$stopListen = function(){
         this.listening = false;
-        this.setProperty('sessionId',"");
+        this.setProperty("sessionId", "");
 
         this.cancel(this.$lastpoll);
     }
@@ -328,7 +328,7 @@ apf.persist = function(struct, tagName){
                     return _self.$handleError(data, state, extra, callback);
                 else {
                     data = apf.unserialize(data);
-                    _self.setProperty('sessionId', data.sId || data.pId);
+                    _self.setProperty("sessionId", data.sId || data.pId);
                     
                     if (!_self.sessionId) {
                         extra.message = "Did not get a session id from the server";

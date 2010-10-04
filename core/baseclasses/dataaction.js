@@ -443,20 +443,23 @@ apf.DataAction = function(){
             //#endif
                 return false;
         }
-        
-        var compiled = rule.value ? rule.cvalue : rule.cmatch;
-        if (!compiled) {
-            if (rule.value)
-                compiled = rule.compile("value");
-            else
-                return false;
-        }
+
+        var compiled;
+        ["valuematch", "match", "value"].each(function(type){
+            if (!rule[type] || compiled)
+                return;
+            
+            compiled = rule["c" + type]; //cvaluematch || (rule.value ? rule.cvalue : rule.cmatch);
+            if (!compiled)
+                compiled = rule.compile(type);
+            
+            if (compiled.type != 3)
+                compiled = null;
+        });
         
         //#ifdef __DEBUG
-        //If not one xpath segment then error
-        if (compiled.type != 3) {
+        if (!compiled)
             throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
-        }
         //#endif
 
         var atAction, model, node,

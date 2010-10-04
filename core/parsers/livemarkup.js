@@ -2272,6 +2272,8 @@ apf.lm_exec = new (function(){
         }
     }
     
+    var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
+    
     function _injself(s){           // self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
