@@ -1,5 +1,5 @@
 require("./paths");
-require("apfinclude");
+require("apf-node");
 
 require("proc");
 require("files");
