@@ -101,14 +101,7 @@ apf.scrollbar = function(struct, tagName){
     
     this.$getHtmlHost = function(){
         var h = this.$host && (this.$host.$int || this.$host.$container);
-        
-        if (!h)
-            return;
-        
-        if (h.tagName == "HTML" || h.tagName == "BODY")
-            return apf.isSafari || apf.isChrome ? document.body : document.documentElement;
-
-        return h;
+        return (h && (h.tagName == "BODY" || h.tagName == "HTML") ? (apf.isSafari || apf.isChrome ? document.body : h.parentNode) : h);
     }
     
     this.$getViewPort = function(oHtml){
@@ -190,6 +183,14 @@ apf.scrollbar = function(struct, tagName){
                     _self.$update();
                 });
                 amlNode.addEventListener("xmlupdate", function(){
+                    _self.$update();
+                });
+            }
+            if (amlNode.$isTreeArch) {
+                amlNode.addEventListener("collapse", function(){
+                    _self.$update();
+                });
+                amlNode.addEventListener("expand", function(){
                     _self.$update();
                 });
             }

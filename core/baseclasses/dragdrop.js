@@ -1109,10 +1109,10 @@ apf.DragServer = {
         if (dragdata.indicator)
             dragdata.indicator.style.top = "10000px";
 
-        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (apf.isGecko
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
-        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (apf.isGecko
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
             ? window.pageYOffset
             : 0) : c.clientY;
         var el = document.elementFromPoint(apf.DragServer.dragdata.x,
@@ -1170,10 +1170,10 @@ apf.DragServer = {
         if (indicator)
             indicator.style.top = "10000px";
 
-        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (apf.isGecko
+        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
-        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (apf.isGecko
+        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
             ? window.pageYOffset
             : 0) : c.clientY;
 
