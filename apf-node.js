@@ -21,8 +21,8 @@
 // #ifndef __PACKAGED
 //#ifdef __SUPPORT_O3
 
-var sys = require("sys"),
-    cwd = o3.cwd;
+var sys = require("sys");
+//    cwd = o3.cwd;
 
 self = window = global;
 
@@ -31,7 +31,7 @@ self.sys = sys;
 require("./apf-o3");
 require("./loader-o3");
 //o3.print("AML: " + cwd.get(apf.config.name + ".aml").data);
-apf.start(cwd.get(apf.config.name + ".aml").data);
+apf.start();//cwd.get(apf.config.name + ".aml").data);
 //sys.puts(sys.inspect(apf));
 //#endif
 //#endif
