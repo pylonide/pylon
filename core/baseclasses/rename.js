@@ -91,7 +91,7 @@ apf.Rename = function(){
             this.removeEventListener("keydown", $keydown);
         }
     }
-    
+
     function $afterselect(){
         var _self = this;
         $setTimeout(function(){
