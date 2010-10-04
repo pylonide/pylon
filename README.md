@@ -50,6 +50,14 @@ in your browser, it will show the directory structure of the current workspace i
 You can specify your own workspace as follows:
 
     $ node bin/cloud9.js -w /path/to/your/awesome/workspace
+
+You can specify the ip cloud9 is listening to using:
+
+    $ node bin/cloud9.js -l 192.168.2.1
+
+Or specify to listen all ip's
+
+    $ node bin/cloud9.js -l all
     
 And as a result the tree will display the contents of that directory.
 
