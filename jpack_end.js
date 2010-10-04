@@ -23,6 +23,16 @@ else*/
     apf.addDomLoadEvent(function(){apf.Init.run('body');});
 
 //Start
-apf.start();
+if (window.require && typeof require.def == "function") {
+    require([
+        "apf/elements/codeeditor",
+        "apf/elements/debugger",
+        "apf/elements/debughost"
+    ], function() {
+        apf.start()
+    });
+}
+else
+    apf.start();
 
 // #endif
