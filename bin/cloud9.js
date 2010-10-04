@@ -5,8 +5,8 @@
  */
 
 function usage() {
-    console.log("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]")
-    process.exit(0)
+    console.log("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]");
+    process.exit(0);
 }
 
 function parseArguments(argv) {
@@ -31,21 +31,23 @@ function parseArguments(argv) {
                     return usage();
                 opts.port = parseInt(port);
                 break;
+
             case "-l":
                 var ip = argv.shift();
                 if (!ip)
                     return usage();
                 opts.ip = ip;
                 break;
-            default:
-        if (arg.indexOf('-a')==0) {
-            var args = arg.slice(2).split(' ');
-            opts.start = args.shift();
-            opts.startargs = args;
-        } else
-            return usage();
 
-        }
+            default:
+                if (arg.indexOf('-a')==0) {
+                    var args = arg.slice(2).split(' ');
+                    opts.start = args.shift();
+                    opts.startargs = args;
+                } else
+                    return usage();
+
+                }
     }
 
     return opts;
@@ -63,6 +65,6 @@ var url = "http://" + options.ip + ":" + options.port;
 if (options.start) {
     console.log("Trying to start your browser in: "+url);
     options.startargs.push(url);
-    require("child_process").spawn(options.start, options.startargs); 
+    require("child_process").spawn(options.start, options.startargs);
 } else
     console.log("Point you browser to "+url);
