@@ -51,19 +51,19 @@ You can specify your own workspace as follows:
 
     $ node bin/cloud9.js -w /path/to/your/awesome/workspace
 
+And as a result the tree will display the contents of that directory.
+
 You can specify the ip cloud9 is listening to using:
 
     $ node bin/cloud9.js -l 192.168.2.1
 
-Or specify to listen all ip's
+Or specify to listen to all ip's
 
     $ node bin/cloud9.js -l all
-    
-And as a result the tree will display the contents of that directory.
+
+To see more usage information and additional command line options use.
 
     $ node bin/cloud9.js -h
-    
-...will show you more usage information and additional command line options.
 
 ## Installation
 
