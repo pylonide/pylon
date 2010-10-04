@@ -4,11 +4,13 @@
  */
 apf.runO3 = function(){
     //apf.importClass(runNonIe, true, self);
-    
-    var XMLDocument = o3.xml.parseFromString("<root />", "text/xml");
+    // 
+	var XMLParser = require('node-xml-dom');
+    //var XMLParser = require('o3').xml;
+    var XMLDocument = XMLParser.parseFromString("<root />", "text/xml");
     var Element = XMLDocument.documentElement;
     var Node = Element;
-    document = o3.xml.parseFromString("<html><body /></html>", "text/xml");
+    document = XMLParser.parseFromString("<html><body /></html>", "text/xml");
     document.body = document.documentElement.firstChild;
 
 //    $setTimeout = setInterval = function(a){
@@ -216,8 +218,7 @@ apf.runO3 = function(){
     };
     
     apf.getXmlDom = function(message, noError){
-        var xmlParser = require('xml');//o3.xml;
-        xmlParser     = xmlParser.parseFromString(message, "text/xml");
+    	xmlParser     = XMLParser.parseFromString(message, "text/xml");
         
         if (!noError)
             this.xmlParseError(xmlParser);
@@ -226,9 +227,10 @@ apf.runO3 = function(){
     };
     
     apf.xmlParseError = function(xml){
-        if (!xml)
+        if (!xml){
             apf.console.error("no xml document was passed to the xml parse error function");
-
+            return;
+        }
         if (xml.documentElement.tagName == "parsererror") {
             var str     = xml.documentElement.firstChild.nodeValue.split("\n");
             var linenr  = str[2].match(/\w+ (\d+)/)[1];
