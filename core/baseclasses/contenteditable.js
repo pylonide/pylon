@@ -466,10 +466,10 @@ apf.ContentEditable = function() {
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //@todo shouldn't this only be set when editable is enabled
-        try{
+        /*try{
             if (this.$ext && !this.$ext.host)
                 this.$ext.host = this;
-        }catch(e){}
+        }catch(e){}*/
         
         if (!this.editable) {
             this.editable = apf.isTrue(apf.getInheritedAttribute(this, "editable"));
