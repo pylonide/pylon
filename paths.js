@@ -3,4 +3,4 @@ require.paths.unshift(__dirname + "/lib");
 
 require.paths.unshift(__dirname + "/vendor/apf");
 require.paths.unshift(__dirname + "/vendor/async.js/lib");
-require.paths.unshift(__dirname + "/vendor/o3node");
+require.paths.unshift(__dirname + "/vendor/node-o3-xml/lib");
