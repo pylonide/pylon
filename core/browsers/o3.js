@@ -7,9 +7,9 @@ apf.runO3 = function(){
     // 
 	var XMLParser = require('node-o3-xml');
     //var XMLParser = require('o3').xml;
-    var XMLDocument = XMLParser.parseFromString("<root />", "text/xml");
-    var Element = XMLDocument.documentElement;
-    var Node = Element;
+    //var XMLDocument = XMLParser.parseFromString("<root />", "text/xml");
+    //var Element = XMLDocument.documentElement;
+    //var Node = Element;
     document = XMLParser.parseFromString("<html><body /></html>", "text/xml");
     document.body = document.documentElement.firstChild;
 
