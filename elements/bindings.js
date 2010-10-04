@@ -246,7 +246,14 @@ apf.ruleList.prototype = {
                     if (!rule[type] || func)
                         return;
                     
-                    rule.valuematch = rule[type];
+                    if (type == "value" && rule.match) {
+                        rule.valuematch = "{_n = " + rule.match + "; %[child::" 
+                            + rule.value.substr(1, rule.value.length - 2)
+                                .split("|").join("|child::") + "]}";
+                    }
+                    else
+                        rule.valuematch = rule[type];
+
                     func = rule.$compile("valuematch", {
                         xpathmode  : multiple ? 4 : 3, 
                         injectself : type == "match" ? true : false
