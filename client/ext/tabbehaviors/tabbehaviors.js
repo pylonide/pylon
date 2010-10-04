@@ -149,7 +149,8 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             return; // no more items allowed...
         var no = this.nodes.push(
             mnuPanels.appendChild(new apf.item({
-                caption : page.caption,
+                caption : page.getAttribute("caption"),
+                model   : page.$model,
                 relPage : page.id,
                 onclick : function() {
                     tabEditors.set(this.relPage);
