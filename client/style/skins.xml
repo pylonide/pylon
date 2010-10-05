@@ -4706,124 +4706,12 @@
 
         /*** TM ***/
 
-        .ce {
-          border: none;
-          border-bottom: none;
-          -moz-box-sizing: border-box;
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-        }
-
-        .ce .ace_gutter {
-          width: 60px;
-          background: #e8e8e8;
-          color: #333;
-          font-family: Monaco, "Courier New";
-          font-size: 12px;
-          overflow : hidden;
-        }
-
-        .ceFocus .ace_gutter{
-            background: #ebebeb;
-        }
-
-        .ceFocus{
-            /*background : #f2f9ff;*/
-        }
-
-        .ce .ace_gutter-layer {
-          right: 0px;
-          text-align: right;
-        }
-
-        .ce .ace_gutter-layer .ace_gutter-cell {
-          padding-right: 15px;
-        }
-
-       .ce .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.gif");
           background-repeat: no-repeat;
           background-position: center right;
         }
 
-        .ce .ace_text-layer {
-          font-family: Monaco, "Courier New", monospace;
-          font-size: 12px;
-          cursor: text;
-        }
-
-        .ce .ace_cursor {
-          border-left: 2px solid black;
-        }
-
-        .ce .ace_cursor.ace_overwrite {
-          border-left: 0px;
-          border-bottom: 1px solid black;
-        }
-
-        .ce .ace_line .ace_invisible {
-          color: rgb(191, 191, 191);
-         }
-
-        .ce .ace_line .ace_keyword {
-          color: #2270b2;
-        }
-
-        .ce .ace_line .ace_buildin-constant {
-          color: rgb(88, 72, 246);
-        }
-
-        .ce .ace_line .ace_library-constant {
-          color: rgb(6, 150, 14);
-        }
-
-        .ce .ace_line .ace_buildin-function {
-          color: rgb(60, 76, 114);
-        }
-
-        .ce .ace_line .ace_string {
-          color: rgb(3, 106, 7);
-        }
-
-        .ce .ace_line .ace_comment {
-          font-style: italic;
-          color: rgb(76, 136, 107);
-        }
-
-        .ce .ace_line .ace_doc-comment {
-          color: rgb(0, 102, 255);
-        }
-
-        .ce .ace_line .ace_doc-comment-tag {
-          color: rgb(128, 159, 191);
-        }
-
-        .ce .ace_line .ace_number {
-          color: #2270b2;
-        }
-
-        .ce .ace_line .ace_xml_pe {
-          color: rgb(104, 104, 91);
-        }
-
-        .ce .ace_marker-layer .ace_selection {
-          background: rgb(181, 213, 255);
-          /*color: white;
-          background-color: #2582d1;*/
-        }
-
-        .ce .ace_marker-layer .ace_step {
-          background: rgb(198, 219, 174);
-        }
-
-        .ce .ace_marker-layer .ace_bracket {
-          margin: -1px 0 0 -1px;
-          border: 1px solid rgb(192, 192, 192);
-        }
-
-        .ce .ace_marker-layer .ace_active_line {
-          background: rgb(232, 242, 254);
-        }
     ]]></a:style>
     <a:presentation>
         <a:main content=".">
