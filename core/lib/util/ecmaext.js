@@ -887,6 +887,18 @@ String.prototype.sprintf = function() {
     return str;
 };
 
+/**
+ * The now method returns the milliseconds elapsed since 
+ * 1 January 1970 00:00:00 UTC up until now as a number.
+ * 
+ * @type {Number}
+ */
+if (!Date.now) {
+    Date.now = function now() {
+        return +new Date();
+    };
+}
+
 //})(); //end closure
 
 // #endif
