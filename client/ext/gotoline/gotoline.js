@@ -20,9 +20,9 @@ return ext.register("ext/gotoline/gotoline", {
     markup  : markup,
     hotkeys : {"gotoline":1},
     hotitems: {},
-    
+
     nodes   : [],
-    
+
     hook : function(){
         var _self = this;
         this.nodes.push(
@@ -34,26 +34,51 @@ return ext.register("ext/gotoline/gotoline", {
                 }
             }))
         );
-        
+
         this.hotitems["gotoline"] = [this.nodes[1]];
-        
+
         plugins.registerCommand("gotoline", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(true);
         });
     },
-    
+
     init : function(amlNode){
-        this.txtLinenr = txtLineNr;//winGotoLine.selectSingleNode("a:vbox/a:hbox/a:textbox[1]");
+        this.txtLineNr = txtLineNr;
         //buttons
-        this.btnGo = btnLinGo;//winGotoLine.selectSingleNode("a:vbox/a:hbox/a:button[1]");
+        this.btnGo = btnLinGo;
         this.btnGo.onclick = this.gotoLine.bind(this);
+        var _self = this;
+        lstLineNumber.onafterchoose = function() {
+            if (lstLineNumber.selected) {
+                console.log();
+                _self.gotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
+            }
+            else
+                _self.gotoLine();
+        }
+        this.txtLineNr.onkeydown = function(e) {
+            if (e.keyCode == 40) {
+                var first = lstLineNumber.getFirstTraverseNode();
+                if (first) {
+                    lstLineNumber.select(first);
+                    lstLineNumber.focus();
+                }
+            };
+        };
     },
 
     toggleDialog: function(forceShow) {
         ext.initExtension(this);
 
-        if (!winGotoLine.visible || forceShow)
+        if (!winGotoLine.visible || forceShow) {
+            editorPage = tabEditors.getPage();
+            if (!editorPage) return;
+
+            var model = editorPage.$model;
+            apf.createNodeFromXpath(model.data, "gotoline");
+            lstLineNumber.setAttribute("model", editorPage.$model);
             winGotoLine.show();
+        }
         else
             winGotoLine.hide();
         return false;
@@ -67,33 +92,45 @@ return ext.register("ext/gotoline/gotoline", {
         return this;
     },
 
-    gotoLine: function() {
+    gotoLine: function(line) {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
-            return;            
-        this.$editor.gotoLine(parseInt(this.txtLinenr.getValue()) || 0);
+            return;
+
         winGotoLine.hide();
+
+        if (typeof line != "number")
+            line = parseInt(this.txtLineNr.getValue()) || 0;
+
+        var history = lstLineNumber.$model;
+        var lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");
+        if (lineEl)
+            apf.xmldb.setAttribute(lineEl, "ts", Date.now());
+        else
+            history.appendXml("<line nr='" + line + "' ts='" + Date.now() + "'/>", "gotoline");
+
+        this.$editor.gotoLine(line);
     },
-    
+
     onHide : function() {
         var editor = require('ext/editors/editors').currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.focus();
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
     },
-    
+
     destroy : function(){
         this.nodes.each(function(item){
             item.destroy(true, true);

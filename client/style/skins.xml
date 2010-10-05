@@ -6019,35 +6019,49 @@
         </a:main>
     </a:presentation>
 </a:button>
-<a:list name="simplelist">
+<a:list name="lineselect">
     <a:style><![CDATA[
-        .simplelist{
+        .lineselect{
             overflow: auto;
             position: relative;
-            border: 1px solid #c3c3c3;
-            background-color: #fafbfc;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            border: 1px solid #afafaf;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+
             cursor: default;
         }
-        .simplelist>.selected{
+        .lineselect>.selected{
             background-color: #f0f0f0;
             color: black;
         }
-        .simplelistFocus>.selected{
+        .lineselectFocus>.selected{
             color: white;
             background-color: #25a8e7;
         }
-
-        .simplelist .empty, .simplelist .offline, .simplelist .loading{
+        .lineselect .empty, .lineselect .offline, .lineselect .loading{
             text-align: center;
             padding: 8px 0 0 5px;
             color: #AAA;
             font-weight : normal;
         }
+        .lineselect>DIV{
+        	padding: 2px 6px;
+        }
+        
     ]]></a:style>
 
     <a:presentation>
         <a:main container=".">
-            <div class='simplelist'>
+            <div class='lineselect'>
             </div>
         </a:main>
         <a:item
@@ -6058,9 +6072,6 @@
         >
             <div> </div>
         </a:item>
-        <a:dragindicator>
-            <div class='draglist'><span><u>-</u></span></div>
-        </a:dragindicator>
         <a:empty caption=".">
             <div class="message">-</div>
         </a:empty>
