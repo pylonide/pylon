@@ -30,7 +30,7 @@ return ext.register("ext/keybindings/keybindings", {
         require(["ext/keybindings_default/default_" + (apf.isMac ? "mac" : "win")]);
         ide.addEventListener("$event.keybindingschange", function(callback){
             if (_self.current)
-                callback(_self.current);
+                callback({keybindings: _self.current});
         });
     },
 
@@ -57,7 +57,7 @@ return ext.register("ext/keybindings/keybindings", {
                     }
                 }
                 if (typeof oExt[hotkey] != "function") {
-                    apf.console.error("Please implement the '" + hotkey 
+                    apf.console.error("Please implement the '" + hotkey
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
                 }
                 else {

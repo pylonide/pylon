@@ -48,7 +48,7 @@ return ext.register("ext/code/code", {
         });
     },
 
-    init : function(amlPage){
+    init : function(amlPage) {
         var def = ceEditor.getDefaults();
         //check default settings...
         var settings = require("ext/settings/settings"),
@@ -92,9 +92,9 @@ return ext.register("ext/code/code", {
                 caption : "Overwrite Mode",
                 checked : "{ceEditor.overwrite}"
             })),*/
-            
+
             mnuView.appendChild(new apf.divider()),
-            
+
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
@@ -115,7 +115,7 @@ return ext.register("ext/code/code", {
                 caption : "Highlight Active Line",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@activeline]"
             })),
-            
+
             mnuView.appendChild(new apf.divider()),
 
             mnuView.appendChild(new apf.item({
@@ -147,11 +147,11 @@ return ext.register("ext/code/code", {
         });
 
         ide.addEventListener("keybindingschange", function(e){
-            if (!e.ext || typeof ceEditor == "undefined")
+            if (typeof ceEditor == "undefined")
                 return;
-            var bindings = e.ext.code;
+            var bindings = e.keybindings.code;
             ceEditor.$editor.keyBinding.setConfig(bindings);
-        })
+        });
     },
 
     onCommit: function() {

@@ -27,8 +27,11 @@ return keys.onLoad({
             "search": "Command-F",
             "searchreplace": "Command-Shift-R"
         },
-        "formatjson" : {            "format" : "Command-Shift-J"        },        "settings": {
-            "showsettings": "Command-,"
+        "formatjson" : {
+            "format" : "Command-Shift-J"
+        },
+        "settings": {
+            "showsettings": "Command-J"
         },
         "tabbehaviors" : {
             "closetab": "Command-W",
