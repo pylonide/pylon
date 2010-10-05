@@ -6044,8 +6044,9 @@
             color: black;
         }
         .lineselectFocus>.selected{
-            color: white;
-            background-color: #25a8e7;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
         }
         .lineselect .empty, .lineselect .offline, .lineselect .loading{
             text-align: center;
@@ -7498,8 +7499,9 @@
         }
 
         .treeFocus .selected U, .tree .dragAppend U, .dragtree U{
-            color: white;
-            background-color: #25a8e7;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
         }
 
         .tree BLOCKQUOTE{

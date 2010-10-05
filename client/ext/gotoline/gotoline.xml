@@ -17,6 +17,7 @@
               initial-message="line number"
               value="0"/>
             <a:list id="lstLineNumber"
+              model="{tabEditors.getPage(tabEditors.activepagenr).$model}"
            	  skin="lineselect"
               margin="0 10 5 10" 
               flex="1"

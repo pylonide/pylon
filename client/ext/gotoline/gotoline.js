@@ -74,9 +74,6 @@ return ext.register("ext/gotoline/gotoline", {
             editorPage = tabEditors.getPage();
             if (!editorPage) return;
 
-            var model = editorPage.$model;
-            apf.createNodeFromXpath(model.data, "gotoline");
-            lstLineNumber.setAttribute("model", editorPage.$model);
             winGotoLine.show();
         }
         else
