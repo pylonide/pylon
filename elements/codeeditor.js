@@ -466,7 +466,7 @@ apf.codeeditor = function(struct, tagName) {
             this.$editor.resize();
         });
 
-        this.$editor = new Editor(new VirtualRenderer(this.$input, {cssClass: "ce"}));
+        this.$editor = new Editor(new VirtualRenderer(this.$input));
         // read defaults...
         var ed  = this.$editor,
             doc = ed.getDocument();
