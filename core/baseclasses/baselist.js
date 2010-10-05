@@ -554,7 +554,7 @@ apf.BaseList = function(){
         if (!htmlNode) return;
 
         var oPHtmlNode = htmlNode.parentNode;
-        var nNode      = this.getNextTraverse(xmlNode);
+        var nNode      = this.getNextTraverse(xmlNode); //@todo could optimize because getTraverseNodes returns array indexOf
         var beforeNode = nNode
             ? apf.xmldb.findHtmlNode(nNode, this)
             : null;

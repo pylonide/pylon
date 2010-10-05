@@ -789,6 +789,11 @@ apf.MultiselectBinding = function(){
             }
         }
         else if (htmlNode) {
+            //#ifdef __WITH_SORTING
+            if (this.$sort)
+                this.$moveNode(xmlNode, htmlNode);
+            //#endif
+            
             this.$updateNode(xmlNode, htmlNode);
 
             //Transaction 'niceties'
