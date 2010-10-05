@@ -19,10 +19,10 @@
           out      = "{cwd}/../www/js/apf_release.js"
           filehead = "1" />
 
-        <!--p:compress
+        <p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/../www/js/apf_release.js"
-          out      = "{cwd}/../www/js/apf_release.js" /-->
+          out      = "{cwd}/../www/js/apf_release.js" />
     </p:process>
     
     <p:files>
@@ -96,8 +96,10 @@
         <p:node path="{cwd}/../www/js/editmode.js" group="apf" />
         <p:node path="{cwd}/../www/js/feed.js" group="apf" />
         <p:node path="{cwd}/../www/js/geo.js" group="apf" />
+        <p:node path="{cwd}/../www/js/meetup.js" group="apf" />
         <p:node path="{cwd}/../www/js/messages.js" group="apf" />
         <p:node path="{cwd}/../www/js/scrollfixed.js" group="apf" />
+        <p:node path="{cwd}/../www/js/questions.js" group="apf" />
         <p:node path="{cwd}/../www/js/search.js" group="apf" />
         <p:node path="{cwd}/../www/js/security.js" group="apf" />
         <p:node path="{cwd}/../www/js/session.js" group="apf" />
