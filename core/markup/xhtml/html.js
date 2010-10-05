@@ -33,8 +33,10 @@ apf.XhtmlHtmlElement = function(struct, tagName){
     
     //#ifdef __WITH_CONTENTEDITABLE
     this.$coreHtml   = true;
-    this.$ext        = document.documentElement;
     //#endif
+    
+    this.$ext        = document.documentElement;
+    this.$ext.host   = this;
     
     this.$int        = document.body;
     this.$tabList    = []; //Prevents documentElement from being focussed

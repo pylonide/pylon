@@ -186,6 +186,14 @@ apf.scrollbar = function(struct, tagName){
                     _self.$update();
                 });
             }
+            if (amlNode.$isTreeArch) {
+                amlNode.addEventListener("collapse", function(){
+                    _self.$update();
+                });
+                amlNode.addEventListener("expand", function(){
+                    _self.$update();
+                });
+            }
             
             if (!this.horizontal)
                 amlNode.addEventListener("mousescroll", scrollFunc);
