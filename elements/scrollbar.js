@@ -109,7 +109,12 @@ apf.scrollbar = function(struct, tagName){
     }
     this.$getScrollHeight = function(oHtml){
         //add margin + bottom padding
-        return apf.isIE && oHtml.lastChild ? oHtml.lastChild[this.$offsetPos] + oHtml.lastChild[this.$offsetSize] : oHtml[this.$scrollSize];
+        return (apf.isIE && oHtml.lastChild 
+            ? oHtml.lastChild[this.$offsetPos] 
+                + oHtml.lastChild[this.$offsetSize] 
+                + apf.getBox(apf.getStyle(oHtml, "padding"))[2]
+                + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
+            : oHtml[this.$scrollSize]);
     }
     
     //oHtml, o, scroll_func

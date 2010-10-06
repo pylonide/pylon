@@ -768,7 +768,7 @@ apf.vbox = function(struct, tagName){
                 var m = node.margin && apf.getBox(node.margin);
                 if (m && this.$vbox) m.unshift();
                 var mdiff = (m ? m[0] + m[2] : 0);
-                max = Math.max(max, mdiff + Math.min(node.$ext[scroll] + apf[borders](node.$ext), node["max" + size] || 10000)); //@todo add borders
+                max = Math.max(max, mdiff + Math.min(node.$ext[scroll] + apf[borders](node.$ext), node["max" + size] || 10000));
             }
 
             if (parseInt(node.flex))
