@@ -107,6 +107,10 @@ apf.scrollbar = function(struct, tagName){
     this.$getViewPort = function(oHtml){
         return oHtml.tagName == "HTML" || oHtml.tagName == "BODY" ? apf[this.$windowSize]() : oHtml[this.$offsetSize];
     }
+    this.$getScrollHeight = function(oHtml){
+        //add margin + bottom padding
+        return apf.isIE && oHtml.lastChild ? oHtml.lastChild[this.$offsetPos] + oHtml.lastChild[this.$offsetSize] : oHtml[this.$scrollSize];
+    }
     
     //oHtml, o, scroll_func
     this.$attach = function(amlNode){
@@ -154,14 +158,14 @@ apf.scrollbar = function(struct, tagName){
             scrolling = apf.isIE;
             var oHtml = _self.$getHtmlHost();
 
-            var div = (oHtml[_self.$scrollSize] - _self.$getViewPort(oHtml));
+            var div = (_self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml));
             if (div) {
                 if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
                     if (_self.$lastScrollState === 0)
                         return;
                     setTimeout(function(){_self.$lastScrollState = 0;}, 300);
                 }
-                else if (oHtml[_self.$scrollPos] == oHtml[_self.$scrollSize] - oHtml[_self.$offsetSize] && e.delta < 0) {
+                else if (oHtml[_self.$scrollPos] == _self.$getScrollHeight(oHtml) - oHtml[_self.$offsetSize] && e.delta < 0) {
                     if (_self.$lastScrollState === 1)
                         return;
                     setTimeout(function(){_self.$lastScrollState = 1;}, 300);
@@ -214,7 +218,7 @@ apf.scrollbar = function(struct, tagName){
             
             if (!scrolling) {
                 var oHtml = _self.$getHtmlHost();
-                var m = oHtml[_self.$scrollSize] - _self.$getViewPort(oHtml);
+                var m = _self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml);
                 var p = oHtml[_self.$scrollPos] / m;
                 if (Math.abs(_self.$curValue - p) > 1/m) {
                     _self.$curValue = p;
@@ -279,7 +283,7 @@ apf.scrollbar = function(struct, tagName){
         
         //Disable scrollbar
         var vp = this.$getViewPort(oHtml);
-        var sz = oHtml[this.$scrollSize];
+        var sz = this.$getScrollHeight(oHtml);//this.$getScrollHeight(oHtml);
         
         if (vp >= sz) {
             if (this.overflow == "scroll") {
@@ -291,7 +295,7 @@ apf.scrollbar = function(struct, tagName){
                 
                 //this.$ext.style.display = "none";
             }
-            
+            //if (this.id == "sbtest") console.log(vp + ":" + sz);
             //oHtml.style.overflowY = "visible";
         }
         //Enable scrollbar
@@ -355,7 +359,7 @@ apf.scrollbar = function(struct, tagName){
                 oHtml    = this.$getHtmlHost();
                 from     = oHtml[this.$scrollPos];
                 viewport = this.$getViewPort(oHtml);
-                to       = (oHtml[this.$scrollSize] - viewport) * this.$curValue;
+                to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
             }
             
             (this.$host && this.$host.dispatchEvent 
@@ -364,7 +368,7 @@ apf.scrollbar = function(struct, tagName){
                     timed        : timed,
                     viewportSize : viewport,
                     scrollPos    : to,
-                    scrollSize   : oHtml[this.$scrollSize],
+                    scrollSize   : this.$getScrollHeight(oHtml),
                     from         : from,
                     pos          : this.pos
                 });

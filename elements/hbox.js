@@ -639,7 +639,7 @@ apf.vbox = function(struct, tagName){
                     if (!($int = (node = nodes[i]).$int || node.$container))
                         continue;
 
-                    if ($int.scrollHeight > $int.offsetHeight)
+                    if (Math.min($int.scrollHeight, node["maxheight"] || 10000) > $int.offsetHeight)
                         return _self.$resize(true);
                 }
                 
@@ -721,7 +721,7 @@ apf.vbox = function(struct, tagName){
 
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
 
-        //this.$ext.style.border = "1px solid " + (["red", "green", "blue"])[Math.round(Math.random() * 2)];
+        //this.$ext.style.border = "1px solid " + (["red", "green", "blue", "orange", "pink", "yellow"])[Math.round(Math.random() * 5)];
         
         /*if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
@@ -741,19 +741,20 @@ apf.vbox = function(struct, tagName){
         
         //if (!this.$vbox) alert("here");
 
-        
         var total    = 0;
         var size     = this.$vbox ? "width" : "height";
         var minsize  = this.$vbox ? "minWidth" : "minHeight";
         var osize    = this.$vbox ? "height" : "width";
+        var scroll   = this.$vbox ? "scrollWidth"  : "scrollHeight";
         var offset   = this.$vbox ? "offsetWidth" : "offsetHeight";
         var ooffset  = this.$vbox ? "offsetHeight" : "offsetWidth";
         var getDiff  = this.$vbox ? "getWidthDiff" : "getHeightDiff";
         var ogetDiff = this.$vbox ? "getHeightDiff" : "getWidthDiff";
         var inner    = this.$vbox ? "getHtmlInnerWidth" : "getHtmlInnerHeight";
         var oinner   = this.$vbox ? "getHtmlInnerHeight" : "getHtmlInnerWidth";
+        var borders  = this.$vbox ? "getVerBorders" : "getHorBorders";
 
-        var nodes = this.childNodes, hNodes = [], fW = 0;
+        var nodes = this.childNodes, hNodes = [], fW = 0, max = 0;
         for (var node, i = 0; i < nodes.length; i++) {
             if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || node.visible === false || !node.$amlLoaded)
                 continue;
@@ -764,6 +765,10 @@ apf.vbox = function(struct, tagName){
                 //else node.$skipResizeOnce++;
                 //node.$skipResizeOnce = 1
                 //node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
+                var m = node.margin && apf.getBox(node.margin);
+                if (m && this.$vbox) m.unshift();
+                var mdiff = (m ? m[0] + m[2] : 0);
+                max = Math.max(max, mdiff + Math.min(node.$ext[scroll] + apf[borders](node.$ext), node["max" + size] || 10000)); //@todo add borders
             }
 
             if (parseInt(node.flex))
@@ -774,24 +779,43 @@ apf.vbox = function(struct, tagName){
                 fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
             }
         }
-        
+        if (!max && this[size]) {
+            max = this[size] 
+                //- (this.$vbox ? this.$edge[0] + this.$edge[2] : this.$edge[1] + this.$edge[3]);
+                - apf[ogetDiff](this.$ext);
+        }
+
         /*
              && (this[size] || this.flex)
         */
         if (this.align == "stretch") {
             //var hasSize = this[size] || this.flex;
             var l  = hNodes.length;
-            var pH = this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
+            var pH = max;//this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
             for (var i = 0; i < l; i++) {
                 node = hNodes[i];
 
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
                     var m = node.margin && apf.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
+                    var mdiff = (m ? m[0] + m[2] : 0);
                     
-                    node.$ext.style[size] = !this[size] && !this.flex && node.$ext.offsetHeight == pH
+                    /*shouldClear = !this[size] && !this.flex && node.$ext.offsetHeight == (pH - mdiff);
+                    if (shouldClear)
+                        node.$ext.style[size] = "";
+                    else
+                        node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - mdiff) + "px";
+                    node.$setResizeHeight = !shouldClear;*/
+
+                    //!this[size] && !this.flex
+                    if (max && Math.min(node.$ext[scroll], node["max" + size] || 10000) != max)
+                        node.$ext.style[size] = Math.max(0, max - apf[getDiff](node.$ext) - mdiff) + "px";
+                    else
+                        node.$ext.style[size] = "";
+                    
+                    /*node.$ext.style[size] = !this[size] && !this.flex && node.$ext.offsetHeight == pH - mdiff
                         ? ""
-                        : Math.max(0, pH - apf[getDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
+                        : Math.max(0, pH - apf[getDiff](node.$ext) - mdiff) + "px";*/
                 }
             }
         }
