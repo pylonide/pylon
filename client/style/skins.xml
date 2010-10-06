@@ -10033,6 +10033,7 @@
             padding: 19px 0 0 0;
             color : #333;
         }
+        
 
         .datagrid .headings{
             position : relative;
@@ -10042,7 +10043,7 @@
             z-index : 10;
             /*padding-left : 5px;*/
             background-color : #e6e6e6;
-            margin : -20px 17px 0 0;
+            margin : -20px 15px 0 0;
             white-space : nowrap;
         }
 
@@ -10406,6 +10407,22 @@
             position : relative;
         }
     ]]></a:style>
+    <a:style condition="apf.isWin">
+    	.datagrid .headings{
+            margin : -20px 17px 0 0;
+        }
+    </a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+        .datagrid div.records .treecell strong {
+			top : 0px;
+		}
+		
+        .draggrid .treecell .iconCell,
+        .datagrid .records span.treecell .iconCell {
+            padding : 2px 0 1px 24px;
+        }
+    ]]></a:style>
+    
 
     <a:presentation>
         <a:main
