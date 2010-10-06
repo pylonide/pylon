@@ -4988,7 +4988,7 @@
         .editor_tab .session_page {
             display : none;
             position : absolute;
-            top : 32px;
+            top : 31px;
             bottom : 0;
             left : 0;
             right : 0;

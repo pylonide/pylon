@@ -5,7 +5,12 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/code/code",
-    ["core/ide", "core/ext", "text!ext/code/code.xml", "text!ext/code/settings.xml"],
+    ["core/ide", 
+     "core/ext", 
+     "text!ext/code/code.xml",
+     "text!ext/code/settings.xml",
+     "ace/theme/TextMate" // preload default theme
+    ],
     function(ide, ext, markup, settings) {
 
 return ext.register("ext/code/code", {
