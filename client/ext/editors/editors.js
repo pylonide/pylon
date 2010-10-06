@@ -116,7 +116,7 @@ return ext.register("ext/editors/editors", {
             ext.style.width = (ph.offsetWidth - d[0]) + "px";
             ext.style.height = (ph.offsetHeight - d[1]) + "px";
         });
-        
+
         return vbox;
     },
 
@@ -195,7 +195,8 @@ return ext.register("ext/editors/editors", {
         var model, fake = tabEditors.add("{[@name] + ([@changed] == 1 ? '*' : '')}", filepath, editor.path, null, function(page){
             page.contentType    = contentType;
             page.$at            = new apf.actiontracker();
-            model = page.$model = new apf.model();
+            model               = new apf.model();
+            page.setAttribute("model", page.$model = model);
             page.$model.load(xmlNode);
         });
 
@@ -354,7 +355,7 @@ return ext.register("ext/editors/editors", {
                     var file = pages[i].$model.data;
                     if (file.getAttribute("debug"))
                         continue;
-                    
+
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
                     copy.removeAttribute("changed");
                     pNode.appendChild(copy);
