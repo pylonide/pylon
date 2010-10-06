@@ -43,7 +43,7 @@ apf.upload.html4.isSupported = function() {
 };
 
 (function() {
-    var oCont, oForm, oIframe,
+    var oCont, oForm, oIframe, input,
         html4files = {};
 
     function addSelectedFiles(element) {
@@ -66,7 +66,7 @@ apf.upload.html4.isSupported = function() {
     }
 
     this.draw = function() {
-        var inputContainer, input, type, node,
+        var inputContainer, type, node,
             mimes    = [],
             uid      = this.oUpload.$uniqueId,
             filter   = this.oUpload.$filter,
@@ -80,8 +80,14 @@ apf.upload.html4.isSupported = function() {
             if (type = this.oUpload.mimeTypes[filter[i]])
                 mimes.push(type);
         }
-
+        
         $setTimeout(function() {
+            if (apf.isIE) {
+                _self.oUpload.$button.addEventListener("click", function(){
+                    input.click();
+                });
+            }
+            
             // If no form set, create a new one
             // Create a form and set it as inline so it doesn't mess up any layout
             oForm = document.createElement("form");
@@ -189,7 +195,7 @@ apf.upload.html4.isSupported = function() {
                 // set input styles
                 input.style.width  = "100%",
                 input.style.height = "100%",
-                apf.setOpacity(input, 0);
+                //apf.setOpacity(input, 0);
 
                 // add change event
                 input.onchange = function(e) {
@@ -216,10 +222,16 @@ apf.upload.html4.isSupported = function() {
         var oBtn = this.oUpload.$button.$ext,
             pos  = apf.getAbsolutePosition(oBtn);
 
-        oCont.style.left   = pos[0] + "px",
-        oCont.style.top    = pos[1] + "px",
-        oCont.style.width  = oBtn.offsetWidth  + "px",
-        oCont.style.height = oBtn.offsetHeight + "px";
+        if (apf.isIE) {
+            oCont.style.left   = "-2000px";
+            oCont.style.top    = "-2000px";
+        }
+        else {
+            oCont.style.left   = pos[0] + "px",
+            oCont.style.top    = (pos[1] + 100) + "px",
+            oCont.style.width  = oBtn.offsetWidth  + "px",
+            oCont.style.height = oBtn.offsetHeight + "px";
+        }
     };
 
     this.upload = function(file) {
