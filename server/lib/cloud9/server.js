@@ -148,7 +148,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
         var _self = this;
         var child = _self.child = spawn(this.nodeCmd, args, {cwd: cwd});
         _self.client.send(JSON.stringify({"type": "node-start"}));
-        _self.debugClient = true;
+        _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
