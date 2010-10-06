@@ -39,9 +39,9 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename set="{davProject.rename([@name], [@path], require('ext/filesystem/filesystem').afterRename)}"/>
+            <a:rename set="{var fs=require('ext/filesystem/filesystem'); davProject.rename([@name], [@path], fs.afterRename.bind(fs))}"/>
             <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-            <a:move set="{davProject.move([@path], [../@path], require('ext/filesystem/filesystem').afterMove)}"/>
+            <a:move set="{var fs=require('ext/filesystem/filesystem'); davProject.move([@path], [../@path], fs.afterMove.bind(fs))}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
 
             <a:drag match="[folder|file]" />

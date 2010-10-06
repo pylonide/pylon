@@ -125,7 +125,7 @@ return ext.register("ext/filesystem/filesystem", {
                 });
             }
             if (selected)
-                trFiles.select(node.selectSingleNode("//node()[@path='" + selected + "']"));
+                trFiles.select(trFiles.xmlRoot.selectSingleNode("//node()[@path='" + selected + "']"));
         });
     },
 
