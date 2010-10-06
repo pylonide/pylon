@@ -193,7 +193,7 @@ apf.scrollbar = function(struct, tagName){
                 });
                 amlNode.addEventListener("xmlupdate", function(){
                     _self.$update();
-                });
+                }); 
             }
             if (amlNode.$isTreeArch) {
                 amlNode.addEventListener("collapse", function(){

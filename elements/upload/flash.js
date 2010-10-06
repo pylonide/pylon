@@ -52,7 +52,7 @@ apf.upload.flash.isSupported = function() {
 
 (function() {
     var oCont;
-
+ 
     this.event = function(name, o) {
         var file,
             files = this.oUpload.$files;
