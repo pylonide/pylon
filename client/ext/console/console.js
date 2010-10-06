@@ -58,11 +58,6 @@ return ext.register("ext/console/console", {
 
     log : function(msg, type, pre, post){
         msg = apf.htmlentities(String(msg));
-        /*
-        code.replace(/ /g, "&nbsp;")
-                  .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/\n/g, "\n<br />") */
 
         if (!type)
             type = "log";
