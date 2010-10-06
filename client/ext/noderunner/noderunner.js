@@ -7,10 +7,9 @@
 require.def("ext/noderunner/noderunner",
     ["core/ide",
      "core/ext",
-     "ext/tree/tree",
      "ext/console/console",
      "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, tree, log, markup) {
+     "/socket.io/socket.io.js"], function(ide, ext, log, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -18,7 +17,7 @@ return ext.register("ext/noderunner/noderunner", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    deps   : [tree, log],
+    deps   : [log],
 
     nodes : [],
 
