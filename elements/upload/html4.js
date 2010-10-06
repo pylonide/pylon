@@ -82,12 +82,6 @@ apf.upload.html4.isSupported = function() {
         }
         
         $setTimeout(function() {
-            if (apf.isIE) {
-                _self.oUpload.$button.addEventListener("click", function(){
-                    input.click();
-                });
-            }
-            
             // If no form set, create a new one
             // Create a form and set it as inline so it doesn't mess up any layout
             oForm = document.createElement("form");
@@ -167,11 +161,11 @@ apf.upload.html4.isSupported = function() {
                 //window.frames[oIframe.id].name = oIframe.name;
 
             // Create container for iframe
-            inputContainer = document.createElement("div");
+            _self.$inputContainer = inputContainer = document.createElement("div");
             inputContainer.id = uid + "_iframe_container";
 
             // Set container styles
-            with (oCont.style) {
+            with (inputContainer.style) {
                 position   = "absolute",
                 background = "transparent",
                 width      = "100px",
@@ -182,7 +176,7 @@ apf.upload.html4.isSupported = function() {
             }
 
             // Append to form
-            oCont.appendChild(inputContainer);
+            oForm.appendChild(inputContainer);
 
             // Create an input element
             function createInput() {
@@ -195,7 +189,7 @@ apf.upload.html4.isSupported = function() {
                 // set input styles
                 input.style.width  = "100%",
                 input.style.height = "100%",
-                //apf.setOpacity(input, 0);
+                apf.setOpacity(input, 0);
 
                 // add change event
                 input.onchange = function(e) {
@@ -215,22 +209,27 @@ apf.upload.html4.isSupported = function() {
 
             // Create input element
             createInput();
+            _self.refresh();
         });
     };
 
     this.refresh = function() {
-        var oBtn = this.oUpload.$button.$ext,
-            pos  = apf.getAbsolutePosition(oBtn);
-
-        if (apf.isIE) {
-            oCont.style.left   = "-2000px";
-            oCont.style.top    = "-2000px";
-        }
-        else {
-            oCont.style.left   = pos[0] + "px",
-            oCont.style.top    = (pos[1] + 100) + "px",
-            oCont.style.width  = oBtn.offsetWidth  + "px",
-            oCont.style.height = oBtn.offsetHeight + "px";
+        if (this.$inputContainer) {
+            var oBtn = this.oUpload.$button.$ext,
+                pos  = apf.getAbsolutePosition(oBtn, this.$inputContainer.offsetParent);
+            
+            //#ifdef __DEBUG
+            if (apf.isIE && oBtn.offsetWidth > 81) {
+                apf.console.warn("Button found for upload element with a width "
+                               + "greater than 81 pixels. This sadly will not work: "
+                               + oBtn.serialize());
+            }
+            //#endif
+            
+            this.$inputContainer.style.left   = pos[0] + "px",
+            this.$inputContainer.style.top    = pos[1] + "px",
+            this.$inputContainer.style.width  = (apf.isIE ? "81px" : oBtn.offsetWidth  + "px"),
+            this.$inputContainer.style.height = oBtn.offsetHeight + "px";
         }
     };
 
