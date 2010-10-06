@@ -1412,8 +1412,12 @@ var apf = {
         //elScript.defer = true;
         if (type)
             elScript.setAttribute("_apf_type", type);
-        if (text)
-            elScript.text  = text;
+        if (text) {
+			if (apf.isIE)
+				window.execScript(text);
+			else
+				elScript.text = text;
+		}
         else 
             elScript.src   = sSrc;
         head.appendChild(elScript);
