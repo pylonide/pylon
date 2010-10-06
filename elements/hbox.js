@@ -180,7 +180,7 @@ apf.vbox = function(struct, tagName){
 
                 if (stretch && !node[size]) //(node.$altExt || 
                     node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) 
-                        ? "auto" 
+                        ? (this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right) ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
                             : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
