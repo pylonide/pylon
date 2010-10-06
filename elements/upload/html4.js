@@ -260,7 +260,8 @@ apf.upload.html4.isSupported = function() {
 
         // set current file
         this.currentfile = file;
-
+        
+        oForm.appendChild(file.input);
         oForm.submit();
     };
 
