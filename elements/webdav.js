@@ -702,6 +702,35 @@ apf.webdav = function(struct, tagName){
             : null);
     };
 
+    this.report = function(sPath, reportName, oProperties, callback) {
+        var aCont = ['<?xml version="1.0" encoding="utf-8" ?>',
+            '<D:' + reportName + ' xmlns:D="', apf.webdav.NS.D, '">'];
+        if (oProperties) {
+            for (var prop in oProperties) {
+                aCont.push('<D:' + prop, (oProperties[prop]
+                    ? '>' + oProperties[prop] + '</D:' + prop + '>'
+                    : '/>'));
+            }
+        }
+        aCont.push('</D:', reportName, '>');
+
+        this.method = "REPORT";
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.status);
+            if (state != apf.SUCCESS) {
+                var oError = WebDAVError.call(this, "Unable to fetch report on '" + sPath
+                             + "'. Server says: "
+                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+            callback.call(this, data, state, extra);
+        }, sPath, aCont.join(""));
+    };
+
     /**
      * Wrapper function that centrally manages locking of resources. Files and
      * directories (resources) can be locked prior to any modifying operation to
