@@ -26,7 +26,6 @@ return ext.register("ext/console/console", {
     jump: function(path, row, column) {
         row = parseInt(row.slice(1));
         column = column ? parseInt(column.slice(1)) : 0;
-        console.log(path, row, column);
         require("ext/debugger/debugger").showFile(path, row, column);
     },
 

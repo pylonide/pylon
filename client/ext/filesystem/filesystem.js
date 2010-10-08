@@ -135,7 +135,7 @@ return ext.register("ext/filesystem/filesystem", {
             tabEditors.remove(page);
 
         davProject.remove(path, false, function() {
-            console.log("deleted", path);
+//            console.log("deleted", path);
         });
     },
 
