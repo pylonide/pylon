@@ -50,7 +50,6 @@ return ext.register("ext/gotolinewindow/gotolinewindow", {
         var _self = this;
         lstLineNumber.onafterchoose = function() {
             if (lstLineNumber.selected) {
-                console.log();
                 _self.gotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
             }
             else

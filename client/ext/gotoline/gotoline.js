@@ -49,7 +49,6 @@ return ext.register("ext/gotoline/gotoline", {
         var _self = this;
         lstLineNumber.addEventListener("afterchoose", function() {
             if (lstLineNumber.selected) {
-                console.log();
                 _self.gotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
             }
             else
@@ -59,7 +58,7 @@ return ext.register("ext/gotoline/gotoline", {
             if (this.selected)
                 txtLineNr.setValue(this.selected.getAttribute("nr"));
         });
-        
+
         var restricted = [38, 40, 36, 35]
         lstLineNumber.addEventListener("keydown", function(e) {
             if (e.keyCode == 13 && this.selected){
@@ -75,7 +74,7 @@ return ext.register("ext/gotoline/gotoline", {
             else if (restricted.indexOf(e.keyCode) == -1)
                 txtLineNr.focus();
         }, true);
-        
+
         txtLineNr.addEventListener("keydown", function(e) {
             if (e.keyCode == 13){
                 _self.gotoLine();
@@ -108,7 +107,7 @@ return ext.register("ext/gotoline/gotoline", {
         if (!force && !winGotoLine.visible || force > 0) {
             editorPage = tabEditors.getPage();
             if (!editorPage) return;
-            
+
             var editor = require('ext/editors/editors').currentEditor;
             if (editor && editor.ceEditor) {
                 var ace = editor.ceEditor.$editor;
