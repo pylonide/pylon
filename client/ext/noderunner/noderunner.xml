@@ -24,33 +24,6 @@
     <a:state id="stServerConnected" active="false" />
     <a:state id="stProcessRunning" active="false" />
     <a:state id="stDebugProcessRunning" active="false" />
-
-	<a:toolbar id="tbNoderunner">
-	    <a:divider />
-       	<!--a:button
-       	  icon="chromium_16.png"
-       	  caption="Debug Chrome"
-       	  onclick="require('ext/noderunner/noderunner').debugChrome()"
-       	  disabled="{stConnected.active}" /-->
-		<a:button
-		  icon="debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
-		  caption="debug"
-		  onclick="require('ext/noderunner/noderunner').debug()"
-		  disabled="{stProcessRunning.active || (tabEditors.getPage(tabEditors.activepage).$model.data.getAttribute('contenttype') || '').indexOf('application/javascript') != 0}"
-		/>
-		<a:button
-		  icon="debugger/run_tool{this.disabled ? '_disabled' : ''}.gif"
-		  caption="run"
-		  onclick="require('ext/noderunner/noderunner').run()"
-		  disabled="{stProcessRunning.active || (tabEditors.getPage(tabEditors.activepage).$model.data.getAttribute('contenttype') || '').indexOf('application/javascript') != 0}"
-		/>
-		<a:button
-		  icon="debugger/terminate_co{this.disabled ? '_disabled' : ''}.gif"
-		  caption="stop"
-		  onclick="require('ext/noderunner/noderunner').stop()"
-		  disabled="{!stProcessRunning.active}"
-		/>
-	</a:toolbar>
     
     <a:window id="winTab" 
       title="Choose a Tab"

@@ -19,15 +19,7 @@ return ext.register("ext/noderunner/noderunner", {
     markup : markup,
     deps   : [log],
 
-    nodes : [],
-
     init : function(amlNode){
-        while(tbNoderunner.childNodes.length) {
-            var button = tbNoderunner.firstChild;
-            ide.barTools.appendChild(button);
-            this.nodes.push(button);
-        }
-
         var options = {
             transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
             transportOptions: {
@@ -39,6 +31,7 @@ return ext.register("ext/noderunner/noderunner", {
                 }
             }
         };
+
         var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
         this.socket.on("connect", this.onConnect.bind(this));
@@ -176,22 +169,12 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
     },
 
     disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
     },
 
     destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 
