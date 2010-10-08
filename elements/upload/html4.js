@@ -36,6 +36,7 @@
 
 apf.upload.html4 = function(oUpload) {
     this.oUpload = oUpload;
+    this.$files  = {};
 };
 
 apf.upload.html4.isSupported = function() {
@@ -43,9 +44,6 @@ apf.upload.html4.isSupported = function() {
 };
 
 (function() {
-    var oCont, oForm, oIframe, input,
-        html4files = {};
-
     function addSelectedFiles(element) {
         var file, id, name,
             uid   = this.oUpload.$uniqueId,
@@ -56,7 +54,7 @@ apf.upload.html4.isSupported = function() {
 
         id = uid + "_html4_".appendRandomNumber(5);
 
-        html4files[id] = file = {id: id, name: name};
+        this.$files[id] = file = {id: id, name: name};
 
         file.input = element;
         files.push(file);
@@ -73,7 +71,7 @@ apf.upload.html4.isSupported = function() {
             i        = 0,
             l        = filter.length,
             _self    = this;
-        oCont = this.oUpload.$ext;
+        this.$cont = this.oUpload.$ext;
 
         // Convert extensions to mime types list
         for (; i < l; ++i) {
@@ -82,34 +80,28 @@ apf.upload.html4.isSupported = function() {
         }
         
         $setTimeout(function() {
-            if (apf.isIE) {
-                _self.oUpload.$button.addEventListener("click", function(){
-                    input.click();
-                });
-            }
-            
             // If no form set, create a new one
             // Create a form and set it as inline so it doesn't mess up any layout
-            oForm = document.createElement("form");
-            oForm.style.display = "inline";
+            _self.$form = document.createElement("form");
+            _self.$form.style.display = "inline";
 
             // Wrap browse button in empty form
             node = _self.oUpload.$button.$ext;
-            node.parentNode.insertBefore(oForm, node);
-            oForm.appendChild(node);
+            node.parentNode.insertBefore(_self.$form, node);
+            _self.$form.appendChild(node);
 
             // Force the form into post and multipart
-            oForm.setAttribute("method", "post");
-            oForm.setAttribute("enctype", "multipart/form-data");
+            _self.$form.setAttribute("method", "post");
+            _self.$form.setAttribute("enctype", "multipart/form-data");
 
-            oIframe = document.createElement("iframe");
-            oIframe.setAttribute("src",  'javascript:""'); // javascript:"" for HTTPS issue on IE6
-            oIframe.setAttribute("name", uid + "_iframe");
-            oIframe.setAttribute("id",   uid + "_iframe");
-            oIframe.style.display = "none";
+            _self.$iframe = document.createElement("iframe");
+            _self.$iframe.setAttribute("src",  'javascript:""'); // javascript:"" for HTTPS issue on IE6
+            _self.$iframe.setAttribute("name", uid + "_iframe");
+            _self.$iframe.setAttribute("id",   uid + "_iframe");
+            _self.$iframe.style.display = "none";
 
             // Add IFrame onload event
-            apf.addListener(oIframe, "load", function(e){
+            apf.addListener(_self.$iframe, "load", function(e){
                 e = e || window.event;
                 var el,
                     n    = e.srcElement || e.target,
@@ -152,26 +144,26 @@ apf.upload.html4.isSupported = function() {
                     });
 
                     // Reset action and target
-                    if (oForm.tmpAction)
-                        oForm.setAttribute("action", oForm.tmpAction);
-                    if (oForm.tmpTarget)
-                        oForm.setAttribute("target", oForm.tmpTarget);
+                    if (_self.$form.tmpAction)
+                        _self.$form.setAttribute("action", _self.$form.tmpAction);
+                    if (_self.$form.tmpTarget)
+                        _self.$form.setAttribute("target", _self.$form.tmpTarget);
                 }
             });
 
             // append iframe to form
-            oForm.appendChild(oIframe);
+            _self.$form.appendChild(_self.$iframe);
 
             // Change iframe name
             //if (apf.isIE)
-                //window.frames[oIframe.id].name = oIframe.name;
+                //window.frames[_self.$iframe.id].name = _self.$iframe.name;
 
             // Create container for iframe
-            inputContainer = document.createElement("div");
+            _self.$inputContainer = inputContainer = document.createElement("div");
             inputContainer.id = uid + "_iframe_container";
 
             // Set container styles
-            with (oCont.style) {
+            with (inputContainer.style) {
                 position   = "absolute",
                 background = "transparent",
                 width      = "100px",
@@ -182,12 +174,12 @@ apf.upload.html4.isSupported = function() {
             }
 
             // Append to form
-            oCont.appendChild(inputContainer);
+            _self.$form.appendChild(inputContainer);
 
             // Create an input element
             function createInput() {
                 // Create element and set attributes
-                input = document.createElement("input");
+                var input = document.createElement("input");
                 input.setAttribute("type", "file");
                 input.setAttribute("accept", mimes.join(","));
                 input.setAttribute("size", 1);
@@ -195,7 +187,7 @@ apf.upload.html4.isSupported = function() {
                 // set input styles
                 input.style.width  = "100%",
                 input.style.height = "100%",
-                //apf.setOpacity(input, 0);
+                apf.setOpacity(input, 0);
 
                 // add change event
                 input.onchange = function(e) {
@@ -215,22 +207,27 @@ apf.upload.html4.isSupported = function() {
 
             // Create input element
             createInput();
+            _self.refresh();
         });
     };
 
     this.refresh = function() {
-        var oBtn = this.oUpload.$button.$ext,
-            pos  = apf.getAbsolutePosition(oBtn);
-
-        if (apf.isIE) {
-            oCont.style.left   = "-2000px";
-            oCont.style.top    = "-2000px";
-        }
-        else {
-            oCont.style.left   = pos[0] + "px",
-            oCont.style.top    = (pos[1] + 100) + "px",
-            oCont.style.width  = oBtn.offsetWidth  + "px",
-            oCont.style.height = oBtn.offsetHeight + "px";
+        if (this.$inputContainer) {
+            var oBtn = this.oUpload.$button.$ext,
+                pos  = apf.getAbsolutePosition(oBtn, this.$inputContainer.offsetParent);
+            
+            //#ifdef __DEBUG
+            if (apf.isIE && oBtn.offsetWidth > 81) {
+                apf.console.warn("Button found for upload element with a width "
+                               + "greater than 81 pixels. This sadly will not work: "
+                               + oBtn.serialize());
+            }
+            //#endif
+            
+            this.$inputContainer.style.left   = pos[0] + "px",
+            this.$inputContainer.style.top    = pos[1] + "px",
+            this.$inputContainer.style.width  = (apf.isIE ? "81px" : oBtn.offsetWidth  + "px"),
+            this.$inputContainer.style.height = oBtn.offsetHeight + "px";
         }
     };
 
@@ -250,18 +247,19 @@ apf.upload.html4.isSupported = function() {
         file.input.setAttribute("name", this.oUpload.filedataname);
 
         // Store action
-        oForm.tmpAction = oForm.getAttribute("action");
-        oForm.setAttribute("action", this.oUpload.$buildUrl(this.oUpload.target,
+        this.$form.tmpAction = this.$form.getAttribute("action");
+        this.$form.setAttribute("action", this.oUpload.$buildUrl(this.oUpload.target,
             {name : file.target_name || file.name}));
 
         // Store Target
-        oForm.tmpTarget = oForm.getAttribute("target");
-        oForm.setAttribute("target", oIframe.name);
+        this.$form.tmpTarget = this.$form.getAttribute("target");
+        this.$form.setAttribute("target", this.$iframe.name);
 
         // set current file
         this.currentfile = file;
-
-        oForm.submit();
+        
+        this.$form.appendChild(file.input);
+        this.$form.submit();
     };
 
     this.removeFile = function(file) {
