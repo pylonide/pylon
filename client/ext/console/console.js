@@ -5,8 +5,12 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/console/console",
-    ["core/ide", "core/ext", "ext/panels/panels", "text!ext/console/console.xml"],
-    function(ide, ext, panels, markup) {
+    ["core/ide",
+     "core/ext",
+     "ace/lib/lang",
+     "ext/panels/panels",
+     "text!ext/console/console.xml"],
+    function(ide, ext, lang, panels, markup) {
 
 return ext.register("ext/console/console", {
     name   : "Console",
@@ -19,7 +23,14 @@ return ext.register("ext/console/console", {
         this.inited && txtConsole.clear();
     },
 
-    logNodeStream : function(data, stream) {
+    jump: function(path, row, column) {
+        row = parseInt(row.slice(1));
+        column = column ? parseInt(column.slice(1)) : 0;
+        console.log(path, row, column);
+        require("ext/debugger/debugger").showFile(path, row, column);
+    },
+
+    logNodeStream : function(data, stream, workspaceDir, davPrefix) {
         var colors = {
             30: "black",
             31: "red",
@@ -34,15 +45,15 @@ return ext.register("ext/console/console", {
         var lines = data.split("\n");
         var style = "color:black;";
         var log = [];
+        var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
 
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;
 
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
-                .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, function(m, url) {
-                     return "<a href='" + url + "' target='_blank'>" + url + "</a>";
-                 })
+                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "black");
                     if (extra == 1) {
@@ -213,7 +224,7 @@ return ext.register("ext/console/console", {
 
     showObject : function(xmlNode, ref, expression){
         if (ref && ref.dataType == apf.ARRAY) {
-            require("ext/debugger/debugger").$showFile(ref[0], ref[1] + 1, ref[4]);
+            require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
         }
         else {
             tabConsole.set(1);
@@ -287,7 +298,7 @@ return ext.register("ext/console/console", {
         this.panel = winDbgConsole;
 
         lstScripts.addEventListener("afterselect", function(e) {
-            e.selected && require("ext/debugger/debugger").$showFile(e.selected.getAttribute("scriptid"));
+            e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
         });
 
         apf.importCssString(".console_date{display:inline}");

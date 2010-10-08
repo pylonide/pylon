@@ -62,27 +62,27 @@ return ext.register("ext/debugger/debugger", {
         });
         //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
-            e.data && _self.$showFile(e.data.getAttribute("scriptid"));
+            e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
         });
 
         lstBreakpoints.addEventListener("afterselect", function(e) {
             if (e.selected && e.selected.getAttribute("scriptid"))
-                _self.$showFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
+                _self.showDebugFile(e.selected.getAttribute("scriptid"), parseInt(e.selected.getAttribute("line")) + 1);
             // TODO sometimes we don't have a scriptID
         });
 
         log.enable(true);
     },
 
-    $showFile : function(scriptId, line, text) {
-        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
-
-        if (line !== undefined) {
+    jump : function(fileEl, row, column, text) {
+        var path = fileEl.getAttribute("path");
+        
+        if (row !== undefined) {
             ide.addEventListener("afteropenfile", function(e) {
-                if (e.node.getAttribute("scriptid") == scriptId) {
+                if (e.node.getAttribute("path") == path) {
                     ide.removeEventListener("afteropenfile", arguments.callee);
                     setTimeout(function() {
-                        ceEditor.$editor.gotoLine(line);
+                        ceEditor.$editor.gotoLine(row, column);
                         if (text)
                             ceEditor.$editor.find(text);
                         ceEditor.focus();
@@ -91,12 +91,32 @@ return ext.register("ext/debugger/debugger", {
             });
         }
 
+        ide.dispatchEvent("openfile", {
+            node: fileEl
+        });
+    },
+
+    showFile : function(path, row, column, text) {
+        var chunks = path.split("/");
+        var name = chunks[chunks.length-1];
+        var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("path", path)
+            .node();
+
+        this.jump(node, row, column, text);
+    },
+
+    showDebugFile : function(scriptId, row, column, text) {
+        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+
         if (file) {
-            ide.dispatchEvent("openfile", {
-                node: file
-            });
+            this.jump(file, row, column, text);
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+            if (!script)
+                return;
+                
             var name = script.getAttribute("scriptname");
             var chunks = name.split("/");
             var value = chunks[chunks.length-1];
@@ -116,7 +136,7 @@ return ext.register("ext/debugger/debugger", {
                     .attr("scriptname", script.getAttribute("scriptname"))
                     .attr("lineoffset", "0").node();
 
-                ide.dispatchEvent("openfile", { node: node });
+                this.jump(node, row, column, text);
             }
             else {
                 var node = apf.n("<file />")
@@ -133,8 +153,8 @@ return ext.register("ext/debugger/debugger", {
                     var data = doc.createElement("data");
                     data.appendChild(doc.createTextNode(source));
                     node.appendChild(data);
-
-                    ide.dispatchEvent("openfile", { node: node });
+                    
+                    this.jump(node, row, column, text);
                 });
             }
         }
@@ -156,11 +176,7 @@ return ext.register("ext/debugger/debugger", {
             var path = name.slice(workspaceDir.length+1);
             this.paths[path] = dbgFile;
         }
-        var treeFiles = fs.model.data.getElementsByTagName("file");
-        var tabFiles = tabEditors.getPages().map(function(page) {
-            return page.$model.data;
-        });
-        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
+        var files = this.$getFiles();
 
         var davPrefix = noderunner.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {

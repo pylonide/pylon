@@ -99,7 +99,7 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "node-data":
                 //ide.log(message.data);
-                log.logNodeStream(message.data, message.stream);
+                log.logNodeStream(message.data, message.stream, this.workspaceDir, this.davPrefix);
                 break;
         }
     },
