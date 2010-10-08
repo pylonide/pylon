@@ -60,13 +60,13 @@
     <a:button
       icon="debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
       caption="debug"
-      onclick="require('ext/run/run').debug()"
+      onclick="require('ext/run/run').run(true)"
       disabled="{stProcessRunning.active}"
     />
     <a:button
       icon="debugger/run_tool{this.disabled ? '_disabled' : ''}.gif"
       caption="run"
-      onclick="require('ext/run/run').run()"
+      onclick="require('ext/run/run').run(false)"
       disabled="{stProcessRunning.active}"
     />
     <a:button

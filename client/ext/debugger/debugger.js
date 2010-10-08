@@ -76,7 +76,7 @@ return ext.register("ext/debugger/debugger", {
 
     jump : function(fileEl, row, column, text) {
         var path = fileEl.getAttribute("path");
-        
+
         if (row !== undefined) {
             ide.addEventListener("afteropenfile", function(e) {
                 if (e.node.getAttribute("path") == path) {
@@ -116,7 +116,7 @@ return ext.register("ext/debugger/debugger", {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
                 return;
-                
+
             var name = script.getAttribute("scriptname");
             var chunks = name.split("/");
             var value = chunks[chunks.length-1];
@@ -153,7 +153,7 @@ return ext.register("ext/debugger/debugger", {
                     var data = doc.createElement("data");
                     data.appendChild(doc.createTextNode(source));
                     node.appendChild(data);
-                    
+
                     this.jump(node, row, column, text);
                 });
             }
@@ -176,7 +176,11 @@ return ext.register("ext/debugger/debugger", {
             var path = name.slice(workspaceDir.length+1);
             this.paths[path] = dbgFile;
         }
-        var files = this.$getFiles();
+        var treeFiles = fs.model.data.getElementsByTagName("file");
+        var tabFiles = tabEditors.getPages().map(function(page) {
+            return page.$model.data;
+        });
+        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
 
         var davPrefix = noderunner.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {

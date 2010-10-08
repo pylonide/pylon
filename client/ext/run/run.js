@@ -44,10 +44,10 @@ return ext.register("ext/run/run", {
         return page.$model.data;
     },
 
-    addConfig : function() {
+    addConfig : function(debug) {
         var file = this.$getActivePageModel();
 
-        if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
+        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
             var path = "";
             var name = "server";
         }
@@ -59,6 +59,7 @@ return ext.register("ext/run/run", {
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
+            .attr("debug", debug ? "1" : "")
             .attr("args", "").node();
 
         mdlRunConfigurations.appendXml(cfg);
@@ -67,13 +68,13 @@ return ext.register("ext/run/run", {
         winRunCfgNew.show();
     },
 
-    run : function() {
+    run : function(debug) {
         var config = lstRunCfg.selected;
         if (!config) {
-            this.addConfig();
+            this.addConfig(debug);
         }
         else
-            this.runConfig(config);
+            this.runConfig(config, debug);
     },
 
     $updateMenu : function() {
@@ -99,7 +100,7 @@ return ext.register("ext/run/run", {
 
                 var _self = this;
                 item.onclick = function() {
-                    _self.runConfig(this.config);
+                    _self.runConfig(this.config, false);
                     lstRunCfg.select(this.config);
                 };
                 mnuRunCfg.insertBefore(item, mnuRunCfg.firstChild);
@@ -107,8 +108,10 @@ return ext.register("ext/run/run", {
         }
     },
 
-    runConfig : function(config) {
-        noderunner.run(config.getAttribute("path"), config.getAttribute("args"), false);
+    runConfig : function(config, debug) {
+        if (debug === undefined)
+            debug = config.getAttribute("debug") == "1";
+        noderunner.run(config.getAttribute("path"), config.getAttribute("args"), debug);
     },
 
     stop : function() {
