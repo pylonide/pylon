@@ -37,6 +37,11 @@ return ext.register("ext/run/run", {
     },
 
     run : function() {
+        var configuration = mdlRunConfigurations.queryNode("configuration[1]")
+        if (!configuration)
+            alert("no config")
+        else
+            noderunner.run(configuration);
         noderunner.run();
     },
 
