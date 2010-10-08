@@ -50,6 +50,11 @@ apf.aml.setElement("skin", apf.skin);
     this.$includesRemaining = 0;
     
     this.$propHandlers["src"] = function(value){
+        if (value.trim().charAt(0) == "<") {
+            apf.skins.Init(apf.getXml(value), this, this.$path);
+            return;
+        }
+        
         this.$path = apf.getAbsolutePath(apf.hostPath, value)
         getSkin.call(this, this.$path);
     }
