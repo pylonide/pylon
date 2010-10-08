@@ -125,28 +125,14 @@ return ext.register("ext/noderunner/noderunner", {
         this.$run(true);
     },
 
-    run : function() {
-        this.$run(false);
-    },
-
-    $run : function(debug) {
+    run : function(path, args, debug) {
         if (stProcessRunning.active || !stServerConnected.active)
-            return;
-
-        page = tabEditors.getPage();
-        if (!page)
-            return;
-
-        var file = page.$model.data;
-        if (!file)
-            return;
-
-        if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0)
             return;
 
         var command = {
             "command" : debug ? "RunDebug" : "Run",
-            "file"    : file.getAttribute("path").slice(this.davPrefix.length)
+            "file"    : path,
+            "args"    : args || ""
         };
         this.socket.send(JSON.stringify(command));
 

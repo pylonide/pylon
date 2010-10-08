@@ -36,13 +36,79 @@ return ext.register("ext/run/run", {
         noderunner.debug();
     },
 
+    $getActivePageModel : function() {
+        page = tabEditors.getPage();
+        if (!page)
+            return null;
+
+        return page.$model.data;
+    },
+
+    addConfig : function() {
+        var file = this.$getActivePageModel();
+
+        if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
+            var path = "";
+            var name = "server";
+        }
+        else {
+            path = file.getAttribute("path").slice(noderunner.davPrefix.length)
+            name = file.getAttribute("name").replace(/\.js$/, "");
+        }
+
+        var cfg = apf.n("<config />")
+            .attr("path", path)
+            .attr("name", name)
+            .attr("args", "").node();
+
+        mdlRunConfigurations.appendXml(cfg);
+        lstRunCfg.select(cfg);
+        this.$updateMenu();
+        winRunCfgNew.show();
+    },
+
     run : function() {
-        var configuration = mdlRunConfigurations.queryNode("configuration[1]")
-        if (!configuration)
-            alert("no config")
+        var config = lstRunCfg.selected;
+        if (!config) {
+            this.addConfig();
+        }
         else
-            noderunner.run(configuration);
-        noderunner.run();
+            this.runConfig(config);
+    },
+
+    $updateMenu : function() {
+        var item = mnuRunCfg.firstChild;
+        while(item && item.tagName !== "a:divider") {
+            mnuRunCfg.removeChild(item);
+            item = mnuRunCfg.firstChild;
+        }
+        var divider = item;
+
+        var configs = mdlRunConfigurations.queryNodes("config");
+        if (!configs.length)
+            mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "no run history"}), divider);
+        else {
+            for (var i=0,l=configs.length; i<l; i++) {
+                var item = new apf.item({
+                    type: "radio",
+                    caption: configs[i].getAttribute("name"),
+                    checked: configs[i] == lstRunCfg.selected,
+                    group: "grpRunCfg"
+                });
+                item.$config = configs[i];
+
+                var _self = this;
+                item.onclick = function() {
+                    _self.runConfig(this.config);
+                    lstRunCfg.select(this.config);
+                };
+                mnuRunCfg.insertBefore(item, mnuRunCfg.firstChild);
+            }
+        }
+    },
+
+    runConfig : function(config) {
+        noderunner.run(config.getAttribute("path"), config.getAttribute("args"), false);
     },
 
     stop : function() {
