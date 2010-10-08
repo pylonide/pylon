@@ -1,0 +1,41 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window 
+      title="Go to Line" 
+      onhide="require('ext/gotolinewindow/gotolinewindow').onHide()"
+      buttons="close" 
+      id="winGotoLine" 
+      modal="false" 
+      center="true" 
+      width="230"
+      height="230"
+      kbclose="true"
+    >
+        <a:vbox anchors="5 0 0 0" padding="5">
+            <a:textbox id="txtLineNr"
+              margin="5 10 0 10"
+              focusselect="true"
+              initial-message="line number"
+              value="0"/>
+            <a:list id="lstLineNumber"
+              model="{tabEditors.getPage(tabEditors.activepagenr).$model}"
+           	  skin="lineselect"
+              margin="0 10 5 10" 
+              flex="1"
+              autoselect="false"
+              multiselect="false"
+              empty-message="line number history"
+              caption="[@nr]">
+            	<a:each 
+                  match="[gotoline/line]"
+	              sort="[@ts]"
+	              data-type="number"
+	              order="descending"/>    
+            </a:list>
+            <a:divider />
+            <a:hbox edge="5 10 5 10" padding="5" pack="end">
+                <a:button id="btnLinGo" default="2" class="ui-btn-green">Go</a:button>
+                <a:button onclick="winGotoLine.hide()">Close</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>
