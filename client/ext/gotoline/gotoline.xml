@@ -1,7 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <!--a:skin id="gotoline" src="{require('ext/gotoline/gotoline').skin}" /-->
+    <a:skin id="gotoline" 
+        src="{require('ext/gotoline/gotoline').skin}" />
     <a:bar
-      skinset2="gotoline"
+      skinset="gotoline"
       skin = "basic"
       id="winGotoLine" 
       width="60"
