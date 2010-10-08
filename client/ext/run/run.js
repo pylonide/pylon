@@ -47,7 +47,7 @@ return ext.register("ext/run/run", {
     addConfig : function(debug) {
         var file = this.$getActivePageModel();
 
-        if ((file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
+        if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
             var path = "";
             var name = "server";
         }
