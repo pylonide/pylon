@@ -46,9 +46,9 @@ return ext.register("ext/searchreplace/searchreplace", {
         this.hotitems["search"] = [this.nodes[1]];
         this.hotitems["searchreplace"] = [this.nodes[2]];
         
-        plugins.registerCommand("find", function(editor, selection) {
+        /*plugins.registerCommand("find", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(false, true);
-        });
+        });*/
         plugins.registerCommand("replace", function(editor, selection) {
             _self.setEditor(editor, selection).toggleDialog(true, true);
         });
