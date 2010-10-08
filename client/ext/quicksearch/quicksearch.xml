@@ -1,0 +1,21 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <!--a:skin id="quicksearch" 
+        src="{require('ext/gotoline/gotoline').skin}" /-->
+    <a:bar id="winQuickSearch"
+      skin    = "basic"
+      style   = "background:#666"
+      skinset2 = "quicksearch"
+      width   = "350"
+      kbclose = "true"
+      top     = "5"
+      right   = "30">
+        <a:hbox edge="0 5 5 5">
+            <a:textbox id="txtQuickSearch" flex="1" focusselect="true" />
+            <a:button onclick="require('ext/quicksearch/quicksearch').find(null, true)">Left</a:button>
+            <a:button onclick="require('ext/quicksearch/quicksearch').find()">Right</a:button>
+            <a:button margin="0 0 0 10" onclick="
+              
+            ">Advanced</a:button>
+        </a:hbox>
+    </a:bar>
+</a:application>

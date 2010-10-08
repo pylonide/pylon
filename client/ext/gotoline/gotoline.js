@@ -96,12 +96,10 @@ return ext.register("ext/gotoline/gotoline", {
                 return false;
         });
         
-        function blur(e){
+        winGotoLine.addEventListener("blur", function(e){
             if (!apf.isChildOf(winGotoLine, e.toElement))
                 _self.toggleDialog(-1);
-        }
-        txtLineNr.addEventListener("blur", blur);
-        lstLineNumber.addEventListener("blur", blur);
+        });
     },
 
     toggleDialog: function(force) {
