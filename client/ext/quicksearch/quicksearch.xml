@@ -14,7 +14,7 @@
             <a:button onclick="require('ext/quicksearch/quicksearch').find(null, true)">Left</a:button>
             <a:button onclick="require('ext/quicksearch/quicksearch').find()">Right</a:button>
             <a:button margin="0 0 0 10" onclick="
-              
+              require('ext/searchreplace/searchreplace').toggleDialog(false, true);
             ">Advanced</a:button>
         </a:hbox>
     </a:bar>
