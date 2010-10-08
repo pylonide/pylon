@@ -9,29 +9,30 @@
       buttons="close" 
       modal="false" 
       center="true" 
-      width="350" 
+      width="350"
+      height="210"
       kbclose="true">
-        <a:hbox align="center">
-            <a:label width="75">Name</a:label>
-            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
-        </a:hbox>
-        <a:divider />
-        <a:hbox align="center">
-            <a:label width="75">Name</a:label>
-            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
-        </a:hbox>
-        <a:hbox align="center">
-            <a:label width="75">Name</a:label>
-            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
-        </a:hbox>
-            <a:label width="75">Name</a:label>
-            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
-        </a:hbox>
-        <a:divider />
-        <a:hbox padding="5" pack="end" edge="10 10 5 10">
-            <a:button id="btnFind" default="2" class="ui-btn-green">Run</a:button>
-            <a:button onclick="winRunCfgNew.hide()">Cancel</a:button>
-        </a:hbox>        
+      	<a:vbox anchors="0 0 0 0" padding="5">
+	        <a:hbox align="center" margin="5 10 0 10" padding="10">
+	            <a:label width="130" textalign="right">Name</a:label>
+	            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
+	        </a:hbox>
+	        <a:divider />
+	        <a:hbox align="center" margin="0 10" padding="10">
+	            <a:label width="130" textalign="right">JavaScript file</a:label>
+	            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
+	            <a:button icon="folder.png" tooltip="Browse ..."></a:button>
+	        </a:hbox>
+	        <a:hbox align="center" margin="0 10" padding="10">
+	            <a:label width="130" textalign="right">Command line arguments</a:label>
+	            <a:textbox id="txtRunCfgName" flex="1" focusselect="true"/>
+	        </a:hbox>
+	        <a:divider />
+	        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+	            <a:button id="btnFind" default="2" class="ui-btn-green">Run</a:button>
+	            <a:button onclick="winRunCfgNew.hide()">Cancel</a:button>
+	        </a:hbox>        
+        </a:vbox>
     </a:window>
         
     <a:toolbar id="tbRun">
