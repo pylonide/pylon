@@ -577,9 +577,12 @@ apf.xmldb = new (function(){
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
+        if (pNode == xmlNode.parentNode)
+            return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
+        
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
-
+        
         if (undoObj && !undoObj.$filled) {
             undoObj.$filled = true;
             this.cleanNode(xmlNode);
@@ -643,18 +646,21 @@ apf.xmldb = new (function(){
         this.applyChanges("move-away", xmlNode, undoObj);
 
         //Set new id if the node change document (for safari this should be fixed)
-        if (!apf.isWebkit
+        //@todo I don't get this if...
+        /*if (!apf.isWebkit 
+          && xmlNode.getAttribute(this.xmlIdTag)
           && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
-            xmlNode.removeAttributeNode(xmlNode.getAttributeNode(this.xmlIdTag));
+            xmlNode.removeAttribute(this.xmlIdTag));
             this.nodeConnect(apf.xmldb.getXmlDocId(pNode), xmlNode);
-        }
+        }*/
+
+        // @todo: only do this once! - should store on the undo object
+        if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         // #ifdef __WITH_RDB
         this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
         // #endif
-
-        if (apf.isWebkit && pNode.ownerDocument != xmlNode.ownerDocument)
-            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, undoObj);
