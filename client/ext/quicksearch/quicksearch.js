@@ -1,0 +1,203 @@
+/**
+ * quicksearch Module for the Cloud9 IDE
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+require.def("ext/quicksearch/quicksearch",
+    ["core/ide",
+     "core/ext",
+     "ace/PluginManager",
+     "ace/Search",
+     "ext/editors/editors", 
+     "text!ext/quicksearch/quicksearch.xml"],
+    function(ide, ext, plugins, search, editors, markup) {
+
+return ext.register("ext/quicksearch/quicksearch", {
+    name    : "quicksearch",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    alone   : true,
+    markup  : markup,
+    hotkeys : {"quicksearch":1},
+    hotitems: {},
+
+    nodes   : [],
+
+    hook : function(){
+        var _self = this;
+
+        plugins.registerCommand("find", function(editor, selection) {
+            _self.toggleDialog(1);
+        });
+    },
+
+    init : function(amlNode){
+        var _self = this;
+        
+        txtQuickSearch.addEventListener("keydown", function(e){
+            switch(e.keyCode){
+                case 13: //ENTER
+                    _self.find(true);
+                    return false;
+                break;
+                case 27: //ENTER
+                    _self.toggleDialog(-1);
+                    return false;
+                break;
+                case 38: //UP
+                    _self.navigateList("prev");
+                break;
+                case 40: //DOWN
+                    _self.navigateList("next");
+                break;
+                case 36: //HOME
+                    if (!e.ctrlKey) return;
+                    _self.navigateList("first");
+                break;
+                case 35: //END
+                    if (!e.ctrlKey) return;
+                    _self.navigateList("last");
+                break;
+            }
+        });
+        
+        winQuickSearch.addEventListener("blur", function(e){
+            if (!apf.isChildOf(winQuickSearch, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        
+        var editor = editors.currentEditor;
+        if (editor && editor.ceEditor)
+            editor.ceEditor.parentNode.appendChild(winQuickSearch);
+    },
+    
+    navigateList : function(type){
+        var settings = require("ext/settings/settings");
+        if (!settings) return;
+        
+        var model = settings.model;
+        var lines = model.queryNodes("search/word");
+        
+        var next;
+        if (type == "prev")
+            next = Math.max(0, this.position - 1);
+        else if (type == "next")
+            next = Math.min(lines.length - 1, this.position + 1);
+        else if (type == "last")
+            next = Math.max(lines.length - 1, 0);
+        else if (type == "first")
+            next = 0;
+
+        if (lines[next]) {
+            txtQuickSearch.setValue(lines[next].getAttribute("key"));
+            txtQuickSearch.select();
+            this.position = next;
+        }
+    },
+
+    toggleDialog: function(force) {
+        ext.initExtension(this);
+
+        if (!force && !winQuickSearch.visible || force > 0) {
+            editorPage = tabEditors.getPage();
+            if (!editorPage) return;
+            
+            var editor = editors.currentEditor;
+            if (editor && editor.ceEditor) {
+                this.position = 0;
+                
+                var sel   = editor.getSelection();
+                var doc   = editor.getDocument();
+                var range = sel.getRange();
+                var value = doc.getTextRange(range);
+                
+                if (!value && editor.ceEditor)
+                    var value = editor.ceEditor.getLastSearchOptions().needle;
+                
+                if (value)
+                    txtQuickSearch.setValue(value);
+            }
+            
+            winQuickSearch.show();
+            txtQuickSearch.focus();
+        }
+        else {
+            winQuickSearch.hide();
+        }
+
+        return false;
+    },
+
+    quicksearch : function(){
+        this.toggleDialog(1);
+    },
+
+    find: function(close, backwards) {
+        var editor = require('ext/editors/editors').currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+        
+        var ceEditor = editor.ceEditor;
+        var ace      = ceEditor.$editor;
+
+        var txt = txtQuickSearch.getValue();
+        if (!txt)
+            return;
+
+        var options = {
+            backwards: backwards || false, 
+            wrap: true, 
+            caseSensitive: true, 
+            wholeWord: false, 
+            regExp: false, 
+            scope: search.ALL 
+        }
+
+        if (this.$crtSearch != txt) {
+            this.$crtSearch = txt;
+            ace.find(txt, options);
+        }
+        else {
+            ace.findNext(options);
+        }
+        
+        var settings = require("ext/settings/settings");
+        if (settings.model) {
+            var history = settings.model;
+            search = apf.createNodeFromXpath(history.data, "search");
+            
+            if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
+                keyEl = apf.getXml("<word />");
+                keyEl.setAttribute("key", txt);
+                apf.xmldb.appendChild(search, keyEl, search.firstChild);
+            }
+        }
+        
+        if (close) {
+            winQuickSearch.hide();
+            ceEditor.focus();
+        }
+    },
+
+    enable : function(){
+        this.nodes.each(function(item){
+            item.enable();
+        });
+    },
+
+    disable : function(){
+        this.nodes.each(function(item){
+            item.disable();
+        });
+    },
+
+    destroy : function(){
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
+        this.nodes = [];
+    }
+});
+
+});
