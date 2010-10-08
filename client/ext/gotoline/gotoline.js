@@ -13,7 +13,7 @@ require.def("ext/gotoline/gotoline",
     function(ide, ext, plugins, search, markup) {
 
 return ext.register("ext/gotoline/gotoline", {
-    name    : "Gotoline",
+    name    : "Gotoline Window",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
@@ -43,28 +43,55 @@ return ext.register("ext/gotoline/gotoline", {
     },
 
     init : function(amlNode){
-        this.txtLineNr = txtLineNr;
-        //buttons
-        this.btnGo = btnLinGo;
-        this.btnGo.onclick = this.gotoLine.bind(this);
         var _self = this;
-        lstLineNumber.onafterchoose = function() {
+        lstLineNumber.addEventListener("afterchoose", function() {
             if (lstLineNumber.selected) {
                 console.log();
                 _self.gotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
             }
             else
                 _self.gotoLine();
-        }
-        this.txtLineNr.onkeydown = function(e) {
-            if (e.keyCode == 40) {
+        });
+        lstLineNumber.addEventListener("afterselect", function() {
+            if (this.selected)
+                txtLineNr.setValue(this.selected.getAttribute("nr"));
+        });
+        
+        var restricted = [38, 40, 36, 35]
+        lstLineNumber.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13 && this.selected){
+                _self.gotoLine(this.selected.getAttribute("nr"));
+                return false;
+            }
+            else if (e.keyCode == 38) {
+                if (this.selected == this.getFirstTraverseNode())
+                    txtLineNr.focus();
+            }
+            else if (e.keyCode == 27){
+                _self.toggleDialog();
+            }
+            else if (restricted.indexOf(e.keyCode) == -1)
+                txtLineNr.focus();
+        }, true);
+        
+        txtLineNr.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13){
+                _self.gotoLine();
+                return false;
+            }
+            else if (e.keyCode == 27){
+                _self.toggleDialog();
+            }
+            else if (e.keyCode == 40) {
                 var first = lstLineNumber.getFirstTraverseNode();
                 if (first) {
                     lstLineNumber.select(first);
                     lstLineNumber.focus();
                 }
-            };
-        };
+            }
+            else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
+                return false;
+        });
     },
 
     toggleDialog: function(forceShow) {
@@ -73,8 +100,13 @@ return ext.register("ext/gotoline/gotoline", {
         if (!winGotoLine.visible || forceShow) {
             editorPage = tabEditors.getPage();
             if (!editorPage) return;
-
+            
+            var editor = require('ext/editors/editors').currentEditor;
+            if (editor && editor.ceEditor)
+                txtLineNr.setValue(editor.ceEditor.$editor.getCursorPosition().row); //current line
+            
             winGotoLine.show();
+            txtLineNr.focus();
         }
         else
             winGotoLine.hide();
@@ -98,12 +130,12 @@ return ext.register("ext/gotoline/gotoline", {
         winGotoLine.hide();
 
         if (typeof line != "number")
-            line = parseInt(this.txtLineNr.getValue()) || 0;
+            line = parseInt(txtLineNr.getValue()) || 0;
 
         var history = lstLineNumber.$model;
         var lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");
         if (lineEl)
-            apf.xmldb.setAttribute(lineEl, "ts", Date.now());
+            apf.xmldb.appendChild(lineEl.parentNode, lineEl, lineEl.parentNode.firstChild);
         else
             history.appendXml("<line nr='" + line + "' ts='" + Date.now() + "'/>", "gotoline");
 
