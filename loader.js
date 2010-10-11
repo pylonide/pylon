@@ -299,6 +299,7 @@ apf.$x = apf.$loader
         "elements/body.js",
         "elements/browser.js",
         "elements/button.js",
+        "elements/splitbutton.js",
         "elements/calendar.js",
         "elements/calendarlist.js",
         "elements/caldropdown.js",
