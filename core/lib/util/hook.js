@@ -118,16 +118,22 @@ apf.hookWrapSync = function(inner){
             var args = Array.prototype.slice.call(arguments)
 
             if(outer._pres){
+                outer._callee = arguments.callee;
+                outer._caller = arguments.callee.caller;
                 for(var i = 0;i<outer._pres.length;i++){
                     args = outer._pres[i].call(this,outer,inner,args);
                 }
+                outer._callee = outer._caller = null;
             }
             
             var results = inner.apply(this, arguments)
             
             if(outer._posts){
+                outer._callee = arguments.callee;
+                outer._caller = arguments.callee.caller;
                 for(var i = 0;i<outer._posts.length;i++)
                     results = outer._posts[i].call(this,outer,inner,args,null,results);
+               outer._callee = outer._caller = null;
             }
         
             return results;
@@ -160,7 +166,6 @@ apf.hookWrap = function ( func, onlyasync ){
 apf.hookPre = function ( func, forcesync, cb){
     var hooked = func._inner?func:(forcesync?apf.hookWrapSync(func):apf.hookWrap(func));
     (hooked._pres || (hooked._pres=[])).push(cb);
-    if(hooked._pres && hooked._pres.length>1)hooked._pres.pop();
     hooked._hooks = 1;
     return hooked;
 }
@@ -254,7 +259,10 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
 
             arg2obj(inner, args, global, 'args');
             global._name = name;
+            global._caller = outer._caller;
+            global._callee = outer._callee;
             global._module = module;
+            
             
             try{
                 var out =fmt.call(this,global,this);
@@ -275,6 +283,8 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
             else
                 global.results = [results], global.resultnames = ['retval'];
             global._name = name;
+            global._caller = outer._caller;
+            global._callee = outer._callee;
             global._module = module;
             
             try{

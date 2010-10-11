@@ -311,7 +311,7 @@ apf.persist = function(struct, tagName){
         }
 
         this.contentType = "application/x-www-form-urlencoded";
-        this.get(this.host + this.PATHS.login, {
+        this.get(this.host + this.PATHS.login + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "POST",
