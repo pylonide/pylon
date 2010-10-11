@@ -46,6 +46,24 @@ apf.junction = function(){
      */
     this.$booleanProperties["autoshow"] = true;
     
+    this.$propHandlers["for"] = function(value){
+        if (this.$amlLoaded) //@todo remove vManager
+            init.call(this);
+    }
+    
+    function init(e){
+        var _self = this;
+        if (apf.window.vManager.permanent(this.parentNode, function(){
+            //Show
+            _self.$reparent();
+        }, function(){
+            //Hide
+            
+        })) {
+            this.$reparent();
+        }
+    }
+    
     this.$reparent = function(){
         var amlNode = self[this["for"]];
         if (!amlNode)
@@ -57,19 +75,7 @@ apf.junction = function(){
         this.parentNode.insertBefore(amlNode, this);
     }
     
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        var _self = this;
-        
-        if (apf.window.vManager.permanent(this.parentNode, function(){
-            //Show
-            _self.$reparent();
-        }, function(){
-            //Hide
-            
-        })) {
-            this.$reparent();
-        }
-    });
+    this.addEventListener("DOMNodeInsertedIntoDocument", init);
 }).call(apf.junction.prototype = new apf.AmlElement());
 
 apf.aml.setElement("junction", apf.junction);
