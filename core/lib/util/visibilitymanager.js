@@ -31,18 +31,6 @@ apf.visibilitymanager = function(){
     var _self  = this;
     var inited = false;
     
-    function destroy(){
-        //@todo
-    }
-    
-    function remove(){
-        //@todo
-    }
-    
-    function add(){
-        //@todo
-    }
-    
     this.check = function(amlNode, type, callback) {
         if (amlNode.$ext.offsetHeight || amlNode.$ext.offsetWidth)
             return true;
@@ -53,7 +41,20 @@ apf.visibilitymanager = function(){
         }
         else
             amlNode.$visibleCheck = {};
-        amlNode.$visibleCheck[type] = true;
+
+        function cleanup(setInsertion){
+            var p = amlNode;
+            while (p) {
+                p.removeEventListener("prop.visible", check);
+                p.removeEventListener("DOMNodeRemoved", remove); 
+                p.removeEventListener("DOMNodeRemovedFromDocument", remove); 
+                if (setInsertion)
+                    p.addEventListener("DOMNodeInserted", add);
+                p = p.parentNode || p.$parentNode;
+            }
+            
+            delete amlNode.$visibleCheck[type];
+        }
 
         function check(e){
             //apf.isTrue(e.value)
@@ -61,32 +62,31 @@ apf.visibilitymanager = function(){
                 return;
                 
             callback.call(amlNode);
+            cleanup();
+        }
+        
+        function remove(e){
+            if (e.currentTarget != this)
+                return;
             
-            p = amlNode;
+            cleanup(e.name == "DOMNodeRemoved");
+        }
+
+        function add(){
+            //Set events on the parent tree
+            var p = amlNode;
             while (p) {
-                p.removeEventListener("prop.visible", check);
+                p.addEventListener("prop.visible", check);
+                p.addEventListener("DOMNodeRemoved", remove); 
+                p.addEventListener("DOMNodeRemovedFromDocument", remove); 
+                p.removeEventListener("DOMNodeInserted", add);
                 p = p.parentNode || p.$parentNode;
             }
             
-            delete amlNode.$visibleCheck[type];
+            amlNode.$visibleCheck[type] = true;
         }
-
-        //Set events on the parent tree
-        amlNode.addEventListener("prop.visible", check);
-        //amlNode.addEventListener("DOMNodeRemovedFromDocument", destroy); 
         
-        var p = amlNode.parentNode || amlNode.$parentNode;
-        while (p) {
-            p.addEventListener("prop.visible", check);
-            p = p.parentNode || p.$parentNode;
-        }
-    
-        /*if (!inited) {
-            apf.document.addEventListener("DOMNodeRemoved", remove); 
-            apf.document.addEventListener("DOMNodeInserted", add); 
-            
-            inited = true;
-        }*/
+        add();
         
         return false;
     }
@@ -105,10 +105,7 @@ apf.visibilitymanager = function(){
         }
 
         //Set events on the parent tree
-        amlNode.addEventListener("prop.visible", check);
-        //amlNode.addEventListener("DOMNodeRemovedFromDocument", destroy); 
-        
-        var p = amlNode.parentNode || amlNode.$parentNode;
+        var p = amlNode;
         while (p) {
             p.addEventListener("prop.visible", check);
             p = p.parentNode || p.$parentNode;
