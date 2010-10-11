@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<d:multistatus xmlns:d="DAV:" xmlns:a="http://ajax.org/2005/aml" query="DOMParser">
+    <d:response path="common/apf/core/baseclasses/liveedit/richtext.js">
+        <d:excerpt line="1446"><![CDATA[            var domParser = new apf.DOMParser(),]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/browsers/ie.js">
+        <d:excerpt line="84"><![CDATA[            var xmlParser = getDOMParser(message, noError);]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/browsers/non_ie.js">
+        <d:excerpt line="192"><![CDATA[        var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
+]]></d:excerpt>
+        <d:excerpt line="343"><![CDATA[            xmlParser = new DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/browsers/webkit.js">
+        <d:excerpt line="44"><![CDATA[            var x           = new DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/lib/teleport/iframe.js">
+        <d:excerpt line="148"><![CDATA[    function getDOMParser(message, no_error){
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/lib/util/xmldiff.js">
+        <d:excerpt line="25"><![CDATA[    /*var domParser = new apf.DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/markup/domparser.js">
+        <d:excerpt line="38"><![CDATA[apf.DOMParser = function(){};]]></d:excerpt>
+        <d:excerpt line="40"><![CDATA[apf.DOMParser.prototype = new (function(){]]></d:excerpt>
+        <d:excerpt line="122"><![CDATA[                apf.console.warn("DOMParser got markup without any children");]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/markup/xslt/xslt.js">
+        <d:excerpt line="284"><![CDATA[            //new DOMParser().parseFromString("<xsltresult></xsltresult>", "text/xml");//
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/window-o3.js">
+        <d:excerpt line="114"><![CDATA[        this.$domParser = new apf.DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/core/window.js">
+        <d:excerpt line="1401"><![CDATA[        this.$domParser = new apf.DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/debugwin/apf_debugwin.js">
+        <d:excerpt line="5958"><![CDATA[    /*var domParser = new apf.DOMParser();]]></d:excerpt>
+        <d:excerpt line="29999"><![CDATA[    function getDOMParser(message, no_error){]]></d:excerpt>
+        <d:excerpt line="32292"><![CDATA[apf.DOMParser = function(){};]]></d:excerpt>
+        <d:excerpt line="32294"><![CDATA[apf.DOMParser.prototype = new (function(){]]></d:excerpt>
+        <d:excerpt line="32364"><![CDATA[                apf.console.warn("DOMParser got markup without any children");]]></d:excerpt>
+        <d:excerpt line="37907"><![CDATA[            //new DOMParser().parseFromString("<xsltresult></xsltresult>", "text/xml");//]]></d:excerpt>
+        <d:excerpt line="48309"><![CDATA[            var domParser = new apf.DOMParser(),]]></d:excerpt>
+        <d:excerpt line="68562"><![CDATA[        this.$domParser = new apf.DOMParser();]]></d:excerpt>
+        <d:excerpt line="69373"><![CDATA[            var xmlParser = getDOMParser(message, noError);]]></d:excerpt>
+        <d:excerpt line="69865"><![CDATA[        var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");]]></d:excerpt>
+        <d:excerpt line="70011"><![CDATA[            xmlParser = new DOMParser();]]></d:excerpt>
+        <d:excerpt line="70496"><![CDATA[            var x           = new DOMParser();]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/test/lm_test.html">
+        <d:excerpt line="108"><![CDATA[					p = new DOMParser();
+]]></d:excerpt>
+    </d:response>
+    <d:response path="common/apf/test/lm_tryout.html">
+        <d:excerpt line="167"><![CDATA[                else{p = new DOMParser();if(x) p = p.parseFromString(x, "text/xml");}
+]]></d:excerpt>
+    </d:response>
+</d:multistatus>
