@@ -14,7 +14,7 @@
       ">
         <a:model id="mdlGoToFile" />
         <a:hbox id="hbGoToFile" edge="4">
-            <a:textbox id="txtGoToFile" flex="1" realtime="true" />
+            <a:textbox id="txtGoToFile" flex="1" realtime="true" focusselect="true" />
             <a:button submenu="mnuGoToFileOptions" />
             
             <a:menu id="mnuGoToFileOptions">
@@ -30,7 +30,7 @@
           border  = "1 0 0 0"
           class   = "searchresults"
           model   = "mdlGoToFile"
-          loading-message = "Searching Project"
+          loading-message = "Searching Project..."
           empty-message   = "No search results"
           startcollapsed  = "false"
           each    = "[d:response]"

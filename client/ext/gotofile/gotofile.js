@@ -30,7 +30,7 @@ return ext.register("ext/gotofile/gotofile", {
             mnuEdit.appendChild(new apf.item({
                 caption : "Go To File",
                 onclick : function() {
-                    _self.toggleDialog(false);
+                    _self.toggleDialog(true);
                 }
             }))
         );
@@ -45,10 +45,33 @@ return ext.register("ext/gotofile/gotofile", {
                     keyword: txtGoToFile.value
                 });
             }
+            else if (e.keyCode == 40 && dgGoToFile.length) {
+                var first = dgGoToFile.getFirstTraverseNode();
+                if (first) {
+                    dgGoToFile.select(first);
+                    dgGoToFile.focus();
+                }
+            }
         });
+        
+        var _self = this, restricted = [38, 40, 36, 35];
+        dgGoToFile.addEventListener("keydown", function(e) {
+            if (e.keyCode == 38) {
+                if (this.selected == this.getFirstTraverseNode())
+                    txtGoToFile.focus();
+            }
+            else if (e.keyCode == 27)
+                _self.toggleDialog(-1);
+            else if (restricted.indexOf(e.keyCode) == -1)
+                txtGoToFile.focus();
+        }, true);
     },
     
-    toggleDialog: function(isReplace, forceShow) {
+    gotofile : function(){
+        this.toggleDialog(true);
+    },
+    
+    toggleDialog: function(forceShow) {
         ext.initExtension(this);
         
         if (!winGoToFile.visible || forceShow)
