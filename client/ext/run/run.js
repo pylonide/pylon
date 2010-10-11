@@ -26,6 +26,13 @@ return ext.register("ext/run/run", {
             ide.barTools.appendChild(button);
             this.nodes.push(button);
         }
+
+        var _self = this;
+        mdlRunConfigurations.addEventListener("update", function(e) {
+            console.log(e.action);
+            if (e.action == "add" || e.action == "redo-remove")
+                _self.$updateMenu();
+        });
     },
 
     debugChrome : function() {
@@ -64,7 +71,6 @@ return ext.register("ext/run/run", {
 
         mdlRunConfigurations.appendXml(cfg);
         lstRunCfg.select(cfg);
-        this.$updateMenu();
         winRunCfgNew.show();
     },
 
@@ -100,8 +106,8 @@ return ext.register("ext/run/run", {
 
                 var _self = this;
                 item.onclick = function() {
-                    _self.runConfig(this.config, false);
-                    lstRunCfg.select(this.config);
+                    _self.runConfig(this.$config, false);
+                    lstRunCfg.select(this.$config);
                 };
                 mnuRunCfg.insertBefore(item, mnuRunCfg.firstChild);
             }
@@ -111,6 +117,8 @@ return ext.register("ext/run/run", {
     runConfig : function(config, debug) {
         if (debug === undefined)
             debug = config.getAttribute("debug") == "1";
+
+        config.setAttribute("debug", "0");
         noderunner.run(config.getAttribute("path"), config.getAttribute("args"), debug);
     },
 
