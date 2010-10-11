@@ -62,6 +62,10 @@ return ext.register("ext/run/run", {
             .attr("debug", debug ? "1" : "")
             .attr("args", "").node();
 
+        // TODO workaround - remove!
+        if (mdlRunConfigurations.queryNode("config"))
+            mdlRunConfigurations.removeXml(mdlRunConfigurations.queryNode("config"));
+
         mdlRunConfigurations.appendXml(cfg);
         lstRunCfg.select(cfg);
         this.$updateMenu();
@@ -69,12 +73,14 @@ return ext.register("ext/run/run", {
     },
 
     run : function(debug) {
-        var config = lstRunCfg.selected;
-        if (!config) {
-            this.addConfig(debug);
-        }
-        else
-            this.runConfig(config, debug);
+        this.addConfig(debug);
+// TODO
+//        var config = lstRunCfg.selected;
+//        if (!config) {
+//            this.addConfig(debug);
+//        }
+//        else
+//            this.runConfig(config, debug);
     },
 
     $updateMenu : function() {

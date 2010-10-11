@@ -1,0 +1,141 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:bar name="basic">
+    <a:style><![CDATA[
+        .basic{
+            position : relative;
+            background : #666;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="basic">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:textbox name="textbox">
+    <a:alias>input</a:alias>
+    <a:alias>secret</a:alias>
+    <a:style><![CDATA[
+        .tb_textbox {
+            position : relative;
+            height   : 25px;
+        }
+
+        .tb_textbox .sbtb_middle {
+            height           : 19px;
+            padding          : 2px 5px;
+
+
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            border: 1px solid #afafaf;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+        }
+
+        .tb_textbox .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 12px;
+            color            : #333333;
+            font-family      : Trebuchet MS;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .tb_textboxInitial .sbtb_middle INPUT {
+            color : #777777;
+        }
+        
+        .tb_textboxDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+        
+        .tb_textboxDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="tb_textbox">
+                <div class="sbtb_middle">
+                    <input type="text" />
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:list name="lineselect">
+    <a:style><![CDATA[
+        .lineselect{
+            overflow: auto;
+            position: relative;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            border: 1px solid #afafaf;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+
+            cursor: default;
+        }
+        .lineselect>.selected{
+            background-color: #f0f0f0;
+            color: black;
+        }
+        .lineselectFocus>.selected{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
+        }
+        .lineselect .empty, .lineselect .offline, .lineselect .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #AAA;
+            font-weight : normal;
+        }
+        .lineselect>DIV{
+        	padding: 2px 6px;
+        }
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='lineselect'>
+            </div>
+        </a:main>
+        <a:item
+            class     = "."
+            container = "."
+            caption   = "."
+            select    = "."
+        >
+            <div> </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+</a:skin>
