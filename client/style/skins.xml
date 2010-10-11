@@ -5733,7 +5733,7 @@
         }
 
         .menu div{
-            padding: 4px 56px 4px 23px;
+            padding: 4px 16px 4px 23px;
             white-space: nowrap;
             cursor : default;
         }
@@ -5766,8 +5766,9 @@
             z-index: 10;
             text-align: right;
             padding-left: 15px;
-            /*margin-right: -15px;*/
-            position : absolute;
+            /*margin-right: -15px;
+            position : absolute;*/
+            float : right;
         }
 
         .menu div.submenu span{
@@ -5783,10 +5784,6 @@
 
         .menu div.hover span{
             background-position : right -15px;
-        }
-
-        .menu div.submenu>span{
-            margin-top: -10px;
         }
 
         .menu div.disabled{
@@ -5830,7 +5827,7 @@
             </blockquote>
         </a:main>
         <a:item caption="text()" icon="u" hotkey="span" inherit="true">
-            <div><u> </u>-<span> </span></div>
+            <div><span> </span><u> </u>-</div>
         </a:item>
         <a:divider inherit="true">
             <div class='menu_divider'></div>

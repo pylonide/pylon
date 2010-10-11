@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Ctrl-C",
             "paste": "Ctrl-V"
         },
+        "gotofile": {
+            "gotofile": "Alt-Shift-R"
+        },
         "newresource": {
             "newfile": "Ctrl-N",
             "newfolder": "Ctrl-Shift-N"
@@ -29,6 +32,9 @@ return keys.onLoad({
         },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
+        },
+        "settings": {
+            "showsettings": "Ctrl-J"
         },
         "tabbehaviors" : {
             "closetab": "Ctrl-W",

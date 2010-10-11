@@ -10,10 +10,6 @@ return keys.onLoad({
             "quicksave": "Command-S",
             "saveas": "Command-Shift-S"
         },
-        "newresource": {
-            "newfile": "Command-N",
-            "newfolder": "Command-Shift-N"
-        },
         "undo" : {
             "undo": "Command-Z",
             "redo": "Command-Y"
@@ -22,6 +18,13 @@ return keys.onLoad({
             "cut": "Shift-Command-X",
             "copy": "Command-C",
             "paste": "Command-V"
+        },
+        "gotofile": {
+            "gotofile": "Command-Shift-R"
+        },
+        "newresource": {
+            "newfile": "Command-N",
+            "newfolder": "Command-Shift-N"
         },
         "searchreplace" : {
             "search": "Command-F",
