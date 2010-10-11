@@ -31,10 +31,10 @@
 apf.isChildOf = function(pNode, childnode, orItself){
     if (!pNode || !childnode)
         return false;
-    
+
     if (childnode.nodeType == 2)
         childnode = childnode.ownerElement || childnode.selectSingleNode("..");
-    
+
     if (orItself && pNode == childnode)
         return true;
 
@@ -51,7 +51,7 @@ apf.isChildOf = function(pNode, childnode, orItself){
 /**
  * Escapes "&amp;", greater than and less than signs and quotation marks into
  * the proper XML entities.
- * 
+ *
  * @param {String} str   The string to escape
  * @returns {String}     The escaped string
  */
@@ -96,17 +96,17 @@ apf.isOnlyChild = function(node, nodeType){
  */
 apf.getChildNumber = function(node, fromList){
     if (!node) return -1;
-    
+
     var p = node.parentNode, j = 0;
     if (!p) return 0;
     if (!fromList)
         fromList = p.childNodes;
-    
+
     if (fromList.indexOf) {
         var idx = fromList.indexOf(node);
         return idx == -1 ? fromList.length : idx;
     }
-        
+
     for (var i = 0, l = fromList.length; i < l; i++) {
         if (fromList[i] == node)
             return j;
@@ -150,7 +150,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
                     node.$model.$waitForXml(node);
             }
         }
-        
+
         //clean parent
         nodes = parentNode.childNodes;
         for (i = nodes.length - 1; i >= 0; i--)
@@ -244,13 +244,13 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
 apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     if (!xmlNode)
         return;
-    
+
     var undoObj, xpath, newNodes;
     if (options) {
         undoObj  = options.undoObj;
         xpath    = options.xpath;
         newNodes = options.newNodes;
-        
+
         undoObj.extra.oldValue = options.forceNew
             ? ""
             : apf.queryValue(xmlNode, xpath);
@@ -262,7 +262,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 
         undoObj.extra.appliedNode = xmlNode;
     }
-    
+
     if (xmlNode.nodeType == 1) {
         if (!xmlNode.firstChild)
             xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
@@ -276,14 +276,14 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         // @todo: this should be fixed in libxml
         if (apf.isO3 && xmlNode.nodeType == 2)
             nodeValue = nodeValue.replace(/&/g, "&amp;");
-        
+
         var oldValue      = xmlNode.nodeValue;
         xmlNode.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
-        
+
         if (undoObj) {
-            undoObj.name = xmlNode.nodeName; 
+            undoObj.name = xmlNode.nodeName;
         }
-        
+
         //AML support - getters/setters would be awesome
         if (xmlNode.$triggerUpdate)
             xmlNode.$triggerUpdate(null, oldValue);
@@ -293,7 +293,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
                 || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
                 undoObj);
     }
-    
+
     // #ifdef __WITH_RDB
     if (applyChanges) {
         var node;
@@ -306,8 +306,8 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         }
         else
             node = xmlNode;
-        
-        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath, 
+
+        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath,
             options && options.forceNew],
             undoObj || {xmlNode: xmlNode}
         );
@@ -350,7 +350,7 @@ apf.removeQueryNode = function(xmlNode, xpath, local){
         node.parentNode.removeChild(node);
     else
         apf.xmldb.removeNode(node);
-    
+
     return node;
 };
 
@@ -361,14 +361,14 @@ apf.removeQueryNode = function(xmlNode, xpath, local){
  * @return {String} the value of the query result or empty string.
  */
 apf.queryValue = function (xmlNode, xpath){
-    if (!xmlNode) 
+    if (!xmlNode)
         return "";
-    if (xmlNode.nodeType == 2) 
+    if (xmlNode.nodeType == 2)
         return xmlNode.nodeValue;
 
     if (xpath) {
         xmlNode = xmlNode.selectSingleNode(xpath);
-        if (!xmlNode) 
+        if (!xmlNode)
             return "";
     }
    return xmlNode.nodeType == 1
@@ -454,8 +454,8 @@ apf.getInheritedAttribute = function(xml, attr, func){
     if (xml.nodeType != 1)
         xml = xml.parentNode;
 
-    while (xml && (xml.nodeType != 1 || !(result = attr 
-      && ((avalue = xml.getAttribute(attr)) || typeof avalue == "string") 
+    while (xml && (xml.nodeType != 1 || !(result = attr
+      && ((avalue = xml.getAttribute(attr)) || typeof avalue == "string")
       || func && func(xml)))) {
         xml = xml.parentNode;
     }
@@ -497,25 +497,25 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         paths.shift();paths.shift();
         len--;len--;
     }
-    
+
     for (var addedNode, isAdding = false, i = 0; i < len; i++) {
         if (!isAdding && contextNode.selectSingleNode(foundpath
           + (i != 0 ? "/" : "") + paths[i])) {
             foundpath += (i != 0 ? "/" : "") + paths[i];// + "/";
             continue;
         }
-        
-        //Temp hack 
+
+        //Temp hack
         var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
         // #ifdef __DEBUG
         if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-            throw new Error(apf.formatErrorString(1041, this, 
-                "Select via xPath", 
+            throw new Error(apf.formatErrorString(1041, this,
+                "Select via xPath",
                 "Could not use xPath to create xmlNode: " + xPath));
         }
         if (!isAddId && paths[i].match(/\/\//)) {
-            throw new Error(apf.formatErrorString(1041, this, 
-                "Select via xPath", 
+            throw new Error(apf.formatErrorString(1041, this,
+                "Select via xPath",
                 "Could not use xPath to create xmlNode: " + xPath));
         }
         // #endif
@@ -543,7 +543,7 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     if (addedNodes)
         addedNodes.foundpath = foundpath;
 
-    var newNode, lastpath = paths[len], 
+    var newNode, lastpath = paths[len],
         doc = contextNode.nodeType == 9 ? contextNode : contextNode.ownerDocument;
     do {
         if (lastpath.match(/^\@(.*)$/)) {
@@ -562,10 +562,10 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
             if (hasId)
                 newNode.setAttribute(hasId[2], hasId[3]);
         }
-        
+
         if (addedNodes)
             addedNodes.push(newNode);
-        
+
         foundpath += (foundpath ? "/" : "") + paths[len];
     } while((lastpath = paths[++len]));
 
@@ -609,9 +609,9 @@ apf.convertMethods = {
     },
 
     "cgivars": function(xml, basename){
-        if (!basename) 
+        if (!basename)
             basename = "";
-        
+
         var value, name, sameNodes, j, l2,
             str   = [],
             nodes = xml.childNodes,
@@ -645,7 +645,7 @@ apf.convertMethods = {
         var attr = xml.attributes;
         for (i = 0, l = attr.length; i < l; i++) {
             if (attr[i].nodeValue) {
-                if (basename) 
+                if (basename)
                     str.push(basename + "[" + attr[i].nodeName + "]="
                         + escape(attr[i].nodeValue));
                 else
@@ -666,52 +666,52 @@ apf.convertMethods = {
     "cgiobjects": function(xml, basename, isSub, includeEmpty){
         if (!basename)
             basename = "";
-        
+
         var node, name, value, a, i, j, attr, attr_len, isOnly,
             nodes    = xml.childNodes,
             output   = [],
             tagNames = {},
             nm       = "";
-        
+
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            
+
             if (node.nodeType == 1) {
                 name = node.tagName;
-                
-                isOnly = node.parentNode.selectNodes(name).length == 1 
-                    ? true 
+
+                isOnly = node.parentNode.selectNodes(name).length == 1
+                    ? true
                     : false;
-                
+
                 if (typeof tagNames[name] == "undefined") {
                     tagNames[name] = 0;
                 }
 
-                nm = basename 
-                   + (isSub ? "[" : "") + name + (isSub ? "]" : "") 
+                nm = basename
+                   + (isSub ? "[" : "") + name + (isSub ? "]" : "")
                    + (isOnly ? "" : "[" + tagNames[name] + "]");
-                
+
                 attr     = node.attributes;
                 attr_len = node.attributes.length;
-                
+
                 if (attr_len > 0) {
                     for (j = 0; j < attr_len; j++) {
-                        if (!(a = attr[j]).nodeValue) 
+                        if (!(a = attr[j]).nodeValue)
                             continue;
-                        
-                        output.push(nm + "[_" + a.nodeName + "]=" 
+
+                        output.push(nm + "[_" + a.nodeName + "]="
                             + escape(a.nodeValue.trim()));
                     }
                 }
-                
+
                 value = this.cgiobjects(node, nm, true);
-                
+
                 if (value.dataType !== 1) {
                     output.push(value);
                 }
                 else {
                     if (node.firstChild && node.firstChild.nodeValue.trim()) {
-                        output.push(nm + (attr_len > 0 ? "[_]=" : "=") 
+                        output.push(nm + (attr_len > 0 ? "[_]=" : "=")
                             + escape(node.firstChild.nodeValue.trim()));
                     }
                     else {
@@ -722,18 +722,18 @@ apf.convertMethods = {
                         }
                     }
                 }
-                
+
                 tagNames[name]++;
             }
             //@todo, that's that ??
             //handle node values (for form submission)
             else if (node.nodeType == 3 && isSub) {
                 var nval = node.nodeValue;
-                
+
                 if (nval && nval.trim() !== "") {
                     output.push(basename + "=" + escape(nval));
                 }
-                
+
                 //was: output = node.nodeType;
             }
         }
@@ -805,7 +805,7 @@ apf.serializeChildren = function(xmlNode){
         i     = 0,
         l     = nodes.length;
     for (; i < l; ++i) {
-        s[i] = (node = nodes[i]).nodeType == 1 
+        s[i] = (node = nodes[i]).nodeType == 1
             ? node.xml || node.serialize()
             : (node.nodeType == 8 ? "" : node.nodeValue);
     }
@@ -871,9 +871,9 @@ apf.formatXml = function(strXml){
 apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
     if (!xmlNode) //@todo apf3.0
         return "";
-    
+
     if (useAID === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
-        return "//node()[@" + apf.xmldb.xmlIdTag + "='" 
+        return "//node()[@" + apf.xmldb.xmlIdTag + "='"
             + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
     }
 
@@ -884,7 +884,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
             unique = xmlNode.selectSingleNode(def).nodeValue;
             return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
         }
-        
+
         for (var i = 0, l = this.select.length; i < l; i++) {
             if (xmlNode.selectSingleNode(this.select[i][0])) {
                 unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
@@ -899,12 +899,12 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 
     if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null, 
-            "Converting XML to Xpath", 
+        throw new Error(apf.formatErrorString(0, null,
+            "Converting XML to Xpath",
             "Error xml node without parent and non matching context cannot\
              be converted to xml.", xmlNode));
         //#endif
-        
+
         return false;
     }
 
@@ -920,7 +920,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
             //str.unshift("/");//pfx = "//";
             break;
         }
-        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") 
+        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()")
             + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
                 : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
@@ -928,22 +928,22 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
         lNode = lNode.parentNode;
     };
 
-    return (str[0] == "/" || xmlContext && xmlContext.nodeType == 1 ? "" : "/") + str.join("/"); //pfx + 
+    return (str[0] == "/" || xmlContext && xmlContext.nodeType == 1 ? "" : "/") + str.join("/"); //pfx +
 };
-    
+
 //for RDB: Xpath statement --> xmlNode
 apf.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null, 
-            "Converting Xpath to XML", 
+        throw new Error(apf.formatErrorString(0, null,
+            "Converting Xpath to XML",
             "Error context xml node is empty, thus xml node cannot \
              be found for '" + xpath + "'"));
         //#endif
-        
+
         return false;
     }
-    
+
     return xmlNode.selectSingleNode(xpath);
 };
 
@@ -965,7 +965,7 @@ apf.b.$state = 0;
 apf.xmlset = function(xml, xpath, local, previous){
     if (typeof(xml) == "string")
         xml = apf.getXml(xml);
-    
+
     this.$xml = xml;
     if (xml)
         this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
@@ -976,7 +976,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 (function(){
     this.add = function(){} //@todo not implemented
-    
+
     this.begin = function(){
         apf.b.$state = 1;
         return this;
@@ -994,14 +994,14 @@ apf.xmlset = function(xml, xpath, local, previous){
             }
 
             at.execute({
-                action : 'multicall', 
+                action : 'multicall',
                 args   : apf.b.$queue
             });
-            
+
             if (rmt)
                 rmt.$processQueue(rmt);
         }
-        
+
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
@@ -1014,31 +1014,41 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.getRDBMessage = function(){
         return this.rdbstack || [];
     }
-    
+
     this.before = function(el){
+        el = typeof el == "function" ? el(i) : el;
+
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
-            node.parentNode.insertBefore(typeof el == "function" ? el(i) : el, node);
+            if (this.$local)
+                node.parentNode.insertBefore(el, node);
+            else
+                apf.xmldb.appendChild(node.parentNode, el, node);
         }
         return this;
     }
-    
+
     this.after = function(el){
+        el = typeof el == "function" ? el(i) : el;
+
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
-            node.parentNode.insertBefore(typeof el == "function" ? el(i) : el, node.nextSibling);
+            if (this.$local)
+                node.parentNode.insertBefore(el, node.nextSibling);
+            else
+                apf.xmldb.appendChild(node.parentNode, el, node.nextSibling);
         }
-        
+
         return this;
     }
-    
+
     this.andSelf = function(){}
-    
+
     this.append = function(el){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             child = typeof el == "function" ? el(i, node) : el;
-            
+
             if (apf.b.$state)
                 apf.b.$queue.push({
                     action : 'appendChild',
@@ -1048,9 +1058,9 @@ apf.xmlset = function(xml, xpath, local, previous){
                 node.appendChild(child);
             else
                 apf.xmldb.appendChild(node, child);
-            
+
         }
-        
+
         return this;
     }
     this.appendTo = function(target){
@@ -1064,7 +1074,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             node = this.$nodes[i];
             node.insertBefore(typeof el == "function" ? el(i, node) : el, node.firstChild);
         }
-        
+
         return this;
     }
     this.prependTo = function(content){
@@ -1073,7 +1083,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return this;
     }
-    
+
     this.attr = function(attrName, value){
         if (value === undefined)
             return this.$nodes && this.$nodes[0] && this.$nodes[0].getAttribute(attrName) || "";
@@ -1090,10 +1100,10 @@ apf.xmlset = function(xml, xpath, local, previous){
                     apf.xmldb.setAttribute(this.$nodes[i], attrName, value);
             }
         }
-        
+
         return this;
     }
-    
+
     this.removeAttr = function(attrName){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             if (apf.b.$state)
@@ -1106,10 +1116,10 @@ apf.xmlset = function(xml, xpath, local, previous){
             else
                 apf.xmldb.removeAttribute(this.$nodes[i], attrName);
         }
-        
+
         return this;
     }
-    
+
     this.xml = function(){
         var str = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -1117,37 +1127,37 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return str.join("\n");
     }
-    
-    this.get   = 
+
+    this.get   =
     this.index = function(idx){
         if (idx == undefined)
             return apf.getChildNumber(this.$nodes[0], this.$nodes[0].parentNode.getElementsByTagName("*"))
     }
-    
+
     this.eq    = function(index){
         return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
     }
-    
-    this.size   = 
+
+    this.size   =
     this.length = function(){
         return this.$nodes.length;
     }
     this.load = function(url){
-        
+
     }
-    
+
     this.next = function(selector){
         if (!selector) selector = "node()[local-name()]";
         return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
-    
+
     this.nextAll = function(selector){
         if (!selector) selector = "node()[local-name()]";
         return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
-    
+
     this.nextUntil = function(){}
-    
+
     this.prev = function(selector){
         if (!selector) selector = "node()[local-name()]";
         return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
@@ -1156,13 +1166,13 @@ apf.xmlset = function(xml, xpath, local, previous){
         if (!selector) selector = "node()[local-name()]";
         return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
-    
+
     this.not = function(){}
 
     this.parent = function(selector){
         return new apf.xmlset(this.$xml.parentNode, this.$local, this);
     }
-    
+
     this.parents = function(selector){}
     this.pushStack = function(){}
     this.replaceAll = function(){}
@@ -1180,21 +1190,21 @@ apf.xmlset = function(xml, xpath, local, previous){
                 node.parentNode.replaceChild(child, node);
             else
                 apf.xmldb.replaceNode(child, node);
-            
+
         }
-        
+
         return this;
     }
-    
+
     this.siblings = function(selector){
         //preceding-sibling::
         //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
     }
 
     this.text = function(){
-        
+
     }
-    
+
     this.toArray = function(){
         var arr = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -1202,15 +1212,15 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return arr;
     }
-    
+
     this.detach = function(selector){
         var items = [];
-        
+
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             if (!node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
-            
+
             if (apf.b.$state)
                 apf.b.$queue.push({
                     action : 'removeNode',
@@ -1220,19 +1230,19 @@ apf.xmlset = function(xml, xpath, local, previous){
                 node.parentNode.removeChild(node);
             else
                 apf.xmldb.removeNode(node);
-                
+
             items.push(node);
         }
-        
+
         return new apf.xmlset(items, "", this.$local, this);
     }
-    
+
     this.remove = function(selector){
         for (var node, n = this.$nodes, i = n.length - 1; i >= 0; i--) {
             node = n[i];
             if (selector && !node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
-            
+
             if (apf.b.$state)
                 apf.b.$queue.push({
                     action : 'removeNode',
@@ -1243,10 +1253,10 @@ apf.xmlset = function(xml, xpath, local, previous){
             else
                 apf.xmldb.removeNode(node);
         }
-        
+
         return this;
     }
-    
+
     this.children = function(selector){
         var nodes = [];
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
@@ -1257,20 +1267,20 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return new apf.xmlset(nodes, null, this.$local, this);
     }
-    
+
     this.children2 = function(selector){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     }
-    
-    this.has  = 
+
+    this.has  =
     this.find = function(path){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("|self::"), this.$local, this);
     }
-    
+
     this.query = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" + path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);    
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" + path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
     }
-    
+
     this.filter = function(filter){
         var newList = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -1279,23 +1289,23 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return new apf.xmlset(newList, null, this.$local, this);
     }
-    
+
     this.end = function(){
         return this.$previous || this;
     }
-    
+
     this.is = function(selector) {
         return this.filter(selector) ? true : false;
     }
-    
+
     this.contents = function(){
         return this.children("node()");
     }
-    
+
     this.has = function(){
         //return this.children(
     }
-    
+
     this.val = function(value){
         if (value !== undefined) {
             apf.setQueryValue(this.$xml, this.$xpath, value);
@@ -1304,11 +1314,11 @@ apf.xmlset = function(xml, xpath, local, previous){
         else
             return apf.queryValue(this.$xml, this.$xpath);
     }
-    
+
     this.vals = function(){
         return apf.queryValues(this.$xml, this.$xpath);
     }
-    
+
     this.node = function(){
         return apf.queryNode(this.$xml, this.$xpath);
     }
@@ -1316,44 +1326,44 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.nodes = function(){
         return apf.queryNodes(this.$xml, this.$xpath);
     }
-    
+
     this.clone = function(deep){
         if (this.$nodes.length == 1)
             return new apf.xmlset(this.$nodes[0].cloneNode(true), "", this.$local, this);
-        
+
         var nodes = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             nodes.push(this.$nodes[i].cloneNode(deep == undefined ? true : deep));
         }
-        
+
         return new apf.xmlset(nodes, "", this.$local, this);
     }
-    
+
     this.context = function(){
         return this.$xml;
     }
-    
+
     this.data = function(data){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             apf.setQueryValue(this.$nodes[i], ".", data);
         }
         return this;
     }
-    
+
     this.each = function(func){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             func.call(this.$nodes[i], i);
         }
         return this;
     }
-    
+
     this.eachrev = function(func){
         for (var i = this.$nodes.length - 1; i >= 0; i--) {
             func.call(this.$nodes[i], i);
         }
         return this;
     }
-    
+
     this.map = function(callback){
         var values = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -1361,16 +1371,16 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         return new apf.xmlset(values, "", this.$local, this); //blrghhh
     }
-    
+
     this.empty  = function(){
         this.children().detach();
         return this;
     }
-    
+
     this.first = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
     }
-    
+
     this.last = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
     }
