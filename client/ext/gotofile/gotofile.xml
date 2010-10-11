@@ -1,0 +1,46 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winGoToFile"
+      title="Go To File" 
+      buttons="close" 
+      modal="false" 
+      center="true" 
+      width = "350" 
+      height = "350"
+      resizable = "true"
+      kbclose="true">
+        <a:model id="mdlGoToFile" />
+        <a:hbox id="hbGoToFile" edge="4">
+            <a:textbox id="txtGoToFile" flex="1" realtime="true" />
+            <a:button submenu="mnuGoToFileOptions" />
+            
+            <a:menu id="mnuGoToFileOptions">
+                <a:item type="radio" selected="true">By Name</a:item>
+                <a:item type="radio">By Content</a:item>
+                <a:divider />
+                <a:item type="check">Case Insensitive</a:item>
+                <a:item type="check">RegExp (Perl)</a:item>
+            </a:menu>
+        </a:hbox>
+        <a:datagrid id="dgGoToFile"
+          anchors = "34 0 0 0"
+          border  = "1 0 0 0"
+          class   = "searchresults"
+          model   = "mdlGoToFile"
+          loading-message = "Searching Project"
+          empty-message   = "No search results"
+          startcollapsed  = "false"
+          each    = "[d:response]"
+          onafterchoose = "alert('open file')"> <!-- d:excerpt -->
+            <a:column width="100" value="{apf.getFilename([@path])}" caption="Name" /> 
+            <a:column width="100%" caption="Path"><?lm
+                if (localName() == "response") {
+                    [@path]
+                }
+                else {
+                    <span class="line">[@line]</span>
+                    <pre>{[text()].replace([/node()/@query], "<strong>" + [/node()/@query] + "</strong>")}</pre>
+                }
+            ?></a:column>
+        </a:datagrid>
+    </a:window>
+</a:application>
