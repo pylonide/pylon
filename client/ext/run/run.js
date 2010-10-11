@@ -29,8 +29,7 @@ return ext.register("ext/run/run", {
 
         var _self = this;
         mdlRunConfigurations.addEventListener("update", function(e) {
-            console.log(e.action);
-            if (e.action == "add" || e.action == "redo-remove")
+            if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });
     },
@@ -49,6 +48,17 @@ return ext.register("ext/run/run", {
             return null;
 
         return page.$model.data;
+    },
+
+    duplicate : function() {
+        var config = lstRunCfg.selected;
+        if (!config)
+            return;
+
+        var duplicate = config.cloneNode(true);
+        apf.b(config).after(duplicate);
+        lstRunCfg.select(duplicate);
+        winRunCfgNew.show();
     },
 
     addConfig : function(debug) {
@@ -119,7 +129,7 @@ return ext.register("ext/run/run", {
             debug = config.getAttribute("debug") == "1";
 
         config.setAttribute("debug", "0");
-        noderunner.run(config.getAttribute("path"), config.getAttribute("args"), debug);
+        noderunner.run(config.getAttribute("path"), config.getAttribute("args").split(" "), debug);
     },
 
     stop : function() {

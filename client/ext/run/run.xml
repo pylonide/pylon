@@ -4,44 +4,10 @@
         <configurations />
     </a:model>
 
-	<a:window id="winRunCfg"
-      title="Run Configurations"
-	  width="350"
-	  height="400"
-	  buttons="close"
-	  center="true"
-	  modal="false"
-	  kbclose="true">
-		<a:vbox anchors="0 0 0 0">
-		<a:toolbar>
-			<a:bar>
-				<a:button
-				  icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
-				  caption="Add"
-				  onclick="require('ext/run/run').addConfig()"/>
-				<a:button 
-				  icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.gif" 
-				  caption="Duplicate" />
-				<a:button 
-				  icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.gif"
-				  caption="Remove"
-				  onclick="lstRunCfg.remove()"/>
-			</a:bar>
-		</a:toolbar>
-		<a:list id="lstRunCfg" 
-		  model="mdlRunConfigurations"
-		  each="[config]"
-		  caption="[@name]"
-		  autoselect="true"
-		  flex="1"/>				
-		</a:vbox>
-	</a:window>
-
 	<a:menu id="mnuRunCfg">	
 		<a:item disabled="true" caption="no run history" />
 		<a:divider></a:divider>
-		<a:item onclick="require('ext/run/run').addConfig()">Add Run Configuration</a:item>
-		<a:item onclick="winRunCfg.show()">Run Configurations ...</a:item>
+		<a:item onclick="winRunCfgNew.show()">Run Configurations ...</a:item>
 	</a:menu>
 
     <a:window id="winRunCfgNew" 
@@ -51,27 +17,63 @@
       modal="false"
       center="true" 
       width="350"
-      height="210"
+      height="400"
       kbclose="true">
-      	<a:vbox anchors="0 0 0 0" padding="5">
-	        <a:hbox align="center" margin="5 10 0 10" padding="10">
+      	<a:vbox anchors="0 0 0 0">
+			<a:toolbar>
+				<a:bar>
+					<a:button
+					  icon="debugger/monitorexpression_tsk{this.disabled ? '_disabled' : ''}.gif"
+					  caption="Add"
+					  onclick="require('ext/run/run').addConfig()"/>
+					<a:button 
+					  icon="debugger/copy_edit_co{this.disabled ? '_disabled' : ''}.gif" 
+					  caption="Duplicate"
+					  onclick="require('ext/run/run').duplicate()"
+					  disabled="{!lstRunCfg.selected}"/>
+					<a:button 
+					  icon="debugger/delete_config{this.disabled ? '_disabled' : ''}.gif"
+					  caption="Remove"
+					  onclick="lstRunCfg.remove()"
+					  disabled="{!lstRunCfg.selected}"/>
+				</a:bar>
+			</a:toolbar>
+			<a:list id="lstRunCfg" 
+		      skin="lineselect"
+			  model="mdlRunConfigurations"
+			  each="[config]"
+			  caption="[@name]"
+			  empty-message="no run configurations"
+			  autoselect="true"
+			  flex="1"/>				
+	        <a:divider />
+	        <a:hbox align="center" margin="5 10 5 10" padding="10">
 	            <a:label width="130" textalign="right">Name</a:label>
-	            <a:textbox id="txtRunCfgName" flex="1" value="[@name]"/>
+	            <a:textbox id="txtRunCfgName" 
+	              flex="1"
+	              realtime="true"
+	              value="[@name]"
+	              disabled="{!lstRunCfg.selected}"/>
 	        </a:hbox>
 	        <a:divider />
-	        <a:hbox align="center" margin="0 10" padding="10">
+	        <a:hbox align="center" margin="5 10" padding="10">
 	            <a:label width="130" textalign="right">JavaScript file</a:label>
-	            <a:textbox id="txtRunCfgName" flex="1" value="[@path]"/>
+	            <a:textbox id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected}"/>
 	            <a:button icon="folder.png" tooltip="Browse ..."></a:button>
 	        </a:hbox>
-	        <a:hbox align="center" margin="0 10" padding="10">
+	        <a:hbox align="center" margin="5 10" padding="10">
 	            <a:label width="130" textalign="right">Command line arguments</a:label>
-	            <a:textbox id="txtRunCfgName" flex="1" value="[@args]"/>
+	            <a:textbox id="txtRunCfgName" flex="1" value="[@args]" disabled="{!lstRunCfg.selected}"/>
 	        </a:hbox>
 	        <a:divider />
 	        <a:hbox padding="5" pack="end" edge="10 10 5 10">
-	            <a:button default="2" class="ui-btn-green" onclick="winRunCfgNew.hide();require('ext/run/run').runConfig(lstRunCfg.selected)">Run</a:button>
-	            <a:button onclick="winRunCfgNew.hide()">Cancel</a:button>
+	            <a:button 
+	              default="2" 
+	              class="ui-btn-green" 
+	              onclick="winRunCfgNew.hide();require('ext/run/run').runConfig(lstRunCfg.selected)"
+	              disabled="{!lstRunCfg.selected}"
+	              caption="Run"/>
+	            <a:button onclick="winRunCfgNew.hide()">Close</a:button>
 	        </a:hbox>        
         </a:vbox>
     </a:window>

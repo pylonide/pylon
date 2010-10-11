@@ -6040,7 +6040,7 @@
             cursor: default;
         }
         .lineselect>.selected{
-            background-color: #f0f0f0;
+            background-color: rgb(203, 205, 208);
             color: black;
         }
         .lineselectFocus>.selected{
