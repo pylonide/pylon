@@ -28,18 +28,31 @@ return ext.register("ext/run/run", {
         }
 
         var _self = this;
+        mdlRunConfigurations.addEventListener("afterload", function(e) {
+            _self.$updateMenu();
+        });
         mdlRunConfigurations.addEventListener("update", function(e) {
+            _self.$changed = true;
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });
-    },
 
-    debugChrome : function() {
-        noderunner.chromeDebug();
-    },
+        ide.addEventListener("loadsettings", function(e){
+            var runConfigs = e.model.queryNode("auto/configurations");
+            if (runConfigs)
+                mdlRunConfigurations.load(runConfigs);
+        });
 
-    debug : function() {
-        noderunner.debug();
+        ide.addEventListener("savesettings", function(e){
+            if (_self.$changed) {
+                _self.$changed = false;
+                return true;
+            }
+        });
+
+        winRunCfgNew.addEventListener("hide", function() {
+            mdlRunConfigurations.data.setAttribute("debug", "0");
+        });
     },
 
     $getActivePageModel : function() {
@@ -61,7 +74,7 @@ return ext.register("ext/run/run", {
         winRunCfgNew.show();
     },
 
-    addConfig : function(debug) {
+    addConfig : function() {
         var file = this.$getActivePageModel();
 
         if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
@@ -69,14 +82,13 @@ return ext.register("ext/run/run", {
             var name = "server";
         }
         else {
-            path = file.getAttribute("path").slice(noderunner.davPrefix.length)
+            path = file.getAttribute("path").slice(noderunner.davPrefix.length);
             name = file.getAttribute("name").replace(/\.js$/, "");
         }
 
         var cfg = apf.n("<config />")
             .attr("path", path)
             .attr("name", name)
-            .attr("debug", debug ? "1" : "")
             .attr("args", "").node();
 
         mdlRunConfigurations.appendXml(cfg);
@@ -84,51 +96,60 @@ return ext.register("ext/run/run", {
         winRunCfgNew.show();
     },
 
+    showRunConfigs : function(debug) {
+        mdlRunConfigurations.data.setAttribute("debug", debug ? "1": "0");
+        winRunCfgNew.show();
+    },
+
     run : function(debug) {
         var config = lstRunCfg.selected;
+        mdlRunConfigurations.data.setAttribute("debug", debug ? "1": "0");
         if (!config) {
-            this.addConfig(debug);
+            this.addConfig();
         }
         else
             this.runConfig(config, debug);
     },
 
     $updateMenu : function() {
-        var item = mnuRunCfg.firstChild;
-        while(item && item.tagName !== "a:divider") {
-            mnuRunCfg.removeChild(item);
-            item = mnuRunCfg.firstChild;
-        }
-        var divider = item;
+        var menus = [mnuRunCfg, mnuDebugCfg];
 
-        var configs = mdlRunConfigurations.queryNodes("config");
-        if (!configs.length)
-            mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "no run history"}), divider);
-        else {
-            for (var i=0,l=configs.length; i<l; i++) {
-                var item = new apf.item({
-                    type: "radio",
-                    caption: configs[i].getAttribute("name"),
-                    checked: configs[i] == lstRunCfg.selected,
-                    group: "grpRunCfg"
-                });
-                item.$config = configs[i];
+        for (var j=0; j<menus.length; j++) {
+            var menu = menus[j];
 
-                var _self = this;
-                item.onclick = function() {
-                    _self.runConfig(this.$config, false);
-                    lstRunCfg.select(this.$config);
-                };
-                mnuRunCfg.insertBefore(item, mnuRunCfg.firstChild);
+            var item = menu.firstChild;
+            while(item && item.tagName !== "a:divider") {
+                menu.removeChild(item);
+                item = menu.firstChild;
+            }
+            var divider = item;
+
+            var configs = mdlRunConfigurations.queryNodes("config");
+            if (!configs.length)
+                menu.insertBefore(new apf.item({disabled:true, caption: "no run history"}), divider);
+            else {
+                for (var i=0,l=configs.length; i<l; i++) {
+                    var item = new apf.item({
+                        caption: configs[i].getAttribute("name")
+                    });
+                    item.$config = configs[i];
+
+                    var _self = this;
+                    item.onclick = function(debug) {
+                        _self.runConfig(this.$config, debug);
+                        lstRunCfg.select(this.$config);
+                    }.bind(item, menu == mnuDebugCfg);
+                    menu.insertBefore(item, menu.firstChild);
+                }
             }
         }
     },
 
     runConfig : function(config, debug) {
         if (debug === undefined)
-            debug = config.getAttribute("debug") == "1";
+            debug = config.parentNode.getAttribute("debug") == "1";
 
-        config.setAttribute("debug", "0");
+        config.parentNode.setAttribute("debug", "0");
         noderunner.run(config.getAttribute("path"), config.getAttribute("args").split(" "), debug);
     },
 

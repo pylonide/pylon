@@ -4252,6 +4252,29 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:splitbutton name="splitbutton">
+    <a:style><![CDATA[
+    	.toolbar .subbar .toolbarbutton.splitbtn {
+    		display: inline-block;
+    		margin: 0px 0px;
+    	}
+    	
+    	.toolbar .subbar .toolbarbutton.splitbtn.arrow div {
+    		background : url(images/arrow_down_black.png) no-repeat right 50%;
+    	}
+    	
+    	.primary {
+    	
+    	}
+    ]]></a:style>
+    <a:presentation>
+        <a:main caption="div/text()" label="div/text()" background="div/span" icon="div/span">
+            <div class="toolbarbutton splitbtn">
+                <div><span></span>-</div>
+             </div>
+        </a:main>
+    </a:presentation>
+</a:splitbutton>
 <a:label name="label">
     <a:style><![CDATA[
         .label{
