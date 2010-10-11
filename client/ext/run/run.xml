@@ -69,11 +69,11 @@
       onclick="require('ext/run/run').run(false)"
       disabled="{stProcessRunning.active}"
     />
-    <!-- a:button
+    <a:button
       icon="images/arrow_down_black.png"
       submenu="mnuRunCfg"
       disabled="{stProcessRunning.active}"
-    /-->
+    />
     <a:button
       icon="debugger/terminate_co{this.disabled ? '_disabled' : ''}.gif"
       caption="stop"
