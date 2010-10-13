@@ -1119,6 +1119,10 @@ apf.webdav = function(struct, tagName){
             case "unlock":
                 this.unlock(args[0], cb);
                 break;
+            case "report":
+                debugger;
+                this.report(args[0], args[1], args[2], cb);
+                break;
             default:
                 //#ifdef __DEBUG
                 throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
