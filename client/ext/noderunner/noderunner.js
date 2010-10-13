@@ -21,7 +21,6 @@ return ext.register("ext/noderunner/noderunner", {
 
     init : function(amlNode){
         var options = {
-    	    resource: location.pathname  ? location.pathname.replace('/',"") + "socket.io" : null,
             transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
             transportOptions: {
                 'xhr-polling': {
