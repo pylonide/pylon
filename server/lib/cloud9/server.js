@@ -15,7 +15,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     this.workspaceDir = async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
 
-    this.davPrefix = "/workspace/";
+    this.davPrefix = "workspace/";
     dav.mount(this.workspaceDir, this.davPrefix, server);
 
     var _self = this;

@@ -15,7 +15,7 @@ return ext.register("ext/settings/settings", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    file    : "/workspace/.settings.xml",
+    file    : "workspace/.settings.xml",
     hotkeys : {"showsettings":1},
     hotitems: {},
 

@@ -62,7 +62,7 @@
                 apf.onstart = function(){
                     var list = ["core/ide", "core/ext", "core/util"];
                     if (location.host)
-                        list.push("text!/workspace/.settings.xml");
+                        list.push("text!workspace/.settings.xml");
 
                     require(list, function(ide, ext, util, settings){
                         ide.settings = settings;
