@@ -86,7 +86,7 @@ return ext.register("ext/debugger/debugger", {
                         if (text)
                             ceEditor.$editor.find(text);
                         ceEditor.focus();
-                    }, 30);
+                    }, 100);
                 }
             });
         }
@@ -101,6 +101,7 @@ return ext.register("ext/debugger/debugger", {
         var name = chunks[chunks.length-1];
         var node = apf.n("<file />")
             .attr("name", name)
+            .attr("contenttype", "application/javascript")
             .attr("path", path)
             .node();
 
