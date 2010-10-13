@@ -290,7 +290,7 @@ apf.select1   = function(struct, tagName){
             //this.addEventListener("afterrename", $afterRenameMore);
             //this.addEventListener("beforeselect", $beforeSelect);
             
-            this.$setClearMessage    = function(msg){
+            this.$addMoreItem    = function(msg){
                 if (!this.moreItem)
                     this.$fill();
                 if (this.morePos == "begin")

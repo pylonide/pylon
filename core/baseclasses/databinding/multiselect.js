@@ -377,6 +377,7 @@ apf.MultiselectBinding = function(){
     }
     
     this.$setClearMessage = function(msg, className, lastHeight){
+        if (this.more && this.$addMoreItem) this.$addMoreItem();
         if (!this.$empty) {
             if (!this.$hasLayoutNode("empty"))
                 return;
