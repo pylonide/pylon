@@ -1,0 +1,39 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winSearchInFiles"
+      onhide="require('ext/searchinfiles/searchinfiles').onHide()"
+      title="Search &amp; Replace" 
+      buttons="close" 
+      modal="false" 
+      center="true" 
+      width="350" 
+      kbclose="true">
+        <a:vbox edge="10" padding="5">
+            <a:hbox align="center">
+                <a:label width="75">Search</a:label>
+                <a:textbox id="txtFind" flex="1" focusselect="true"/>
+            </a:hbox>
+            <!--a:hbox id="barReplace" align="center">
+                <a:label width="75">Replace With</a:label>
+                <a:textbox id="txtReplace" flex="1" />
+            </a:hbox-->
+            <a:table columns="150,150" edge="10 10 0 10">
+                <a:checkbox id="chkSFMatchCase" checked="false" label="Match Case" />
+                <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
+                <a:checkbox id="chkSFRegEx" label="Regular Expressions" />
+            </a:table>
+        </a:vbox>
+        <a:divider />
+        <a:hbox padding="5" pack="end" edge="10 10 5 10">
+            <!--a:button id="btnReplace">Replace</a:button>
+            <a:button id="btnReplaceAll">Replace All</a:button-->
+            <a:button id="btnFind" default="2" class="ui-btn-green">Find</a:button>
+            <a:button onclick="winSearchInFiles.hide()">Close</a:button>
+        </a:hbox>
+    </a:window>
+
+    <a:tree id="trSFResult" anchors="0 0 0 0" visible="false" each="[d:response|d:excerpt]">
+        <a:model />
+        <a:caption match="[d:response]">[@path]</a:caption>
+        <a:caption match="[d:excerpt]"><span>[@line]</span> [@path] ... </a:caption>
+    </a:tree>
+</a:application>

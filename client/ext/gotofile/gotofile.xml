@@ -4,29 +4,30 @@
       buttons="close" 
       modal="false" 
       center="true" 
-      min-width = "350"
-      min-height = "350"
+      width = "350" 
+      height = "350"
       resizable = "true"
       kbclose="true"
       onshow = "
         txtGoToFile.clear();
         mdlGoToFile.clear();
       ">
+        <a:hbox edge="5">
+            <a:textbox id="txtGoToFile" realtime="true" flex="1" focusselect="true" />
+        </a:hbox>
+        <a:datagrid id="dgGoToFile"
+          anchors = "34 0 0 0"
+          border  = "1 0 0 0"
+          class   = "searchresults"
+          model   = "mdlGoToFile"
+          loading-message = "Searching Project..."
+          empty-message   = "No search results"
+          startcollapsed  = "false"
+          each    = "[d:response/d:href]">
+            <a:column width="100" value="{apf.getFilename([text()])}" caption="Name" />
+            <a:column width="100%" caption="Path" value="[text()]" />
+        </a:datagrid>
+
         <a:model id="mdlGoToFile" />
-        <a:vbox>
-            <a:textbox id="txtGoToFile" realtime="true" focusselect="true" margin="5" />
-            <a:datagrid id="dgGoToFile"
-              margin  = "0 5 5 5"
-              border  = "1 0 0 0"
-              class   = "searchresults"
-              model   = "mdlGoToFile"
-              loading-message = "Searching Project..."
-              empty-message   = "No search results"
-              startcollapsed  = "false"
-              each    = "[d:response/d:href]">
-                <a:column width="100" value="{apf.getFilename([text()])}" caption="Name" />
-                <a:column width="100%" caption="Path" value="[text()]" />
-            </a:datagrid>
-        </a:vbox>
     </a:window>
 </a:application>
