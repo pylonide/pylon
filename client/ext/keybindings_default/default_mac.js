@@ -20,7 +20,7 @@ return keys.onLoad({
             "paste": "Command-V"
         },
         "gotofile": {
-            "gotofile": "Command-Shift-R"
+            "gotofile": "Alt-Shift-R"
         },
         "newresource": {
             "newfile": "Command-N",
