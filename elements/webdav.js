@@ -203,7 +203,7 @@ apf.webdav = function(struct, tagName){
         }
 
         var _self = this;
-        return this.get(this.$server + sPath || "", {
+        return this.get(sPath || this.$server, {
             callback: function(data, state, extra) {
                 if (state != apf.SUCCESS) {
                     var oError;
@@ -359,7 +359,7 @@ apf.webdav = function(struct, tagName){
         try {
             if (apf.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
                 oDoc.async = false;
-                oDoc.load(this.$server + this.$rootPath);
+                oDoc.load(this.$rootPath);
             }
         }
         catch (e) {
@@ -540,7 +540,7 @@ apf.webdav = function(struct, tagName){
         var _self = this;
         this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status);
-            if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
+            if (state != apf.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to write to file. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
@@ -580,7 +580,7 @@ apf.webdav = function(struct, tagName){
 
         this.method  = "COPY";
         var oHeaders = {
-            "Destination": this.$server + sTo
+            "Destination": sTo || this.$server
         };
         if (typeof bOverwrite == "undefined")
             bOverwrite = true;
@@ -634,7 +634,7 @@ apf.webdav = function(struct, tagName){
 
         this.method  = "MOVE";
         var oHeaders = {
-            "Destination": this.$server + sTo
+            "Destination": sTo || this.$server
         };
         if (typeof bOverwrite == "undefined")
             bOverwrite = true;
