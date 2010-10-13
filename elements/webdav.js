@@ -234,7 +234,8 @@ apf.webdav = function(struct, tagName){
                         if (!apf.supportNamespaces)
                             data.setProperty("SelectionLanguage", "XPath");
 
-                        extra.data = data.documentElement;
+                        data = data.documentElement;
+                        extra.data = data;//.documentElement;
                     }
                     catch(e) {
                         if (fCallback)
@@ -1149,7 +1150,6 @@ apf.webdav = function(struct, tagName){
                 this.unlock(args[0], cb);
                 break;
             case "report":
-                debugger;
                 this.report(args[0], args[1], args[2], cb);
                 break;
             default:
