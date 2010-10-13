@@ -489,7 +489,7 @@ apf.BaseTree = function(){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if (!startcollapsed && this.openadd && htmlParentNode != this.$container 
+                if (this.openadd && htmlParentNode != this.$container 
                   && htmlParentNode.style.display != "block") 
                     this.slideOpen(htmlParentNode, xmlParentNode, true);
                 
