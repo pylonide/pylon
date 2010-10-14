@@ -55,6 +55,18 @@ BODY {
     position : relative;
 }
 
+.searchinfiles .linenumber {
+    width : 35px;
+    display : inline-block;
+    text-align : right;
+    padding : 0 5px 0 0;
+}
+
+.searchinfiles .excerpt {
+    margin : 0;
+    display : inline-block;
+}
+
 .searchresults .line{
     width : 35px;
     display : inline-block;

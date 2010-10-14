@@ -9,20 +9,23 @@ require.def("ext/searchinfiles/searchinfiles",
      "core/ext",
      "ace/PluginManager",
      "ace/Search",
-     "ext/editors/editors", 
+     "ext/editors/editors",
+     "ext/console/console",
      "text!ext/searchinfiles/searchinfiles.xml"],
-    function(ide, ext, plugins, search, editors, markup) {
+    function(ide, ext, plugins, search, editors, console, markup) {
 
 return ext.register("ext/searchinfiles/searchinfiles", {
-    name    : "Search in files",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    alone   : true,
-    markup  : markup,
-    hotkeys : {"searchinfiles":1},
-    hotitems: {},
+    name     : "Search in files",
+    dev      : "Ajax.org",
+    type     : ext.GENERAL,
+    alone    : true,
+    markup   : markup,
+    hotkeys  : {"searchinfiles":1},
+    pageTitle: "Search Results",
+    pageID   : "pgSFResults",
+    hotitems : {},
 
-    nodes   : [],
+    nodes    : [],
 
     hook : function(){
         var _self = this;
@@ -41,7 +44,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     init : function(amlNode){
-        this.txtFind       = txtFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
+        this.txtFind       = txtSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //this.txtReplace    = txtReplace;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //bars
         //this.barReplace    = barReplace;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox[2]");
@@ -50,11 +53,42 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         //this.btnReplace.onclick = this.replace.bind(this);
         //this.btnReplaceAll = btnReplaceAll;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[2]");
         //this.btnReplaceAll.onclick = this.replaceAll.bind(this);
-        this.btnFind       = btnFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
+        this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this);
+
+        var _self = this;
         winSearchInFiles.onclose = function() {
             ceEditor.focus();
-        }
+        };
+        winSearchInFiles.onshow = function() {
+            // get selected node in tree and set it as selection
+            var name = _self.getSelectedTreeNode().getAttribute("name");
+            if (name.length > 25)
+                name = name.substr(0, 22) + "...";
+            rbSFSelection.setAttribute("label", "Selection ( " + name + " )")
+        };
+        trSFResult.addEventListener("afterselect", function(e) {
+            var path,
+                node = trSFResult.selected,
+                line = 0;
+            if (node.tagName == "d:excerpt") {
+                path = node.parentNode.getAttribute("path");
+                line = node.getAttribute("line");
+            }
+            else {
+                path = node.getAttribute("path");
+            }
+            require("ext/debugger/debugger").showFile(path, line, 0);
+        });
+    },
+
+    getSelectedTreeNode: function() {
+        var node = trFiles.selected;
+        if (!node)
+            trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
+        while (node.tagName != "folder")
+            node = node.parentNode;
+        return node;
     },
 
     toggleDialog: function(isReplace, forceShow) {
@@ -62,17 +96,17 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         
         if (!winSearchInFiles.visible || forceShow || this.$lastState != isReplace) {
             //this.setupDialog(isReplace);
-
             var editor = editors.currentEditor;
-    
-            var value = editor.getDocument().getTextRange(editor.getSelection().getRange());
-            if (value)
-                this.txtFind.setValue(value);
-
+            if (editor) {
+                var value  = editor.getDocument().getTextRange(editor.getSelection().getRange());
+                if (value)
+                    this.txtFind.setValue(value);
+            }
             winSearchInFiles.show();
         }
-        else
+        else {
             winSearchInFiles.hide();
+        }
         return false;
     },
 
@@ -98,17 +132,35 @@ return ext.register("ext/searchinfiles/searchinfiles", {
 
     getOptions: function() {
         return {
-            backwards: chkSearchBackwards.checked,
-            wrap: chkWrapAround.checked,
-            caseSensitive: !chkMatchCase.checked,
-            wholeWord: chkWholeWords.checked,
-            regExp: chkRegEx.checked,
-            scope: chkSearchSelection.checked ? search.SELECTION : search.ALL
+            query: txtSFFind.value,
+            pattern: ddSFPatterns.value,
+            casesensitive: chkSFMatchCase.checked,
+            regexp: chkSFRegEx.checked
         };
     },
 
     execFind: function() {
-        //
+        winSearchInFiles.hide();
+        console.enable(true);
+        if (!this.$panel) {
+            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.appendChild(trSFResult);
+            trSFResult.setProperty("visible", true);
+            this.$model = trSFResult.getModel();
+            var _self = this;
+            this.$model.addEventListener("afterload", function() {
+                tabConsole.set(_self.pageID);
+            });
+        }
+        tabConsole.set(this.pageID);
+        var node = trFiles.selected;
+        if (!node || grpSFScope.value == "projects")
+            trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
+        while (node.tagName != "folder")
+            node = node.parentNode;
+        //var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
+        this.$model.load("{davProject.report('" + node.getAttribute("path")
+            + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
     },
 
     replaceAll: function() {

@@ -54,7 +54,7 @@ function parseArguments(argv) {
 }
 
 
-if (process.version.split(".")[1] != "2") {
+if (parseInt(process.version.split(".")[1]) < 2) {
     console.log("ERROR: Cloud9 IDE requires node version 0.2.x but you use " + process.version);
     return;
 }

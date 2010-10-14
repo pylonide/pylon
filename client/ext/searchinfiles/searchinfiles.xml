@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winSearchInFiles"
       onhide="require('ext/searchinfiles/searchinfiles').onHide()"
-      title="Search &amp; Replace" 
+      title="Search in Files"
       buttons="close" 
       modal="false" 
       center="true" 
@@ -9,31 +9,88 @@
       kbclose="true">
         <a:vbox edge="10" padding="5">
             <a:hbox align="center">
-                <a:label width="75">Search</a:label>
-                <a:textbox id="txtFind" flex="1" focusselect="true"/>
+                <a:label width="95">Containing Text</a:label>
+                <a:textbox id="txtSFFind" flex="1" focusselect="true"/>
+            </a:hbox>
+            <a:hbox align="center">
+                <a:label width="95">Filename Patterns</a:label>
+                <a:dropdown id="ddSFPatterns" flex="1" autoselect="true">
+                    <a:item value="all">All known filetypes</a:item>
+                    <a:item value="actionscript">Actionscript files</a:item>
+                    <a:item value="ada">Ada files</a:item>
+                    <a:item value="asm">Assembler files</a:item>
+                    <a:item value="batch">Batch files</a:item>
+                    <a:item value="cc">C files</a:item>
+                    <a:item value="cfmx">Coldfusion files</a:item>
+                    <a:item value="cpp">C++ files</a:item>
+                    <a:item value="csharp">C# files</a:item>
+                    <a:item value="css">CSS files</a:item>
+                    <a:item value="elisp">ELisp files</a:item>
+                    <a:item value="erlang">Erlang files</a:item>
+                    <a:item value="fortran">Fortran files</a:item>
+                    <a:item value="haskell">Haskell files</a:item>
+                    <a:item value="hh">Header files</a:item>
+                    <a:item value="html">HTML files</a:item>
+                    <a:item value="java">Java files</a:item>
+                    <a:item value="js">Javascript files</a:item>
+                    <a:item value="jsp">JSP files</a:item>
+                    <a:item value="lisp">Lisp files</a:item>
+                    <a:item value="lua">Lua files</a:item>
+                    <a:item value="make">Make files</a:item>
+                    <a:item value="mason">Mason files</a:item>
+                    <a:item value="objc">Obj-C files</a:item>
+                    <a:item value="objcpp">Obj-C++ files</a:item>
+                    <a:item value="ocaml">Ocaml files</a:item>
+                    <a:item value="parrot">Parrot files</a:item>
+                    <a:item value="perl">Perl files</a:item>
+                    <a:item value="php">PHP files</a:item>
+                    <a:item value="plone">Plone files</a:item>
+                    <a:item value="python">Python files</a:item>
+                    <a:item value="rake">Rake files</a:item>
+                    <a:item value="ruby">Ruby files</a:item>
+                    <a:item value="scala">Scala files</a:item>
+                    <a:item value="scheme">Scheme files</a:item>
+                    <a:item value="shell">Shell script files</a:item>
+                    <a:item value="smalltalk">Smalltalk files</a:item>
+                    <a:item value="sql">SQL files</a:item>
+                    <a:item value="tcl">TCL files</a:item>
+                    <a:item value="tex">Tex files</a:item>
+                    <a:item value="text">Text files</a:item>
+                    <a:item value="tt">TT files</a:item>
+                    <a:item value="vb">Visual Basic files</a:item>
+                    <a:item value="vim">Vim files</a:item>
+                    <a:item value="yaml">Yaml files</a:item>
+                    <a:item value="xml">XML files</a:item>
+                </a:dropdown>
             </a:hbox>
             <!--a:hbox id="barReplace" align="center">
                 <a:label width="75">Replace With</a:label>
                 <a:textbox id="txtReplace" flex="1" />
             </a:hbox-->
-            <a:table columns="150,150" edge="10 10 0 10">
-                <a:checkbox id="chkSFMatchCase" checked="false" label="Match Case" />
-                <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
-                <a:checkbox id="chkSFRegEx" label="Regular Expressions" />
-            </a:table>
+            <a:hbox align="center">
+                <a:vbox flex="1">
+                    <a:checkbox id="chkSFMatchCase" height="20" checked="false" label="Match Case" />
+                    <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
+                    <a:checkbox id="chkSFRegEx" height="20" label="Regular Expressions" />
+                </a:vbox>
+                <a:vbox flex="1">
+                    <a:radiobutton group="grpSFScope" skin="classic" checked="true" value="projects" label="Open Projects" />
+                    <a:radiobutton group="grpSFScope" id="rbSFSelection" skin="classic" checked="false" value="selection" label="Selection" />
+                </a:vbox>
+            </a:hbox>
         </a:vbox>
         <a:divider />
         <a:hbox padding="5" pack="end" edge="10 10 5 10">
             <!--a:button id="btnReplace">Replace</a:button>
             <a:button id="btnReplaceAll">Replace All</a:button-->
-            <a:button id="btnFind" default="2" class="ui-btn-green">Find</a:button>
+            <a:button id="btnSFFind" default="2" class="ui-btn-green">Find</a:button>
             <a:button onclick="winSearchInFiles.hide()">Close</a:button>
         </a:hbox>
     </a:window>
 
-    <a:tree id="trSFResult" anchors="0 0 0 0" visible="false" each="[d:response|d:excerpt]">
+    <a:tree id="trSFResult" anchors="0 0 0 0" visible="false" class="searchinfiles" each="[d:response|d:excerpt]" autoselect="false">
         <a:model />
         <a:caption match="[d:response]">[@path]</a:caption>
-        <a:caption match="[d:excerpt]"><span>[@line]</span> [@path] ... </a:caption>
+        <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">[text()]</pre></a:caption>
     </a:tree>
 </a:application>

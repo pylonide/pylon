@@ -42,11 +42,7 @@ return ext.register("ext/gotofile/gotofile", {
     init : function() {
         txtGoToFile.addEventListener("keydown", function(e){
             if (e.keyCode == 13){
-                var node = trFiles.selected;
-                if (!node)
-                    trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
-                while (node.tagName != "folder")
-                    node = node.parentNode;
+                var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
             }
