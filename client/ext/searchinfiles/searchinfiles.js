@@ -69,6 +69,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
         };
         trSFResult.addEventListener("afterselect", function(e) {
             var path,
+                root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
                 node = trSFResult.selected,
                 line = 0;
             if (node.tagName == "d:excerpt") {
@@ -78,14 +79,14 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             else {
                 path = node.getAttribute("path");
             }
-            require("ext/debugger/debugger").showFile(path, line, 0);
+            require("ext/debugger/debugger").showFile(root.getAttribute("path") + "/" + path, line, 0);
         });
     },
 
     getSelectedTreeNode: function() {
         var node = trFiles.selected;
         if (!node)
-            trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
+            node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
             node = node.parentNode;
         return node;
@@ -141,24 +142,28 @@ return ext.register("ext/searchinfiles/searchinfiles", {
 
     execFind: function() {
         winSearchInFiles.hide();
-        console.enable(true);
+        // show the console (also used by the debugger):
+        console.enable();
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.appendChild(trSFResult);
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
             var _self = this;
+            // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
+            // hide the debugger toolbar in the results tab
+            tabConsole.addEventListener("beforeswitch", function(e) {
+                tbDebug.setProperty("visible", (e.nextPage != _self.$panel));
+            });
         }
+        // show the tab
         tabConsole.set(this.pageID);
-        var node = trFiles.selected;
-        if (!node || grpSFScope.value == "projects")
-            trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
-        while (node.tagName != "folder")
-            node = node.parentNode;
-        //var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
+        var node = this.$currentScope = grpSFScope.value == "projects"
+            ? trFiles.xmlRoot.selectSingleNode("folder[1]")
+            : this.getSelectedTreeNode();
         this.$model.load("{davProject.report('" + node.getAttribute("path")
             + "', 'codesearch', " + JSON.stringify(this.getOptions()) + ")}");
     },

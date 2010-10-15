@@ -3,9 +3,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+var Sys = require("sys");
 
 function usage() {
-    console.log("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]");
+    Sys.puts("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]");
     process.exit(0);
 }
 
@@ -55,20 +56,42 @@ function parseArguments(argv) {
 
 
 if (parseInt(process.version.split(".")[1]) < 2) {
-    console.log("ERROR: Cloud9 IDE requires node version 0.2.x but you use " + process.version);
+    Sys.puts("ERROR: Cloud9 IDE requires node version 0.2.x but you use " + process.version);
     return;
 }
 
 var options = parseArguments(process.argv.slice(2));
-
 require("../server/lib/cloud9").main(options.workspace, options.port, options.ip);
-console.log("ajax.org Cloud9 IDE");
-console.log("Project root is: " + options.workspace);
-var url = "http://" + options.ip + ":" + options.port;
 
+Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
+                          _<iIIviiiiiiiiiillli<_.\n\
+                       .ivIvilli%||+++++|iillllvs;_\n\
+                     ..nvlIlv|~`.......... -<*IIIvv=\n\
+                    .)nvvvvv-.... .   .. ...  ~nvvvo=.\n\
+         .__i<iiiii><vvvvn(= .  . ..i>, .  ... +)nnnv..\n\
+      _i%vvvvllIIlIlIvIvvv(   .. . lnnsi  .    :)vnvnsissvisi>__.\n\
+   .<vnvvvvvvIvvvvvvvlvvII;. .     |nnvv:  . . -)lvvlIIIIlvvIvnnns=_.\n\
+ .:vnvvvvvvvvvvvvvIvIvIIvv>:  . . . |{}l.    . :<lvIvvvvvvvvvvvvvvnov.\n\
+ |)nvnvnvnvnvnvvvvvvvvvvvvis .            . .  =ivvvvvvvvvvvnvnvnvnvnn..\n\
+.nnnnnnvnnvnvnvnvvvnvvvvvvvnv_   .    .       :vnvvvvvvvnvnnvnnnnnnnnov;\n\
+:2oonnnnnnnnnvnvnnvnvvnvvvvvIvvi==_i..    .  .vvvvvvvvnvnnvnnnnnnnnooooc\n\
+:nnooonnnnnnnnnnvvnvvvvvvvvIvIlIvvnI-      .=vvvvvvvvnvnvnnnnnnnnnnooo2(\n\
+ |{XooooonnnnnvnvnvvvvvvvIIIIIIIIv|-      .<vIlIIvIvvvvvnvvnvnnnnnooo2v(\n\
+ .){2ooooonnnnvnvnvvvvvIIIIIIlll+-     . =)lllIIvIvvvvvvvnvnnnvnnooo22-`\n\
+   -{2oooonnnnnvvvvvvvlIIlllllil==_   ._iIllillllllIvvvvvvnvnnnnoooo*-\n\
+  . -.\"11oonnvvvnvvIIlIlliliiiiillii||iliiiiiiililllIIvvvvvnnnnn2}(~.\n\
+      . -+~!lvvnvIvIIllliiiii|i|||i||i|||i||iiiiilillIIvvvvvv}|\"- .\n\
+          . ..--~++++++++~+~+~+~+-+-+~+~+-+~+~++~++++++~~~-:.. .\n\
+               . .  . . .... . . .... .. ... .. ... . . . .\n\n\
+                           Ajax.org Cloud9 IDE\n\n\
+Project root is: " + options.workspace);
+
+var url = "http://" + options.ip + ":" + options.port;
 if (options.start) {
-    console.log("Trying to start your browser in: "+url);
+    Sys.puts("Trying to start your browser in: "+url);
     options.startargs.push(url);
     require("child_process").spawn(options.start, options.startargs);
-} else
-    console.log("Point you browser to "+url);
+}
+else {
+    Sys.puts("Point you browser to " + url);
+}

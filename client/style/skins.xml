@@ -5514,8 +5514,8 @@
 <a:radiobutton name="classic">
     <a:style><![CDATA[
         .rbclassic {
-            padding: 2px 2px 2px 2px;
-            _padding: 2px 2px 2px 0; /* IE6 fix */
+            padding: 1px;
+            _padding: 1px 1px 1px 0; /* IE6 fix */
             position: relative;
             min-height: 13px;
             color: #333;
@@ -7488,8 +7488,14 @@
             margin-top: -18px;
         }
 
+        .searchinfiles LABEL {
+            padding: 1px 0 0 2px !important;
+            height: auto !important;
+        }
 
-
+        .searchinfiles DIV {
+            height: auto !important;
+        }
 
         .tree DIV.loading LABEL{
 

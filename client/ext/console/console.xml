@@ -46,7 +46,7 @@
             </a:toolbar>
             
             <a:tab id="tabConsole" skin="lowtab" flex="1" border="0">
-                <a:page caption="Console">
+                <a:page caption="Console" id="pgConsConsole">
                     <a:hbox anchors="0 0 0 0" padding="4">
                         <a:text id="txtConsole"
                           flex       = "5"
@@ -69,7 +69,7 @@
                         require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
                       ">Evaluate</a:button>
                 </a:page>
-                <a:page caption="Quick Watch" render="runtime">
+                <a:page caption="Quick Watch" id="pgConsQuickWatch" render="runtime">
                     <a:vbox anchors="0 0 0 0">
                         <a:textbox id="txtCurObject" 
                             skin      = "tbempty" 

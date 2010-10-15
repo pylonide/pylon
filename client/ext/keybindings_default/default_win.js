@@ -30,6 +30,9 @@ return keys.onLoad({
             "search": "Ctrl-F",
             "searchreplace": "Ctrl-Shift-R"
         },
+        "searchinfiles" : {
+            "searchinfiles": "Ctrl-Shift-F"
+        },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
         },
