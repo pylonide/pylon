@@ -220,7 +220,7 @@ apf.upload.html4.isSupported = function() {
             if (apf.isIE && oBtn.offsetWidth > 81) {
                 apf.console.warn("Button found for upload element with a width "
                                + "greater than 81 pixels. This sadly will not work: "
-                               + oBtn.serialize());
+                               + this.oUpload.$button.serialize());
             }
             //#endif
             
