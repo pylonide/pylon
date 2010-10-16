@@ -65,8 +65,10 @@ return ext.register("ext/gotoline/gotoline", {
                 return false;
             }
             else if (e.keyCode == 38) {
-                if (this.selected == this.getFirstTraverseNode())
+                if (this.selected == this.getFirstTraverseNode()) {
                     txtLineNr.focus();
+                    this.clearSelection();
+                }
             }
             else if (e.keyCode == 27){
                 _self.toggleDialog(-1);

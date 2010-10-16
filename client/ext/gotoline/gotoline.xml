@@ -11,7 +11,7 @@
       top     = "100"
       zindex  = "10000"
     >
-        <a:vbox anchors="0 0 0 0" padding="5" edge="5">
+        <a:vbox anchors="0 0 0 0" padding="0" edge="5">
             <a:textbox id="txtLineNr"
               focusselect="true" />
             <a:list id="lstLineNumber"

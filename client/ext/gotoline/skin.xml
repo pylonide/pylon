@@ -2,8 +2,8 @@
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <a:list name="list">
         <a:style><![CDATA[
-            .lineselect{
-                overflow: auto;
+            .gotolinelist{
+                overflow: hidden;
                 position: relative;
                 background-color: #545454;
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(69,69,69)),color-stop(1, rgb(84,84,84)));
@@ -22,20 +22,21 @@
                 cursor: default;
                 text-align: right;
             }
-            .lineselect>.selected{
+            .gotolinelist>.selected{
                 background-color: #5f5f5f;
                 color: #e7e7e7;
             }
-            .lineselectFocus>.selected{
+            .gotolinelistFocus>.selected{
                 color : #e7e7e7;
             }
-            .lineselect .empty, .lineselect .offline, .lineselect .loading{
+            .gotolinelist .empty, .gotolinelist .offline, .gotolinelist .loading{
                 text-align: center;
-                padding: 8px 0 0 5px;
-                color: #AAA;
+                padding: 8px 0 0 0;
+                color: #777;
+                font-size : 8pt;
                 font-weight : normal;
             }
-            .lineselect>DIV{
+            .gotolinelist>DIV{
                 padding: 2px 6px;
             }
 
@@ -43,7 +44,7 @@
 
         <a:presentation>
             <a:main container=".">
-                <div class='lineselect'>
+                <div class='gotolinelist'>
                 </div>
             </a:main>
             <a:item

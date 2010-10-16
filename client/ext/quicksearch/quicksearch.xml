@@ -11,12 +11,12 @@
       top     = "5"
       right   = "30">
         <a:hbox edge="0 5 5 5">
-            <a:textbox id="txtQuickSearch" flex="1" focusselect="true" />
-            <a:button onclick="require('ext/quicksearch/quicksearch').find(null, true)" skin="btnIconWithBg" class="btnIconWithBgLeft withDivider" icon="arrow_left_search.png">Left</a:button>
-            <a:button onclick="require('ext/quicksearch/quicksearch').find()" skin="btnIconWithBg" class="btnIconWithBgRight" icon="arrow_right_search.png">Right</a:button>
+            <a:textbox id="txtQuickSearch" flex="1" focusselect="true" skinset="default" />
+            <a:button onclick="require('ext/quicksearch/quicksearch').find(null, true)" skin="btnIconWithBg" class="btnIconWithBgLeft withDivider" icon="arrow_left_search.png" />
+            <a:button onclick="require('ext/quicksearch/quicksearch').find()" skin="btnIconWithBg" class="btnIconWithBgRight" icon="arrow_right_search.png" />
             <a:button margin="0 0 0 10" skin="btnIcon" icon="rounded_plus.png" onclick="
               require('ext/searchreplace/searchreplace').toggleDialog(false, true);
-            ">Advanced</a:button>
+            " />
         </a:hbox>
     </a:bar>
 </a:application>
