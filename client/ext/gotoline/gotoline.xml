@@ -5,6 +5,7 @@
 
     <a:bar id="winGotoLine"
       skinset = "gotoline"
+      visible = "false"
       width   = "60"
       height  = "90"
       left    = "100"

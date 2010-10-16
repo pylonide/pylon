@@ -90,6 +90,7 @@ return ext.register("ext/gotoline/gotoline", {
                 var first = lstLineNumber.getFirstTraverseNode();
                 if (first) {
                     lstLineNumber.select(first);
+                    lstLineNumber.$container.scrollTop = 0;
                     lstLineNumber.focus();
                 }
             }
@@ -105,32 +106,62 @@ return ext.register("ext/gotoline/gotoline", {
 
     toggleDialog: function(force) {
         ext.initExtension(this);
+        
+        if (this.control && this.control.stop)
+            this.control.stop();
 
         if (!force && !winGotoLine.visible || force > 0) {
             editorPage = tabEditors.getPage();
             if (!editorPage) return;
 
             var editor = require('ext/editors/editors').currentEditor;
-            if (editor && editor.ceEditor) {
-                var ace = editor.ceEditor.$editor;
-                var cursor = ace.getCursorPosition();
+            if (!editor || !editor.ceEditor)
+                return;
                 
-                //Set the current line
-                txtLineNr.setValue(cursor.row + 1);
-                    
-                //Determine the position of the window
-                var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-                var epos = apf.getAbsolutePosition(editor.ceEditor.$ext);
-                editor.ceEditor.parentNode.appendChild(winGotoLine);
-                winGotoLine.setAttribute("left", 0);
-                winGotoLine.setAttribute("top", pos.pageY - epos[1]);
-            }
+            var ace = editor.ceEditor.$editor;
+            var aceHtml = editor.ceEditor.$ext;
+            var cursor = ace.getCursorPosition();
+            
+            //Set the current line
+            txtLineNr.setValue(cursor.row + 1);
+                
+            //Determine the position of the window
+            var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+            var epos = apf.getAbsolutePosition(aceHtml);
+            var maxTop = aceHtml.offsetHeight - 100;
+            
+            editor.ceEditor.parentNode.appendChild(winGotoLine);
+            winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
+            winGotoLine.setAttribute("left", -60);
             
             winGotoLine.show();
             txtLineNr.focus();
+            
+            //Animate
+            apf.tween.single(winGotoLine.$ext, {
+                type     : "left",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -60,
+                to       : 0,
+                steps    : 8,
+                interval : 1,
+                control  : (this.control = {})
+            });
         }
         else {
-            winGotoLine.hide();
+            //Animate
+            apf.tween.single(winGotoLine.$ext, {
+                type     : "left",
+                anim     : apf.tween.easeInOutCubic,
+                from     : winGotoLine.$ext.offsetLeft,
+                to       : -60,
+                steps    : 8,
+                interval : 1,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winGotoLine.hide();
+                }
+            });
         }
 
         return false;
