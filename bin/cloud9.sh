@@ -17,7 +17,7 @@ Darwin)  echo  "OSX"
     common/node-builds/osx64/node bin/cloud9.js "$@" -aopen
     ;;
 
-Cygwin*)  echo  "Cygwin"
+CYGWIN*)  echo  "Cygwin"
     common/node-builds/win32/node.exe bin/cloud9.js "$@" -a"cmd /c start"
     ;;
 
