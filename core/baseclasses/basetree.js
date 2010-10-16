@@ -295,7 +295,7 @@ apf.BaseTree = function(){
         }
 
         if (immediate || container.scrollHeight > 1000) {
-            if (!this.nocollapse) {
+            if (!this.nocollapse && container != this.$container) {
                 container.style.height = "auto";
                 container.style.overflow = "visible";
             }
@@ -322,14 +322,18 @@ apf.BaseTree = function(){
             onfinish: function(container){
                 if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                     $setTimeout(function(){
-                        container.style.height = container.scrollHeight + "px";
-                        container.style.overflow = "hidden";
+                        if (container != this.$container) {
+                            container.style.height = container.scrollHeight + "px";
+                            container.style.overflow = "hidden";
+                        }
                         _self.$extend(xmlNode, container, null, callback);
                     });
-                    container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";;
-                    container.style.overflow = "visible";
+                    if (container != this.$container) {
+                        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";;
+                        container.style.overflow = "visible";
+                    }
                 }
-                else {
+                else if (container != this.$container) {
                     container.style.overflow = "visible";
                     container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
                 }
@@ -361,11 +365,14 @@ apf.BaseTree = function(){
             container = this.$findContainer(htmlNode);
         }
         
-        container.style.height   = container.offsetHeight;
-        container.style.overflow = "hidden";
+        if (container != this.$container) {
+            container.style.height   = container.offsetHeight;
+            container.style.overflow = "hidden";
+        }
         
         if (immediate) {
-            container.style.height = 0;
+            if (container != this.$container)
+                container.style.height = 0;
             container.style.display = "none";
             this.dispatchEvent("collapse", {xmlNode: xmlNode});
             return;
