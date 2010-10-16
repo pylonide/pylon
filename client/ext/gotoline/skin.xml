@@ -63,7 +63,7 @@
     <a:bar name="bar">
         <a:style><![CDATA[
             .barGotoline{
-                position : relative;
+                position : absolute;
                 background-color: #353637;
                 -webkit-border-top-left-radius: 0px;
                 -webkit-border-top-right-radius: 8px;
@@ -80,6 +80,8 @@
                 -webkit-box-shadow: 1px 1px 4px #666666;
                 -moz-box-shadow: 1px 1px 4px #666666;
                 box-shadow: 1px 1px 4px #666666;
+                width : 20px;
+                left : -100px;
             }
             .brGtlContent {
             }

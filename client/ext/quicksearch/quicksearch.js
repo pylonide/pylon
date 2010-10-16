@@ -10,14 +10,16 @@ require.def("ext/quicksearch/quicksearch",
      "ace/PluginManager",
      "ace/Search",
      "ext/editors/editors", 
+     "text!ext/quicksearch/skin.xml",
      "text!ext/quicksearch/quicksearch.xml"],
-    function(ide, ext, plugins, search, editors, markup) {
+    function(ide, ext, plugins, search, editors, skin, markup) {
 
 return ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
+    skin    : skin,
     markup  : markup,
     hotkeys : {"quicksearch":1},
     hotitems: {},
@@ -99,6 +101,9 @@ return ext.register("ext/quicksearch/quicksearch", {
     toggleDialog: function(force) {
         ext.initExtension(this);
 
+        if (this.control && this.control.stop)
+            this.control.stop();
+
         if (!force && !winQuickSearch.visible || force > 0) {
             editorPage = tabEditors.getPage();
             if (!editorPage) return;
@@ -118,12 +123,36 @@ return ext.register("ext/quicksearch/quicksearch", {
                 if (value)
                     txtQuickSearch.setValue(value);
             }
-            
+
+            winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
             txtQuickSearch.focus();
+
+            //Animate
+            apf.tween.single(winQuickSearch, {
+                type     : "top",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -30,
+                to       : 5,
+                steps    : 8,
+                interval : 1,
+                control  : (this.control = {})
+            });
         }
         else {
-            winQuickSearch.hide();
+            //Animate
+            apf.tween.single(winQuickSearch, {
+                type     : "top",
+                anim     : apf.tween.NORMAL,
+                from     : winQuickSearch.$ext.offsetTop,
+                to       : -30,
+                steps    : 8,
+                interval : 1,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winQuickSearch.hide();
+                }
+            });
         }
 
         return false;

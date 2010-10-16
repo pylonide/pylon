@@ -138,7 +138,7 @@ return ext.register("ext/gotoline/gotoline", {
             txtLineNr.focus();
             
             //Animate
-            apf.tween.single(winGotoLine.$ext, {
+            apf.tween.single(winGotoLine, {
                 type     : "left",
                 anim     : apf.tween.easeInOutCubic,
                 from     : -60,
@@ -150,9 +150,9 @@ return ext.register("ext/gotoline/gotoline", {
         }
         else {
             //Animate
-            apf.tween.single(winGotoLine.$ext, {
+            apf.tween.single(winGotoLine, {
                 type     : "left",
-                anim     : apf.tween.easeInOutCubic,
+                anim     : apf.tween.EASEOUT,
                 from     : winGotoLine.$ext.offsetLeft,
                 to       : -60,
                 steps    : 8,

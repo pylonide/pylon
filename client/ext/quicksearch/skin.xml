@@ -36,9 +36,9 @@
         </a:presentation>
     </a:bar>
 
-    <a:button name="btnIcon">
+    <a:button name="btnsearchicon">
         <a:style><![CDATA[
-            .btnIcon {
+            .btnsearchicon {
                 cursor             : pointer;
                 position           : relative;
                 -moz-user-select   : none;
@@ -46,23 +46,23 @@
                 user-select        : none;
                 
             }
-            .btnIcon .lbl {
+            .btnsearchicon .lbl {
                 width              : 20px;
                 height             : 21px;
                 padding-top        : 4px;
                 overflow           : hidden;
             }
-            .btnIcon span {
+            .btnsearchicon span {
                 height: 20px;
                 display: block;
                 background-repeat:no-repeat;
                 background-position: 0 1px;
             }
 
-            .btnIconOver span {
+            .btnsearchiconOver span {
                 background-position: 0 -20px;
             }
-            .btnIconDown span {
+            .btnsearchiconDown span {
                 background-position: 0 -40px;
             }
         ]]></a:style>
@@ -73,7 +73,7 @@
               background = "."
               icon       = "div[1]/span"
               minwidth   = "20">
-                <div class="btnIcon">
+                <div class="btnsearchicon">
                     <div class="lbl">-
                         <span></span>
                     </div>
@@ -81,9 +81,9 @@
             </a:main>
         </a:presentation>
     </a:button>
-    <a:button name="btnIconWithBg">
+    <a:button name="btnquicksearchnav">
         <a:style><![CDATA[
-            .btnIconWithBg {
+            .btnquicksearchnav {
                 height             : 22px;
                 cursor             : pointer;
                 position           : relative;
@@ -92,7 +92,7 @@
                 user-select        : none;
                 width              : 20px;
              }
-            .btnIconWithBg .lbl{
+            .btnquicksearchnav .lbl{
                 background-color: #e5e5e5;
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
                 background:-moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
@@ -110,20 +110,20 @@
                 padding-top: 1px;
             }
 
-            .btnIconWithBgOver .lbl {
+            .btnquicksearchnavOver .lbl {
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(254,254,254)));
                 background:-moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(254,254,254) 100%);
             }
-            .btnIconWithBgDown .lbl {
+            .btnquicksearchnavDown .lbl {
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(248,248,248)),color-stop(1, rgb(229,229,229)));
                 background:-moz-linear-gradient(center bottom,rgb(248,248,248) 0%,rgb(229,229,229) 100%);
             }
 
-            .btnIconWithBg.btnIconWithBgLeft .lbl {
+            .btnquicksearchnav.btnquicksearchnavLeft .lbl {
                 border-right: none;
                 border-left: none;
             }
-            .btnIconWithBg.btnIconWithBgRight .lbl{
+            .btnquicksearchnav.btnquicksearchnavRight .lbl{
                 border-left: none;
                 -webkit-border-top-left-radius: 0px;
                 -webkit-border-top-right-radius: 4px;
@@ -139,17 +139,17 @@
                 border-bottom-left-radius: 0px;
             }
 
-            .btnIconWithBg .lbl {
+            .btnquicksearchnav .lbl {
                 
             }
-            .btnIconWithBg span {
+            .btnquicksearchnav span {
                 background-repeat:no-repeat;
                 display: block;
                 height: 22px;
                 background-position:center center;
             }
 
-            .btnIconWithBg .btnDivider {
+            .btnquicksearchnav .btnDivider {
                 z-index: 1;
                 border-color: transparent white transparent #C3C3C3;
                 border-left:1px solid #C3C3C3;
@@ -166,7 +166,7 @@
                 display: none;
             }
 
-            .btnIconWithBg.withDivider .btnDivider {
+            .btnquicksearchnav.withDivider .btnDivider {
                 display: block;
             }
         ]]></a:style>
@@ -177,7 +177,7 @@
               background = "."
               icon       = "div[1]/span"
               minwidth   = "20">
-                <div class="btnIconWithBg">
+                <div class="btnquicksearchnav">
                     <div class="lbl">-
                         <span></span>
                         <div class="btnDivider"></div>
