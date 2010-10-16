@@ -31,7 +31,7 @@ return keys.onLoad({
             "searchreplace": "Ctrl-Shift-R"
         },
         "searchinfiles" : {
-            "searchinfiles": "Ctrl-Shift-F"
+            "searchinfiles": "Alt-Shift-F"
         },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
