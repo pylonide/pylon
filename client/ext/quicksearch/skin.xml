@@ -1,0 +1,363 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+   <a:bar name="barQuickSearch">
+        <a:style><![CDATA[
+            .barQuickSearch{
+                position : relative;
+
+                -webkit-border-top-left-radius: 0px;
+                -webkit-border-top-right-radius: 0px;
+                -webkit-border-bottom-right-radius: 8px;
+                -webkit-border-bottom-left-radius: 8px;
+                -moz-border-radius-topleft: 0px;
+                -moz-border-radius-topright: 0px;
+                -moz-border-radius-bottomright: 8px;
+                -moz-border-radius-bottomleft: 8px;
+                border-top-left-radius: 0px;
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 8px;
+                border-bottom-left-radius: 8px;
+
+                border-left: 1px solid #b8b8b8;
+                border-right: 1px solid #b8b8b8;
+                border-bottom: 1px solid #b8b8b8;
+
+                background-color: #e8e8e8;
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(232,232,232)),color-stop(1, rgb(227,227,227)));
+                background:-moz-linear-gradient(center bottom,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="barQuickSearch">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:bar>
+    
+    <a:textbox name="searchbox_textbox">
+        <a:style><![CDATA[
+            .searchbox_textbox {
+                position : relative;
+                height   : 25px;
+                padding-bottom: 1px;
+            }
+
+            .searchbox_textbox .sbtb_middle {
+                height           : 19px;
+                padding          : 2px 25px 2px 25px;
+
+
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+                background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+                color: #333333;
+                border: 1px solid #afafaf;
+                margin: 0;
+                outline: none;
+                font-family: Tahoma;
+                font-size: 12px;
+                text-overflow: ellipsis;
+                -webkit-box-shadow: 0px 1px 0px #ffffff;
+                -moz-box-shadow: 0px 1px 0px #ffffff;
+                box-shadow: 0px 1px 0px #ffffff;
+            }
+
+            .searchbox_textbox .sbtb_middle INPUT {
+                border           : 0;
+                height           : 17px;
+                font-size        : 12px;
+                color            : #333333;
+                font-family      : Trebuchet MS;
+                outline          : none;
+                background-color : transparent;
+                width: 100%;
+            }
+
+            .searchbox_textboxInitial .sbtb_middle INPUT {
+                color : #777777;
+            }
+
+            .searchbox_textbox .sbtb_arrow {
+
+            }
+
+            .searchbox_textbox .sbtb_icon {
+                width               : 18px;
+                height              : 18px;
+                position            : absolute;
+                top                 : 4px;
+                left                : 5px;
+                background-image    : url(images/searchbox_textbox_icon.png);
+                background-position : 0 0;
+                background-repeat   : no-repeat;
+            }
+
+            .searchbox_textboxFocus .sbtb_icon {
+                background-position : 0 -18px;
+            }
+
+            .searchbox_textboxFocus .btnclose {
+                position : absolute;
+                right : 11px;
+                top : 5px;
+                width : 14px;
+                height : 14px;
+                background : url(images/btnclose.gif) no-repeat 0 0;
+                display : none;
+                cursor: pointer;
+            }
+
+            .searchbox_textboxFocus .btnclose:hover{
+                background-position : 0 -14px;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main input="div[3]/input" button="div[4]">
+                <div class="searchbox_textbox">
+                    <div class="sbtb_arrow"></div>
+                    <div class="sbtb_icon"></div>
+                    <div class="sbtb_middle">
+                        <input type="text" />
+                    </div>
+                    <div class="btnclose"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:textbox>
+
+    <a:button name="btnIcon">
+        <a:style><![CDATA[
+            .btnIcon {
+                cursor             : pointer;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                
+            }
+            .btnIcon .lbl {
+                width              : 20px;
+                height             : 21px;
+                padding-top        : 4px;
+                overflow           : hidden;
+            }
+            .btnIcon span {
+                height: 20px;
+                display: block;
+                background-repeat:no-repeat;
+                background-position: 0 1px;
+            }
+
+            .btnIconOver span {
+                background-position: 0 -20px;
+            }
+            .btnIconDown span {
+                background-position: 0 -40px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main
+              caption    = "div[1]/text()"
+              label      = "div[1]/text()"
+              background = "."
+              icon       = "div[1]/span"
+              minwidth   = "20">
+                <div class="btnIcon">
+                    <div class="lbl">-
+                        <span></span>
+                    </div>
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    <a:button name="btnIconWithBg">
+        <a:style><![CDATA[
+            .btnIconWithBg {
+                height             : 22px;
+                cursor             : pointer;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                width              : 20px;
+             }
+            .btnIconWithBg .lbl{
+                background-color: #e5e5e5;
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
+                background:-moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
+                color: #333333;
+                border: 1px solid #afafaf;
+                margin: 0;
+                outline: none;
+                font-family: Tahoma;
+                font-size: 12px;
+                text-overflow: ellipsis;
+                -webkit-box-shadow: 0px 1px 0px #ffffff;
+                -moz-box-shadow: 0px 1px 0px #ffffff;
+                box-shadow: 0px 1px 0px #ffffff;
+                height : 22px;
+                padding-top: 1px;
+            }
+
+            .btnIconWithBgOver .lbl {
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(254,254,254)));
+                background:-moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(254,254,254) 100%);
+            }
+            .btnIconWithBgDown .lbl {
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(248,248,248)),color-stop(1, rgb(229,229,229)));
+                background:-moz-linear-gradient(center bottom,rgb(248,248,248) 0%,rgb(229,229,229) 100%);
+            }
+
+            .btnIconWithBg.btnIconWithBgLeft .lbl {
+                border-right: none;
+                border-left: none;
+            }
+            .btnIconWithBg.btnIconWithBgRight .lbl{
+                border-left: none;
+                -webkit-border-top-left-radius: 0px;
+                -webkit-border-top-right-radius: 4px;
+                -webkit-border-bottom-right-radius: 4px;
+                -webkit-border-bottom-left-radius: 0px;
+                -moz-border-radius-topleft: 0px;
+                -moz-border-radius-topright: 4px;
+                -moz-border-radius-bottomright: 4px;
+                -moz-border-radius-bottomleft: 0px;
+                border-top-left-radius: 0px;
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                border-bottom-left-radius: 0px;
+            }
+
+            .btnIconWithBg .lbl {
+                
+            }
+            .btnIconWithBg span {
+                background-repeat:no-repeat;
+                display: block;
+                height: 22px;
+                background-position:center center;
+            }
+
+            .btnIconWithBg .btnDivider {
+                z-index: 1;
+                border-color: transparent white transparent #C3C3C3;
+                border-left:1px solid #C3C3C3;
+                border-right:1px solid white;
+                border-style:none solid;
+                border-width:medium 1px;
+                cursor:default;
+                height:17px;
+                line-height:0;
+                position:absolute;
+                right: -1px;
+                top:4px;
+                width:0;
+                display: none;
+            }
+
+            .btnIconWithBg.withDivider .btnDivider {
+                display: block;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main
+              caption    = "div[1]/text()"
+              label      = "div[1]/text()"
+              background = "."
+              icon       = "div[1]/span"
+              minwidth   = "20">
+                <div class="btnIconWithBg">
+                    <div class="lbl">-
+                        <span></span>
+                        <div class="btnDivider"></div>
+                    </div>
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    <a:button name="btnDd">
+        <a:style><![CDATA[
+            .btnDd {
+                height             : 22px;
+                cursor             : pointer;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                width              : 20px;
+             }
+            .btnDd .lbl{
+                background-color: #e5e5e5;
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
+                background:-moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
+                color: #333333;
+                border: 1px solid #afafaf;
+                margin: 0;
+                outline: none;
+                font-family: Tahoma;
+                font-size: 12px;
+                text-overflow: ellipsis;
+                -webkit-box-shadow: 0px 1px 0px #ffffff;
+                -moz-box-shadow: 0px 1px 0px #ffffff;
+                box-shadow: 0px 1px 0px #ffffff;
+                height : 22px;
+                padding-top: 1px;
+            }
+
+            .btnDdOver .lbl {
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(254,254,254)));
+                background:-moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(254,254,254) 100%);
+            }
+            .btnDdDown .lbl {
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(248,248,248)),color-stop(1, rgb(229,229,229)));
+                background:-moz-linear-gradient(center bottom,rgb(248,248,248) 0%,rgb(229,229,229) 100%);
+            }
+
+            .btnDd.btnDdLeft .lbl {
+                border-right: none;
+                border-left: none;
+            }
+            .btnDd.btnDdRight .lbl{
+                border-left: none;
+                -webkit-border-top-left-radius: 0px;
+                -webkit-border-top-right-radius: 2px;
+                -webkit-border-bottom-right-radius: 2px;
+                -webkit-border-bottom-left-radius: 0px;
+                -moz-border-radius-topleft: 0px;
+                -moz-border-radius-topright: 2px;
+                -moz-border-radius-bottomright: 2px;
+                -moz-border-radius-bottomleft: 0px;
+                border-top-left-radius: 0px;
+                border-top-right-radius: 2px;
+                border-bottom-right-radius: 2px;
+                border-bottom-left-radius: 0px;
+            }
+
+            .btnDd .lbl {
+
+            }
+            .btnDd span {
+                background-repeat:no-repeat;
+                display: block;
+                height: 22px;
+                background-position:center center;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main
+              caption    = "div[1]/text()"
+              label      = "div[1]/text()"
+              background = "."
+              icon       = "div[1]/span"
+              minwidth   = "15">
+                <div class="btnDd">
+                    <div class="lbl">-
+                        <span></span>
+                    </div>
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+</a:skin>
