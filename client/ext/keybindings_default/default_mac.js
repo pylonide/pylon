@@ -27,7 +27,7 @@ return keys.onLoad({
             "newfolder": "Command-Shift-N"
         },
         "searchreplace" : {
-            "search": "Command-F",
+            "search": "Command-Shift-F",
             "searchreplace": "Command-Shift-R"
         },
         "searchinfiles" : {

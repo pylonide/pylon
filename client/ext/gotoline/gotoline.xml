@@ -1,28 +1,27 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="gotoline" 
-        src="{require('ext/gotoline/gotoline').skin}" />
-    <a:bar
-      skinset="gotoline"
-      skin = "basic"
-      id="winGotoLine" 
-      width="60"
-      height="90"
-      left = "100"
-      top  = "100"
-      zindex = "10000"
+      src        = "{require('ext/gotoline/gotoline').skin}" 
+      media-path = "ext/gotoline/images/" />
+
+    <a:bar id="winGotoLine"
+      skinset = "gotoline"
+      width   = "60"
+      height  = "90"
+      left    = "100"
+      top     = "100"
+      zindex  = "10000"
     >
         <a:vbox anchors="0 0 0 0" padding="5" edge="5">
             <a:textbox id="txtLineNr"
               focusselect="true" />
             <a:list id="lstLineNumber"
-              model="{tabEditors.getPage(tabEditors.activepagenr).$model}"
-           	  skin="lineselect"
-              flex="1"
-              autoselect="false"
-              multiselect="false"
-              empty-message="empty"
-              caption="[@nr]"
-              each   = "[gotoline/line]" />
+              model   = "{tabEditors.getPage(tabEditors.activepagenr).$model}"
+              flex    = "1"
+              caption = "[@nr]"
+              each    = "[gotoline/line]" 
+              autoselect    = "false"
+              multiselect   = "false"
+              empty-message = "empty" />
         </a:vbox>
     </a:bar>
 </a:application>
