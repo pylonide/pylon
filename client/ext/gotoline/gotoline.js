@@ -9,9 +9,10 @@ require.def("ext/gotoline/gotoline",
      "core/ext",
      "ace/PluginManager",
      "ace/Search",
+     "ext/editors/editors", 
      "text!ext/gotoline/skin.xml",
      "text!ext/gotoline/gotoline.xml"],
-    function(ide, ext, plugins, search, skin, markup) {
+    function(ide, ext, plugins, search, editors, skin, markup) {
 
 return ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
@@ -110,14 +111,14 @@ return ext.register("ext/gotoline/gotoline", {
         if (this.control && this.control.stop)
             this.control.stop();
 
-        if (!force && !winGotoLine.visible || force > 0) {
-            editorPage = tabEditors.getPage();
-            if (!editorPage) return;
+        var editorPage = tabEditors.getPage();
+        if (!editorPage) return;
 
-            var editor = require('ext/editors/editors').currentEditor;
-            if (!editor || !editor.ceEditor)
-                return;
-                
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
+        if (!force && !winGotoLine.visible || force > 0) {
             var ace = editor.ceEditor.$editor;
             var aceHtml = editor.ceEditor.$ext;
             var cursor = ace.getCursorPosition();
@@ -148,7 +149,7 @@ return ext.register("ext/gotoline/gotoline", {
                 control  : (this.control = {})
             });
         }
-        else {
+        else if (winGotoLine.visible) {
             //Animate
             apf.tween.single(winGotoLine, {
                 type     : "left",
@@ -160,6 +161,7 @@ return ext.register("ext/gotoline/gotoline", {
                 control  : (this.control = {}),
                 onfinish : function(){
                     winGotoLine.hide();
+                    editor.ceEditor.focus();
                 }
             });
         }

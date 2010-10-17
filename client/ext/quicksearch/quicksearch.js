@@ -104,25 +104,26 @@ return ext.register("ext/quicksearch/quicksearch", {
         if (this.control && this.control.stop)
             this.control.stop();
 
+        var editorPage = tabEditors.getPage();
+        if (!editorPage) return;
+
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
         if (!force && !winQuickSearch.visible || force > 0) {
-            editorPage = tabEditors.getPage();
-            if (!editorPage) return;
+            this.position = 0;
             
-            var editor = editors.currentEditor;
-            if (editor && editor.ceEditor) {
-                this.position = 0;
-                
-                var sel   = editor.getSelection();
-                var doc   = editor.getDocument();
-                var range = sel.getRange();
-                var value = doc.getTextRange(range);
-                
-                if (!value && editor.ceEditor)
-                    var value = editor.ceEditor.getLastSearchOptions().needle;
-                
-                if (value)
-                    txtQuickSearch.setValue(value);
-            }
+            var sel   = editor.getSelection();
+            var doc   = editor.getDocument();
+            var range = sel.getRange();
+            var value = doc.getTextRange(range);
+            
+            if (!value && editor.ceEditor)
+                var value = editor.ceEditor.getLastSearchOptions().needle;
+            
+            if (value)
+                txtQuickSearch.setValue(value);
 
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
@@ -139,7 +140,7 @@ return ext.register("ext/quicksearch/quicksearch", {
                 control  : (this.control = {})
             });
         }
-        else {
+        else if (winQuickSearch.visible) {
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
@@ -151,6 +152,7 @@ return ext.register("ext/quicksearch/quicksearch", {
                 control  : (this.control = {}),
                 onfinish : function(){
                     winQuickSearch.hide();
+                    editor.ceEditor.focus();
                 }
             });
         }
