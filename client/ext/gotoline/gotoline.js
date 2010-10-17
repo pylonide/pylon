@@ -144,7 +144,7 @@ return ext.register("ext/gotoline/gotoline", {
                 from     : -60,
                 to       : 0,
                 steps    : 8,
-                interval : 1,
+                interval : 10,
                 control  : (this.control = {})
             });
         }
@@ -156,7 +156,7 @@ return ext.register("ext/gotoline/gotoline", {
                 from     : winGotoLine.$ext.offsetLeft,
                 to       : -60,
                 steps    : 8,
-                interval : 1,
+                interval : 10,
                 control  : (this.control = {}),
                 onfinish : function(){
                     winGotoLine.hide();

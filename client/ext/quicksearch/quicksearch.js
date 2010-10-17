@@ -135,7 +135,7 @@ return ext.register("ext/quicksearch/quicksearch", {
                 from     : -30,
                 to       : 5,
                 steps    : 8,
-                interval : 1,
+                interval : 10,
                 control  : (this.control = {})
             });
         }
@@ -147,7 +147,7 @@ return ext.register("ext/quicksearch/quicksearch", {
                 from     : winQuickSearch.$ext.offsetTop,
                 to       : -30,
                 steps    : 8,
-                interval : 1,
+                interval : 10,
                 control  : (this.control = {}),
                 onfinish : function(){
                     winQuickSearch.hide();
