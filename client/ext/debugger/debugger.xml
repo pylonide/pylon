@@ -46,6 +46,7 @@
 		  autoselect = "false"
 		  reselectable = "true"
 		  anchors    = "0 0 0 0"
+		  border     = "0"
 		  model      = "mdlDbgBreakpoints"
 		  each       = "[breakpoint]"
 		  caption    = "[@text]"
