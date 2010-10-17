@@ -581,7 +581,7 @@ apf.webdav = function(struct, tagName){
 
         this.method  = "COPY";
         var oHeaders = {
-            "Destination": sTo || this.$server
+            "Destination": sTo || this.$server
         };
         if (typeof bOverwrite == "undefined")
             bOverwrite = true;

@@ -218,10 +218,11 @@ apf.splitter = function(struct, tagName){
                                     ? 2 * _self.parentNode.padding : 0));
                     }
                     for (var i = 0, l = set.length; i < l; i+=2) {
-                        _self.$totalFlex += set[i+1];
                         set[i].setAttribute("flex", set[i+1]);
                     }
                 }
+                
+                _self.$totalFlex += _self.$next.flex + _self.$previous.flex;
             
                 var startPos, startOffset;
                 if (apf.hasFlexibleBox) {

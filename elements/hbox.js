@@ -87,7 +87,8 @@ apf.vbox = function(struct, tagName){
      *   end
      *   stretch
      */
-    this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align");
+    this.$booleanProperties["splitters"] = true;
+    this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align", "splitters");
     
     this.$propHandlers["padding"] = function(value){
         this.padding = parseInt(value);
@@ -232,6 +233,28 @@ apf.vbox = function(struct, tagName){
             this.parentNode.$propHandlers["padding"]
                 .call(this.parentNode, this.parentNode.padding);
         //}
+        
+        //#ifdef __LAYOUT_ENABLE_SPLITTERS
+        if (this.parentNode.splitters && !this.$splitter) {
+            if (!e.value) {
+                if (this.nextSibling && this.nextSibling.$splitter)
+                    this.nextSibling.$splitter.removeNode();
+            }
+            else {
+                var isLast = isLastVisibleChild(this);
+                if (!isLast) {
+                    this.parentNode.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        this.nextSibling);
+                }
+                else if (this.previousSibling && !this.previousSibling.$splitter) {
+                    this.parentNode.insertBefore(
+                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        this);
+                }
+            }
+        }
+        //#endif
         
         if (apf.hasFlexibleBox) {
             if (this.$altExt)
@@ -406,7 +429,8 @@ apf.vbox = function(struct, tagName){
     function isLastVisibleChild(amlNode){
         var lastChild = amlNode.parentNode.lastChild;
         while(lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
-          || lastChild.visible === false)) {
+          || lastChild.visible === false 
+          || !lastChild.visible && apf.isFalse(lastChild.getAttribute("visible")))) {
             lastChild = lastChild.previousSibling;
         }
         
@@ -518,7 +542,7 @@ apf.vbox = function(struct, tagName){
                 propHandlers.flex.call(amlNode, amlNode.flex);    
 
             //Ie somehow sets the visible flags in between registration
-            var isLast = apf.isIE ? this.lastChild == amlNode : isLastVisibleChild(amlNode);
+            var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
                 this.$propHandlers["padding"].call(this, this.padding);
                 this.$propHandlers["align"].call(this, this.align);
@@ -526,6 +550,13 @@ apf.vbox = function(struct, tagName){
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
             }
+            //#ifdef __LAYOUT_ENABLE_SPLITTERS
+            else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false) {
+                this.insertBefore(
+                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                    amlNode.nextSibling);
+            }
+            //#endif
         
             delete this.$noResize;
             
@@ -584,6 +615,13 @@ apf.vbox = function(struct, tagName){
             
             if (amlNode.width)
                 amlNode.$ext.style.width = "";
+            
+            //#ifdef __LAYOUT_ENABLE_SPLITTERS
+            if (this.splitters && !amlNode.$splitter 
+              && amlNode.nextSibling && amlNode.nextSibling.$splitter) {
+                amlNode.nextSibling.$splitter.removeNode();
+            }
+            //#endif
         }
     }
     /*
