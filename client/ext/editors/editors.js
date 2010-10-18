@@ -114,7 +114,7 @@ return ext.register("ext/editors/editors", {
             ext.style.top  = pos[1] + "px";
             var d = apf.getDiff(ext);
             ext.style.width = (ph.offsetWidth - d[0]) + "px";
-            ext.style.height = (ph.offsetHeight - d[1] - 2) + "px";
+            ext.style.height = (ph.offsetHeight - d[1]) + "px";
         });
 
         return vbox;
