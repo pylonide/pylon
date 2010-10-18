@@ -97,6 +97,10 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$ext.host = this;
 
         // #ifdef __WITH_LIVEEDIT
+        if (!this.hasFeature(apf.__LIVEEDIT__)) {
+            this.implement(apf.LiveEdit);
+        }
+        
         this.liveedit = apf.isTrue(apf.getInheritedAttribute(this, "liveedit"));
         if (this.liveedit) {
             //this.implement(apf.LiveEdit);
