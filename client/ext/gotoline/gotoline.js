@@ -9,9 +9,10 @@ require.def("ext/gotoline/gotoline",
      "core/ext",
      "ace/PluginManager",
      "ace/Search",
+     "ext/editors/editors", 
      "text!ext/gotoline/skin.xml",
      "text!ext/gotoline/gotoline.xml"],
-    function(ide, ext, plugins, search, skin, markup) {
+    function(ide, ext, plugins, search, editors, skin, markup) {
 
 return ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
@@ -65,8 +66,10 @@ return ext.register("ext/gotoline/gotoline", {
                 return false;
             }
             else if (e.keyCode == 38) {
-                if (this.selected == this.getFirstTraverseNode())
+                if (this.selected == this.getFirstTraverseNode()) {
                     txtLineNr.focus();
+                    this.clearSelection();
+                }
             }
             else if (e.keyCode == 27){
                 _self.toggleDialog(-1);
@@ -88,6 +91,7 @@ return ext.register("ext/gotoline/gotoline", {
                 var first = lstLineNumber.getFirstTraverseNode();
                 if (first) {
                     lstLineNumber.select(first);
+                    lstLineNumber.$container.scrollTop = 0;
                     lstLineNumber.focus();
                 }
             }
@@ -103,32 +107,63 @@ return ext.register("ext/gotoline/gotoline", {
 
     toggleDialog: function(force) {
         ext.initExtension(this);
+        
+        if (this.control && this.control.stop)
+            this.control.stop();
+
+        var editorPage = tabEditors.getPage();
+        if (!editorPage) return;
+
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
 
         if (!force && !winGotoLine.visible || force > 0) {
-            editorPage = tabEditors.getPage();
-            if (!editorPage) return;
-
-            var editor = require('ext/editors/editors').currentEditor;
-            if (editor && editor.ceEditor) {
-                var ace = editor.ceEditor.$editor;
-                var cursor = ace.getCursorPosition();
+            var ace = editor.ceEditor.$editor;
+            var aceHtml = editor.ceEditor.$ext;
+            var cursor = ace.getCursorPosition();
+            
+            //Set the current line
+            txtLineNr.setValue(cursor.row + 1);
                 
-                //Set the current line
-                txtLineNr.setValue(cursor.row + 1);
-                    
-                //Determine the position of the window
-                var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-                var epos = apf.getAbsolutePosition(editor.ceEditor.$ext);
-                editor.ceEditor.parentNode.appendChild(winGotoLine);
-                winGotoLine.setAttribute("left", 0);
-                winGotoLine.setAttribute("top", pos.pageY - epos[1]);
-            }
+            //Determine the position of the window
+            var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+            var epos = apf.getAbsolutePosition(aceHtml);
+            var maxTop = aceHtml.offsetHeight - 100;
+            
+            editor.ceEditor.parentNode.appendChild(winGotoLine);
+            winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
+            winGotoLine.setAttribute("left", -60);
             
             winGotoLine.show();
             txtLineNr.focus();
+            
+            //Animate
+            apf.tween.single(winGotoLine, {
+                type     : "left",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -60,
+                to       : 0,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {})
+            });
         }
-        else {
-            winGotoLine.hide();
+        else if (winGotoLine.visible) {
+            //Animate
+            apf.tween.single(winGotoLine, {
+                type     : "left",
+                anim     : apf.tween.EASEOUT,
+                from     : winGotoLine.$ext.offsetLeft,
+                to       : -60,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winGotoLine.hide();
+                    editor.ceEditor.focus();
+                }
+            });
         }
 
         return false;

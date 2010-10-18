@@ -10,14 +10,16 @@ require.def("ext/quicksearch/quicksearch",
      "ace/PluginManager",
      "ace/Search",
      "ext/editors/editors", 
+     "text!ext/quicksearch/skin.xml",
      "text!ext/quicksearch/quicksearch.xml"],
-    function(ide, ext, plugins, search, editors, markup) {
+    function(ide, ext, plugins, search, editors, skin, markup) {
 
 return ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
+    skin    : skin,
     markup  : markup,
     hotkeys : {"quicksearch":1},
     hotitems: {},
@@ -99,31 +101,60 @@ return ext.register("ext/quicksearch/quicksearch", {
     toggleDialog: function(force) {
         ext.initExtension(this);
 
+        if (this.control && this.control.stop)
+            this.control.stop();
+
+        var editorPage = tabEditors.getPage();
+        if (!editorPage) return;
+
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
         if (!force && !winQuickSearch.visible || force > 0) {
-            editorPage = tabEditors.getPage();
-            if (!editorPage) return;
+            this.position = 0;
             
-            var editor = editors.currentEditor;
-            if (editor && editor.ceEditor) {
-                this.position = 0;
-                
-                var sel   = editor.getSelection();
-                var doc   = editor.getDocument();
-                var range = sel.getRange();
-                var value = doc.getTextRange(range);
-                
-                if (!value && editor.ceEditor)
-                    var value = editor.ceEditor.getLastSearchOptions().needle;
-                
-                if (value)
-                    txtQuickSearch.setValue(value);
-            }
+            var sel   = editor.getSelection();
+            var doc   = editor.getDocument();
+            var range = sel.getRange();
+            var value = doc.getTextRange(range);
             
+            if (!value && editor.ceEditor)
+                var value = editor.ceEditor.getLastSearchOptions().needle;
+            
+            if (value)
+                txtQuickSearch.setValue(value);
+
+            winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
             txtQuickSearch.focus();
+
+            //Animate
+            apf.tween.single(winQuickSearch, {
+                type     : "top",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -30,
+                to       : 5,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {})
+            });
         }
-        else {
-            winQuickSearch.hide();
+        else if (winQuickSearch.visible) {
+            //Animate
+            apf.tween.single(winQuickSearch, {
+                type     : "top",
+                anim     : apf.tween.NORMAL,
+                from     : winQuickSearch.$ext.offsetTop,
+                to       : -30,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winQuickSearch.hide();
+                    editor.ceEditor.focus();
+                }
+            });
         }
 
         return false;

@@ -89,7 +89,7 @@ return ext.register("ext/noderunner/noderunner", {
                 this.workspaceDir = message.workspaceDir;
                 fs.setProjectName(this.workspaceDir.replace(/\/+$/, "").split("/").pop());
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
-                this.davPrefix = location.pathname+message.davPrefix;
+                this.davPrefix = message.davPrefix;
                 break;
 
             case "node-data":

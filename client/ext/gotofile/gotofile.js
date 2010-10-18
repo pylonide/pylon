@@ -42,11 +42,7 @@ return ext.register("ext/gotofile/gotofile", {
     init : function() {
         txtGoToFile.addEventListener("keydown", function(e){
             if (e.keyCode == 13){
-                var node = trFiles.selected;
-                if (!node)
-                    trFiles.select(node = trFiles.xmlRoot.selectSingleNode("folder[1]"));
-                while (node.tagName != "folder")
-                    node = node.parentNode;
+                var node = trFiles.xmlRoot.selectSingleNode("folder[1]");
                 mdlGoToFile.load("{davProject.report('" + node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
             }
@@ -75,17 +71,9 @@ return ext.register("ext/gotofile/gotofile", {
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
             winGoToFile.hide();
-            var root = trFiles.selected;
-            while (root.tagName != "folder")
-                root = root.parentNode;
-            var path   = root.getAttribute("path") + apf.getTextNode(e.xmlNode).nodeValue,
-                chunks = path.split("/"),
-                node   = apf.n("<file />")
-                    .attr("name", chunks[chunks.length-1])
-                    .attr("contenttype", "application/javascript")
-                    .attr("path", path)
-                    .node();
-            ide.dispatchEvent("openfile", {node: node});
+            var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
+                path   = root.getAttribute("path") + apf.getTextNode(e.xmlNode).nodeValue;
+            require("ext/debugger/debugger").showFile(path, 0, 0);
         });
     },
     

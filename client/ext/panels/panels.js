@@ -68,7 +68,7 @@ return ext.register("ext/panels/panels", {
     
     setPanelSettings : function(panelExt, set){
         var pset, panel = panelExt.panel, parent = panel.parentNode;
-        for (prop in set) {
+        for (var prop in set) {
             if (prop == "parent") {
                 pset = set.parent;
                 for (prop in pset) {

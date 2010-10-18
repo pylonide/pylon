@@ -27,19 +27,22 @@ return keys.onLoad({
             "newfolder": "Ctrl-Shift-N"
         },
         "searchreplace" : {
-            "search": "Ctrl-F",
+            "search": "Ctrl-Shift-F",
             "searchreplace": "Ctrl-Shift-R"
+        },
+        "searchinfiles" : {
+            "searchinfiles": "Alt-Shift-F"
         },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
         },
         "settings": {
-            "showsettings": "Ctrl-J"
+            "showsettings": "Ctrl-,"
         },
         "tabbehaviors" : {
-            "closetab": "Ctrl-W",
-            "closealltabs": "Ctrl-Shift-W",
-            "closeallbutme": "Ctrl-Alt-W",
+            "closetab": "Ctrl-F4",
+            "closealltabs": "Ctrl-Shift-F4",
+            "closeallbutme": "Ctrl-Alt-F4",
             "gototabright": "Ctrl-Shift-]",
             "gototableft": "Ctrl-Shift-[",
             "tab1": "Ctrl-1",
@@ -56,14 +59,14 @@ return keys.onLoad({
         "code" : {
             "selectall": "Ctrl-A",
             "removeline": "Ctrl-D",
-            "gotoline": "Ctrl-L",
+            "gotoline": "Ctrl-G",
             "togglecomment": "Ctrl-7",
-            "findnext": "Ctrl-K",
-            "findprevious": "Ctrl-Shift-K",
+            "findnext": "F3",
+            "findprevious": "Shift-F3",
             "find": "Ctrl-F",
             "replace": "Ctrl-Shift-R",
             "undo": "Ctrl-Z",
-            "redo": "Ctrl-Shift=Z|Ctrl-Y",
+            "redo": "Ctrl-Shift-Z|Ctrl-Y",
             "overwrite": "Insert",
             "copylinesup": "Ctrl-Alt-Up",
             "movelinesup": "Alt-Up",

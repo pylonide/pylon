@@ -27,14 +27,17 @@ return keys.onLoad({
             "newfolder": "Command-Shift-N"
         },
         "searchreplace" : {
-            "search": "Command-F",
+            "search": "Command-Shift-F",
             "searchreplace": "Command-Shift-R"
+        },
+        "searchinfiles" : {
+            "searchinfiles": "Alt-Shift-F"
         },
         "formatjson" : {
             "format" : "Command-Shift-J"
         },
         "settings": {
-            "showsettings": "Command-J"
+            "showsettings": "Command-,"
         },
         "tabbehaviors" : {
             "closetab": "Command-W",
@@ -58,8 +61,8 @@ return keys.onLoad({
             "removeline": "Command-D",
             "gotoline": "Command-L",
             "togglecomment": "Command-7",
-            "findnext": "Command-K",
-            "findprevious": "Command-Shift-K",
+            "findnext": "Command-G",
+            "findprevious": "Command-Shift-G",
             "find": "Command-F",
             "replace": "Command-Shift-R",
             "undo": "Command-Z",

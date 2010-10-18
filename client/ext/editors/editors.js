@@ -316,8 +316,8 @@ return ext.register("ext/editors/editors", {
         });
 
         var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
-        this.hbox     = vbox.appendChild(new apf.hbox({flex : 1, padding : 5}));
-        this.splitter = vbox.appendChild(new apf.splitter());
+        this.hbox     = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
+        //this.splitter = vbox.appendChild(new apf.splitter());
         this.nodes.push(this.addTabSection());
 
         this.panel = this.hbox;
@@ -369,17 +369,17 @@ return ext.register("ext/editors/editors", {
 
     enable : function(){
         this.hbox.show();
-        this.splitter.show();
+        //this.splitter.show();
     },
 
     disable : function(){
         this.hbox.hide();
-        this.splitter.hide();
+        //this.splitter.hide();
     },
 
     destroy : function(){
         this.hbox.destroy(true, true);
-        this.splitter.destroy(true, true);
+        //this.splitter.destroy(true, true);
         panels.unregister(this);
     }
 });

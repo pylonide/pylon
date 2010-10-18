@@ -27,7 +27,7 @@
 
             var HOST    = "http://dev1.ajax.org";
             var TESTING = false; //Load data from test models
-            var VERSION = FILES; //Change the version you want to use here
+            var VERSION = RELEASE; //Change the version you want to use here
 
             var apfLoc = VERSION == FILES
                 ? "common/apf/apf.js"
@@ -78,6 +78,7 @@
                             "ext/undo/undo",
                             "ext/clipboard/clipboard",
                             //"ext/refactor/refactor",
+                            "ext/searchinfiles/searchinfiles",
                             "ext/searchreplace/searchreplace",
                             "ext/quicksearch/quicksearch",
                             "ext/gotoline/gotoline",
@@ -197,12 +198,10 @@
                 </a:bar>
             </a:toolbar>
 
-            <a:hbox padding="8" edge="8" flex="1">
-                <a:vbox padding="8" width="200" />
-                <a:splitter />
-                <a:vbox flex="1" padding="8" />
-                <a:splitter />
-                <a:vbox padding="8" width="300" visible="false" />
+            <a:hbox padding="8" edge="8" flex="1" splitters="true">
+                <a:vbox padding="8" width="200" splitters="true" />
+                <a:vbox flex="1" padding="8" splitters="true" />
+                <a:vbox padding="8" width="300" visible="false" splitters="true" />
             </a:hbox>
 
             <a:statusbar id="sbMain">

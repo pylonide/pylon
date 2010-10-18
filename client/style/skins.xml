@@ -2096,7 +2096,22 @@
         }
 
         .wn_cp_window .wn_cp_border_t .wn_cp_buttons {
-            display : none;
+            float : right;
+            margin : 11px 0 0 0;
+            position : relative;
+            z-index : 100;
+        }
+        
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons div{
+            color: #bfbfbf;
+            font-size : 18px;
+            font-family : Arial;
+            padding : 3px;
+            cursor : pointer;
+            font-weight : bold;
+        }
+        .wn_cp_window .wn_cp_border_t .wn_cp_buttons div:hover{
+            color: #7d7d7d;
         }
 
         .wn_cp_window .wn_cp_content {
@@ -2150,9 +2165,9 @@
           minwidth         = "50"
           container        = "div[1]"
           drag             = "div[6]"
-          title            = "div[6]/div[2]/text()"
-          icon             = "div[6]/div[1]"
-          buttons          = "div[6]/div[3]">
+          title            = "div[6]/div[3]/text()"
+          icon             = "div[6]/div[2]"
+          buttons          = "div[6]/div[1]">
             <div class="wn_cp_window">
                 <div class="wn_cp_content"></div>
                 <div class="wn_cp_corner_tl"></div>
@@ -2161,9 +2176,9 @@
                 <div class="wn_cp_corner_br"></div>
 
                 <div class="wn_cp_border_t">
+                    <div class="wn_cp_buttons"></div>
                     <div class="wn_cp_icon"></div>
                     <div class="wn_cp_title">-</div>
-                    <div class="wn_cp_buttons"></div>
                 </div>
                 <div class="wn_cp_border_b"></div>
                 <div class="wn_cp_border_l"></div>
@@ -2171,7 +2186,7 @@
             </div>
         </a:main>
         <a:button>
-            <div> </div>
+            <div>X</div>
         </a:button>
     </a:presentation>
 </a:modalwindow>
@@ -5511,11 +5526,11 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
-<!--<a:radiobutton name="radiobutton">
+<a:radiobutton name="classic">
     <a:style><![CDATA[
-        .rbcontainer {
-            padding: 2px 2px 2px 2px;
-            _padding: 2px 2px 2px 0; /* IE6 fix */
+        .rbclassic {
+            padding: 1px;
+            _padding: 1px 1px 1px 0; /* IE6 fix */
             position: relative;
             min-height: 13px;
             color: #333;
@@ -5523,7 +5538,7 @@
             _clear: both; /* IE6 fix */
         }
 
-        .rbcontainer span{
+        .rbclassic span{
             font-family: Tahoma;
             font-size: 11px;
             padding: 1px 3px 2px 3px;
@@ -5533,12 +5548,12 @@
             line-height: 13px;
         }
 
-        .rbcontainerFocus span{
+        .rbclassicFocus span{
             padding: 0 2px 1px 2px;
             border: 1px dotted #BBB;
         }
 
-        .rbcontainer .radio{
+        .rbclassic .radio{
             width: 12px;
             height: 12px;
             overflow: hidden;
@@ -5550,41 +5565,41 @@
             background: url("images/radio.png") no-repeat 0 -12px;
         }
 
-        .rbcontainerDown .radio{
+        .rbclassicDown .radio{
             background-position: 0 -36px;
         }
 
-        .rbcontainerChecked .radio{
+        .rbclassicChecked .radio{
             background-position: 0 -24px;
         }
 
-        .rbcontainerDisabled .radio{
+        .rbclassicDisabled .radio{
             background-position: 0 -0px;
         }
 
-        .rbcontainerDisabled span{
+        .rbclassicDisabled span{
             color: #bebebe;
         }
 
-        .rbcontainerError span{
+        .rbclassicError span{
             background-color : #ffb500;
             color: #fbfbfb;
         }
 
-        .rbcontainer br{
+        .rbclassic br{
             display: none;
         }
     ]]></a:style>
 
     <a:presentation>
         <a:main label="span">
-            <div class="rbcontainer">
+            <div class="rbclassic">
                 <div class="radio"> </div>
                 <span>-</span>
             </div>
         </a:main>
     </a:presentation>
-</a:radiobutton>-->
+</a:radiobutton>
 <a:radiobutton name="radiobutton">
     <a:style><![CDATA[
         .rbcontainer {
@@ -7488,8 +7503,14 @@
             margin-top: -18px;
         }
 
+        .searchinfiles LABEL {
+            padding: 1px 0 0 2px !important;
+            height: auto !important;
+        }
 
-
+        .searchinfiles DIV {
+            height: auto !important;
+        }
 
         .tree DIV.loading LABEL{
 
@@ -12965,9 +12986,8 @@
         .apf_console{
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
-            font-size : 9px;
-            /*font-size : 11px;
-            font-family : Monaco,"Courier New",monospace;*/
+            font-size : 11px;
+            font-family : Monaco,"Courier New",monospace;
         }
         
         .apf_console .item{
