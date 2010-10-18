@@ -8,8 +8,9 @@ require.def("ext/noderunner/noderunner",
     ["core/ide",
      "core/ext",
      "ext/console/console",
+     "ext/filesystem/filesystem",
      "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, log, markup) {
+     "/socket.io/socket.io.js"], function(ide, ext, log, fs, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -86,6 +87,7 @@ return ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.setProperty("active", message.processRunning);
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
+                fs.setProjectName(this.workspaceDir.replace(/\/+$/, "").split("/").pop());
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
                 this.davPrefix = location.pathname+message.davPrefix;
                 break;

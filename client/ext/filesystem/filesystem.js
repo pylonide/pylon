@@ -141,13 +141,15 @@ return ext.register("ext/filesystem/filesystem", {
 
     /**** Init ****/
 
+    projectName : "Project",
+    
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='Project' path='workspace' /></data>");
+        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='workspace' root='1'/></data>");
 
         var url;
         if (location.host) {
-	    var dav_url = location.href.replace(location.hash, '');
+	        var dav_url = location.href.replace(location.hash, '');
             this.webdav = new apf.webdav({
                 id  : "davProject",
                 url : dav_url+"workspace"
@@ -160,7 +162,7 @@ return ext.register("ext/filesystem/filesystem", {
         }
 
         this.model.insert(url, {
-            insertPoint : this.model.queryNode("folder[@name='Project']")
+            insertPoint : this.model.queryNode("folder[@root='1']")
         });
 
         var fs = this;
@@ -200,6 +202,11 @@ return ext.register("ext/filesystem/filesystem", {
                 }
             });
         });
+    },
+
+    setProjectName : function(name) {
+        this.model && this.model.setQueryValue("folder[@root='1']/@name", name);
+        this.projectName = name;
     },
 
     enable : function(){
