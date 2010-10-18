@@ -72,15 +72,18 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             var path,
                 root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
                 node = trSFResult.selected,
-                line = 0;
+                line = 0,
+                text = "";
             if (node.tagName == "d:excerpt") {
                 path = node.parentNode.getAttribute("path");
                 line = node.getAttribute("line");
+                text = node.parentNode.getAttribute("query");
             }
             else {
                 path = node.getAttribute("path");
+                text = node.getAttribute("query");
             }
-            require("ext/debugger/debugger").showFile(root.getAttribute("path") + "/" + path, line, 0);
+            require("ext/debugger/debugger").showFile(root.getAttribute("path") + "/" + path, line, 0, text);
         });
     },
 

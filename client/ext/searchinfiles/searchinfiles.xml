@@ -95,7 +95,7 @@
       each       = "[d:response|d:excerpt]"
       autoselect = "false">
         <a:model />
-        <a:caption match="[d:response]">[@path]</a:caption>
+        <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
         <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">[text()]</pre></a:caption>
     </a:tree>
 </a:application>
