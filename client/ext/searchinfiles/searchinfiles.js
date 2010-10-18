@@ -7,12 +7,13 @@
 require.def("ext/searchinfiles/searchinfiles",
     ["core/ide",
      "core/ext",
+     "core/util",
      "ace/PluginManager",
      "ace/Search",
      "ext/editors/editors",
      "ext/console/console",
      "text!ext/searchinfiles/searchinfiles.xml"],
-    function(ide, ext, plugins, search, editors, console, markup) {
+    function(ide, ext, util, plugins, search, editors, console, markup) {
 
 return ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
@@ -94,6 +95,11 @@ return ext.register("ext/searchinfiles/searchinfiles", {
 
     toggleDialog: function(isReplace, forceShow) {
         ext.initExtension(this);
+
+        if (apf.isWin) {
+            return util.alert("Search in Files", "Not Supported",
+                "I'm sorry, searching through files is not yet supported on the Windows platform.");
+        }
         
         if (!winSearchInFiles.visible || forceShow || this.$lastState != isReplace) {
             //this.setupDialog(isReplace);
