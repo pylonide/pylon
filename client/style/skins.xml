@@ -12986,9 +12986,8 @@
         .apf_console{
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
-            font-size : 9px;
-            /*font-size : 11px;
-            font-family : Monaco,"Courier New",monospace;*/
+            font-size : 11px;
+            font-family : Monaco,"Courier New",monospace;
         }
         
         .apf_console .item{
