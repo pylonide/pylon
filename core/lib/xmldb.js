@@ -327,8 +327,8 @@ apf.xmldb = new (function(){
             //#endif
         }
 
-        if (!listen || listen.indexOf(id + ";") == -1)
-            xmlNode.setAttribute(this.xmlListenTag, (listen ? listen + id : id) + ";");
+        if (!listen || listen.indexOf(";" + id + ";") == -1)
+            xmlNode.setAttribute(this.xmlListenTag, (listen ? listen + id : ";" + id) + ";");
 
         return xmlNode;
     };
