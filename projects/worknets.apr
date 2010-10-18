@@ -19,10 +19,10 @@
           out      = "../../www/js/apf_release.js"
           filehead = "1" />
 
-        <p:compress
+        <!--p:compress
           cmd      = "yuicompressor"
           in       = "../../www/js/apf_release.js"
-          out      = "../../www/js/apf_release.js" />
+          out      = "../../www/js/apf_release.js" /-->
     </p:process>
     
     <p:files>
