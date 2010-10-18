@@ -5,9 +5,9 @@
       verbose  = "2"
       version  = "3.0.{buildnr}.Beta"
       name     = "apf_{version.replace(/\./g, '_')}"
-      cwd      = "{__dirname}/../../"
+      cwd      = "."
       tmp      = "/tmp"
-      platform = "{__dirname}/../support/apf"
+      platform = "support/apf"
       release  = "~">
     </p:settings>
 
@@ -16,13 +16,13 @@
           type     = "script"
           defines  = "1"
           group    = "apf"
-          out      = "{cwd}/../www/js/apf_release.js"
+          out      = "../../www/js/apf_release.js"
           filehead = "1" />
 
         <p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/../www/js/apf_release.js"
-          out      = "{cwd}/../www/js/apf_release.js" />
+          in       = "../../www/js/apf_release.js"
+          out      = "../../www/js/apf_release.js" />
     </p:process>
     
     <p:files>
@@ -90,24 +90,24 @@
             <p:node path="jpack_end.js" />
         </p:node>
 
-        <p:node path="{cwd}/../www/js/app.js" group="apf" />
-        <p:node path="{cwd}/../www/js/connections.js" group="apf" />
-        <p:node path="{cwd}/../www/js/create.js" group="apf" />
-        <p:node path="{cwd}/../www/js/editmode.js" group="apf" />
-        <p:node path="{cwd}/../www/js/feed.js" group="apf" />
-        <p:node path="{cwd}/../www/js/geo.js" group="apf" />
-        <p:node path="{cwd}/../www/js/meetup.js" group="apf" />
-        <p:node path="{cwd}/../www/js/messages.js" group="apf" />
-        <p:node path="{cwd}/../www/js/scrollfixed.js" group="apf" />
-        <p:node path="{cwd}/../www/js/questions.js" group="apf" />
-        <p:node path="{cwd}/../www/js/search.js" group="apf" />
-        <p:node path="{cwd}/../www/js/security.js" group="apf" />
-        <p:node path="{cwd}/../www/js/session.js" group="apf" />
-        <p:node path="{cwd}/../www/js/spinner.js" group="apf" />
-        <p:node path="{cwd}/../www/js/loader.js" group="apf" />
-        <p:node path="{cwd}/../www/js/util.js" group="apf" />
-        <p:node path="{cwd}/../www/js/widgetpanel.js" group="apf" />
-        <p:node path="{cwd}/../www/js/feedbackbtn.js" group="apf" />
+        <p:node path="../../www/js/app.js" group="apf" />
+        <p:node path="../../www/js/connections.js" group="apf" />
+        <p:node path="../../www/js/create.js" group="apf" />
+        <p:node path="../../www/js/editmode.js" group="apf" />
+        <p:node path="../../www/js/feed.js" group="apf" />
+        <p:node path="../../www/js/geo.js" group="apf" />
+        <p:node path="../../www/js/meetup.js" group="apf" />
+        <p:node path="../../www/js/messages.js" group="apf" />
+        <p:node path="../../www/js/scrollfixed.js" group="apf" />
+        <p:node path="../../www/js/questions.js" group="apf" />
+        <p:node path="../../www/js/search.js" group="apf" />
+        <p:node path="../../www/js/security.js" group="apf" />
+        <p:node path="../../www/js/session.js" group="apf" />
+        <p:node path="../../www/js/spinner.js" group="apf" />
+        <p:node path="../../www/js/loader.js" group="apf" />
+        <p:node path="../../www/js/util.js" group="apf" />
+        <p:node path="../../www/js/widgetpanel.js" group="apf" />
+        <p:node path="../../www/js/feedbackbtn.js" group="apf" />
     </p:files>
 
     <p:defines defaults="defines_3.0.xml">
