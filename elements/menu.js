@@ -300,7 +300,7 @@ apf.menu = function(struct, tagName){
             
             apf.popup.last = null;
             
-            if (!apf.isGecko)
+            if (!apf.isGecko) //This disables keyboard support for gecko - very strange behaviour
                 this.focus();
     
             //Make the component that provides context appear to have focus
@@ -386,6 +386,9 @@ apf.menu = function(struct, tagName){
                 node.$down();
                 node.$up();
                 node.$click();
+                break;
+            case 27:
+                this.hide();
                 break;
             case 38:
                 //UP
