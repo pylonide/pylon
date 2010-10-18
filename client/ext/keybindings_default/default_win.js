@@ -37,12 +37,12 @@ return keys.onLoad({
             "format" : "Ctrl-Shift-J"
         },
         "settings": {
-            "showsettings": "Ctrl-J"
+            "showsettings": "Ctrl-,"
         },
         "tabbehaviors" : {
-            "closetab": "Ctrl-W",
-            "closealltabs": "Ctrl-Shift-W",
-            "closeallbutme": "Ctrl-Alt-W",
+            "closetab": "Ctrl-F4",
+            "closealltabs": "Ctrl-Shift-F4",
+            "closeallbutme": "Ctrl-Alt-F4",
             "gototabright": "Ctrl-Shift-]",
             "gototableft": "Ctrl-Shift-[",
             "tab1": "Ctrl-1",

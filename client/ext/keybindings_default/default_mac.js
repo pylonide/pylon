@@ -37,7 +37,7 @@ return keys.onLoad({
             "format" : "Command-Shift-J"
         },
         "settings": {
-            "showsettings": "Command-J"
+            "showsettings": "Command-,"
         },
         "tabbehaviors" : {
             "closetab": "Command-W",
@@ -59,10 +59,10 @@ return keys.onLoad({
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
-            "gotoline": "Command-G",
+            "gotoline": "Command-L",
             "togglecomment": "Command-7",
-            "findnext": "Command-K",
-            "findprevious": "Command-Shift-K",
+            "findnext": "Command-G",
+            "findprevious": "Command-Shift-G",
             "find": "Command-F",
             "replace": "Command-Shift-R",
             "undo": "Command-Z",
