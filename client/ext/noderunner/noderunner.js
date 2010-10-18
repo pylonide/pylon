@@ -87,7 +87,7 @@ return ext.register("ext/noderunner/noderunner", {
                 stDebugProcessRunning.setProperty("active", message.debugClient);
                 this.workspaceDir = message.workspaceDir;
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
-                this.davPrefix = location.pathname+message.davPrefix;
+                this.davPrefix = message.davPrefix;
                 break;
 
             case "node-data":
