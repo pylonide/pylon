@@ -792,7 +792,7 @@ apf.Class.prototype = new (function(){
                 e.returnValue = false;
             }
         }
-        
+
         //#ifdef __WITH_PROPERTY_INHERITANCE
         /*
             States:
