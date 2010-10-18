@@ -105,7 +105,7 @@ apf.GuiElement = function(){
     this.$regbase    = this.$regbase | apf.__GUIELEMENT__;
     
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
-    //this.visible     = true; //default value;
+    this.visible     = true; //default value;
     
     /*this.minwidth   = 5;
     this.minheight  = 5;
