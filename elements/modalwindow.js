@@ -410,10 +410,6 @@ apf.AmlWindow = function(struct, tagName){
 
             this.$ext.style.display = ""; //Some form of inheritance detection
 
-            //#ifdef __WITH_LAYOUT
-            if (apf.layout && this.$int)
-                apf.layout.forceResize(this.$int); //@todo this should be recursive down
-            //#endif
             //if (this.modal) 
                 //this.$ext.style.position = "fixed";
             
@@ -460,6 +456,11 @@ apf.AmlWindow = function(struct, tagName){
             
             this.dispatchEvent("hide");
         }
+        
+        //#ifdef __WITH_LAYOUT
+        if (apf.layout && this.$int)
+            apf.layout.forceResize(this.$int); //@todo this should be recursive down
+        //#endif
 
         wasVisible = value;
     };
