@@ -3,7 +3,8 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Sys = require("sys");
+var Sys = require("sys"),
+    Fs  = require("fs");
 
 function usage() {
     Sys.puts("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]");
@@ -60,7 +61,8 @@ if (parseInt(process.version.split(".")[1]) < 2) {
     return;
 }
 
-var options = parseArguments(process.argv.slice(2));
+var options = parseArguments(process.argv.slice(2)),
+    version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 require("../server/lib/cloud9").main(options.workspace, options.port, options.ip);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
@@ -83,7 +85,8 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
       . -+~!lvvnvIvIIllliiiii|i|||i||i|||i||iiiiilillIIvvvvvv}|\"- .\n\
           . ..--~++++++++~+~+~+~+-+-+~+~+-+~+~++~++++++~~~-:.. .\n\
                . .  . . .... . . .... .. ... .. ... . . . .\n\n\
-                           Ajax.org Cloud9 IDE\n\n\
+                           Ajax.org Cloud9 IDE\n\
+                              version " + version + "\n\
 Project root is: " + options.workspace);
 
 var url = "http://" + options.ip + ":" + options.port;
