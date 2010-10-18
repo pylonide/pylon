@@ -40,9 +40,9 @@ return keys.onLoad({
             "showsettings": "Ctrl-,"
         },
         "tabbehaviors" : {
-            "closetab": "Ctrl-F4",
-            "closealltabs": "Ctrl-Shift-F4",
-            "closeallbutme": "Ctrl-Alt-F4",
+            "closetab": "Ctrl-W",
+            "closealltabs": "Ctrl-Shift-W",
+            "closeallbutme": "Ctrl-Alt-W",
             "gototabright": "Ctrl-Shift-]",
             "gototableft": "Ctrl-Shift-[",
             "tab1": "Ctrl-1",
