@@ -243,9 +243,11 @@ apf.vbox = function(struct, tagName){
             else {
                 var isLast = isLastVisibleChild(this);
                 if (!isLast) {
-                    this.parentNode.insertBefore(
-                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                        this.nextSibling);
+                    if (!this.nextSibling.$splitter) {
+                        this.parentNode.insertBefore(
+                            this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            this.nextSibling);
+                    }
                 }
                 else if (this.previousSibling && !this.previousSibling.$splitter) {
                     this.parentNode.insertBefore(
