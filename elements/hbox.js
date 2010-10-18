@@ -430,7 +430,7 @@ apf.vbox = function(struct, tagName){
         var lastChild = amlNode.parentNode.lastChild;
         while(lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
           || lastChild.visible === false 
-          || !lastChild.visible && apf.isFalse(lastChild.getAttribute("visible")))) {
+          || lastChild.visible == 2 && apf.isFalse(lastChild.getAttribute("visible")))) {
             lastChild = lastChild.previousSibling;
         }
         
