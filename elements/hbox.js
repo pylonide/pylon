@@ -238,7 +238,7 @@ apf.vbox = function(struct, tagName){
         if (this.parentNode.splitters && !this.$splitter) {
             if (!e.value) {
                 if (this.nextSibling && this.nextSibling.$splitter)
-                    this.nextSibling.$splitter.removeNode();
+                    this.nextSibling.removeNode();
             }
             else {
                 var isLast = isLastVisibleChild(this);
