@@ -499,7 +499,7 @@ apf.webdav = function(struct, tagName){
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
-                  }) === false)
+                  }) === false && callback)
                     callback(oError);
             }
         }, sPath, null, bLock && oLock.token
@@ -549,7 +549,7 @@ apf.webdav = function(struct, tagName){
                     bubbles : true
                   }) === false)
                     throw oError;
-                callback.call(this, data, apf.ERROR, extra);
+                callback && callback.call(this, data, apf.ERROR, extra);
             }
             else {
                 _self.getProperties(sPath, 0, callback);
@@ -664,7 +664,7 @@ apf.webdav = function(struct, tagName){
                     delete this.$fsCache[sFrom];
                 }
             }
-            callback.call(this, data, state, extra);
+            callback && callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
     };
 
@@ -697,7 +697,7 @@ apf.webdav = function(struct, tagName){
                   }) === false)
                     throw oError;
             }
-            callback.call(this, data, state, extra);
+            callback && callback.call(this, data, state, extra);
         }, sPath, null, bLock && oLock.token
             ? {"If": "<" + oLock.token + ">"}
             : null);
@@ -728,7 +728,7 @@ apf.webdav = function(struct, tagName){
                   }) === false)
                     throw oError;
             }
-            callback.call(this, data, state, extra);
+            callback && callback.call(this, data, state, extra);
         }, sPath, aCont.join(""));
     };
 
@@ -1021,8 +1021,7 @@ apf.webdav = function(struct, tagName){
         for (var i = 1, j = aResp.length; i < j; i++)
             aOut.push(parseItem.call(this, aResp[i]));
 
-        if (callback)
-            callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
+        callback && callback.call(this, "<files>" + aOut.join("") + "</files>", state, extra);
     }
 
     /*
@@ -1082,7 +1081,7 @@ apf.webdav = function(struct, tagName){
             extra.originalArgs = args
             if (typeof args[args.length - 1] == "function")
                 args[args.length - 1](data, state, extra);
-            callback(data, state, extra);
+            callback && callback(data, state, extra);
         };
         // RULE for case aliases: first, topmost match is the preferred term for any
         //                        action and should be used in demos/ examples in
