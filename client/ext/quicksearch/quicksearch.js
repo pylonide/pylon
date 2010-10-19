@@ -40,10 +40,13 @@ return ext.register("ext/quicksearch/quicksearch", {
         txtQuickSearch.addEventListener("keydown", function(e){
             switch(e.keyCode){
                 case 13: //ENTER
-                    _self.find(true);
+                    if (e.shiftKey)
+                        _self.find(false, true);
+                    else
+                        _self.find(false, false);
                     return false;
                 break;
-                case 27: //ENTER
+                case 27: //ESCAPE
                     _self.toggleDialog(-1);
                     return false;
                 break;
