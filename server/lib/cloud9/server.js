@@ -152,7 +152,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
             if (!(key in env))
                 env[key] = process.env[key];
         }
-        console.log(env);
+
         var child = _self.child = spawn(this.nodeCmd, args, {cwd: cwd, env: env});
         _self.client.send(JSON.stringify({"type": "node-start"}));
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
