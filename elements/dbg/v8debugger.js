@@ -286,36 +286,39 @@ var V8Debugger = function(dbg, host) {
         var _self = this;
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
-            if (!v8Breakpoints.breakpoints)
-                return;
 
-            for (var id in _self.$breakpoints)
-                _self.$breakpoints[id].destroy();
-            _self.$breakpoints = {};
-            
-            for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
-                var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
-                var id = breakpoint.source + "|" + breakpoint.line;
+            if (v8Breakpoints.breakpoints) {
+                for (var id in _self.$breakpoints)
+                    _self.$breakpoints[id].destroy();
+                _self.$breakpoints = {};
                 
-                _self.$breakpoints[id] = breakpoint;
-                
-                model.removeXml("breakpoint[@script='" + breakpoint.script + "' and @line='" + breakpoint.line + "']");
-                model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
+                    var id = breakpoint.source + "|" + breakpoint.line;
+                    
+                    _self.$breakpoints[id] = breakpoint;
+                    
+                    model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
+                    model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                }
             }
-
+    
             var modelBps = model.queryNodes("breakpoint");
             for (var i=modelBps.length-1; i>=0; i--) {
                 var modelBp = modelBps[i];
                 var script = modelBp.getAttribute("script");
                 var line = modelBp.getAttribute("line");
                 var id = script + "|" + line;
-                if (!_self.$breakpoints[id]) {
-                    var bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
+                var bp = _self.$breakpoints[id];
+                if (!bp) {
+                    bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
                     bp.condition = modelBp.getAttribute("condition");
                     bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount"));
                     bp.enabled = modelBp.getAttribute("enabled") == "true";
                     bp.attach(_self.$debugger, function() {});
                 }
+                model.removeXml(modelBp);
+                model.appendXml(this.$getBreakpointXml(bp, 0));
             }
         });
     };

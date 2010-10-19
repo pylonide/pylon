@@ -150,7 +150,15 @@ apf.dbg = function(struct, tagName){
     };
     
     this.toggleBreakpoint = function(script, row) {
-        this.$debugger.toggleBreakpoint(script, row, this.$mdlBreakpoints);
+        if (this.$debugger)
+            this.$debugger.toggleBreakpoint(script, row, this.$mdlBreakpoints);
+        else {
+            var bp = apf.n("<breakpoint/>")
+                .attr("script", script)
+                .attr("line", row)
+                .node();
+            this.$mdlBreakpoints.appendXml(bp);
+        }
     };
 
     this.continueScript = function() {
