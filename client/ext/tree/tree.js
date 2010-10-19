@@ -9,7 +9,7 @@ require.def("ext/tree/tree",
      "ext/filesystem/filesystem", "ext/settings/settings", 
      "ext/panels/panels", "text!ext/tree/tree.xml"],
     function(ide, ext, fs, settings, panels, markup) {
-        
+
 return ext.register("ext/tree/tree", {
     name    : "Tree",
     dev     : "Ajax.org",
@@ -31,7 +31,7 @@ return ext.register("ext/tree/tree", {
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(winFilesViewer);
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
+        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
             var node = this.selected;
             if (!node || node.tagName != "file" || this.selection.length > 1)
                 return;
