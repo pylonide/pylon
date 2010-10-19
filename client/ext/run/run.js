@@ -8,7 +8,8 @@ require.def("ext/run/run",
     ["core/ide",
      "core/ext",
      "ext/noderunner/noderunner",
-     "text!ext/run/run.xml"], function(ide, ext, noderunner, markup) {
+     "ext/settings/settings",
+     "text!ext/run/run.xml"], function(ide, ext, noderunner, settings, markup) {
 
 return ext.register("ext/run/run", {
     name   : "Run Toolbar",
@@ -33,6 +34,7 @@ return ext.register("ext/run/run", {
         });
         mdlRunConfigurations.addEventListener("update", function(e) {
             _self.$changed = true;
+            settings.doSave();
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });

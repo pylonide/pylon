@@ -27,7 +27,7 @@ return ext.register("ext/settings/settings", {
     },
 
     doSave: function() {
-        var pages   = pgSettings.getPages(),
+        var pages   = self.pgSettings ? pgSettings.getPages() : [],
             i       = 0,
             l       = pages.length,
             changed = false;
@@ -38,12 +38,10 @@ return ext.register("ext/settings/settings", {
                 changed = true;
             }
         }
-        if (changed) {
-            if (ide.dispatchEvent("savesettings", {
-                model : this.model
-            }) !== false)
-                this.save();
-        }
+        if (ide.dispatchEvent("savesettings", {
+            model : this.model
+        }) !== false || changed)
+            this.save();
     },
 
     getSectionId: function(part) {
