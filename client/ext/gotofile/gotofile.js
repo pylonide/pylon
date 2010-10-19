@@ -55,14 +55,11 @@ return ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        var _self = this, restricted = [38, 40, 36, 35];
+        var restricted = [38, 40, 36, 35];
         dgGoToFile.addEventListener("keydown", function(e) {
             if (e.keyCode == 38) {
                 if (this.selected == this.getFirstTraverseNode())
                     txtGoToFile.focus();
-            }
-            else if (e.keyCode == 27) {
-                _self.toggleDialog(-1);
             }
             else if (restricted.indexOf(e.keyCode) == -1) {
                 txtGoToFile.focus();
