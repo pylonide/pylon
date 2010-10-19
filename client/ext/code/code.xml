@@ -46,10 +46,10 @@
     </a:menu>
     
     <a:menu id="mnuSyntax">
-        <a:item value="Text" type="radio" selected="{ceEditor.syntax == 'Text'}">Plain Text</a:item>
-        <a:item value="JavaScript" type="radio" selected="{ceEditor.syntax == 'JavaScript'}">JavaScript</a:item>
-        <a:item value="Css" type="radio" selected="{ceEditor.syntax == 'Css'}">CSS</a:item>
-        <a:item value="Html" type="radio" selected="{ceEditor.syntax == 'Html'}">(X)HTML</a:item>
-        <a:item value="Xml" type="radio" selected="{ceEditor.syntax == 'Xml'}">XML</a:item>
+        <a:item type="radio" value="text/plain">Plain Text</a:item>
+        <a:item type="radio" value="application/javascript">JavaScript</a:item>
+        <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/html">(X)HTML</a:item>
+        <a:item type="radio" value="application/xml">XML</a:item>
     </a:menu>
 </a:application>

@@ -144,7 +144,9 @@ return ext.register("ext/code/code", {
         );
 
         mnuSyntax.onitemclick = function(e) {
-            ceEditor.setAttribute("syntax", e.relatedNode.value);
+            var file = ide.getActivePageModel();
+            if (file)
+                apf.xmldb.setAttribute(file, "contenttype", e.relatedNode.value);
         };
 
         ide.addEventListener("clearfilecache", function(e){
