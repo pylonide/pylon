@@ -18,8 +18,9 @@ return ext.register("ext/tree/tree", {
     markup  : markup,
     visible : true,
     
+    //@todo deprecated?
     getSelectedPath: function() {
-        return this.trFiles.selected.getAttribute("path");
+        return trFiles.selected.getAttribute("path");
     },
     
     hook : function(){
@@ -27,7 +28,7 @@ return ext.register("ext/tree/tree", {
     },
 
     init : function() {
-        this.trFiles = this.panel = winFilesViewer;
+        this.panel = winFilesViewer;
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(winFilesViewer);
         trFiles.setAttribute("model", fs.model);
         
@@ -79,11 +80,11 @@ return ext.register("ext/tree/tree", {
     },
 
     enable : function(){
-        trFiles.show();
+        winFilesViewer.show();
     },
 
     disable : function(){
-        trFiles.hide();
+        winFilesViewer.hide();
     },
 
     destroy : function(){

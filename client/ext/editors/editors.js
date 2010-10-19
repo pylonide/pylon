@@ -25,6 +25,7 @@ return ext.register("ext/editors/editors", {
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
+            margin    : "0 -1 0 0",
             visible   : "{require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" + oExtension.path + "')}",
             onclick   : function(){
                 require('ext/editors/editors').switchEditor(this.value);
@@ -73,40 +74,45 @@ return ext.register("ext/editors/editors", {
 
     addTabSection : function(){
         var _self = this;
-        var vbox = this.hbox.appendChild(new apf.vbox({
-            flex       : 1,
-            childNodes : [
-                new apf.bar({id:"tabPlaceholder",flex:1,skin:"basic"}),
+        var vbox = this.hbox.appendChild(
+            new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
+        );
+
+        var tab = new apf.bar({
+            skin     : "basic",
+            style    : "padding : 0 0 53px 0;position:absolute;",
+            htmlNode : document.body,
+            childNodes: [
+                new apf.tab({
+                    id       : "tabEditors",
+                    skin     : "editor_tab",
+                    style    : "height : 100%",
+                    buttons  : "close,scale",
+                    onfocus  : function(e){
+                        _self.switchfocus(e);
+                    },
+                    onbeforeswitch : function(e){
+                        _self.beforeswitch(e);
+                    },
+                    onafterswitch : function(e){
+                        _self.afterswitch(e);
+                    },
+                    onclose : function(e){
+                        _self.close(e.page);
+                    }
+                }),
                 new apf.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
-                    zindex  : 1000,
-                    "class" : "relative",
-                    padding : "-1",
-                    margin  : "-2 0 0 0"
+                    class   : "relative",
+                    zindex  : "1000",
+                    bottom  : "0",
+                    left    : "0",
+                    right   : "0"
                 })
             ]
-        }));
-
-        var tab = new apf.tab({
-            id       : "tabEditors",
-            skin     : "editor_tab",
-            htmlNode : document.body,
-            style    : "position:absolute;",
-            buttons  : "close,scale",
-            onfocus  : function(e){
-                _self.switchfocus(e);
-            },
-            onbeforeswitch : function(e){
-                _self.beforeswitch(e);
-            },
-            onafterswitch : function(e){
-                _self.afterswitch(e);
-            },
-            onclose : function(e){
-                _self.close(e.page);
-            }
         });
+        
         tabPlaceholder.addEventListener("resize", function(e){
             var ext = tab.$ext, ph;
             var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
@@ -126,7 +132,12 @@ return ext.register("ext/editors/editors", {
             return false;
 
         var contentTypes = editor.contentTypes;
-        return contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
+        var isEnabled = contentTypes.indexOf(tabEditors.getPage(page).contentType) > -1;
+        
+        if (!isEnabled && this.contentTypes["default"] == editor)
+            return true; 
+        else
+            return isEnabled;
     },
 
     initEditor : function(editor){
