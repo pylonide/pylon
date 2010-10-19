@@ -57,14 +57,6 @@ return ext.register("ext/run/run", {
         });
     },
 
-    $getActivePageModel : function() {
-        page = tabEditors.getPage();
-        if (!page)
-            return null;
-
-        return page.$model.data;
-    },
-
     duplicate : function() {
         var config = lstRunCfg.selected;
         if (!config)
@@ -77,7 +69,7 @@ return ext.register("ext/run/run", {
     },
 
     addConfig : function() {
-        var file = this.$getActivePageModel();
+        var file = ide.getActivePageModel();
 
         if (!file || (file.getAttribute("contenttype") || "").indexOf("application/javascript") != 0) {
             var path = "";

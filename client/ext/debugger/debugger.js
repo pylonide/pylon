@@ -178,9 +178,7 @@ return ext.register("ext/debugger/debugger", {
             this.paths[path] = dbgFile;
         }
         var treeFiles = fs.model.data.getElementsByTagName("file");
-        var tabFiles = tabEditors.getPages().map(function(page) {
-            return page.$model.data;
-        });
+        var tabFiles = ide.getAllPageModels();
         var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
 
         var davPrefix = noderunner.davPrefix;

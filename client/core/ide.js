@@ -139,6 +139,20 @@ require.def("core/ide",
         apf.addEventListener("load", function(){
             ide.start();
         });
+        
+        ide.getActivePageModel = function() {
+            page = tabEditors.getPage();
+            if (!page)
+                return null;
+    
+            return page.$model.data;
+        };
+        
+        ide.getAllPageModels = function() {
+            return tabEditors.getPages().map(function(page) {
+                return page.$model.data;
+            });
+        };
 
         return ide;
     });
