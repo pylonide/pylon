@@ -532,6 +532,7 @@
         <p:define name="__PARSER_XINCLUDE" value="1" />
         <p:define name="__WITH_XIINCLUDE" value="1" />
         <p:define name="__WITH_XIFALLBACK" value="1" />
+        <p:define name="__LAYOUT_ENABLE_SPLITTERS" value="1" />
     </p:defines>
 
     <!--<p:include src="" />-->
