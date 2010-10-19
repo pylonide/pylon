@@ -80,7 +80,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger");
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints");
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
@@ -300,9 +300,30 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.getDocument().setUseSoftTabs(value);
     };
 
-    this.$propHandlers["debugger"] = function(value, prop, inital) {
-        if (this.$debugger) {           
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
             this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+
+        this.$breakpoints = value;
+
+        if (!this.$breakpoints) {
+            this.$updateBreakpoints();
+            return;
+        }
+
+        var _self = this;
+        _self.$updateBreakpoints();
+        this.$onBreakpoint = function() {
+            _self.$updateBreakpoints();
+        }
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
+        this.$updateBreakpoints();
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {
             this.$debugger.removeEventListener("prop.activeframe", this.$onChangeActiveFrame);
             this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
         }
@@ -315,23 +336,18 @@ apf.codeeditor = function(struct, tagName) {
             this.$debugger = value;
         }
 
+        if (!this.$breakpoints || this.$debuggerBreakpoints) {
+            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
+            this.$debuggerBreakpoints = true;
+        }
+
         if (!this.$debugger) {
-            this.$breakpoints = null;
-            this.$updateBreakpoints();
             this.$updateMarker();
             return;
         }
             
-        this.$breakpoints = this.$debugger.$mdlBreakpoints;
-
-        var _self = this;
-        _self.$updateBreakpoints();
-        this.$onBreakpoint = function() {
-            _self.$updateBreakpoints();
-        }
-        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
-
         this.$updateMarker();
+        var _self = this;
         this.$onChangeActiveFrame = function() {
             _self.$updateMarker();
         }
