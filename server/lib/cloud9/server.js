@@ -140,8 +140,11 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandKill = function(message) {
-        if (this.child)
-            this.child.kill();
+        if (this.child) {
+            try {
+                this.child.kill();
+            } catch(e) {}
+        }
     };
 
     this.$runNode = function(args, cwd, env, debug) {
@@ -163,7 +166,10 @@ module.exports = IdeServer = function(workspaceDir, server) {
         function sender(stream) {
             return function(data) {
                 if (!_self.client) {
-                    return child.kill();
+                    try {
+                        child.kill();
+                    } catch(e) {}
+                    return;
                 }
                 var message = {
                     "type": "node-data",
