@@ -25,6 +25,7 @@ return ext.register("ext/editors/editors", {
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
+            margin    : "0 -1 0 0",
             visible   : "{require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" + oExtension.path + "')}",
             onclick   : function(){
                 require('ext/editors/editors').switchEditor(this.value);
