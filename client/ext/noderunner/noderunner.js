@@ -131,10 +131,14 @@ return ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || !stServerConnected.active)
             return;
 
+        var page = ide.getActivePageModel();
         var command = {
             "command" : debug ? "RunDebug" : "Run",
             "file"    : path,
-            "args"    : args || ""
+            "args"    : args || "",
+            "env"     : {
+                "C9_SELECTED_FILE": page ? this.workspaceDir + page.getAttribute("path").slice(this.davPrefix.length) : ""
+            }
         };
         this.socket.send(JSON.stringify(command));
 

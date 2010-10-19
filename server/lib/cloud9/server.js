@@ -134,7 +134,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
                    return _self.error("cwd does not exist: " + message.cwd, message);
 
                var args = (message.preArgs || []).concat(file).concat(message.args || []);
-               _self.$runNode(args, cwd, message.debug || false);
+               _self.$runNode(args, cwd, message.env || {}, message.debug || false);
            });
         });
     };
@@ -144,9 +144,16 @@ module.exports = IdeServer = function(workspaceDir, server) {
             this.child.kill();
     };
 
-    this.$runNode = function(args, cwd, debug) {
+    this.$runNode = function(args, cwd, env, debug) {
         var _self = this;
-        var child = _self.child = spawn(this.nodeCmd, args, {cwd: cwd});
+        
+        // mixin process env
+        for (var key in process.env) {
+            if (!(key in env))
+                env[key] = process.env[key];
+        }
+        console.log(env);
+        var child = _self.child = spawn(this.nodeCmd, args, {cwd: cwd, env: env});
         _self.client.send(JSON.stringify({"type": "node-start"}));
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
 
@@ -240,4 +247,3 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
 
 }).call(IdeServer.prototype);
-
