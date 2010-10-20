@@ -33,7 +33,6 @@ return ext.register("ext/run/run", {
             _self.$updateMenu();
         });
         mdlRunConfigurations.addEventListener("update", function(e) {
-            debugger;
             settings.save();
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
