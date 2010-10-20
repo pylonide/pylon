@@ -161,9 +161,9 @@ return ext.register("ext/filesystem/filesystem", {
             this.readFile = this.saveFile = apf.K;
         }
 
-        this.model.insert(url, {
+        /*this.model.insert(url, {
             insertPoint : this.model.queryNode("folder[@root='1']")
-        });
+        });*/
 
         var fs = this;
         ide.addEventListener("openfile", function(e){
