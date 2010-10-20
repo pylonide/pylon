@@ -184,46 +184,40 @@ apf.BaseTree = function(){
         var root = this.xmlRoot, _self = this;
         apf.asyncForEach(pathList,
             function(item, next){
-                var xmlNode = root.selectSingleNode(item);
-                if (!xmlNode) {
-                    var paths = item.split("/");
-                    var lastNode = null;//root.selectSingleNode(paths.shift());
-                    //var lastPath = paths.pop();
-                    apf.asyncForEach(paths, 
-                        function(part, next2, index) {                      
-                            apf.queue.empty();
+                console.log(item);
+                var paths = item.split("/");
+                var lastNode = null;//root.selectSingleNode(paths.shift());
+                //var lastPath = paths.pop();
+                apf.asyncForEach(paths, 
+                    function(part, next2, index) {                      
+                        apf.queue.empty();
 
-                            var xmlNode = (lastNode || root).selectSingleNode(part);
-                            if (xmlNode) {
-                                //if (index == paths.length - 1)
-                                    //return _self.select(xmlNode);
-                                
-                                lastNode = xmlNode;
-                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
-                                    next2();
-                                });
-                            }
-                            else {
-                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
-                                    lastNode = lastNode.selectSingleNode(part);
-                                    if (!lastNode)
-                                        next2(true);
-                                    else
-                                        next2();
-                                });
-                            }
+                        var xmlNode = (lastNode || root).selectSingleNode(part);
+                        if (xmlNode) {
+                            //if (index == paths.length - 1)
+                                //return _self.select(xmlNode);
                             
-                        }, function(err){
-                            //if (!err) {
-                                next();
-                            //}
+                            lastNode = xmlNode;
+                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
+                                next2();
+                            });
                         }
-                    );
-                }
-                else {
-                    _self.expandAndSelect(xmlNode);
-                    _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, next);
-                }
+                        else {
+                            _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
+                                lastNode = lastNode.selectSingleNode(part);
+                                if (!lastNode)
+                                    next2(true);
+                                else
+                                    next2();
+                            });
+                        }
+                        
+                    }, function(err){
+                        //if (!err) {
+                            next();
+                        //}
+                    }
+                );
             },
             function(err){
                 
@@ -246,7 +240,7 @@ apf.BaseTree = function(){
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
         if (this.nocollapse || userAction && this.disabled)
             return;
-        
+
         if (!htmlNode)
             htmlNode = this.$selected;
         
@@ -258,13 +252,19 @@ apf.BaseTree = function(){
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!container) return;
         
-        if (false && apf.getStyle(container, "display") == "block") {
-            if (force == 1) return;
+        if (apf.getStyle(container, "display") == "block") {
+            if (force == 1) {
+                if (callback) callback();
+                return;
+            }
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
         else {
-            if (force == 2) return;
+            if (force == 2) {
+                if (callback) callback();
+                return;
+            }
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
             this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
@@ -316,6 +316,9 @@ apf.BaseTree = function(){
                 container.style.height = "auto";
                 container.style.overflow = "visible";
             }
+
+            if (this.$hasLoadStatus(xmlNode, "potential"))
+                return this.$extend(xmlNode, container, immediate, callback);
             
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return callback && callback();
@@ -588,8 +591,8 @@ apf.BaseTree = function(){
                 hasChildren = true;
             else
                 hasChildren = false;
-            
-            var isClosed = hasChildren && container.style.display != "block",
+
+            var isClosed = hasChildren && htmlNode.className.indexOf("plus") > -1;//container.style.display != "block",
                 isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1)
                     ? false
                     : true,
@@ -606,6 +609,8 @@ apf.BaseTree = function(){
             
             if (!hasChildren && container)
                 container.style.display = "none";
+            else if (!isClosed)
+                container.style.display = "block";
         }
     };
 
