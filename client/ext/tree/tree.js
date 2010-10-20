@@ -42,40 +42,68 @@ return ext.register("ext/tree/tree", {
 
         /**** Support for state preservation ****/
         
-        var expandedList = {};
+        var expandedList = {}, loading = false, changed = false;
         trFiles.addEventListener("expand", function(e){
             expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
+
+            if (!loading) {
+                changed = true;
+                settings.save();
+            }
         });
         trFiles.addEventListener("collapse", function(e){
             delete expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+            
+            if (!loading) {
+                changed = true;
+                settings.save();
+            }
         });
 
         var currentSettings = [];
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/tree");
             if (strSettings) {
+                loading = true;
                 currentSettings = apf.unserialize(strSettings);
-                trFiles.expandList(currentSettings);
+                trFiles.expandList(currentSettings, function(){
+                    loading = false;
+                });
             }
         });
 
         ide.addEventListener("savesettings", function(e){
-            var changed = false, 
-                xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
+            if (!changed)
+                return;
+            
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
 
-            var path, id;
+            currentSettings = [];
+
+            var path, id, lut = {};
             for (id in expandedList) {
                 path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
-                if (currentSettings.indexOf(path) == -1) {
-                    currentSettings.push(path);
-                    changed = true;
-                }
+                console.log(path);
+                lut[path] = true;
             }
             
-            if (changed) {
-                xmlSettings.nodeValue = apf.serialize(currentSettings);
-                return true;
+            var cc, parts;
+            for (path in lut) {
+                parts = path.split("/");
+                cc = parts.shift();
+                do {
+                    if (!parts.length) 
+                        break;
+                    
+                    cc += "/" + parts.shift();
+                } while(lut[cc]);
+                
+                if (!parts.length)
+                    currentSettings.push(path);
             }
+            
+            xmlSettings.nodeValue = apf.serialize(currentSettings);
+            return true;
         });
     },
 

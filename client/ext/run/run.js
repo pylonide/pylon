@@ -33,23 +33,17 @@ return ext.register("ext/run/run", {
             _self.$updateMenu();
         });
         mdlRunConfigurations.addEventListener("update", function(e) {
-            _self.$changed = true;
-            settings.doSave();
+            settings.save();
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });
 
         ide.addEventListener("loadsettings", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (runConfigs)
-                mdlRunConfigurations.load(runConfigs);
-        });
+            if (!runConfigs)
+                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
 
-        ide.addEventListener("savesettings", function(e){
-            if (_self.$changed) {
-                _self.$changed = false;
-                return true;
-            }
+            mdlRunConfigurations.load(runConfigs);
         });
 
         winRunCfgNew.addEventListener("hide", function() {
