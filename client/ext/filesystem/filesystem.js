@@ -115,8 +115,10 @@ return ext.register("ext/filesystem/filesystem", {
         else {
             node = trFiles.xmlRoot.selectSingleNode("//folder[@path='" + extra.originalArgs[0] + "']");
         }
+        
         if (!node)
             return;
+        
         this.webdav.exec("readdir", [node.getAttribute("path")], function(data) {
             if (data.indexOf("<folder") > -1) {
                 trFiles.insert(data, {

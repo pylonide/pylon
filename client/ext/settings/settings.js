@@ -22,11 +22,21 @@ return ext.register("ext/settings/settings", {
     nodes : [],
 
     save : function(){
+        var _self = this;
+        clearTimeout(this.$customSaveTimer);
+
+        this.$customSaveTimer = setTimeout(function(){
+            ide.dispatchEvent("savesettings", {model : _self.model});
+            _self.saveToFile();
+        }, 100);
+    },
+
+    saveToFile : function(){
         //apf.console.log("SAVING SETTINGS");
         fs.saveFile(this.file, this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "");
     },
 
-    doSave: function() {
+    saveSettingsPanel: function() {
         var pages   = self.pgSettings ? pgSettings.getPages() : [],
             i       = 0,
             l       = pages.length,
@@ -41,7 +51,7 @@ return ext.register("ext/settings/settings", {
         if (ide.dispatchEvent("savesettings", {
             model : this.model
         }) !== false || changed)
-            this.save();
+            this.saveToFile();
     },
 
     getSectionId: function(part) {
@@ -93,9 +103,10 @@ return ext.register("ext/settings/settings", {
             if (ide.dispatchEvent("savesettings", {
                 model : _self.model
             }) === true)
-                _self.save();
+                _self.saveToFile();
         };
-        this.$timer = setInterval(checkSave, 6000); //60000
+        this.$timer = setInterval(checkSave, 60000);
+
         apf.addEventListener("exit", checkSave);
 
         ide.addEventListener("$event.loadsettings", function(callback) {
@@ -149,11 +160,11 @@ return ext.register("ext/settings/settings", {
 
     saveSettings: function() {
         winSettings.hide();
-        this.doSave();
+        this.saveSettingsPanel();
     },
 
     applySettings: function() {
-        this.doSave();
+        this.saveSettingsPanel();
     },
 
     cancelSettings: function() {

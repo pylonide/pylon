@@ -33,8 +33,7 @@ return ext.register("ext/run/run", {
             _self.$updateMenu();
         });
         mdlRunConfigurations.addEventListener("update", function(e) {
-            _self.$changed = true;
-            settings.doSave();
+            settings.save();
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
         });
@@ -43,13 +42,6 @@ return ext.register("ext/run/run", {
             var runConfigs = e.model.queryNode("auto/configurations");
             if (runConfigs)
                 mdlRunConfigurations.load(runConfigs);
-        });
-
-        ide.addEventListener("savesettings", function(e){
-            if (_self.$changed) {
-                _self.$changed = false;
-                return true;
-            }
         });
 
         winRunCfgNew.addEventListener("hide", function() {
