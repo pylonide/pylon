@@ -168,7 +168,10 @@ apf.BaseTree = function(){
         var _self = this;
         if ((function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);
-            if (!pNode || pNode == _self.xmlRoot || _recur(pNode) === false)
+            if (pNode == _self.xmlRoot)
+                return true;
+
+            if (!pNode || _recur(pNode) === false)
                 return false;
                 
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
@@ -184,22 +187,38 @@ apf.BaseTree = function(){
                 var xmlNode = root.selectSingleNode(item);
                 if (!xmlNode) {
                     var paths = item.split("/");
-                    var lastNode = root.selectSingleNode(paths.shift());
+                    var lastNode = null;//root.selectSingleNode(paths.shift());
+                    //var lastPath = paths.pop();
                     apf.asyncForEach(paths, 
-                        function(part, next2) {
-                            if (!lastNode) {//Can't find node returning
-                                next2(true);
-                                next();
-                                return;
+                        function(part, next2, index) {                      
+                            apf.queue.empty();
+
+                            var xmlNode = (lastNode || root).selectSingleNode(part);
+                            if (xmlNode) {
+                                if (index == paths.length - 1)
+                                    return _self.select(xmlNode);
+                                
+                                lastNode = xmlNode;
+                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
+                                    next2();
+                                });
+                            }
+                            else {
+                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
+                                    lastNode = lastNode.selectSingleNode(part);
+                                    if (!lastNode) {
+                                        next2(true);
+                                        next();
+                                    }
+                                    else
+                                        next2();
+                                });
                             }
                             
-                            var xmlNode = lastNode.selectSingleNode(part);
-                            if (xmlNode) 
-                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, next2);
-                            else
-                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, next2);
                         }, function(err){
-                            
+                            if (!err) {
+                                
+                            }
                         }
                     );
                 }
@@ -241,7 +260,7 @@ apf.BaseTree = function(){
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!container) return;
         
-        if (apf.getStyle(container, "display") == "block") {
+        if (false && apf.getStyle(container, "display") == "block") {
             if (force == 1) return;
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate, callback);
@@ -267,7 +286,7 @@ apf.BaseTree = function(){
     this.slideOpen = function(container, xmlNode, immediate, callback){
         if (!xmlNode)
             xmlNode = this.selected;
-        
+
         var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -288,8 +307,8 @@ apf.BaseTree = function(){
         if (!this.nocollapse)
             container.style.display = "block";
 
-        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential") 
-          && !container.childNodes.length) {
+        //&& !container.childNodes.length
+        if ((immediate || !this.prerender) && this.$hasLoadStatus(xmlNode, "potential")) {
             this.$extend(xmlNode, container, immediate, callback);
             return;
         }
@@ -746,7 +765,7 @@ apf.BaseTree = function(){
             - Being insterted using xmlUpdate
             - there is at least 1 child inserted
         */
-        
+
         if (e.action == "move-away")
             this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
@@ -768,7 +787,7 @@ apf.BaseTree = function(){
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);
-        
+
         //Can this be removed?? (because it was added in the insert function)
         //if (this.$hasLoadStatus(e.xmlNode, "loading"))
             //this.$setLoadStatus(e.xmlNode, "loaded");

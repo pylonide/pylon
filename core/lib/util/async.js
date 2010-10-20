@@ -50,11 +50,11 @@ apf.asyncForEach = function(list, async, callback) {
         i++;
 
         if (i < len) {
-            async(list[i], handler);
+            async(list[i], handler, i);
         } else {
             callback(null);
         }
-    });
+    }, i);
 };
 
 /**
