@@ -33,6 +33,7 @@ return ext.register("ext/run/run", {
             _self.$updateMenu();
         });
         mdlRunConfigurations.addEventListener("update", function(e) {
+            debugger;
             settings.save();
             if (e.action == "add" || e.action == "redo-remove" || e.action == "attribute")
                 _self.$updateMenu();
@@ -40,8 +41,10 @@ return ext.register("ext/run/run", {
 
         ide.addEventListener("loadsettings", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (runConfigs)
-                mdlRunConfigurations.load(runConfigs);
+            if (!runConfigs)
+                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
+
+            mdlRunConfigurations.load(runConfigs);
         });
 
         winRunCfgNew.addEventListener("hide", function() {
