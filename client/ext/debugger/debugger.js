@@ -96,12 +96,27 @@ return ext.register("ext/debugger/debugger", {
         });
     },
 
+    contentTypes : {
+        "js" : "application/javascript",
+        "json" : "application/json",
+        "css" : "text/css",
+        "xml" : "application/xml",
+        "php" : "application/x-httpd-php",
+        "html" : "text/html",
+        "xhtml" : "application/xhtml+xml"
+    },
+
+    getContentType : function(file) {
+        var type = file.split(".").pop() || "";
+        return this.contentTypes[type] || "text/plain";
+    },
+
     showFile : function(path, row, column, text) {
         var chunks = path.split("/");
         var name = chunks[chunks.length-1];
         var node = apf.n("<file />")
             .attr("name", name)
-            .attr("contenttype", "application/javascript")
+            .attr("contenttype", this.getContentType(name))
             .attr("path", path)
             .node();
 
