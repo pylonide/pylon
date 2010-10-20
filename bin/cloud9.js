@@ -44,7 +44,7 @@ function parseArguments(argv) {
             case "-c":
                 //get config file path and add current process path if its relative path, also remove ".js"
                 var confFile = argv.shift(),
-            pref = ( confFile.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
+                    pref = ( confFile.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
                 if (!confFile)
                     return usage();
                 config = require(pref + confFile.replace(".js", "")).Config;
