@@ -195,8 +195,8 @@ apf.BaseTree = function(){
 
                             var xmlNode = (lastNode || root).selectSingleNode(part);
                             if (xmlNode) {
-                                if (index == paths.length - 1)
-                                    return _self.select(xmlNode);
+                                //if (index == paths.length - 1)
+                                    //return _self.select(xmlNode);
                                 
                                 lastNode = xmlNode;
                                 _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
@@ -206,19 +206,17 @@ apf.BaseTree = function(){
                             else {
                                 _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
                                     lastNode = lastNode.selectSingleNode(part);
-                                    if (!lastNode) {
+                                    if (!lastNode)
                                         next2(true);
-                                        next();
-                                    }
                                     else
                                         next2();
                                 });
                             }
                             
                         }, function(err){
-                            if (!err) {
-                                
-                            }
+                            //if (!err) {
+                                next();
+                            //}
                         }
                     );
                 }
@@ -307,8 +305,8 @@ apf.BaseTree = function(){
         if (!this.nocollapse)
             container.style.display = "block";
 
-        //&& !container.childNodes.length
-        if ((immediate || !this.prerender) && this.$hasLoadStatus(xmlNode, "potential")) {
+        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential")
+          && !container.childNodes.length) {
             this.$extend(xmlNode, container, immediate, callback);
             return;
         }
