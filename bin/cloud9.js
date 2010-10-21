@@ -9,20 +9,22 @@ var Sys = require("sys"),
         w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
         p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
         l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
-        a: { key: "action", hint: "ACTION", dev:null, parser: function(value) {
+        a: { key: "action", hint: "ACTION", def:null, parser: function(value) {
             return value.split(/\s+/g);
         }},
         c: { key: "_config", parser: function(value) {
             var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
                 return require(pref + value.replace(".js", "")).Config;
             },
-            hint: "configFile" }
+            hint: "configFile"
+        }
     };
 
 function usage() {
     var message = "USAGE: cloud9",
         hint, opt, def,
         mapOption;
+
     for(opt in mapOptions) {
         mapOption = mapOptions[opt];
         hint = mapOption.hint;
