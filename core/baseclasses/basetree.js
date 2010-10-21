@@ -665,8 +665,8 @@ apf.BaseTree = function(){
         if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
         
-        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
-            this.slideOpen(pContainer, pHtmlNode, true);
+//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+//            this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
