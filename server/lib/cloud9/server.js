@@ -70,7 +70,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.error = function(description, message) {
-        console.log(description);
+        console.log("Socket error: " + description);
         var sid = (message || {}).sid || -1;
         var error = {
             "type": "error",
@@ -167,15 +167,35 @@ module.exports = IdeServer = function(workspaceDir, server) {
                     path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
                     if (path.indexOf(this.workspaceDir) === -1)
                         return this.sendTermPacket();
-                    console.log("checking for path: ", path);
                     Fs.stat(path, function(err, stat) {
                         if (err) {
                             return _self.sendTermPacket(0, "error", 
                                 err.toString().replace("Error: ENOENT, ", ""));
                         }
+                        if (!stat.isDirectory())
+                            return _self.sendTermPacket(0, "error", "Not a directory.");
                         _self.sendTermPacket(0, "result-cd", {cwd: path});
                     });
                 }
+                break;
+            case "check-isfile":
+                var file = argv.pop();
+                    path  = message.cwd || this.workspaceDir,
+                    _self = this;
+                    path  = Path.normalize(path + "/" + file.replace(/^\//g, ""));
+
+                if (path.indexOf(this.workspaceDir) === -1)
+                    return this.sendTermPacket();
+                Fs.stat(path, function(err, stat) {
+                    if (err) {
+                        return _self.sendTermPacket(0, "error",
+                            err.toString().replace("Error: ENOENT, ", ""));
+                    }
+                    _self.sendTermPacket(0, "result-check-isfile", {
+                        cwd: path,
+                        isfile: (stat && !stat.isDirectory())
+                    });
+                });
                 break;
             default:
                 this.sendTermPacket(0, "error", "This command is not supported.");
