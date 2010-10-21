@@ -197,6 +197,8 @@ return ext.register("ext/filesystem/filesystem", {
                     var doc = node.ownerDocument;
                     var xml = doc.createElement("data");
                     xml.appendChild(doc.createTextNode(data));
+                    var noderunner = require("ext/noderunner/noderunner");
+                    xml.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length))
                     xml.setAttribute("newline", nl);
                     apf.b(node).append(xml);
 

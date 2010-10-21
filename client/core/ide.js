@@ -8,7 +8,7 @@ require.def("core/ide",
     function() {
         var ide = new apf.Class().$init();
 
-        ide.start = function(){
+        ide.start = function() {
             var last = "";
 
             //Set references to global elements - aka extension points
@@ -155,4 +155,5 @@ require.def("core/ide",
         };
 
         return ide;
-    });
+    }
+);

@@ -137,41 +137,48 @@ return ext.register("ext/debugger/debugger", {
             var chunks = name.split("/");
             var value = chunks[chunks.length-1];
 
-            // TODO this has to be refactored to support multiple tabs
-            var page = tabEditors.getPage(value);
-            if (page) {
-                tabEditors.set(page);
-            }
-            else if (name.indexOf(noderunner.workspaceDir) == 0) {
-                var path = noderunner.davPrefix + "/" + name.slice(noderunner.workspaceDir.length);
-                var node = apf.n("<file />")
-                    .attr("name", name)
-                    .attr("path", path)
-                    .attr("contenttype", "application/javascript")
-                    .attr("scriptid", script.getAttribute("scriptid"))
-                    .attr("scriptname", script.getAttribute("scriptname"))
-                    .attr("lineoffset", "0").node();
-
-                this.jump(node, row, column, text);
+            if (name.indexOf(noderunner.workspaceDir) == 0) {
+                var path = "/" + noderunner.davPrefix + name.slice(noderunner.workspaceDir.length + 1);
+	            // TODO this has to be refactored to support multiple tabs
+	            var page = tabEditors.getPage(path);
+	            if (page)
+	                tabEditors.set(page);
+                else {
+	                var node = apf.n("<file />")
+	                    .attr("name", value)
+	                    .attr("path", path)
+	                    .attr("contenttype", "application/javascript")
+	                    .attr("scriptid", script.getAttribute("scriptid"))
+	                    .attr("scriptname", script.getAttribute("scriptname"))
+	                    .attr("lineoffset", "0").node();
+	
+	                this.jump(node, row, column, text);
+                }
             }
             else {
-                var node = apf.n("<file />")
-                    .attr("name", value)
-                    .attr("path", name)
-                    .attr("contenttype", "application/javascript")
-                    .attr("scriptid", script.getAttribute("scriptid"))
-                    .attr("scriptname", script.getAttribute("scriptname"))
-                    .attr("debug", "1")
-                    .attr("lineoffset", "0").node();
+                var page = tabEditors.getPage(value);
+	            if (page)
+	                tabEditors.set(page);
+                else {
+                    var node = apf.n("<file />")
+	                    .attr("name", value)
+	                    .attr("path", name)
+	                    .attr("contenttype", "application/javascript")
+	                    .attr("scriptid", script.getAttribute("scriptid"))
+	                    .attr("scriptname", script.getAttribute("scriptname"))
+	                    .attr("debug", "1")
+	                    .attr("lineoffset", "0").node();
 
-                dbg.loadScript(script, function(source) {
-                    var doc = node.ownerDocument;
-                    var data = doc.createElement("data");
-                    data.appendChild(doc.createTextNode(source));
-                    node.appendChild(data);
-
-                    this.jump(node, row, column, text);
-                });
+                    var _self = this;
+                    dbg.loadScript(script, function(source) {
+	                    var doc = node.ownerDocument;
+	                    var data = doc.createElement("data");
+	                    data.appendChild(doc.createTextNode(source));
+	                    node.appendChild(data);
+	
+	                    _self.jump(node, row, column, text);
+	                });
+	            }
             }
         }
     },
