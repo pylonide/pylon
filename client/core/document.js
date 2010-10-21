@@ -8,6 +8,8 @@ require.def("core/document",
     function() {
 
 var Document = function(node, docValue){
+    this.$init();
+    
     this.getNode = function(){
         return node;
     }
@@ -27,7 +29,7 @@ var Document = function(node, docValue){
             : docValue);
     }
 };
-Document.prototype = new apf.Class().$init();
+Document.prototype = new apf.Class();
 
 return Document;
 

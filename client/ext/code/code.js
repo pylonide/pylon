@@ -67,14 +67,13 @@ return ext.register("ext/code/code", {
             doc.acedoc.setUndoManager(actiontracker);//new UndoManager());
             
             doc.addEventListener("prop.value", function(e){
-                //@todo this function is called twice, find out why
-                this.acedoc.setValue(e.value || "");
-                this.isInited = true;
+                doc.acedoc.setValue(e.value || "");
+                doc.isInited = true;
             });
             
             doc.addEventListener("retrievevalue", function(e){
-                if (!this.isInited) return e.value;
-                else return this.acedoc.toString();
+                if (!doc.isInited) return e.value;
+                else return doc.acedoc.toString();
             });
             
             doc.addEventListener("close", function(){
