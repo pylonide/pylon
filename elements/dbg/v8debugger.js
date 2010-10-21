@@ -312,12 +312,17 @@ var V8Debugger = function(dbg, host) {
                 if (!bp) {
                     bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
                     bp.condition = modelBp.getAttribute("condition");
-                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount"));
+                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
                     bp.enabled = modelBp.getAttribute("enabled") == "true";
-                    bp.attach(_self.$debugger, function() {});
+                    bp.attach(_self.$debugger, function() {
+		                model.removeXml(modelBp);
+		                model.appendXml(_self.$getBreakpointXml(bp, 0));
+                    });
                 }
-                model.removeXml(modelBp);
-                model.appendXml(_self.$getBreakpointXml(bp, 0));
+                else {
+	                model.removeXml(modelBp);
+	                model.appendXml(_self.$getBreakpointXml(bp, 0));
+                }
             }
         });
     };

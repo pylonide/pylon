@@ -149,15 +149,22 @@ apf.dbg = function(struct, tagName){
     };
     
     this.toggleBreakpoint = function(script, row) {
+        var model = this.$mdlBreakpoints;
         if (this.$debugger)
-            this.$debugger.toggleBreakpoint(script, row, this.$mdlBreakpoints);
+            this.$debugger.toggleBreakpoint(script, row, model);
         else {
-            var bp = apf.n("<breakpoint/>")
-                .attr("script", script.getAttribute("scriptname"))
-                .attr("line", row)
-                .attr("lineoffset", 0)
-                .node();
-            this.$mdlBreakpoints.appendXml(bp);
+            var scriptName = script.getAttribute("scriptname");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
+            if (bp)
+                model.removeXml(bp)
+            else {
+	            var bp = apf.n("<breakpoint/>")
+	                .attr("script", scriptName)
+	                .attr("line", row)
+	                .attr("lineoffset", 0)
+	                .node();
+	            model.appendXml(bp);
+            }
         }
     };
 
