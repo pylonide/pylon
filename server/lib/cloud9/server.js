@@ -7,7 +7,7 @@ var io = require("socket.io");
 var async = require("async");
 var Path = require("path");
 var Fs = require("fs");
-var spawn = require("child_process").spawn;
+var Spawn = require("child_process").spawn;
 var NodeDebugProxy = require("cloud9/nodedebugproxy");
 var ChromeDebugProxy = require("cloud9/chromedebugproxy");
 
@@ -154,8 +154,10 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
         switch(cmd) {
             case "git":
-                // let's do git stuff!
-                
+            case "ls":
+            case "pwd":
+                // an allowed command!
+                this.spawnCommand(0, cmd, argv, message.cmd);
                 break;
             case "cd":
                 var to    = argv.pop(),
@@ -169,16 +171,14 @@ module.exports = IdeServer = function(workspaceDir, server) {
                     Fs.stat(path, function(err, stat) {
                         if (err) {
                             return _self.sendTermPacket(0, "error", 
-                                err.replace("Error: ENOENT, ", ""));
+                                err.toString().replace("Error: ENOENT, ", ""));
                         }
                         _self.sendTermPacket(0, "result-cd", {cwd: path});
                     });
                 }
                 break;
-            case "ls":
-                break;
             default:
-                this.sendTermPacket();
+                this.sendTermPacket(0, "error", "This command is not supported.");
                 break;
         }
         console.log("command: " + cmd + ", cwd: " + message.cwd);
@@ -193,6 +193,46 @@ module.exports = IdeServer = function(workspaceDir, server) {
         }));
     };
 
+    this.spawnCommand = function(sid, cmd, args, cwd) {
+        var child = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
+            _self = this;
+        child.stdout.on("data", sender("stdout"));
+        child.stderr.on("data", sender("stderr"));
+
+        function sender(stream) {
+            return function(data) {
+                if (!_self.client) {
+                    try {
+                        child.kill();
+                    } catch(e) {}
+                    return;
+                }
+                console.log("data coming in: " + data.toString("utf8"));
+                var message = {
+                    type   : "terminal",
+                    subtype: "output",
+                    sid    : sid || 0,
+                    stream : stream,
+                    body   : data.toString("utf8")
+                };
+                _self.client.send(JSON.stringify(message));
+            };
+        }
+
+        child.on("exit", function(code) {
+            if (!_self.client)
+               return;
+            _self.client.send(JSON.stringify({
+                type   : "terminal",
+                subtype: "node-exit",
+                sid    : sid || 0,
+                code   : code
+            }));
+        });
+
+        return child;
+    };
+
     this.$runNode = function(args, cwd, env, debug) {
         var _self = this;
         
@@ -202,7 +242,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
                 env[key] = process.env[key];
         }
 
-        var child = _self.child = spawn(this.nodeCmd, args, {cwd: cwd, env: env});
+        var child = _self.child = Spawn(this.nodeCmd, args, {cwd: cwd, env: env});
         _self.client.send(JSON.stringify({"type": "node-start"}));
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
 

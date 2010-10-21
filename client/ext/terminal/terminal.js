@@ -37,20 +37,6 @@ var terminal,
     ];
 
 function termInitHandler() {
-    // output a start up screen
-    /*this.write([
-        this.globals.center("####################################################", 80),
-        this.globals.center("#                                                  #", 80),
-        this.globals.center("#         termlib.js - Sample Parser v 1.1         #", 80),
-        this.globals.center("#  Input is echoed as a list of parsed arguments.  #", 80),
-        this.globals.center("#                                                  #", 80),
-        this.globals.center("#  Type 'help' for commands.                       #", 80),
-        this.globals.center("#                                                  #", 80),
-        this.globals.center("#  (c) N. Landsteiner 2005-2010;  www.masswerk.at  #", 80),
-        this.globals.center("#                                                  #", 80),
-        this.globals.center("####################################################", 80),
-        "%n"
-    ]);*/
     // set a double status line
     this.statusLine("", 8, 2); // just a line of strike
     this.statusLine(" +++ Type 'help' for a list of available commands. +++");
@@ -187,17 +173,6 @@ function commandHandler() {
                 this.close();
                 return;
             default:
-                // for test purpose just output argv as list
-                // assemble a string of style-escaped lines and output it in more-mode
-                s=" INDEX  QL  ARGUMENT%n";
-                for (var i=0; i<this.argv.length; i++) {
-                    s += this.globals.stringReplace("%", "%%",
-                        this.globals.fillLeft(i, 6) +
-                        this.globals.fillLeft((this.argQL[i])? this.argQL[i]:"-", 4) +
-                        '  "' + this.argv[i] + '"'
-                        ) + "%n";
-                }
-                this.write(s, true);
                 noderunner.socket.send(JSON.stringify({
                     command: "terminal",
                     argv: this.argv,
@@ -317,21 +292,16 @@ return terminal = ext.register("ext/terminal/terminal", {
 
         if (message.type != "terminal")
             return;
-debugger;
+
         switch(message.subtype) {
             case "result-cd":
-                this.$term.cursorOff();
-                apf.console.log("message: " + message.body);
-                if (message.body.cwd) {
+                if (message.body.cwd)
                     this.setPrompt(message.body.cwd);
-                    this.$term.write([], true);
-                }
-                this.$term.cursorOn();
                 break;
             default:
             case "error":
                 if (typeof message.body == "string")
-                    this.$term.write("%n " + message.body
+                    this.$term.write(message.body
                         .replace(noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")
                         .replace(/%/g, "%%") + "%n", true);
                 break;
