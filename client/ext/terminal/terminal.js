@@ -15,32 +15,39 @@ require.def("ext/terminal/terminal",
     function(ide, ext, util, termlib, parserCls, console, noderunner) {
 
 var terminal,
+    termKey    = termlib.prototype.termKey,
+    setDebug   = false,
+    setRun     = false,
     parser     = new parserCls(),
-    rszTimeout = null,
     helpPage   = [
         "%CS%+r Terminal Help %-r%n",
-        "  This is just a sample to demonstrate command line parsing.",
         " ",
         "  Use one of the following commands:",
         "     clear [-a] .......... clear the terminal",
         "                           option 'a' also removes the status line",
-        "     number -n<value> .... return value of option 'n' (test for options)",
-        "     repeat -n<value> .... repeats the first argument n times (another test)",
         "     dump ................ lists all arguments and alphabetic options",
         "     login <username> .... sample login (test for raw mode)",
-        "     exit ................ close the terminal (same as <ESC>)",
+        "     ls .................. list directory contents. See ls(1) for more ",
+        "                           information and arguments",
+        "     pwd ................. return working directory name. See pwd(1) for",
+        "                           more information and arguments",
+        "     git <command> ....... the stupid content tracker. See git(1) for",
+        "                           more information and arguments",
+        "     open <filename> ..... open a file in a new Editor tab",
+        "     c9 <filename> ....... alias for 'open'",
+        "     run <filename> ...... attempts to run 'filename' in a NodeJS instance",
+        "     debug <filename> .... attempts to open a debug session for 'filename'",
         "     help ................ show this help page",
-        " ",
-        "  other input will be echoed to the terminal as a list of parsed arguments",
-        "  in the format <argument index> <quoting level> '<parsed value>'.",
         " "
     ];
 
+function getCwd() {
+    return terminal.$cwd.replace("/workspace",
+        noderunner.workspaceDir.replace(/\/+$/, ""));
+}
+
 function termInitHandler() {
-    // set a double status line
-    this.statusLine("", 8, 2); // just a line of strike
-    this.statusLine(" +++ Type 'help' for a list of available commands. +++");
-    this.maxLines -= 2;
+    this.write(["Type 'help' for a list of available commands.", "%n"]);
     // and leave with prompt
     this.prompt();
 }
@@ -83,10 +90,12 @@ function commandHandler() {
     }
     else {
         var cmd = this.argv[this.argc++];
-        /*
-        process commands now
-        1st argument: this.argv[this.argc]
-        */
+        // special commands (run & debug):
+        if (cmd == "debug" || cmd == "run") {
+            setDebug = (cmd == "debug");
+            setRun   = (cmd == "run");
+            cmd = "open";
+        }
         switch (cmd) {
             case "help":
                 this.write(helpPage);
@@ -99,39 +108,6 @@ function commandHandler() {
                     this.maxLines = this.conf.rows;
                 }
                 this.clear();
-                break;
-            case "number":
-                // test for value options
-                var opts = parser.getopt(this, "n");
-                if (opts.illegals.length) {
-                    this.type("illegal option. usage: number -n<value>");
-                }
-                else if ((opts.n) && (opts.n.value != -1)) {
-                    this.type("option value: "+opts.n.value);
-                }
-                else {
-                    this.type("usage: number -n<value>");
-                }
-                break;
-            case "repeat":
-                // another test for value options
-                var opts = parser.getopt(this, "n");
-                if (opts.illegals.length) {
-                    this.type("illegal option. usage: repeat -n<value> <string>");
-                }
-                else if ((opts.n) && (opts.n.value != -1)) {
-                    // first normal argument is again this.argv[this.argc]
-                    var s = this.argv[this.argc];
-                    if (typeof s != "undefined") {
-                        // repeat this string n times
-                        var a = [];
-                        for (var i=0; i<opts.n.value; i++) a[a.length] = s;
-                        this.type(a.join(" "));
-                    }
-                }
-                else {
-                    this.type("usage: repeat -n<value> <string>");
-                }
                 break;
             case "login":
                 // sample login (test for raw mode)
@@ -169,15 +145,22 @@ function commandHandler() {
                     this.newLine();
                 }
                 break;
-            case "exit":
-                this.close();
-                return;
-            default:
+            case "open":
+            case "c9":
+                this.argv[0] = "check-isfile"
                 noderunner.socket.send(JSON.stringify({
                     command: "terminal",
                     argv: this.argv,
-                    cwd: terminal.$cwd.replace("/workspace", noderunner.workspaceDir.replace(/\/+$/, ""))
-                }))
+                    cwd: getCwd()
+                }));
+                break;
+            default:
+                this.cursorOn();
+                noderunner.socket.send(JSON.stringify({
+                    command: "terminal",
+                    argv: this.argv,
+                    cwd: getCwd()
+                }));
                 return;
         }
     }
@@ -185,11 +168,17 @@ function commandHandler() {
 }
 
 function termExitHandler() {
-    // reset the UI
-    var mainPane = (document.getElementById)?
-        document.getElementById("mainPane") : document.all.mainPane;
-    if (mainPane)
-        mainPane.className = "lh15";
+    //do nothing.
+}
+
+function ctrlHandler() {
+    var ch = this.inputChar;
+    if (ch == termKey.TAB) {// || ch == termlib.termKey.ESC) {
+        alert("TAB hit!");
+    }
+    else if (ch == termKey.ETX) {
+        alert("C hit!");
+    }
 }
 
 return terminal = ext.register("ext/terminal/terminal", {
@@ -201,7 +190,6 @@ return terminal = ext.register("ext/terminal/terminal", {
     hotkeys  : {"terminal":1},
     pageTitle: "Terminal",
     pageID   : "pgTerminal",
-    fontSize : 12,
     hotitems : {},
 
     nodes    : [],
@@ -221,22 +209,15 @@ return terminal = ext.register("ext/terminal/terminal", {
     },
 
     init : function(amlNode){
-        apf.importCssString("\
-.term {\
-    font-family: courier,fixed,swiss,sans-serif;\
-    font-size: " + this.fontSize + "px;\
-    color: #33d011;\
-    background: none;\
-}\
-.termReverse {\
-    color: #111111;\
-    background: #33d011;\
-}");
         var _self = this;
         this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-        var div   = this.$panel.$ext.appendChild(document.createElement("div")),
-            id    = this.pageID + "_divTerminalCont";
-        div.setAttribute("id", id);
+        var id  = this.pageID + "_divTerminalCont",
+            bar = this.$panel.appendChild(new apf.bar({
+                id: this.pageID + "Bar",
+                skin: "terminal",
+                focussable: true
+            }));
+        bar.$ext.setAttribute("id", id);
         // hide the debugger toolbar in the results tab
         tabConsole.addEventListener("beforeswitch", function(e) {
             tbDebug.setProperty("visible", (e.nextPage != _self.$panel));
@@ -246,11 +227,17 @@ return terminal = ext.register("ext/terminal/terminal", {
 
         this.$cwd  = "/workspace";
         this.$term = new termlib({
+            x: 0,
+            y: 0,
+            bgColor: "",
+            frameColor: "",
+            closeOnESC: false,
             termDiv: id,
             ps: this.getPrompt(),
             initHandler: termInitHandler,
             handler: commandHandler,
-            exitHandler: termExitHandler
+            exitHandler: termExitHandler,
+            ctrlHandler: ctrlHandler
         });
         this.$term.open();
         this.$term.focus();
@@ -258,11 +245,14 @@ return terminal = ext.register("ext/terminal/terminal", {
             _self.onResize();
         });
         this.$panel.addEventListener("resize", this.onResize.bind(this));
-        apf.addEventListener("focus", function() {
+        winDbgConsole.addEventListener("blur", function() {
             _self.$term.globals.disableKeyboard();
         });
-        apf.addEventListener("blur", function() {
+        winDbgConsole.addEventListener("focus", function() {
+            if (tabConsole.getPage() != _self.$panel)
+                return;
             _self.$term.globals.enableKeyboard(_self.$term);
+            _self.$term.cursorOn();
         });
         this.onResize();
 
@@ -271,15 +261,14 @@ return terminal = ext.register("ext/terminal/terminal", {
     },
 
     onResize: function() {
-        clearTimeout(rszTimeout);
         var oNode = this.$panel.$ext,
-            cols  = Math.max(Math.floor(oNode.offsetWidth  / (this.fontSize - 5), 10), 20),
-            rows  = Math.max(Math.floor(oNode.offsetHeight / (this.fontSize + 1), 10), 15);
+            rowH  = this.$term.conf.rowHeight,
+            cols  = Math.max(Math.floor(oNode.offsetWidth  / (rowH / 2), 10), 20),
+            rows  = Math.max(Math.floor(oNode.offsetHeight / rowH, 10), 15);
+        if (this.$term.maxCols === cols && this.$term.maxLines === rows)
+            return;
         this.$term.resizeTo(cols, rows);
-        var _self = this;
-        rszTimeout = setTimeout(function() {
-            termInitHandler.call(_self.$term);
-        }, 200);
+        termInitHandler.call(this.$term);
     },
 
     onMessage: function(message) {
@@ -298,12 +287,29 @@ return terminal = ext.register("ext/terminal/terminal", {
                 if (message.body.cwd)
                     this.setPrompt(message.body.cwd);
                 break;
+            case "result-check-isfile":
+                if (typeof message.body.cwd != "string")
+                    break;
+                var path = message.body.cwd.replace(
+                    noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")
+                if (message.body.isfile) {
+                    require("ext/debugger/debugger").showFile(path);
+                    if (setDebug || setRun) {
+                        require("ext/run/run").run(setDebug === true);
+                        setDebug = setRun = false;
+                    }
+                }
+                else {
+                    this.$term.write("%n'" + path + "' is not a file.%n", true);
+                }
+                break;
             default:
             case "error":
-                if (typeof message.body == "string")
-                    this.$term.write(message.body
+                if (typeof message.body == "string") {
+                    this.$term.write("%n" + message.body
                         .replace(noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")
                         .replace(/%/g, "%%") + "%n", true);
+                }
                 break;
         }
     },
