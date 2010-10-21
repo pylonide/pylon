@@ -7,18 +7,18 @@ var Sys = require("sys"),
     Fs  = require("fs");
 
 function usage() {
-    Sys.puts("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)]");
+    Sys.puts("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)] [-c configFile]");
     process.exit(0);
 }
 
 function parseArguments(argv) {
-    var opts = {
+    var opts_def = {
         workspace: ".",
         ip: "127.0.0.1",
         port: 3000
     };
 
-    var arg;
+    var arg, key, config = {}, opts = {};
     while (argv.length && (arg = argv.shift())) {
         switch(arg) {
             case "-w":
@@ -41,6 +41,15 @@ function parseArguments(argv) {
                 opts.ip = ip;
                 break;
 
+            case "-c":
+                //get config file path and add current process path if its relative path, also remove ".js"
+                var confFile = argv.shift(),
+                    pref = ( confFile.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
+                if (!confFile)
+                    return usage();
+                config = require(pref + confFile.replace(".js", "")).Config;
+                break;
+
             default:
                 if (arg.indexOf('-a')==0) {
                     var args = arg.slice(2).split(' ');
@@ -50,6 +59,12 @@ function parseArguments(argv) {
                     return usage();
 
                 }
+    }
+
+    //merge config options
+    for(key in opts_def) {
+        if(!opts[key])
+            opts[key] = config[key] || opts_def[key] ;
     }
 
     return opts;

@@ -1,5 +1,15 @@
 <settings version="0.0.2">
     <auto />
     <general name="General" page="pgSettingsGeneral" />
-    <editors name="Editor" page="pgSettingsEditors" />
+    <editors name="Editor" page="pgSettingsEditors">
+        <code 
+          overwrite="false"
+          selectstyle="line"
+          activeline="true"
+          showinvisibles="false"
+          showprintmargin="true"
+          printmargincolumn="80"
+          softtabs="true"
+          tabsize="4"/>
+    </editors>
 </settings>

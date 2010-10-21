@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winDbgConsole" skin="dockwin" title="Debug" modal="false" height="200" visible="false" buttons="close">
+    <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar id="tbDebug">
                 <a:bar>
@@ -37,11 +37,11 @@
               	    <a:dropdown id="lstScripts"
               	      right      = "2"
               	      top        = "2"
-        		      model      = "mdlDbgSources"
-        		      each       = "[file]"
-        		      caption    = "[@text]"
-        		      autoselect = "false"
-        		      icon       = "debugger/file_obj.gif" />
+                      model      = "mdlDbgSources"
+                      each       = "[file]"
+                      caption    = "[@text]"
+                      autoselect = "false"
+                      icon       = "debugger/file_obj.gif" />
             	</a:bar>
             </a:toolbar>
             
