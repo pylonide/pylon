@@ -286,7 +286,6 @@ var V8Debugger = function(dbg, host) {
         var _self = this;
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
-
             if (v8Breakpoints.breakpoints) {
                 for (var id in _self.$breakpoints)
                     _self.$breakpoints[id].destroy();
@@ -318,7 +317,7 @@ var V8Debugger = function(dbg, host) {
                     bp.attach(_self.$debugger, function() {});
                 }
                 model.removeXml(modelBp);
-                model.appendXml(this.$getBreakpointXml(bp, 0));
+                model.appendXml(_self.$getBreakpointXml(bp, 0));
             }
         });
     };
@@ -363,20 +362,20 @@ var V8Debugger = function(dbg, host) {
         return(xml.join(""));
     };
 
-    this.continueScript = function() {
-        this.$debugger.continueScript();
+    this.continueScript = function(callback) {
+        this.$debugger.continueScript(null, null, callback);
     };
 
-    this.stepInto = function() {
-        this.$debugger.continueScript("in", 1);
+    this.stepInto = function(callback) {
+        this.$debugger.continueScript("in", 1, callback);
     };
 
-    this.stepNext = function() {
-        this.$debugger.continueScript("next", 1);
+    this.stepNext = function(callback) {
+        this.$debugger.continueScript("next", 1, callback);
     };
 
-    this.stepOut = function() {
-        this.$debugger.continueScript("out", 1);
+    this.stepOut = function(callback) {
+        this.$debugger.continueScript("out", 1, callback);
     };
 
     this.suspend = function() {
