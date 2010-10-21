@@ -105,7 +105,7 @@ apf.codeeditor = function(struct, tagName) {
     }
     
     this.addEventListener("unloadmodel", function(e) {
-        this.$changeValue();
+        this.syncValue();
     });
     
     /**
@@ -119,9 +119,8 @@ apf.codeeditor = function(struct, tagName) {
         if (this.caching)
             key = this.$getCacheKey(value);
         //Assuming document
-        else if (value instanceof Document){
+        else if (value instanceof Document)
             doc = value;
-        }
 
         if (!doc && key)
             doc = this.$cache[key];
@@ -443,7 +442,7 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.focus();
     };
 
-    this.$changeValue = function() {
+    this.syncValue = function() {
         var doc = this.$editor.getDocument();
         if (doc.cacheId == this.$getCacheKey(this.value)) {
             var value = this.getValue();
@@ -456,7 +455,7 @@ apf.codeeditor = function(struct, tagName) {
         if (!this.$ext)
             return;
 
-        this.$changeValue();
+        this.syncValue();
     
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
