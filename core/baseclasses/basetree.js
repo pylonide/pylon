@@ -168,7 +168,10 @@ apf.BaseTree = function(){
         var _self = this;
         if ((function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);
-            if (!pNode || pNode == _self.xmlRoot || _recur(pNode) === false)
+            if (pNode == _self.xmlRoot)
+                return true;
+
+            if (!pNode || _recur(pNode) === false)
                 return false;
                 
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
@@ -176,40 +179,48 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList){
+    this.expandList = function(pathList, callback){
         pathList.sort();
         var root = this.xmlRoot, _self = this;
         apf.asyncForEach(pathList,
             function(item, next){
-                var xmlNode = root.selectSingleNode(item);
-                if (!xmlNode) {
-                    var paths = item.split("/");
-                    var lastNode = root.selectSingleNode(paths.shift());
-                    apf.asyncForEach(paths, 
-                        function(part, next2) {
-                            if (!lastNode) {//Can't find node returning
-                                next2(true);
-                                next();
-                                return;
-                            }
+                var paths = item.split("/");
+                var lastNode = null;//root.selectSingleNode(paths.shift());
+                //var lastPath = paths.pop();
+                apf.asyncForEach(paths, 
+                    function(part, next2, index) {                      
+                        apf.queue.empty();
+
+                        var xmlNode = (lastNode || root).selectSingleNode(part);
+                        if (xmlNode) {
+                            //if (index == paths.length - 1)
+                                //return _self.select(xmlNode);
                             
-                            var xmlNode = lastNode.selectSingleNode(part);
-                            if (xmlNode) 
-                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, next2);
-                            else
-                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, next2);
-                        }, function(err){
-                            
+                            lastNode = xmlNode;
+                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
+                                next2();
+                            });
                         }
-                    );
-                }
-                else {
-                    _self.expandAndSelect(xmlNode);
-                    _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, next);
-                }
+                        else {
+                            _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
+                                lastNode = lastNode.selectSingleNode(part);
+                                if (!lastNode)
+                                    next2(true);
+                                else
+                                    next2();
+                            });
+                        }
+                        
+                    }, function(err){
+                        //if (!err) {
+                            next();
+                        //}
+                    }
+                );
             },
             function(err){
-                
+                if (callback) 
+                    callback();
             }
         );
     }
@@ -229,9 +240,12 @@ apf.BaseTree = function(){
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
         if (this.nocollapse || userAction && this.disabled)
             return;
-        
+
         if (!htmlNode)
             htmlNode = this.$selected;
+        
+        if (!htmlNode)
+            return callback && callback();
         
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
@@ -242,12 +256,18 @@ apf.BaseTree = function(){
         if (!container) return;
         
         if (apf.getStyle(container, "display") == "block") {
-            if (force == 1) return;
+            if (force == 1) {
+                if (callback) callback();
+                return;
+            }
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.slideClose(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
         else {
-            if (force == 2) return;
+            if (force == 2) {
+                if (callback) callback();
+                return;
+            }
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
             this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
@@ -267,7 +287,7 @@ apf.BaseTree = function(){
     this.slideOpen = function(container, xmlNode, immediate, callback){
         if (!xmlNode)
             xmlNode = this.selected;
-        
+
         var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
@@ -288,7 +308,7 @@ apf.BaseTree = function(){
         if (!this.nocollapse)
             container.style.display = "block";
 
-        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential") 
+        if (!this.prerender && this.$hasLoadStatus(xmlNode, "potential")
           && !container.childNodes.length) {
             this.$extend(xmlNode, container, immediate, callback);
             return;
@@ -299,6 +319,9 @@ apf.BaseTree = function(){
                 container.style.height = "auto";
                 container.style.overflow = "visible";
             }
+
+            if (this.$hasLoadStatus(xmlNode, "potential"))
+                return this.$extend(xmlNode, container, immediate, callback);
             
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return callback && callback();
@@ -571,8 +594,8 @@ apf.BaseTree = function(){
                 hasChildren = true;
             else
                 hasChildren = false;
-            
-            var isClosed = hasChildren && container.style.display != "block",
+
+            var isClosed = hasChildren && htmlNode.className.indexOf("plus") > -1;//container.style.display != "block",
                 isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1)
                     ? false
                     : true,
@@ -589,6 +612,8 @@ apf.BaseTree = function(){
             
             if (!hasChildren && container)
                 container.style.display = "none";
+            else if (!isClosed)
+                container.style.display = "block";
         }
     };
 
@@ -665,8 +690,8 @@ apf.BaseTree = function(){
         if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
         
-        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
-            this.slideOpen(pContainer, pHtmlNode, true);
+        //if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+            //this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
@@ -746,7 +771,7 @@ apf.BaseTree = function(){
             - Being insterted using xmlUpdate
             - there is at least 1 child inserted
         */
-        
+
         if (e.action == "move-away")
             this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
@@ -768,7 +793,7 @@ apf.BaseTree = function(){
         }
         else
             this.$fixItem(e.xmlNode, htmlNode);
-        
+
         //Can this be removed?? (because it was added in the insert function)
         //if (this.$hasLoadStatus(e.xmlNode, "loading"))
             //this.$setLoadStatus(e.xmlNode, "loaded");

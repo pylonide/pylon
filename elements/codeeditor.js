@@ -82,13 +82,14 @@ apf.codeeditor = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "scrollspeed", "debugger");
 
+    var cacheId = 0;
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
             var key = this.xmlRoot
                 ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
                 : value;
         }
-        else {
+        else if (value.nodeType) {
             key = value.getAttribute(apf.xmldb.xmlIdTag);
         }
         
@@ -118,10 +119,10 @@ apf.codeeditor = function(struct, tagName) {
 
         if (this.caching)
             key = this.$getCacheKey(value);
+
         //Assuming document
-        else if (value instanceof Document){
+        if (value instanceof Document)
             doc = value;
-        }
 
         if (!doc && key)
             doc = this.$cache[key];
@@ -257,7 +258,7 @@ apf.codeeditor = function(struct, tagName) {
         require([syntax], function(ModeClass) {
             // #ifdef __DEBUG
             if (typeof ModeClass != "function")
-                return apf.console.error("Unkown sytax type: '" + syntax + "'");
+                return apf.console.error("Unkown syntax type: '" + syntax + "'");
             // #endif
             _self.$modes[syntax] = new ModeClass();
             callback(_self.$modes[syntax]);
