@@ -29,6 +29,7 @@
       printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+      scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       contextmenu       = "mnuCtxEditor"
       debugger          = "{location.host and stDebugProcessRunning.active and [@scriptid] ? dbg : null}"
       readonly          = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
