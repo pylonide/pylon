@@ -80,7 +80,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger");
+        "overwrite", "tabsize", "softtabs", "scrollspeed", "debugger");
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
@@ -300,6 +300,10 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.getDocument().setUseSoftTabs(value);
     };
 
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value);
+    };
+
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (this.$debugger) {           
             this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
@@ -474,6 +478,7 @@ apf.codeeditor = function(struct, tagName) {
             syntax            : "Text",//doc.getMode(),
             tabsize           : doc.getTabSize(),//4,
             softtabs          : doc.getUseSoftTabs(),//true,
+            scrollspeed       : ed.getScrollSpeed(),
             selectstyle       : ed.getSelectionStyle(),//"line",
             activeline        : ed.getHighlightActiveLine(),//true,
             readonly          : ed.getReadOnly(),//false,
