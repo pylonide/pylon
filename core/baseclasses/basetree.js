@@ -179,12 +179,11 @@ apf.BaseTree = function(){
             this.select(xmlNode);
     }
     
-    this.expandList = function(pathList){
+    this.expandList = function(pathList, callback){
         pathList.sort();
         var root = this.xmlRoot, _self = this;
         apf.asyncForEach(pathList,
             function(item, next){
-                console.log(item);
                 var paths = item.split("/");
                 var lastNode = null;//root.selectSingleNode(paths.shift());
                 //var lastPath = paths.pop();
@@ -220,7 +219,8 @@ apf.BaseTree = function(){
                 );
             },
             function(err){
-                
+                if (callback) 
+                    callback();
             }
         );
     }
@@ -243,6 +243,9 @@ apf.BaseTree = function(){
 
         if (!htmlNode)
             htmlNode = this.$selected;
+        
+        if (!htmlNode)
+            return callback && callback();
         
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
@@ -687,8 +690,8 @@ apf.BaseTree = function(){
         if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
         
-        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
-            this.slideOpen(pContainer, pHtmlNode, true);
+        //if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+            //this.slideOpen(pContainer, pHtmlNode, true);
         
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
