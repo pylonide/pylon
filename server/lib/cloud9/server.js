@@ -6,6 +6,7 @@ var dav = require("jsdav");
 var io = require("socket.io");
 var async = require("async");
 var Path = require("path");
+var Fs = require("fs");
 var spawn = require("child_process").spawn;
 var NodeDebugProxy = require("cloud9/nodedebugproxy");
 var ChromeDebugProxy = require("cloud9/chromedebugproxy");
@@ -147,6 +148,51 @@ module.exports = IdeServer = function(workspaceDir, server) {
         }
     };
 
+    this.commandTerminal = function(message) {
+        var argv = message.argv,
+            cmd  = argv.shift();
+
+        switch(cmd) {
+            case "git":
+                // let's do git stuff!
+                
+                break;
+            case "cd":
+                var to    = argv.pop(),
+                    path  = message.cwd || this.workspaceDir,
+                    _self = this;
+                if (to != "/") {
+                    path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
+                    if (path.indexOf(this.workspaceDir) === -1)
+                        return this.sendTermPacket();
+                    console.log("checking for path: ", path);
+                    Fs.stat(path, function(err, stat) {
+                        if (err) {
+                            return _self.sendTermPacket(0, "error", 
+                                err.replace("Error: ENOENT, ", ""));
+                        }
+                        _self.sendTermPacket(0, "result-cd", {cwd: path});
+                    });
+                }
+                break;
+            case "ls":
+                break;
+            default:
+                this.sendTermPacket();
+                break;
+        }
+        console.log("command: " + cmd + ", cwd: " + message.cwd);
+    };
+
+    this.sendTermPacket = function(sid, type, msg) {
+        this.client.send(JSON.stringify({
+            type   : "terminal",
+            subtype: type || "error",
+            sid    : sid  || 0,
+            body   : msg  || "Access denied."
+        }));
+    };
+
     this.$runNode = function(args, cwd, env, debug) {
         var _self = this;
         
@@ -249,7 +295,4 @@ module.exports = IdeServer = function(workspaceDir, server) {
             _self.client && _self.client.send('{"type": "chrome-debug-ready"}');
         });
     };
-
-
-
 }).call(IdeServer.prototype);
