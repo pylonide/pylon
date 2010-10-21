@@ -32,12 +32,12 @@ return ext.register("ext/tree/tree", {
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[1]").appendChild(winFilesViewer);
         trFiles.setAttribute("model", fs.model);
         
-        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
+        trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             var node = this.selected;
             if (!node || node.tagName != "file" || this.selection.length > 1)
                 return;
 
-            ide.dispatchEvent("openfile", {node: node});
+            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
 
         /**** Support for state preservation ****/
@@ -83,7 +83,6 @@ return ext.register("ext/tree/tree", {
             var path, id, lut = {};
             for (id in expandedList) {
                 path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
-                console.log(path);
                 lut[path] = true;
             }
             

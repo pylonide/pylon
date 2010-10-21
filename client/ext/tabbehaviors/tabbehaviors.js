@@ -64,6 +64,10 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             var page;
             if ((page = e.currentTarget) && page.parentNode == this && page.localName == "page" && page.fake) {
                 _self.addItem(page);
+                page.$button.ondblclick = function(e) {
+                    e = e || window.event;
+                    require("ext/panels/panels").toggleAll();
+                }
             }
         })
     },

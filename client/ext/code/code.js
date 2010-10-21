@@ -9,9 +9,24 @@ require.def("ext/code/code",
      "core/ext", 
      "text!ext/code/code.xml",
      "text!ext/code/settings.xml",
+     "ace/Document", 
      "ace/theme/TextMate" // preload default theme
     ],
-    function(ide, ext, markup, settings) {
+    function(ide, ext, markup, settings, Document) {
+
+apf.actiontracker.actions.aceupdate = function(undoObj, undo){
+    var q = undoObj.args;
+    
+    if (!undoObj.initial) {
+        undoObj.initial = true;
+        return;
+    }
+    
+    if (undo)
+        q[1].undoChanges(q[0]);
+    else
+        q[1].redoChanges(q[0]);
+};
 
 return ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -42,10 +57,37 @@ return ext.register("ext/code/code", {
             return null;
         return ceEditor.getDocument();
     },
+    
+    setDocument : function(doc, actiontracker){
+        if (!doc.acedoc) {
+            var _self = this;
+
+            doc.isInited = doc.hasValue();
+            doc.acedoc = new Document(doc.getValue() || "");
+            doc.acedoc.setUndoManager(actiontracker);//new UndoManager());
+            
+            doc.addEventListener("prop.value", function(e){
+                doc.acedoc.setValue(e.value || "");
+                doc.isInited = true;
+            });
+            
+            doc.addEventListener("retrievevalue", function(e){
+                if (!doc.isInited) return e.value;
+                else return doc.acedoc.toString();
+            });
+            
+            doc.addEventListener("close", function(){
+                //??? destroy doc.acedoc
+            });
+        }
+
+        ceEditor.setProperty("value", doc.acedoc);
+    },
 
     hook : function(){
         var commitFunc = this.onCommit.bind(this),
             name       = this.name;
+        
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e){
             var page = e.ext.addSection("code", name, "editors", commitFunc);
@@ -149,9 +191,9 @@ return ext.register("ext/code/code", {
                 apf.xmldb.setAttribute(file, "contenttype", e.relatedNode.value);
         };
 
-        ide.addEventListener("clearfilecache", function(e){
+        /*ide.addEventListener("clearfilecache", function(e){
             ceEditor.clearCacheItem(e.xmlNode);
-        });
+        });*/
 
         ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")

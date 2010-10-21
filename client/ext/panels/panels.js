@@ -43,11 +43,19 @@ return ext.register("ext/panels/panels", {
     
     $setEvents : function(panelExt){
         panelExt.panel.addEventListener("show", function(){
-            if (!this.parentNode.visible)
-                this.parentNode.show();
-            panelExt.mnuItem.check();
+            var panels = require("ext/panels/panels");
+
+            if (!panels.togglingAll && !panels.showingAll) 
+                panels.showAll();
+            else {
+                if (!this.parentNode.visible)
+                    this.parentNode.show();
+                panelExt.mnuItem.check();
+            }
         });
         panelExt.panel.addEventListener("hide", function(){
+            var panels = require("ext/panels/panels");
+
             panelExt.mnuItem.uncheck();
             if (!this.parentNode.selectSingleNode("node()[not(@visible='false')]"))
                 this.parentNode.hide();
@@ -164,6 +172,42 @@ return ext.register("ext/panels/panels", {
             item.destroy(true, true);
         });
         this.nodes = [];
+    },
+
+    toggleAll : function() {
+        this.togglingAll = true;
+        for (var key in this.panels) {
+            if (key != "ext/editors/editors") {
+                var panel = this.panels[key];
+            
+                if (panel.panel) {
+                    if (panel.hidden) {
+                        panel.enable();
+                        panel.hidden = false;
+                    } else if (panel.panel.visible) {
+                        panel.disable();
+                        panel.hidden = true;
+                    }
+                }
+            }
+        }
+        this.togglingAll = false;
+    },
+    
+    showAll : function() {
+        this.showingAll = true;
+        for (var key in this.panels) {
+            if (key != "ext/editors/editors") {
+                var panel = this.panels[key];
+            
+                if (panel.panel && panel.hidden) {
+                    console.log("Showing " + key);
+                    panel.enable();
+                    panel.hidden = false;
+                }
+            }
+        }       
+        this.showingAll = false;
     }
 });
 
