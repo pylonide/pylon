@@ -9065,6 +9065,31 @@
         </a:main>
     </a:presentation>
 </a:bar>
+<a:bar name="terminal">
+    <a:style><![CDATA[
+    .bar_terminal{
+        background-color: #181818;
+        padding : 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    .term {
+        font-family: menlo,courier,fixed,swiss,sans-serif;
+        font-size: 12px;
+        color: #33d011;
+        background: none;
+    }
+    .termReverse {
+        color: #111111;
+        background: #33d011;
+    }
+    ]]></a:style>
+    <a:presentation>
+        <a:main container="div">
+            <div class="bar_terminal"> </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
 <a:bar name="previewBar">
     <a:style><![CDATA[
         .previewBar{

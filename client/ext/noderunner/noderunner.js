@@ -36,7 +36,6 @@ return ext.register("ext/noderunner/noderunner", {
         var socket = this.socket = new io.Socket(null, options);
         this.socket.on("message", this.onMessage.bind(this));
         this.socket.on("connect", this.onConnect.bind(this));
-        this.socket.on("connect", this.onConnect.bind(this));
         this.socket.on("disconnect", this.onDisconnect.bind(this));
         this.socket.connect();
 

@@ -4,9 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("core/ide",
-    function() {
+require.def("core/ide", ["core/document"],
+    function(Document) {
         var ide = new apf.Class().$init();
+
+        ide.createDocument = function(node, value){
+            return new Document(node, value);
+        };
 
         ide.start = function(){
             var last = "";

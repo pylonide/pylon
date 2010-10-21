@@ -19,7 +19,6 @@
       flex              = "1"
       anchors           = "6 0 4 0"
       visible           = "false"
-      value             = "[data]"
       syntax            = "{getSyntax([@contenttype])}"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
