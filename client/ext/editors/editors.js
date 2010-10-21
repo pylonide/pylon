@@ -176,7 +176,11 @@ return ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(filename, filepath, xmlNode) {
+    openEditor : function(doc) { //filename, filepath, xmlNode) {
+        var xmlNode  = doc.getNode();
+        var filename = xmlNode.getAttribute("name");
+        var filepath = xmlNode.getAttribute("path");
+
         var page = tabEditors.getPage(filepath);
         if (page) {
             tabEditors.set(page);
@@ -203,13 +207,16 @@ return ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
-        var model, fake = tabEditors.add("{[@name] + ([@changed] == 1 ? '*' : '')}", filepath, editor.path, null, function(page){
-            page.contentType    = contentType;
-            page.$at            = new apf.actiontracker();
-            model               = new apf.model();
-            page.setAttribute("model", page.$model = model);
-            page.$model.load(xmlNode);
-        });
+        var model = new apf.model(), 
+            fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+                page.contentType = contentType;
+                page.$at     = new apf.actiontracker();
+                page.$doc    = doc;
+                page.$editor = editor;
+                
+                page.setAttribute("model", page.$model = model);
+                page.$model.load(xmlNode);
+            });
 
         fake.$at.addEventListener("afterchange", function(){
             var val = (this.undolength ? 1 : undefined);
@@ -245,6 +252,8 @@ return ext.register("ext/editors/editors", {
         var page = this;
         var at   = page.$at;
         var mdl  = page.$model;
+        
+        page.$doc.dispatchEvent("close");
 
         mdl.removeXml("data");
         ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
@@ -273,6 +282,8 @@ return ext.register("ext/editors/editors", {
             editorPage.setAttribute("model", page.$model);
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
+        
+        page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
@@ -314,10 +325,7 @@ return ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(
-                e.node.getAttribute("name"),
-                e.node.getAttribute("path"),
-                e.node);
+            _self.openEditor(e.doc);
         });
 
         ide.addEventListener("filenotfound", function(e) {
@@ -343,7 +351,7 @@ return ext.register("ext/editors/editors", {
                 var nodes = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
-                        node : nodes[i]
+                        doc: ide.createDocument(nodes[i])
                     });
                 }
             });
