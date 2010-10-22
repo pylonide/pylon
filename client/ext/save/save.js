@@ -78,23 +78,14 @@ return ext.register("ext/save/save", {
         if (!page)
             return;
 
-        var node = page.$model.data;
+        var doc  = page.$doc;
+        var node = doc.getNode();
         if (node.getAttribute("debug"))
             return;
 
         var path = node.getAttribute("path");
+        var data = doc.getValue();
         
-        var editor = require('ext/editors/editors').currentEditor;
-        if (editor.ceEditor)
-            editor.ceEditor.syncValue();
-
-        var data = apf.queryValue(node, "data");
-            
-        if (apf.queryValue(node, "data/@newline") == "windows")
-            data = data.replace(/\r?\n/g, "\r\n");
-        else
-            data = data.replace(/\r?\n/g, "\n");
-
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
         fs.saveFile(path, data, function(data, state, extra){

@@ -169,10 +169,11 @@ return ext.register("ext/filesystem/filesystem", {
 
         var fs = this;
         ide.addEventListener("openfile", function(e){
-            var node = e.node;
+            var doc  = e.doc;
+            var node = doc.getNode();
 
-            if (node.selectSingleNode("data")) {
-                ide.dispatchEvent("afteropenfile", {node: node});
+            if (doc.hasValue()) {
+                ide.dispatchEvent("afteropenfile", {doc: doc});
                 return;
             }
 
@@ -188,20 +189,9 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-                    var match = data.match(/^.*?(\r?\n)/m);
-                    if (match && match[1] == "\r\n")
-                        var nl = "windows";
-                    else
-                        nl = "unix";
-
-                    var doc = node.ownerDocument;
-                    var xml = doc.createElement("data");
-                    xml.appendChild(doc.createTextNode(data));
-                    var noderunner = require("ext/noderunner/noderunner");
                     node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
-                    xml.setAttribute("newline", nl);
-                    apf.b(node).append(xml);
-                    ide.dispatchEvent("afteropenfile", {node: node});
+                    doc.setValue(data);
+                    ide.dispatchEvent("afteropenfile", {doc: doc});
                 }
             });
         });

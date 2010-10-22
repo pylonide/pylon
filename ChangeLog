@@ -1,3 +1,18 @@
+2010.10.XX, Version 0.1.2
+
+* Run configurations are now saved
+
+* Tree state is now opened at startup
+
+* Indent/outdent issues fixed
+
+* Copy/paste and undo/redo issues fixed
+
+* Tweaked keybindings
+
+* Fixed save and dirty state issues.
+
+
 2010.10.19, Version 0.1.1
 
 * Enable splitter between the tree and the editor

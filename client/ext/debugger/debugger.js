@@ -79,7 +79,9 @@ return ext.register("ext/debugger/debugger", {
 
         if (row !== undefined) {
             ide.addEventListener("afteropenfile", function(e) {
-                if (e.node.getAttribute("path") == path) {
+                var node = e.doc.getNode();
+                
+                if (node.getAttribute("path") == path) {
                     ide.removeEventListener("afteropenfile", arguments.callee);
                     setTimeout(function() {
                         ceEditor.$editor.gotoLine(row, column);
@@ -92,7 +94,7 @@ return ext.register("ext/debugger/debugger", {
         }
 
         ide.dispatchEvent("openfile", {
-            node: fileEl
+            doc: ide.createDocument(fileEl)
         });
     },
 
