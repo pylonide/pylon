@@ -610,10 +610,12 @@ apf.BaseTree = function(){
                 this.$getLayoutNode("item", "openclose", htmlNode)
                     .setAttribute("children", hasChildren);
             
-            if (!hasChildren && container)
-                container.style.display = "none";
-            else if (!isClosed)
-                container.style.display = "block";
+            if (container) {
+                if (!hasChildren)
+                    container.style.display = "none";
+                else if (!isClosed)
+                    container.style.display = "block";
+            }
         }
     };
 
