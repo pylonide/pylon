@@ -1,43 +1,17 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window
-      id        = "winNewDir"
-      title     = "Create a new folder"
-      icon      = ""
-      center    = "true"
-      render    = "runtime"
-      width     = "350">
-        <a:vbox padding="10" edge="15 20 20 20">
-            <h3 class="wheader">Please enter the name of your new folder:</h3>
-            <a:textbox initial-message="Folder name" />
-        </a:vbox>
-
-        <a:vbox edge="0 0 4 0" padding="8">
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 5 10">
-                <a:button width="80" default="3" caption="OK" />
-                <a:button width="80">Cancel</a:button>
-            </a:hbox>
-        </a:vbox>
-    </a:window>
-
-    <a:window
-      id        = "winNewFile"
-      title     = "Create a new file"
-      icon      = ""
-      center    = "true"
-      render    = "runtime"
-      width     = "350">
-        <a:vbox padding="10" edge="15 20 20 20">
-            <h3 class="wheader">Please enter the name of your new file:</h3>
-            <a:textbox initial-message="Filename" />
-        </a:vbox>
-
-        <a:vbox edge="0 0 4 0" padding="8">
-            <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 5 10">
-                <a:button width="80" default="3" caption="OK" />
-                <a:button width="80">Cancel</a:button>
-            </a:hbox>
-        </a:vbox>
-    </a:window>
+    <a:menu id="mnuNew" onitemclick="
+        var fs = require('ext/filesystem/filesystem');
+        if (event.value == 'folder')
+            fs.createFolder();
+        else
+            fs.createFile('Untitled.' + event.value);
+      ">
+        <a:item value="folder" icon="folder.png">Folder</a:item>
+        <a:divider />
+        <a:item value="txt" icon="page_white_text.png">Text file</a:item>
+        <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
+        <a:item value="html" icon="html.png">HTML file</a:item>
+        <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
+        <a:item value="css" icon="css.png">CSS file</a:item>
+    </a:menu>
 </a:application>

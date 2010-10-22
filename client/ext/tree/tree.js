@@ -39,6 +39,21 @@ return ext.register("ext/tree/tree", {
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
+        
+        trFiles.addEventListener("beforerename", function(e){
+            setTimeout(function(){
+                fs.beforeRename(e.args[0], e.args[1]);
+            });
+        });
+        
+        trFiles.addEventListener("beforemove", function(e){
+            setTimeout(function(){
+                var changes = e.args;
+                for (var i = 0; i < changes.length; i++) {
+                    fs.beforeMove(changes[i].args[0], changes[i].args[1]);
+                }
+            });
+        });
 
         /**** Support for state preservation ****/
         
@@ -66,9 +81,15 @@ return ext.register("ext/tree/tree", {
             if (strSettings) {
                 loading = true;
                 currentSettings = apf.unserialize(strSettings);
-                trFiles.expandList(currentSettings, function(){
-                    loading = false;
-                });
+                
+                //Unstable - temporary fix
+                try{
+                    trFiles.expandList(currentSettings, function(){
+                        loading = false;
+                    });
+                }catch(e){
+                    e.model.setQueryValue("auto/tree/text()", "");
+                }
             }
         });
 
@@ -82,8 +103,14 @@ return ext.register("ext/tree/tree", {
 
             var path, id, lut = {};
             for (id in expandedList) {
-                path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
-                lut[path] = true;
+                try {
+                    path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
+                    lut[path] = true;
+                }
+                catch(e){
+                    //Node is deleted
+                    delete expandedList[id];
+                }
             }
             
             var cc, parts;
