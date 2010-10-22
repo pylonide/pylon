@@ -114,6 +114,7 @@ apf.dbg = function(struct, tagName){
         this.$mdlSources.load("<sources />");
         this.$mdlStack.load("<frames />");
         this.$stAttached.deactivate();
+        this.setProperty("activeframe", null);
     };   
 
     this.$onChangeFrame = function() {
