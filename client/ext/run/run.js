@@ -70,7 +70,7 @@ return ext.register("ext/run/run", {
             var name = "server";
         }
         else {
-            path = file.getAttribute("path").slice(noderunner.davPrefix.length);
+            path = file.getAttribute("path").slice(noderunner.davPrefix.length + 1);
             name = file.getAttribute("name").replace(/\.js$/, "");
         }
 

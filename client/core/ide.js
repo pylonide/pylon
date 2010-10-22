@@ -12,7 +12,7 @@ require.def("core/ide", ["core/document"],
             return new Document(node, value);
         };
 
-        ide.start = function(){
+        ide.start = function() {
             var last = "";
 
             //Set references to global elements - aka extension points
@@ -159,4 +159,5 @@ require.def("core/ide", ["core/document"],
         };
 
         return ide;
-    });
+    }
+);
