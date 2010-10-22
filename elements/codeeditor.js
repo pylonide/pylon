@@ -80,15 +80,16 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints");
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed");
 
+    var cacheId = 0;
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
             var key = this.xmlRoot
                 ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
                 : value;
         }
-        else {
+        else if (value.nodeType) {
             key = value.getAttribute(apf.xmldb.xmlIdTag);
         }
         
@@ -118,8 +119,9 @@ apf.codeeditor = function(struct, tagName) {
 
         if (this.caching)
             key = this.$getCacheKey(value);
+
         //Assuming document
-        else if (value instanceof Document)
+        if (value instanceof Document)
             doc = value;
 
         if (!doc && key)
@@ -256,7 +258,7 @@ apf.codeeditor = function(struct, tagName) {
         require([syntax], function(ModeClass) {
             // #ifdef __DEBUG
             if (typeof ModeClass != "function")
-                return apf.console.error("Unkown sytax type: '" + syntax + "'");
+                return apf.console.error("Unkown syntax type: '" + syntax + "'");
             // #endif
             _self.$modes[syntax] = new ModeClass();
             callback(_self.$modes[syntax]);
@@ -297,6 +299,10 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
         this.$editor.getDocument().setUseSoftTabs(value);
+    };
+
+    this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
+        this.$editor.setScrollSpeed(value);
     };
 
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
@@ -489,6 +495,7 @@ apf.codeeditor = function(struct, tagName) {
             syntax            : "Text",//doc.getMode(),
             tabsize           : doc.getTabSize(),//4,
             softtabs          : doc.getUseSoftTabs(),//true,
+            scrollspeed       : ed.getScrollSpeed(),
             selectstyle       : ed.getSelectionStyle(),//"line",
             activeline        : ed.getHighlightActiveLine(),//true,
             readonly          : ed.getReadOnly(),//false,

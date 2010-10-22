@@ -284,6 +284,7 @@ apf.DOMParser.prototype = new (function(){
     
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){
         var o;
+        
         switch (nodeType) {
             case 1:
                 var id, prefix;
@@ -412,8 +413,8 @@ apf.DOMParser.prototype = new (function(){
                 break;
         }
         
+        o.ownerDocument = doc;    
         o.$aml          = xmlNode;
-        o.ownerDocument = doc;
         
         return o;
     };

@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:model id="mdlTest">
+            <data>
+                <folder caption="test" />
+                <folder caption="test" />
+                <folder caption="test" />
+                <folder caption="test" />
+                <folder caption="test" />
+                <file caption="try" />
+                <file caption="try" />
+                <file caption="try" />
+            </data>
+        </a:model>
+        
+        <a:tree id="tree" model="mdlTest" anchors="5 5 5 5"> 
+            <a:bindings> 
+                <!-- {mdlTest.getXml()} -->
+                <a:insert get="folders.xml" />
+                <a:caption match="[@caption|@filename]" /> 
+                <a:icon match="[drive]" value="icoContact.png" /> 
+                <a:icon match="[file]" value="icoFolder.png" /> 
+                <a:empty match="[folder]" value="Drag a contact to this group." /> 
+                <a:each match="[drive|folder|file]" /> 
+            </a:bindings> 
+        </a:tree>
+        
+        <a:button left="10" bottom="10" onclick="
+            tree.expandList(\['folder[1]/folder[2]/folder[3]/file[2]'\]);
+        ">expand</a:button>
+        
+        <a:button left="100" bottom="10" onclick="
+            tree.expandList(\['folder[1]', 'folder[1]/folder[2]', 'folder[1]/folder[2]/folder[3]', 'folder[1]/folder[2]/folder[3]/file[2]'\]);
+        ">expand all</a:button>
+        
+        <a:button left="200" bottom="10" onclick="
+            tree.expandList(\['folder[1]','folder[1]/file[10]','folder[1]/file[1]','folder[1]/file[2]','folder[1]/file[3]','folder[1]/file[4]','folder[1]/file[5]','folder[1]/file[6]','folder[1]/folder[4]','folder[1]/folder[4]/folder[1]','folder[1]/folder[1]','folder[1]/folder[2]','folder[1]/folder[2]/folder[1]','folder[1]/folder[2]/folder[2]','folder[1]/folder[2]/folder[2]/folder[1]','folder[1]/folder[2]/folder[2]/folder[2]','folder[1]/folder[2]/folder[3]','folder[1]/folder[2]/folder[5]','folder[1]/folder[2]/folder[4]','folder[1]/folder[3]','folder[1]/folder[3]/folder[1]','folder[1]/folder[3]/folder[1]/folder[2]','folder[1]/folder[3]/folder[1]/folder[3]'\]);
+        ">expand all</a:button>
+    </body>
+</html>
