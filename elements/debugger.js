@@ -128,9 +128,8 @@ apf.dbg = function(struct, tagName){
     
     this.detach = function(callback) {
         var self = this;
-        this.continueScript(function() {
-            self.$host.$detach(self.$debugger, callback);
-        });
+        this.continueScript();
+        self.$host.$detach(self.$debugger, callback);
     };
 
     this.$loadSources = function(callback) {
@@ -150,11 +149,30 @@ apf.dbg = function(struct, tagName){
     };
     
     this.toggleBreakpoint = function(script, row) {
-        this.$debugger.toggleBreakpoint(script, row, this.$mdlBreakpoints);
+        var model = this.$mdlBreakpoints;
+        if (this.$debugger)
+            this.$debugger.toggleBreakpoint(script, row, model);
+        else {
+            var scriptName = script.getAttribute("scriptname");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
+            if (bp)
+                model.removeXml(bp)
+            else {
+	            var bp = apf.n("<breakpoint/>")
+	                .attr("script", scriptName)
+	                .attr("line", row)
+	                .attr("lineoffset", 0)
+	                .node();
+	            model.appendXml(bp);
+            }
+        }
     };
 
-    this.continueScript = function() {
-        this.$debugger && this.$debugger.continueScript();
+    this.continueScript = function(callback) {
+        if (this.$debugger)
+            this.$debugger.continueScript(callback);
+        else
+            callback && callback();
     };
 
     this.stepInto = function() {

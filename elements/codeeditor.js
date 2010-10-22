@@ -80,7 +80,7 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "scrollspeed", "debugger");
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -106,7 +106,7 @@ apf.codeeditor = function(struct, tagName) {
     }
     
     this.addEventListener("unloadmodel", function(e) {
-        this.$changeValue();
+        this.syncValue();
     });
     
     /**
@@ -305,9 +305,30 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.setScrollSpeed(value);
     };
 
-    this.$propHandlers["debugger"] = function(value, prop, inital) {
-        if (this.$debugger) {           
+    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
+        this.$debuggerBreakpoints = false;
+        
+        if (this.$breakpoints)
             this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
+
+        this.$breakpoints = value;
+
+        if (!this.$breakpoints) {
+            this.$updateBreakpoints();
+            return;
+        }
+
+        var _self = this;
+        _self.$updateBreakpoints();
+        this.$onBreakpoint = function() {
+            _self.$updateBreakpoints();
+        }
+        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
+        this.$updateBreakpoints();
+    };
+    
+    this.$propHandlers["debugger"] = function(value, prop, inital) {
+        if (this.$debugger) {
             this.$debugger.removeEventListener("prop.activeframe", this.$onChangeActiveFrame);
             this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
         }
@@ -320,23 +341,18 @@ apf.codeeditor = function(struct, tagName) {
             this.$debugger = value;
         }
 
+        if (!this.$breakpoints || this.$debuggerBreakpoints) {
+            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
+            this.$debuggerBreakpoints = true;
+        }
+
         if (!this.$debugger) {
-            this.$breakpoints = null;
-            this.$updateBreakpoints();
             this.$updateMarker();
             return;
         }
             
-        this.$breakpoints = this.$debugger.$mdlBreakpoints;
-
-        var _self = this;
-        _self.$updateBreakpoints();
-        this.$onBreakpoint = function() {
-            _self.$updateBreakpoints();
-        }
-        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
-
         this.$updateMarker();
+        var _self = this;
         this.$onChangeActiveFrame = function() {
             _self.$updateMarker();
         }
@@ -432,7 +448,7 @@ apf.codeeditor = function(struct, tagName) {
         this.$editor.focus();
     };
 
-    this.$changeValue = function() {
+    this.syncValue = function() {
         var doc = this.$editor.getDocument();
         if (doc.cacheId == this.$getCacheKey(this.value)) {
             var value = this.getValue();
@@ -445,7 +461,7 @@ apf.codeeditor = function(struct, tagName) {
         if (!this.$ext)
             return;
 
-        this.$changeValue();
+        this.syncValue();
     
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
