@@ -152,7 +152,7 @@ apf.codeeditor = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        apf.queue.add("ce" + _self.$uniqueId, function() {
+        //apf.queue.add("ce" + _self.$uniqueId, function() {
             _self.$getMode(_self.syntax, function(mode) {
                 doc.setMode(mode);
             });
@@ -166,7 +166,7 @@ apf.codeeditor = function(struct, tagName) {
 
             _self.$updateMarker();
             _self.$updateBreakpoints(doc);
-        })
+        //})
     };
 
     this.$addDocListeners = function(doc) {
