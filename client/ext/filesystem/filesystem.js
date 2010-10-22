@@ -189,6 +189,7 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
+                    var noderunner = require("ext/noderunner/noderunner");
                     node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
                     doc.setValue(data);
                     ide.dispatchEvent("afteropenfile", {doc: doc});
