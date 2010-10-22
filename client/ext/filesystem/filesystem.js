@@ -45,10 +45,10 @@ return ext.register("ext/filesystem/filesystem", {
                 if (data instanceof Error)
                     throw Error;
                 
-                var folder = node.ownerDocument.createElement("folder");
-                folder.setAttribute("name", name);
-                folder.setAttribute("path", node.getAttribute("path") + "/" + name);
-                apf.xmldb.appendChild(node, folder);
+                var strXml = data.match(new RegExp(("(<folder path='" + path 
+                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
+
+                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
 
                 trFiles.select(folder);
                 trFiles.startRename();
