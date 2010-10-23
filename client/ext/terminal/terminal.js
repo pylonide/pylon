@@ -236,13 +236,28 @@ function termExitHandler() {
     //do nothing.
 }
 
-function ctrlHandler() {
+function ctrlHandler(ev) {
     var ch = this.inputChar;
+    apf.console.log("current line: " + this._getLine());
     if (ch == termKey.TAB) {// || ch == termlib.termKey.ESC) {
-        alert("TAB hit!");
+        // start autocompletion
+        apf.stopEvent(ev);
+        var line = this._getLine();
+        if (typeof line != "string" || line.trim() == "")
+            return;
+        noderunner.socket.send(JSON.stringify({
+            command: "terminal",
+            argv: ["internal-autocomplete", line],
+            cwd: getCwd()
+        }));
     }
-    else if (ch == termKey.ETX) {
-        alert("C hit!");
+    else if (ch == 99) {
+        // kill current process.
+        noderunner.socket.send(JSON.stringify({
+            command: "terminal",
+            argv: ["internal-killps"],
+            cwd: getCwd()
+        }));
     }
 }
 
@@ -366,6 +381,22 @@ return terminal = ext.register("ext/terminal/terminal", {
                 }
                 else {
                     this.$term.write("'" + path + "' is not a file.%n");
+                }
+                break;
+            case "result-internal-killps":
+                this.$term.write("^C%n");
+                this.$term.prompt();
+                break;
+            case "result-internal-autocomplete":
+                var res = message.body;
+                if (!res.length)
+                    break;
+                var line = this.$term._getLine();
+                if (res.length == 1)
+                    this.$term.type(res[0].replace(line));
+                else {
+                    this.$term.write("%n" + res.join(" "));
+                    this.$term.prompt();
                 }
                 break;
             default:
