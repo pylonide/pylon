@@ -145,10 +145,8 @@ return ext.register("ext/code/code", {
             mnuView.appendChild(new apf.item({
                 type    : "check",
                 caption : "Select Full Line",
-                checked : "{[{require('ext/settings/settings').model}::editors/code/@selectstyle] == 'line'}",
-                onclick : function(){
-                    _self.toggleSetting("selectstyle");
-                }
+                values  : "line|text",
+                value   : "[{require('ext/settings/settings').model}::editors/code/@selectstyle]",
             })),
 
             /*mnuView.appendChild(new apf.item({
@@ -206,14 +204,6 @@ return ext.register("ext/code/code", {
     onCommit: function() {
         //console.log("commit func called!")
         //todo
-    },
-
-    toggleSetting: function(name) {
-        if (typeof ceEditor == "undefined")
-            return;
-        if (name == "selectstyle") {
-            ceEditor.setAttribute("selectstyle", ceEditor.selectstyle == "line" ? "text" : "line");
-        }
     },
 
     enable : function() {
