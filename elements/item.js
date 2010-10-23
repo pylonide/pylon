@@ -272,6 +272,18 @@ apf.item  = function(struct, tagName){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
     }
     
+    this.$values = [1, 0];
+    this.$propHandlers["values"] = function(value){
+        this.$values = value && value.split("|");
+    }
+    
+    this.$propHandlers["value"] = function(value){
+        if (this.type != "check")
+            return;
+        
+        this.setProperty("checked", this.$values.indexOf(value) == 0);
+    }
+    
     /**
      * @attribute {Boolean} checked whether the item is checked.
      */
@@ -283,6 +295,9 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "checked");
         else
             apf.setStyleClass(this.$ext, "", ["checked"]);
+        
+        if (this.$values && this.$values[value ? 0 : 1] != this.value)
+            return this.setProperty("value", this.$values[value ? 0 : 1]);
     }
     
     this.select = function(){
