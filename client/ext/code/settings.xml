@@ -7,15 +7,15 @@
             <a:checkbox label="Highlight active line" value="[@activeline]" checked="true"/>
             <a:checkbox label="Show invisibles" value="[@showinvisibles]" checked="true"/>
         </a:table>
-        <a:hbox edge="10 0 0 0">
+        <a:hbox edge="5 0 0 0">
             <a:checkbox label="Show print margin" value="[@showprintmargin]" checked="true" width="115" />
             <a:spinner value="[@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
         </a:hbox>
-        <a:hbox edge="10 0 0 0">
+        <a:hbox edge="5 0 0 0">
             <a:checkbox label="Soft tabs" value="[@softtabs]" checked="true" width="115" />
             <a:spinner value="[@tabsize]" realtime="true" min="1" max="64" width="50" />
         </a:hbox>
-        <a:hbox edge="10 0 0 0">
+        <a:hbox edge="5 0 0 0">
             <a:label width="115">Scroll speed</a:label>
             <a:spinner value="[@scrollspeed]" realtime="true" min="1" max="8" width="50" />
         </a:hbox>

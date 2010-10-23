@@ -172,6 +172,14 @@
                 cursor : default;
             }
         ]]></a:style>
+        <a:style condition="apf.isWebkit"><![CDATA[
+            .tbGotoline .sbtb_middle INPUT {
+                position : relative;
+                top : -3px;
+                padding : 0;
+                height : auto;
+            }
+        ]]></a:style>
 
         <a:presentation>
             <a:main input="div[1]/input">

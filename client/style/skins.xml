@@ -5442,12 +5442,10 @@
     <a:style><![CDATA[
         .cbcontainer{
             padding: 2px 2px 2px 16px;
-            _padding: 2px; /* IE6 fix */
             position: relative;
             overflow : hidden;
             color: #333;
             background: url(images/spacer.gif);
-            _clear: both; /* IE6 fix */
         }
 
         .cbcontainer span{
@@ -5455,10 +5453,10 @@
             font-size: 11px;
             cursor: default;
             padding: 1px 3px 2px 3px;
-            margin : -2px 0 0 0;
+            position : relative;
+            top : -2px;
             overflow: hidden;
-            display: block;
-            float: left;
+            display: inline-block;
             line-height: 13px;
         }
 
@@ -5478,9 +5476,6 @@
             position: absolute;
             left: 2px;
             top: 2px;
-            _position: relative; /* IE6 fix */
-            _float: left; /* IE6 fix */
-            _margin: -2px 4px 0 0; /* IE6 fix */
             background: url("images/checkbox.png") no-repeat 0 -12px;
         }
 
@@ -5504,15 +5499,10 @@
         .cbcontainerDisabled span{
             color: #bebebe;
         }
-
-        .cbcontainer br{
-            display: none;
-        }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
-        .cbcontainer br{
-            line-height: 0;
-            display: block;
+    <a:style condition="apf.isWebkit"><![CDATA[
+        .cbcontainer span{
+            top : -4px;
         }
     ]]></a:style>
 
@@ -5521,7 +5511,6 @@
             <div class='cbcontainer'>
                 <div class='checkbox'> </div>
                 <span>-</span>
-                <br clear="left" />
             </div>
         </a:main>
     </a:presentation>
