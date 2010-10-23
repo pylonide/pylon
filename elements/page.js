@@ -420,6 +420,10 @@ apf.page = function(struct, tagName){
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
                 'var page = apf.lookup(' + this.$uniqueId + ');\
                  if (page.disabled) return;\
+                 if (event.button == 2 &amp;&amp; page.parentNode.contextmenu) {\
+                    page.parentNode.contextPage = page;\
+                    return;\
+                 }\
                  page.parentNode.set(page);\
                  page.canHaveChildren = 2;\
                  page.$setStyleClass(this, "down", null, true);');
