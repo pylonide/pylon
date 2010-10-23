@@ -149,20 +149,20 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandTerminal = function(message) {
-        var argv = message.argv,
-            cmd  = argv.shift();
+        var _self = this,
+            argv  = message.argv,
+            cmd   = argv.shift();
 
         switch(cmd) {
             case "git":
             case "ls":
             case "pwd":
                 // an allowed command!
-                this.spawnCommand(0, cmd, argv, message.cmd);
+                this.activePs = this.spawnCommand(0, cmd, argv, message.cmd);
                 break;
             case "cd":
                 var to    = argv.pop(),
-                    path  = message.cwd || this.workspaceDir,
-                    _self = this;
+                    path  = message.cwd || this.workspaceDir;
                 if (to != "/") {
                     path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
                     if (path.indexOf(this.workspaceDir) === -1)
@@ -181,7 +181,6 @@ module.exports = IdeServer = function(workspaceDir, server) {
             case "check-isfile":
                 var file = argv.pop();
                     path  = message.cwd || this.workspaceDir,
-                    _self = this;
                     path  = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
                 if (path.indexOf(this.workspaceDir) === -1)
@@ -194,6 +193,33 @@ module.exports = IdeServer = function(workspaceDir, server) {
                     _self.sendTermPacket(0, "result-check-isfile", {
                         cwd: path,
                         isfile: (stat && !stat.isDirectory())
+                    });
+                });
+                break;
+            case "internal-killps":
+                // @todo: check for multi-user
+                if (this.activePs && this.activePs.kill) {
+                    try {
+                        this.activePs.kill();
+                    }
+                    catch (ex) {}
+                }
+                _self.sendTermPacket(0, "result-internal-killps", {
+                    code: 0,
+                    body: "OK"
+                });
+                break;
+            case "internal-autocomplete":
+                console.log("received autocomplete for: ", argv[0], message.cwd)
+                var tail = argv[0].replace(/^[\s]+/g, "").replace(/[\s]+$/g, "")
+                Fs.readdir(message.cwd, function(err, files) {
+                    var matches = [];
+                    files.forEach(function(file) {
+                        if (file.indexOf(tail) === 0)
+                            matches.push(file);
+                    });
+                    _self.sendTermPacket(0, "result-internal-autocomplete", {
+                        body: matches
                     });
                 });
                 break;
@@ -227,7 +253,6 @@ module.exports = IdeServer = function(workspaceDir, server) {
                     } catch(e) {}
                     return;
                 }
-                console.log("data coming in: " + data.toString("utf8"));
                 var message = {
                     type   : "terminal",
                     subtype: "output",

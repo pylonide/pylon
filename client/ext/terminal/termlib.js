@@ -2265,7 +2265,7 @@ globals: {
         var keyRepeat=0;
         if (e) {
             ch=e.which;
-            ctrl=(((e.ctrlKey) && (e.altKey)) || (e.modifiers==2));
+            ctrl=(((e.ctrlKey) && (!e.altKey)) || (e.modifiers==2));
             shft=((e.shiftKey) || (e.modifiers==4));
             if (e._remapped) {
                 remapped=true;
@@ -2471,7 +2471,7 @@ globals: {
                     }
                 }
                 term.inputChar=ch;
-                term.ctrlHandler();
+                term.ctrlHandler(e || window.event);
                 if (window.event) window.event.cancelBubble=true;
                 return false;
             }

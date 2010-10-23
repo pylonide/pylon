@@ -34,7 +34,7 @@ return ext.register("ext/gotoline/gotoline", {
             mnuEdit.appendChild(new apf.item({
                 caption : "Go to Line",
                 onclick : function(){
-                    _self.toggleDialog(1);
+                    _self.gotoline(1);
                 }
             }))
         );
@@ -42,7 +42,7 @@ return ext.register("ext/gotoline/gotoline", {
         this.hotitems["gotoline"] = [this.nodes[1]];
 
         plugins.registerCommand("gotoline", function(editor, selection) {
-            _self.toggleDialog(1);
+            _self.gotoline(1);
         });
     },
 
@@ -50,10 +50,10 @@ return ext.register("ext/gotoline/gotoline", {
         var _self = this;
         lstLineNumber.addEventListener("afterchoose", function() {
             if (lstLineNumber.selected) {
-                _self.gotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
+                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr")));
             }
             else
-                _self.gotoLine();
+                _self.execGotoLine();
         });
         lstLineNumber.addEventListener("afterselect", function() {
             if (this.selected)
@@ -72,7 +72,7 @@ return ext.register("ext/gotoline/gotoline", {
                 }
             }
             else if (e.keyCode == 27){
-                _self.toggleDialog(-1);
+                _self.gotoline(-1);
             }
             else if (restricted.indexOf(e.keyCode) == -1)
                 txtLineNr.focus();
@@ -80,11 +80,11 @@ return ext.register("ext/gotoline/gotoline", {
 
         txtLineNr.addEventListener("keydown", function(e) {
             if (e.keyCode == 13){
-                _self.gotoLine();
+                _self.execGotoLine();
                 return false;
             }
             else if (e.keyCode == 27){
-                _self.toggleDialog(-1);
+                _self.gotoline(-1);
                 return false;
             }
             else if (e.keyCode == 40) {
@@ -101,11 +101,11 @@ return ext.register("ext/gotoline/gotoline", {
         
         winGotoLine.addEventListener("blur", function(e){
             if (!apf.isChildOf(winGotoLine, e.toElement))
-                _self.toggleDialog(-1);
+                _self.gotoline(-1);
         });
     },
 
-    toggleDialog: function(force) {
+    gotoline: function(force) {
         ext.initExtension(this);
         
         if (this.control && this.control.stop)
@@ -169,7 +169,7 @@ return ext.register("ext/gotoline/gotoline", {
         return false;
     },
 
-    gotoLine: function(line) {
+    execGotoLine: function(line) {
         var editor = require('ext/editors/editors').currentEditor;
         if (!editor || !editor.ceEditor)
             return;
