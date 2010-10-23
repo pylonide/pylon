@@ -188,29 +188,31 @@ apf.BaseTree = function(){
                 var lastNode = null;//root.selectSingleNode(paths.shift());
                 //var lastPath = paths.pop();
                 apf.asyncForEach(paths, 
-                    function(part, next2, index) {                      
+                    function(part, next2, index) {
                         apf.queue.empty();
 
-                        var xmlNode = (lastNode || root).selectSingleNode(part);
-                        if (xmlNode) {
-                            //if (index == paths.length - 1)
-                                //return _self.select(xmlNode);
-                            
-                            lastNode = xmlNode;
-                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
-                                next2();
-                            });
-                        }
-                        else {
-                            _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
-                                lastNode = lastNode.selectSingleNode(part);
-                                if (!lastNode)
-                                    next2(true);
-                                else
+                        //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
+                        setTimeout(function(){
+                            var xmlNode = (lastNode || root).selectSingleNode(part);
+                            if (xmlNode) {
+                                //if (index == paths.length - 1)
+                                    //return _self.select(xmlNode);
+                                
+                                lastNode = xmlNode;
+                                _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 1, true, null, function(){
                                     next2();
-                            });
-                        }
-                        
+                                });
+                            }
+                            else {
+                                _self.slideToggle(apf.xmldb.getHtmlNode(lastNode, _self), 1, true, null, function(){
+                                    lastNode = lastNode.selectSingleNode(part);
+                                    if (!lastNode)
+                                        next2(true);
+                                    else
+                                        next2();
+                                });
+                            }
+                        });  
                     }, function(err){
                         //if (!err) {
                             next();
