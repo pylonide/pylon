@@ -29,19 +29,15 @@ return ext.register("ext/newresource/newresource", {
         //btnNewFolder.onclick = this.newfolder;
 
         this.nodes.push(
+            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Folder",
-                onclick : this.newfolder
-            }), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New File",
-                onclick : this.newfile
+                caption : "New",
+                submenu : "mnuNew"
             }), ide.mnuFile.firstChild)
         );
 
-        this.hotitems["newfolder"] = [this.nodes[0]];
-        this.hotitems["newfile"] = [this.nodes[1]];
+        //this.hotitems["newfolder"] = [mnuNew.firstChild];
+        //this.hotitems["newfile"] = [mnuNew.childNodes[3]];
     },
 
     newfile: function() {
@@ -71,6 +67,8 @@ return ext.register("ext/newresource/newresource", {
             item.destroy(true, true);
         });
         this.nodes = [];
+        
+        mnuNew.destroy(true, true);
 
         tabEditors.removeEventListener("close", this.$close);
     }

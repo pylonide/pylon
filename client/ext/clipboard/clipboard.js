@@ -41,11 +41,20 @@ return ext.register("ext/clipboard/clipboard", {
         };
     },
 
-    cut: function() {},
+    cut: function() {
+        if (apf.document.activeElement == trFiles)
+            apf.clipboard.cutSelection(trFiles);
+    },
 
-    copy: function() {},
+    copy: function() {
+        if (apf.document.activeElement == trFiles)
+            apf.clipboard.copySelection(trFiles);
+    },
 
-    paste: function() {},
+    paste: function() {
+        if (apf.document.activeElement == trFiles)
+            apf.clipboard.pasteSelection(trFiles);
+    },
 
     enable : function(){
         this.nodes.each(function(item){

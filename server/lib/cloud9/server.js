@@ -96,7 +96,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebug = function(message) {
-        message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
+        message.preArgs = ["--debug=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 

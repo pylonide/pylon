@@ -21,6 +21,10 @@ return ext.register("ext/panels/panels", {
     initPanel : function(panelExt){
         ext.initExtension(panelExt);
         this.$setEvents(panelExt);
+        
+        var set = this.$settings && this.$settings[panelExt.path];
+        if (set)
+            this.setPanelSettings(panelExt, set);
     },
     
     register : function(panelExt){
@@ -35,8 +39,11 @@ return ext.register("ext/panels/panels", {
             }
         }));
         
-        if (panelExt.visible)
-            _self.initPanel(panelExt);
+        if (this.$settings && this.$settings[panelExt.path]) {
+            this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
+        }
+        else if (panelExt.visible)
+            this.initPanel(panelExt);
         
         this.panels[panelExt.path] = panelExt;
     },
@@ -73,8 +80,14 @@ return ext.register("ext/panels/panels", {
         panelExt.mnuItem.destroy(true, true);
         delete this.panels[panelExt.path];
     },
-    
+
     setPanelSettings : function(panelExt, set){
+        if (!panelExt.panel) {
+            if (set.visible)
+                this.initPanel(panelExt);
+            return;
+        }
+        
         var pset, panel = panelExt.panel, parent = panel.parentNode;
         for (var prop in set) {
             if (prop == "parent") {

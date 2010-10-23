@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:script><![CDATA[
         function filesort(value, args, xmlNode) {
-            return (xmlNode.tagName == "folder" ? 0 : 1) + value;
+            return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
         }
         
         SupportedIcons = {
@@ -27,7 +27,7 @@
     ]]></a:script>
 
     <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
-        <a:tree id="trFiles" autoselect="false" canrename="true" anchors="0 0 0 0" border="0"
+        <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true">
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
@@ -39,9 +39,9 @@
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename set="{var fs=require('ext/filesystem/filesystem'); davProject.rename([@name], [@path], fs.afterRename.bind(fs))}"/>
+            <a:rename set="{davProject.rename([@name], [@path])}"/>
             <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
-            <a:move set="{var fs=require('ext/filesystem/filesystem'); davProject.move([@path], [../@path], fs.afterMove.bind(fs))}"/>
+            <a:move set="{davProject.move([@path], [../@path])}"/>
             <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
 
             <a:drag match="[folder|file]" />
@@ -68,22 +68,6 @@
             ">Paste</a:item>
             <a:divider />
             <a:item submenu="mnuNew">New</a:item>
-        </a:menu>
-
-        <a:menu id="mnuNew" onitemclick="
-            var fs = require('ext/filesystem/filesystem');
-            if (event.value == 'folder')
-                fs.createFolder();
-            else
-                fs.createFile('Untitled.' + event.value);
-          ">
-            <a:item value="folder" icon="folder.png">Folder</a:item>
-            <a:divider />
-            <a:item value="txt" icon="page_white_text.png">Text file</a:item>
-            <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
-            <a:item value="html" icon="html.png">HTML file</a:item>
-            <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
-            <a:item value="css" icon="css.png">CSS file</a:item>
         </a:menu>
     </a:window>
 </a:application>

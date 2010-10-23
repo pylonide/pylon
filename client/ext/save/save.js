@@ -61,14 +61,30 @@ return ext.register("ext/save/save", {
         btnSave.onclick = _self.quicksave;
 
         this.nodes.push(
+            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
+        
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "Save All",
+                onclick : function(){
+                    _self.saveall();
+                }
+            }), ide.mnuFile.firstChild),
+        
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
                 onclick : _self.quicksave
             }), ide.mnuFile.firstChild)
-            //ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.childNodes[1])
         );
 
         this.hotitems["quicksave"] = [this.nodes[this.nodes.length - 1]];
+    },
+    
+    saveall : function(){
+        var pages = tabEditors.getPages();
+        for (var i = 0; i < pages.length; i++) {
+            if (pages[i].$at.undolength)
+                this.quicksave(pages[i]);
+        }
     },
 
     quicksave : function(page) {
