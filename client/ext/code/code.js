@@ -97,12 +97,14 @@ return ext.register("ext/code/code", {
 
     init : function(amlPage) {
         var def = ceEditor.getDefaults();
+        
         //check default settings...
         var settings = require("ext/settings/settings"),
             model    = settings.model,
             base     = model.data.selectSingleNode("editors/code");
         if (!base)
             base = model.appendXml('<code name="' + this.name +'" page="' + settings.getSectionId(this.name) + '" />', "editors");
+        
         // go through all default settings and append them to the XML if they're not there yet
         for (var prop in def) {
             if (!prop) continue;
