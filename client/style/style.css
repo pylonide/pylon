@@ -30,6 +30,7 @@ BODY {
     text-indent: -800em;
     margin-left:5px;
     margin-top:3px;
+    position : relative;
 }
 
 .alertMsg {

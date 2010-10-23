@@ -146,7 +146,7 @@ require.def("core/ide", ["core/document"],
         
         //@todo this doesnt work
         apf.addEventListener("exit", function(){
-            return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
+            //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
         });
         
         ide.getActivePageModel = function() {

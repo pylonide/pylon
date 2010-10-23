@@ -104,7 +104,7 @@ return ext.register("ext/editors/editors", {
                 new apf.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
-                    class   : "relative",
+                    "class" : "relative",
                     zindex  : "1000",
                     bottom  : "0",
                     left    : "0",

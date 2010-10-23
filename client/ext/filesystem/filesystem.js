@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/filesystem/filesystem",
-    ["core/ide", "core/ext"], function(ide, ext) {
+    ["core/ide", "core/ext", "core/util"], function(ide, ext, util) {
 
 return ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -171,7 +171,23 @@ return ext.register("ext/filesystem/filesystem", {
                 }
                 else {
                     var noderunner = require("ext/noderunner/noderunner");
-                    node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
+                    if (!noderunner.davPrefix) {
+                        /*util.alert(
+                            "Could not connect to server backend",
+                            "Could not connect",
+                            "There is more than one session open with the server. " +
+                            "This is currently not supported. Please close the other " +
+                            "sessions and restart this one.");
+                        return;*/
+                        
+                        ide.addEventListener("noderunnerready", function(){
+                            node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
+                            ide.removeEventListener("noderunnerready", arguments.callee);
+                        });
+                    }
+                    else
+                        node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
+                    
                     doc.setValue(data);
                     ide.dispatchEvent("afteropenfile", {doc: doc});
                 }
