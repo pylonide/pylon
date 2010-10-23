@@ -28,9 +28,6 @@ BODY {
     height: 22px;
     display: block;
     text-indent: -800em;
-    margin-left:5px;
-    margin-top:3px;
-    position : absolute;
 }
 
 .alertMsg {
