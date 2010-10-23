@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Ctrl-C",
             "paste": "Ctrl-V"
         },
+        "gotoline": {
+            "gotoline": "Ctrl-G"
+        },
         "gotofile": {
             "gotofile": "Alt-Shift-R"
         },

@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Command-C",
             "paste": "Command-V"
         },
+        "gotoline": {
+            "gotoline": "Command-L"
+        },
         "gotofile": {
             "gotofile": "Alt-Shift-R"
         },
