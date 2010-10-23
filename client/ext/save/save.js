@@ -171,7 +171,7 @@ return ext.register("ext/save/save", {
             setTimeout(function(){
                 if (panel.caption == "Saved file " + path)
                     panel.removeAttribute("caption");
-            }, 500);
+            }, 2500);
         });
         
         page.$at.reset(); //@todo this sucks... please fix
