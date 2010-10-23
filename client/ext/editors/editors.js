@@ -176,7 +176,7 @@ return ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(doc, init, last) { //filename, filepath, xmlNode) {
+    openEditor : function(doc, init, active) { //filename, filepath, xmlNode) {
         var xmlNode  = doc.getNode();
         var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
@@ -232,7 +232,7 @@ return ext.register("ext/editors/editors", {
             }
         });
         
-        if (init && !last)
+        if (init && !active)
             return;
 
         //Set active page
@@ -334,7 +334,7 @@ return ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.last);
+            _self.openEditor(e.doc, e.init, e.active);
         });
 
         ide.addEventListener("filenotfound", function(e) {
@@ -356,12 +356,15 @@ return ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             ide.addEventListener("extload", function(){
-                var nodes = model.queryNodes("auto/files/file");
+                var active = model.queryValue("auto/files/@active");
+                var nodes  = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
-                        doc  : ide.createDocument(nodes[i]),
-                        init : true,
-                        last : i == l - 1
+                        doc    : ide.createDocument(nodes[i]),
+                        init   : true,
+                        active : active 
+                            ? active == nodes[i].getAttribute("path") 
+                            : i == l - 1
                     });
                 }
             });
@@ -379,6 +382,9 @@ return ext.register("ext/editors/editors", {
             }
 
             if (pages.length) {
+                var active = tabEditors.activepage;
+                e.model.setQueryValue("auto/files/@active", active);
+                
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     var file = pages[i].$model.data;
