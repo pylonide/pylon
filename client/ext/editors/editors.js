@@ -190,7 +190,7 @@ return ext.register("ext/editors/editors", {
         var contentType = (xmlNode.getAttribute("contenttype") || "").split(";")[0];
         var editor = this.contentTypes[contentType] && this.contentTypes[contentType][0] || this.contentTypes["default"];
 
-        if (this.currentEditor)
+        if (!init && this.currentEditor)
             this.currentEditor.disable();
 
         if (!editor) {
@@ -363,7 +363,7 @@ return ext.register("ext/editors/editors", {
                         doc    : ide.createDocument(nodes[i]),
                         init   : true,
                         active : active 
-                            ? active == nodes[i].getAttribute("path") 
+                            ? active == nodes[i].getAttribute("path")
                             : i == l - 1
                     });
                 }

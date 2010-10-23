@@ -15,7 +15,7 @@ return keys.onLoad({
             "redo": "Ctrl-Y"
         },
         "clipboard" : {
-            "cut": "Shift-Ctrl-X",
+            "cut": "Ctrl-X",
             "copy": "Ctrl-C",
             "paste": "Ctrl-V"
         },

@@ -24,6 +24,8 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     nodes   : [],
 
     init : function(amlNode){
+        var _self = this;
+        
         this.nodes.push(
             mnuPanels.appendChild(new apf.divider()),
             mnuPanels.appendChild(new apf.item({
@@ -37,14 +39,35 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuPanels.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : this.closeallbutme.bind(this)
+            })),
+            apf.document.body.appendChild(new apf.menu({
+                id : "mnuTabs",
+                childNodes : [
+                    new apf.item({
+                        caption : "Close Tab",
+                        onclick : function(){
+                            _self.closetab(tabEditors.contextPage);
+                        }
+                    }),
+                    new apf.item({
+                        caption : "Close All Tabs",
+                        onclick : this.closealltabs.bind(this)
+                    }),
+                    new apf.item({
+                        caption : "Close All But Current Tab",
+                        onclick : function(){
+                            _self.closeallbutme(tabEditors.contextPage);
+                        }
+                    })
+                ]
             }))
         );
-
+        
         this.hotitems["closetab"] = [this.nodes[1]];
         this.hotitems["closealltabs"] = [this.nodes[2]];
         this.hotitems["closeallbutme"] = [this.nodes[3]];
 
-        var _self = this;
+        tabEditors.setAttribute("contextmenu", "mnuTabs");
 
         tabEditors.addEventListener("close", function(e) {
             _self.removeItem(e.page);
@@ -72,8 +95,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         })
     },
 
-    closetab: function() {
-        var page = tabEditors.getPage();
+    closetab: function(page) {
+        if (!page)
+            page = tabEditors.getPage();
         if (page)
             tabEditors.remove(page);
         return false;

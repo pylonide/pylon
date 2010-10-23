@@ -19,7 +19,6 @@ return ext.register("ext/undo/undo", {
 
     init : function(amlNode){
         this.nodes.push(
-            //mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Undo",
                 onclick : this.undo

@@ -12,6 +12,20 @@
 
 * Fixed save and dirty state issues.
 
+* Debugged file handling in the filetree
+
+* Fixed startup estethics
+
+* Settings are now properly saved and loaded
+
+* scrollwheel speed is now a setting
+
+* Added save-all
+
+* Created Git Terminal console
+
+* Improved debugger
+
 
 2010.10.19, Version 0.1.1
 
