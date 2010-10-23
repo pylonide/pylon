@@ -296,6 +296,9 @@ return ext.register("ext/console/console", {
     init : function(amlNode){
         this.panel = winDbgConsole;
 
+        //Append the console window at the bottom below the tab
+        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+
         lstScripts.addEventListener("afterselect", function(e) {
             e.selected && require("ext/debugger/debugger").showDebugFile(e.selected.getAttribute("scriptid"));
         });
@@ -306,11 +309,6 @@ return ext.register("ext/console/console", {
     enable : function(fromParent){
         if (!this.panel)
             panels.initPanel(this);
-
-        //@todo stupid hack, find out why its not below editors
-
-        //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
 
         if (this.manual && fromParent)
             return;

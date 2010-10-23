@@ -176,7 +176,7 @@ return ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(doc) { //filename, filepath, xmlNode) {
+    openEditor : function(doc, init, last) { //filename, filepath, xmlNode) {
         var xmlNode  = doc.getNode();
         var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");
@@ -207,6 +207,9 @@ return ext.register("ext/editors/editors", {
             editorPage = tabEditors.getPage(editor.path);
 
         //Create Fake Page
+        if (init)
+            tabEditors.setAttribute("buttons", "close");
+        
         var model = new apf.model(), 
             fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
                 page.contentType = contentType;
@@ -218,6 +221,9 @@ return ext.register("ext/editors/editors", {
                 page.$model.load(xmlNode);
             });
 
+        if (init)
+            tabEditors.setAttribute("buttons", "close,scale");
+
         fake.$at.addEventListener("afterchange", function(){
             var val = (this.undolength ? 1 : undefined);
             if (fake.changed != val) {
@@ -225,6 +231,9 @@ return ext.register("ext/editors/editors", {
                 model.setQueryValue("@changed", (val ? "1" : "0"));
             }
         });
+        
+        if (init && !last)
+            return;
 
         //Set active page
         tabEditors.set(filepath);
@@ -325,7 +334,7 @@ return ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc);
+            _self.openEditor(e.doc, e.init, e.last);
         });
 
         ide.addEventListener("filenotfound", function(e) {
@@ -347,11 +356,12 @@ return ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             ide.addEventListener("extload", function(){
-                //apf.getXml('<files><file id="6" type="file" size="1109" name="cloud9.js" contenttype="application/javascript; charset=utf-8" creationdate="" lockable="false" hidden="false" executable="false"/></files>').childNodes;
                 var nodes = model.queryNodes("auto/files/file");
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     ide.dispatchEvent("openfile", {
-                        doc: ide.createDocument(nodes[i])
+                        doc  : ide.createDocument(nodes[i]),
+                        init : true,
+                        last : i == l - 1
                     });
                 }
             });

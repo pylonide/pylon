@@ -5869,6 +5869,8 @@
             position: relative;
             padding: 0;
             width : 100%;
+            overflow : hidden;
+            height : 27px;
         }
 
         .toolbar>.subbar>*{
