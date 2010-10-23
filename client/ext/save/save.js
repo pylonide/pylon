@@ -24,23 +24,23 @@ return ext.register("ext/save/save", {
         var _self = this;
 
         winCloseConfirm.onafterrender = function(){
+            btnYesAll.addEventListener("click", function(){
+                winCloseConfirm.all = 1;
+                winCloseConfirm.hide();
+            });
+            btnNoAll.addEventListener("click", function(){
+                winCloseConfirm.all = -1;
+                winCloseConfirm.hide();
+            });
             btnSaveYes.addEventListener("click", function(){
-                var page = winCloseConfirm.page;
-                _self.quicksave(page);
-                tabEditors.remove(page);
-
-                delete winCloseConfirm.page;
+                _self.quicksave(winCloseConfirm.page);
                 winCloseConfirm.hide()
             });
             btnSaveNo.addEventListener("click", function(){
-                var page = winCloseConfirm.page;
-                page.$at.undo(-1);
-
-                tabEditors.remove(page);
-                delete winCloseConfirm.page;
                 winCloseConfirm.hide();
             });
             btnSaveCancel.addEventListener("click", function(){
+                winCloseConfirm.all = -100;
                 winCloseConfirm.hide();
             });
         }
@@ -48,7 +48,21 @@ return ext.register("ext/save/save", {
         tabEditors.addEventListener("close", this.$close = function(e){
             if (e.page.$at.undolength) {
                 winCloseConfirm.page = e.page;
+                winCloseConfirm.all = 0;
                 winCloseConfirm.show();
+                
+                winCloseConfirm.addEventListener("hide", function(){
+                    if (winCloseConfirm.all != -100) {
+                        tabEditors.remove(winCloseConfirm.page);
+                        winCloseConfirm.page.$at.undo(-1);
+                        delete winCloseConfirm.page;
+                    }
+                    winCloseConfirm.removeEventListener("hide", arguments.callee);
+                });
+                
+                btnYesAll.hide();
+                btnNoAll.hide();
+                
                 e.preventDefault();
             }
         });
@@ -85,6 +99,44 @@ return ext.register("ext/save/save", {
             if (pages[i].$at.undolength)
                 this.quicksave(pages[i]);
         }
+    },
+    
+    saveAllInteractive : function(pages, callback){
+        winCloseConfirm.all = 0;
+                
+        var _self = this;
+        apf.asyncForEach(pages, function(item, next){
+            if (item.$at.undolength) {
+                if (winCloseConfirm.all == 1)
+                    _self.quicksave(item);
+                //else if (winCloseConfirm.all == -1)
+                    //item.$at.undo(-1);
+
+                if (winCloseConfirm.all)
+                    return next();
+                
+                tabEditors.set(item);
+                winCloseConfirm.page = item;
+                winCloseConfirm.show();
+                winCloseConfirm.addEventListener("hide", function(){
+                    if (winCloseConfirm.all == 1)
+                        _self.quicksave(item);
+                    //else if (winCloseConfirm.all == -1)
+                        //item.$at.undo(-1);
+
+                    winCloseConfirm.removeEventListener("hide", arguments.callee);
+                    next();
+                });
+                
+                btnYesAll.setProperty("visible", pages.length > 1);
+                btnNoAll.setProperty("visible", pages.length > 1);
+            }
+            else
+                next();
+        },
+        function(){
+            callback(winCloseConfirm.all);
+        });
     },
 
     quicksave : function(page) {

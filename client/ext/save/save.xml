@@ -15,6 +15,9 @@
         <a:vbox edge="0 0 4 0" padding="8">
             <a:divider skin="hordivider" />
             <a:hbox pack="end" padding="7" edge="0 10 0 10">
+                <a:button id="btnYesAll" caption="Yes to all" />
+                <a:button id="btnNoAll" caption="No to all" />
+                <a:filler />
                 <a:button id="btnSaveYes" width="80" default="3" class="ui-btn-green" caption="Yes" />
                 <a:button id="btnSaveNo" width="80" class="ui-btn-red" caption="No" />
                 <a:button id="btnSaveCancel" width="80">Cancel</a:button>
@@ -25,4 +28,4 @@
     <a:bar id="barSave" visible="false">
         <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disabled' : ''}.png">Save file</a:button>
     </a:bar>
-</a:application>
+</a:application> 

@@ -5,8 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/tabbehaviors/tabbehaviors",
-    ["core/ide", "core/ext", "core/util"],
-    function(ide, ext, util) {
+    ["core/ide", "core/ext", "core/util", "ext/save/save"],
+    function(ide, ext, util, save) {
 
 return ext.register("ext/tabbehaviors/tabbehaviors", {
     name    : "Tab Behaviors",
@@ -27,10 +27,11 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         this.nodes.push(
-            mnuPanels.appendChild(new apf.divider()),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close Tab",
-                onclick : this.closetab.bind(this)
+                onclick : function(){
+                    _self.closetab();
+                }
             })),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close All Tabs",
@@ -38,8 +39,11 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             })),
             mnuPanels.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
-                onclick : this.closeallbutme.bind(this)
+                onclick : function(){
+                    _self.closeallbutme();
+                }
             })),
+            mnuPanels.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuTabs",
                 childNodes : [
@@ -63,9 +67,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
         
-        this.hotitems["closetab"] = [this.nodes[1]];
-        this.hotitems["closealltabs"] = [this.nodes[2]];
-        this.hotitems["closeallbutme"] = [this.nodes[3]];
+        this.hotitems["closetab"]      = [this.nodes[0]];
+        this.hotitems["closealltabs"]  = [this.nodes[1]];
+        this.hotitems["closeallbutme"] = [this.nodes[2]];
 
         tabEditors.setAttribute("contextmenu", "mnuTabs");
 
@@ -106,24 +110,44 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     closealltabs: function() {
         var tabs  = tabEditors,
             pages = tabs.getPages(),
-            i     = pages.length - 1;
-        for (; i >= 0; --i) {
-            this.removeItem(pages[i]);
-            tabs.remove(pages[i], true);
-        }
-        return false;
+            i     = pages.length - 1,
+            _self = this;
+        
+        save.saveAllInteractive(pages, function(all){
+            if (all == -100) //Cancel
+                return;
+            
+            pages.each(function(page){
+                page.$at.undo(-1);
+                _self.removeItem(page);
+                tabs.remove(page, true);
+            });
+        });
     },
 
     closeallbutme: function(page) {
         page = page || tabEditors.getPage();
         var tabs  = tabEditors,
             pages = tabs.getPages(),
-            i     = pages.length - 1;
+            i     = pages.length - 1,
+            set   = [],
+            _self = this;
         for (; i >= 0; --i) {
             if (pages[i] == page) continue;
-            this.removeItem(pages[i]);
-            tabs.remove(pages[i], true);
+            set.push(pages[i]);
         }
+        
+        save.saveAllInteractive(set, function(all){
+            if (all == -100) //Cancel
+                return;
+            
+            set.each(function(page){
+                page.$at.undo(-1);
+                _self.removeItem(page);
+                tabs.remove(page, true);
+            });
+        });
+        
         return false;
     },
 
