@@ -63,8 +63,11 @@ return ext.register("ext/settings/settings", {
             page = pgSettings.getPage(id);
         if (page)
             return page;
-        if (!this.model.data.selectSingleNode(xpath + "/" + tagName))
+		var node = this.model.queryNode(xpath + "/" + tagName);
+        if (!node)
             this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
+		else
+			node.setAttribute("page", id);
         page = pgSettings.add(name, id);
         page.$at = new apf.actiontracker();
         page.$commit = cbCommit || apf.K;
