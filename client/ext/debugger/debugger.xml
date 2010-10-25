@@ -50,7 +50,7 @@
 		  model      = "mdlDbgBreakpoints"
 		  each       = "[breakpoint]"
 		  caption    = "[@text]"
-		  icon       = "debugger/brkp_obj.gif">
+		  icon       = "debugger/brkp_obj.png">
 		    <a:actions />
 		</a:list>
     </a:window>

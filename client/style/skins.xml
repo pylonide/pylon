@@ -4745,9 +4745,9 @@
         /*** TM ***/
 
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
-          background-image: url("icons/debugger/brkp_obj.gif");
+          background-image: url("icons/debugger/brkp_obj.png");
           background-repeat: no-repeat;
-          background-position: center right;
+          background-position: center left;
         }
 
     ]]></a:style>
@@ -6022,16 +6022,16 @@
         .toolbar .subbar .toolbarbuttonIcon span{
             display: block;
             float:left;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             margin: -1px 4px 0 0;
         }
 
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonOver span{
-            background-position: 0 -16px;
+            background-position: 0 -18px;
         }
         .toolbar .subbar .toolbarbuttonIcon.toolbarbuttonDown span{
-            background-position: 0 -32px;
+            background-position: 0 -36px;
         }
 
         .toolbar .subbar .toolbarbuttonEmpty span{
