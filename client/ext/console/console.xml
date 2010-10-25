@@ -51,6 +51,7 @@
                         <a:text id="txtConsole"
                           flex       = "5"
                           scrolldown = "true" 
+						  textselect = "true"
                           focussable = "true"
                           class      = "apf_console" />
                         <a:splitter />
