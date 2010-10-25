@@ -176,7 +176,7 @@ return ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}});
     },
 
-    openEditor : function(doc, init, active) { //filename, filepath, xmlNode) {
+    openEditor : function(doc, init, active) {
         var xmlNode  = doc.getNode();
         var filename = xmlNode.getAttribute("name");
         var filepath = xmlNode.getAttribute("path");

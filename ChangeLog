@@ -1,5 +1,9 @@
 2010.10.XX, Version 0.1.2
 
+* Setting breakpoints while application is not running
+
+* Themes for the editor (based on textmate themes)
+
 * Run configurations are now saved
 
 * Tree state is now opened at startup
@@ -23,10 +27,6 @@
 * Added save-all
 
 * Created Git Terminal console
-
-* Improved debugger
-
-* Themes for the editor (based on textmate themes)
 
 
 2010.10.19, Version 0.1.1

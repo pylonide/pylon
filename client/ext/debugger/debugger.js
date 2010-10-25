@@ -6,12 +6,13 @@
  */
 require.def("ext/debugger/debugger",
     ["core/ide",
+     "core/document",
      "core/ext",
      "ext/console/console",
      "ext/filesystem/filesystem",
      "ext/noderunner/noderunner",
      "text!ext/debugger/debugger.xml"],
-    function(ide, ext, log, fs, noderunner, markup) {
+    function(ide, Document, ext, log, fs, noderunner, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -74,7 +75,7 @@ return ext.register("ext/debugger/debugger", {
         log.enable(true);
     },
 
-    jump : function(fileEl, row, column, text) {
+    jump : function(fileEl, row, column, text, doc) {
         var path = fileEl.getAttribute("path");
 
         if (row !== undefined) {
@@ -94,7 +95,7 @@ return ext.register("ext/debugger/debugger", {
         }
 
         ide.dispatchEvent("openfile", {
-            doc: ide.createDocument(fileEl)
+            doc: doc || ide.createDocument(fileEl)
         });
     },
 
@@ -114,8 +115,7 @@ return ext.register("ext/debugger/debugger", {
     },
 
     showFile : function(path, row, column, text) {
-        var chunks = path.split("/");
-        var name = chunks[chunks.length-1];
+        var name = path.split("/").pop();
         var node = apf.n("<file />")
             .attr("name", name)
             .attr("contenttype", this.getContentType(name))
@@ -136,8 +136,7 @@ return ext.register("ext/debugger/debugger", {
                 return;
 
             var name = script.getAttribute("scriptname");
-            var chunks = name.split("/");
-            var value = chunks[chunks.length-1];
+            var value = name.split("/").pop();
 
             if (name.indexOf(noderunner.workspaceDir) == 0) {
                 var path = "/" + noderunner.davPrefix + name.slice(noderunner.workspaceDir.length + 1);
@@ -173,12 +172,9 @@ return ext.register("ext/debugger/debugger", {
 
                     var _self = this;
                     dbg.loadScript(script, function(source) {
-	                    var doc = node.ownerDocument;
-	                    var data = doc.createElement("data");
-	                    data.appendChild(doc.createTextNode(source));
-	                    node.appendChild(data);
+	                    var doc = ide.createDocument(node, source);
 	
-	                    _self.jump(node, row, column, text);
+	                    _self.jump(node, row, column, text, doc);
 	                });
 	            }
             }
