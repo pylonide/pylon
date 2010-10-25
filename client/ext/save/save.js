@@ -53,7 +53,6 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.show();
                 
                 winCloseConfirm.addEventListener("hide", function(){
-                	alert(winCloseConfirm.all);
                     if (winCloseConfirm.all != -100) {
                     	//debugger;
                         tabEditors.remove(winCloseConfirm.page, true);
