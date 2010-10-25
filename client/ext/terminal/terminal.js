@@ -183,7 +183,7 @@ function commandHandler() {
                     "make me a sandwich": "What? Make it yourself.",
                     "make love": "I put on my robe and wizard hat.",
                     "i read the source code": "<3",
-                    "pwd": "You are in a maze of twisty passages, all alike.",
+                    //"pwd": "You are in a maze of twisty passages, all alike.",
                     "lpr": "PC LOAD LETTER",
                     "hello joshua": "How about a nice game of Global Thermonuclear War?",
                     "xyzzy": "Nothing happens.",
@@ -199,9 +199,10 @@ function commandHandler() {
                     "moo":"moo",
                     "ping": "There is another submarine three miles ahead, bearing 225, forty fathoms down.",
                     "find": "What do you want to find? Kitten would be nice.",
-                    "hello":"Hello.","more":"Oh, yes! More! More!",
+                    "more":"Oh, yes! More! More!",
                     "your gay": "Keep your hands off it!",
-                    "hi":"Hi.","echo": "Echo ... echo ... echo ...",
+                    "hi":"Hi.",
+                    "echo": "Echo ... echo ... echo ...",
                     "bash": "You bash your head against the wall. It's not very effective.",
                     "ssh": "ssh, this is a library.",
                     "uname": "Illudium Q-36 Explosive Space Modulator",
@@ -326,15 +327,21 @@ return terminal = ext.register("ext/terminal/terminal", {
         });
         this.$panel.addEventListener("resize", this.onResize.bind(this));
         winDbgConsole.addEventListener("blur", function() {
-            _self.$term.globals.disableKeyboard();
+            if (_self.$term.globals.kbdEnabled)
+                _self.$term.globals.disableKeyboard();
         });
         winDbgConsole.addEventListener("focus", function() {
-            if (tabConsole.getPage() != _self.$panel)
+            if (tabConsole.getPage() != _self.$panel
+              || _self.$term.globals.kbdEnabled)
                 return;
+            apf.console.log("enabling keyboard...");
             _self.$term.globals.enableKeyboard(_self.$term);
+            _self.$term._cursorReset();
             _self.$term.cursorOn();
         });
-        this.onResize();
+        setTimeout(function() {
+            _self.onResize();
+        }, 500);
 
         // connect to socket:
         noderunner.socket.on("message", this.onMessage.bind(this));
@@ -343,8 +350,8 @@ return terminal = ext.register("ext/terminal/terminal", {
     onResize: function() {
         var oNode = this.$panel.$ext,
             rowH  = this.$term.conf.rowHeight,
-            cols  = Math.max(Math.floor(oNode.offsetWidth  / (rowH / 2), 10), 20),
-            rows  = Math.max(Math.floor(oNode.offsetHeight / rowH, 10), 15);
+            cols  = Math.max(Math.floor(oNode.offsetWidth  / (rowH / 2)), 20),
+            rows  = Math.max(Math.floor(oNode.offsetHeight / rowH), 3);
         if (this.$term.maxCols === cols && this.$term.maxLines === rows)
             return;
         this.$term.resizeTo(cols, rows);
@@ -391,16 +398,20 @@ return terminal = ext.register("ext/terminal/terminal", {
                 var res = message.body;
                 if (!res.length)
                     break;
-                var line = this.$term._getLine();
-                if (res.length == 1)
-                    this.$term.type(res[0].replace(line));
+                if (res.length == 1) {
+                    var line = (this.$term._getLine() || "").trim().split(/[\s]+/g).pop();
+                    this.$term.type(res[0].replace(line, ""));
+                }
                 else {
+                    line = this.$term._getLine();
                     this.$term.write("%n" + res.join(" "));
                     this.$term.prompt();
+                    this.$term.type(line);
                 }
+                this.$term.cursorOn();
                 break;
             default:
-            case "error":
+            //case "error":
                 if (typeof message.body == "string") {
                     this.$term.write(message.body
                         .replace(noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")

@@ -158,7 +158,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
             case "ls":
             case "pwd":
                 // an allowed command!
-                this.activePs = this.spawnCommand(0, cmd, argv, message.cmd);
+                this.spawnCommand(0, cmd, argv, message.cmd);
                 break;
             case "cd":
                 var to    = argv.pop(),
@@ -210,24 +210,22 @@ module.exports = IdeServer = function(workspaceDir, server) {
                 });
                 break;
             case "internal-autocomplete":
-                console.log("received autocomplete for: ", argv[0], message.cwd)
-                var tail = argv[0].replace(/^[\s]+/g, "").replace(/[\s]+$/g, "")
+                var tail = (argv[0] || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
                 Fs.readdir(message.cwd, function(err, files) {
                     var matches = [];
+
                     files.forEach(function(file) {
                         if (file.indexOf(tail) === 0)
                             matches.push(file);
                     });
-                    _self.sendTermPacket(0, "result-internal-autocomplete", {
-                        body: matches
-                    });
+                    _self.sendTermPacket(0, "result-internal-autocomplete", matches);
                 });
                 break;
             default:
                 this.sendTermPacket(0, "error", "This command is not supported.");
                 break;
         }
-        console.log("command: " + cmd + ", cwd: " + message.cwd);
+        //console.log("command: " + cmd + ", cwd: " + message.cwd);
     };
 
     this.sendTermPacket = function(sid, type, msg) {
@@ -240,7 +238,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.spawnCommand = function(sid, cmd, args, cwd) {
-        var child = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
+        var child = this.activePs = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
             _self = this;
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
@@ -265,6 +263,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
         }
 
         child.on("exit", function(code) {
+            delete _self.activePs;
             if (!_self.client)
                return;
             _self.client.send(JSON.stringify({
