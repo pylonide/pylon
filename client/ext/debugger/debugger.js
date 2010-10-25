@@ -6,12 +6,13 @@
  */
 require.def("ext/debugger/debugger",
     ["core/ide",
+     "core/document",
      "core/ext",
      "ext/console/console",
      "ext/filesystem/filesystem",
      "ext/noderunner/noderunner",
      "text!ext/debugger/debugger.xml"],
-    function(ide, ext, log, fs, noderunner, markup) {
+    function(ide, Document, ext, log, fs, noderunner, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -74,7 +75,7 @@ return ext.register("ext/debugger/debugger", {
         log.enable(true);
     },
 
-    jump : function(fileEl, row, column, text) {
+    jump : function(fileEl, row, column, text, doc) {
         var path = fileEl.getAttribute("path");
 
         if (row !== undefined) {
@@ -94,7 +95,7 @@ return ext.register("ext/debugger/debugger", {
         }
 
         ide.dispatchEvent("openfile", {
-            doc: ide.createDocument(fileEl)
+            doc: doc || ide.createDocument(fileEl)
         });
     },
 
@@ -171,12 +172,9 @@ return ext.register("ext/debugger/debugger", {
 
                     var _self = this;
                     dbg.loadScript(script, function(source) {
-	                    var doc = node.ownerDocument;
-	                    var data = doc.createElement("data");
-	                    data.appendChild(doc.createTextNode(source));
-	                    node.appendChild(data);
+	                    var doc = ide.createDocument(node, source);
 	
-	                    _self.jump(node, row, column, text);
+	                    _self.jump(node, row, column, text, doc);
 	                });
 	            }
             }
