@@ -20,6 +20,7 @@
       anchors           = "6 0 4 0"
       visible           = "false"
       syntax            = "{getSyntax([@contenttype])}"
+      theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
       selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"

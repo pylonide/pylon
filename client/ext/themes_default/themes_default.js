@@ -15,27 +15,16 @@ return ext.register("ext/themes_default/themes_default", {
     type    : ext.GENERAL,
     nodes   : [],
 
+    themes  : {
+        "TextMate" : "ace/theme/TextMate",
+        "Eclipse" : "ace/theme/Eclipse",
+        "Dawn" : "ace/theme/Dawn",
+        "IdleFingers" : "ace/theme/IdleFingers",
+        "Twilight" : "ace/theme/Twilight"
+    },
+
     init : function(){
-        this.nodes.push(
-            mnuThemes.appendChild(new apf.item({
-                caption : "My First Theme",
-                onclick : function(){
-                    themes.set("ext/themes_default/theme1.css");
-                }
-            })),
-            mnuThemes.appendChild(new apf.item({
-                caption : "Dark Theme",
-                onclick : function(){
-                    themes.set("ext/themes_default/theme2.css");
-                }
-            })),
-            mnuThemes.appendChild(new apf.item({
-                caption : "Dark Theme 2",
-                onclick : function(){
-                    themes.set("ext/themes_default/theme3.css");
-                }
-            }))
-        );
+        themes.register(this.themes);
     },
 
     enable : function(){

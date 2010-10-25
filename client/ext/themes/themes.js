@@ -15,14 +15,27 @@ return ext.register("ext/themes/themes", {
     type    : ext.GENERAL,
     nodes   : [],
 
-    set : function(){
+    register : function(themes){
+        for (var name in themes) {
+            this.nodes.push(
+                mnuThemes.appendChild(new apf.item({
+                    caption : name,
+                    type    : "radio",
+                    value   : themes[name]
+                }))
+            )
+        }
+    },
+
+    set : function(path){
         //Save theme settings
-        //settings.model
-        
-        //Set theme
+        settings.model.setQueryValue("editors/code/@theme", path);
+        settings.save();
     },
 
     init : function(){
+        var _self = this;
+        
         this.nodes.push(
             mnuView.appendChild(new apf.item({
                 caption : "Themes",
@@ -30,11 +43,11 @@ return ext.register("ext/themes/themes", {
             })),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuThemes",
+                onitemclick : function(e){
+                    _self.set(e.relatedNode.value);
+                }
             }))
         );
-        
-        //Hook settings
-        //settings
     },
 
     enable : function(){
