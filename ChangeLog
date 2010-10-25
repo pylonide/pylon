@@ -1,57 +1,35 @@
-2010.10.XX, Version 0.1.2
+2010.10.25, Version 0.1.2
 
 * Setting breakpoints while application is not running
-
 * Themes for the editor (based on textmate themes)
-
 * Run configurations are now saved
-
 * Tree state is now opened at startup
-
 * Indent/outdent issues fixed
-
 * Copy/paste and undo/redo issues fixed
-
 * Tweaked keybindings
-
 * Fixed save and dirty state issues.
-
 * Debugged file handling in the filetree
-
 * Fixed startup estethics
-
 * Settings are now properly saved and loaded
-
 * scrollwheel speed is now a setting
-
 * Added save-all
-
 * Created Git Terminal console
-
 * Improved debugger (setting breakpoints while app is not running)
-
 * Themes for the editor (based on textmate themes)
 
 
 2010.10.19, Version 0.1.1
 
 * Enable splitter between the tree and the editor
-
 * Menus were sometimes not working while the editor had focus
 
 
 2010.10.18, Version 0.1.0
 
 * Jump to File plugin added
-
 * Search in Files/ Project plugin added
-
 * Goto Line plugin improved
-
 * Quicksearch plugin added
-
 * Run Configuration plugin added
-
 * Editor Javascript syntax highlighting improved
-
 * Bugfixes
