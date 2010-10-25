@@ -379,6 +379,8 @@ apf.item  = function(struct, tagName){
         }
 
         this.parentNode.$hideTree = true;
+        
+        //@todo This statement makes the menu loose focus.
         this.parentNode.hide();//true not focus?/
 
         this.parentNode.dispatchEvent("itemclick", {
@@ -389,13 +391,15 @@ apf.item  = function(struct, tagName){
         });
 
         //@todo Anim effect here?
-    };
-
-    this.$click = function(){
+        
         this.dispatchEvent("click", {
             xmlContext : this.parentNode.xmlReference,
             opener     : this.parentNode.opener
         });
+    };
+
+    this.$click = function(){
+        
     };
 
     var timer;
