@@ -302,7 +302,7 @@ apf.codeeditor = function(struct, tagName) {
     };
 
     this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
-        this.$editor.setScrollSpeed(value);
+        this.$editor.setScrollSpeed(value || 2);
     };
 
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
