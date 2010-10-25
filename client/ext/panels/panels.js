@@ -25,6 +25,8 @@ return ext.register("ext/panels/panels", {
         var set = this.$settings && this.$settings[panelExt.path];
         if (set)
             this.setPanelSettings(panelExt, set);
+        
+        panelExt.panel.setAttribute("draggable", "false");
     },
     
     register : function(panelExt){
