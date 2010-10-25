@@ -416,7 +416,7 @@ return terminal = ext.register("ext/terminal/terminal", {
                     this.$term.write(message.body
                         .replace(noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")
                         .replace(/%/g, "%%") + "%n", true);
-                    this.$term.prompt();
+                    //this.$term.prompt();
 
                 }
                 break;
