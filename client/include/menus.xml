@@ -7,10 +7,6 @@
 </a:menu>
 
 <a:menu id="mnuView">
-    <a:item submenu="mnuEditors">Editors</a:item>
-</a:menu>
-
-<a:menu id="mnuEditors">
 </a:menu>
 
 <a:menu id="mnuModes"

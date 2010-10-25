@@ -33,14 +33,14 @@ return ext.register("ext/editors/editors", {
         }));
 
         //Add a menu item to the list of editors
-        oExtension.$itmEditor = ide.mnuEditors.appendChild(new apf.item({
+        /*oExtension.$itmEditor = ide.mnuEditors.appendChild(new apf.item({
             type    : "radio",
             caption : oExtension.name,
             value   : oExtension.path,
             onclick : function(){
                 require('ext/editors/editors').switchEditor(this.value);
             }
-        }));
+        }));*/
 
         var _self = this;
         oExtension.contentTypes.each(function(mime){
@@ -53,7 +53,7 @@ return ext.register("ext/editors/editors", {
 
     unregister : function(oExtension){
         oExtension.$rbEditor.destroy(true, true);
-        oExtension.$itmEditor.destroy(true, true);
+        //oExtension.$itmEditor.destroy(true, true);
 
         var _self = this;
         oExtension.contentTypes.each(function(fe){
@@ -167,7 +167,7 @@ return ext.register("ext/editors/editors", {
         if (!editor.inited)
             this.initEditor(editor);
 
-        editor.$itmEditor.select();
+        //editor.$itmEditor.select();
         editor.$rbEditor.select();
 
         page.setAttribute("type", path);
@@ -247,7 +247,7 @@ return ext.register("ext/editors/editors", {
         });*/
 
         editor.enable();
-        editor.$itmEditor.select();
+        //editor.$itmEditor.select();
         editor.$rbEditor.select();
 
         this.currentEditor = editor;
@@ -308,7 +308,7 @@ return ext.register("ext/editors/editors", {
             toHandler.enable();
         }
 
-        toHandler.$itmEditor.select();
+        //toHandler.$itmEditor.select();
         toHandler.$rbEditor.select();
 
         /*if (self.TESTING) {}

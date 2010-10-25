@@ -21,7 +21,6 @@ require.def("core/ide", ["core/document"],
             this.mnuEdit      = mnuEdit;
             this.barMenu      = barMenu;
             this.barTools     = barTools;
-            this.mnuEditors   = mnuEditors;
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
 
