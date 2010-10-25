@@ -7,3 +7,4 @@ client/common
 .settings
 /demo
 .settings.xml.old
+.DS_Store
