@@ -332,7 +332,7 @@ var V8Debugger = function(dbg, host) {
 
         var name = script.getAttribute("scriptname");
 
-        var lineOffset = parseInt(script.getAttribute("lineoffset"));
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
         var row = lineOffset + relativeRow;
         var id = name + "|" + row;
 
