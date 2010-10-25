@@ -47,8 +47,21 @@ apf.nameserver = {
         if (this.onchange)
             this.onchange(type, item, id);
         //#endif
+        
+        if (this.waiting[id]) {
+            var list = this.waiting[id];
+            for (var i = 0; i < list.length; i++) {
+                list[i]();
+            }
+            delete this.waiting[id];
+        }
 
         return (this.lookup[type][id] = item);
+    },
+    
+    waiting : {},
+    waitFor : function(name, callback){
+        (this.waiting[name] || (this.waiting[name] = [])).push(callback);
     },
     
     remove : function(type, item){
