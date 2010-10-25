@@ -190,7 +190,6 @@ apf.BaseTree = function(){
                 apf.asyncForEach(paths, 
                     function(part, next2, index) {
                         apf.queue.empty();
-
                         //This timeout is here to workaround a bug in chrome7 (and perhaps earlier)
                         setTimeout(function(){
                             var xmlNode = (lastNode || root).selectSingleNode(part);
@@ -212,7 +211,7 @@ apf.BaseTree = function(){
                                         next2();
                                 });
                             }
-                        });  
+                        },100);  
                     }, function(err){
                         //if (!err) {
                             next();
