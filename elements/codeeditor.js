@@ -499,13 +499,13 @@ apf.codeeditor = function(struct, tagName) {
 
         ed.addEventListener("gutterclick", function(e) {
             _self.dispatchEvent("gutterclick", e);
+            if (_self.$debugger) {
+                _self.$toggleBreakpoint(e.row);
+            }
         });
 
         ed.addEventListener("gutterdblclick", function(e) {
             _self.dispatchEvent("gutterdblclick", e);
-            if (_self.$debugger) {
-                _self.$toggleBreakpoint(e.row);
-            }
         });
 
         apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
