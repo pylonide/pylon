@@ -2,7 +2,7 @@
     <auto />
     <general name="General" page="pgSettingsGeneral" />
     <editors name="Editor" page="pgSettingsEditors">
-        <code 
+        <code name="Code Editor"
           overwrite="false"
           selectstyle="line"
           activeline="true"
@@ -10,6 +10,7 @@
           showprintmargin="true"
           printmargincolumn="80"
           softtabs="true"
-          tabsize="4"/>
+          tabsize="4"
+		  scrollspeed="2"/>
     </editors>
 </settings>
