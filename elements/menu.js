@@ -286,10 +286,10 @@ apf.menu = function(struct, tagName){
                     y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
                     animate      : noanim || !this.animate ? false : "fade",
                     steps        : 10,
-                    ref          : this.$ext.offsetParent,
+                    //ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
-                    autohide     : this.autohide !== false,
-                    autoCorrect  : false
+                    autohide     : this.autohide !== false
+                    //autoCorrect  : false
                 });
             }
             

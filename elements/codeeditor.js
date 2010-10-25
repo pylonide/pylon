@@ -491,20 +491,6 @@ apf.codeeditor = function(struct, tagName) {
         // read defaults...
         var ed  = this.$editor,
             doc = ed.getDocument();
-        this.$defaults = {
-            syntax            : "Text",//doc.getMode(),
-            tabsize           : doc.getTabSize(),//4,
-            softtabs          : doc.getUseSoftTabs(),//true,
-            scrollspeed       : ed.getScrollSpeed(),
-            selectstyle       : ed.getSelectionStyle(),//"line",
-            activeline        : ed.getHighlightActiveLine(),//true,
-            readonly          : ed.getReadOnly(),//false,
-            showinvisibles    : ed.getShowInvisibles(),//false,
-            showprintmargin   : ed.getShowPrintMargin(),//false,
-            printmargincolumn : ed.getPrintMarginColumn(),//80,
-            overwrite         : ed.getOverwrite()//false
-        };
-        apf.extend(this, this.$defaults);
 
         var _self = this;
         ed.addEventListener("changeOverwrite", function(e) {
@@ -524,6 +510,31 @@ apf.codeeditor = function(struct, tagName) {
 
         apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
     };
+    
+    this.$loadAml = function(){
+        if (this.syntax == undefined)
+            this.syntax = "Text";
+        if (this.tabsize == undefined)
+            this.tabsize = doc.getTabSize(); //4
+        if (this.softtabs == undefined)
+            this.softtabs = doc.getUseSoftTabs(); //true
+        if (this.scrollspeed == undefined)
+            this.scrollspeed = ed.getScrollSpeed();
+        if (this.selectstyle == undefined)
+            this.selectstyle = ed.getSelectionStyle();//"line";
+        if (this.activeline == undefined)
+            this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.readonly == undefined)
+            this.readonly = ed.getReadOnly();//false;
+        if (this.showinvisibles == undefined)
+            this.showinvisibles = ed.getShowInvisibles();//false;
+        if (this.showprintmargin == undefined)
+            this.showprintmargin = ed.getShowPrintMargin();//false;
+        if (this.printmargincolumn == undefined)
+            this.printmargincolumn = ed.getPrintMarginColumn();//80;
+        if (this.overwrite == undefined)
+            this.overwrite = ed.getOverwrite()//false
+    }
 
 // #ifdef __WITH_DATABINDING
 }).call(apf.codeeditor.prototype = new apf.StandardBinding());

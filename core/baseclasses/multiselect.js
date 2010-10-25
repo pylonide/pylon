@@ -1270,6 +1270,7 @@ apf.MultiSelect = function(){
             else {
                 if (!this.multiselect)
                     this.clearSelection();
+                this.clearSelection();
                 this.setCaret(nextNode);
             }
         }
