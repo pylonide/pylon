@@ -204,7 +204,7 @@ apf.codeeditor = function(struct, tagName) {
         if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
             return;
 
-        var lineOffset = parseInt(script.getAttribute("lineoffset"));
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
         this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
