@@ -80,7 +80,8 @@ apf.codeeditor = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed");
+        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
+        "theme");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -237,6 +238,10 @@ apf.codeeditor = function(struct, tagName) {
     this.$toggleBreakpoint = function(row) {
         this.$debugger.toggleBreakpoint(this.xmlRoot, row);
     };
+
+    this.$propHandlers["theme"] = function(value) {
+        this.$editor.setTheme(value);
+    }
 
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
