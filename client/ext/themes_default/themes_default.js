@@ -20,7 +20,13 @@ return ext.register("ext/themes_default/themes_default", {
         "Eclipse" : "ace/theme/Eclipse",
         "Dawn" : "ace/theme/Dawn",
         "IdleFingers" : "ace/theme/IdleFingers",
-        "Twilight" : "ace/theme/Twilight"
+        "Twilight" : "ace/theme/Twilight",
+        "Monokai": "ace/theme/Monokai",
+        "Cobalt": "ace/theme/Cobalt",
+        "Mono Industrial": "ace/theme/MonoIndustrial",
+        "Clouds": "ace/theme/Clouds",
+        "Clouds Midnight": "ace/theme/CloudsMidnight",     
+        "krTheme": "ace/theme/KrTheme"        
     },
 
     init : function(){
