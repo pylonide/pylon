@@ -430,27 +430,32 @@ apf.item  = function(struct, tagName){
           || apf.isChildOf(this.$ext, e.fromElement || e.target)))  //@todo test FF
             return;
 
-        var ps = this.parentNode.$showingSubMenu;
-        if (ps) {
-            if (ps.name == this.submenu)
-                return;
-
-            ps.hide();
-            this.parentNode.$showingSubMenu = null;
+        var _self = this, ps = this.parentNode.$showingSubMenu;
+        if (ps && ps.name == this.submenu)
+            return;
+            
+        clearTimeout(timer);
+        
+        function submenu(){
+            if (ps && ps.visible) {
+                ps.hide();
+                
+                if (_self.parentNode.$showingSubMenu == ps)
+                    _self.parentNode.$showingSubMenu = null;
+            }
+    
+            if (_self.submenu && _self.parentNode.opener 
+              && _self.parentNode.opener.visible)
+                _self.$submenu();
         }
 
-        if (this.submenu) {
-            if (force) {
-                this.$submenu();
-            }
-            else {
-                var _self = this;
-                clearTimeout(timer);
-                timer = $setTimeout(function(){
-                    _self.$submenu();
-                    timer = null;
-                }, 200);
-            }
+        if (force)
+            submenu();
+        else {
+            timer = $setTimeout(function(){
+                submenu();
+                timer = null;
+            }, 210);
         }
     };
 
@@ -477,7 +482,7 @@ apf.item  = function(struct, tagName){
 
             var pos = apf.getAbsolutePosition(this.$ext, this.parentNode.$ext.offsetParent);
             menu.display(pos[0] + this.$ext.offsetWidth - 3,
-                pos[1] + 3, false, this,
+                pos[1] + 3, true, this,
                 this.parentNode.xmlReference, this.parentNode.$uniqueId);
             menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
         }
@@ -486,9 +491,8 @@ apf.item  = function(struct, tagName){
                 return false;
             }
             
-            if(this.parentNode.$showingSubMenu) {
+            if (this.parentNode.$showingSubMenu == menu)
                 this.parentNode.$showingSubMenu = null;
-            }
             
             apf.setStyleClass(this.$ext, '', ['hover']);
             menu.hide();

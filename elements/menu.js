@@ -172,6 +172,8 @@ apf.menu = function(struct, tagName){
             }
             //#endif
 
+            clearTimeout(this.$submenuTimer);
+
             if (this.$showingSubMenu) {
                 this.$showingSubMenu.hide();
                 this.$showingSubMenu = null;
