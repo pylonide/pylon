@@ -114,8 +114,7 @@ return ext.register("ext/debugger/debugger", {
     },
 
     showFile : function(path, row, column, text) {
-        var chunks = path.split("/");
-        var name = chunks[chunks.length-1];
+        var name = path.split("/").pop();
         var node = apf.n("<file />")
             .attr("name", name)
             .attr("contenttype", this.getContentType(name))
@@ -136,8 +135,7 @@ return ext.register("ext/debugger/debugger", {
                 return;
 
             var name = script.getAttribute("scriptname");
-            var chunks = name.split("/");
-            var value = chunks[chunks.length-1];
+            var value = name.split("/").pop();
 
             if (name.indexOf(noderunner.workspaceDir) == 0) {
                 var path = "/" + noderunner.davPrefix + name.slice(noderunner.workspaceDir.length + 1);
