@@ -47,7 +47,7 @@ return ext.register("ext/console/console", {
         // absolute workspace files
         var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
         // relative workspace files
-        var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+\.[\w\_\$]+)(\:\d+)(\:\d+)*/g;
+        var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
         
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;

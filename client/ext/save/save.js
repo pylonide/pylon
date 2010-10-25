@@ -37,6 +37,7 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.hide()
             });
             btnSaveNo.addEventListener("click", function(){
+                winCloseConfirm.all = -1;
                 winCloseConfirm.hide();
             });
             btnSaveCancel.addEventListener("click", function(){
@@ -52,8 +53,10 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.show();
                 
                 winCloseConfirm.addEventListener("hide", function(){
+                	alert(winCloseConfirm.all);
                     if (winCloseConfirm.all != -100) {
-                        tabEditors.remove(winCloseConfirm.page);
+                    	//debugger;
+                        tabEditors.remove(winCloseConfirm.page, true);
                         winCloseConfirm.page.$at.undo(-1);
                         delete winCloseConfirm.page;
                     }
