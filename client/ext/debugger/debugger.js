@@ -187,9 +187,8 @@ return ext.register("ext/debugger/debugger", {
 
     count : 0,
     $syncTree : function() {
-        if (this.inSync) return
+        if (this.inSync) return;
         this.inSync = true;
-
         var dbgFiles = mdlDbgSources.data.childNodes;
 
         var workspaceDir = noderunner.workspaceDir;
@@ -198,8 +197,7 @@ return ext.register("ext/debugger/debugger", {
             var name = dbgFile.getAttribute("scriptname");
             if (name.indexOf(workspaceDir) != 0)
                 continue;
-            var path = name.slice(workspaceDir.length+1);
-            this.paths[path] = dbgFile;
+            this.paths[name] = dbgFile;
         }
         var treeFiles = fs.model.data.getElementsByTagName("file");
         var tabFiles = ide.getAllPageModels();
@@ -208,15 +206,11 @@ return ext.register("ext/debugger/debugger", {
         var davPrefix = noderunner.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {
             var file = files[i];
-            var path = file.getAttribute("path").slice(davPrefix.length);
+            var path = file.getAttribute("scriptname");
 
             var dbgFile = this.paths[path];
-            if (dbgFile) {
+            if (dbgFile)
                 apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
-                apf.n(file)
-                    .attr("scriptname", dbgFile.getAttribute("scriptname"))
-                    .attr("lineoffset", "0");
-            }
         }
         this.inSync = false;
     },
