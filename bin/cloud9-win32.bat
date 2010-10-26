@@ -13,7 +13,7 @@ echo ------ Submodules installed ----
 :skip
 echo ------ Starting Cloud9 server ------
 
-start common\node-builds\win32\node bin/cloud9.js -a"cmd /c start"
+start common\node-builds\win32\node bin/cloud9.js -a "cmd /c start"
 
 IF %ERRORLEVEL% EQ 0 goto exit
 

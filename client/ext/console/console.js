@@ -47,15 +47,15 @@ return ext.register("ext/console/console", {
         // absolute workspace files
         var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
         // relative workspace files
-        var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+\.[\w\_\$]+)(\:\d+)(\:\d+)*/g;
+        var wsrRe = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
         
         for (var i=0; i<lines.length; i++) {
             if (!lines[i]) continue;
 
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
-                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "$1\", \"$2\", \"$3\")'>$1$2$3</a>")
-                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
+                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"/" + davPrefix + "$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"/" + davPrefix + "$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "black");

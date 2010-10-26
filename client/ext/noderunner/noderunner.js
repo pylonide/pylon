@@ -7,10 +7,11 @@
 require.def("ext/noderunner/noderunner",
     ["core/ide",
      "core/ext",
+     "core/util",
      "ext/console/console",
      "ext/filesystem/filesystem",
      "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, log, fs, markup) {
+     "/socket.io/socket.io.js"], function(ide, ext, util, log, fs, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -96,6 +97,13 @@ return ext.register("ext/noderunner/noderunner", {
                 //ide.log(message.data);
                 log.logNodeStream(message.data, message.stream, this.workspaceDir, this.davPrefix);
                 break;
+                
+            case "error":
+                if (message.code !== 6)
+                    util.alert("Server Error", "Server Error", message.message);
+                this.socket.send('{"command": "state"}');
+                break;
+                
         }
     },
 

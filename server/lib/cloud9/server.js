@@ -59,22 +59,23 @@ module.exports = IdeServer = function(workspaceDir, server) {
         try {
             var message = JSON.parse(message);
         } catch (e) {
-            return this.error("Error parsing message: " + e);
+            return this.error("Error parsing message: " + e, 8);
         }
 
         var command = "command" + this.$firstUp(message.command);
         if (!this[command])
-            return this.error("Error: unknown command: " + message.command, message);
+            return this.error("Error: unknown command: " + message.command, 9, message);
 
         this[command](message);
     };
 
-    this.error = function(description, message) {
+    this.error = function(description, code, message) {
         console.log("Socket error: " + description);
         var sid = (message || {}).sid || -1;
         var error = {
             "type": "error",
             "sid": sid,
+            "code": code,
             "message": description
         };
         this.client.send(JSON.stringify(error));
@@ -96,7 +97,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebug = function(message) {
-        message.preArgs = ["--debug=" + this.NODE_DEBUG_PORT];
+        message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -121,18 +122,18 @@ module.exports = IdeServer = function(workspaceDir, server) {
         var _self = this;
 
         if (this.child)
-            return _self.error("Child process already running!", message);
+            return _self.error("Child process already running!", 1, message);
 
         var file = _self.workspaceDir + "/" + message.file;
 
         Path.exists(file, function(exists) {
            if (!exists)
-               return _self.error("File does not exist: " + message.file, message);
+               return _self.error("File does not exist: " + message.file, 2, message);
 
            var cwd = _self.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
-                   return _self.error("cwd does not exist: " + message.cwd, message);
+                   return _self.error("cwd does not exist: " + message.cwd, 3, message);
 
                var args = (message.preArgs || []).concat(file).concat(message.args || []);
                _self.$runNode(args, cwd, message.env || {}, message.debug || false);
@@ -158,15 +159,15 @@ module.exports = IdeServer = function(workspaceDir, server) {
             case "ls":
             case "pwd":
                 // an allowed command!
-                this.activePs = this.spawnCommand(0, cmd, argv, message.cmd);
+                this.spawnCommand(0, cmd, argv, message.cwd);
                 break;
             case "cd":
                 var to    = argv.pop(),
                     path  = message.cwd || this.workspaceDir;
-                if (to != "/") {
+                if (to && to != "/") {
                     path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
                     if (path.indexOf(this.workspaceDir) === -1)
-                        return this.sendTermPacket();
+                        return this.sendTermPacket(0, "error", "Invalid input.");
                     Fs.stat(path, function(err, stat) {
                         if (err) {
                             return _self.sendTermPacket(0, "error", 
@@ -176,6 +177,9 @@ module.exports = IdeServer = function(workspaceDir, server) {
                             return _self.sendTermPacket(0, "error", "Not a directory.");
                         _self.sendTermPacket(0, "result-cd", {cwd: path});
                     });
+                }
+                else {
+                    return this.sendTermPacket(0, "error", "Invalid input.");
                 }
                 break;
             case "check-isfile":
@@ -210,24 +214,29 @@ module.exports = IdeServer = function(workspaceDir, server) {
                 });
                 break;
             case "internal-autocomplete":
-                console.log("received autocomplete for: ", argv[0], message.cwd)
-                var tail = argv[0].replace(/^[\s]+/g, "").replace(/[\s]+$/g, "")
-                Fs.readdir(message.cwd, function(err, files) {
-                    var matches = [];
-                    files.forEach(function(file) {
-                        if (file.indexOf(tail) === 0)
-                            matches.push(file);
-                    });
-                    _self.sendTermPacket(0, "result-internal-autocomplete", {
-                        body: matches
-                    });
+                var tail    = (argv[0] || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop(),
+                    matches = [],
+                    path    = message.cwd,
+                    dirMode = false;
+                if (tail.indexOf("/") > -1) {
+                    path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
+                    tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
+                    dirMode = true;
+                }
+                async.readdir(path).stat().each(function(file, next) {
+                    if (file.name.indexOf(tail) === 0 && (!dirMode || file.stat.isDirectory()))
+                        matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
+                    next();
+                })
+                .end(function() {
+                    _self.sendTermPacket(0, "result-internal-autocomplete", matches);
                 });
                 break;
             default:
                 this.sendTermPacket(0, "error", "This command is not supported.");
                 break;
         }
-        console.log("command: " + cmd + ", cwd: " + message.cwd);
+        //console.log("command: " + cmd + ", cwd: " + message.cwd);
     };
 
     this.sendTermPacket = function(sid, type, msg) {
@@ -240,7 +249,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.spawnCommand = function(sid, cmd, args, cwd) {
-        var child = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
+        var child = this.activePs = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
             _self = this;
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
@@ -265,6 +274,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
         }
 
         child.on("exit", function(code) {
+            delete _self.activePs;
             if (!_self.client)
                return;
             _self.client.send(JSON.stringify({
@@ -327,10 +337,10 @@ module.exports = IdeServer = function(workspaceDir, server) {
         var _self = this;
 
         if (!this.debugClient)
-            return this.error("No debuggable application running", message);
+            return this.error("No debuggable application running", 4, message);
 
         if (this.nodeDebugProxy)
-            return this.error("Debug session already running", message);
+            return this.error("Debug session already running", 5, message);
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT++);
         this.nodeDebugProxy.on("message", function(body) {
@@ -358,7 +368,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
     this.commandDebugNode = function(message) {
         if (!this.nodeDebugProxy)
-            return this.error("No debug session running!", message);
+            return this.error("No debug session running!", 6, message);
 
         this.nodeDebugProxy.send(message.body);
     };
@@ -370,7 +380,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
     this.commandRunDebugChrome = function(message) {
         if (this.chromeDebugProxy)
-            return this.error("Chrome debugger already running!", message);
+            return this.error("Chrome debugger already running!", 7, message);
 
         this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
         this.chromeDebugProxy.connect();

@@ -4,69 +4,67 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Sys = require("sys"),
-    Fs  = require("fs");
+    Fs  = require("fs"),
+    mapOptions = {
+        w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
+        p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
+        l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
+        a: { key: "action", hint: "ACTION", dev:null, parser: function(value) {
+            return value.split(/\s+/g);
+        }},
+        c: { key: "_config", parser: function(value) {
+            var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
+                return require(pref + value.replace(".js", "")).Config;
+            },
+            hint: "configFile" }
+    };
 
 function usage() {
-    Sys.puts("USAGE: cloud9 [-w WORKSPACE_DIR ('.')] [-l LISTEN_IP ('127.0.0.1')] [-p PORT (3000)] [-c configFile]");
+    var message = "USAGE: cloud9",
+        hint, opt, def;
+    for(opt in mapOptions) {
+        mapOption = mapOptions[opt];
+        hint = mapOption.hint;
+        def = mapOption.def;
+        message += " [-" + opt + " " + hint.replace("{def}", def) + "]";
+    }
+    Sys.puts(message);
     process.exit(0);
 }
 
-function parseArguments(argv) {
-    var opts_def = {
-        workspace: ".",
-        ip: "127.0.0.1",
-        port: 3000
-    };
+function getArg(argv, arg) {
+    var option = argv.shift(),
+        optionMap = mapOptions[arg.replace("-", "")],
+        key = optionMap ? optionMap.key : null,
+        parser = optionMap ? optionMap.parser : null;
 
-    var arg, key, config = {}, opts = {};
-    while (argv.length && (arg = argv.shift())) {
-        switch(arg) {
-            case "-w":
-                var workspace = argv.shift();
-                if (!workspace) return usage();
-                opts.workspace = workspace;
-                break;
-
-            case "-p":
-                var port = argv.shift();
-                if (!port || parseInt(port) != port)
-                    return usage();
-                opts.port = parseInt(port);
-                break;
-
-            case "-l":
-                var ip = argv.shift();
-                if (!ip)
-                    return usage();
-                opts.ip = ip;
-                break;
-
-            case "-c":
-                //get config file path and add current process path if its relative path, also remove ".js"
-                var confFile = argv.shift(),
-                    pref = ( confFile.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
-                if (!confFile)
-                    return usage();
-                config = require(pref + confFile.replace(".js", "")).Config;
-                break;
-
-            default:
-                if (arg.indexOf('-a')==0) {
-                    var args = arg.slice(2).split(' ');
-                    opts.start = args.shift();
-                    opts.startargs = args;
-                } else
-                    return usage();
-
-                }
+    if(!key || !option){
+        usage();
+        return null;
     }
+    if(parser)
+        option = parser(option);
+    return { key: key, value: option};
+}
 
+function parseArguments(argv) {
+    var arg, key, opt, opts = {}, opts_def = {};
+    while (argv.length && (arg = argv.shift())) {
+        opt = getArg(argv, arg);
+        opts[opt.key] = opt.value;
+    }
+    //set default values
+    for(key in mapOptions) {
+        opt = mapOptions[key];
+        if(opt.def)
+            opts_def[opt.key] = opt.def;
+    }
     //merge config options
     for(key in opts_def) {
         if(!opts[key])
-            opts[key] = config[key] || opts_def[key] ;
+            opts[key] = (opts._config && opts._config[key])? opts._config[key] : opts_def[key] ;
     }
-
+    delete opts._config;
     return opts;
 }
 
@@ -105,10 +103,10 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
 Project root is: " + options.workspace);
 
 var url = "http://" + options.ip + ":" + options.port;
-if (options.start) {
+if (options.action) {
     Sys.puts("Trying to start your browser in: "+url);
-    options.startargs.push(url);
-    require("child_process").spawn(options.start, options.startargs);
+    options.action.push(url);
+    require("child_process").spawn(options.action[0], options.action.slice(1));
 }
 else {
     Sys.puts("Point you browser to " + url);

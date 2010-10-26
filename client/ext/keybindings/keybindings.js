@@ -53,6 +53,7 @@ return ext.register("ext/keybindings/keybindings", {
                 if ((items = oExt.hotitems[hotkey])) {
                     for (j = 0, l = items.length; j < l; ++j) {
                         item = items[j];
+                        if (!item.setAttribute) continue;
                         item.setAttribute("hotkey", bindings[hotkey]);
                     }
                 }

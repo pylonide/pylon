@@ -5,8 +5,8 @@
  */
 
 if (process.platform == "darwin")
-    process.argv.push("-aopen");
+    process.argv.push("-a", "open");
 else
-    process.argv.push("-ax-www-browser");
+    process.argv.push("-a", "x-www-browser");
 
 require("./cloud9.js");

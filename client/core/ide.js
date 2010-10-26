@@ -35,7 +35,7 @@ require.def("core/ide", ["core/document"],
               && loc.indexOf("cloud9ide.com") > -1) {
                 window.onerror = function(m, u, l) {
                     if (self.console)
-                        console.log("An error occurred, the worknets system admin has been notified.")
+                        console.log("An error occurred, the Cloud9 system admin has been notified.")
                     apf.ajax("/debug", {
                         method      : "POST",
                         contentType : "application/json",
