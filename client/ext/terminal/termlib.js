@@ -1405,7 +1405,7 @@ _makeTerm: function(rebuild) {
     if (this.domAPI) {
         // if applicable we're using createElement
         this.globals.hasSubDivs=false;
-        var td, row, table, tbody, table2, tbody2, tr, td, node;
+        var td, row, table, tbody, table2, tbody2, tr, ptd, node;
         table=document.createElement('table');
         table.setAttribute('border', 0);
         table.setAttribute('cellSpacing', 0);
@@ -2684,7 +2684,8 @@ globals: {
     writeElement: function(e,t) {
         if (document.getElementById) {
             var obj=document.getElementById(e);
-            obj.innerHTML=t;
+            if (obj)
+                obj.innerHTML=t;
         }
         else if (document.all) {
             document.all[e].innerHTML=t;

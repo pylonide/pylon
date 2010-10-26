@@ -159,15 +159,15 @@ module.exports = IdeServer = function(workspaceDir, server) {
             case "ls":
             case "pwd":
                 // an allowed command!
-                this.spawnCommand(0, cmd, argv, message.cmd);
+                this.spawnCommand(0, cmd, argv, message.cwd);
                 break;
             case "cd":
                 var to    = argv.pop(),
                     path  = message.cwd || this.workspaceDir;
-                if (to != "/") {
+                if (to && to != "/") {
                     path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
                     if (path.indexOf(this.workspaceDir) === -1)
-                        return this.sendTermPacket();
+                        return this.sendTermPacket(0, "error", "Invalid input.");
                     Fs.stat(path, function(err, stat) {
                         if (err) {
                             return _self.sendTermPacket(0, "error", 
@@ -177,6 +177,9 @@ module.exports = IdeServer = function(workspaceDir, server) {
                             return _self.sendTermPacket(0, "error", "Not a directory.");
                         _self.sendTermPacket(0, "result-cd", {cwd: path});
                     });
+                }
+                else {
+                    return this.sendTermPacket(0, "error", "Invalid input.");
                 }
                 break;
             case "check-isfile":
@@ -211,14 +214,21 @@ module.exports = IdeServer = function(workspaceDir, server) {
                 });
                 break;
             case "internal-autocomplete":
-                var tail = (argv[0] || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
-                Fs.readdir(message.cwd, function(err, files) {
-                    var matches = [];
-
-                    files.forEach(function(file) {
-                        if (file.indexOf(tail) === 0)
-                            matches.push(file);
-                    });
+                var tail    = (argv[0] || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop(),
+                    matches = [],
+                    path    = message.cwd,
+                    dirMode = false;
+                if (tail.indexOf("/") > -1) {
+                    path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
+                    tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
+                    dirMode = true;
+                }
+                async.readdir(path).stat().each(function(file, next) {
+                    if (file.name.indexOf(tail) === 0 && (!dirMode || file.stat.isDirectory()))
+                        matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
+                    next();
+                })
+                .end(function() {
                     _self.sendTermPacket(0, "result-internal-autocomplete", matches);
                 });
                 break;
