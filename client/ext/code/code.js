@@ -9,8 +9,7 @@ require.def("ext/code/code",
      "core/ext", 
      "text!ext/code/code.xml",
      "text!ext/code/settings.xml",
-     "ace/Document", 
-     "ace/theme/TextMate" // preload default theme
+     "ace/Document"
     ],
     function(ide, ext, markup, settings, Document) {
 
@@ -100,6 +99,9 @@ return ext.register("ext/code/code", {
             if (theme) 
                 require([theme], function() {});
         });
+        
+        // preload common language modes
+        require(["ace/mode/JavaScript", "ace/mode/Html", "ace/mode/Css"], function() {});
     },
 
     init : function(amlPage) {
