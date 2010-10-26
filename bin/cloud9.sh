@@ -8,12 +8,16 @@ if [ ! -e common/ace/LICENSE ]; then
 	echo "--------------------------- Submodules installed ------------------------"
 fi
 
-case `uname` in
-Linux)  echo "Linux"   
+case `uname -a` in
+Linux*x86_64*)  echo "Linux 64 bit"   
+	common/node-builds/lin64/node bin/cloud9.js "$@" -ax-www-browser
+	;;
+
+Linux*i686*)  echo "Linux 32 bit"   
 	common/node-builds/lin32/node bin/cloud9.js "$@" -ax-www-browser
 	;;
     
-Darwin)  echo  "OSX"
+Darwin*)  echo  "OSX"
     common/node-builds/osx64/node bin/cloud9.js "$@" -aopen
     ;;
 
