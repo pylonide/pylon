@@ -65,6 +65,7 @@ var V8Debugger = function(dbg, host) {
                 xml.push(_self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
+            callback();
         });
     };
 

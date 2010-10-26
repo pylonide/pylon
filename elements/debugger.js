@@ -58,24 +58,38 @@ apf.dbg = function(struct, tagName){
     };
 
     this.attach = function(host, tab) {
-        var self = this;
+        var _self = this;
 
         host.$attach(this, tab, function(err, dbgImpl) {
-            self.$host = host;
-            self.$debugger = dbgImpl;
-            dbgImpl.addEventListener("afterCompile", self.$onAfterCompile.bind(self));
+            _self.$host = host;
+            _self.$debugger = dbgImpl;
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
             
-            self.$stAttached.activate();
-            self.$stRunning.setProperty("active", dbgImpl.isRunning());
+            _self.$stAttached.activate();
+            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
             
-            self.$loadSources();
+            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+            dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
-            dbgImpl.addEventListener("changeRunning", self.$onChangeRunning.bind(self));
-            dbgImpl.addEventListener("break", self.$onBreak.bind(self));
-            dbgImpl.addEventListener("detach", self.$onDetach.bind(self));
-            dbgImpl.addEventListener("changeFrame", self.$onChangeFrame.bind(self));
-            
-            dbgImpl.setBreakpoints(self.$mdlBreakpoints); 
+            _self.$loadSources(function() {           
+	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                    var frame = _self.$mdlStack.queryNode("frame[1]");
+                    var line = frame.getAttribute("line");
+                    if (frame) {
+                        var scriptId = frame.getAttribute("scriptid");
+                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+                        
+                        if (scriptName) {
+                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+                        }
+                        if (!scriptName || !bp) {
+                           _self.$debugger.continueScript();
+                        }
+                    }
+	            });            
+            });
         });
     };
     
@@ -92,7 +106,7 @@ apf.dbg = function(struct, tagName){
     
     this.$onBreak = function() {
         var _self = this;
-        this.$debugger.backtrace(this.$mdlStack, function() {
+        this.$debugger.backtrace(this.$mdlStack, function() {            
             _self.dispatchEvent("break");
         });
     };
