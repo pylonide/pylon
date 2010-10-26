@@ -75,6 +75,20 @@ Via [npm](http://github.com/isaacs/npm):
 
     $ npm install cloud9
 
+## Startup errors: Binaries and node.js
+
+Starting Cloud9 using cloud9.sh or .bat uses nodejs and node-o3-xml binaries that are distributed with Cloud9.
+We have included binaries for OSX 64 bit Intel (10.5/10.6), 32 and 64 bit Ubuntu and Windows 32 bit.
+All binaries are based on node 0.2.x latest stable.
+If you get an error about unable to load o3-xml or an architecture error, you will need to compile nodejs and node-o3-xml yourself and put it in the right directory of cloud9. For information how to compile node, please check www.nodejs.org. You will need to compile and install nodejs before you can compile node-o3-xml.
+
+    $ git clone http://github.com/ajaxorg/o3
+    $ cd o3
+    $ ./tools/node_modules_build
+    $ cp build/default/o3.node cloud9dir/common/jsdav/vendor/node-o3-xml/lib/o3-xml/
+
+after this you can start node manually using node bin/cloud9.js
+
 ## Documentation
 
 Documentation is in the making. 
