@@ -239,7 +239,6 @@ function termExitHandler() {
 
 function ctrlHandler(ev) {
     var ch = this.inputChar;
-    apf.console.log("current line: " + this._getLine());
     if (ch == termKey.TAB) {// || ch == termlib.termKey.ESC) {
         // start autocompletion
         apf.stopEvent(ev);
@@ -334,7 +333,6 @@ return terminal = ext.register("ext/terminal/terminal", {
             if (tabConsole.getPage() != _self.$panel
               || _self.$term.globals.kbdEnabled)
                 return;
-            apf.console.log("enabling keyboard...");
             _self.$term.globals.enableKeyboard(_self.$term);
             _self.$term._cursorReset();
             _self.$term.cursorOn();
@@ -351,7 +349,7 @@ return terminal = ext.register("ext/terminal/terminal", {
         var oNode = this.$panel.$ext,
             rowH  = this.$term.conf.rowHeight,
             cols  = Math.max(Math.floor(oNode.offsetWidth  / (rowH / 2)), 20),
-            rows  = Math.max(Math.floor(oNode.offsetHeight / rowH), 3);
+            rows  = Math.max(Math.floor(oNode.offsetHeight / rowH), 3) - 1;
         if (this.$term.maxCols === cols && this.$term.maxLines === rows)
             return;
         this.$term.resizeTo(cols, rows);
@@ -400,6 +398,8 @@ return terminal = ext.register("ext/terminal/terminal", {
                     break;
                 if (res.length == 1) {
                     var line = (this.$term._getLine() || "").trim().split(/[\s]+/g).pop();
+                    if (line.indexOf("/") > -1)
+                        line = line.substr(line.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
                     this.$term.type(res[0].replace(line, ""));
                 }
                 else {
@@ -417,7 +417,6 @@ return terminal = ext.register("ext/terminal/terminal", {
                         .replace(noderunner.workspaceDir.replace(/\/+$/, ""), "/workspace")
                         .replace(/%/g, "%%") + "%n", true);
                     //this.$term.prompt();
-
                 }
                 break;
         }
