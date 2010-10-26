@@ -9,6 +9,9 @@ var Sys = require("sys"),
         w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
         p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
         l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
+        a: { key: "action", hint: "ACTION", dev:null, parser: function(value) {
+            return value.split(/\s+/g);
+        }},
         c: { key: "_config", parser: function(value) {
             var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
                 return require(pref + value.replace(".js", "")).Config;
@@ -47,14 +50,8 @@ function getArg(argv, arg) {
 function parseArguments(argv) {
     var arg, key, opt, opts = {}, opts_def = {};
     while (argv.length && (arg = argv.shift())) {
-        if (arg.indexOf('-a')==0) {
-            var args = arg.slice(2).split(' ');
-            opts.start = args.shift();
-            opts.startargs = args;
-        } else {
-            opt = getArg(argv, arg);
-            opts[opt.key] = opt.value;
-        }
+        opt = getArg(argv, arg);
+        opts[opt.key] = opt.value;
     }
     //set default values
     for(key in mapOptions) {
@@ -106,10 +103,10 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
 Project root is: " + options.workspace);
 
 var url = "http://" + options.ip + ":" + options.port;
-if (options.start) {
+if (options.action) {
     Sys.puts("Trying to start your browser in: "+url);
-    options.startargs.push(url);
-    require("child_process").spawn(options.start, options.startargs);
+    options.action.push(url);
+    require("child_process").spawn(options.action[0], options.action.slice(1));
 }
 else {
     Sys.puts("Point you browser to " + url);
