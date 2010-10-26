@@ -84,7 +84,7 @@ return ext.register("ext/code/code", {
         ceEditor.setProperty("value", doc.acedoc);
     },
 
-    hook : function(){
+    hook : function() {
         var commitFunc = this.onCommit.bind(this),
             name       = this.name;
         
@@ -92,6 +92,13 @@ return ext.register("ext/code/code", {
         ide.addEventListener("init.ext/settings/settings", function(e){
             var page = e.ext.addSection("code", name, "editors", commitFunc);
             page.insertMarkup(settings);
+        });
+        
+        ide.addEventListener("loadsettings", function(e) {
+            // pre load theme
+            var theme = e.model.queryValue("editors/code/@theme");
+            if (theme) 
+                require([theme], function() {});
         });
     },
 
