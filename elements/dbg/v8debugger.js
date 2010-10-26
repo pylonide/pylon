@@ -282,8 +282,9 @@ var V8Debugger = function(dbg, host) {
         return this.$activeFrame;
     };
 
-    this.setBreakpoints = function(model) {
+    this.setBreakpoints = function(model, callback) {
         var _self = this;
+
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
             if (v8Breakpoints.breakpoints) {
@@ -292,6 +293,9 @@ var V8Debugger = function(dbg, host) {
                 _self.$breakpoints = {};
                 
                 for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                    if (v8Breakpoints.breakpoints[i].type == "scriptId")
+                        continue;
+                        
                     var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
                     var id = breakpoint.source + "|" + breakpoint.line;
                     
@@ -302,9 +306,9 @@ var V8Debugger = function(dbg, host) {
                 }
             }
     
-            var modelBps = model.queryNodes("breakpoint");
-            for (var i=modelBps.length-1; i>=0; i--) {
-                var modelBp = modelBps[i];
+            var modelBps = model.queryNodes("breakpoint") || [];
+            
+            apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
                 var script = modelBp.getAttribute("script");
                 var line = modelBp.getAttribute("line");
                 var id = script + "|" + line;
@@ -317,13 +321,15 @@ var V8Debugger = function(dbg, host) {
                     bp.attach(_self.$debugger, function() {
 		                model.removeXml(modelBp);
 		                model.appendXml(_self.$getBreakpointXml(bp, 0));
+		                next();
                     });
                 }
                 else {
 	                model.removeXml(modelBp);
 	                model.appendXml(_self.$getBreakpointXml(bp, 0));
+	                next();
                 }
-            }
+            }, callback);
         });
     };
     
