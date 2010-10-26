@@ -59,22 +59,23 @@ module.exports = IdeServer = function(workspaceDir, server) {
         try {
             var message = JSON.parse(message);
         } catch (e) {
-            return this.error("Error parsing message: " + e);
+            return this.error("Error parsing message: " + e, 8);
         }
 
         var command = "command" + this.$firstUp(message.command);
         if (!this[command])
-            return this.error("Error: unknown command: " + message.command, message);
+            return this.error("Error: unknown command: " + message.command, 9, message);
 
         this[command](message);
     };
 
-    this.error = function(description, message) {
+    this.error = function(description, code, message) {
         console.log("Socket error: " + description);
         var sid = (message || {}).sid || -1;
         var error = {
             "type": "error",
             "sid": sid,
+            "code": code,
             "message": description
         };
         this.client.send(JSON.stringify(error));
@@ -96,7 +97,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
     };
 
     this.commandRunDebug = function(message) {
-        message.preArgs = ["--debug=" + this.NODE_DEBUG_PORT];
+        message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
         message.debug = true;
         this.commandRun(message);
 
@@ -121,18 +122,18 @@ module.exports = IdeServer = function(workspaceDir, server) {
         var _self = this;
 
         if (this.child)
-            return _self.error("Child process already running!", message);
+            return _self.error("Child process already running!", 1, message);
 
         var file = _self.workspaceDir + "/" + message.file;
 
         Path.exists(file, function(exists) {
            if (!exists)
-               return _self.error("File does not exist: " + message.file, message);
+               return _self.error("File does not exist: " + message.file, 2, message);
 
            var cwd = _self.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
-                   return _self.error("cwd does not exist: " + message.cwd, message);
+                   return _self.error("cwd does not exist: " + message.cwd, 3, message);
 
                var args = (message.preArgs || []).concat(file).concat(message.args || []);
                _self.$runNode(args, cwd, message.env || {}, message.debug || false);
@@ -326,10 +327,10 @@ module.exports = IdeServer = function(workspaceDir, server) {
         var _self = this;
 
         if (!this.debugClient)
-            return this.error("No debuggable application running", message);
+            return this.error("No debuggable application running", 4, message);
 
         if (this.nodeDebugProxy)
-            return this.error("Debug session already running", message);
+            return this.error("Debug session already running", 5, message);
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT++);
         this.nodeDebugProxy.on("message", function(body) {
@@ -357,7 +358,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
     this.commandDebugNode = function(message) {
         if (!this.nodeDebugProxy)
-            return this.error("No debug session running!", message);
+            return this.error("No debug session running!", 6, message);
 
         this.nodeDebugProxy.send(message.body);
     };
@@ -369,7 +370,7 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
     this.commandRunDebugChrome = function(message) {
         if (this.chromeDebugProxy)
-            return this.error("Chrome debugger already running!", message);
+            return this.error("Chrome debugger already running!", 7, message);
 
         this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
         this.chromeDebugProxy.connect();

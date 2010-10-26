@@ -99,7 +99,8 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
                 
             case "error":
-                util.alert("Server Error", "Server Error", message.message);
+                if (message.code !== 6)
+                    util.alert("Server Error", "Server Error", message.message);
                 this.socket.send('{"command": "state"}');
                 break;
                 
