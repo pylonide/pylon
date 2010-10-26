@@ -106,8 +106,10 @@ apf.dbg = function(struct, tagName){
     };
     
     this.$onDetach = function() {
-        this.$debugger.destroy();
-        this.$debugger = null;
+        if (this.$debugger) {
+	        this.$debugger.destroy();
+	        this.$debugger = null;
+        }
         
         this.$host = null;
         
@@ -128,9 +130,11 @@ apf.dbg = function(struct, tagName){
     };
     
     this.detach = function(callback) {
-        var self = this;
         this.continueScript();
-        self.$host.$detach(self.$debugger, callback);
+        if (this.$host)
+            this.$host.$detach(this.$debugger, callback);
+        else 
+            this.$onDetach();
     };
 
     this.$loadSources = function(callback) {
@@ -162,6 +166,7 @@ apf.dbg = function(struct, tagName){
 	            var bp = apf.n("<breakpoint/>")
 	                .attr("script", scriptName)
 	                .attr("line", row)
+	                .attr("text", script.getAttribute("path") + ":" + row)
 	                .attr("lineoffset", 0)
 	                .node();
 	            model.appendXml(bp);
