@@ -17,7 +17,7 @@ function cloud9TerminalPlugin(server) {
 (function() {
     this.commandHandler = function(e, message) {
         if (message.command != "terminal")
-            e.next();
+            return e.next();
 
         var _self = this,
             argv  = message.argv,
