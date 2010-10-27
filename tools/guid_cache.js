@@ -1,1 +1,1 @@
-module.exports = {}
+module.exports = {"2EB544FB-3DCB-48CF-8819-C44F087BA35B":1}
