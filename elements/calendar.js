@@ -99,6 +99,8 @@ apf.calendar = function(struct, tagName){
         currentYear  : null,
         numberOfDays : null,
         dayNumber    : null,
+        
+        startDay     : 0,
 
         temp         : null,
 
@@ -158,6 +160,10 @@ apf.calendar = function(struct, tagName){
         }
         else
             this.outputFormat = value;
+    };
+    
+    this.$propHandlers["start-day"] = function(value) {
+        this.$calVars.startDay = parseInt(value);
     };
 
     this.$propHandlers["value"] = function(value) {
@@ -308,9 +314,7 @@ apf.calendar = function(struct, tagName){
     };
     
     this.$getFontSize = function(oHtml) {
-        return apf.isIE
-            ? parseInt(apf.getStyle(oHtml, "fontSize"))
-            : parseInt(apf.getStyle(oHtml, "font-size"));
+        return parseInt(apf.getStyle(oHtml, "fontSize"));
     };
     
     this.$getPadding = function(oHtml) {
@@ -348,8 +352,10 @@ apf.calendar = function(struct, tagName){
             c.numberOfDays++;
 
         c.dayNumber = new Date(year, month, 1).getDay();
+        var dayInTheWeek = c.dayNumber - c.startDay;
+            dayInTheWeek = dayInTheWeek < 0 ? 6 + 1 + dayInTheWeek : dayInTheWeek;
         var prevMonth     = month == 0 ? 11 : month - 1,
-            prevMonthDays = c.months[prevMonth].number - c.dayNumber + 1,
+            prevMonthDays = c.months[prevMonth].number - dayInTheWeek + 1,
 
             nextMonthDays = 1,
 
@@ -385,6 +391,7 @@ apf.calendar = function(struct, tagName){
         //Rows
         var rows = this.oContent.childNodes,
             cWidthf, pl;
+            
         for (var i = 0, z = 0, y = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") > -1) {
                 var rDiff = !c.inited ? apf.getDiff(rows[i]) : c.startDiffs[0];
@@ -427,7 +434,9 @@ apf.calendar = function(struct, tagName){
                         height -= (paddingTop + paddingBottom - cDiff[1]);
                         
                         cells[j].style.width         = (width > 0 ? width : 0) + "px";
-                        cells[j].style.height        = (height > 0 ? height : 0) + "px";
+                        
+                        if (height > 0)
+                            cells[j].style.height = height + "px";
                         cells[j].style.paddingTop    = (paddingTop > 0 ? paddingTop + 1 : 0) + "px";
                         cells[j].style.paddingBottom = (paddingBottom > 0 ? paddingBottom - 1 : 0) + "px";
 
@@ -444,29 +453,29 @@ apf.calendar = function(struct, tagName){
                         }
                         else {
                             y++;
-
-                            if (y <= c.dayNumber) {
-                                cells[j].innerHTML = prevMonthDays++;
-                                this.$setStyleClass(cells[j], "disabled prev");
-                                
-                            }
-                            else if (y > c.dayNumber
-                              && y <= c.numberOfDays + c.dayNumber) {
-                                cells[j].innerHTML = y - c.dayNumber;
-        
-                                var dayNrWeek = new Date(year, month,
-                                    y - c.dayNumber).getDay();
-        
-                                if (dayNrWeek == 0 || dayNrWeek == 6)
+                            
+                            var dayNrWeek = new Date(year, month,
+                                    y - dayInTheWeek).getDay();
+                            
+                            if (dayNrWeek == 0 || dayNrWeek == 6)
                                     this.$setStyleClass(cells[j], "weekend");
+
+                            if (y <= dayInTheWeek) {
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = prevMonthDays++;
+                                this.$setStyleClass(cells[j], "disabled prev");
+                            }
+                            else if (y > dayInTheWeek
+                              && y <= c.numberOfDays + dayInTheWeek) {
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = y - dayInTheWeek;
         
                                 if (month == c.month && year == c.year
-                                  && y - c.dayNumber == c.day)
+                                  && y - dayInTheWeek == c.day)
                                     this.$setStyleClass(cells[j], "active");
                             }
-                            else if (y > c.numberOfDays + c.dayNumber) {
-                                cells[j].innerHTML = nextMonthDays++;
+                            else if (y > c.numberOfDays + dayInTheWeek) {
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = nextMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled next");
+                                
                                 disabledRow++;
                             }
                         }
@@ -500,9 +509,11 @@ apf.calendar = function(struct, tagName){
         }
         
         /* Days of the week */
-        var daysofweek = this.oDow.childNodes;
+        var daysofweek = this.oDow.childNodes,
+            startDay = this.$calVars.startDay,
+            dayIndex;
         this.oDow.style.paddingLeft = pl + "px";
-
+        
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].style.width  = (cWidthf > 0 ? cWidthf : 0) + "px";
@@ -512,13 +523,16 @@ apf.calendar = function(struct, tagName){
                 }
 
                 if (z > 0) {
+                    dayIndex = (z - 1 + startDay) % 7;
                     daysofweek[i].innerHTML = 
-                        c.days[z - 1].substr(0, cWidthf < 12
-                            ? 1 : (cWidthf < 16 ? 2
+                        c.days[dayIndex].substr(0, cWidthf < 12
+                            ? 1 : (cWidthf < 30 ? 2
                             : 3));
+                    apf.setStyleClass(daysofweek[i], c.days[dayIndex], c.days, true);
                 }
                 else {
-                    daysofweek[i].innerHTML = "&nbsp;";
+                    daysofweek[i].innerHTML = "W";
+                    apf.setStyleClass(daysofweek[i], "weeknumber_column", null, true);
                 }
                 z++;
             }
@@ -534,9 +548,11 @@ apf.calendar = function(struct, tagName){
      * @param {Number}   nr     day number
      * @param {String}   type   class name of html representation of selected cell
      */
-    this.selectDay = function(nr, type, userAction) {
+    this.selectDay = function(cellNode, type, userAction) {
         if (userAction && this.disabled)
             return;
+        
+        var nr = this.$getLayoutNode("cell", "container", cellNode).innerHTML;
         
         var c        = this.$calVars,
             newMonth = type == "prev"
@@ -631,10 +647,10 @@ apf.calendar = function(struct, tagName){
                         oCell.setAttribute("onmousedown", 
                             "var o = apf.lookup(" + this.$uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
-                            + "o.selectDay(this.innerHTML, 'prev', true);}"
+                            + "o.selectDay(this, 'prev', true);}"
                             + " else if (this.className.indexOf('next') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'next', true);}"
-                            + " else {o.selectDay(this.innerHTML, null, true);}");
+                            + "o.selectDay(this, 'next', true);}"
+                            + " else {o.selectDay(this, null, true);}");
                     }
                     oRow.appendChild(oCell);
                 }
@@ -660,7 +676,7 @@ apf.calendar = function(struct, tagName){
             }
 
             var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek", oExt);
-
+            
             for (var i = 0; i < this.$calVars.days.length + 1; i++) {
                 this.$getNewContext("day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
