@@ -7,12 +7,12 @@ var io = require("socket.io");
 var async = require("async");
 var Path = require("path");
 var Fs = require("fs");
+var Events = require("util/events");
 var Spawn = require("child_process").spawn;
 var NodeDebugProxy = require("cloud9/nodedebugproxy");
 var ChromeDebugProxy = require("cloud9/chromedebugproxy");
 
-module.exports = IdeServer = function(workspaceDir, server) {
-
+module.exports = IdeServer = function(workspaceDir, server, exts) {
     this.workspaceDir = async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
 
@@ -31,6 +31,10 @@ module.exports = IdeServer = function(workspaceDir, server) {
     this.child = null;
     this.client = null;
     this.nodeCmd = process.argv[0];
+
+    this.exts = {}
+    for (var ext in exts)
+        this.exts[ext] = new exts[ext](this);
 };
 
 (function () {
@@ -57,16 +61,24 @@ module.exports = IdeServer = function(workspaceDir, server) {
 
     this.onClientMessage = function(message) {
         try {
-            var message = JSON.parse(message);
+            message = JSON.parse(message);
         } catch (e) {
             return this.error("Error parsing message: " + e, 8);
         }
 
         var command = "command" + this.$firstUp(message.command);
-        if (!this[command])
-            return this.error("Error: unknown command: " + message.command, 9, message);
-
-        this[command](message);
+        if (this[command]) {
+            this[command](message);
+        }
+        else {
+            var _self = this;
+            this.dispatchEvent("unknownCommand", message, function(stop) {
+                if (stop === true)
+                    return;
+                // Unsupported method
+                _self.error("Error: unknown command: " + message.command, 9, message);
+            });
+        }
     };
 
     this.error = function(description, code, message) {
@@ -147,145 +159,6 @@ module.exports = IdeServer = function(workspaceDir, server) {
                 this.child.kill();
             } catch(e) {}
         }
-    };
-
-    this.commandTerminal = function(message) {
-        var _self = this,
-            argv  = message.argv,
-            cmd   = argv.shift();
-
-        switch(cmd) {
-            case "git":
-            case "ls":
-            case "pwd":
-                // an allowed command!
-                this.spawnCommand(0, cmd, argv, message.cwd);
-                break;
-            case "cd":
-                var to    = argv.pop(),
-                    path  = message.cwd || this.workspaceDir;
-                if (to && to != "/") {
-                    path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-                    if (path.indexOf(this.workspaceDir) === -1)
-                        return this.sendTermPacket(0, "error", "Invalid input.");
-                    Fs.stat(path, function(err, stat) {
-                        if (err) {
-                            return _self.sendTermPacket(0, "error", 
-                                err.toString().replace("Error: ENOENT, ", ""));
-                        }
-                        if (!stat.isDirectory())
-                            return _self.sendTermPacket(0, "error", "Not a directory.");
-                        _self.sendTermPacket(0, "result-cd", {cwd: path});
-                    });
-                }
-                else {
-                    return this.sendTermPacket(0, "error", "Invalid input.");
-                }
-                break;
-            case "check-isfile":
-                var file = argv.pop();
-                    path  = message.cwd || this.workspaceDir,
-                    path  = Path.normalize(path + "/" + file.replace(/^\//g, ""));
-
-                if (path.indexOf(this.workspaceDir) === -1)
-                    return this.sendTermPacket();
-                Fs.stat(path, function(err, stat) {
-                    if (err) {
-                        return _self.sendTermPacket(0, "error",
-                            err.toString().replace("Error: ENOENT, ", ""));
-                    }
-                    _self.sendTermPacket(0, "result-check-isfile", {
-                        cwd: path,
-                        isfile: (stat && !stat.isDirectory())
-                    });
-                });
-                break;
-            case "internal-killps":
-                // @todo: check for multi-user
-                if (this.activePs && this.activePs.kill) {
-                    try {
-                        this.activePs.kill();
-                    }
-                    catch (ex) {}
-                }
-                _self.sendTermPacket(0, "result-internal-killps", {
-                    code: 0,
-                    body: "OK"
-                });
-                break;
-            case "internal-autocomplete":
-                var tail    = (argv[0] || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop(),
-                    matches = [],
-                    path    = message.cwd,
-                    dirMode = false;
-                if (tail.indexOf("/") > -1) {
-                    path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
-                    tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
-                    dirMode = true;
-                }
-                async.readdir(path).stat().each(function(file, next) {
-                    if (file.name.indexOf(tail) === 0 && (!dirMode || file.stat.isDirectory()))
-                        matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
-                    next();
-                })
-                .end(function() {
-                    _self.sendTermPacket(0, "result-internal-autocomplete", matches);
-                });
-                break;
-            default:
-                this.sendTermPacket(0, "error", "This command is not supported.");
-                break;
-        }
-        //console.log("command: " + cmd + ", cwd: " + message.cwd);
-    };
-
-    this.sendTermPacket = function(sid, type, msg) {
-        this.client.send(JSON.stringify({
-            type   : "terminal",
-            subtype: type || "error",
-            sid    : sid  || 0,
-            body   : msg  || "Access denied."
-        }));
-    };
-
-    this.spawnCommand = function(sid, cmd, args, cwd) {
-        var child = this.activePs = Spawn(cmd, args, {cwd: cwd || this.workspaceDir}),
-            _self = this;
-        child.stdout.on("data", sender("stdout"));
-        child.stderr.on("data", sender("stderr"));
-
-        function sender(stream) {
-            return function(data) {
-                if (!_self.client) {
-                    try {
-                        child.kill();
-                    } catch(e) {}
-                    return;
-                }
-                var message = {
-                    type   : "terminal",
-                    subtype: "output",
-                    sid    : sid || 0,
-                    stream : stream,
-                    body   : data.toString("utf8")
-                };
-                _self.client.send(JSON.stringify(message));
-            };
-        }
-
-        child.on("exit", function(code) {
-            delete _self.activePs;
-            if (!_self.client)
-               return;
-            _self.client.send(JSON.stringify({
-                type   : "terminal",
-                subtype: "node-exit",
-                sid    : sid || 0,
-                code   : code
-            }));
-        });
-
-        return child;
     };
 
     this.$runNode = function(args, cwd, env, debug) {
@@ -390,4 +263,4 @@ module.exports = IdeServer = function(workspaceDir, server) {
             _self.client && _self.client.send('{"type": "chrome-debug-ready"}');
         });
     };
-}).call(IdeServer.prototype);
+}).call(IdeServer.prototype = new Events.EventEmitter());
