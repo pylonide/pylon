@@ -1,9 +1,6 @@
 [submodule "common/socket.io"]
 	path = common/socket.io
 	url = http://github.com/LearnBoost/Socket.IO-node.git
-[submodule "common/ace"]
-	path = common/ace
-	url = http://github.com/ajaxorg/editor.git
 [submodule "common/connect"]
 	path = common/connect
 	url = http://github.com/senchalabs/connect.git
@@ -16,3 +13,9 @@
 [submodule "common/node-builds"]
 	path = common/node-builds
 	url = http://github.com/ajaxorg/node-builds.git
+[submodule "common/lib-v8debug"]
+	path = common/lib-v8debug
+	url = git://github.com/ajaxorg/lib-v8debug.git
+[submodule "common/ace"]
+	path = common/ace
+	url = git://github.com/ajaxorg/ace.git
