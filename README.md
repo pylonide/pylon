@@ -1,6 +1,7 @@
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben], Mike de Boer ([mikedeboer]) and Rik Arends ([rikarends]) from [ajax.org], built on top of [Node.JS].
+The Cloud9 IDE is an open source project started by Fabian Jakobs ([fjakobs]), Ruben Daniels ([javruben]), Mike de Boer ([mikedeboer]) and 
+Rik Arends ([rikarends]) from [ajax.org], built on top of [Node.JS].
 
 This Integrated Development Environment aims to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
 Cloud9's main focus is on Javascript development, it is able to set a new standard for client and server development integration.
@@ -74,6 +75,20 @@ Via git (or downloaded tarball):
 Via [npm](http://github.com/isaacs/npm):
 
     $ npm install cloud9
+
+## Startup errors: Binaries and node.js
+
+Starting Cloud9 using cloud9.sh or .bat uses nodejs and node-o3-xml binaries that are distributed with Cloud9.
+We have included binaries for OSX 64 bit Intel (10.5/10.6), 32 and 64 bit Ubuntu and Windows 32 bit.
+All binaries are based on node 0.2.x latest stable.
+If you get an error about unable to load o3-xml or an architecture error, you will need to compile nodejs and node-o3-xml yourself and put it in the right directory of cloud9. For information how to compile node, please check www.nodejs.org. You will need to compile and install nodejs before you can compile node-o3-xml.
+
+    $ git clone http://github.com/ajaxorg/o3
+    $ cd o3
+    $ ./tools/node_modules_build
+    $ cp build/default/o3.node cloud9dir/common/jsdav/vendor/node-o3-xml/lib/o3-xml/
+
+after this you can start cloud9 manually using node bin/cloud9.js
 
 ## Documentation
 

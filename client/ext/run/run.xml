@@ -85,32 +85,58 @@
     </a:window>
         
     <a:toolbar id="tbRun">
-    <a:divider />
-       <!--a:button
-      icon="chromium_16.png"
-      caption="Debug Chrome"
-      onclick="require('ext/run/run').debugChrome()"
-      disabled="{stConnected.active}" /-->      
-    <a:splitbutton id="btnDebug"
-      icon="debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
-      caption="debug"
-      onclick="require('ext/run/run').run(true)"
-      disabled="{stProcessRunning.active}"
-      submenu="mnuDebugCfg"
-    />
-    <a:splitbutton
-      icon="debugger/run_tool{this.disabled ? '_disabled' : ''}.gif"
-      caption="run"
-      onclick="require('ext/run/run').run(false)"
-      disabled="{stProcessRunning.active}"
-      submenu="mnuRunCfg"
-    />
-    <a:button
-      icon="debugger/terminate_co{this.disabled ? '_disabled' : ''}.gif"
-      caption="stop"
-      onclick="require('ext/run/run').stop()"
-      disabled="{!stProcessRunning.active}"
-    />
+        <a:divider />
+        <!--a:button
+          icon="chromium_16.png"
+          caption="Debug Chrome"
+          onclick="require('ext/run/run').debugChrome()"
+          disabled="{stConnected.active}" /-->      
+        <a:splitbutton id="btnDebug"
+          icon     = "debugger/ldebug_obj{this.disabled ? '_disabled' : ''}.gif"
+          caption  = "debug"
+          onclick  = "require('ext/run/run').run(true)"
+          disabled = "{stProcessRunning.active}"
+          submenu  = "mnuDebugCfg" />
+        <a:splitbutton
+          icon     = "debugger/run_tool{this.disabled ? '_disabled' : ''}.gif"
+          caption  = "run"
+          onclick  = "require('ext/run/run').run(false)"
+          disabled = "{stProcessRunning.active}"
+          submenu  = "mnuRunCfg" />
+        <a:button
+          icon     = "debugger/terminate_co{this.disabled ? '_disabled' : ''}.gif"
+          caption  = "stop"
+          onclick  = "require('ext/run/run').stop()"
+          disabled = "{!stProcessRunning.active}" />
+        <a:divider />
+        <a:button tooltip="Resume"
+          icon     = "debugger/resume_co{this.disabled ? '_disabled' : ''}.png"
+          onclick  = "dbg.continueScript();"
+          disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+       	<a:button  tooltip="Suspends"
+          icon     = "debugger/suspend_co{this.disabled ? '_disabled' : ''}.png"
+          onclick  = "dbg.suspend();"
+          disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+		<a:divider />
+       	<a:button  tooltip="Step Into"
+       	  icon     = "debugger/stepinto_co{this.disabled ? '_disabled' : ''}.png" 
+       	  onclick  = "dbg.stepInto();" 
+       	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+       	<a:button tooltip="Step Over"
+       	  icon     = "debugger/stepover_co{this.disabled ? '_disabled' : ''}.png"
+       	  onclick  = "dbg.stepNext();"
+       	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+       	<a:button tooltip="Step Out"
+       	  icon     = "debugger/stepreturn_co{this.disabled ? '_disabled' : ''}.png" 
+       	  onclick  = "dbg.stepOut();"
+       	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+       	<a:divider />
+       	<a:dropdown id="lstScripts"
+          model      = "mdlDbgSources"
+          each       = "[file]"
+          caption    = "[@text]"
+          autoselect = "false"
+          icon       = "debugger/file_obj.gif" />
   </a:toolbar>
 
 </a:application>
