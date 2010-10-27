@@ -74,14 +74,14 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
             _self.$loadSources(function() {           
-	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {                    
                     var frame = _self.$mdlStack.queryNode("frame[1]");
-                    var line = frame.getAttribute("line");
                     if (frame) {
                         var scriptId = frame.getAttribute("scriptid");
                         var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
                         
                         if (scriptName) {
+                            var line = frame.getAttribute("line");
                             var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
                         }
                         if (!scriptName || !bp) {
