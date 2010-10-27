@@ -571,7 +571,8 @@ apf.webdav = function(struct, tagName){
      * @type  {void}
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) return;
+        if (!sTo || sFrom == sTo) 
+            return (callback && callback("", apf.SUCCESS, {}));
         
         if (bLock) {
             var oLock = this.lock(sFrom);
@@ -625,7 +626,8 @@ apf.webdav = function(struct, tagName){
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) return;
+        if (!sTo || sFrom == sTo) 
+            return (callback && callback("", apf.SUCCESS, {}));
         
         if (bLock) {
             var oLock = this.lock(sFrom);
