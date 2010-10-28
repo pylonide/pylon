@@ -7741,9 +7741,9 @@
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
             width:  134px;
-            height: 18px;
+            height: 19px;
             margin: 0;
-            padding : 1px 21px 1px 0;
+            padding : 2px 21px 2px 0;
 
             color: #333;
             font-family : Tahoma;
@@ -7815,6 +7815,10 @@
         .dropdownInitial .dropdownArrow {
         }
 
+        .dropdownFocus .dropdownArrow {
+            background: none;
+        }
+
         .dropdownOver .dropdownArrow {
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.48, rgb(207,207,207)),color-stop(0.53, rgb(230,230,230)),color-stop(1, rgb(255,255,255)));
             background: -moz-linear-gradient(center bottom,rgb(207,207,207) 48%,rgb(230,230,230) 53%,rgb(255,255,255) 100%);
@@ -7825,16 +7829,12 @@
             background: -moz-linear-gradient(center bottom,rgb(166,166,166) 0%,rgb(201,201,201) 100%);
         }
 
-        .dropdownFocus .dropdownArrow {
-            background: none;
-        }
-
         .optionList{
             position: absolute;
             top: 0;
             left: 0;
             width: 120px;
-            margin-top : 1px;
+            margin-top : 2px;
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
             border-radius: 4px;
