@@ -7741,9 +7741,9 @@
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
             width:  134px;
-            height: 17px;
+            height: 18px;
             margin: 0;
-            padding : 2px 18px 0 0;
+            padding : 1px 21px 1px 0;
 
             color: #333;
             font-family : Tahoma;
@@ -7756,10 +7756,6 @@
 
         .dropdownDisabled {
             color: #bebebe;
-        }
-
-        .dropdownFocus {
-            border: 1px dashed #B8B8B8;
         }
 
         .dropdownOver {
@@ -7798,13 +7794,18 @@
         }
 
         .dropdown .dropdownlabel{
-            padding: 0 0 0 4px;
+            padding: 1px 1px 1px 5px;
             cursor : default;
-            height: 15px;
+            height: 13px;
             margin : 0 0 0 2px;
             overflow : hidden;
             white-space : nowrap;
             text-overflow : ellipsis;
+        }
+
+        .dropdownFocus .dropdownlabel {
+            border: 1px dotted #B8B8B8;
+            padding: 0 0 0 4px;
         }
 
         .dropdownError .dropdownArrow {
@@ -7849,13 +7850,7 @@
             overflow : auto;
         }
 
-        .optionList .top{
-            background: url("images/dropdown_background_top.png") no-repeat top left;
-            width: 136px;
-            height: 5px;
-        }
-
-        .optionList span{
+        .optionList .dditem {
             display: block;
             height: 16px;
             padding: 2px 3px 2px 20px;
@@ -7864,10 +7859,11 @@
             text-overflow: ellipsis;
             background-color: white;
             color: #333333;
+            position: relative;
             cursor: default;
         }
 
-        .optionList span:first-child{
+        .optionList .dditem:first-child{
             -webkit-border-top-left-radius: 4px;
             -webkit-border-top-right-radius: 4px;
             -moz-border-radius-topleft: 4px;
@@ -7876,7 +7872,7 @@
             border-top-right-radius: 4px;
         }
 
-        .optionList span:last-child{
+        .optionList .dditem:last-child{
             -webkit-border-bottom-right-radius: 4px;
             -webkit-border-bottom-left-radius: 4px;
             -moz-border-radius-bottomright: 4px;
@@ -7885,12 +7881,23 @@
             border-bottom-left-radius: 4px;
         }
 
-        .optionList span.hover {
-            background-color: #f0f0f0;
+        .optionList .dditem.hover {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
         }
 
-        .optionList .selected{
-            background: url("images/bluedot.png") no-repeat 5px center;
+        .optionList .selected span{
+            background: url("images/dot_blue.png") no-repeat 0 0;
+            height: 8px;
+            left: 5px;
+            position:absolute;
+            top: 6px;
+            width: 9px;
+        }
+
+        .optionList .selected.hover span{
+            background-position: 0 -8px;
         }
     ]]></a:style>
 
@@ -7914,7 +7921,9 @@
             select      = "."
             inherit     = "true"
         >
-            <span>-</span>
+            <span class="dditem">
+                -<span></span>
+            </span>
         </a:item>
         <a:empty caption=".">
             <div class="empty">-</div>
