@@ -13,6 +13,13 @@ require.def("core/util",
                 winAlert.setAttribute('title', title);
                 winAlertHeader.$ext.innerHTML = header;
                 winAlertMsg.$ext.innerHTML = msg;
+            },
+            confirm : function(title, header, msg, onconfirm) {
+                winConfirm.show();   
+                winConfirm.setAttribute("title", title);
+                winConfirmHeader.$ext.innerHTML = header;
+                winConfirmMsg.$ext.innerHTML = msg;
+                btnConfirmOk.onclick = onconfirm;
             }
         };
     }

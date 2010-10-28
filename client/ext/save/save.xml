@@ -12,7 +12,7 @@
             <div>This file has unsaved changes. Would you like to save the file before closing?</div>
         </a:vbox>
     
-        <a:vbox edge="0 0 4 0" padding="8">
+        <a:vbox>
             <a:divider skin="hordivider" />
             <a:hbox pack="end" padding="7" edge="0 10 0 10">
                 <a:button id="btnYesAll" caption="Yes to all" />
@@ -28,4 +28,105 @@
     <a:bar id="barSave" visible="false">
         <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disabled' : ''}.png">Save file</a:button>
     </a:bar>
-</a:application> 
+
+    <a:script><![CDATA[
+        function chooseFile(file) {
+            if (file.getAttribute("type") == "file") 
+                require('ext/save/save').saveas()
+            else
+                trSaveAs.expandAndSelect(file);
+        }
+    ]]></a:script>
+
+    <a:window
+      id        = "winSaveAs"
+      height    = "350"
+      icon      = ""
+      kbclose   = "true"
+      resizable = "true"
+      title     = "Save As"
+      width     = "500">
+        <a:vbox
+          anchors   = "5 5 5 5"
+          padding   = "5">
+            <a:hbox
+              flex      = "1"
+              padding   = "5"
+              splitters = "true">
+		        <a:tree  
+		          id            = "trSaveAs"
+		          flex          = "1"
+                  model         = "{require('ext/filesystem/filesystem').model}"
+                  onafterchoose = "txtSaveAs.setValue(this.selected.getAttribute('path'))">
+	                <a:each match="[folder]">
+	                   <a:insert
+	                     match = "[folder]"
+	                     get   = "{location.host and davProject.readdir([@path])}" />
+	                   <a:caption match="[@name]" />
+	                   <a:icon
+	                     match = "[folder]"
+	                     value = "folder.png" />
+				    </a:each>
+		        </a:tree>
+		        <a:datagrid
+	              flex             = "2"
+	              model            = "{trSaveAs.selected}"
+                  onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
+	              onafterchoose    = "chooseFile(this.selected)">
+		            <a:each
+                      match         =   "[folder|file]"
+                      filter        =   "{drpSaveAs.value.replace('*', '')}"
+                      filter-fields =   "@name">
+		                <a:load get="{location.host and davProject.readdir([@path])}" />
+                        <a:column
+                          caption   = "Name"
+                          value     = "[@name]"
+                          width     = "60%" />
+                        <a:column
+                          caption   = "Size"
+                          value     = "[@size]"
+                          width     = "20%" />
+                        <a:column
+                          caption   = "Type"
+                          value     = "[@type]"
+                          width     = "20%" />
+	    		    </a:each>
+                    <a:actions /> 
+		        </a:datagrid>
+		    </a:hbox>
+            <a:hbox
+              align     = "center"
+              padding   = "5">
+                <a:label flex="1">File name:</a:label>
+	            <a:textbox
+	              id   = "txtSaveAs"
+	              flex = "5" />
+            </a:hbox>
+            <!--a:hbox
+                align   = "center"
+                padding = "5">
+                <a:label flex="1">Save as type:</a:label>
+                <a:dropdown
+                  id    = "drpSaveAs"
+                  flex  = "5">
+                    <a:item>*.html</a:item>
+                    <a:item>*.js</a:item>
+                    <a:item>*.txt</a:item>
+                    <a:item>*.xml</a:item>
+                </a:dropdown>
+            </a:hbox-->
+	        <a:hbox
+                pack    = "end"
+                padding = "5">
+	            <a:button
+	              onclick = "winSaveAs.hide()">
+	                Cancel
+	            </a:button>
+	            <a:button
+                  onclick = "require('ext/save/save').saveas()">
+	                Save
+	            </a:button>
+	        </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>
