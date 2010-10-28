@@ -10,7 +10,7 @@
                   class      = "apf_console" />
                 <a:vbox id="test"
                   flex    = "1" 
-                  visible = "{!stDebugProcessRunning.active or stRunning.active}">
+                  visible = "{stDebugProcessRunning.active and !stRunning.active}">
                     <a:codeeditor id="txtCode" 
                       flex      = "1"
                       onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
