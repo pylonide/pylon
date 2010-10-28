@@ -167,6 +167,7 @@ apf.calendar = function(struct, tagName){
     };
 
     this.$propHandlers["value"] = function(value) {
+        console.log(value)
         var c = this.$calVars;
         
         if (!this.outputFormat) {
@@ -552,6 +553,14 @@ apf.calendar = function(struct, tagName){
     
     this.getDay = function() {
         return this.$calVars.day;
+    };
+    
+    this.setYear = function(value) {
+        this.redraw(this.$calVars.currentMonth, value);
+    };
+    
+    this.setMonth = function(value) {
+        this.redraw(parseInt(value) - 1, this.$calVars.currentYear);
     };
 
     /**
