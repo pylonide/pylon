@@ -2,13 +2,9 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var jsDAV = require("jsdav");
-var IO = require("socket.io");
-var Async = require("async");
-var Path = require("path");
-var Fs = require("fs");
-var Events = require("util/events");
-var Spawn = require("child_process").spawn;
+var jsDAV = require("jsdav"),
+    IO    = require("socket.io"),
+    Async = require("async");
 
 module.exports = IdeServer = function(workspaceDir, server, exts) {
     this.workspaceDir = Async.abspath(workspaceDir).replace(/\/+$/, "");
@@ -19,20 +15,17 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
 
     var _self = this;
     var options = {
-        transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+        transports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"]
     };
     this.socketIo = IO.listen(server, options);
     this.socketIo.on("connection", function(client) {
         _self.onClientConnection(client);
     });
 
-    this.child = null;
-    this.client = null;
+    this.client  = null;
     this.nodeCmd = process.argv[0];
 
-    this.exts = {}
-    for (var ext in exts)
-        this.exts[ext] = new exts[ext](this);
+    this.registerExts(exts);
 };
 
 (function () {
@@ -51,11 +44,7 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
             delete _self.client;
         });
 
-        this.dispatchEvent("clientConnect", function(stop) {
-            if (stop === true)
-                return;
-            _self.error("Error: no clientConnect handler found!", 10);
-        })
+        this.execHook("connect");
     };
 
     this.onClientMessage = function(message) {
@@ -65,23 +54,37 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
             return this.error("Error parsing message: " + e, 8);
         }
 
-        var command = "command" + this.$firstUp(message.command);
-        if (this[command]) {
-            this[command](message);
-        }
-        else {
-            var _self = this;
-            this.dispatchEvent("unknownCommand", message, function(stop) {
-                if (stop === true)
-                    return;
-                // Unsupported method
-                _self.error("Error: unknown command: " + message.command, 9, message);
-            });
-        }
+        this.execHook("command", message);
     };
+
+    this.registerExts = function(exts) {
+        this.exts = {}
+        for (var ext in exts)
+            this.exts[ext] = new exts[ext](this);
+        for (ext in this.exts) {
+            if (this.exts[ext].init)
+                this.exts[ext].init();
+        }
+    }
 
     this.getExt = function(name) {
        return this.exts[name] || null;
+    };
+
+    this.execHook = function() {
+        var ext, hooks,
+            args = Array.prototype.slice.call(arguments),
+            hook = args.shift().toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
+        for (var name in this.exts) {
+            ext   = this.exts[name];
+            hooks = ext.getHooks();
+            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
+                return;
+        }
+        // if we get here, no hook function was successfully delegated to an
+        // extension.
+        this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
+            + JSON.stringify(args), 9, args[0]);
     };
 
     this.error = function(description, code, message) {
@@ -95,8 +98,4 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
         };
         this.client.send(JSON.stringify(error));
     };
-
-    this.$firstUp = function(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    };
-}).call(IdeServer.prototype = new Events.EventEmitter());
+}).call(IdeServer.prototype);

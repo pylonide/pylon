@@ -1,0 +1,6 @@
+{
+    "name": "state",
+    "description": "Provides a simple JSON struct with state information to the client.",
+    "version": "0.1",
+    "author": "Ajax.org B.V. <info@ajax.org>"
+}

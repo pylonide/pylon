@@ -6,7 +6,7 @@ require("../../../common/paths");
 var Connect = require("connect");
 var Fs = require("fs");
 var Path = require("path");
-var IdeServer = require("cloud9/server");
+var IdeServer = require("lib/cloud9/server");
 
 exports.main = function(projectDir, port, ip) {
     var commonProvider = function() {
@@ -36,7 +36,7 @@ exports.main = function(projectDir, port, ip) {
     // load plugins:
     var exts = {};
     Fs.readdirSync(__dirname + "/../../ext").forEach(function(name){
-        exts[name] = require(name);
+        exts[name] = require("ext/" + name);
     });
 
     server.listen(port, ip);

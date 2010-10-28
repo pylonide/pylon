@@ -4,28 +4,29 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+var Plugin = require("lib/cloud9/plugin");
+
 function cloud9StatePlugin(server) {
     this.server = server;
-    server.addEventListener("clientConnect",  this.connectHandler.bind(this));
-    server.addEventListener("unknownCommand", this.connectHandler.bind(this));
+    this.hooks = ["connect", "command"];
 }
 
 (function() {
-    this.connectHandler = function(e, message) {
+    this.command =
+    this.connect = function(message) {
         if (message && message.command != "state")
-            return e.next();
-        // successful fire
-        e.stop();
+            return false;
 
         var state = {
             "type": "state",
             "workspaceDir": this.server.workspaceDir,
-            "processRunning": !!this.server.child,
-            "debugClient": !!this.server.getExt("debugger").debugClient,
             "davPrefix": this.server.davPrefix
         };
+        this.emit("statechange", state);
+
         this.server.client.send(JSON.stringify(state));
+        return true;
     };
-}).call(cloud9StatePlugin.prototype);
+}).call(cloud9StatePlugin.prototype = new Plugin());
 
 module.exports = cloud9StatePlugin;

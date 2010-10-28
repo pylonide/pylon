@@ -1,6 +1,0 @@
-{
-    "name": "debugger",
-    "version": "0.1",
-    "author": "Ajax.org",
-    "description": "Provides the server-side face of the NodeJS and Chrome debugger."
-}
