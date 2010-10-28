@@ -167,6 +167,7 @@ apf.calendar = function(struct, tagName){
     };
 
     this.$propHandlers["value"] = function(value) {
+        console.log(value)
         var c = this.$calVars;
         
         if (!this.outputFormat) {
@@ -453,29 +454,29 @@ apf.calendar = function(struct, tagName){
                         }
                         else {
                             y++;
+                            
+                            var dayNrWeek = new Date(year, month,
+                                    y - dayInTheWeek).getDay();
+                            
+                            if (dayNrWeek == 0 || dayNrWeek == 6)
+                                    this.$setStyleClass(cells[j], "weekend");
 
                             if (y <= dayInTheWeek) {
-                                cells[j].innerHTML = prevMonthDays++;
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = prevMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled prev");
-                                
                             }
                             else if (y > dayInTheWeek
                               && y <= c.numberOfDays + dayInTheWeek) {
-                                cells[j].innerHTML = y - dayInTheWeek;
-        
-                                var dayNrWeek = new Date(year, month,
-                                    y - dayInTheWeek).getDay();
-        
-                                if (dayNrWeek == 0 || dayNrWeek == 6)
-                                    this.$setStyleClass(cells[j], "weekend");
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = y - dayInTheWeek;
         
                                 if (month == c.month && year == c.year
                                   && y - dayInTheWeek == c.day)
                                     this.$setStyleClass(cells[j], "active");
                             }
                             else if (y > c.numberOfDays + dayInTheWeek) {
-                                cells[j].innerHTML = nextMonthDays++;
+                                this.$getLayoutNode("cell", "container", cells[j]).innerHTML = nextMonthDays++;
                                 this.$setStyleClass(cells[j], "disabled next");
+                                
                                 disabledRow++;
                             }
                         }
@@ -526,11 +527,13 @@ apf.calendar = function(struct, tagName){
                     dayIndex = (z - 1 + startDay) % 7;
                     daysofweek[i].innerHTML = 
                         c.days[dayIndex].substr(0, cWidthf < 12
-                            ? 1 : (cWidthf < 16 ? 2
+                            ? 1 : (cWidthf < 30 ? 2
                             : 3));
+                    apf.setStyleClass(daysofweek[i], c.days[dayIndex], c.days, true);
                 }
                 else {
-                    daysofweek[i].innerHTML = "&nbsp;";
+                    daysofweek[i].innerHTML = "W";
+                    apf.setStyleClass(daysofweek[i], "weeknumber_column", null, true);
                 }
                 z++;
             }
@@ -539,6 +542,26 @@ apf.calendar = function(struct, tagName){
         
         c.inited = true;
     };
+    
+    this.getYear = function() {
+        return this.$calVars.currentYear;
+    };
+    
+    this.getMonth = function() {
+        return this.$calVars.currentMonth;
+    };
+    
+    this.getDay = function() {
+        return this.$calVars.day;
+    };
+    
+    this.setYear = function(value) {
+        this.redraw(this.$calVars.currentMonth, value);
+    };
+    
+    this.setMonth = function(value) {
+        this.redraw(parseInt(value) - 1, this.$calVars.currentYear);
+    };
 
     /**
      * Selects date and highlights its cell in calendar component
@@ -546,9 +569,11 @@ apf.calendar = function(struct, tagName){
      * @param {Number}   nr     day number
      * @param {String}   type   class name of html representation of selected cell
      */
-    this.selectDay = function(nr, type, userAction) {
+    this.selectDay = function(cellNode, type, userAction) {
         if (userAction && this.disabled)
             return;
+        
+        var nr = this.$getLayoutNode("cell", "container", cellNode).innerHTML;
         
         var c        = this.$calVars,
             newMonth = type == "prev"
@@ -643,10 +668,10 @@ apf.calendar = function(struct, tagName){
                         oCell.setAttribute("onmousedown", 
                             "var o = apf.lookup(" + this.$uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
-                            + "o.selectDay(this.innerHTML, 'prev', true);}"
+                            + "o.selectDay(this, 'prev', true);}"
                             + " else if (this.className.indexOf('next') > -1) {"
-                            + "o.selectDay(this.innerHTML, 'next', true);}"
-                            + " else {o.selectDay(this.innerHTML, null, true);}");
+                            + "o.selectDay(this, 'next', true);}"
+                            + " else {o.selectDay(this, null, true);}");
                     }
                     oRow.appendChild(oCell);
                 }
