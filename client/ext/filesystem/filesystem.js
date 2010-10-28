@@ -92,14 +92,19 @@ return ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    beforeRename : function(node, name){
+    beforeRename : function(node, name, newPath) {
         var path = node.getAttribute("path"),
-            page = tabEditors.getPage(path),
-            newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
+            page = tabEditors.getPage(path);
+
+        if (name)
+            newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
+        else
+            name = newPath.match(/[^/]+$/);
             
-        node.setAttribute("path", newpath);//apf.xmldb.setAttribute(node, "path", newpath);
+        node.setAttribute("path", newPath);
+        apf.xmldb.setAttribute(node, "name", name);
         if (page)
-            page.setAttribute("id", newpath);
+            page.setAttribute("id", newPath);
     },
 
     beforeMove: function(parent, node) {
