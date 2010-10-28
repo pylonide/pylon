@@ -387,9 +387,10 @@ apf.cancelBubble = function(e, o, noPropagate){
     if (!noPropagate) {
         if (o && o.$ext && o.$ext["on" + (e.type || e.name)])
             o.$ext["on" + (e.type || e.name)](e);
-    }
-    if (!apf.isIE)
         apf.window.$mousedown(e);
+    }
+    //if (apf.isGecko)
+        //apf.window.$mousedown(e);
     
     //#ifdef __WITH_UIRECORDER
     if (apf.uirecorder && apf.uirecorder.captureDetails 

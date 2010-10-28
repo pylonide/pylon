@@ -179,11 +179,15 @@ apf.BaseButton = function(){
             
             if (_self.disabled)
                 return;
+
+            if (!apf.isIE) { // && (apf.isGecko || !_self.submenu) Causes a focus problem for menus
+                if (_self.value)
+                    apf.stopEvent(e);
+                else
+                    apf.cancelBubble(e);
+            }
             
             _self.$updateState(e, "mousedown");
-            
-            if (!apf.isIE && !_self.submenu) //Causes a focus problem for menus
-                apf.cancelBubble(e);
         };
         
         this.$ext.onmouseup = function(e, force) {

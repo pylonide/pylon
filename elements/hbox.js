@@ -228,17 +228,13 @@ apf.vbox = function(struct, tagName){
     };
     
     function visibleHandler(e){
-        //@todo this can be more optimized by calcing if it WAS the last vis child.
-        //if (isLastVisibleChild(this)) {
-            this.parentNode.$propHandlers["padding"]
-                .call(this.parentNode, this.parentNode.padding);
-        //}
-        
         //#ifdef __LAYOUT_ENABLE_SPLITTERS
         if (this.parentNode.splitters && !this.$splitter) {
             if (!e.value) {
                 if (this.nextSibling && this.nextSibling.$splitter)
                     this.nextSibling.removeNode();
+                else if (this.previousSibling && this.previousSibling.$splitter)
+                    this.previousSibling.removeNode();
             }
             else {
                 var isLast = isLastVisibleChild(this);
@@ -257,6 +253,14 @@ apf.vbox = function(struct, tagName){
             }
         }
         //#endif
+        
+        //@todo this can be more optimized by calcing if it WAS the last vis child.
+        //if (isLastVisibleChild(this)) {
+            this.parentNode.$propHandlers["padding"]
+                .call(this.parentNode, this.parentNode.padding);
+        //}
+        
+        apf.layout.forceResize(this.parentNode.$int);
         
         if (apf.hasFlexibleBox) {
             if (this.$altExt)

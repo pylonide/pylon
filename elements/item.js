@@ -272,6 +272,18 @@ apf.item  = function(struct, tagName){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
     }
     
+    this.$values = [1, 0];
+    this.$propHandlers["values"] = function(value){
+        this.$values = value && value.split("|");
+    }
+    
+    this.$propHandlers["value"] = function(value){
+        if (this.type != "check")
+            return;
+        
+        this.setProperty("checked", this.$values.indexOf(value) == 0);
+    }
+    
     /**
      * @attribute {Boolean} checked whether the item is checked.
      */
@@ -283,6 +295,9 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "checked");
         else
             apf.setStyleClass(this.$ext, "", ["checked"]);
+        
+        if (this.$values && this.$values[value ? 0 : 1] != this.value)
+            return this.setProperty("value", this.$values[value ? 0 : 1]);
     }
     
     this.select = function(){
@@ -364,6 +379,8 @@ apf.item  = function(struct, tagName){
         }
 
         this.parentNode.$hideTree = true;
+        
+        //@todo This statement makes the menu loose focus.
         this.parentNode.hide();//true not focus?/
 
         this.parentNode.dispatchEvent("itemclick", {
@@ -374,13 +391,15 @@ apf.item  = function(struct, tagName){
         });
 
         //@todo Anim effect here?
-    };
-
-    this.$click = function(){
+        
         this.dispatchEvent("click", {
             xmlContext : this.parentNode.xmlReference,
             opener     : this.parentNode.opener
         });
+    };
+
+    this.$click = function(){
+        
     };
 
     var timer;
@@ -415,27 +434,32 @@ apf.item  = function(struct, tagName){
           || apf.isChildOf(this.$ext, e.fromElement || e.target)))  //@todo test FF
             return;
 
-        var ps = this.parentNode.$showingSubMenu;
-        if (ps) {
-            if (ps.name == this.submenu)
-                return;
-
-            ps.hide();
-            this.parentNode.$showingSubMenu = null;
+        var _self = this, ps = this.parentNode.$showingSubMenu;
+        if (ps && ps.name == this.submenu)
+            return;
+            
+        clearTimeout(timer);
+        
+        function submenu(){
+            if (ps && ps.visible) {
+                ps.hide();
+                
+                if (_self.parentNode.$showingSubMenu == ps)
+                    _self.parentNode.$showingSubMenu = null;
+            }
+    
+            if (_self.submenu && _self.parentNode.opener 
+              && _self.parentNode.opener.visible)
+                _self.$submenu();
         }
 
-        if (this.submenu) {
-            if (force) {
-                this.$submenu();
-            }
-            else {
-                var _self = this;
-                clearTimeout(timer);
-                timer = $setTimeout(function(){
-                    _self.$submenu();
-                    timer = null;
-                }, 200);
-            }
+        if (force)
+            submenu();
+        else {
+            timer = $setTimeout(function(){
+                submenu();
+                timer = null;
+            }, 210);
         }
     };
 
@@ -462,7 +486,7 @@ apf.item  = function(struct, tagName){
 
             var pos = apf.getAbsolutePosition(this.$ext, this.parentNode.$ext.offsetParent);
             menu.display(pos[0] + this.$ext.offsetWidth - 3,
-                pos[1] + 3, false, this,
+                pos[1] + 3, true, this,
                 this.parentNode.xmlReference, this.parentNode.$uniqueId);
             menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
         }
@@ -471,9 +495,8 @@ apf.item  = function(struct, tagName){
                 return false;
             }
             
-            if(this.parentNode.$showingSubMenu) {
+            if (this.parentNode.$showingSubMenu == menu)
                 this.parentNode.$showingSubMenu = null;
-            }
             
             apf.setStyleClass(this.$ext, '', ['hover']);
             menu.hide();

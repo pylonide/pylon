@@ -159,8 +159,8 @@ apf.tree = function(struct, tagName){
     
     //@todo apf3.0 retest this completely
     function $afterRenameMode(){
+        
     }
-    
     //#endif
     
     this.$initNode = function(xmlNode, state, Lid){

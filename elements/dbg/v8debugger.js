@@ -65,6 +65,7 @@ var V8Debugger = function(dbg, host) {
                 xml.push(_self.$getScriptXml(script));
             }
             model.load("<sources>" + xml.join("") + "</sources>");
+            callback();
         });
     };
 
@@ -282,41 +283,54 @@ var V8Debugger = function(dbg, host) {
         return this.$activeFrame;
     };
 
-    this.setBreakpoints = function(model) {
+    this.setBreakpoints = function(model, callback) {
         var _self = this;
+
         var breakpoints = model.queryNodes("breakpoint");
         _self.$debugger.listbreakpoints(function(v8Breakpoints) {
-            if (!v8Breakpoints.breakpoints)
-                return;
-
-            for (var id in _self.$breakpoints)
-                _self.$breakpoints[id].destroy();
-            _self.$breakpoints = {};
-            
-            for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
-                var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
-                var id = breakpoint.source + "|" + breakpoint.line;
+            if (v8Breakpoints.breakpoints) {
+                for (var id in _self.$breakpoints)
+                    _self.$breakpoints[id].destroy();
+                _self.$breakpoints = {};
                 
-                _self.$breakpoints[id] = breakpoint;
-                
-                model.removeXml("breakpoint[@script='" + breakpoint.script + "' and @line='" + breakpoint.line + "']");
-                model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                for (var i=0,l=v8Breakpoints.breakpoints.length; i<l; i++) {
+                    if (v8Breakpoints.breakpoints[i].type == "scriptId")
+                        continue;
+                        
+                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
+                    var id = breakpoint.source + "|" + breakpoint.line;
+                    
+                    _self.$breakpoints[id] = breakpoint;
+                    
+                    model.removeXml("breakpoint[@script='" + breakpoint.source + "' and @line='" + breakpoint.line + "']");
+                    model.appendXml(_self.$getBreakpointXml(breakpoint, 0));
+                }
             }
-
-            var modelBps = model.queryNodes("breakpoint");
-            for (var i=modelBps.length-1; i>=0; i--) {
-                var modelBp = modelBps[i];
+    
+            var modelBps = model.queryNodes("breakpoint") || [];
+            
+            apf.asyncForEach(Array.prototype.slice.call(modelBps, 0), function(modelBp, next) {
                 var script = modelBp.getAttribute("script");
                 var line = modelBp.getAttribute("line");
                 var id = script + "|" + line;
-                if (!_self.$breakpoints[id]) {
-                    var bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
+                var bp = _self.$breakpoints[id];
+                if (!bp) {
+                    bp = _self.$breakpoints[id] = new Breakpoint(script, line, modelBp.getAttribute("column"));
                     bp.condition = modelBp.getAttribute("condition");
-                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount"));
+                    bp.ignoreCount = parseInt(modelBp.getAttribute("ignorecount") || 0);
                     bp.enabled = modelBp.getAttribute("enabled") == "true";
-                    bp.attach(_self.$debugger, function() {});
+                    bp.attach(_self.$debugger, function() {
+		                model.removeXml(modelBp);
+		                model.appendXml(_self.$getBreakpointXml(bp, 0));
+		                next();
+                    });
                 }
-            }
+                else {
+	                model.removeXml(modelBp);
+	                model.appendXml(_self.$getBreakpointXml(bp, 0));
+	                next();
+                }
+            }, callback);
         });
     };
     
@@ -325,7 +339,7 @@ var V8Debugger = function(dbg, host) {
 
         var name = script.getAttribute("scriptname");
 
-        var lineOffset = parseInt(script.getAttribute("lineoffset"));
+        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
         var row = lineOffset + relativeRow;
         var id = name + "|" + row;
 
@@ -360,20 +374,20 @@ var V8Debugger = function(dbg, host) {
         return(xml.join(""));
     };
 
-    this.continueScript = function() {
-        this.$debugger.continueScript();
+    this.continueScript = function(callback) {
+        this.$debugger.continueScript(null, null, callback);
     };
 
-    this.stepInto = function() {
-        this.$debugger.continueScript("in", 1);
+    this.stepInto = function(callback) {
+        this.$debugger.continueScript("in", 1, callback);
     };
 
-    this.stepNext = function() {
-        this.$debugger.continueScript("next", 1);
+    this.stepNext = function(callback) {
+        this.$debugger.continueScript("next", 1, callback);
     };
 
-    this.stepOut = function() {
-        this.$debugger.continueScript("out", 1);
+    this.stepOut = function(callback) {
+        this.$debugger.continueScript("out", 1, callback);
     };
 
     this.suspend = function() {

@@ -172,6 +172,8 @@ apf.menu = function(struct, tagName){
             }
             //#endif
 
+            clearTimeout(this.$submenuTimer);
+
             if (this.$showingSubMenu) {
                 this.$showingSubMenu.hide();
                 this.$showingSubMenu = null;
@@ -286,10 +288,10 @@ apf.menu = function(struct, tagName){
                     y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
                     animate      : noanim || !this.animate ? false : "fade",
                     steps        : 10,
-                    ref          : this.$ext.offsetParent,
+                    //ref          : this.$ext.offsetParent,
                     allowTogether: openMenuId,
-                    autohide     : this.autohide !== false,
-                    autoCorrect  : false
+                    autohide     : this.autohide !== false
+                    //autoCorrect  : false
                 });
             }
             
@@ -300,7 +302,7 @@ apf.menu = function(struct, tagName){
             
             apf.popup.last = null;
             
-            if (!apf.isGecko)
+            //if (!apf.isGecko) //This disables keyboard support for gecko - very strange behaviour
                 this.focus();
     
             //Make the component that provides context appear to have focus
@@ -386,6 +388,9 @@ apf.menu = function(struct, tagName){
                 node.$down();
                 node.$up();
                 node.$click();
+                break;
+            case 27:
+                this.hide();
                 break;
             case 38:
                 //UP

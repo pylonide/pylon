@@ -356,7 +356,7 @@ apf.button  = function(struct, tagName){
         this.parentNode.hasMoved = false;
 
         if (e)
-            apf.cancelBubble(e.htmlEvent); //stopPropagation
+            apf.stopPropagation(e.htmlEvent);
 
         return false;
     }

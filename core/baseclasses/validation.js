@@ -457,7 +457,7 @@ apf.Validation = function(){
             if(rvCache[value] == -1) return true;
             rvCache[value] = -1;
 
-            apf.getData(this.validtest, {
+            apf.getData(this.validtest.toString(), {
                xmlNode : this.xmlRoot,
                value   : this.getValue(),
                callback : function(data, state, extra){
