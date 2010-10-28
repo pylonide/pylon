@@ -7847,8 +7847,6 @@
             font-size : 11px;
             display : none;
             overflow : auto;
-            padding-top: 5px;
-            padding-bottom: 5px;
         }
 
         .optionList .top{
@@ -7859,7 +7857,7 @@
 
         .optionList span{
             display: block;
-            height: 15px;
+            height: 16px;
             padding: 2px 3px 2px 20px;
             white-space: nowrap;
             overflow: hidden;
@@ -7867,6 +7865,24 @@
             background-color: white;
             color: #333333;
             cursor: default;
+        }
+
+        .optionList span:first-child{
+            -webkit-border-top-left-radius: 4px;
+            -webkit-border-top-right-radius: 4px;
+            -moz-border-radius-topleft: 4px;
+            -moz-border-radius-topright: 4px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .optionList span:last-child{
+            -webkit-border-bottom-right-radius: 4px;
+            -webkit-border-bottom-left-radius: 4px;
+            -moz-border-radius-bottomright: 4px;
+            -moz-border-radius-bottomleft: 4px;
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 4px;
         }
 
         .optionList span.hover {
