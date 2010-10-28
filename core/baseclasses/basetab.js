@@ -1185,6 +1185,7 @@ apf.BaseTab = function(){
     /**** DOM Hooks ****/
 
     this.addEventListener("DOMNodeRemoved", function(e){
+        debugger;
         var amlNode = e.currentTarget;
         if (e.$doOnlyAdmin || e.relatedNode != this 
           || amlNode.localName != "page")
@@ -1214,6 +1215,7 @@ apf.BaseTab = function(){
                 this.$activepage  =
                 this.activepage   =
                 this.activepagenr = null;
+                this.setProperty("activepage", null);
             }
         }
         else {
