@@ -7775,6 +7775,13 @@
             right:0;
             top:0;
             width:18px;
+
+            -webkit-border-top-right-radius: 2px;
+            -webkit-border-bottom-right-radius: 2px;
+            -moz-border-radius-topright: 2px;
+            -moz-border-radius-bottomright: 2px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
         }
 
         .dropdown .dropdownArrow span {
@@ -7825,8 +7832,8 @@
         }
 
         .dropdownDown .dropdownArrow {
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(166,166,166)),color-stop(1, rgb(201,201,201)));
-            background: -moz-linear-gradient(center bottom,rgb(166,166,166) 0%,rgb(201,201,201) 100%);
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.48, rgb(255,255,255)),color-stop(0.53, rgb(230,230,230)),color-stop(1, rgb(207,207,207)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 48%,rgb(230,230,230) 53%,rgb(207,207,207) 100%);
         }
 
         .optionList{
@@ -7902,7 +7909,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="20" minheight="19" maxheight="19">
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="20" minheight="20" maxheight="20">
             <div class='dropdown'>
                 <div class='dropdownlabel'>-</div>
                 <div class='dropdownArrow'>
