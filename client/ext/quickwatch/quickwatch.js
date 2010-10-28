@@ -82,7 +82,7 @@ return ext.register("ext/quickwatch/quickwatch", {
     },
 
     quickwatch : function(){
-        this.toggleDialog(1);
+        this.toggleDialog(1, true);
     },
 
     enable : function(){
