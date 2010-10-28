@@ -43,6 +43,12 @@
         <a:item>Copy</a:item>
         <a:item>Paste</a:item>
         <a:divider />
+        <a:item 
+          visible="{stDebugProcessRunning.active and !stRunning.active}"
+          onclick="
+            require('ext/quickwatch/quickwatch').toggleDialog(1, true);
+          ">Quick Watch</a:item>
+        <a:divider visible="{stDebugProcessRunning.active and !stRunning.active}" />
         <a:item>Select All</a:item>
     </a:menu>
     
