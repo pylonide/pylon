@@ -540,9 +540,15 @@ apf.Class.prototype = new (function(){
 
             if (!node) {
                 if (arguments[2]) {
-                    apf.console.warn("[287] Could not create property binding with object."
-                        + ". Element '"  + o[0] + "' does not exist.\n"
+                    apf.console.warn("[287] Could not create property binding: "
+                        + " '"  + o[0] + "' does not exist. \n"
                         + pValue.replace(/</g, "&lt;").substr(0, 400));
+                    
+                    var _self = this;
+                    apf.nameserver.waitFor(o[0], function(){
+                        _self.$setDynamicProperty(prop, pValue);
+                    })
+                    return;
                 }
                 else {
                     //@todo this is sloppy and not efficient - shouldn't clear 

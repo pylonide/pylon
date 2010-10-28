@@ -494,8 +494,7 @@ apf.codeeditor = function(struct, tagName) {
 
         this.$editor = new Editor(new VirtualRenderer(this.$input));
         // read defaults...
-        var ed  = this.$editor,
-            doc = ed.getDocument();
+        var ed  = this.$editor;
 
         var _self = this;
         ed.addEventListener("changeOverwrite", function(e) {
@@ -517,6 +516,9 @@ apf.codeeditor = function(struct, tagName) {
     };
     
     this.$loadAml = function(){
+        var ed  = this.$editor,
+            doc = ed.getDocument();
+        
         if (this.syntax == undefined)
             this.syntax = "Text";
         if (this.tabsize == undefined)
