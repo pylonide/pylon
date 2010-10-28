@@ -70,8 +70,8 @@ function parseArguments(argv) {
 
 
 if (parseInt(process.version.split(".")[1]) < 2) {
-    Sys.puts("ERROR: Cloud9 IDE requires node version 0.2.x but you use " + process.version);
-    return;
+    Sys.puts("ERROR: Cloud9 IDE requires node version 0.2.x or higher, but you are using " + process.version);
+    process.exit(1);
 }
 
 var options = parseArguments(process.argv.slice(2)),

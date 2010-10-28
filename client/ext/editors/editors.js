@@ -21,7 +21,7 @@ return ext.register("ext/editors/editors", {
     register : function(oExtension){
         var id = "rb" + oExtension.path.replace(/\//g, "_");
 
-        oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+        /*oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
@@ -30,7 +30,7 @@ return ext.register("ext/editors/editors", {
             onclick   : function(){
                 require('ext/editors/editors').switchEditor(this.value);
             }
-        }));
+        }));*/
 
         //Add a menu item to the list of editors
         /*oExtension.$itmEditor = ide.mnuEditors.appendChild(new apf.item({
@@ -52,7 +52,7 @@ return ext.register("ext/editors/editors", {
     },
 
     unregister : function(oExtension){
-        oExtension.$rbEditor.destroy(true, true);
+        //oExtension.$rbEditor.destroy(true, true);
         //oExtension.$itmEditor.destroy(true, true);
 
         var _self = this;
@@ -80,7 +80,7 @@ return ext.register("ext/editors/editors", {
 
         var tab = new apf.bar({
             skin     : "basic",
-            style    : "padding : 0 0 53px 0;position:absolute;",
+            style    : "padding : 0 0 33px 0;position:absolute;", //53px
             htmlNode : document.body,
             childNodes: [
                 new apf.tab({
@@ -100,7 +100,7 @@ return ext.register("ext/editors/editors", {
                     onclose : function(e){
                         _self.close(e.page);
                     }
-                }),
+                })/*,
                 new apf.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
@@ -109,7 +109,7 @@ return ext.register("ext/editors/editors", {
                     bottom  : "0",
                     left    : "0",
                     right   : "0"
-                })
+                })*/
             ]
         });
         
@@ -168,7 +168,7 @@ return ext.register("ext/editors/editors", {
             this.initEditor(editor);
 
         //editor.$itmEditor.select();
-        editor.$rbEditor.select();
+        //editor.$rbEditor.select();
 
         page.setAttribute("type", path);
 
@@ -248,7 +248,7 @@ return ext.register("ext/editors/editors", {
 
         editor.enable();
         //editor.$itmEditor.select();
-        editor.$rbEditor.select();
+        //editor.$rbEditor.select();
 
         this.currentEditor = editor;
     },
@@ -309,7 +309,7 @@ return ext.register("ext/editors/editors", {
         }
 
         //toHandler.$itmEditor.select();
-        toHandler.$rbEditor.select();
+        //toHandler.$rbEditor.select();
 
         /*if (self.TESTING) {}
             //do nothing

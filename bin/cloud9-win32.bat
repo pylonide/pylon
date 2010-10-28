@@ -1,5 +1,5 @@
 @echo off
-cd ..
+cd %~dp0..
 IF EXIST common\ace\LICENSE goto skip
 
 echo --- Initializing submodules for first launch, this can take a few minutes ---

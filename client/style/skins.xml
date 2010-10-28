@@ -7727,7 +7727,19 @@
     <a:style><![CDATA[
         .dropdown{
             position: relative;
-            background: url("images/dropdown.png") no-repeat top right;
+            background-color: #dedede;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,222,222)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(222,222,222) 0%,rgb(255,255,255) 100%);
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            -webkit-box-shadow: 0px 1px 1px #9fa0a3;
+            -moz-box-shadow: 0px 1px 1px #9fa0a3;
+            box-shadow: 0px 1px 1px #9fa0a3;
+            border-top: 1px solid #dddddd;
+            border-bottom: 1px solid #fafafa;
+            border-left: 1px solid #fafafa;
+            border-right: 1px solid #fafafa;
             width:  134px;
             height: 17px;
             margin: 0;
@@ -7739,7 +7751,7 @@
         }
 
         .dropdownError {
-            background-position: right -57px;
+
         }
 
         .dropdownDisabled {
@@ -7747,7 +7759,7 @@
         }
 
         .dropdownFocus {
-            background-position:  right -19px;
+            border: 1px dashed #B8B8B8;
         }
 
         .dropdownOver {
@@ -7756,16 +7768,33 @@
 
         .dropdownDown {
             position: relative;
-            background-position: right -38px;
         }
 
-        .dropdown .dropdownLeftBorder {
-            background: url("images/dropdown.png") no-repeat top left;
-            float: left;
-            margin: -2px 0 0 0;
-            width: 2px;
-            _margin: -2px -1px 0 0;
-            height: 19px;
+        .dropdown .dropdownArrow {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,222,222)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(222,222,222) 0%,rgb(255,255,255) 100%);
+            height:15px;
+            margin: 2px 0 4px;
+            position:absolute;
+            right:0;
+            top:0;
+            width:18px;
+        }
+
+        .dropdown .dropdownArrow span {
+            background: url("images/ddarrow.png") no-repeat center center;
+            display:block;
+            height:15px;
+            position:absolute;
+            width:18px;
+        }
+
+        .dropdown .dropdownArrow div {
+            border-left:1px solid #B9B9B9;
+            height:13px;
+            width: 1px;
+            background-color: #fff;
+            padding-bottom:2px;
         }
 
         .dropdown .dropdownlabel{
@@ -7778,44 +7807,25 @@
             text-overflow : ellipsis;
         }
 
-        .dropdownError .dropdownLeftBorder {
-            background-position: 0 -57px;
+        .dropdownError .dropdownArrow {
+
         }
 
-        .dropdownError .dropdownlabel{
-            background-color: #ffb500;
-            color: #fbfbfb;
+        .dropdownInitial .dropdownArrow {
         }
 
-
-        .dropdownInitial .dropdownLeftBorder {
+        .dropdownOver .dropdownArrow {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.48, rgb(207,207,207)),color-stop(0.53, rgb(230,230,230)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(207,207,207) 48%,rgb(230,230,230) 53%,rgb(255,255,255) 100%);
         }
 
-        /*.dropdownFocus .dropdownlabel{
-            background-color: transparent;
-            color : #ffffff;
-        }*/
-
-        .dropdownFocus .dropdownLeftBorder{
-            background-position: 0 -19px;
+        .dropdownDown .dropdownArrow {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(166,166,166)),color-stop(1, rgb(201,201,201)));
+            background: -moz-linear-gradient(center bottom,rgb(166,166,166) 0%,rgb(201,201,201) 100%);
         }
 
-        .dropdownInitial .dropdownlabel{
-            color : #999;
-        }
-
-        .dropdownFocus .dropdownlabel{
-            background-color: #25a8e7;
-            color: #ffffff;
-        }
-
-        .dropdownDown .dropdownlabel{
-            color : #333;
-            background-color : white;
-        }
-
-        .dropdownDown .dropdownLeftBorder {
-            background-position: 0 -38px;
+        .dropdownFocus .dropdownArrow {
+            background: none;
         }
 
         .optionList{
@@ -7823,11 +7833,16 @@
             top: 0;
             left: 0;
             width: 120px;
-            margin-top : -1px;
-            border: 1px solid #327fbd;
-            background: #ffffff url("images/dropdown_background.png") repeat-y top left;
+            margin-top : 1px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            -webkit-box-shadow: 0 2px 8px #8A8A8A;
+            -moz-box-shadow: 0 2px 8px #8A8A8A;
+            box-shadow: 0 2px 8px #8A8A8A;
+            background: #ffffff;
             z-index: 1000;
-            color: #0d5381;
+            color: #333333;
             font-family : Tahoma;
             font-size : 11px;
             display : none;
@@ -7842,31 +7857,51 @@
 
         .optionList span{
             display: block;
-            height: 15px;
-            padding: 2px 3px 2px 6px;
+            height: 16px;
+            padding: 2px 3px 2px 20px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             background-color: white;
-            color: black;
+            color: #333333;
             cursor: default;
         }
 
+        .optionList span:first-child{
+            -webkit-border-top-left-radius: 4px;
+            -webkit-border-top-right-radius: 4px;
+            -moz-border-radius-topleft: 4px;
+            -moz-border-radius-topright: 4px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .optionList span:last-child{
+            -webkit-border-bottom-right-radius: 4px;
+            -webkit-border-bottom-left-radius: 4px;
+            -moz-border-radius-bottomright: 4px;
+            -moz-border-radius-bottomleft: 4px;
+            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
         .optionList span.hover {
-            background-color: #25a8e7;
-            color: #ffffff;
+            background-color: #f0f0f0;
         }
 
         .optionList .selected{
-            background-color: #f0f0f0;
+            background: url("images/bluedot.png") no-repeat 5px center;
         }
     ]]></a:style>
 
     <a:presentation>
-        <a:main label="div[2]/text()" button="." width-diff="-1" item-height="20" minheight="19" maxheight="19">
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="20" minheight="19" maxheight="19">
             <div class='dropdown'>
-                <div class='dropdownLeftBorder'> </div>
                 <div class='dropdownlabel'>-</div>
+                <div class='dropdownArrow'>
+                    <span></span>
+                    <div> </div>
+                </div>
             </div>
         </a:main>
         <a:container contents=".">

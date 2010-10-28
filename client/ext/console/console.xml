@@ -1,128 +1,34 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">
-            <a:toolbar id="tbDebug">
-                <a:bar>
-        	        <a:button tooltip="Resume"
-        	          icon="debugger/resume_co{this.disabled ? '_disabled' : ''}.png"
-        	          onclick="dbg.continueScript();"
-        	          disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-        	       	<a:button  tooltip="Suspends"
-        	          icon="debugger/suspend_co{this.disabled ? '_disabled' : ''}.png"
-        	          onclick="dbg.suspend();"
-        	          disabled="{!stDebugProcessRunning.active or !stRunning.active}"/>
-        	       	<!-- a:button
-        	      	  icon="debugger/disconnect_co{this.disabled ? '_disabled' : ''}.png"
-        	       	  onclick="dbgNode.disconnect();"
-        	       	  disabled="{!stDebuggerConnected.active}" /-->
-        			<a:divider />
-        	       	<a:button  tooltip="Step Into"
-        	       	  icon="debugger/stepinto_co{this.disabled ? '_disabled' : ''}.png" 
-        	       	  onclick="dbg.stepInto();" 
-        	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-        	       	<a:button tooltip="Step Over"
-        	       	  icon="debugger/stepover_co{this.disabled ? '_disabled' : ''}.png"
-        	       	  onclick="dbg.stepNext();"
-        	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-        	       	<a:button tooltip="Step Out"
-        	       	  icon="debugger/stepreturn_co{this.disabled ? '_disabled' : ''}.png" 
-        	       	  onclick="dbg.stepOut();"
-        	       	  disabled="{!stDebugProcessRunning.active or stRunning.active}" />
-        	       	<a:divider visible="{tabConsole.activepagenr==0}" />
-        	       	<a:button 
-        	       	  visible  = "{tabConsole.activepagenr == 0}" 
-        	       	  disabled = "{!txtConsole.value}"
-        	       	  onclick  = "txtConsole.clear()">Clear Log</a:button>
-        	       	
-              	    <a:dropdown id="lstScripts"
-              	      right      = "2"
-              	      top        = "2"
-                      model      = "mdlDbgSources"
-                      each       = "[file]"
-                      caption    = "[@text]"
-                      autoselect = "false"
-                      icon       = "debugger/file_obj.gif" />
-            	</a:bar>
-            </a:toolbar>
-            
-            <a:tab id="tabConsole" skin="lowtab" flex="1" border="0">
-                <a:page caption="Console" id="pgConsConsole">
-                    <a:hbox anchors="0 0 0 0" padding="4">
-                        <a:text id="txtConsole"
-                          flex       = "5"
-                          scrolldown = "true" 
-						  textselect = "true"
-                          focussable = "true"
-                          class      = "apf_console" />
-                        <a:splitter />
-                        <a:textarea id="txtCode" 
-                          flex      = "1"
-                          onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
-                          realtime  = "true"
-                          border    = "0 0 0 1" 
-                          disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
-                          model     = "{require('ext/settings/settings').model}" 
-                          value     = "[auto/console/input]" />
-                    </a:hbox>
-                    <a:button width="80" right="8" bottom="8"
+            <a:hbox padding="4" flex="1" splitters="true">
+                <a:text id="txtConsole"
+                  flex       = "5"
+                  scrolldown = "true" 
+                  textselect = "true"
+                  focussable = "true"
+                  class      = "apf_console" />
+                <a:vbox id="test"
+                  flex    = "1" 
+                  visible = "{stDebugProcessRunning.active and !stRunning.active}">
+                    <a:codeeditor id="txtCode" 
+                      flex      = "1"
+                      onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
+                      realtime  = "true"
+                      border    = "0 0 0 1" 
+                      model     = "{require('ext/settings/settings').model}" 
+                      value     = "[auto/console/input]" />
+                    <!--a:button
                       disabled = "{!txtCode.value.trim() or !stDebugProcessRunning.active or stRunning.active}"
-                      onclick = "
+                      caption  = "Evaluate" 
+                      onclick  = "
                         require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
-                      ">Evaluate</a:button>
-                </a:page>
-                <a:page caption="Quick Watch" id="pgConsQuickWatch" render="runtime">
-                    <a:vbox anchors="0 0 0 0">
-                        <a:textbox id="txtCurObject" 
-                            skin      = "tbempty" 
-                            margin    = "5" 
-                            realtime  = "true"
-                            disabled  = "{!stDebugProcessRunning.active or stRunning.active}"
-                            initial-message = "Enter an expression"
-                            onclear   = "
-                                dgWatch.clear();
-                            "
-                            onkeydown = "
-                                if (event.keyCode == 13) {
-                                    if (!this.value.trim())
-                                        return dgWatch.clear();
-
-                                    require('ext/console/console').evaluate(this.value);
-                                    dgWatch.focus();
-                                }
-                            "/>
-                        
-                        <a:datagrid id="dgWatch"
-                          flex       = "1"
-                          border     = "1 0 0 0"
-                          options    = "size|move"
-                          prerender  = "false"
-                          caching    = "false"
-                          disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
-                          empty-message   = "Inspect an object by typing a javascript expression above and pressing enter."
-                          loading-message = "Calculating..."
-                          onafterselect   = "
-                            if (this.selected)
-                                txtCurObject.setValue(require('ext/console/console').calcName(this.selected, true));
-                          "
-                          onbeforechange  = "
-                            return require('ext/console/console').checkChange(event.args[0]);
-                          ">
-                            <a:model>
-                                <vars />
-                            </a:model>
-                            <a:actions />
-                            <a:each match="[item|globals]" sort="[@name]">
-                                <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
-                                <a:expanded match="[node()[@expand]]" />
-                                <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon="debugger/genericvariable_obj.gif" tree="true" />
-                                <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
-                                <a:column caption="Type" value="[@type]" width="80"/>
-                            </a:each>
-                            <a:change set="{require('ext/console/console').applyChange(xmlNode);}" />
-                        </a:datagrid>
-                    </a:vbox>
-                </a:page>
-            </a:tab>
+                      " /-->
+                </a:vbox>
+            </a:hbox>
+            <a:textbox 
+              border    = "1 0 0 0"
+              onkeydown = "return require('ext/console/console').commandTextHandler(event)" />
         </a:vbox>
     </a:window>
 </a:application>
