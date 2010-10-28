@@ -230,7 +230,7 @@ return ext.register("ext/console/console", {
             require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
         }
         else {
-            tabConsole.set(1);
+            winQuickWatch.show()
 
             if (xmlNode && typeof xmlNode == "string")
                 xmlNode = apf.getXml(xmlNode);

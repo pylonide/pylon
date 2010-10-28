@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Ctrl-C",
             "paste": "Ctrl-V"
         },
+        "quickwatch": {
+            "quickwatch": "Ctrl-Q"
+        },
         "gotoline": {
             "gotoline": "Ctrl-G"
         },
