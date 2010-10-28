@@ -5,7 +5,7 @@
                 <a:text id="txtConsole"
                   flex       = "5"
                   scrolldown = "true" 
-    			  textselect = "true"
+                  textselect = "true"
                   focussable = "true"
                   class      = "apf_console" />
                 <a:vbox id="test"
@@ -26,7 +26,9 @@
                       " /-->
                 </a:vbox>
             </a:hbox>
-            <a:textbox border="1 0 0 0" />
+            <a:textbox 
+              border    = "1 0 0 0"
+              onkeydown = "return require('ext/console/console').commandTextHandler(event)" />
         </a:vbox>
     </a:window>
 </a:application>
