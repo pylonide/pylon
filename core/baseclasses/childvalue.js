@@ -58,6 +58,10 @@ apf.ChildValue = function(){
     this.addEventListener("DOMNodeInserted", f);
     this.addEventListener("DOMNodeRemoved", f);
     
+    this.addEventListener("$skinchange", function(e){
+        this.$propHandlers[this.$childProperty].call(this, this.caption || "");
+    });
+    
     this.$init(function(){
         this.addEventListener("prop." + this.$childProperty, function(e){
             if (!e.value && !this.getAttributeNode(this.$childProperty))
