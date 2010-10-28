@@ -527,6 +527,18 @@ apf.calendar = function(struct, tagName){
         
         c.inited = true;
     };
+    
+    this.getYear = function() {
+        return this.$calVars.currentYear;
+    };
+    
+    this.getMonth = function() {
+        return this.$calVars.currentMonth;
+    };
+    
+    this.getDay = function() {
+        return this.$calVars.day;
+    };
 
     /**
      * Selects date and highlights its cell in calendar component
