@@ -4,26 +4,25 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Fs    = require("fs"),
-    Path  = require("path"),
-    Async = require("async"),
-    Spawn = require("child_process").spawn;
+var Fs     = require("fs"),
+    Path   = require("path"),
+    Async  = require("async"),
+    Spawn  = require("child_process").spawn,
+    Plugin = require("lib/cloud9/plugin");
 
 function cloud9TerminalPlugin(server) {
     this.server = server;
-    server.addEventListener("unknownCommand", this.commandHandler.bind(this));
+    this.hooks  = ["command"];
 }
 
 (function() {
-    this.commandHandler = function(e, message) {
+    this.command = function(e, message) {
         if (message.command != "terminal")
-            return e.next();
+            return false;
 
         var _self = this,
             argv  = message.argv,
             cmd   = argv.shift();
-
-        e.stop();
 
         switch(cmd) {
             case "git":
@@ -37,8 +36,10 @@ function cloud9TerminalPlugin(server) {
                     path  = message.cwd || this.server.workspaceDir;
                 if (to && to != "/") {
                     path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-                    if (path.indexOf(this.server.workspaceDir) === -1)
-                        return this.sendTermPacket(0, "error", "Invalid input.");
+                    if (path.indexOf(this.server.workspaceDir) === -1) {
+                        this.sendTermPacket(0, "error", "Invalid input.");
+                        break;
+                    }
                     Fs.stat(path, function(err, stat) {
                         if (err) {
                             return _self.sendTermPacket(0, "error",
@@ -50,7 +51,7 @@ function cloud9TerminalPlugin(server) {
                     });
                 }
                 else {
-                    return this.sendTermPacket(0, "error", "Invalid input.");
+                    this.sendTermPacket(0, "error", "Invalid input.");
                 }
                 break;
             case "check-isfile":
@@ -58,8 +59,10 @@ function cloud9TerminalPlugin(server) {
                     path = message.cwd || this.server.workspaceDir,
                     path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
-                if (path.indexOf(this.workspaceDir) === -1)
-                    return this.sendTermPacket();
+                if (path.indexOf(this.workspaceDir) === -1) {
+                    this.sendTermPacket();
+                    break;
+                }
                 Fs.stat(path, function(err, stat) {
                     if (err) {
                         return _self.sendTermPacket(0, "error",
@@ -108,6 +111,7 @@ function cloud9TerminalPlugin(server) {
                 break;
         }
         //console.log("command: " + cmd + ", cwd: " + message.cwd);
+        return true;
     };
 
     this.sendTermPacket = function(sid, type, msg) {
@@ -158,6 +162,6 @@ function cloud9TerminalPlugin(server) {
 
         return child;
     };
-}).call(cloud9TerminalPlugin.prototype);
+}).call(cloud9TerminalPlugin.prototype = new Plugin());
 
 module.exports = cloud9TerminalPlugin;

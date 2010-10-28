@@ -4,28 +4,37 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Path = require("path");
-var Spawn = require("child_process").spawn;
-var NodeDebugProxy = require("./nodedebugproxy");
-var ChromeDebugProxy = require("./chromedebugproxy");
+var Path             = require("path"),
+    Spawn            = require("child_process").spawn,
+    NodeDebugProxy   = require("./nodedebugproxy"),
+    ChromeDebugProxy = require("./chromedebugproxy"),
+    Plugin           = require("lib/cloud9/plugin");
 
 function cloud9DebuggerPlugin(server) {
     this.server = server;
-    server.addEventListener("unknownCommand", this.commandHandler.bind(this));
+    this.hooks = ["command"];
 }
 
 (function() {
+    this.init = function() {
+        var _self = this;
+        this.server.getExt("state").on("statechange", function(state) {
+            state.debugClient    = !!_self.debugClient;
+            state.processRunning = !!_self.child;
+        });
+    };
+
     this.NODE_DEBUG_PORT = 5858;
     this.CHROME_DEBUG_PORT = 9222;
 
-    this.commandHandler = function(e, message) {
+    this.command = function(message) {
         var _self = this;
 
-        var cmd = (message.command || "").toLowerCase();
+        var cmd = (message.command || "").toLowerCase(),
+            res = true;
         switch (cmd) {
             case "run":
                 this.$run(message);
-                e.stop();
                 break;
             case "rundebug":
                 message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
@@ -35,10 +44,8 @@ function cloud9DebuggerPlugin(server) {
                 setTimeout(function() {
                     _self.$startDebug();
                 }, 100);
-
-                e.stop();
                 break;
-            case "runDedugbrk":
+            case "rundedugbrk":
                 message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
                 message.debug = true;
                 this.$run(message);
@@ -46,15 +53,12 @@ function cloud9DebuggerPlugin(server) {
                 setTimeout(function() {
                     _self.$startDebug();
                 }, 100);
-                
-                e.stop();
                 break;
             case "rundebugchrome":
-                e.stop();
-
-                if (this.chromeDebugProxy)
-                    return this.server.error("Chrome debugger already running!", 7, message);
-
+                if (this.chromeDebugProxy) {
+                    this.server.error("Chrome debugger already running!", 7, message);
+                    break;
+                }
                 this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
                 this.chromeDebugProxy.connect();
 
@@ -63,21 +67,16 @@ function cloud9DebuggerPlugin(server) {
                 });
                 break;
             case "debugnode":
-                e.stop();
-
                 if (!this.nodeDebugProxy)
-                    return this.server.error("No debug session running!", 6, message);
-
-                this.nodeDebugProxy.send(message.body);
+                    this.server.error("No debug session running!", 6, message);
+                else
+                    this.nodeDebugProxy.send(message.body);
                 break;
             case "debugattachnode":
                 if (this.nodeDebugProxy)
                     this.server.client.send('{"type": "node-debug-ready"}');
-                e.stop();
                 break;
             case "kill":
-                e.stop();
-
                 if (!this.child)
                     break;
                 try {
@@ -86,9 +85,10 @@ function cloud9DebuggerPlugin(server) {
                 catch(e) {}
                 break;
             default:
-                e.next();
+                res = false;
                 break;
         }
+        return res;
     };
 
     this.$run = function(message) {
@@ -191,6 +191,6 @@ function cloud9DebuggerPlugin(server) {
 
         this.nodeDebugProxy.connect();
     };
-}).call(cloud9DebuggerPlugin.prototype);
+}).call(cloud9DebuggerPlugin.prototype = new Plugin());
 
 module.exports = cloud9DebuggerPlugin;
