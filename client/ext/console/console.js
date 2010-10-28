@@ -16,6 +16,7 @@ require.def("ext/console/console",
 var setDebug   = false,
     setRun     = false,
     cmdHistory = [],
+    cmdBuffer  = "",
     parser     = new parserCls(),
     helpPage   = [
         "%CS%+r Terminal Help %-r",
@@ -185,11 +186,28 @@ return ext.register("ext/console/console", {
 
     commandTextHandler: function(e) {
         console.log("keyCode: ", e.keyCode);
-        if (e.keyCode == 38) { //UP
+        var line      = e.currentTarget.getValue(),
+            idx       = cmdHistory.indexOf(line),
+            hisLength = cmdHistory.length,
+            newVal    = "";
 
+        if (e.keyCode == 38) { //UP
+            if (!hisLength)
+                return;
+            if (!cmdBuffer)
+                cmdBuffer = line;
+            newVal = cmdHistory[--idx < 0 ? hisLength - 1 : idx];
+            e.currentTarget.setValue(newVal);
+            return false;
         }
         else if (e.keyCode == 40) { //DOWN
-            //
+            if (!hisLength || idx === -1)
+                return;
+            if (!cmdBuffer)
+                cmdBuffer = line;
+            newVal = cmdHistory[++idx > hisLength - 1 ? (cmdBuffer || "") : idx];
+            e.currentTarget.setValue(newVal);
+            return false;
         }
         else if (e.keyCode != 13) {
             //do some autcompletion magic here...
@@ -197,7 +215,6 @@ return ext.register("ext/console/console", {
         }
         //debugger;
 
-        var line = e.currentTarget.getValue();
         parser.parseLine(line);
         if (parser.argv.length == 0) {
             // no commmand line input
@@ -209,7 +226,9 @@ return ext.register("ext/console/console", {
         else {
             var s,
                 cmd = parser.argv[parser.argc++];
-
+            cmdHistory.push(line);
+            e.currentTarget.setValue(newVal);
+            cmdBuffer = null;
 
             // special commands (run & debug):
             if (cmd == "debug" || cmd == "run") {
