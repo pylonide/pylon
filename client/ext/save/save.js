@@ -5,20 +5,20 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require.def("ext/save/save",
-    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem", "text!ext/save/save.xml"],
+    ["core/ide", "core/ext", "core/util", "ext/filesystem/filesystem",
+            "text!ext/save/save.xml"],
     function(ide, ext, util, fs, markup) {
 
 return ext.register("ext/save/save", {
-    dev     : "Ajax.org",
-    name    : "Save",
-    alone   : true,
-    type    : ext.GENERAL,
-    markup  : markup,
-    deps    : [fs],
-    hotkeys : {"quicksave":1, "saveas":1},
-    hotitems: {},
-
-    nodes   : [],
+    dev         : "Ajax.org",
+    name        : "Save",
+    alone       : true,
+    type        : ext.GENERAL,
+    markup      : markup,
+    deps        : [fs],
+    hotkeys     : {"quicksave":1, "saveas":1},
+    hotitems    : {},
+    nodes       : [],
 
     init : function(amlNode){
         var _self = this;
@@ -81,12 +81,23 @@ return ext.register("ext/save/save", {
                 caption : "Save All",
                 onclick : function(){
                     _self.saveall();
-                }
+                },
+                disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
-        
+                
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "Save As",
+                onclick : function () {
+                    txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
+                    winSaveAs.show();
+                },
+                disabled : "{!tabEditors.activepage}"
+            }), ide.mnuFile.firstChild),
+            
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                onclick : _self.quicksave
+                onclick : _self.quicksave,
+                disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
@@ -177,9 +188,50 @@ return ext.register("ext/save/save", {
         page.$at.reset(); //@todo this sucks... please fix
         return false;
     },
-
-    saveas : function() {
-        //console.log("saveas called...");
+    
+    saveas : function () {
+        var page    = tabEditors.getPage(),
+            file    = page.$model.data,
+            path    = file.getAttribute("path"),
+            newPath = txtSaveAs.getValue();
+            
+        function onconfirm() {
+            var panel   = sbMain.firstChild,
+                value   = page.$doc.getValue();
+  
+            console.log(value);
+            winConfirm.hide();
+            winSaveAs.hide();
+            
+            panel.setAttribute("caption", "Saving file " + newPath);
+            fs.saveFile(newPath, value, function(value, state, extra) {
+                if (state != apf.SUCCESS)
+                   util.alert("Could not save document",
+                              "An error occurred while saving this document",
+                              "Please see if your internet connection is available and try again.");            
+                panel.setAttribute("caption", "Saved file " + newPath);
+                if (path != newPath)
+                    fs.beforeRename(file, null, newPath);
+	            setTimeout(function () {
+	               if (panel.caption == "Saved file " + newPath)
+	                   panel.removeAttribute("caption");
+	            }, 2500);
+            });
+        };
+    
+        if (path != newPath) {
+            var name    = newPath.match(/\/([^/]*)$/)[1],
+                folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
+                                
+	        util.confirm(
+	            "Are you sure?",
+	            "\"" + name + "\" already exists, do you want to replace it?",
+	            "A file or folder with the same name already exists in the folder "
+	            + folder + ". "
+	            + "Replacing it will overwrite it's current contents.",
+	            onconfirm);
+        } else
+            onconfirm();
     },
 
     enable : function(){
