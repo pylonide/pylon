@@ -40,14 +40,16 @@
 
     <a:window
       id        = "winSaveAs"
+      center    = "true"
       height    = "350"
       icon      = ""
+      buttons   = "close"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
       width     = "500">
         <a:vbox
-          anchors   = "5 5 5 5"
+          anchors   = "5 5 0 5"
           padding   = "5">
             <a:hbox
               flex      = "1"

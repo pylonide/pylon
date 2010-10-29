@@ -23,6 +23,8 @@ return ext.register("ext/save/save", {
     hotitems    : {},
     nodes       : [],
 
+    //todo missing hook
+
     init : function(amlNode){
         var _self = this;
 
@@ -77,6 +79,7 @@ return ext.register("ext/save/save", {
 
         btnSave.onclick = _self.quicksave;
 
+        var saveItem, saveAsItem;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
         
@@ -88,7 +91,7 @@ return ext.register("ext/save/save", {
                 disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
                 
-            ide.mnuFile.insertBefore(new apf.item({
+            saveAsItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save As",
                 onclick : function () {
                     txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
@@ -97,14 +100,15 @@ return ext.register("ext/save/save", {
                 disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
             
-            ide.mnuFile.insertBefore(new apf.item({
+            saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
                 onclick : _self.quicksave,
                 disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
-        this.hotitems["quicksave"] = [this.nodes[this.nodes.length - 1]];
+        this.hotitems["quicksave"] = [saveItem];
+        this.hotitems["saveas"]    = [saveAsItem];
     },
     
     saveall : function(){
