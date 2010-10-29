@@ -176,6 +176,7 @@ return ext.register("ext/searchreplace/searchreplace", {
         if (!this.barReplace.visible)
             return;
         var options = this.getOptions();
+        options.needle = this.txtFind.getValue()
         this.$editor.replace(this.txtReplace.getValue() || "", options);
         this.$editor.find(this.$crtSearch, options);
     },
@@ -187,6 +188,7 @@ return ext.register("ext/searchreplace/searchreplace", {
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
+        options.needle = this.txtFind.getValue()
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
     },
 

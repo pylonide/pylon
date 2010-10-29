@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Command-C",
             "paste": "Command-V"
         },
+        "quickwatch": {
+            "quickwatch": "Command-Q"
+        },
         "gotoline": {
             "gotoline": "Command-L"
         },
@@ -95,8 +98,10 @@ return keys.onLoad({
             "gotolineend": "Command-Right|End",
             "selectright": "Shift-Right",
             "gotoright": "Right",
+            "gotopagedown": "Command-PageDown",
             "selectpagedown": "Shift-PageDown",
             "pagedown": "PageDown",
+            "gotopageup": "Command-PageUp",
             "selectpageup": "Shift-PageUp",
             "pageup": "PageUp",
             "selectlinestart": "Shift-Home",
