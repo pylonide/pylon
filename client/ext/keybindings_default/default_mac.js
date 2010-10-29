@@ -22,6 +22,12 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Command-Q"
         },
+        "run": {
+            "resume": "F8",
+            "stepinto": "F11",
+            "stepover": "F10",
+            "stepout": "Shift-F11"
+        },
         "gotoline": {
             "gotoline": "Command-L"
         },

@@ -61,7 +61,7 @@ return ext.register("ext/keybindings/keybindings", {
                     apf.console.error("Please implement the '" + command
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
                 }
-                else {
+                else if (!oExt.hotitems) {
                     apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
                 }
             }

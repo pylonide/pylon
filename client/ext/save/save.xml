@@ -70,7 +70,7 @@
 	                     value = "folder.png" />
 				    </a:each>
 		        </a:tree>
-		        <a:datagrid
+		        <a:datagrid id="dgTest"
 	              flex             = "2"
 	              model            = "{trSaveAs.selected}"
                   onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
@@ -118,15 +118,15 @@
                 </a:dropdown>
             </a:hbox-->
 	        <a:hbox
-                pack    = "end"
-                padding = "5">
+              pack    = "end"
+              padding = "5">
+	            <a:button  default="2" class="ui-btn-green"
+                  onclick = "require('ext/save/save').saveFileAs()">
+	                Save
+	            </a:button>
 	            <a:button
 	              onclick = "winSaveAs.hide()">
 	                Cancel
-	            </a:button>
-	            <a:button
-                  onclick = "require('ext/save/save').saveas()">
-	                Save
 	            </a:button>
 	        </a:hbox>
         </a:vbox>

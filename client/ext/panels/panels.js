@@ -44,8 +44,16 @@ return ext.register("ext/panels/panels", {
         if (this.$settings && this.$settings[panelExt.path]) {
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
-        else if (panelExt.visible)
-            this.initPanel(panelExt);
+        else if (panelExt.visible) {
+            if (panelExt.skin) {
+                setTimeout(function(){
+                    this.initPanel(panelExt);
+                });
+            }
+            else {
+                this.initPanel(panelExt);
+            }
+        }
         
         this.panels[panelExt.path] = panelExt;
     },

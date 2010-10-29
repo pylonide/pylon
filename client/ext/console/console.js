@@ -11,9 +11,9 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
-     //"text!ext/console/skin.xml",
+     "text!ext/console/skin.xml",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, skin, markup) {
 
 var trieInternals,
     cmdHistory = [],
@@ -46,7 +46,7 @@ return ext.register("ext/console/console", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
-    //skin   : skin,
+    skin   : skin,
     markup : markup,
     commands: {
         "help": {hint: "show general help information and a list of available commands"},

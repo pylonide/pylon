@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="skinconsole"
-      src       = "ext/console/skin.xml" />
+      src       = "{require('ext/console/console').skin}" />
 
     <a:bar id="winConsoleHints"
       skinset = "skinconsole"

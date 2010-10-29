@@ -94,8 +94,7 @@ return ext.register("ext/save/save", {
             saveAsItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save As",
                 onclick : function () {
-                    txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
-                    winSaveAs.show();
+                    _self.saveas();
                 },
                 disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild),
@@ -196,7 +195,12 @@ return ext.register("ext/save/save", {
         return false;
     },
     
-    saveas : function () {
+    saveas : function(){
+        txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
+        winSaveAs.show();
+    },
+    
+    saveFileAs : function () {
         var page    = tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),

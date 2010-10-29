@@ -4711,7 +4711,7 @@
         .ace_marker-layer {
         }
 
-        .ace_marker-layer .ace_step {
+        .ace_marker-layer .ace_step, .ace_marker-layer .ace_stack {
           position: absolute;
           z-index: 2;
         }
@@ -4750,13 +4750,19 @@
        }
        
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
-          background-image: url("icons/debugger/current_line.png"), url("icons/debugger/brkp_obj.png");
+          background-image: url("icons/debugger/brkp_obj_current_line.png");
           background-repeat: no-repeat;
-          background-position: 2px center, 2px center;
+          background-position: 2px center;
        }
        
        .ace_gutter-layer .ace_gutter-cell.ace_arrow {
           background-image: url("icons/debugger/current_line.png");
+          background-repeat: no-repeat;
+          background-position: 2px center;
+       }
+       
+       .ace_gutter-layer .ace_gutter-cell.ace_stack {
+          background-image: url("icons/debugger/stack_co.png");
           background-repeat: no-repeat;
           background-position: 2px center;
        }

@@ -62,9 +62,15 @@ return ext.register("ext/quickwatch/quickwatch", {
         if (!winQuickWatch.visible || force == 1) {
             var editor = editors.currentEditor;
     
+            var range;
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
-            var range = sel.getRange();
+            if (sel.isEmpty()) {
+                var cursor = sel.getCursor();
+                range = doc.getWordRange(cursor.row, cursor.column);
+            }
+            else
+                range = sel.getRange();
             var value = doc.getTextRange(range);
 
             if (value) {

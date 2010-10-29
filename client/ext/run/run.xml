@@ -109,24 +109,24 @@
           onclick  = "require('ext/run/run').stop()"
           disabled = "{!stProcessRunning.active}" />
         <a:divider />
-        <a:button tooltip="Resume"
+        <a:button id="btnResume" tooltip="Resume"
           icon     = "debugger/resume_co{this.disabled ? '_disabled' : ''}.png"
           onclick  = "dbg.continueScript();"
           disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-       	<a:button  tooltip="Suspends"
+       	<a:button  tooltip="Suspend"
           icon     = "debugger/suspend_co{this.disabled ? '_disabled' : ''}.png"
           onclick  = "dbg.suspend();"
           disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
 		<a:divider />
-       	<a:button  tooltip="Step Into"
+       	<a:button id="btnStepInto" tooltip="Step Into"
        	  icon     = "debugger/stepinto_co{this.disabled ? '_disabled' : ''}.png" 
        	  onclick  = "dbg.stepInto();" 
        	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-       	<a:button tooltip="Step Over"
+       	<a:button id="btnStepOver" tooltip="Step Over"
        	  icon     = "debugger/stepover_co{this.disabled ? '_disabled' : ''}.png"
        	  onclick  = "dbg.stepNext();"
        	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
-       	<a:button tooltip="Step Out"
+       	<a:button id="btnStepOut" tooltip="Step Out"
        	  icon     = "debugger/stepreturn_co{this.disabled ? '_disabled' : ''}.png" 
        	  onclick  = "dbg.stepOut();"
        	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
