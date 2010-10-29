@@ -1185,7 +1185,6 @@ apf.BaseTab = function(){
     /**** DOM Hooks ****/
 
     this.addEventListener("DOMNodeRemoved", function(e){
-        debugger;
         var amlNode = e.currentTarget;
         if (e.$doOnlyAdmin || e.relatedNode != this 
           || amlNode.localName != "page")
