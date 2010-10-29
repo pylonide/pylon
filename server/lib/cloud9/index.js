@@ -3,12 +3,16 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 require("../../../common/paths");
+
 var Connect = require("connect");
 var Fs = require("fs");
 var Path = require("path");
 var IdeServer = require("lib/cloud9/server");
 
 exports.main = function(projectDir, port, ip) {
+    if (!Path.existsSync(projectDir)) 
+        throw new Error("Workspace directory does not exist: " + projectDir);
+        
     var commonProvider = function() {
         var common = Connect.staticProvider(Path.normalize(__dirname + "/../../../common"));
         return function(req, resp, next) {
