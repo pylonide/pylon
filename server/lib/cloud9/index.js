@@ -5,8 +5,12 @@
 require("../../../common/paths");
 var connect = require("connect");
 var IdeServer = require("cloud9/server");
+var Path = require("path");
 
 exports.main = function(projectDir, port, ip) {
+    if (!Path.existsSync(projectDir)) 
+        throw new Error("Workspace directory does not exist: " + projectDir);
+        
     var commonProvider = function() {
 	
         var common = connect.staticProvider(__dirname + "/../../../common");
