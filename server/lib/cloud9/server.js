@@ -15,7 +15,7 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
 
     var _self = this;
     var options = {
-        transports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"]
+        transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
     };
     this.socketIo = IO.listen(server, options);
     this.socketIo.on("connection", function(client) {
