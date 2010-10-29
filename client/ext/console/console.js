@@ -410,39 +410,30 @@ return ext.register("ext/console/console", {
             content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\''
                 + hint + '\')">' + hint + '</a><br />');
         }
-        winConsoleHints.innerHTML = content.join("");
+        winConsoleHints.$ext.innerHTML = content.join("");
 
+        var pos = apf.getAbsolutePosition(textbox.$ext, winConsoleHints.$ext.parentNode);
         if (!winConsoleHints.visible) {
-            winConsoleHints.$ext.style.top = "-30px";
+            //winConsoleHints.$ext.style.top = "-30px";
             winConsoleHints.show();
+            winConsoleHints.$ext.style.left = pos[0] + "px";
+            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
             //txtConsoleInput.focus();
 
             //Animate
-            apf.tween.single(winConsoleHints, {
-                type     : "top",
+            /*apf.tween.single(winConsoleHints.$ext, {
+                type     : "fade",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -30,
-                to       : 5,
+                from     : 0,
+                to       : 100,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {})
-            });
+            });*/
         }
         else if (winConsoleHints.visible) {
-            //Animate
-            apf.tween.single(winConsoleHints, {
-                type     : "top",
-                anim     : apf.tween.NORMAL,
-                from     : winConsoleHints.$ext.offsetTop,
-                to       : -30,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winConsoleHints.hide();
-                    //editor.ceEditor.focus();
-                }
-            });
+            winConsoleHints.$ext.style.left = pos[0] + "px";
+            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
         }
     },
 

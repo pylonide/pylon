@@ -57,7 +57,7 @@ return ext.register("ext/keybindings/keybindings", {
                         item.setAttribute("hotkey", bindings[command]);
                     }
                 }
-                if (typeof oExt[command] != "function") {
+                if (typeof oExt[command] != "function" && !oExt.hotitems) {
                     apf.console.error("Please implement the '" + command
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
                 }
