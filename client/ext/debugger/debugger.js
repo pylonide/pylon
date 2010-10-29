@@ -20,6 +20,9 @@ return ext.register("ext/debugger/debugger", {
     alone  : true,
     markup : markup,
     deps   : [log, fs],
+    commands: {
+        "debug": {hint: "run and debug a node program on the server"}
+    },
 
     nodes : [],
 

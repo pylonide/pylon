@@ -11,20 +11,14 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
+     //"text!ext/console/skin.xml",
      "text!ext/console/console.xml"],
     function(ide, ext, lang, panels, parserCls, Trie, markup) {
 
 var trieInternals,
-    setDebug   = false,
-    setRun     = false,
     cmdHistory = [],
     cmdBuffer  = "",
     parser     = new parserCls(),
-    internal   = {"help":1,"clear":1,"open":1,"c9":1,"debug":1,"run":1,"sudo":1,
-        "man":1,"locate":1,"make":1,"lpr":1,"hello":1,"xyzzy":1,"date":1,"who":1,
-        "su":1,"fuck":1,"whoami":1,"nano":1,"top":1,"moo":1,"ping":1,"find":1,
-        "more":1,"your":1,"hi":1,"echo":1,"bash":1,"ssh":1,"uname":1,"finger":1,
-        "kill":1,"use":1,"serenity":1,"enable":1,"ed":1},
     helpPage   = [
         "%CS%+r Terminal Help %-r",
         " ",
@@ -52,7 +46,12 @@ return ext.register("ext/console/console", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
+    //skin   : skin,
     markup : markup,
+    commands: {
+        "help": {hint: "show general help information and a list of available commands"},
+        "clear": {hint: "clear all the messages from the console"}
+    },
 
     clear : function() {
         this.inited && txtConsole.clear();
@@ -371,8 +370,7 @@ return ext.register("ext/console/console", {
         mode = mode || 2;
         if (!trieInternals) {
             trieInternals = new Trie();
-            apf.extend(internal, ext.commandsLut);
-            for (var name in internal)
+            for (var name in ext.commandsLut)
                 trieInternals.add(name);
         }
 
@@ -403,34 +401,49 @@ return ext.register("ext/console/console", {
         var name = "console_hints";
         base = base.substr(0, base.length - 1);
 
-        if (!this.hintsPanel) {
-            this.hintsPanel = document.body.appendChild(document.createElement("div"));
-            this.hintsPanel.className = name;
-            this.hintsPanel.style.display = "none";
-            apf.popup.setContent(name, this.hintsPanel);
-        }
+        if (this.control && this.control.stop)
+            this.control.stop();
+
         var content = [];
         for (var i = 0, len = hints.length; i < len; ++i) {
             var hint = base + hints[i];
             content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\''
                 + hint + '\')">' + hint + '</a><br />');
         }
-        this.hintsPanel.innerHTML = content.join("");
+        winConsoleHints.innerHTML = content.join("");
 
-        if (apf.popup.isShowing(name)) {
-            if (len === 0)
-                apf.popup.forceHide();
-            return;
+        if (!winConsoleHints.visible) {
+            winConsoleHints.$ext.style.top = "-30px";
+            winConsoleHints.show();
+            //txtConsoleInput.focus();
+
+            //Animate
+            apf.tween.single(winConsoleHints, {
+                type     : "top",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -30,
+                to       : 5,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {})
+            });
         }
-
-        apf.popup.show(name, {
-            x        : 0,
-            y        : 22,
-            animate  : false,
-            ref      : textbox.$ext,
-            width    : 200,
-            height   : 200
-        });
+        else if (winConsoleHints.visible) {
+            //Animate
+            apf.tween.single(winConsoleHints, {
+                type     : "top",
+                anim     : apf.tween.NORMAL,
+                from     : winConsoleHints.$ext.offsetTop,
+                to       : -30,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winConsoleHints.hide();
+                    //editor.ceEditor.focus();
+                }
+            });
+        }
     },
 
     consoleTextHandler: function(e) {

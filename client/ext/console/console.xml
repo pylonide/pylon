@@ -1,4 +1,15 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin id="skinconsole"
+      src       = "ext/console/skin.xml" />
+
+    <a:bar id="winConsoleHints"
+      skinset = "skinconsole"
+      visible = "false"
+      width   = "350"
+      kbclose = "true"
+      top     = "-30"
+      right   = "30" />
+
     <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
         <a:hbox anchors="0 0 0 0" padding="4" flex="1" splitters="true">
             <a:vbox flex="1">
@@ -8,7 +19,7 @@
                   textselect = "true"
                   focussable = "true"
                   class      = "apf_console" />
-                <a:textbox 
+                <a:textbox id="txtConsoleInput"
                   border    = "1 0 0 0"
                   onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
                   onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />

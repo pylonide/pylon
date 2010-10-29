@@ -1,0 +1,39 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+   <a:bar name="bar">
+        <a:style><![CDATA[
+            .barConsoleHints{
+                position : absolute;
+                z-index: 10000;
+
+                -webkit-border-top-left-radius: 8px;
+                -webkit-border-top-right-radius: 8px;
+                -webkit-border-bottom-right-radius: 0px;
+                -webkit-border-bottom-left-radius: 0px;
+                -moz-border-radius-topleft: 8px;
+                -moz-border-radius-topright: 8px;
+                -moz-border-radius-bottomright: 0px;
+                -moz-border-radius-bottomleft: 0px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 0px;
+                border-bottom-left-radius: 0px;
+
+                border-left: 1px solid #b8b8b8;
+                border-right: 1px solid #b8b8b8;
+                border-top: 1px solid #b8b8b8;
+
+                background-color: #e8e8e8;
+                background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(232,232,232)),color-stop(1, rgb(227,227,227)));
+                background:-moz-linear-gradient(center top,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="barConsoleHints">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:bar>
+</a:skin>

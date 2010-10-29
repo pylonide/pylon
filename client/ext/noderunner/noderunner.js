@@ -18,6 +18,9 @@ return ext.register("ext/noderunner/noderunner", {
     alone  : true,
     markup : markup,
     deps   : [log],
+    commands: {
+        "run": {hint: "run a node program on the server"}
+    },
 
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
