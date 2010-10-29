@@ -210,8 +210,14 @@ return ext.register("ext/save/save", {
                               "An error occurred while saving this document",
                               "Please see if your internet connection is available and try again.");            
                 panel.setAttribute("caption", "Saved file " + newPath);
-                if (path != newPath)
+                if (path != newPath) {
+                    var model = page.$model,
+                        node  = model.getXml();
+                        
+                    model.load(node);
+                    file = model.data;
                     fs.beforeRename(file, null, newPath);
+                }
 	            setTimeout(function () {
 	               if (panel.caption == "Saved file " + newPath)
 	                   panel.removeAttribute("caption");
@@ -219,18 +225,23 @@ return ext.register("ext/save/save", {
             });
         };
     
-        if (path != newPath) {
-            var name    = newPath.match(/\/([^/]*)$/)[1],
-                folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
-                                
-	        util.confirm(
-	            "Are you sure?",
-	            "\"" + name + "\" already exists, do you want to replace it?",
-	            "A file or folder with the same name already exists in the folder "
-	            + folder + ". "
-	            + "Replacing it will overwrite it's current contents.",
-	            onconfirm);
-        } else
+        if (path != newPath)
+            fs.readFile(newPath, function (data, state, extra) {
+                if (state == apf.SUCCESS) {
+                    var name    = newPath.match(/\/([^/]*)$/)[1],
+                        folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
+                    
+	                util.confirm(
+	                    "Are you sure?",
+	                    "\"" + name + "\" already exists, do you want to replace it?",
+	                    "A file or folder with the same name already exists in the folder "
+	                    + folder + ". "
+	                    + "Replacing it will overwrite it's current contents.",
+	                    onconfirm);
+                } else
+                    onconfirm();
+            });
+        else
             onconfirm();
     },
 

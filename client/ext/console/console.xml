@@ -1,35 +1,35 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
-        <a:vbox anchors="0 0 0 0">
-            <a:hbox padding="4" flex="1" splitters="true">
+        <a:hbox anchors="0 0 0 0" padding="4" flex="1" splitters="true">
+            <a:vbox flex="1">
                 <a:text id="txtConsole"
-                  flex       = "5"
+                  flex       = "1"
                   scrolldown = "true" 
                   textselect = "true"
                   focussable = "true"
                   class      = "apf_console" />
-                <a:vbox id="test"
-                  flex    = "1" 
-                  visible = "{stDebugProcessRunning.active and !stRunning.active}">
-                    <a:codeeditor id="txtCode" 
-                      flex      = "1"
-                      onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
-                      realtime  = "true"
-                      border    = "0 0 0 1" 
-                      model     = "{require('ext/settings/settings').model}" 
-                      value     = "[auto/console/input]" />
-                    <!--a:button
-                      disabled = "{!txtCode.value.trim() or !stDebugProcessRunning.active or stRunning.active}"
-                      caption  = "Evaluate" 
-                      onclick  = "
-                        require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
-                      " /-->
-                </a:vbox>
-            </a:hbox>
-            <a:textbox 
-              border    = "1 0 0 0"
-              onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
-              onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
-        </a:vbox>
+                <a:textbox 
+                  border    = "1 0 0 0"
+                  onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
+                  onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
+            </a:vbox>      
+            <a:vbox id="test"
+              width   = "250"
+              visible = "{stDebugProcessRunning.active and !stRunning.active}">
+                <a:codeeditor id="txtCode" 
+                  flex      = "1"
+                  onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
+                  realtime  = "true"
+                  border    = "0 0 0 1" 
+                  model     = "{require('ext/settings/settings').model}" 
+                  value     = "[auto/console/input]" />
+                <!--a:button
+                  disabled = "{!txtCode.value.trim() or !stDebugProcessRunning.active or stRunning.active}"
+                  caption  = "Evaluate" 
+                  onclick  = "
+                    require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
+                  " /-->
+            </a:vbox>
+        </a:hbox>
     </a:window>
 </a:application>

@@ -19,6 +19,9 @@ return keys.onLoad({
             "copy": "Command-C",
             "paste": "Command-V"
         },
+        "quickwatch": {
+            "quickwatch": "Command-Q"
+        },
         "gotoline": {
             "gotoline": "Command-L"
         },

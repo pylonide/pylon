@@ -132,7 +132,8 @@
        	  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
        	<a:divider />
        	<a:dropdown id="lstScripts"
-       	  margin     = "4 0 0 4"
+       	  margin     = "3 0 0 4"
+       	  maxitems   = "10"
           model      = "mdlDbgSources"
           disabled   = "{!stDebugProcessRunning.active}" 
           each       = "[file]"
