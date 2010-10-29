@@ -15,9 +15,20 @@
             </a:vbox>      
             <a:vbox id="test"
               width   = "250"
-              visible = "{stDebugProcessRunning.active and !stRunning.active}">
+              disabled = "{stRunning.active}"
+              visible  = "{stDebugProcessRunning.active}">
                 <a:codeeditor id="txtCode" 
                   flex      = "1"
+                  gutter    = "false"
+                  showprintmargin   = "false"
+                  printmargincolumn = "0"
+                  softtabs        = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+                  tabsize         = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+                  scrollspeed     = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+                  theme           = "[{require('ext/settings/settings').model}::editors/code/@theme]"
+                  selectstyle     = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+                  activeline      = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
+                  showinvisibles  = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
                   onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
                   realtime  = "true"
                   border    = "0 0 0 1" 

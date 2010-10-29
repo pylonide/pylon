@@ -393,7 +393,7 @@ return ext.register("ext/console/console", {
         }
         else if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
-            var expression = txtCode.value;
+            var expression = txtCode.getValue();
             if (!expression.trim())
                 return;
 

@@ -4637,7 +4637,7 @@
     </a:presentation>
 </a:toc>
 <a:codeeditor name="codeeditor">
-    <a:style>
+    <a:style><![CDATA[
         .ace_editor {
           position: relative;
           overflow: hidden;
@@ -4730,8 +4730,7 @@
           position: absolute;
           z-index: 1;
         }
-    </a:style>
-    <a:style><![CDATA[
+   
         .ceDisabled {
             border: 1px solid #c3c3c3;
             color: #bebebe;
@@ -4745,11 +4744,22 @@
         /*** TM ***/
 
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
-          background-image: url("icons/debugger/brkp_obj.gif");
+          background-image: url("icons/debugger/brkp_obj.png");
           background-repeat: no-repeat;
-          background-position: center right;
-        }
-
+          background-position: 2px center;
+       }
+       
+       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+          background-image: url("icons/debugger/current_line.png"), url("icons/debugger/brkp_obj.png");
+          background-repeat: no-repeat;
+          background-position: 2px center, 2px center;
+       }
+       
+       .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+          background-image: url("icons/debugger/current_line.png");
+          background-repeat: no-repeat;
+          background-position: 2px center;
+       }
     ]]></a:style>
     <a:presentation>
         <a:main content=".">
