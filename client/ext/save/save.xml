@@ -25,10 +25,6 @@
         </a:vbox>
     </a:window>
     
-    <a:bar id="barSave" visible="false">
-        <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disabled' : ''}.png">Save file</a:button>
-    </a:bar>
-
     <a:script><![CDATA[
         function chooseFile(file) {
             if (file.getAttribute("type") == "file") 
@@ -68,6 +64,7 @@
 	                   <a:icon
 	                     match = "[folder]"
 	                     value = "folder.png" />
+	                   <a:expanded match="[project]" />
 				    </a:each>
 		        </a:tree>
 		        <a:datagrid id="dgTest"
@@ -76,14 +73,20 @@
                   onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
 	              onafterchoose    = "chooseFile(this.selected)">
 		            <a:each
-                      match         =   "[folder|file]"
-                      filter        =   "{drpSaveAs.value.replace('*', '')}"
-                      filter-fields =   "@name">
+                      match         = "[folder|file]"
+                      filter        = "{drpSaveAs.value.replace('*', '')}"
+                      filter-fields = "@name"
+                      sort          = "[@name]" 
+                      sort-method   = "filesort">
 		                <a:load get="{location.host and davProject.readdir([@path])}" />
                         <a:column
                           caption   = "Name"
                           value     = "[@name]"
-                          width     = "60%" />
+                          width     = "60%" 
+                          icon      = "{
+                            if (#[self::folder]) 'folder.png';
+                            else getIcon(%[.]);
+                          }" />
                         <a:column
                           caption   = "Size"
                           value     = "[@size]"

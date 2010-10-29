@@ -23,33 +23,9 @@ return ext.register("ext/save/save", {
     hotitems    : {},
     nodes       : [],
 
-    //todo missing hook
-
-    init : function(amlNode){
+    hook : function(){
         var _self = this;
-
-        winCloseConfirm.onafterrender = function(){
-            btnYesAll.addEventListener("click", function(){
-                winCloseConfirm.all = 1;
-                winCloseConfirm.hide();
-            });
-            btnNoAll.addEventListener("click", function(){
-                winCloseConfirm.all = -1;
-                winCloseConfirm.hide();
-            });
-            btnSaveYes.addEventListener("click", function(){
-                _self.quicksave(winCloseConfirm.page);
-                winCloseConfirm.hide()
-            });
-            btnSaveNo.addEventListener("click", function(){
-                winCloseConfirm.hide();
-            });
-            btnSaveCancel.addEventListener("click", function(){
-                winCloseConfirm.all = -100;
-                winCloseConfirm.hide();
-            });
-        }
-
+        
         tabEditors.addEventListener("close", this.$close = function(e){
             if (e.page.$at.undolength) {
                 winCloseConfirm.page = e.page;
@@ -72,12 +48,12 @@ return ext.register("ext/save/save", {
             }
         });
 
-        var nodes = barSave.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
-        }
-
-        btnSave.onclick = _self.quicksave;
+        this.nodes.push(ide.barTools.appendChild(new apf.button({
+            id      : "btnSave",
+            icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+            caption : "Save file",
+            onclick : this.quicksave
+        })));
 
         var saveItem, saveAsItem;
         this.nodes.push(
@@ -101,13 +77,37 @@ return ext.register("ext/save/save", {
             
             saveItem = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Save",
-                onclick : _self.quicksave,
+                onclick : this.quicksave,
                 disabled : "{!tabEditors.activepage}"
             }), ide.mnuFile.firstChild)
         );
 
         this.hotitems["quicksave"] = [saveItem];
         this.hotitems["saveas"]    = [saveAsItem];
+    },
+
+    init : function(amlNode){
+        winCloseConfirm.onafterrender = function(){
+            btnYesAll.addEventListener("click", function(){
+                winCloseConfirm.all = 1;
+                winCloseConfirm.hide();
+            });
+            btnNoAll.addEventListener("click", function(){
+                winCloseConfirm.all = -1;
+                winCloseConfirm.hide();
+            });
+            btnSaveYes.addEventListener("click", function(){
+                _self.quicksave(winCloseConfirm.page);
+                winCloseConfirm.hide()
+            });
+            btnSaveNo.addEventListener("click", function(){
+                winCloseConfirm.hide();
+            });
+            btnSaveCancel.addEventListener("click", function(){
+                winCloseConfirm.all = -100;
+                winCloseConfirm.hide();
+            });
+        }
     },
     
     saveall : function(){
@@ -196,6 +196,7 @@ return ext.register("ext/save/save", {
     },
     
     saveas : function(){
+        ext.initExtension(this);
         txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
         winSaveAs.show();
     },
