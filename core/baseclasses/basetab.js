@@ -1214,6 +1214,7 @@ apf.BaseTab = function(){
                 this.$activepage  =
                 this.activepage   =
                 this.activepagenr = null;
+                this.setProperty("activepage", null);
             }
         }
         else {
