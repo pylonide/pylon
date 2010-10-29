@@ -18,7 +18,8 @@ var Sys = require("sys"),
 
 function usage() {
     var message = "USAGE: cloud9",
-        hint, opt, def;
+        hint, opt, def,
+        mapOption;
     for(opt in mapOptions) {
         mapOption = mapOptions[opt];
         hint = mapOption.hint;
