@@ -1134,7 +1134,7 @@ apf.$debugwin = {
     
     activate : function(){
         //Show me
-        this.show();
+        //this.show();
     }
 }
 

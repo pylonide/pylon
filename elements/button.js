@@ -292,6 +292,9 @@ apf.button  = function(struct, tagName){
                     _self.dispatchEvent("click");
             });
         }
+
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
     }
     //#endif
 
@@ -530,6 +533,11 @@ apf.button  = function(struct, tagName){
     //#endif
 
     /**** Init ****/
+
+    this.addEventListener("$skinchange", function(e){
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+    });
 
     this.$draw  = function(){
         var pNode, isToolbarButton = (pNode = this.parentNode) 

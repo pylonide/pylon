@@ -188,9 +188,10 @@ apf.codeeditor = function(struct, tagName) {
         };
     };
 
+    //@todo fix that this is not called three times
     this.$updateMarker = function(removeOnly) {
         if (this.$marker) {
-            this.$editor.renderer.removeGutterDecoration(this.$lastRow, "arrow");
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
             this.$editor.renderer.removeMarker(this.$marker);
             this.$marker = null;
             
@@ -209,12 +210,17 @@ apf.codeeditor = function(struct, tagName) {
         if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
             return;
 
+        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
+        
         var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
-        this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
-        this.$lastRow = row;
-        this.$editor.renderer.addGutterDecoration(row, "arrow");
+
+        this.$marker = this.$editor.renderer.addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        var type = isTop ? "arrow" : "stack";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
         
         this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column")));
         //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
