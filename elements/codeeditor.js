@@ -77,11 +77,12 @@ apf.codeeditor = function(struct, tagName) {
     this.$booleanProperties["showprintmargin"] = true;
     this.$booleanProperties["overwrite"]       = true;
     this.$booleanProperties["softtabs"]        = true;
+    this.$booleanProperties["gutter"]          = true;
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme");
+        "theme", "gutter");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -187,10 +188,14 @@ apf.codeeditor = function(struct, tagName) {
         };
     };
 
-    this.$updateMarker = function() {
+    this.$updateMarker = function(removeOnly) {
         if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow, "arrow");
             this.$editor.renderer.removeMarker(this.$marker);
             this.$marker = null;
+            
+            if (removeOnly)
+                return;
         }
 
         if (!this.$debugger)
@@ -208,8 +213,11 @@ apf.codeeditor = function(struct, tagName) {
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
         this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
-
-        this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+        this.$lastRow = row;
+        this.$editor.renderer.addGutterDecoration(row, "arrow");
+        
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column")));
+        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
     };
 
     this.$updateBreakpoints = function(doc) {
@@ -309,7 +317,11 @@ apf.codeeditor = function(struct, tagName) {
     this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
         this.$editor.setScrollSpeed(value || 2);
     };
-
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.setShowGutter(value);
+    };
+    
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
         this.$debuggerBreakpoints = false;
         
@@ -334,8 +346,9 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (this.$debugger) {
-            this.$debugger.removeEventListener("prop.activeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
             this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
         }
         
         if (typeof value === "string") {
@@ -358,11 +371,15 @@ apf.codeeditor = function(struct, tagName) {
             
         this.$updateMarker();
         var _self = this;
-        this.$onChangeActiveFrame = function() {
+        this.$onChangeActiveFrame = function(e) {
             _self.$updateMarker();
         }
-        this.$debugger.addEventListener("prop.activeframe", this.$onChangeActiveFrame);
+        this.$onBeforeContinue = function() {
+            _self.$updateMarker(true);
+        }
+        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
         this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
     };
 
     var propModelHandler = this.$propHandlers["model"];

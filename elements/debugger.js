@@ -88,7 +88,7 @@ apf.dbg = function(struct, tagName){
                            _self.$debugger.continueScript();
                         }
                     }
-	            });            
+	            });
             });
         });
     };
@@ -100,13 +100,13 @@ apf.dbg = function(struct, tagName){
         
         this.$stRunning.setProperty("active", isRunning);
         
-        if (isRunning)
-            this.$mdlStack.load("<frames />");
+        //if (isRunning)
+            //this.$mdlStack.load("<frames />");
     };
     
     this.$onBreak = function() {
         var _self = this;
-        this.$debugger.backtrace(this.$mdlStack, function() {            
+        this.$debugger.backtrace(this.$mdlStack, function() {
             _self.dispatchEvent("break");
         });
     };
@@ -189,6 +189,9 @@ apf.dbg = function(struct, tagName){
     };
 
     this.continueScript = function(callback) {
+        this.dispatchEvent("beforecontinue");
+        this.$stRunning.setProperty("active", true);
+        
         if (this.$debugger)
             this.$debugger.continueScript(callback);
         else
@@ -196,14 +199,23 @@ apf.dbg = function(struct, tagName){
     };
 
     this.stepInto = function() {
+        this.dispatchEvent("beforecontinue");
+        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepInto();
     };
 
     this.stepNext = function() {
+        this.dispatchEvent("beforecontinue");
+        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepNext();
     };
 
     this.stepOut = function() {
+        this.dispatchEvent("beforecontinue");
+        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepOut();
     };    
 
