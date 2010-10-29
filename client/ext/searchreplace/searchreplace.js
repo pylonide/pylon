@@ -19,7 +19,10 @@ return ext.register("ext/searchreplace/searchreplace", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"search":1, "searchreplace":1},
+    commands : {
+        "search": {hint: "search for a string inside the active document"},
+        "searchreplace": {hint: "search for a string inside the active document and replace it"}
+    },
     hotitems: {},
 
     nodes   : [],

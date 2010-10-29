@@ -15,7 +15,10 @@ return ext.register("ext/newresource/newresource", {
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],
-    hotkeys : {"newfile":1, "newfolder":1},
+    commands : {
+        "newfile": {hint: "create a new file resource"},
+        "newfolder": {hint: "create a new directory resource"}
+    },
     hotitems: {},
 
     nodes   : [],

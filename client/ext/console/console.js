@@ -219,7 +219,7 @@ return ext.register("ext/console/console", {
             return false;
         }
         else if (e.keyCode != 13 && e.keyCode != 9) {
-            this.autoComplete(e, parser);
+            this.autoComplete(e, parser, 2);
             return;
         }
         //debugger;
@@ -235,12 +235,12 @@ return ext.register("ext/console/console", {
             var s,
                 cmd = parser.argv[parser.argc++];
             cmdHistory.push(line);
-            e.currentTarget.setValue(newVal);
             cmdBuffer = null;
 
             if (e.keyCode == 9) {
-                return this.autoComplete(e, parser);
+                return this.autoComplete(e, parser, 1);
             }
+            e.currentTarget.setValue(newVal);
 
             // special commands (run & debug):
             if (cmd == "debug" || cmd == "run") {
@@ -367,7 +367,8 @@ return ext.register("ext/console/console", {
         }
     },
 
-    autoComplete: function(e, parser) {
+    autoComplete: function(e, parser, mode) {
+        mode = mode || 2;
         if (!trieInternals) {
             trieInternals = new Trie();
             apf.extend(internal, ext.commandsLut);
@@ -375,14 +376,61 @@ return ext.register("ext/console/console", {
                 trieInternals.add(name);
         }
 
-        if (parser.argv.length == 1) {
-            var root = trieInternals.find(parser.argv[0]),
+        var list    = [],
+            textbox = e.currentTarget,
+            len     = parser.argv.length;
+        if (len == 1) {
+            var root = trieInternals.find(parser.argv[0]);
+            if (root) {
                 list = root.getWords();
-            console.log("check: ", parser.argv[0], e.currentTarget.getValue());
-            console.log("words found for word '", parser.argv[0], "' ", list);
+                console.log("check: ", parser.argv[0], textbox.getValue());
+                console.log("words found for word '", parser.argv[0], "' ", list);
+            }
+                
+        }
+
+        if (mode === 2) {
+            this.showHints(textbox, parser.argv[0] || "", list);
+        }
+        else if (mode === 1 && list.length === 1) {
+            textbox.setValue(textbox.getValue() + list[0].substr(1));
         }
 
         return false;
+    },
+
+    showHints: function(textbox, base, hints) {
+        var name = "console_hints";
+        base = base.substr(0, base.length - 1);
+
+        if (!this.hintsPanel) {
+            this.hintsPanel = document.body.appendChild(document.createElement("div"));
+            this.hintsPanel.className = name;
+            this.hintsPanel.style.display = "none";
+            apf.popup.setContent(name, this.hintsPanel);
+        }
+        var content = [];
+        for (var i = 0, len = hints.length; i < len; ++i) {
+            var hint = base + hints[i];
+            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\''
+                + hint + '\')">' + hint + '</a><br />');
+        }
+        this.hintsPanel.innerHTML = content.join("");
+
+        if (apf.popup.isShowing(name)) {
+            if (len === 0)
+                apf.popup.forceHide();
+            return;
+        }
+
+        apf.popup.show(name, {
+            x        : 0,
+            y        : 22,
+            animate  : false,
+            ref      : textbox.$ext,
+            width    : 200,
+            height   : 200
+        });
     },
 
     consoleTextHandler: function(e) {

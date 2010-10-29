@@ -61,8 +61,8 @@ return ext = {
         else
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
-        if (oExtension.hotkeys)
-            apf.extend(this.commandsLut, oExtension.hotkeys);
+        if (oExtension.commands)
+            apf.extend(this.commandsLut, oExtension.commands);
 
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
@@ -112,7 +112,7 @@ return ext = {
         delete this.extLut[oExtension.path];
 
         //Check commands to clean up
-        var commands = oExtension.hotkeys;
+        var commands = oExtension.commands;
         if (commands) {
             for (var cmd in commands) {
                 if (this.commandsLut[cmd])

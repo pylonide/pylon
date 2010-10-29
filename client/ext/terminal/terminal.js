@@ -267,7 +267,9 @@ return terminal = ext.register("ext/terminal/terminal", {
     type     : ext.GENERAL,
     alone    : true,
     markup   : null,
-    hotkeys  : {"terminal":1},
+    commands  : {
+        "terminal": {hint: "open the terminal window"}
+    },
     pageTitle: "Terminal",
     pageID   : "pgTerminal",
     hotitems : {},

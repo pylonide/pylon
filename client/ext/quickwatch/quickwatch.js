@@ -17,7 +17,9 @@ return ext.register("ext/quickwatch/quickwatch", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"quickwatch":1},
+    commands : {
+        "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
+    },
     hotitems: {},
 
     nodes   : [],

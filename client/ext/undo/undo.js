@@ -13,7 +13,10 @@ return ext.register("ext/undo/undo", {
     name   : "Undo",
     alone  : true,
     type   : ext.GENERAL,
-    hotkeys: {"undo":1, "redo":1},
+    commands: {
+        "undo": {hint: "undo one edit step in the active document"},
+        "redo": {hint: "redo one edit step in the active document"}
+    },
 
     nodes : [],
 
