@@ -19,7 +19,9 @@ return ext.register("ext/gotofile/gotofile", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    hotkeys : {"gotofile":1},
+    commands : {
+        "gotofile": {hint: "search for a filename and jump to it"}
+    },
     hotitems: {},
 
     nodes   : [],

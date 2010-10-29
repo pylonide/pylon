@@ -19,7 +19,9 @@ return ext.register("ext/formatjson/formatjson", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    hotkeys  : {"format":1},
+    commands  : {
+        "format": {hint: "reformat the current JSON document"}
+    },
     hotitems : {},
     
     nodes : [],

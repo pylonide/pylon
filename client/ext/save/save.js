@@ -16,7 +16,10 @@ return ext.register("ext/save/save", {
     type        : ext.GENERAL,
     markup      : markup,
     deps        : [fs],
-    hotkeys     : {"quicksave":1, "saveas":1},
+    commands     : {
+        "quicksave": {hint: "save the currently active file to disk"},
+        "saveas": {hint: "save the file to disk with a different filename"}
+    },
     hotitems    : {},
     nodes       : [],
 

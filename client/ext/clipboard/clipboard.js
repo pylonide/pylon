@@ -13,7 +13,11 @@ return ext.register("ext/clipboard/clipboard", {
     name   : "Clipboard",
     alone  : true,
     type   : ext.GENERAL,
-    hotkeys: {"cut":1, "copy":1, "paste":1},
+    commands: {
+        "cut": {hint: "cut the selected text to the clipboard"},
+        "copy": {hint: "copy the selected text to the clipboard"},
+        "paste": {hint: "paste text from the clipboard into the active document"}
+    },
 
     nodes : [],
 

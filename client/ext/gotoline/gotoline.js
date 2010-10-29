@@ -22,7 +22,9 @@ return ext.register("ext/gotoline/gotoline", {
     skin    : skin,
     markup  : markup,
     
-    hotkeys : {"gotoline":1},
+    commands : {
+        "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
+    },
     hotitems: {},
 
     nodes   : [],
