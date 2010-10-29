@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require.def("core/ide", ["core/document"],
+require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
     function(Document) {
         var ide = new apf.Class().$init();
 
@@ -146,6 +146,68 @@ require.def("core/ide", ["core/document"],
         //@todo this doesnt work
         apf.addEventListener("exit", function(){
             //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
+        });
+
+        ide.addEventListener("extload", function() {
+            //setTimeout(function() {
+            // fire up the socket connection:
+            var options = {
+                transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
+                transportOptions: {
+                    'xhr-polling': {
+                        timeout: 30000
+                    },
+                    'jsonp-polling': {
+                        timeout: 30000
+                    }
+                }
+            };
+            ide.socketConnect = function() {
+                clearTimeout(ide.$retryTimer);
+                stServerConnected.activate();
+                ide.dispatchEvent("socketConnect");
+            };
+
+            ide.socketDisconnect = function() {
+                stProcessRunning.deactivate();
+                ide.dispatchEvent("socketDisconnect");
+
+                clearTimeout(ide.$retryTimer);
+                ide.$retryTimer = setTimeout(function() {
+                    ide.socket.connect();
+                }, 2000);
+            };
+
+            ide.socketMessage = function(message) {
+                try {
+                    message = JSON.parse(message);
+                } catch(e) {
+                    return;
+                }
+                ide.dispatchEvent("socketMessage", {
+                    message: message
+                });
+                if (message.type && message.type == "state") {
+                    stProcessRunning.setProperty("active", message.processRunning);
+                    if (ide.workspaceDir !== message.workspaceDir) {
+                        ide.workspaceDir = message.workspaceDir;
+                        ide.dispatchEvent("workspaceDirChange", {
+                            workspaceDir: ide.workspaceDir
+                        });
+                    }
+                    var isInit = !ide.davPrefix;
+                    ide.davPrefix = message.davPrefix;
+                    if (isInit)
+                        ide.dispatchEvent("ideready")
+                }
+            };
+
+            ide.socket = new io.Socket(null, options);
+            ide.socket.on("message",    ide.socketMessage);
+            ide.socket.on("connect",    ide.socketConnect);
+            ide.socket.on("disconnect", ide.socketDisconnect);
+            ide.socket.connect();
+            //}, 1000);
         });
         
         ide.getActivePageModel = function() {

@@ -28,7 +28,8 @@
             </a:hbox>
             <a:textbox 
               border    = "1 0 0 0"
-              onkeydown = "return require('ext/console/console').commandTextHandler(event)" />
+              onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
+              onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
         </a:vbox>
     </a:window>
 </a:application>

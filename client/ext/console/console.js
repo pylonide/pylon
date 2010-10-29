@@ -10,14 +10,21 @@ require.def("ext/console/console",
      "ace/lib/lang",
      "ext/panels/panels",
      "ext/console/parser",
+     "ext/console/trie",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, markup) {
 
-var setDebug   = false,
+var trieInternals,
+    setDebug   = false,
     setRun     = false,
     cmdHistory = [],
     cmdBuffer  = "",
     parser     = new parserCls(),
+    internal   = {"help":1,"clear":1,"open":1,"c9":1,"debug":1,"run":1,"sudo":1,
+        "man":1,"locate":1,"make":1,"lpr":1,"hello":1,"xyzzy":1,"date":1,"who":1,
+        "su":1,"fuck":1,"whoami":1,"nano":1,"top":1,"moo":1,"ping":1,"find":1,
+        "more":1,"your":1,"hi":1,"echo":1,"bash":1,"ssh":1,"uname":1,"finger":1,
+        "kill":1,"use":1,"serenity":1,"enable":1,"ed":1},
     helpPage   = [
         "%CS%+r Terminal Help %-r",
         " ",
@@ -55,6 +62,10 @@ return ext.register("ext/console/console", {
         row = parseInt(row.slice(1));
         column = column ? parseInt(column.slice(1)) : 0;
         require("ext/debugger/debugger").showFile(path, row, column);
+    },
+
+    getCwd: function() {
+        return this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
     },
 
     logNodeStream : function(data, stream, workspaceDir, davPrefix) {
@@ -185,38 +196,35 @@ return ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
-        console.log("keyCode: ", e.keyCode);
         var line      = e.currentTarget.getValue(),
             idx       = cmdHistory.indexOf(line),
             hisLength = cmdHistory.length,
             newVal    = "";
+        if (cmdBuffer === null || (idx == -1 && cmdBuffer !== line))
+            cmdBuffer = line;
+        parser.parseLine(line);
 
         if (e.keyCode == 38) { //UP
             if (!hisLength)
                 return;
-            if (!cmdBuffer)
-                cmdBuffer = line;
             newVal = cmdHistory[--idx < 0 ? hisLength - 1 : idx];
             e.currentTarget.setValue(newVal);
             return false;
         }
         else if (e.keyCode == 40) { //DOWN
-            if (!hisLength || idx === -1)
+            if (!hisLength)
                 return;
-            if (!cmdBuffer)
-                cmdBuffer = line;
-            newVal = cmdHistory[++idx > hisLength - 1 ? (cmdBuffer || "") : idx];
+            newVal = (++idx > hisLength - 1 || idx === 0) ? (cmdBuffer || "") : cmdHistory[idx];
             e.currentTarget.setValue(newVal);
             return false;
         }
-        else if (e.keyCode != 13) {
-            //do some autcompletion magic here...
+        else if (e.keyCode != 13 && e.keyCode != 9) {
+            this.autoComplete(e, parser);
             return;
         }
         //debugger;
 
-        parser.parseLine(line);
-        if (parser.argv.length == 0) {
+        if (parser.argv.length === 0) {
             // no commmand line input
         }
         else if (parser.argQL[0]) {
@@ -230,12 +238,17 @@ return ext.register("ext/console/console", {
             e.currentTarget.setValue(newVal);
             cmdBuffer = null;
 
+            if (e.keyCode == 9) {
+                return this.autoComplete(e, parser);
+            }
+
             // special commands (run & debug):
             if (cmd == "debug" || cmd == "run") {
                 setDebug = (cmd == "debug");
                 setRun   = (cmd == "run");
                 cmd = "open";
             }
+
             switch (cmd) {
                 case "help":
                     this.write(helpPage);
@@ -249,29 +262,13 @@ return ext.register("ext/console/console", {
                     }
                     this.clear();
                     break;
-                case "login":
-                    // sample login (test for raw mode)
-                    if ((parser.argc == parser.argv.length) || (parser.argv[parser.argc] == "")) {
-                        this.type("usage: login <username>");
-                    }
-                    else {
-                        this.env.getPassword = true;
-                        this.env.username = this.argv[this.argc];
-                        this.write("%+iSample login: repeat username as password.%-i\n");
-                        this.type("password: ");
-                        // exit in raw mode (blind input)
-                        this.rawMode = true;
-                        this.lock = false;
-                        return;
-                    }
-                    break;
                 case "open":
                 case "c9":
                     parser.argv[0] = "check-isfile"
-                    noderunner.socket.send(JSON.stringify({
+                    ide.socket.send(JSON.stringify({
                         command: "terminal",
                         argv: parser.argv,
-                        cwd: getCwd()
+                        cwd: this.getCwd()
                     }));
                     break;
                 case "sudo":
@@ -329,7 +326,6 @@ return ext.register("ext/console/console", {
                         "date": "March 32nd",
                         "hello": "Why hello there!",
                         "who": "Doctor Who?",
-                        "xkcd": "Yes?",
                         "su": "God mode activated. Remember, with great power comes great ... aw, screw it, go have fun.",
                         "fuck": "I have a headache.",
                         "whoami": "You are Richard Stallman.",
@@ -363,12 +359,30 @@ return ext.register("ext/console/console", {
                             command: "terminal",
                             argv: parser.argv,
                             parser: parser,
-                            cwd: getCwd()
+                            cwd: this.getCwd()
                         });
                         return;
                     }
             }
         }
+    },
+
+    autoComplete: function(e, parser) {
+        if (!trieInternals) {
+            trieInternals = new Trie();
+            apf.extend(internal, ext.commandsLut);
+            for (var name in internal)
+                trieInternals.add(name);
+        }
+
+        if (parser.argv.length == 1) {
+            var root = trieInternals.find(parser.argv[0]),
+                list = root.getWords();
+            console.log("check: ", parser.argv[0], e.currentTarget.getValue());
+            console.log("words found for word '", parser.argv[0], "' ", list);
+        }
+
+        return false;
     },
 
     consoleTextHandler: function(e) {
@@ -521,6 +535,7 @@ return ext.register("ext/console/console", {
 
     init : function(amlNode){
         this.panel = winDbgConsole;
+        this.$cwd  = "/workspace";
 
         //Append the console window at the bottom below the tab
         ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);

@@ -34,6 +34,7 @@ return ext = {
     },
     extensions    : [],
     extLut        : {},
+    commandsLut   : {},
     typeLut       : {
         1 : "General"
     },
@@ -59,6 +60,9 @@ return ext = {
                 + '" dev="' + (oExtension.dev || "") + '" enabled="1" />');
         else
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+
+        if (oExtension.hotkeys)
+            apf.extend(this.commandsLut, oExtension.hotkeys);
 
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
@@ -106,6 +110,15 @@ return ext = {
         delete oExtension.registered;
         this.extensions.remove(oExtension);
         delete this.extLut[oExtension.path];
+
+        //Check commands to clean up
+        var commands = oExtension.hotkeys;
+        if (commands) {
+            for (var cmd in commands) {
+                if (this.commandsLut[cmd])
+                    delete this.commandsLut[cmd];
+            }
+        }
 
         //Check deps to clean up
         var deps = oExtension.deps;

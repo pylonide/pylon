@@ -21,8 +21,6 @@
       model-tabs      = "mdlTabs"
       state-connected = "stDebuggerConnected" />
       
-    <a:state id="stServerConnected" active="false" />
-    <a:state id="stProcessRunning" active="false" />
     <a:state id="stDebugProcessRunning" active="false" />
     
     <a:window id="winTab" 

@@ -36,7 +36,7 @@ return ext.register("ext/filesystem/filesystem", {
                 name = "New Folder";
             var path = node.getAttribute("path");
             if (!path) {
-                path = require("ext/noderunner/noderunner").davPrefix;
+                path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
             trFiles.focus();
@@ -71,7 +71,7 @@ return ext.register("ext/filesystem/filesystem", {
             var _self = this,
                 path  = node.getAttribute("path");
             if (!path) {
-                path = require("ext/noderunner/noderunner").davPrefix;
+                path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
             this.webdav.exec("create", [path, filename], function(data) {
@@ -175,8 +175,7 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-                    var noderunner = require("ext/noderunner/noderunner");
-                    if (!noderunner.davPrefix) {
+                    if (!ide.davPrefix) {
                         /*util.alert(
                             "Could not connect to server backend",
                             "Could not connect",
@@ -185,18 +184,22 @@ return ext.register("ext/filesystem/filesystem", {
                             "sessions and restart this one.");
                         return;*/
                         
-                        ide.addEventListener("noderunnerready", function(){
-                            node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
-                            ide.removeEventListener("noderunnerready", arguments.callee);
+                        ide.addEventListener("ideready", function(){
+                            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+                            ide.removeEventListener("ideready", arguments.callee);
                         });
                     }
                     else
-                        node.setAttribute("scriptname", noderunner.workspaceDir + path.slice(noderunner.davPrefix.length));
+                        node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
                     
                     doc.setValue(data);
                     ide.dispatchEvent("afteropenfile", {doc: doc});
                 }
             });
+        });
+
+        ide.addEventListener("workspaceDirChange", function(e) {
+            fs.setProjectName(e.workspaceDir.replace(/\/+$/, "").split("/").pop());
         });
     },
 

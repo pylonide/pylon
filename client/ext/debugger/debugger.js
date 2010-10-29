@@ -10,9 +10,8 @@ require.def("ext/debugger/debugger",
      "core/ext",
      "ext/console/console",
      "ext/filesystem/filesystem",
-     "ext/noderunner/noderunner",
      "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, fs, noderunner, markup) {
+    function(ide, Document, ext, log, fs, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -138,8 +137,8 @@ return ext.register("ext/debugger/debugger", {
             var name = script.getAttribute("scriptname");
             var value = name.split("/").pop();
 
-            if (name.indexOf(noderunner.workspaceDir) == 0) {
-                var path = "/" + noderunner.davPrefix + name.slice(noderunner.workspaceDir.length + 1);
+            if (name.indexOf(ide.workspaceDir) == 0) {
+                var path = "/" + ide.davPrefix + name.slice(ide.workspaceDir.length + 1);
 	            // TODO this has to be refactored to support multiple tabs
 	            var page = tabEditors.getPage(path);
 	            if (page)
@@ -187,7 +186,7 @@ return ext.register("ext/debugger/debugger", {
         this.inSync = true;
         var dbgFiles = mdlDbgSources.data.childNodes;
 
-        var workspaceDir = noderunner.workspaceDir;
+        var workspaceDir = ide.workspaceDir;
         for (var i=0,l=dbgFiles.length; i<l; i++) {
             var dbgFile = dbgFiles[i];
             var name = dbgFile.getAttribute("scriptname");
@@ -199,7 +198,7 @@ return ext.register("ext/debugger/debugger", {
         var tabFiles = ide.getAllPageModels();
         var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
 
-        var davPrefix = noderunner.davPrefix;
+        var davPrefix = ide.davPrefix;
         for (var i=0,l=files.length; i<l; i++) {
             var file = files[i];
             var path = file.getAttribute("scriptname");

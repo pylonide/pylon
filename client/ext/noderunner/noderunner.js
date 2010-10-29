@@ -9,9 +9,7 @@ require.def("ext/noderunner/noderunner",
      "core/ext",
      "core/util",
      "ext/console/console",
-     "ext/filesystem/filesystem",
-     "text!ext/noderunner/noderunner.xml",
-     "/socket.io/socket.io.js"], function(ide, ext, util, log, fs, markup) {
+     "text!ext/noderunner/noderunner.xml"], function(ide, ext, util, log, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -22,27 +20,12 @@ return ext.register("ext/noderunner/noderunner", {
     deps   : [log],
 
     init : function(amlNode){
-        var options = {
-            transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'],
-            transportOptions: {
-                'xhr-polling': {
-                    timeout: 30000
-                },
-                'jsonp-polling': {
-                    timeout: 30000
-                }
-            }
-        };
-
-        var socket = this.socket = new io.Socket(null, options);
-        this.socket.on("message", this.onMessage.bind(this));
-        this.socket.on("connect", this.onConnect.bind(this));
-        this.socket.on("disconnect", this.onDisconnect.bind(this));
-        this.socket.connect();
+        ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         var _self = this;
         dbgNode.addEventListener("onsocketfind", function() {
-            return socket;
+            return ide.socket;
         });
 
         stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
@@ -58,12 +41,8 @@ return ext.register("ext/noderunner/noderunner", {
         dbg.detach();
     },
 
-    onMessage : function(message) {
-        try {
-            message = JSON.parse(message);
-        } catch(e) {
-            return;
-        }
+    onMessage : function(e) {
+        var message = e.message;
 //        console.log("MSG", message)
 
         switch(message.type) {
@@ -84,12 +63,8 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-                stProcessRunning.setProperty("active", message.processRunning);
                 stDebugProcessRunning.setProperty("active", message.debugClient);
-                this.workspaceDir = message.workspaceDir;
-                fs.setProjectName(this.workspaceDir.replace(/\/+$/, "").split("/").pop());
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
-                this.davPrefix = message.davPrefix;
                 ide.dispatchEvent("noderunnerready");
                 break;
 
@@ -101,26 +76,14 @@ return ext.register("ext/noderunner/noderunner", {
             case "error":
                 if (message.code !== 6)
                     util.alert("Server Error", "Server Error", message.message);
-                this.socket.send('{"command": "state"}');
+                ide.socket.send('{"command": "state"}');
                 break;
                 
         }
     },
 
-    onConnect : function() {
-        clearTimeout(this.$retryTimer);
-        stServerConnected.activate();
-    },
-
     onDisconnect : function() {
-        stProcessRunning.deactivate();
         stDebugProcessRunning.deactivate();
-
-        clearTimeout(this.$retryTimer);
-        var _self = this;
-        this.$retryTimer = setTimeout(function() {
-            _self.socket.connect();
-        }, 2000);
     },
 
     debugChrome : function() {
@@ -128,7 +91,7 @@ return ext.register("ext/noderunner/noderunner", {
             "command" : "RunDebugChrome",
             "file"    : ""
         };
-        this.socket.send(JSON.stringify(command));
+        ide.socket.send(JSON.stringify(command));
     },
 
     debug : function() {
@@ -148,7 +111,7 @@ return ext.register("ext/noderunner/noderunner", {
                 "C9_SELECTED_FILE": page ? this.workspaceDir + page.getAttribute("path").slice(this.davPrefix.length) : ""
             }
         };
-        this.socket.send(JSON.stringify(command));
+        ide.socket.send(JSON.stringify(command));
 
         log.clear();
         if (debug)
@@ -165,7 +128,7 @@ return ext.register("ext/noderunner/noderunner", {
         ext.setLayoutMode("default");
         log.disable();
 
-        this.socket.send(JSON.stringify({"command": "kill"}));
+        ide.socket.send(JSON.stringify({"command": "kill"}));
     },
 
     enable : function(){
