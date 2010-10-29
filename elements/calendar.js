@@ -167,7 +167,6 @@ apf.calendar = function(struct, tagName){
     };
 
     this.$propHandlers["value"] = function(value) {
-        console.log(value)
         var c = this.$calVars;
         
         if (!this.outputFormat) {
