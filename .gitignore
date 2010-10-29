@@ -8,3 +8,4 @@ client/common
 /demo
 .settings.xml.old
 .DS_Store
+/nbproject
