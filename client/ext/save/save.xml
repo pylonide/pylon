@@ -37,13 +37,13 @@
     <a:window
       id        = "winSaveAs"
       center    = "true"
-      height    = "350"
+      height    = "400"
       icon      = ""
       buttons   = "close"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
-      width     = "500">
+      width     = "650">
         <a:vbox
           anchors   = "5 5 0 5"
           padding   = "5">
@@ -55,6 +55,7 @@
 		          id            = "trSaveAs"
 		          flex          = "1"
                   model         = "{require('ext/filesystem/filesystem').model}"
+                  contextmenu   = "mnuCtxTree"
                   onafterchoose = "txtSaveAs.setValue(this.selected.getAttribute('path'))">
 	                <a:each match="[folder]">
 	                   <a:insert
@@ -64,14 +65,25 @@
 	                   <a:icon
 	                     match = "[folder]"
 	                     value = "folder.png" />
-	                   <a:expanded match="[project]" />
 				    </a:each>
+				    
+				    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                    <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                    <a:rename set="{davProject.rename([@name], [@path])}"/>
+                    <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+                    <a:move set="{davProject.move([@path], [../@path])}"/>
+                    <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+        
+                    <a:drag match="[folder|file]" />
+                    <a:drop match="[folder|file]" target="[folder]"
+                        action="tree-append" copy="{event.ctrlKey}" />
 		        </a:tree>
 		        <a:datagrid id="dgTest"
-	              flex             = "2"
+	              flex             = "3"
 	              model            = "{trSaveAs.selected}"
                   onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
-	              onafterchoose    = "chooseFile(this.selected)">
+	              onafterchoose    = "chooseFile(this.selected)"
+	              loading-message  = "Loading...">
 		            <a:each
                       match         = "[folder|file]"
                       filter        = "{drpSaveAs.value.replace('*', '')}"
@@ -90,6 +102,7 @@
                         <a:column
                           caption   = "Size"
                           value     = "[@size]"
+                          align     = "right"
                           width     = "20%" />
                         <a:column
                           caption   = "Type"

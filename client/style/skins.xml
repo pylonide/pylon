@@ -10200,9 +10200,9 @@
         .datagrid .headings div.hover,
         .datagrid .headings div.down,
         .datagrid .headings div.drag{
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
-            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
-            color : white;
+            background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(221,221,221)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(221,221,221) 0%,rgb(255,255,255) 100%);
+            color : #555;
         }
 
         .datagrid .headings div.drag{
@@ -10217,7 +10217,7 @@
         .datagrid .headings div.ascending u{
             background-image : url(images/sort_asc.gif);
             background-repeat : no-repeat;
-            background-position : right 6px;
+            background-position : right 7px;
         }
 
 
@@ -10459,11 +10459,10 @@
             padding-left: 0;
         }
 
-        .datagrid .treecell .iconCell, .datagrid .iconCell  {
-            background-position : 4px 3px;
+        .datagrid .records .row .treecell .iconCell, .datagrid .records .row .iconCell  {
+            background-position : 1px 1px;
             background-repeat   : no-repeat;
-            padding             : 3px 0 1px 24px;
-            margin-left         : 1px;
+            padding             : 2px 0 2px 22px;
         }
 
         .datagrid .treecell strong{
