@@ -7,14 +7,14 @@
       render    = "runtime"
       width     = "512"
       skin      = "change_photo">
-        <a:vbox padding="10" edge="15 20 20 20">
+        <a:vbox padding="10" edge="15 20 10 20">
             <h3 class="wheader">Save this file?</h3>
             <div>This file has unsaved changes. Would you like to save the file before closing?</div>
         </a:vbox>
     
         <a:vbox>
             <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 0 10">
+            <a:hbox pack="end" padding="7" edge="10 10 5 10">
                 <a:button id="btnYesAll" caption="Yes to all" />
                 <a:button id="btnNoAll" caption="No to all" />
                 <a:filler />

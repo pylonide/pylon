@@ -6,52 +6,32 @@
       skinset = "skinconsole"
       visible = "false"
       width   = "350"
+      zindex  = "10000000"
       kbclose = "true"
       top     = "-30"
       right   = "30" />
 
-    <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
-        <a:hbox anchors="0 0 0 0" padding="4" flex="1" splitters="true">
-            <a:vbox flex="1">
-                <a:text id="txtConsole"
-                  flex       = "1"
-                  scrolldown = "true" 
-                  textselect = "true"
-                  focussable = "true"
-                  class      = "apf_console" />
-                <a:textbox id="txtConsoleInput"
-                  border    = "1 0 0 0"
-                  onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
-                  onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
-            </a:vbox>      
-            <a:vbox id="test"
-              width   = "250"
-              disabled = "{stRunning.active}"
-              visible  = "{stDebugProcessRunning.active}">
-                <a:codeeditor id="txtCode" 
-                  flex      = "1"
-                  gutter    = "false"
-                  showprintmargin   = "false"
-                  printmargincolumn = "0"
-                  softtabs        = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
-                  tabsize         = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
-                  scrollspeed     = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-                  theme           = "[{require('ext/settings/settings').model}::editors/code/@theme]"
-                  selectstyle     = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
-                  activeline      = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-                  showinvisibles  = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-                  onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
-                  realtime  = "true"
-                  border    = "0 0 0 1" 
-                  model     = "{require('ext/settings/settings').model}" 
-                  value     = "[auto/console/input]" />
-                <!--a:button
-                  disabled = "{!txtCode.value.trim() or !stDebugProcessRunning.active or stRunning.active}"
-                  caption  = "Evaluate" 
-                  onclick  = "
-                    require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
-                  " /-->
-            </a:vbox>
-        </a:hbox>
+    <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="200" visible="false" buttons="close">
+        <a:vbox flex="1" anchors="0 0 0 0">
+            <a:toolbar>
+                <a:bar border="0 0 1 0">
+                    <a:button
+                      caption  = "Clear" 
+                      onclick  = "
+                        txtConsole.clear();
+                      " />
+                </a:bar>
+            </a:toolbar>
+            <a:text id="txtConsole"
+              flex       = "1"
+              scrolldown = "true" 
+              textselect = "true"
+              focussable = "true"
+              class      = "apf_console" />
+            <a:textbox id="txtConsoleInput"
+              border    = "1 0 0 0"
+              onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
+              onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
+        </a:vbox>      
     </a:window>
 </a:application>

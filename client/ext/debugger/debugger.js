@@ -34,16 +34,13 @@ return ext.register("ext/debugger/debugger", {
     },
 
     init : function(amlNode){
-        this.rightPane = ide.vbMain.selectSingleNode("a:hbox/a:vbox[3]");
+        this.rightPane = colRight;
         this.nodes.push(
             //Append the stack window at the right
             this.rightPane.appendChild(winDbgStack),
 
             //Append the variable window on the right
-            this.rightPane.appendChild(winDbgVariables),
-
-            //Append the variable window on the right
-            this.rightPane.appendChild(winDbgBreakpoints)
+            this.rightPane.appendChild(winDbgInspect)
         );
 
         this.paths = {};

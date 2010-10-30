@@ -518,7 +518,7 @@ return ext.register("ext/console/console", {
             require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
         }
         else {
-            winQuickWatch.show()
+            require("ext/quickwatch/quickwatch").toggleDialog(1);
 
             if (xmlNode && typeof xmlNode == "string")
                 xmlNode = apf.getXml(xmlNode);
@@ -590,7 +590,7 @@ return ext.register("ext/console/console", {
         this.$cwd  = "/workspace";
 
         //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+        mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString(".console_date{display:inline}");
     },

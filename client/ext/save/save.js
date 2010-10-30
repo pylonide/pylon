@@ -28,6 +28,8 @@ return ext.register("ext/save/save", {
         
         tabEditors.addEventListener("close", this.$close = function(e){
             if (e.page.$at.undolength) {
+                ext.initExtension(_self);
+                
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.all = 0;
                 winCloseConfirm.show();
@@ -119,6 +121,8 @@ return ext.register("ext/save/save", {
     },
     
     saveAllInteractive : function(pages, callback){
+        ext.initExtension(this);
+        
         winCloseConfirm.all = 0;
                 
         var _self = this;
