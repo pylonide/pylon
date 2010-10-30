@@ -478,10 +478,11 @@ apf.codeeditor = function(struct, tagName) {
 
     this.syncValue = function() {
         var doc = this.$editor.getDocument();
-        if (doc.cacheId == this.$getCacheKey(this.value)) {
+        if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
             var value = this.getValue();
             if (this.value != value)
-                this.change(value);
+                this.setProperty("value", value);
+                //this.change(value);
         }
     };
 
@@ -497,7 +498,7 @@ apf.codeeditor = function(struct, tagName) {
 
     //@todo
     this.addEventListener("keydown", function(e){
-        //this.$editor.
+        
     }, true);
 
     /**** Init ****/
