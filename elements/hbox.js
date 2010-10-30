@@ -371,10 +371,10 @@ apf.vbox = function(struct, tagName){
                             this.$altExt.style[size] = "0px";
                             
                             //Possible hack to not do this for $box elements 
-                            /*if (!this.$box)
+                            if (!this.$box)
                                 this.$altExt.style.overflow = "hidden"; //Gecko
                             if (apf.getStyle(this.$ext, "overflow") == "visible")
-                                this.$ext.style.overflow = "hidden"; //Gecko*/
+                                this.$ext.style.overflow = "hidden"; //Gecko
                             this.$ext.style[size] = "1px";
                         
                             this.$altExt.style.minHeight = this.$ext.style.minHeight;
