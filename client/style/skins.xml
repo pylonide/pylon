@@ -4418,14 +4418,12 @@
         .tb_textbox {
             position : relative;
             height   : 25px;
-            border: 1px solid #afafaf;
         }
 
         .tb_textbox .sbtb_middle {
             height           : 19px;
             padding          : 2px 5px;
-
-
+            border: 1px solid #afafaf;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
@@ -4437,6 +4435,10 @@
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
+        }
+        
+        .topborder .sbtb_middle{
+            border-width : 1px 0 0 0;
         }
 
         .tb_textbox .sbtb_middle INPUT {

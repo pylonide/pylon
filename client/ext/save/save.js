@@ -53,7 +53,7 @@ return ext.register("ext/save/save", {
         this.nodes.push(ide.barTools.appendChild(new apf.button({
             id      : "btnSave",
             icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
-            caption : "Save file",
+            caption : "Save",
             onclick : this.quicksave
         })));
 
@@ -70,7 +70,7 @@ return ext.register("ext/save/save", {
             }), ide.mnuFile.firstChild),
                 
             saveAsItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save As",
+                caption : "Save As...",
                 onclick : function () {
                     _self.saveas();
                 },

@@ -76,6 +76,7 @@
                             "ext/panels/panels",
                             "ext/tree/tree",
                             "ext/save/save",
+                            "ext/gotofile/gotofile",
                             "ext/newresource/newresource",
                             "ext/undo/undo",
                             "ext/clipboard/clipboard",
@@ -85,18 +86,17 @@
                             "ext/quickwatch/quickwatch",
                             "ext/quicksearch/quicksearch",
                             "ext/gotoline/gotoline",
-                            "ext/gotofile/gotofile",
                             "ext/html/html",
                             "ext/browser/browser",
                             "ext/code/code",
                             "ext/extmgr/extmgr",
                             //"ext/formatjson/formatjson",
-                            "ext/docs/docs",
+                            //"ext/docs/docs",
                             //"ext/richtext/richtext",
                             "ext/console/console",
                             "ext/tabbehaviors/tabbehaviors",
-                            "ext/keybindings/keybindings",
-                            "ext/terminal/terminal"
+                            "ext/keybindings/keybindings"
+                            //"ext/terminal/terminal"
                         ];
                         if (location.host)
                             modules.push(
@@ -206,7 +206,7 @@
             </a:toolbar>
 
             <a:vbox id="mainRow" padding="8" splitters="true" flex="1">
-                <a:hbox padding="8" edge="8 8 0 8" flex="1" splitters="true">
+                <a:hbox padding="8" edge="8 8 8 8" flex="1" splitters="true">
                     <a:vbox id="colLeft" padding="8" width="200" splitters="true" />
                     <a:vbox id="colMiddle" flex="1" padding="8" splitters="true" />
                     <a:vbox id="colRight" padding="8" width="300" visible="false" splitters="true" />

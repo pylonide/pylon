@@ -21,7 +21,7 @@ return ext.register("ext/extmgr/extmgr", {
         var _self = this;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "Extension Manager",
+                caption : "Extension Manager...",
                 onclick : function(){
                     ext.initExtension(_self);
                     winExt.show();

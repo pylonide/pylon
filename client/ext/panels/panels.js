@@ -18,7 +18,12 @@ return ext.register("ext/panels/panels", {
     nodes : [],
     panels : {},
     
+    showingAll : true,
+    
     initPanel : function(panelExt){
+        if (panelExt.panel)
+            return;
+        
         ext.initExtension(panelExt);
         this.$setEvents(panelExt);
         

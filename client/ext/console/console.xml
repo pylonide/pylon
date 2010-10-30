@@ -11,27 +11,33 @@
       top     = "-30"
       right   = "30" />
 
-    <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="200" visible="false" buttons="close">
-        <a:vbox flex="1" anchors="0 0 0 0">
-            <a:toolbar>
-                <a:bar border="0 0 1 0">
-                    <a:button
-                      caption  = "Clear" 
-                      onclick  = "
-                        txtConsole.clear();
-                      " />
-                </a:bar>
-            </a:toolbar>
-            <a:text id="txtConsole"
-              flex       = "1"
-              scrolldown = "true" 
-              textselect = "true"
-              focussable = "true"
-              class      = "apf_console" />
+    <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="250" visible="false" buttons="close">
+        <a:vbox anchors="0 0 0 0">
+            <a:tab id="tabConsole" skin="lowtab" flex="1">
+                <a:page caption="Console">
+                    <a:vbox anchors="0 0 0 0">
+                        <a:toolbar>
+                            <a:bar border="0 0 1 0">
+                                <a:button
+                                  caption  = "Clear" 
+                                  onclick  = "
+                                    txtConsole.clear();
+                                  " />
+                            </a:bar>
+                        </a:toolbar>
+                        <a:text id="txtConsole"
+                          flex       = "1"
+                          scrolldown = "true" 
+                          textselect = "true"
+                          focussable = "true"
+                          class      = "apf_console" />
+                    </a:vbox>      
+                </a:page>
+            </a:tab>
             <a:textbox id="txtConsoleInput"
-              border    = "1 0 0 0"
+              class     = "topborder"
               onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
               onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
-        </a:vbox>      
+        </a:vbox>
     </a:window>
 </a:application>

@@ -607,6 +607,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.check();
         winDbgConsole.show();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 0 8");
+        apf.layout.forceResize();
     },
 
     disable : function(fromParent){
@@ -618,6 +621,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.uncheck();
         winDbgConsole.hide();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 8 8");
+        apf.layout.forceResize();
     },
 
     destroy : function(){
