@@ -60,7 +60,7 @@ apf.button  = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.value       = null;
     
     this.$init(function(){

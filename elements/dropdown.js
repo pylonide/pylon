@@ -107,7 +107,7 @@ apf.dropdown = function(struct, tagName){
     
     this.dragdrop      = false;
     this.reselectable  = true;
-    this.$focussable   = true;
+    this.$focussable   = apf.KEYBOARD;
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;

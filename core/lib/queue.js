@@ -92,7 +92,8 @@ apf.queue = {
             apf.xmldb.notifyQueued();
         //#endif
         
-        var q = this.q;
+        var q  = this.q;
+        this.q = {};
         for (var prop in q){
             var f = q[prop];
             if (f) {

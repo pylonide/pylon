@@ -60,7 +60,7 @@ apf.Focussable = function(){
             return this;
         }
 
-        if (this.$focus && !this.editable)
+        if (this.$focus && !this.editable && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
             this.$focus(e);
 
         this.dispatchEvent("focus", apf.extend({
