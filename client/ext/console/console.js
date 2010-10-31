@@ -241,13 +241,6 @@ return ext.register("ext/console/console", {
             }
             e.currentTarget.setValue(newVal);
 
-            // special commands (run & debug):
-            if (cmd == "debug" || cmd == "run") {
-                setDebug = (cmd == "debug");
-                setRun   = (cmd == "run");
-                cmd = "open";
-            }
-
             switch (cmd) {
                 case "help":
                     this.write(helpPage);
@@ -404,11 +397,18 @@ return ext.register("ext/console/console", {
         if (this.control && this.control.stop)
             this.control.stop();
 
-        var content = [];
+        var cmdName, cmd,
+            content = [];
         for (var i = 0, len = hints.length; i < len; ++i) {
-            var hint = base + hints[i];
-            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\''
-                + hint + '\')">' + hint + '</a><br />');
+            cmdName = base + hints[i];
+            cmd = ext.commandsLut[cmdName];
+            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
+                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\')">'
+                + cmdName + '<span>' + cmd.hint + (cmd.hotkey
+                    ? '<span class="hints_hotkey">' + (apf.isMac
+                        ? apf.hotkeys.toMacNotation(cmd.hotkey)
+                        : cmd.hotkey) + '</span>'
+                    : '') + '</span></a>');
         }
         winConsoleHints.$ext.innerHTML = content.join("");
 
@@ -435,6 +435,11 @@ return ext.register("ext/console/console", {
             winConsoleHints.$ext.style.left = pos[0] + "px";
             winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
         }
+    },
+
+    hintClick: function(base, cmdName, txtId) {
+        var textbox = self[txtId];
+        textbox.setValue(textbox.getValue().replace(base, cmdName));
     },
 
     consoleTextHandler: function(e) {

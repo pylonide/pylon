@@ -5,10 +5,7 @@
     <a:bar id="winConsoleHints"
       skinset = "skinconsole"
       visible = "false"
-      width   = "350"
-      kbclose = "true"
-      top     = "-30"
-      right   = "30" />
+      kbclose = "true" />
 
     <a:window id="winDbgConsole" skin="dockwin" title="Output" modal="false" height="200" visible="false" buttons="close">
         <a:hbox anchors="0 0 0 0" padding="4" flex="1" splitters="true">
