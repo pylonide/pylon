@@ -152,7 +152,7 @@ apf.splitter = function(struct, tagName){
         //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
         
         this.$setSiblings();
-
+        
         this.$thickness = null;
         if (this.parentNode.$box) {
             this.setProperty("type", this.parentNode.localName == "vbox" 

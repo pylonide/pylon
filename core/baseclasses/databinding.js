@@ -648,7 +648,8 @@ apf.DataBinding = function(){
      *                     that is used to load data into the xmlRoot of this component.
      */
     this.$loadSubData = function(xmlRootNode){
-        if (this.$hasLoadStatus(xmlRootNode)) return;
+        if (this.$hasLoadStatus(xmlRootNode) && !this.$hasLoadStatus(xmlRootNode, "potential")) 
+            return;
 
         //var loadNode = this.$applyBindRule("load", xmlRootNode);
         var rule = this.$getBindRule("load", xmlRootNode);
@@ -769,15 +770,20 @@ apf.DataBinding = function(){
     /**
      * @private
      */
+    //@todo optimize this
     this.$setLoadStatus = function(xmlNode, state, remove){
-        //remove old status if any
-        var ostatus = xmlNode.getAttribute("a_loaded");
-        ostatus = ostatus
-            ? ostatus.replace(new RegExp("\\|\\w+\\:" + this.$uniqueId + "\\|", "g"), "")
-            : "";
+        var group  = this.loadgroup || "default";
+        var re     = new RegExp("\\|(\\w+)\\:" + group + ":(\\d+)\\|");
+        var loaded = xmlNode.getAttribute("a_loaded") || "";
 
+        var m;        
+        if (!remove && (m = loaded.match(re)) && m[1] != "potential" && m[2] != this.$uniqueId)
+            return;
+        
+        //remove old status if any
+        var ostatus = loaded.replace(re, "")
         if (!remove)
-            ostatus += "|" + state + ":" + this.$uniqueId + "|";
+            ostatus += "|" + state + ":" + group + ":" + this.$uniqueId + "|";
 
         xmlNode.setAttribute("a_loaded", ostatus);
     };
@@ -792,11 +798,13 @@ apf.DataBinding = function(){
     /**
      * @private
      */
-    this.$hasLoadStatus = function(xmlNode, state){
+    this.$hasLoadStatus = function(xmlNode, state, unique){
         var ostatus = xmlNode.getAttribute("a_loaded");
         if (!ostatus) return false;
-
-        return (ostatus.indexOf((state || "") + ":" + this.$uniqueId + "|") != -1)
+    
+        var group  = this.loadgroup || "default";
+        var re     = new RegExp("\\|" + (state || "\\w+") + ":" + group + ":" + (unique ? this.$uniqueId : "\\d+") + "\\|");
+        return ostatus.match(re) ? true : false;
     };
 
     /**

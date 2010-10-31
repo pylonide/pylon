@@ -723,7 +723,7 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", value);
+        this.$ext.setAttribute("title", value + (this.hotkey ? " (" + this.hotkey + ")" : ""));
     },
     
     //#ifdef __AMLCONTEXTMENU

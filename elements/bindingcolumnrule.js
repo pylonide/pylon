@@ -300,7 +300,7 @@ apf.BindingColumnRule = function(struct, tagName){
         if (this.sorted)
             this.sort(pNode, true);
         
-        this.$int.onmouseover = function(e){
+        /*this.$int.onmouseover = function(e){
             if (!e) e = event;
             
             if (pNode.disabled) return;
@@ -308,7 +308,7 @@ apf.BindingColumnRule = function(struct, tagName){
             clearTimeout(this.$timer);
 
             apf.setStyleClass(this, "hover", ["down"]);
-        };
+        };*/
         
         this.$int.onmouseup = function(e){
             if (!e) e = event;
@@ -493,9 +493,12 @@ apf.BindingColumnRule = function(struct, tagName){
                 pNode.$ext.style.cursor = t && _self.$resizable
                     ? "w-resize"
                     : "default";
+                
+                apf.setStyleClass(this, "", ["hover", "down"]);
             }
             else {
                 pNode.$ext.style.cursor = "default";
+                apf.setStyleClass(this, "hover", ["down"]);
             }
         };
 

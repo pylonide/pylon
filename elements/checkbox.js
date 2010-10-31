@@ -77,7 +77,7 @@ apf.checkbox = function(struct, tagName){
     );
 
     //Options
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.checked     = false;
     this.$values     = [1, 0];
 
