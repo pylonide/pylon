@@ -11,9 +11,9 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
-     //"text!ext/console/skin.xml",
+     "text!ext/console/skin.xml",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, skin, markup) {
 
 var trieInternals,
     cmdHistory = [],
@@ -46,7 +46,7 @@ return ext.register("ext/console/console", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
-    //skin   : skin,
+    skin   : skin,
     markup : markup,
     commands: {
         "help": {hint: "show general help information and a list of available commands"},
@@ -523,7 +523,7 @@ return ext.register("ext/console/console", {
             require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
         }
         else {
-            winQuickWatch.show()
+            require("ext/quickwatch/quickwatch").toggleDialog(1);
 
             if (xmlNode && typeof xmlNode == "string")
                 xmlNode = apf.getXml(xmlNode);
@@ -595,7 +595,7 @@ return ext.register("ext/console/console", {
         this.$cwd  = "/workspace";
 
         //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+        mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString(".console_date{display:inline}");
     },
@@ -612,6 +612,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.check();
         winDbgConsole.show();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 0 8");
+        apf.layout.forceResize();
     },
 
     disable : function(fromParent){
@@ -623,6 +626,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.uncheck();
         winDbgConsole.hide();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 8 8");
+        apf.layout.forceResize();
     },
 
     destroy : function(){

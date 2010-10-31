@@ -165,10 +165,6 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
             });
-            // hide the debugger toolbar in the results tab
-            tabConsole.addEventListener("beforeswitch", function(e) {
-                tbDebug.setProperty("visible", (e.nextPage != _self.$panel));
-            });
         }
         // show the tab
         tabConsole.set(this.pageID);

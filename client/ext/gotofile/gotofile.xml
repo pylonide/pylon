@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winGoToFile"
-      title     = "Go To File" 
+      title     = "Open File" 
       buttons   = "close" 
       modal     = "false" 
       center    = "true" 

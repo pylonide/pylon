@@ -22,6 +22,12 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Ctrl-Q"
         },
+        "run": {
+            "resume": "F8",
+            "stepinto": "F9",
+            "stepover": "F10",
+            "stepout": "Shift-F9"
+        },
         "gotoline": {
             "gotoline": "Ctrl-G"
         },

@@ -40,6 +40,12 @@
             -webkit-border-top-right-radius: 4px;
             -webkit-border-top-left-radius: 4px;
         }
+        
+        .nocorners .docktitle{
+            -moz-border-radius: 0 0 0 0;
+            -webkit-border-top-right-radius: 0;
+            -webkit-border-top-left-radius: 0;
+        }
 
         .dockwin .dockcontent {
             background   : #f5f5f5;
@@ -4417,12 +4423,10 @@
         .tb_textbox .sbtb_middle {
             height           : 19px;
             padding          : 2px 5px;
-
-
+            border: 1px solid #afafaf;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
-            border: 1px solid #afafaf;
             margin: 0;
             outline: none;
             font-family: Tahoma;
@@ -4431,6 +4435,10 @@
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
+        }
+        
+        .topborder .sbtb_middle{
+            border-width : 1px 0 0 0;
         }
 
         .tb_textbox .sbtb_middle INPUT {
@@ -4711,7 +4719,7 @@
         .ace_marker-layer {
         }
 
-        .ace_marker-layer .ace_step {
+        .ace_marker-layer .ace_step, .ace_marker-layer .ace_stack {
           position: absolute;
           z-index: 2;
         }
@@ -4750,13 +4758,19 @@
        }
        
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
-          background-image: url("icons/debugger/current_line.png"), url("icons/debugger/brkp_obj.png");
+          background-image: url("icons/debugger/brkp_obj_current_line.png");
           background-repeat: no-repeat;
-          background-position: 2px center, 2px center;
+          background-position: 2px center;
        }
        
        .ace_gutter-layer .ace_gutter-cell.ace_arrow {
           background-image: url("icons/debugger/current_line.png");
+          background-repeat: no-repeat;
+          background-position: 2px center;
+       }
+       
+       .ace_gutter-layer .ace_gutter-cell.ace_stack {
+          background-image: url("icons/debugger/stack_co.png");
           background-repeat: no-repeat;
           background-position: 2px center;
        }
@@ -4852,7 +4866,7 @@
         .editor_tab .btnsesssioncontainer .session_btn {
             padding      : 0 20px;
             position     : relative;
-            cursor       : pointer;
+            /*cursor       : pointer;*/
             margin-right : -16px;
             margin-top   : 1px;
         }
@@ -4962,7 +4976,7 @@
             position            : absolute;
             right               : 0;
             top                 : 7px;
-            cursor              : pointer;
+            /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : 0 -14px;
@@ -10194,9 +10208,9 @@
         .datagrid .headings div.hover,
         .datagrid .headings div.down,
         .datagrid .headings div.drag{
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
-            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
-            color : white;
+            background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(221,221,221)),color-stop(1, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(221,221,221) 0%,rgb(255,255,255) 100%);
+            color : #555;
         }
 
         .datagrid .headings div.drag{
@@ -10211,7 +10225,7 @@
         .datagrid .headings div.ascending u{
             background-image : url(images/sort_asc.gif);
             background-repeat : no-repeat;
-            background-position : right 6px;
+            background-position : right 7px;
         }
 
 
@@ -10453,6 +10467,11 @@
             padding-left: 0;
         }
 
+        .datagrid .records .row .treecell .iconCell, .datagrid .records .row .iconCell  {
+            background-position : 1px 1px;
+            background-repeat   : no-repeat;
+            padding             : 2px 0 2px 22px;
+        }
 
         .datagrid .treecell strong{
             width : 9px;
@@ -10494,6 +10513,8 @@
             border : 0;
             border-bottom : 1px solid #eee;
         }
+        
+        
     ]]></a:style>
     <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
         .datagrid .headings div{
@@ -10530,16 +10551,16 @@
             margin : -20px 17px 0 0;
         }
     </a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
+    <a:style condition="apf.isWebkit"><![CDATA[
         .datagrid div.records .treecell strong {
 			top : 0px;
 		}
 		
-        .draggrid .treecell .iconCell,
-        .datagrid .records span.treecell .iconCell {
-            padding : 2px 0 1px 24px;
-        }
-    ]]></a:style>
+        .draggrid .treecell .iconCell,
+        .datagrid .records span.treecell .iconCell {
+            padding : 2px 0 1px 24px;
+        }
+    ]]></a:style>
     
 
     <a:presentation>

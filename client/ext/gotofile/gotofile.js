@@ -30,8 +30,17 @@ return ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         this.nodes.push(
-            mnuEdit.appendChild(new apf.item({
-                caption : "Go To File",
+            mnuFile.insertBefore(new apf.item({
+                caption : "Open...",
+                onclick : function() {
+                    _self.toggleDialog(true);
+                }
+            }), mnuFile.firstChild),
+            
+            ide.barTools.appendChild(new apf.button({
+                id      : "btnOpen",
+                //icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+                caption : "Open...",
                 onclick : function() {
                     _self.toggleDialog(true);
                 }

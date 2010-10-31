@@ -23,11 +23,72 @@ return ext.register("ext/save/save", {
     hotitems    : {},
     nodes       : [],
 
-    //todo missing hook
+    hook : function(){
+        var _self = this;
+        
+        tabEditors.addEventListener("close", this.$close = function(e){
+            if (e.page.$at.undolength) {
+                ext.initExtension(_self);
+                
+                winCloseConfirm.page = e.page;
+                winCloseConfirm.all = 0;
+                winCloseConfirm.show();
+                
+                winCloseConfirm.addEventListener("hide", function(){
+                    if (winCloseConfirm.all != -100) {
+                        tabEditors.remove(winCloseConfirm.page, true);
+                        winCloseConfirm.page.$at.undo(-1);
+                        delete winCloseConfirm.page;
+                    }
+                    winCloseConfirm.removeEventListener("hide", arguments.callee);
+                });
+                
+                btnYesAll.hide();
+                btnNoAll.hide();
+                
+                e.preventDefault();
+            }
+        });
+
+        this.nodes.push(ide.barTools.appendChild(new apf.button({
+            id      : "btnSave",
+            icon    : "save_btn_ico{this.disabled ? '_disabled' : ''}.png",
+            caption : "Save",
+            onclick : this.quicksave
+        })));
+
+        var saveItem, saveAsItem;
+        this.nodes.push(
+            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
+        
+            ide.mnuFile.insertBefore(new apf.item({
+                caption : "Save All",
+                onclick : function(){
+                    _self.saveall();
+                },
+                disabled : "{!tabEditors.activepage}"
+            }), ide.mnuFile.firstChild),
+                
+            saveAsItem = ide.mnuFile.insertBefore(new apf.item({
+                caption : "Save As...",
+                onclick : function () {
+                    _self.saveas();
+                },
+                disabled : "{!tabEditors.activepage}"
+            }), ide.mnuFile.firstChild),
+            
+            saveItem = ide.mnuFile.insertBefore(new apf.item({
+                caption : "Save",
+                onclick : this.quicksave,
+                disabled : "{!tabEditors.activepage}"
+            }), ide.mnuFile.firstChild)
+        );
+
+        this.hotitems["quicksave"] = [saveItem];
+        this.hotitems["saveas"]    = [saveAsItem];
+    },
 
     init : function(amlNode){
-        var _self = this;
-
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
                 winCloseConfirm.all = 1;
@@ -49,66 +110,6 @@ return ext.register("ext/save/save", {
                 winCloseConfirm.hide();
             });
         }
-
-        tabEditors.addEventListener("close", this.$close = function(e){
-            if (e.page.$at.undolength) {
-                winCloseConfirm.page = e.page;
-                winCloseConfirm.all = 0;
-                winCloseConfirm.show();
-                
-                winCloseConfirm.addEventListener("hide", function(){
-                    if (winCloseConfirm.all != -100) {
-                        tabEditors.remove(winCloseConfirm.page, true);
-                        winCloseConfirm.page.$at.undo(-1);
-                        delete winCloseConfirm.page;
-                    }
-                    winCloseConfirm.removeEventListener("hide", arguments.callee);
-                });
-                
-                btnYesAll.hide();
-                btnNoAll.hide();
-                
-                e.preventDefault();
-            }
-        });
-
-        var nodes = barSave.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            this.nodes.push(ide.barTools.appendChild(nodes[0]));
-        }
-
-        btnSave.onclick = _self.quicksave;
-
-        var saveItem, saveAsItem;
-        this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-        
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save All",
-                onclick : function(){
-                    _self.saveall();
-                },
-                disabled : "{!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
-                
-            saveAsItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save As",
-                onclick : function () {
-                    txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
-                    winSaveAs.show();
-                },
-                disabled : "{!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
-            
-            saveItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save",
-                onclick : _self.quicksave,
-                disabled : "{!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild)
-        );
-
-        this.hotitems["quicksave"] = [saveItem];
-        this.hotitems["saveas"]    = [saveAsItem];
     },
     
     saveall : function(){
@@ -120,6 +121,8 @@ return ext.register("ext/save/save", {
     },
     
     saveAllInteractive : function(pages, callback){
+        ext.initExtension(this);
+        
         winCloseConfirm.all = 0;
                 
         var _self = this;
@@ -196,7 +199,13 @@ return ext.register("ext/save/save", {
         return false;
     },
     
-    saveas : function () {
+    saveas : function(){
+        ext.initExtension(this);
+        txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
+        winSaveAs.show();
+    },
+    
+    saveFileAs : function () {
         var page    = tabEditors.getPage(),
             file    = page.$model.data,
             path    = file.getAttribute("path"),

@@ -80,7 +80,7 @@ return ext.register("ext/settings/settings", {
         var _self = this;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.item({
-                caption : "Settings",
+                caption : "Settings...",
                 onclick : this.showsettings.bind(this)
             }), ide.mnuFile.childNodes[ide.mnuFile.childNodes.length - 2])
         );
