@@ -50,6 +50,8 @@ return ext.register("ext/keybindings/keybindings", {
                 if (typeof (val = oExt.commands[command])["hotkey"] !== "undefined")
                     apf.hotkeys.remove(val.hotkey);
                 oExt.commands[command].hotkey = bindings[command];
+                if (ext.commandsLut[command])
+                    ext.commandsLut[command].hotkey = bindings[command];
                 if ((items = oExt.hotitems[command])) {
                     for (j = 0, l = items.length; j < l; ++j) {
                         item = items[j];
