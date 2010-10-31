@@ -1,12 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:skin id="skinconsole"
-      src       = "{require('ext/console/console').skin}" />
-
-    <a:bar id="winConsoleHints"
-      skinset = "skinconsole"
-      zindex  = "10000000"
-      visible = "false"
-      kbclose = "true" />
+    <div id="winConsoleHints" class="barConsoleHints"/>
 
     <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="250" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">

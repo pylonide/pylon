@@ -11,9 +11,9 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
-     "text!ext/console/skin.xml",
+     "text!ext/console/console.css",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, skin, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, css, markup) {
 
 var trieInternals,
     cmdHistory = [],
@@ -46,8 +46,8 @@ return ext.register("ext/console/console", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
-    skin   : skin,
     markup : markup,
+    css    : css,
     commands: {
         "help": {hint: "show general help information and a list of available commands"},
         "clear": {hint: "clear all the messages from the console"}
@@ -410,18 +410,22 @@ return ext.register("ext/console/console", {
                         : cmd.hotkey) + '</span>'
                     : '') + '</span></a>');
         }
-        winConsoleHints.$ext.innerHTML = content.join("");
 
-        var pos = apf.getAbsolutePosition(textbox.$ext, winConsoleHints.$ext.parentNode);
-        if (!winConsoleHints.visible) {
-            //winConsoleHints.$ext.style.top = "-30px";
-            winConsoleHints.show();
-            winConsoleHints.$ext.style.left = pos[0] + "px";
-            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
+        if (!this.$winHints)
+            this.$winHints = document.getElementById("winConsoleHints");
+
+        this.$winHints.innerHTML = content.join("");
+
+        var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
+        if (apf.getStyle(this.$winHints, "display") == "none") {
+            //this.$winHints.style.top = "-30px";
+            this.$winHints.style.display = "block";
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
             //txtConsoleInput.focus();
 
             //Animate
-            /*apf.tween.single(winConsoleHints.$ext, {
+            /*apf.tween.single(this.$winHints, {
                 type     : "fade",
                 anim     : apf.tween.easeInOutCubic,
                 from     : 0,
@@ -431,9 +435,9 @@ return ext.register("ext/console/console", {
                 control  : (this.control = {})
             });*/
         }
-        else if (winConsoleHints.visible) {
-            winConsoleHints.$ext.style.left = pos[0] + "px";
-            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
+        else {
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
         }
     },
 
@@ -597,7 +601,7 @@ return ext.register("ext/console/console", {
         //Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
-        apf.importCssString(".console_date{display:inline}");
+        apf.importCssString((this.css || "") + " .console_date{display:inline}");
     },
 
     enable : function(fromParent){
