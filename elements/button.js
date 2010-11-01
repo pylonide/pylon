@@ -499,6 +499,9 @@ apf.button  = function(struct, tagName){
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;
 
+        if(this.parentNode.$button2.value)
+            return;
+
         this.$doBgSwitch(this.states[state]);
         var bs = this.$baseCSSname;
         this.$setStyleClass(this.$ext, (state != "Out" ? bs + state : ""),

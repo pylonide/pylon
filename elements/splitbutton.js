@@ -97,7 +97,7 @@ apf.splitbutton = function(struct, tagName){
                 _self.dispatchEvent("click");
             }
         });
-        test = _self;
+        
         this.$button2 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
