@@ -9,7 +9,8 @@ require.def("ext/run/run",
      "core/ext",
      "ext/noderunner/noderunner",
      "ext/settings/settings",
-     "text!ext/run/run.xml"], function(ide, ext, noderunner, settings, markup) {
+     "ext/save/save",
+     "text!ext/run/run.xml"], function(ide, ext, noderunner, settings, save, markup) {
 
 return ext.register("ext/run/run", {
     name   : "Run Toolbar",
@@ -134,6 +135,10 @@ return ext.register("ext/run/run", {
     },
 
     runConfig : function(config, debug) {
+        var model = settings.model;
+        var saveallbeforerun = model.queryValue("general/@saveallbeforerun");
+        if(saveallbeforerun) save.saveall();
+        
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";
 
