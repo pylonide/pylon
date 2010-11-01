@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <div id="winConsoleHints" class="barConsoleHints"/>
+    <div id="barConsoleHints" class="barConsoleHints"/>
 
     <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="250" visible="false" buttons="close">
         <a:vbox anchors="0 0 0 0">
