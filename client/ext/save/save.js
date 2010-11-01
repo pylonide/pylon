@@ -175,7 +175,7 @@ return ext.register("ext/save/save", {
                     "Please see if your internet connection is available and try again. "
                         + (state == apf.TIMEOUT
                             ? "The connection timed out."
-                            : "The error reported was " + e.message));
+                            : "The error reported was " + extra.message));
             }
             
             panel.setAttribute("caption", "Saved file " + path);

@@ -70,7 +70,7 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "node-data":
                 //ide.log(message.data);
-                log.logNodeStream(message.data, message.stream, this.workspaceDir, this.davPrefix);
+                log.logNodeStream(message.data, message.stream, ide.workspaceDir, ide.davPrefix);
                 break;
                 
             case "error":
@@ -108,7 +108,7 @@ return ext.register("ext/noderunner/noderunner", {
             "file"    : path.replace(/^\/+/, ""),
             "args"    : args || "",
             "env"     : {
-                "C9_SELECTED_FILE": page ? this.workspaceDir + page.getAttribute("path").slice(this.davPrefix.length) : ""
+                "C9_SELECTED_FILE": page ? ide.workspaceDir + page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
         ide.socket.send(JSON.stringify(command));
