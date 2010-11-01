@@ -536,7 +536,7 @@ apf.window = function(){
             return;
         }
         
-        if (e.srcElement != this && this.$focus)
+        if (e.srcElement != this && this.$focus && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
             this.$focus();
         
         if (e.srcElement == this || e.trackedChild) {
@@ -968,7 +968,8 @@ apf.window = function(){
         else if (amlNode) { //@todo check this for documentElement apf3.0
             if ((p = apf.document.activeElement
               && apf.document.activeElement.$focusParent || lastFocusParent)
-              && p.visible && p.modal && amlNode.$focusParent != p) {
+              && p.visible && p.modal && amlNode.$focusParent != p
+              && amlNode.$isWindowContainer != -1) {
                 apf.window.$focusLast(p, {mouse: true, ctrlKey: e.ctrlKey});
             }
             else if (!amlNode && apf.document.activeElement) {

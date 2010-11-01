@@ -297,7 +297,7 @@ var V8Debugger = function(dbg, host) {
                     if (v8Breakpoints.breakpoints[i].type == "scriptId")
                         continue;
                         
-                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], true);
+                    var breakpoint = Breakpoint.fromJson(v8Breakpoints.breakpoints[i], _self.$debugger);
                     var id = breakpoint.source + "|" + breakpoint.line;
                     
                     _self.$breakpoints[id] = breakpoint;

@@ -770,7 +770,7 @@ apf.xmldb = new (function(){
         if (!this.delayUpdate && "|remove|move-away|".indexOf("|" + action + "|") > -1)
             this.notifyQueued(); //empty queue
 
-        var listen, uId, uIds, i, j, hash, info, amlNode, runTimer, found;
+        var listen, uId, uIds, i, j, hash, info, amlNode, runTimer, found, done = {};
         while (loopNode && loopNode.nodeType == 1) {
             //Get List of Node this.$listeners ID's
             listen = loopNode.getAttribute(this.xmlListenTag);
@@ -780,6 +780,8 @@ apf.xmldb = new (function(){
 
                 for (i = 0; i < uIds.length; i++) {
                     uId = uIds[i];
+                    if (!uId || done[uId]) continue;
+                    done[uId] = true;
 
                     //Property support
                     /*if (uId.charAt(0) == "p") {

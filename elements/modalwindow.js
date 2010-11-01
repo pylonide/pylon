@@ -360,7 +360,7 @@ apf.AmlWindow = function(struct, tagName){
     };
     
     this.$afterRender = function(){
-        if (this.center) {
+        if (this.center && !this.left && !this.top && !this.right && !this.bottom && !this.anchors) {
             //#ifdef __WITH_LAYOUT
             apf.layout.processQueue();
             //#endif

@@ -265,7 +265,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 
     if (xmlNode.nodeType == 1) {
         if (!xmlNode.firstChild)
-            xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
+            xmlNode.appendChild(xmlNode.ownerDocument.createTextNode(""));
 
         xmlNode.firstChild.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
 

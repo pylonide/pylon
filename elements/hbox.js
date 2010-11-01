@@ -175,13 +175,22 @@ apf.vbox = function(struct, tagName){
             var nodes = this.childNodes;
             var size  = this.$vbox ? "width" : "height";
             
+            var isInFixed = false, loopNode = this;
+            while(!isInFixed && loopNode) {
+                isInFixed = loopNode[size] || loopNode.anchors || (loopNode.$vbox ? loopNode.top && loopNode.bottom : loopNode.left && loopNode.right);
+                if (!loopNode.flex)
+                    break;
+                loopNode = loopNode.parentNode || loopNode.$parentNode;
+            }
+            
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!(node = nodes[i]).$ext || node.$ext.nodeType != 1)
                     continue;
 
+                //(this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right)
                 if (stretch && !node[size]) //(node.$altExt || 
                     node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) 
-                        ? (this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right) ? "1px" : "auto")
+                        ? (isInFixed ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
                             : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix

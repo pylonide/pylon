@@ -512,10 +512,11 @@ apf.webdav = function(struct, tagName){
      * see {@link teleport.webdav.method.getProperties}
      *
      * @param {String}   sPath    Path to the resource on the WebDAV server
+     * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
      */
-    this.list = function(sPath) {
-        return this.getProperties(sPath, 0);
+    this.list = function(sPath, callback) {
+        return this.getProperties(sPath, 0, callback);
     };
 
     /**
