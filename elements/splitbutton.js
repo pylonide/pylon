@@ -97,7 +97,7 @@ apf.splitbutton = function(struct, tagName){
                 _self.dispatchEvent("click");
             }
         });
-        
+        test = _self;
         this.$button2 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
@@ -108,8 +108,14 @@ apf.splitbutton = function(struct, tagName){
                 _self.$button1.$setState("Over", {});
             },
             onmouseout: function() {
-                apf.setStyleClass(this.$ext, "", ["primary"]);
-                _self.$button1.$setState("Out", {});
+                if(!_self.$button2.value) {
+                    apf.setStyleClass(this.$ext, "", ["primary"]);
+                    _self.$button1.$setState("Out", {});
+                }
+                else {
+                    apf.setStyleClass(this.$ext, "primary");
+                    _self.$button1.$setState("Over", {});
+                }
             }
         });
     };
