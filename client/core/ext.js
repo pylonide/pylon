@@ -61,8 +61,10 @@ return ext = {
         else
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
-        if (oExtension.commands)
+        if (oExtension.commands) {
+            oExtension.commands.ext = path;
             apf.extend(this.commandsLut, oExtension.commands);
+        }
 
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
@@ -172,6 +174,17 @@ return ext = {
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension
         });
+    },
+
+    execCommand: function(cmd) {
+        cmd = (cmd || "").trim();
+        var oCmd = this.commandsLut[cmd];
+        if (!oCmd || !oCmd.ext)
+            return false;
+        var oExt = require(oCmd.ext);
+        if (oExt && typeof oExt[cmd] == "function")
+            return oCmd[cmd]();
+        return false;
     },
 
     setLayoutMode : function(mode){
