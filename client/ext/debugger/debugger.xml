@@ -21,7 +21,7 @@
     </a:window>
     
     <a:window id="winDbgInspect" skin="dockwin" title="Inspect" modal="false" flex="2" buttons="close" draggable="false">
-        <a:tab anchors="0 0 0 0" skin="lowtab">
+        <a:tab anchors="0 0 0 0">
             <a:page caption="Interactive">
                 <a:vbox anchors="0 0 0 0">
                     <a:toolbar>
