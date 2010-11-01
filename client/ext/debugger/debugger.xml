@@ -59,7 +59,7 @@
                       printmargincolumn = "0" />
                 </a:vbox>
             </a:page>
-            <a:page caption="Variables" render="runtime">
+            <a:page caption="Variables" render2="runtime">
         		<a:datagrid id="dgVars"
                   anchors    = "0 0 0 0" 
                   border     = "0"
@@ -79,7 +79,7 @@
                     </a:each>
                 </a:datagrid>
             </a:page>
-            <a:page caption="Breakpoints">
+            <a:page caption="Breakpoints" render2="runtime">
                 <a:list id="lstBreakpoints"
         		  autoselect = "false"
         		  reselectable = "true"
