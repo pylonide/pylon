@@ -7,14 +7,14 @@
       render    = "runtime"
       width     = "512"
       skin      = "change_photo">
-        <a:vbox padding="10" edge="15 20 20 20">
+        <a:vbox padding="10" edge="15 20 10 20">
             <h3 class="wheader">Save this file?</h3>
             <div>This file has unsaved changes. Would you like to save the file before closing?</div>
         </a:vbox>
     
         <a:vbox>
             <a:divider skin="hordivider" />
-            <a:hbox pack="end" padding="7" edge="0 10 0 10">
+            <a:hbox pack="end" padding="7" edge="10 10 5 10">
                 <a:button id="btnYesAll" caption="Yes to all" />
                 <a:button id="btnNoAll" caption="No to all" />
                 <a:filler />
@@ -25,10 +25,6 @@
         </a:vbox>
     </a:window>
     
-    <a:bar id="barSave" visible="false">
-        <a:button id="btnSave" icon="save_btn_ico{this.disabled ? '_disabled' : ''}.png">Save file</a:button>
-    </a:bar>
-
     <a:script><![CDATA[
         function chooseFile(file) {
             if (file.getAttribute("type") == "file") 
@@ -40,14 +36,16 @@
 
     <a:window
       id        = "winSaveAs"
-      height    = "350"
+      center    = "true"
+      height    = "400"
       icon      = ""
+      buttons   = "close"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
-      width     = "500">
+      width     = "650">
         <a:vbox
-          anchors   = "5 5 5 5"
+          anchors   = "5 5 0 5"
           padding   = "5">
             <a:hbox
               flex      = "1"
@@ -57,6 +55,7 @@
 		          id            = "trSaveAs"
 		          flex          = "1"
                   model         = "{require('ext/filesystem/filesystem').model}"
+                  contextmenu   = "mnuCtxTree"
                   onafterchoose = "txtSaveAs.setValue(this.selected.getAttribute('path'))">
 	                <a:each match="[folder]">
 	                   <a:insert
@@ -67,24 +66,43 @@
 	                     match = "[folder]"
 	                     value = "folder.png" />
 				    </a:each>
+				    
+				    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                    <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                    <a:rename set="{davProject.rename([@name], [@path])}"/>
+                    <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+                    <a:move set="{davProject.move([@path], [../@path])}"/>
+                    <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+        
+                    <a:drag match="[folder|file]" />
+                    <a:drop match="[folder|file]" target="[folder]"
+                        action="tree-append" copy="{event.ctrlKey}" />
 		        </a:tree>
-		        <a:datagrid
-	              flex             = "2"
+		        <a:datagrid id="dgTest"
+	              flex             = "3"
 	              model            = "{trSaveAs.selected}"
                   onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
-	              onafterchoose    = "chooseFile(this.selected)">
+	              onafterchoose    = "chooseFile(this.selected)"
+	              loading-message  = "Loading...">
 		            <a:each
-                      match         =   "[folder|file]"
-                      filter        =   "{drpSaveAs.value.replace('*', '')}"
-                      filter-fields =   "@name">
+                      match         = "[folder|file]"
+                      filter        = "{drpSaveAs.value.replace('*', '')}"
+                      filter-fields = "@name"
+                      sort          = "[@name]" 
+                      sort-method   = "filesort">
 		                <a:load get="{location.host and davProject.readdir([@path])}" />
                         <a:column
                           caption   = "Name"
                           value     = "[@name]"
-                          width     = "60%" />
+                          width     = "60%" 
+                          icon      = "{
+                            if (#[self::folder]) 'folder.png';
+                            else getIcon(%[.]);
+                          }" />
                         <a:column
                           caption   = "Size"
                           value     = "[@size]"
+                          align     = "right"
                           width     = "20%" />
                         <a:column
                           caption   = "Type"
@@ -116,15 +134,15 @@
                 </a:dropdown>
             </a:hbox-->
 	        <a:hbox
-                pack    = "end"
-                padding = "5">
+              pack    = "end"
+              padding = "5">
+	            <a:button  default="2" class="ui-btn-green"
+                  onclick = "require('ext/save/save').saveFileAs()">
+	                Save
+	            </a:button>
 	            <a:button
 	              onclick = "winSaveAs.hide()">
 	                Cancel
-	            </a:button>
-	            <a:button
-                  onclick = "require('ext/save/save').saveas()">
-	                Save
 	            </a:button>
 	        </a:hbox>
         </a:vbox>

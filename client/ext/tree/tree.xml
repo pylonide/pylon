@@ -34,7 +34,6 @@
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{getIcon(%[.])}" />
-                <a:expanded match="[project]" />
             </a:each>
 
             <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
@@ -51,20 +50,20 @@
 
         <a:menu id="mnuCtxTree">
             <a:item match="[file]" class="strong" onclick="
-                require('core/ide').dispatchEvent('openfile', {node: trFiles.selected});
+                require('core/ide').dispatchEvent('openfile', {node: apf.activeElement.selected});
             ">Edit</a:item>
             <a:divider />
-            <a:item onclick="trFiles.startRename()">Rename</a:item>
-            <a:item match="[file|folder]" onclick="trFiles.remove()">Delete</a:item>
+            <a:item onclick="apf.activeElement.startRename()">Rename</a:item>
+            <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
             <a:item match="[file|folder]" onclick="
-                apf.clipboard.cutSelection(trFiles);
+                apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
             <a:item match="[file|folder]" onclick="
-                apf.clipboard.copySelection(trFiles);
+                apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
             <a:item match="[folder|project]" disabled="{!apf.clipboard.empty}" onclick="
-                apf.clipboard.pasteSelection(trFiles);
+                apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
             <a:item submenu="mnuNew">New</a:item>

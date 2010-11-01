@@ -19,7 +19,6 @@ Linux*i686*)  echo "Linux 32 bit"
     
 Darwin*)  echo  "OSX"
     common/node-builds/osx64/node bin/cloud9.js "$@" -a open
->>>>>>> 85b3ed12e28ea4411a15287419b24a990b50fc38
     ;;
 
 CYGWIN*)  echo  "Cygwin"

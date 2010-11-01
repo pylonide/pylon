@@ -13,6 +13,10 @@ return ext.register("ext/filesystem/filesystem", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
+    commands: {
+        "open": {hint: "open a file to edit in a new tab"},
+        "c9": {hint: "alias for 'open'"}
+    },
 
     readFile : function (path, callback){
         if (this.webdav)
@@ -22,6 +26,11 @@ return ext.register("ext/filesystem/filesystem", {
     saveFile : function(path, data, callback) {
         if (this.webdav)
             this.webdav.write(path, data, null, callback);
+    },
+
+    list : function(path, callback) {
+        if (this.webdav)
+            this.webdav.list(path, callback);
     },
 
     createFolder: function(name) {

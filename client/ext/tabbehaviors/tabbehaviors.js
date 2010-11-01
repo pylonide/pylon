@@ -16,9 +16,23 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     menus   : [],
     sep     : null,
     more    : null,
-    hotkeys : {"closetab":1,"closealltabs":1,"closeallbutme":1,"gototabright":1,
-        "gototableft":1,"tab1":1,"tab2":1,"tab3":1,"tab4":1,"tab5":1,"tab6":1,
-        "tab7":1,"tab8":1,"tab9":1,"tab0":1},
+    commands : {
+        "closetab": {hint: "close the tab that is currently active"},
+        "closealltabs": {hint: "close all opened tabs"},
+        "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active"},
+        "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active"},
+        "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active"},
+        "tab1": {hint: "navigate to the first tab"},
+        "tab2": {hint: "navigate to the second tab"},
+        "tab3": {hint: "navigate to the third tab"},
+        "tab4": {hint: "navigate to the fourth tab"},
+        "tab5": {hint: "navigate to the fifth tab"},
+        "tab6": {hint: "navigate to the sixth tab"},
+        "tab7": {hint: "navigate to the seventh tab"},
+        "tab8": {hint: "navigate to the eighth tab"},
+        "tab9": {hint: "navigate to the ninth tab"},
+        "tab0": {hint: "navigate to the tenth tab"}
+    },
     hotitems: {},
 
     nodes   : [],
@@ -212,9 +226,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
 
         var keyId = "tab" + (no - 3 == 10 ? 0 : no - 3);
         this.hotitems[keyId] = [this.nodes[no]];
-        if (this.hotkeys[keyId] !== 1) {
-            apf.hotkeys.register(this.hotkeys[keyId], this[keyId].bind(this));
-            this.nodes[no].setAttribute("hotkey", this.hotkeys[keyId]);
+        if (typeof this.commands[keyId]["hotkey"] != "undefined") {
+            apf.hotkeys.register(this.commands[keyId].hotkey, this[keyId].bind(this));
+            this.nodes[no].setAttribute("hotkey", this.commands[keyId].hotkey);
         }
     },
 
@@ -227,8 +241,8 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
                 keyId = "tab" + (i - 3 == 10 ? 0 : i - 3);
-                if (this.hotkeys[keyId] !== 1)
-                    apf.hotkeys.remove(this.hotkeys[keyId]);
+                if (typeof this.commands[keyId]["hotkey"] != "undefined")
+                    apf.hotkeys.remove(this.commands[keyId].hotkey);
                 return this.updateState();
             }
         }
@@ -270,8 +284,8 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         for (; i < l; ++i) {
             keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
             this.hotitems[keyId] = [aItems[i]];
-            if (this.hotkeys[keyId] !== 1)
-                aItems[i].setProperty("hotkey", this.hotkeys[keyId]);
+            if (typeof this.commands[keyId]["hotkey"] != "undefined")
+                aItems[i].setProperty("hotkey", this.commands[keyId].hotkey);
         }
     },
 

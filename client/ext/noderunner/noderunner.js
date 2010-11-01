@@ -9,7 +9,8 @@ require.def("ext/noderunner/noderunner",
      "core/ext",
      "core/util",
      "ext/console/console",
-     "text!ext/noderunner/noderunner.xml"], function(ide, ext, util, log, markup) {
+     "text!ext/noderunner/noderunner.xml"], 
+     function(ide, ext, util, log, markup) {
 
 return ext.register("ext/noderunner/noderunner", {
     name   : "Node Runner",
@@ -18,12 +19,14 @@ return ext.register("ext/noderunner/noderunner", {
     alone  : true,
     markup : markup,
     deps   : [log],
+    commands: {
+        "run": {hint: "run a node program on the server"}
+    },
 
     init : function(amlNode){
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
-        var _self = this;
         dbgNode.addEventListener("onsocketfind", function() {
             return ide.socket;
         });

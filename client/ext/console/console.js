@@ -11,20 +11,14 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
+     "text!ext/console/console.css",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, css, markup) {
 
 var trieInternals,
-    setDebug   = false,
-    setRun     = false,
     cmdHistory = [],
     cmdBuffer  = "",
     parser     = new parserCls(),
-    internal   = {"help":1,"clear":1,"open":1,"c9":1,"debug":1,"run":1,"sudo":1,
-        "man":1,"locate":1,"make":1,"lpr":1,"hello":1,"xyzzy":1,"date":1,"who":1,
-        "su":1,"fuck":1,"whoami":1,"nano":1,"top":1,"moo":1,"ping":1,"find":1,
-        "more":1,"your":1,"hi":1,"echo":1,"bash":1,"ssh":1,"uname":1,"finger":1,
-        "kill":1,"use":1,"serenity":1,"enable":1,"ed":1},
     helpPage   = [
         "%CS%+r Terminal Help %-r",
         " ",
@@ -53,6 +47,11 @@ return ext.register("ext/console/console", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
+    css    : css,
+    commands: {
+        "help": {hint: "show general help information and a list of available commands"},
+        "clear": {hint: "clear all the messages from the console"}
+    },
 
     clear : function() {
         this.inited && txtConsole.clear();
@@ -219,7 +218,7 @@ return ext.register("ext/console/console", {
             return false;
         }
         else if (e.keyCode != 13 && e.keyCode != 9) {
-            this.autoComplete(e, parser);
+            this.autoComplete(e, parser, 2);
             return;
         }
         //debugger;
@@ -235,19 +234,12 @@ return ext.register("ext/console/console", {
             var s,
                 cmd = parser.argv[parser.argc++];
             cmdHistory.push(line);
-            e.currentTarget.setValue(newVal);
             cmdBuffer = null;
 
             if (e.keyCode == 9) {
-                return this.autoComplete(e, parser);
+                return this.autoComplete(e, parser, 1);
             }
-
-            // special commands (run & debug):
-            if (cmd == "debug" || cmd == "run") {
-                setDebug = (cmd == "debug");
-                setRun   = (cmd == "run");
-                cmd = "open";
-            }
+            e.currentTarget.setValue(newVal);
 
             switch (cmd) {
                 case "help":
@@ -367,22 +359,91 @@ return ext.register("ext/console/console", {
         }
     },
 
-    autoComplete: function(e, parser) {
+    autoComplete: function(e, parser, mode) {
+        mode = mode || 2;
         if (!trieInternals) {
             trieInternals = new Trie();
-            apf.extend(internal, ext.commandsLut);
-            for (var name in internal)
+            for (var name in ext.commandsLut)
                 trieInternals.add(name);
         }
 
-        if (parser.argv.length == 1) {
-            var root = trieInternals.find(parser.argv[0]),
+        var list    = [],
+            textbox = e.currentTarget,
+            len     = parser.argv.length;
+        if (len == 1) {
+            var root = trieInternals.find(parser.argv[0]);
+            if (root) {
                 list = root.getWords();
-            console.log("check: ", parser.argv[0], e.currentTarget.getValue());
-            console.log("words found for word '", parser.argv[0], "' ", list);
+                console.log("check: ", parser.argv[0], textbox.getValue());
+                console.log("words found for word '", parser.argv[0], "' ", list);
+            }
+                
+        }
+
+        if (mode === 2) {
+            this.showHints(textbox, parser.argv[0] || "", list);
+        }
+        else if (mode === 1 && list.length === 1) {
+            textbox.setValue(textbox.getValue() + list[0].substr(1));
         }
 
         return false;
+    },
+
+    showHints: function(textbox, base, hints) {
+        var name = "console_hints";
+        base = base.substr(0, base.length - 1);
+
+        if (this.control && this.control.stop)
+            this.control.stop();
+
+        var cmdName, cmd,
+            content = [];
+        for (var i = 0, len = hints.length; i < len; ++i) {
+            cmdName = base + hints[i];
+            cmd = ext.commandsLut[cmdName];
+            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
+                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\')">'
+                + cmdName + '<span>' + cmd.hint + (cmd.hotkey
+                    ? '<span class="hints_hotkey">' + (apf.isMac
+                        ? apf.hotkeys.toMacNotation(cmd.hotkey)
+                        : cmd.hotkey) + '</span>'
+                    : '') + '</span></a>');
+        }
+
+        if (!this.$winHints)
+            this.$winHints = document.getElementById("winConsoleHints");
+
+        this.$winHints.innerHTML = content.join("");
+
+        var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
+        if (apf.getStyle(this.$winHints, "display") == "none") {
+            //this.$winHints.style.top = "-30px";
+            this.$winHints.style.display = "block";
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
+            //txtConsoleInput.focus();
+
+            //Animate
+            /*apf.tween.single(this.$winHints, {
+                type     : "fade",
+                anim     : apf.tween.easeInOutCubic,
+                from     : 0,
+                to       : 100,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {})
+            });*/
+        }
+        else {
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
+        }
+    },
+
+    hintClick: function(base, cmdName, txtId) {
+        var textbox = self[txtId];
+        textbox.setValue(textbox.getValue().replace(base, cmdName));
     },
 
     consoleTextHandler: function(e) {
@@ -393,7 +454,7 @@ return ext.register("ext/console/console", {
         }
         else if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
-            var expression = txtCode.value;
+            var expression = txtCode.getValue();
             if (!expression.trim())
                 return;
 
@@ -466,7 +527,7 @@ return ext.register("ext/console/console", {
             require("ext/debugger/debugger").showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
         }
         else {
-            winQuickWatch.show()
+            require("ext/quickwatch/quickwatch").toggleDialog(1);
 
             if (xmlNode && typeof xmlNode == "string")
                 xmlNode = apf.getXml(xmlNode);
@@ -538,9 +599,9 @@ return ext.register("ext/console/console", {
         this.$cwd  = "/workspace";
 
         //Append the console window at the bottom below the tab
-        ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]").appendChild(winDbgConsole);
+        mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
-        apf.importCssString(".console_date{display:inline}");
+        apf.importCssString((this.css || "") + " .console_date{display:inline}");
     },
 
     enable : function(fromParent){
@@ -555,6 +616,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.check();
         winDbgConsole.show();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 0 8");
+        apf.layout.forceResize();
     },
 
     disable : function(fromParent){
@@ -566,6 +630,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.uncheck();
         winDbgConsole.hide();
+        
+        mainRow.firstChild.setAttribute("edge", "8 8 8 8");
+        apf.layout.forceResize();
     },
 
     destroy : function(){

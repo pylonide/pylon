@@ -26,7 +26,7 @@
             </a:table>
         </a:vbox>
         <a:divider />
-        <a:hbox padding="5" pack="end" edge="10 10 10 10">
+        <a:hbox padding="5" pack="end" edge="10 10 5 10">
             <a:button id="btnReplace">Replace</a:button>
             <a:button id="btnReplaceAll">Replace All</a:button>
             <a:button id="btnFind" default="2" class="ui-btn-green">Find</a:button>

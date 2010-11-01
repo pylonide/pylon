@@ -18,6 +18,13 @@ return ext.register("ext/run/run", {
     alone  : true,
     markup : markup,
     deps   : [noderunner],
+    commands : {
+        "resume"   : {hint: ""},
+        "stepinto" : {hint: ""},
+        "stepover" : {hint: ""},
+        "stepout"  : {hint: ""}
+    },
+    hotitems: {},
 
     nodes : [],
 
@@ -27,6 +34,11 @@ return ext.register("ext/run/run", {
             ide.barTools.appendChild(button);
             this.nodes.push(button);
         }
+        
+        this.hotitems["resume"]   = [btnResume];
+        this.hotitems["stepinto"] = [btnStepInto];
+        this.hotitems["stepover"] = [btnStepOver];
+        this.hotitems["stepout"]  = [btnStepOut];
 
         var _self = this;
         mdlRunConfigurations.addEventListener("afterload", function(e) {

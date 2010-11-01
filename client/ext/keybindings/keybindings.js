@@ -40,29 +40,31 @@ return ext.register("ext/keybindings/keybindings", {
 
         // update keybindings for extensions:
         def = def.ext;
-        var i, j, l, name, oExt, hotkey, bindings, items, item, val;
+        var i, j, l, name, oExt, command, bindings, items, item, val;
         for (i in ext.extLut) {
             name     = i.substr(i.lastIndexOf("/") + 1).toLowerCase();
             bindings = def[name];
             oExt     = ext.extLut[i];
-            if (!bindings || !oExt.hotkeys) continue;
-            for (hotkey in oExt.hotkeys) {
-                if ((val = oExt.hotkeys[hotkey]) !== 1)
-                    apf.hotkeys.remove(val);
-                oExt.hotkeys[hotkey] = bindings[hotkey];
-                if ((items = oExt.hotitems[hotkey])) {
+            if (!bindings || !oExt.commands) continue;
+            for (command in oExt.commands) {
+                if (typeof (val = oExt.commands[command])["hotkey"] !== "undefined")
+                    apf.hotkeys.remove(val.hotkey);
+                oExt.commands[command].hotkey = bindings[command];
+                if (ext.commandsLut[command])
+                    ext.commandsLut[command].hotkey = bindings[command];
+                if ((items = oExt.hotitems[command])) {
                     for (j = 0, l = items.length; j < l; ++j) {
                         item = items[j];
                         if (!item.setAttribute) continue;
-                        item.setAttribute("hotkey", bindings[hotkey]);
+                        item.setAttribute("hotkey", bindings[command]);
                     }
                 }
-                if (typeof oExt[hotkey] != "function") {
-                    apf.console.error("Please implement the '" + hotkey
+                if (typeof oExt[command] != "function" && !oExt.hotitems) {
+                    apf.console.error("Please implement the '" + command
                         + "' function on plugin '" + oExt.name + "' for the keybindings to work");
                 }
-                else {
-                    apf.hotkeys.register(bindings[hotkey], oExt[hotkey].bind(oExt));
+                else if (!oExt.hotitems) {
+                    apf.hotkeys.register(bindings[command], oExt[command].bind(oExt));
                 }
             }
         }

@@ -343,8 +343,8 @@ return ext.register("ext/editors/editors", {
                 tabEditors.remove(page);
         });
 
-        var vbox = ide.vbMain.selectSingleNode("a:hbox[1]/a:vbox[2]");
-        this.hbox     = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
+        var vbox  = colMiddle;
+        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
         //this.splitter = vbox.appendChild(new apf.splitter());
         this.nodes.push(this.addTabSection());
 

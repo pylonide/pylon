@@ -21,7 +21,9 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     type     : ext.GENERAL,
     alone    : true,
     markup   : markup,
-    hotkeys  : {"searchinfiles":1},
+    commands  : {
+        "searchinfiles": {hint: "search for a string through all files in the current workspace"}
+    },
     pageTitle: "Search Results",
     pageID   : "pgSFResults",
     hotitems : {},
@@ -162,10 +164,6 @@ return ext.register("ext/searchinfiles/searchinfiles", {
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
-            });
-            // hide the debugger toolbar in the results tab
-            tabConsole.addEventListener("beforeswitch", function(e) {
-                tbDebug.setProperty("visible", (e.nextPage != _self.$panel));
             });
         }
         // show the tab

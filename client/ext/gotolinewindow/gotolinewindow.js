@@ -18,7 +18,9 @@ return ext.register("ext/gotolinewindow/gotolinewindow", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"gotoline":1},
+    commands : {
+        "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
+    },
     hotitems: {},
 
     nodes   : [],

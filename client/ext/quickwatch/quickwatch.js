@@ -17,7 +17,9 @@ return ext.register("ext/quickwatch/quickwatch", {
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    hotkeys : {"quickwatch":1},
+    commands : {
+        "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
+    },
     hotitems: {},
 
     nodes   : [],
@@ -60,9 +62,15 @@ return ext.register("ext/quickwatch/quickwatch", {
         if (!winQuickWatch.visible || force == 1) {
             var editor = editors.currentEditor;
     
+            var range;
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
-            var range = sel.getRange();
+            if (sel.isEmpty()) {
+                var cursor = sel.getCursor();
+                range = doc.getWordRange(cursor.row, cursor.column);
+            }
+            else
+                range = sel.getRange();
             var value = doc.getTextRange(range);
 
             if (value) {

@@ -14,7 +14,7 @@
             </a:hbox>
             <a:hbox align="center">
                 <a:label width="95">Filename Patterns</a:label>
-                <a:dropdown id="ddSFPatterns" flex="1" autoselect="true">
+                <a:dropdown id="ddSFPatterns" flex="1" autoselect="true" maxitems="10">
                     <a:item value="all">All known filetypes</a:item>
                     <a:item value="actionscript">Actionscript files</a:item>
                     <a:item value="ada">Ada files</a:item>
@@ -90,6 +90,7 @@
 
     <a:tree id   = "trSFResult"
       anchors    = "0 0 0 0"
+      border     = "0"
       visible    = "false"
       class      = "searchinfiles"
       each       = "[d:response|d:excerpt]"
