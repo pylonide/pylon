@@ -32,6 +32,12 @@ return ext.register("ext/filesystem/filesystem", {
         if (this.webdav)
             this.webdav.list(path, callback);
     },
+    
+    exists : function(path, callback) {
+        this.readFile(path, function (data, state, extra) {
+            callback(state == apf.SUCCESS)
+        });
+    },
 
     createFolder: function(name, tree) {
         if (!tree) {
@@ -47,27 +53,41 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
 
         if (this.webdav) {
-            if (!name)
-                name = "New Folder";
+            var prefix = name ? name : "New Folder";
             var path = node.getAttribute("path");
             if (!path) {
                 path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
-            tree.focus();
-            this.webdav.exec("mkdir", [path, name], function(data) {
-                // @todo: in case of error, show nice alert dialog
-                if (data instanceof Error)
-                    throw Error;
-                
-                var strXml = data.match(new RegExp(("(<folder path='" + path 
-                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-
-                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
-
-                tree.select(folder);
-                tree.startRename();
-            });
+            
+            var _self = this,
+                index = 0;
+            
+            function test(exists) {
+                if (exists) {
+                    name = prefix + index++;
+                    _self.exists(path + "/" + name, test);     
+                } else {
+		            tree.focus();
+		            _self.webdav.exec("mkdir", [path, name], function(data) {
+		                // @todo: in case of error, show nice alert dialog
+		                if (data instanceof Error)
+		                    throw Error;
+		                
+		                console.log("name " + name);
+		                var strXml = data.match(new RegExp(("(<folder path='" + path 
+		                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
+		
+		                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
+		
+		                tree.select(folder);
+		                tree.startRename();
+		            });
+	            }
+	        }
+	        
+	        name = prefix;
+	        this.exists(path + "/" + name, test);
         }
     },
 
