@@ -30,6 +30,7 @@
                     <a:page id="pgSettingsGeneral" render="runtime">
                         <a:frame caption="General" anchors="0 0 0 0">
                             <a:checkbox value="[@openfiles]">Open files at startup</a:checkbox>
+                            <a:checkbox value="[@saveallbeforerun]">Save all files before running</a:checkbox>
                         </a:frame>
                     </a:page>
                     <a:page id="pgSettingsEditor" render="runtime">

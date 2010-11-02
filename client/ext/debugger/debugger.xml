@@ -1,101 +1,101 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgStack" class="smallheader" title=" " skin="dockwin" modal="false" flex="1" buttons="close" draggable="false">
-        <a:tab anchors="0 0 0 0">
-            <a:page caption="Call Stack">
-                <a:datagrid
-                  id         = "dgStack"
-                  anchors    = "0 0 0 0"
-                  border     = "0"
-                  options    = "size|move"
-                  caching    = "false"
-                  prerender  = "false"
-                  model      = "mdlDbgStack"
-                  disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
-                  selected   = "{dbg.activeframe}">
-                    <a:actions />
-                    <a:each match="[frame]">
-                        <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
-                        <a:column caption="Script" value="[@script]" width="50" />
-                        <a:column caption="Ln" value="[@line]" width="25"/>
-                        <a:column caption="Col" value="[@column]" width="25"/>
-                    </a:each>
-                </a:datagrid>
-            </a:page>
-        </a:tab>
-    </a:window>
-    
-    <a:window id="winDbgInspect" skin="dockwin" title="Inspect" modal="false" flex="2" buttons="close" draggable="false">
-        <a:tab anchors="0 0 0 0">
-            <a:page caption="Interactive">
-                <a:vbox anchors="0 0 0 0">
-                    <a:toolbar>
-                        <a:bar border="0 0 1 0">
-                            <a:button
-                              disabled = "{!stDebugProcessRunning.active or stRunning.active}"
-                              caption  = "Execute" 
-                              onclick  = "
-                                require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
-                              " />
-                            <a:button
-                              disabled2 = "{!txtCode.value.trim()}"
-                              caption  = "Clear" 
-                              onclick  = "
-                                txtCode.clear();
-                              " />
-                        </a:bar>
-                    </a:toolbar>
-                    <a:codeeditor id="txtCode" 
-                      flex      = "1"
-                      disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
-                      onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
-                      realtime  = "true"
-                      border    = "0" 
-                      model     = "{require('ext/settings/settings').model}" 
-                      value     = "[auto/console/input]"
-                      softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
-                      tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
-                      scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-                      theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
-                      selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
-                      activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-                      showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-                      showprintmargin   = "false"
-                      printmargincolumn = "0" />
-                </a:vbox>
-            </a:page>
-            <a:page caption="Variables" render="runtime">
-        		<a:datagrid id="dgVars"
-                  anchors    = "0 0 0 0" 
-                  border     = "0"
-                  options    = "size|move"
-                  prerender  = "false"
-                  caching    = "false"
-                  model      = "[{dgStack.selected}::vars]"
-                  disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
-                  loading-message = "Calculating...">
-                    <a:actions />
-                    <a:each match="[item|globals]" sort="[@name]">
-                      	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
-                        <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
-                        <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
-                        <a:column caption="Value" value="[@value]" width="60%" />
-                        <a:column caption="Type" value="[@type]" width="50"/>
-                    </a:each>
-                </a:datagrid>
-            </a:page>
-            <a:page caption="Breakpoints">
-                <a:list id="lstBreakpoints"
-        		  autoselect = "false"
-        		  reselectable = "true"
-        		  anchors    = "0 0 0 0"
-        		  border     = "0"
-        		  model      = "mdlDbgBreakpoints"
-        		  each       = "[breakpoint]"
-        		  caption    = "[@text]"
-        		  icon       = "debugger/brkp_obj.png">
-        		    <a:actions />
-        		</a:list>
-            </a:page>
-        </a:tab>
+        <a:vbox splitters="true" class="thin_splitter" padding="3" anchors="0 0 0 0">
+            <a:tab flex="1">
+                <a:page caption="Call Stack">
+                    <a:datagrid
+                      id         = "dgStack"
+                      anchors    = "0 0 0 0"
+                      border     = "0"
+                      options    = "size|move"
+                      caching    = "false"
+                      prerender  = "false"
+                      model      = "mdlDbgStack"
+                      disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
+                      selected   = "{dbg.activeframe}">
+                        <a:actions />
+                        <a:each match="[frame]">
+                            <a:column caption="Function" value="[@name]" width="100%" icon2="debugger/stckframe_obj.gif" />
+                            <a:column caption="Script" value="[@script]" width="50" />
+                            <a:column caption="Ln" value="[@line]" width="25"/>
+                            <a:column caption="Col" value="[@column]" width="25"/>
+                        </a:each>
+                    </a:datagrid>
+                </a:page>
+            </a:tab>
+
+            <a:tab flex="1">
+                <a:page caption="Interactive">
+                    <a:vbox anchors="0 0 0 0">
+                        <a:toolbar>
+                            <a:bar border="0 0 1 0">
+                                <a:button
+                                  disabled = "{!stDebugProcessRunning.active or stRunning.active}"
+                                  caption  = "Execute" 
+                                  onclick  = "
+                                    require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
+                                  " />
+                                <a:button
+                                  disabled2 = "{!txtCode.value.trim()}"
+                                  caption  = "Clear" 
+                                  onclick  = "
+                                    txtCode.clear();
+                                  " />
+                            </a:bar>
+                        </a:toolbar>
+                        <a:codeeditor id="txtCode" 
+                          flex      = "1"
+                          disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
+                          onkeydown = "return require('ext/console/console').consoleTextHandler(event)" 
+                          realtime  = "true"
+                          border    = "0" 
+                          model     = "{require('ext/settings/settings').model}" 
+                          value     = "[auto/console/input]"
+                          softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+                          tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+                          scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+                          theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
+                          selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+                          activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
+                          showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+                          showprintmargin   = "false"
+                          printmargincolumn = "0" />
+                    </a:vbox>
+                </a:page>
+                <a:page caption="Variables" render2="runtime">
+            		<a:datagrid id="dgVars"
+                      anchors    = "0 0 0 0" 
+                      border     = "0"
+                      options    = "size|move"
+                      prerender  = "false"
+                      caching    = "false"
+                      model      = "[{dgStack.selected}::vars]"
+                      disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
+                      loading-message = "Calculating...">
+                        <a:actions />
+                        <a:each match="[item|globals]" sort="[@name]">
+                          	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+                            <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
+                            <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
+                            <a:column caption="Value" value="[@value]" width="60%" />
+                            <a:column caption="Type" value="[@type]" width="50"/>
+                        </a:each>
+                    </a:datagrid>
+                </a:page>
+                <a:page caption="Breakpoints" render2="runtime">
+                    <a:list id="lstBreakpoints"
+            		  autoselect = "false"
+            		  reselectable = "true"
+            		  anchors    = "0 0 0 0"
+            		  border     = "0"
+            		  model      = "mdlDbgBreakpoints"
+            		  each       = "[breakpoint]"
+            		  caption    = "[@text]"
+            		  icon       = "debugger/brkp_obj.png">
+            		    <a:actions />
+            		</a:list>
+                </a:page>
+            </a:tab>
+        </a:vbox>
     </a:window>
 </a:application>
