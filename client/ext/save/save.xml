@@ -76,11 +76,11 @@
           padding   = "5">
             <a:hbox>
 	            <a:button
-	              icon     = "folder.png"
+	              icon     = "folder_up.png"
 	              onclick  = "gotoParent()"
 	              tooltip  = "Go to parent" />
 	            <a:button
-	              icon     = "folder.png"
+	              icon     = "folder_new.png"
 	              onclick  = "require('ext/filesystem/filesystem').createFolder()"
                   tooltip  = "Create folder" />
 	        </a:hbox>
@@ -106,7 +106,7 @@
 				    
 				    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                     <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                    <a:rename set="{davProject.rename([@name], [@path])}"/>
+                    <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
                     <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
                     <a:move set="{davProject.move([@path], [../@path])}"/>
                     <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
