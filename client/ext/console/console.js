@@ -253,6 +253,7 @@ return ext.register("ext/console/console", {
                 return this.autoComplete(e, parser, 1);
             }
             e.currentTarget.setValue(newVal);
+            this.hideHints();
 
             switch (cmd) {
                 case "help":
@@ -406,9 +407,11 @@ return ext.register("ext/console/console", {
                 cmdFetched = true;
                 break;
             case "internal-autocomplete":
-                console.log("result:", message.body);
                 var res = message.body;
                 lastSearch = res;
+                lastSearch.trie = new Trie();
+                for (var i = 0, l = res.matches.length; i < l; ++i)
+                    lastSearch.trie.add(res.matches[i]);
                 this.showHints(res.textbox, res.base || "", res.matches, null, res.cursor);
                 break;
         }
@@ -422,6 +425,10 @@ return ext.register("ext/console/console", {
                 trieCommands.add(name);
             apf.extend(commands, ext.commandsLut);
         }
+
+        // keycodes that invalidate the previous autocomplete:
+        if (e.keyCode == 8 || e.keyCode == 46)
+            lastSearch = null;
 
         var root,
             list      = [],
@@ -457,16 +464,15 @@ return ext.register("ext/console/console", {
 
         // check for commands in first argument when there is only one argument
         // provided, or when the cursor on the first argument
-        //debugger;
         if (len == 1 && cursorPos < parser.argv[0].length) {
             root = trieCommands.find(parser.argv[0]);
             if (root)
                 list = root.getWords();
         }
         else {
-            var idx, needle,
-                i = 0
-            for (; i < len; ++i) {
+            var idx, needle, cmdTrie,
+                i = len - 1;
+            for (; i >= 0; --i) {
                 idx = val.indexOf(parser.argv[i]);
                 if (idx === -1) //shouldn't happen, but yeah...
                     continue;
@@ -478,18 +484,58 @@ return ext.register("ext/console/console", {
             if (typeof needle != "number")
                 needle = 0;
 
-            var trieKey = parser.argv.slice(0, needle + 1).join("-");
-            if (cmdTries[trieKey]) {
-                root = cmdTries[trieKey].trie.find(parser.argv[++needle]);
+            ++needle;
+            while (!(cmdTrie = cmdTries[parser.argv.slice(0, needle).join("-")]))
+                --needle
+
+            if (cmdTrie) {
+                //console.log("needle we're left with: ", needle, len);
+                root = cmdTrie.trie.find(parser.argv[needle]);
+                base = parser.argv[needle];
                 if (root) {
-                    base = parser.argv[needle];
                     list = root.getWords();
                 }
                 else {
-                    base = "";
-                    list = cmdTries[trieKey].trie.getWords();
+                    list = cmdTrie.trie.getWords();
+                    // check for file/folder autocompletion:
+                    if (list.length == 1 && list[0] == "[PATH]") {
+                        //console.log("we have PATH, ", base, lastSearch);
+                        if (base && lastSearch) {
+                            list.splice(0, 1);
+                            var newbase = base.split("/").pop();
+                            if (!newbase) {
+                                base = newbase;
+                                list = lastSearch.trie.getWords();
+                            }
+                            else if (newbase.indexOf(lastSearch.base) > -1) {
+                                //console.log("searching for ", newbase, base, "mode:", mode);
+                                root = lastSearch.trie.find(newbase);
+                                if (root) {
+                                    base = newbase;
+                                    list = root.getWords();
+                                }
+                            }
+                            if (!list.length) {
+                                // we COULD do something special here...
+                            }
+                        }
+                        else {
+                            if (mode == 2)
+                                list.splice(0, 1);
+                            //base = "";
+                        }
+                        // adjust the argv array to match the current cursor position:
+                        parser.argv = parser.argv.slice(0, needle);
+                        parser.argv.push(base);
+                        // else: autocompletion is sent to the backend
+                        //console.log("directory found: ", base, list, "mode:", mode);
+                    }
+                    else {
+                        base = "";
+                    }
                 }
-                cmds = cmdTries[trieKey].commands;
+                cmds = cmdTrie.commands;
+                //console.log("list: ", list, base, parser.argv);
             }
         }
 
@@ -501,9 +547,9 @@ return ext.register("ext/console/console", {
         }
         else if (mode === 1) { // TAB autocompletion
             var ins = base ? list[0].substr(1) : list[0];
-            if (ins == "[PATH]" && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
+            if (ins.indexOf("PATH]") != -1 && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
                 ins = lastSearch.matches[0].replace(lastSearch.base, "");
-            if (ins == "[PATH]") {
+            if (ins.indexOf("PATH]") != -1) {
                 ide.socket.send(JSON.stringify({
                     command: "internal-autocomplete",
                     line   : val,
@@ -514,7 +560,10 @@ return ext.register("ext/console/console", {
                 }));
             }
             else {
-                textbox.setValue(val.substr(0, cursorPos + 1) + ins + val.substr(cursorPos + 1));
+                var newval = val.substr(0, cursorPos + 1) + ins + val.substr(cursorPos + 1);
+                if (val != newval)
+                    textbox.setValue(newval);
+                lastSearch = null;
             }
             this.hideHints();
         }
@@ -558,11 +607,6 @@ return ext.register("ext/console/console", {
 
         this.$winHints.innerHTML = content.join("");
 
-        var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
-
-        this.$winHints.style.left = Math.max(cursorPos * 5, 5) + "px";
-        this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
-
         if (apf.getStyle(this.$winHints, "display") == "none") {
             //this.$winHints.style.top = "-30px";
             this.$winHints.style.display = "block";
@@ -579,6 +623,10 @@ return ext.register("ext/console/console", {
                 control  : (this.control = {})
             });*/
         }
+
+        var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
+        this.$winHints.style.left = Math.max(cursorPos * 5, 5) + "px";
+        this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
     },
 
     hideHints: function() {
