@@ -5289,6 +5289,9 @@
                 border-top : 1px solid #ffffff;
                 border-right : 1px solid #8c8c8c;
                 border-bottom : 1px solid #8c8c8c;
+
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(199,199,199)),color-stop(1, rgb(214,214,214)));
+                background: -moz-linear-gradient(center bottom,rgb(199,199,199) 50%,rgb(214,214,214) 100%);
             }
 
             /*.tab .btncontainer div.firstbtn {
@@ -5320,11 +5323,8 @@
             }
 
             .tab .btncontainer div.over {
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(199,199,199)),color-stop(1, rgb(214,214,214)));
-                background: -moz-linear-gradient(center bottom,rgb(199,199,199) 50%,rgb(214,214,214) 100%);
-                border-top : 1px solid #ffffff;
-                border-right : 1px solid #8c8c8c;
-                border-bottom : 1px solid #8c8c8c;
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+                background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
                 cursor: pointer;
             }
 
