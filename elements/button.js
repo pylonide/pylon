@@ -321,7 +321,8 @@ apf.button  = function(struct, tagName){
     }
 
     function menuDown(e){
-        var menu = self[this.submenu];
+        var menu = self[this.submenu],
+            $button1;
 
         this.value = !this.value;
 
@@ -339,6 +340,9 @@ apf.button  = function(struct, tagName){
         if (!this.value) {
             menu.hide();
             this.$setState("Over", {}, "toolbarover");
+
+            if($button1 = this.parentNode.$button1)
+                $button1.$setState("Over", {}, "toolbarover");
 
             this.parentNode.menuIsPressed = false;
             if (this.parentNode.hasMoved)
@@ -499,7 +503,7 @@ apf.button  = function(struct, tagName){
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;
 
-        if(this.parentNode.$button2.value)
+        if(this.parentNode.$button2.value && !this.submenu)
             return;
 
         this.$doBgSwitch(this.states[state]);
