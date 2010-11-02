@@ -24,12 +24,17 @@ BODY {
 
 #logo {
     background: url(images/logo.png) no-repeat 0 0;
-    width: 161px;
-    height: 22px;
+    width: 186px;
+    height: 26px;
     display: block;
     text-indent: -800em;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
-
+.headerMenuBar {
+    padding-right: 190px;
+}
 .alertMsg {
     font-size   : 14px;
     color       : #333333;
