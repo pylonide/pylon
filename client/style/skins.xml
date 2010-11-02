@@ -222,7 +222,7 @@
             left         : 0;
             top          : 0;
             height       : 17px;
-            border       : 1px solid #8c8c8c;
+            border       : 1px solid #c3c3c3;
             border-right : 0;
             bottom       : 0;
             right        : 17px;
@@ -252,7 +252,7 @@
         }
 
         .tsliderDisabled .fixdiv {
-            border       : 1px solid #8c8c8c;
+            border       : 1px solid #c3c3c3;
             border-right : 0;
         }
 
@@ -334,7 +334,7 @@
 
         .tslider_container .slider U {
             position    : absolute;
-            background  : #8c8c8c;
+            background  : #c3c3c3;
             overflow    : hidden;
             height      : 4px;
             margin      : 2px 0 0 0;
@@ -402,7 +402,7 @@
             font-size : 11px;
             cursor : default;
             padding : 1px 1px 4px 1px;
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
         }
         .debugmarkup blockquote{
             margin : 0;
@@ -663,7 +663,7 @@
             height : 0;
             border: 1px solid white;
             border-width : 1px 0 1px 0;
-            border-color : #8c8c8c white white #8c8c8c;
+            border-color : #c3c3c3 white white #c3c3c3;
             line-height : 0;
             cursor : default;
         }
@@ -804,7 +804,7 @@
             background : #f5f5f5;
             overflow : hidden;
             position : relative;
-    	    border : 1px solid #8c8c8c;
+    	    border : 1px solid #c3c3c3;
     	    border-width : 0 1px 1px 1px;
     	    padding : 5px;
         }
@@ -890,7 +890,7 @@
             background : #f1f1f1;
             overflow : hidden;
             position : relative;
-    	    border : 1px solid #8c8c8c;
+    	    border : 1px solid #c3c3c3;
     	    border-width : 0 1px 1px 1px;
     	    padding : 5px;
         }
@@ -1035,7 +1035,7 @@
 <a:flowchart name="flowchart">
     <a:style><![CDATA[
         .flowchart {
-            border           : 1px solid #8c8c8c;
+            border           : 1px solid #c3c3c3;
             background-color : #EEEEEE;
             width            : 450px;
             height           : 500px;
@@ -1326,7 +1326,7 @@
             width        : 100%;
             position     : absolute;
             padding      : 0;
-            border       : 1px solid #8c8c8c;
+            border       : 1px solid #c3c3c3;
         }
 
         .accordion_apf_ver .panel {
@@ -1392,8 +1392,8 @@
             display        : none;
             white-space    : nowrap;
             height         : 100%;
-            border-top     : 1px solid #8c8c8c;
-            border-bottom  : 1px solid #8c8c8c;
+            border-top     : 1px solid #c3c3c3;
+            border-bottom  : 1px solid #c3c3c3;
         }
 
         .accordion_apf_ver .panel .last {
@@ -2340,7 +2340,7 @@
         }
 
         .toolwindow .editor_seperator{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             border-right: 1px solid #FFFFFF;
             height: 17px;
             float: left;
@@ -3485,7 +3485,7 @@
         }
 
         .alert .title{
-            border-top:1px solid #8c8c8c;
+            border-top:1px solid #c3c3c3;
             height: 18px;
             margin: -27px 14px 0 8px;
             padding : 8px 0 0 3px;
@@ -3501,7 +3501,7 @@
         }
 
         .alert .content{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             padding: 1px 0 0 10px;
             margin : -1px 9px 0 0;
             /*overflow: hidden;*/
@@ -3611,7 +3611,7 @@
         }
 
         .bardown .content{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             padding: 3px 5px 0 5px;
             height : 100%;
             position : relative;
@@ -3716,7 +3716,7 @@
         }
 
         .searchbar .content{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             height : 100%;
             position : relative;
 			overflow: hidden;
@@ -3724,7 +3724,7 @@
 
         .searchbar .borderRight{
             background: url("images/error_box_r.png") repeat-y top right;
-			border-top: 1px solid #8c8c8c;
+			border-top: 1px solid #C3C3C3;
             overflow: hidden;
             height : 100%;
             width : 8px;
@@ -4372,7 +4372,7 @@
         }
 
         .searchboxDisabled {
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             color: #bebebe;
         }
 
@@ -4756,7 +4756,7 @@
         }
 
         .ceDisabled {
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             color: #bebebe;
         }
 
@@ -4800,7 +4800,7 @@
 <a:textbox name="textarea">
     <a:style><![CDATA[
         .ta{
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background: white url("images/textarea_background2.png") no-repeat top left;
             /*background-attachment: fixed !important; background-attachment: scroll; */
             color: #333;
@@ -4816,7 +4816,7 @@
         }
 
         .taDisabled{
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             color: #bebebe;
         }
 
@@ -5242,24 +5242,24 @@
         <a:style><![CDATA[
             .tab {
                 padding : 0 0 0 0;
-                border: 0px solid #8c8c8c;
+                border: 0px solid #c3c3c3;
                 margin : 0 auto;
                 overflow: hidden;
                 position:relative;
-                padding-top: 21px;
+                padding-top: 17px;
                 /*border-bottom: 1px solid white;*/
             }
 
             .tab .btncontainer{
                 padding : 0 0 1px;
                 z-index : 100;
-                height: 18px;
+                height: 14px;
                 overflow: visible;
                 white-space: nowrap;
                 color: #404040;
                 text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-                font-family : Trebuchet MS;
-                font-size : 12px;
+                font-family : Tahoma;
+                font-size : 11px;
                 border-bottom : 1px solid #8c8c8c;
                 
                 /*border-top : 1px solid #ffffff;
@@ -5268,7 +5268,7 @@
 
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
                 background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
-                margin-top : -20px;
+                margin-top : -16px;
                 width : auto;
             }
 
@@ -5751,7 +5751,7 @@
         .menu div.menu_divider{
             border-style: solid;
             border-width: 1px 0 0 0;
-            border-color: #8c8c8c;
+            border-color: #c3c3c3;
             overflow: visible;
             margin: 1px 3px 1px 3px;
             padding: 0;
@@ -5873,7 +5873,7 @@
         }
 
         .toolbar>.subbar>.divider {
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             border-right: 1px solid #FFFFFF;
             height: 17px;
             float: left;
@@ -6134,7 +6134,7 @@
         .list{
             overflow: auto;
             position: relative;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: #fafbfc;
             cursor: default;
         }
@@ -6245,7 +6245,7 @@
     <a:style><![CDATA[
         .thumbs_caption{
             background-color: #f1f1f1;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             overflow: auto;
             cursor: default;
             padding : 3px;
@@ -6392,7 +6392,7 @@
     <a:style><![CDATA[
         .thumbs{
             background-color: white;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             overflow: auto;
             cursor: default;
             padding : 3px;
@@ -6696,7 +6696,7 @@
         .clist{
             overflow: auto;
             position: relative;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: #fafbfc;
             cursor: default;
         }
@@ -7078,7 +7078,7 @@
             float: left;
             margin : 2px 2px 0 0;
 
-            border-right: 1px solid #8c8c8c;
+            border-right: 1px solid #c3c3c3;
             border-left: 1px solid #FFFFFF;
 
             position : relative;
@@ -7300,7 +7300,7 @@
     .docutree{
         overflow: auto;
         position: relative;
-        border: 1px solid #8c8c8c;
+        border: 1px solid #c3c3c3;
         border-top : 0;
         background-color: white;
         cursor: default;
@@ -7453,8 +7453,8 @@
 
         .trDefines {
             background: none;
-            border-bottom: 1px solid #8c8c8c;
-            border-top: 1px solid #8c8c8c;
+            border-bottom: 1px solid #c3c3c3;
+            border-top: 1px solid #c3c3c3;
             border-right: none;
             border-left: none;
             posittion: relative;
@@ -8321,7 +8321,7 @@
 
         .slider u{
             position : absolute;
-            background : #8c8c8c;
+            background : #c3c3c3;
             overflow : hidden;
             height : 4px;
             margin : 2px 0 0 0;
@@ -8944,7 +8944,7 @@
         }
 
         .errorbox .tBorder {
-            border-top:1px solid #8c8c8c;
+            border-top:1px solid #c3c3c3;
             height: 8px;
             margin: 0 14px 0 8px;
             padding: 0;
@@ -8969,7 +8969,7 @@
         }
 
         .errorbox .ebcontent{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             padding: 0 14px 0 10px;
             overflow: hidden;
             background-color : white;
@@ -9085,9 +9085,9 @@
 
         .bar .contents {
             clear: both;
-            border-top: 1px solid #8c8c8c;
-            border-left: 1px solid #8c8c8c;
-            border-right: 1px solid #8c8c8c;
+            border-top: 1px solid #c3c3c3;
+            border-left: 1px solid #c3c3c3;
+            border-right: 1px solid #c3c3c3;
             background: #fafbfc;
             padding: 7px;
             overflow: hidden;
@@ -9111,7 +9111,7 @@
         }
 
         .bar .barFooter div div {
-            border-bottom: 1px solid #8c8c8c;
+            border-bottom: 1px solid #c3c3c3;
             background-color: #fafbfc;
             background-image: none;
             height: 14px;
@@ -9168,7 +9168,7 @@
             color: #333;
             font-family : Arial,Helvetica,Sans-serif;
             font-size : 12px;
-			border: 1px solid #8c8c8c;
+			border: 1px solid #c3c3c3;
 			background: white none repeat scroll 0 0;
 			overflow : hidden;
 			padding-top : 46px;
@@ -9267,7 +9267,7 @@
             background : #25a8e7 url(images/sectionhead.gif);
             color : #666;
             padding : 3px 2px 3px 2px;
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             font-family : Tahoma;
             font-size : 8pt;
             font-weight : bold;
@@ -9285,7 +9285,7 @@
         }
 
         .sectionCurrent .sectionhead{
-            /*border-bottom : 2px solid #8c8c8c;
+            /*border-bottom : 2px solid #c3c3c3;
             padding-bottom : 2px;
             z-index : 10;
             position : relative;*/
@@ -9389,7 +9389,7 @@
     <a:style><![CDATA[
         .img{
             padding : 10px;
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             background : #fafbfc no-repeat 50% 50%;
             overflow : hidden;
             position : relative;
@@ -9625,7 +9625,7 @@
             font-family: Tahoma;
             font-size: 10px;
             padding: 10px;
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             border-width : 0 1px 1px 1px;
             cursor: default;
             margin: 0;
@@ -10160,7 +10160,7 @@
     <a:style><![CDATA[
         .datagrid{
             position: relative;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: white;
             cursor: default;
             overflow : hidden;
@@ -10624,7 +10624,7 @@
 <a:datagrid name="spreadsheet">
     <a:style><![CDATA[
         .spreadsheet{
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: white;
             cursor: default;
 
@@ -10673,7 +10673,7 @@
         .spreadsheet .headings span b{
             font-weight : normal;
             padding : 1px 0 1px 0;
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             border-width : 0 1px 1px 1px;
 
             background : #e6e6e6 no-repeat 0 50%;
@@ -13088,7 +13088,7 @@
         }
 
         .apf_console{
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
             font-size : 11px;
             font-family : Monaco,"Courier New",monospace;
@@ -13960,7 +13960,7 @@
             display: block;
             z-index: 2;
             overflow: visible;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
         }
 
         .editor .editor_Area{
@@ -13998,7 +13998,7 @@
             height: 25px;
             font-family: Verdana;
             font-size: 11px;
-            border-bottom: 1px solid #8c8c8c;
+            border-bottom: 1px solid #c3c3c3;
             position: relative;
             margin: 0;
             padding: 0;
@@ -14010,7 +14010,7 @@
         }
 
         .editor .editor_seperator{
-            border-left: 1px solid #8c8c8c;
+            border-left: 1px solid #c3c3c3;
             border-right: 1px solid #FFFFFF;
             height: 17px;
             float: left;
@@ -15570,7 +15570,7 @@
 <a:propedit name="propedit">
     <a:style><![CDATA[
         .propedit{
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             /*border-left : 14px solid #cfcbc2;*/
             background-color: white;
             cursor: default;
@@ -16055,7 +16055,7 @@
         }
 
         .propedit .cbcontainer{
-            border : 1px solid #8c8c8c;
+            border : 1px solid #c3c3c3;
             padding-bottom : 2px;
             background : white;
         }
@@ -16456,7 +16456,7 @@
     <a:style><![CDATA[
         .dgnoscroll{
             position: relative;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: white;
             cursor: default;
 
@@ -16860,7 +16860,7 @@
     <a:style><![CDATA[
         .dgcheck{
             position: relative;
-            border: 1px solid #8c8c8c;
+            border: 1px solid #c3c3c3;
             background-color: white;
             cursor: default;
 
