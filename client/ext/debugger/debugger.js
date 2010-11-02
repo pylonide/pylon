@@ -139,43 +139,42 @@ return ext.register("ext/debugger/debugger", {
 
             if (name.indexOf(ide.workspaceDir) == 0) {
                 var path = "/" + ide.davPrefix + name.slice(ide.workspaceDir.length + 1);
-	            // TODO this has to be refactored to support multiple tabs
-	            var page = tabEditors.getPage(path);
-	            if (page)
-	                tabEditors.set(page);
+                // TODO this has to be refactored to support multiple tabs
+                var page = tabEditors.getPage(path);
+                if (page)
+                    var node = page.xmlRoot;
                 else {
-	                var node = apf.n("<file />")
-	                    .attr("name", value)
-	                    .attr("path", path)
-	                    .attr("contenttype", "application/javascript")
-	                    .attr("scriptid", script.getAttribute("scriptid"))
-	                    .attr("scriptname", script.getAttribute("scriptname"))
-	                    .attr("lineoffset", "0").node();
-	
-	                this.jump(node, row, column, text);
+                    var node = apf.n("<file />")
+                        .attr("name", value)
+                        .attr("path", path)
+                        .attr("contenttype", "application/javascript")
+                        .attr("scriptid", script.getAttribute("scriptid"))
+                        .attr("scriptname", script.getAttribute("scriptname"))
+                        .attr("lineoffset", "0").node();
                 }
+                this.jump(node, row, column, text);
             }
             else {
                 var page = tabEditors.getPage(value);
-	            if (page)
-	                tabEditors.set(page);
+                if (page)
+                    this.jump(page.xmlRoot, row, column, text);
                 else {
                     var node = apf.n("<file />")
-	                    .attr("name", value)
-	                    .attr("path", name)
-	                    .attr("contenttype", "application/javascript")
-	                    .attr("scriptid", script.getAttribute("scriptid"))
-	                    .attr("scriptname", script.getAttribute("scriptname"))
-	                    .attr("debug", "1")
-	                    .attr("lineoffset", "0").node();
+                        .attr("name", value)
+                        .attr("path", name)
+                        .attr("contenttype", "application/javascript")
+                        .attr("scriptid", script.getAttribute("scriptid"))
+                        .attr("scriptname", script.getAttribute("scriptname"))
+                        .attr("debug", "1")
+                        .attr("lineoffset", "0").node();
 
                     var _self = this;
                     dbg.loadScript(script, function(source) {
-	                    var doc = ide.createDocument(node, source);
-	
-	                    _self.jump(node, row, column, text, doc);
-	                });
-	            }
+                        var doc = ide.createDocument(node, source);
+    
+                        _self.jump(node, row, column, text, doc);
+                    });
+                }
             }
         }
     },
