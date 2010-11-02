@@ -3816,7 +3816,7 @@
         .btn {
             height             : 27px;
             overflow           : hidden;
-            cursor             : pointer;
+            cursor             : default;
             position           : relative;
             -moz-user-select   : none;
             -khtml-user-select : none;

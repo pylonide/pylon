@@ -9,9 +9,10 @@ require.def("ext/debugger/debugger",
      "core/document",
      "core/ext",
      "ext/console/console",
+     "ext/panels/panels",
      "ext/filesystem/filesystem",
      "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, fs, markup) {
+    function(ide, Document, ext, log, panels, fs, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -27,13 +28,17 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
+        /*this.$layoutItem = mnuModes.appendChild(new apf.item({
             value   : "ext/debugger/debugger",
             caption : this.name
-        }));
+        }));*/
+        
+        panels.register(this);
     },
 
     init : function(amlNode){
+        this.panel = winDbgStack;
+        
         this.rightPane = colRight;
         this.nodes.push(
             //Append the stack window at the right
@@ -215,7 +220,7 @@ return ext.register("ext/debugger/debugger", {
                 item.show();
         });
         this.rightPane.setProperty("visible", true);
-        log.enable(true);
+        //log.enable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -228,7 +233,7 @@ return ext.register("ext/debugger/debugger", {
                 item.hide();
         });
         this.rightPane.setProperty("visible", false);
-        log.disable(true);
+        //log.disable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -243,6 +248,8 @@ return ext.register("ext/debugger/debugger", {
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
+        
+        panels.unregister(this);
     }
 });
 
