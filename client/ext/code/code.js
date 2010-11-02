@@ -63,7 +63,7 @@ return ext.register("ext/code/code", {
 
             doc.isInited = doc.hasValue();
             doc.acedoc = new Document(doc.getValue() || "");
-            doc.acedoc.setUndoManager(actiontracker);//new UndoManager());
+            doc.acedoc.setUndoManager(actiontracker);
             
             doc.addEventListener("prop.value", function(e){
                 doc.acedoc.setValue(e.value || "");

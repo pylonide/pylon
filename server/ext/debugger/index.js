@@ -37,22 +37,29 @@ function cloud9DebuggerPlugin(server) {
                 this.$run(message);
                 break;
             case "rundebug":
-                message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
-                message.debug = true;
-                this.$run(message);
-
-                setTimeout(function() {
-                    _self.$startDebug();
-                }, 100);
+                findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+	                _self.NODE_DEBUG_PORT = port;
+	                message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+	                message.debug = true;
+	                _self.$run(message);
+	
+	                setTimeout(function() {
+	                    _self.$startDebug();
+	                }, 100);
+                });
                 break;
             case "rundedugbrk":
-                message.preArgs = ["--debug-brk=" + this.NODE_DEBUG_PORT];
-                message.debug = true;
-                this.$run(message);
-
-                setTimeout(function() {
-                    _self.$startDebug();
-                }, 100);
+                findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                    _self.NODE_DEBUG_PORT = port;
+                    
+	                message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+	                message.debug = true;
+	                _self.$run(message);
+	
+	                setTimeout(function() {
+	                    _self.$startDebug();
+	                }, 100);
+                });
                 break;
             case "rundebugchrome":
                 if (this.chromeDebugProxy) {
@@ -77,10 +84,17 @@ function cloud9DebuggerPlugin(server) {
                     this.server.client.send('{"type": "node-debug-ready"}');
                 break;
             case "kill":
-                if (!this.child)
+                var child = this.child;
+                if (!child)
                     break;
                 try {
-                    this.child.kill();
+                    child.kill();
+                    // check after 2sec if the process is really dead
+                    // If not kill it harder
+                    setTimeout(function() {
+                        if (child.pid > 0)
+                            child.kill("SIGKILL");
+                    }, 2000)
                 }
                 catch(e) {}
                 break;
@@ -173,7 +187,7 @@ function cloud9DebuggerPlugin(server) {
         if (this.nodeDebugProxy)
             return this.server.error("Debug session already running", 5, message);
 
-        this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT++);
+        this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT);
         this.nodeDebugProxy.on("message", function(body) {
             if (!_self.server.client) return;
 
@@ -198,4 +212,31 @@ function cloud9DebuggerPlugin(server) {
     };
 }).call(cloud9DebuggerPlugin.prototype = new Plugin());
 
+var net = require("net");
+
+function findFreePort(start, hostname, callback) {
+    var port = start;
+	asyncRepeat(function(next, done) {
+		var stream = net.createConnection(port, hostname);
+		
+		stream.on("connect", function() {
+		    stream.end();
+		    port++;
+		    next();
+		});
+		
+		stream.on("error", function() {
+		    done();
+		});
+    }, function() {
+        callback(port);
+    });
+}
+
+function asyncRepeat(callback, onDone) {
+    callback(function() {
+        asyncRepeat(callback, onDone);
+    }, onDone);
+}
+    
 module.exports = cloud9DebuggerPlugin;
