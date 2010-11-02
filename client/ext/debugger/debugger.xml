@@ -24,7 +24,7 @@
                 </a:page>
             </a:tab>
 
-            <a:tab flex="1">
+            <a:tab flex="2">
                 <a:page caption="Interactive">
                     <a:vbox anchors="0 0 0 0">
                         <a:toolbar>
