@@ -191,7 +191,7 @@ apf.text = function(struct, tagName){
 
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
-        this.dispatchEvent("prop.value", {value: value});
+        //this.dispatchEvent("prop.value", {value: value});
     }
 
     /**
