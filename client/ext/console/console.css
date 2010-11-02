@@ -44,12 +44,11 @@
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
-    color: #666;
     background-color: #f0f0f0;
-    background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(227,227,227)));
-    background:-moz-linear-gradient(center top,rgb(255,255,255) 0%,rgb(227,227,227) 100%);
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(27,28,28)),color-stop(1, rgb(52,54,59)));
+    background: -moz-linear-gradient(center bottom,rgb(27,28,28) 0%,rgb(52,54,59) 100%);
 
-    border: 1px solid #b8b8b8;
+    border: 1px solid #000;
 }
 
 .barConsoleHints a span {
