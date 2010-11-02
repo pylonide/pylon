@@ -79,28 +79,41 @@ return ext.register("ext/debugger/debugger", {
         log.enable(true);
     },
 
-    jump : function(fileEl, row, column, text, doc) {
-        var path = fileEl.getAttribute("path");
+    jump : function(fileEl, row, column, text, doc, page) {
+        var path    = fileEl.getAttribute("path");
+        var hasData = fileEl.selectSingleNode("data") ? true : false;
 
         if (row !== undefined) {
-            ide.addEventListener("afteropenfile", function(e) {
-                var node = e.doc.getNode();
-                
-                if (node.getAttribute("path") == path) {
-                    ide.removeEventListener("afteropenfile", arguments.callee);
-                    setTimeout(function() {
-                        ceEditor.$editor.gotoLine(row, column);
-                        if (text)
-                            ceEditor.$editor.find(text);
-                        ceEditor.focus();
-                    }, 100);
-                }
-            });
+            function jumpTo(){
+                setTimeout(function() {
+                    ceEditor.$editor.gotoLine(row, column);
+                    if (text)
+                        ceEditor.$editor.find(text);
+                    ceEditor.focus();
+                }, 100);
+            }
+            
+            if (hasData) {
+                tabEditors.set(path);
+                jumpTo();
+            }
+            else
+                ide.addEventListener("afteropenfile", function(e) {
+                    var node = e.doc.getNode();
+                    
+                    if (node.getAttribute("path") == path) {
+                        ide.removeEventListener("afteropenfile", arguments.callee);
+                        jumpTo();
+                    }
+                });
         }
-
-        ide.dispatchEvent("openfile", {
-            doc: doc || ide.createDocument(fileEl)
-        });
+        
+        if (!hasData && !page) 
+            ide.dispatchEvent("openfile", {
+                doc: doc || ide.createDocument(fileEl)
+            });
+        else
+            tabEditors.set(path);
     },
 
     contentTypes : {
@@ -133,7 +146,7 @@ return ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 
         if (file) {
-            this.jump(file, row, column, text);
+            this.jump(file, row, column, text, null, true);
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
@@ -157,12 +170,12 @@ return ext.register("ext/debugger/debugger", {
                         .attr("scriptname", script.getAttribute("scriptname"))
                         .attr("lineoffset", "0").node();
                 }
-                this.jump(node, row, column, text);
+                this.jump(node, row, column, text, null, page ? true : false);
             }
             else {
                 var page = tabEditors.getPage(value);
                 if (page)
-                    this.jump(page.xmlRoot, row, column, text);
+                    this.jump(page.xmlRoot, row, column, text, null, true);
                 else {
                     var node = apf.n("<file />")
                         .attr("name", value)
