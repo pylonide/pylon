@@ -1,0 +1,21 @@
+{
+    "name": "shell",
+    "description": "Provides system shell integration to a client-side CLI.",
+    "version": "0.1",
+    "author": "Ajax.org B.V. <info@ajax.org>",
+    "commands": {
+        "cd" : {
+            "hint": "change working directory",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+            }
+        },
+        "ls" : {
+            "hint": "list directory contents",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+            }
+        },
+        "pwd": {"hint": "return working directory name"}
+    }
+}

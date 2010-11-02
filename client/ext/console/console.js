@@ -15,9 +15,13 @@ require.def("ext/console/console",
      "text!ext/console/console.xml"],
     function(ide, ext, lang, panels, parserCls, Trie, css, markup) {
 
-var trieInternals,
+var trieCommands,
+    commands   = {},
+    cmdTries   = {},
+    cmdFetched = false,
     cmdHistory = [],
     cmdBuffer  = "",
+    lastSearch = null,
     parser     = new parserCls(),
     helpPage   = [
         "%CS%+r Terminal Help %-r",
@@ -194,6 +198,16 @@ return ext.register("ext/console/console", {
         return path.join(".").replace(/\.\[/g, "[");
     },
 
+    keyupHandler: function(e) {
+        if (e.keyCode != 9 || e.keyCode != 13)
+            return this.commandTextHandler(e);
+    },
+
+    keydownHandler: function(e) {
+        if (e.keyCode == 9 || e.keyCode == 13)
+            return this.commandTextHandler(e);
+    },
+
     commandTextHandler: function(e) {
         var line      = e.currentTarget.getValue(),
             idx       = cmdHistory.indexOf(line),
@@ -221,7 +235,6 @@ return ext.register("ext/console/console", {
             this.autoComplete(e, parser, 2);
             return;
         }
-        //debugger;
 
         if (parser.argv.length === 0) {
             // no commmand line input
@@ -347,81 +360,212 @@ return ext.register("ext/console/console", {
                         break;
                     }
                     else {
-                        ide.dispatchEvent("consolecommand", {
-                            command: "terminal",
-                            argv: parser.argv,
-                            parser: parser,
-                            cwd: this.getCwd()
-                        });
+                        if (ext.execCommand(cmd) === false) {
+                            // @todo send to backend too...
+                            ide.dispatchEvent("consolecommand", {
+                                command: "terminal",
+                                argv: parser.argv,
+                                parser: parser,
+                                cwd: this.getCwd()
+                            });
+                        }
                         return;
                     }
             }
         }
     },
 
+    onMessage: function(e) {
+        var message = e.message;
+        if (message.type != "result")
+            return;
+
+        function subCommands(cmds, prefix) {
+            if (!cmdTries[prefix]) {
+                cmdTries[prefix] = {
+                    trie    : new Trie(),
+                    commands: cmds
+                };
+            }
+            for (var cmd in cmds) {
+                cmdTries[prefix].trie.add(cmd);
+                if (cmds[cmd].commands)
+                    subCommands(cmds[cmd].commands, prefix + "-" + cmd);
+            }
+        }
+
+        switch (message.subtype) {
+            case "commandhints":
+                var cmds = message.body;
+                for (var cmd in cmds) {
+                    trieCommands.add(cmd);
+                    commands[cmd] = cmds[cmd];
+                    if (cmds[cmd].commands)
+                        subCommands(cmds[cmd].commands, cmd)
+                }
+                cmdFetched = true;
+                break;
+            case "internal-autocomplete":
+                console.log("result:", message.body);
+                var res = message.body;
+                lastSearch = res;
+                this.showHints(res.textbox, res.base || "", res.matches, null, res.cursor);
+                break;
+        }
+    },
+
     autoComplete: function(e, parser, mode) {
         mode = mode || 2;
-        if (!trieInternals) {
-            trieInternals = new Trie();
+        if (!trieCommands) {
+            trieCommands = new Trie();
             for (var name in ext.commandsLut)
-                trieInternals.add(name);
+                trieCommands.add(name);
+            apf.extend(commands, ext.commandsLut);
         }
 
-        var list    = [],
-            textbox = e.currentTarget,
-            len     = parser.argv.length;
-        if (len == 1) {
-            var root = trieInternals.find(parser.argv[0]);
-            if (root) {
+        var root,
+            list      = [],
+            cmds      = commands,
+            textbox   = e.currentTarget,
+            val       = textbox.getValue(),
+            len       = parser.argv.length,
+            base      = parser.argv[0],
+            cursorPos = 0;
+        if (!apf.hasMsRangeObject) {
+            var input = textbox.$ext.getElementsByTagName("input")[0];
+            cursorPos = input.selectionStart;
+        }
+        else {
+            var range = document.selection.createRange(),
+                r2    = range.duplicate();
+            r2.expand("textedit");
+            r2.setEndPoint("EndToStart", range);
+            cursorPos = r2.text.length;
+        }
+        --cursorPos;
+
+        if (!cmdFetched) {
+            ide.socket.send(JSON.stringify({
+                command: "commandhints",
+                argv: parser.argv,
+                cwd: this.getCwd()
+            }));
+        }
+
+        if (typeof parser.argv[0] != "string")
+            return this.hideHints();
+
+        // check for commands in first argument when there is only one argument
+        // provided, or when the cursor on the first argument
+        //debugger;
+        if (len == 1 && cursorPos < parser.argv[0].length) {
+            root = trieCommands.find(parser.argv[0]);
+            if (root)
                 list = root.getWords();
-                console.log("check: ", parser.argv[0], textbox.getValue());
-                console.log("words found for word '", parser.argv[0], "' ", list);
+        }
+        else {
+            var idx, needle,
+                i = 0
+            for (; i < len; ++i) {
+                idx = val.indexOf(parser.argv[i]);
+                if (idx === -1) //shouldn't happen, but yeah...
+                    continue;
+                if (cursorPos >= idx || cursorPos <= idx + parser.argv[i].length) {
+                    needle = i;
+                    break;
+                }
             }
-                
+            if (typeof needle != "number")
+                needle = 0;
+
+            var trieKey = parser.argv.slice(0, needle + 1).join("-");
+            if (cmdTries[trieKey]) {
+                root = cmdTries[trieKey].trie.find(parser.argv[++needle]);
+                if (root) {
+                    base = parser.argv[needle];
+                    list = root.getWords();
+                }
+                else {
+                    base = "";
+                    list = cmdTries[trieKey].trie.getWords();
+                }
+                cmds = cmdTries[trieKey].commands;
+            }
         }
 
-        if (mode === 2) {
-            this.showHints(textbox, parser.argv[0] || "", list);
+        if (list.length === 0)
+            return this.hideHints();
+
+        if (mode === 2) { // hints box
+            this.showHints(textbox, base || "", list, cmds, cursorPos);
         }
-        else if (mode === 1 && list.length === 1) {
-            textbox.setValue(textbox.getValue() + list[0].substr(1));
+        else if (mode === 1) { // TAB autocompletion
+            var ins = base ? list[0].substr(1) : list[0];
+            if (ins == "[PATH]" && lastSearch && lastSearch.line == val && lastSearch.matches.length == 1)
+                ins = lastSearch.matches[0].replace(lastSearch.base, "");
+            if (ins == "[PATH]") {
+                ide.socket.send(JSON.stringify({
+                    command: "internal-autocomplete",
+                    line   : val,
+                    textbox: textbox.id,
+                    cursor : cursorPos,
+                    argv   : parser.argv,
+                    cwd    : this.getCwd()
+                }));
+            }
+            else {
+                textbox.setValue(val.substr(0, cursorPos + 1) + ins + val.substr(cursorPos + 1));
+            }
+            this.hideHints();
         }
 
         return false;
     },
 
-    showHints: function(textbox, base, hints) {
+    showHints: function(textbox, base, hints, cmdsLut, cursorPos) {
         var name = "console_hints";
-        base = base.substr(0, base.length - 1);
+        if (typeof textbox == "string")
+            textbox = self[textbox];
+        //base = base.substr(0, base.length - 1);
 
         if (this.control && this.control.stop)
             this.control.stop();
 
         var cmdName, cmd,
-            content = [];
-        for (var i = 0, len = hints.length; i < len; ++i) {
-            cmdName = base + hints[i];
-            cmd = ext.commandsLut[cmdName];
+            content = [],
+            i       = 0,
+            len     = hints.length;
+
+        for (; i < len; ++i) {
+            cmdName = base ? base + hints[i].substr(1) : hints[i];
+            cmd = (cmdsLut || commands)[cmdName];
+            if (!cmd)
+                cmdName = hints[i];
             content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
-                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\')">'
-                + cmdName + '<span>' + cmd.hint + (cmd.hotkey
+                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\', ' + cursorPos + ')">'
+                + cmdName + ( cmd
+                ? '<span>' + cmd.hint + (cmd.hotkey
                     ? '<span class="hints_hotkey">' + (apf.isMac
                         ? apf.hotkeys.toMacNotation(cmd.hotkey)
                         : cmd.hotkey) + '</span>'
-                    : '') + '</span></a>');
+                    : '') + '</span>'
+                : '')
+                + '</a>');
         }
 
         if (!this.$winHints)
-            this.$winHints = document.getElementById("winConsoleHints");
+            this.$winHints = document.getElementById("barConsoleHints");
 
         this.$winHints.innerHTML = content.join("");
 
         var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
+
+        this.$winHints.style.left = Math.max(cursorPos * 5, 5) + "px";
+        this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
+
         if (apf.getStyle(this.$winHints, "display") == "none") {
             //this.$winHints.style.top = "-30px";
             this.$winHints.style.display = "block";
-            this.$winHints.style.left = pos[0] + "px";
-            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
             //txtConsoleInput.focus();
 
             //Animate
@@ -435,15 +579,38 @@ return ext.register("ext/console/console", {
                 control  : (this.control = {})
             });*/
         }
-        else {
-            this.$winHints.style.left = pos[0] + "px";
-            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
-        }
     },
 
-    hintClick: function(base, cmdName, txtId) {
-        var textbox = self[txtId];
-        textbox.setValue(textbox.getValue().replace(base, cmdName));
+    hideHints: function() {
+        if (!this.$winHints)
+            this.$winHints = document.getElementById("barConsoleHints");
+        this.$winHints.style.display = "none";
+        //@todo: animation
+    },
+
+    hintClick: function(base, cmdName, txtId, insertPoint) {
+        var textbox = self[txtId],
+            input   = textbox.$ext.getElementsByTagName("input")[0],
+            val     = textbox.getValue(),
+            before  = val.substr(0, (insertPoint + 1 - base.length)) + cmdName;
+        textbox.setValue(before + val.substr(insertPoint + 1));
+        textbox.focus();
+        // set cursor position at the end of the text just inserted:
+        var pos = before.length;
+        if (apf.hasMsRangeObject) {
+            var range = input.createTextRange();
+            range.expand("textedit");
+            range.select();
+            range.collapse();
+            range.moveStart("character", pos);
+            range.moveEnd("character", 0);
+            range.collapse();
+        }
+        else {
+            input.selectionStart = input.selectionEnd = pos;
+        }
+
+        this.hideHints();
     },
 
     consoleTextHandler: function(e) {
@@ -599,6 +766,8 @@ return ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
         apf.importCssString((this.css || "") + " .console_date{display:inline}");
+
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
     },
 
     enable : function(fromParent){
