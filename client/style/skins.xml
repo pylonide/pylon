@@ -4385,6 +4385,7 @@
             color            : #303030;
             font-family      : menlo,"courier new",fixed,swiss,sans-serif;
             outline          : none;
+            font-weight      : bold;
             background-color : transparent;
             width: 100%;
         }

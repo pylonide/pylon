@@ -17,20 +17,22 @@
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
 
-    border-left: 1px solid #b8b8b8;
-    border-right: 1px solid #b8b8b8;
-    border-top: 1px solid #b8b8b8;
+    border-left: 1px solid #333333;;
+    border-right: 1px solid #333333;;
+    border-top: 1px solid #333333;
 
-    background-color: #e8e8e8;
-    background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(232,232,232)),color-stop(1, rgb(227,227,227)));
-    background:-moz-linear-gradient(center top,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
+    border-top: 1px solid #333333;
+
+    background-color: #000000;
+    backgroud: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
+    background: -moz-linear-gradient(center bottom,rgb(50,51,52) 0%,rgb(30,30,30) 100%);
 }
 
 .barConsoleHints a {
     position: relative;
     text-decoration: none;
     font-weight: normal;
-    color: #666;
+    color: #eeeeee;
     padding: 2px;
     margin: 0 0 2px 0;
 
@@ -43,6 +45,7 @@
 }
 
 .barConsoleHints a:hover {
+    color: #666;
     background-color: #f0f0f0;
     background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(255,255,255)),color-stop(1, rgb(227,227,227)));
     background:-moz-linear-gradient(center top,rgb(255,255,255) 0%,rgb(227,227,227) 100%);
@@ -51,7 +54,7 @@
 }
 
 .barConsoleHints a span {
-    color: #999;
+    color: #909090;
     font-style: italic;
     margin-left: 4px;
     font-size: 11px;
