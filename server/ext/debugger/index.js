@@ -107,13 +107,14 @@ function cloud9DebuggerPlugin(server) {
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.server.error("cwd does not exist: " + message.cwd, 3, message);
-				// lets check what we need to run
-				if(file.match(/\.js$/)){
-	               var args = (message.preArgs || []).concat(file).concat(message.args || []);
-	               _self.$runProc(this.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
-				} else {
-	               _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
-				}
+                // lets check what we need to run
+                if (file.match(/\.js$/)){
+                    var args = (message.preArgs || []).concat(file).concat(message.args || []);
+                    _self.$runProc(_self.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+                }
+                else {
+                    _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
+                }
            });
         });
     };
