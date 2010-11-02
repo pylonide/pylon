@@ -14,8 +14,18 @@ return ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
     commands: {
-        "open": {hint: "open a file to edit in a new tab"},
-        "c9": {hint: "alias for 'open'"}
+        "open": {
+            "hint": "open a file to edit in a new tab",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        },
+        "c9": {
+            "hint": "alias for 'open'",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        }
     },
 
     readFile : function (path, callback){
@@ -194,6 +204,29 @@ return ext.register("ext/filesystem/filesystem", {
             url = "ext/filesystem/files.xml";
             this.readFile = this.saveFile = apf.K;
         }
+
+        function openHandler(e) {
+            ide.socket.send(JSON.stringify({
+                command: "internal-isfile",
+                argv: e.data.argv,
+                cwd: e.data.cwd,
+                sender: "filesystem"
+            }));
+            return false;
+        }
+        ide.addEventListener("consolecommand.open", openHandler);
+        ide.addEventListener("consolecommand.c9",   openHandler);
+
+        ide.addEventListener("consoleresult.internal-isfile", function(e) {
+            var data = e.data;
+            if (data.sender != "filesystem")
+                return;
+            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            if (data.isfile)
+                require("ext/debugger/debugger").showFile(path);
+            else
+                require("ext/console/console").log("'" + path + "' is not a file.");
+        });
 
         /*this.model.insert(url, {
             insertPoint : this.model.queryNode("folder[@root='1']")
