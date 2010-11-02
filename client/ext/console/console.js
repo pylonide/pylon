@@ -44,7 +44,7 @@ var trieCommands,
         "     help ................ show this help page",
         " "
     ];
-
+var tt=0;
 return ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
@@ -109,6 +109,7 @@ return ext.register("ext/console/console", {
                     return "</span><span style='" + style + "'>"
                 }) + "</span></div>");
         }
+		//txtConsole.addValue((tt++)+"---------------------<br/>")
         txtConsole.addValue(log.join(""));
     },
 
@@ -121,7 +122,6 @@ return ext.register("ext/console/console", {
             msg = "<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
                 + msg + "</div></span>";
         }
-
         txtConsole.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
     },
 
@@ -614,16 +614,13 @@ return ext.register("ext/console/console", {
     },
 
     consoleTextHandler: function(e) {
-        if (e.keyCode == 9 && e.currentTarget == txtConsole) {
-            txtConsole.focus();
-            e.cancelBubble = true;
-            return false;
-        }
-        else if(e.keyCode == 13 && e.ctrlKey) {
+        if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
             var expression = txtCode.getValue();
             if (!expression.trim())
                 return;
+            
+            tabConsole.set(0);
 
             this.log(expression, "command");
             this.evaluate(expression, function(xmlNode, body, refs, error){
@@ -634,7 +631,7 @@ return ext.register("ext/console/console", {
                     if (className == "Function") {
                         var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(null, ["
                             + body.scriptId + ", " + body.line + ", " + body.position + ", "
-                            + body.handler + ",\"" + (body.name || body.inferredName) + "\"], \""
+                            + body.handle + ",\"" + (body.name || body.inferredName) + "\"], \""
                             + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
                         var post = "</a>";
                         var name = body.name || body.inferredName || "function";
@@ -674,7 +671,7 @@ return ext.register("ext/console/console", {
                                 out.push(name + "=" + item.value, ", ");
                                 t++;
                             }
-                            out.pop();
+                            if (t) out.pop();
 
                             _self.log(out.join(" "), "log", pre, post);
                         });

@@ -98,23 +98,27 @@ function cloud9DebuggerPlugin(server) {
             return _self.server.error("Child process already running!", 1, message);
 
         var file = _self.server.workspaceDir + "/" + message.file;
-
+		
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.server.error("File does not exist: " + message.file, 2, message);
-
+			
            var cwd = _self.server.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.server.error("cwd does not exist: " + message.cwd, 3, message);
-
-               var args = (message.preArgs || []).concat(file).concat(message.args || []);
-               _self.$runNode(args, cwd, message.env || {}, message.debug || false);
+				// lets check what we need to run
+				if(file.match(/\.js$/)){
+	               var args = (message.preArgs || []).concat(file).concat(message.args || []);
+	               _self.$runProc(this.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+				} else {
+	               _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
+				}
            });
         });
     };
 
-    this.$runNode = function(args, cwd, env, debug) {
+    this.$runProc = function(proc, args, cwd, env, debug) {
         var _self = this;
 
         // mixin process env
@@ -123,7 +127,7 @@ function cloud9DebuggerPlugin(server) {
                 env[key] = process.env[key];
         }
 
-        var child = _self.child = Spawn(this.server.nodeCmd, args, {cwd: cwd, env: env});
+        var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.server.client.send(JSON.stringify({"type": "node-start"}));
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
 
