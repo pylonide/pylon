@@ -1,33 +1,36 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div id="barConsoleHints" class="barConsoleHints"/>
 
-    <a:window id="winDbgConsole" skin="dockwin" class="nocorners" title="Console" modal="false" height="250" visible="false" buttons="close">
-        <a:vbox anchors="0 0 0 0">
-            <a:tab id="tabConsole" skin="lowtab" flex="1">
+    <a:bar id="winDbgConsole" skin="basic">
+        <a:vbox>
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="{!btnCollapseConsole.value}" height="200">
+<!--                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />-->
+                <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
+                  onclick  = "
+                    txtConsole.clear();
+                  "/>
                 <a:page caption="Console">
-                    <a:vbox anchors="0 0 0 0">
-                        <a:toolbar>
-                            <a:bar border="0 0 1 0">
-                                <a:button
-                                  caption  = "Clear" 
-                                  onclick  = "
-                                    txtConsole.clear();
-                                  " />
-                            </a:bar>
-                        </a:toolbar>
-                        <a:text id="txtConsole"
-                          flex       = "1"
-                          scrolldown = "true" 
-                          textselect = "true"
-                          focussable = "true"
-                          class      = "apf_console" />
-                    </a:vbox>      
+                    <a:text id="txtConsole"
+                      anchors   = "0 0 0 0"
+                      scrolldown = "true"
+                      textselect = "true"
+                      focussable = "true"
+                      class      = "console_text" />
                 </a:page>
+<!--                <a:page caption="Search results">
+
+                </a:page>-->
             </a:tab>
-            <a:textbox id="txtConsoleInput"
-              class     = "topborder"
-              onkeydown = "return require('ext/console/console').keydownHandler(event)"
-              onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
+
+            <a:hbox class="consoleInputBox" edge="1 1 2" padding="8">
+                <a:textbox id="txtConsoleInput"
+                  margin="4 0 0"
+                  skin="tb_console"
+                  flex="1"
+                  onkeydown = "return require('ext/console/console').keydownHandler(event)"
+                  onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
+                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"/>
+            </a:hbox>
         </a:vbox>
-    </a:window>
+    </a:bar>
 </a:application>

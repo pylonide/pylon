@@ -4351,6 +4351,80 @@
 <!--
     * Textbox isn't scalable - done
 -->
+<a:textbox name="tb_console">
+    <a:style><![CDATA[
+        .tb_console {
+            position : relative;
+            height   : 30px;
+        }
+
+        .tb_console .sbtb_middle {
+            height           : 17px;
+            padding          : 5px 10px 7px;
+            border-top       : 1px solid #ffffff;
+            color            : #303030;
+            margin           : 0 0 0 26px;
+            outline          : none;
+            font-size        : 14px;
+            text-overflow    : ellipsis;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(247,247,247)),color-stop(1, rgb(218,218,218)));
+            background: -moz-linear-gradient(center bottom,rgb(247,247,247) 50%,rgb(218,218,218) 100%);
+        }
+
+        .topborder .sbtb_middle{
+            border-width : 1px 0 0 0;
+        }
+
+        .tb_console .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 14px;
+            color            : #303030;
+            font-family      : menlo,"courier new",fixed,swiss,sans-serif;
+            outline          : none;
+            font-weight      : bold;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .tb_consoleInitial .sbtb_middle INPUT {
+            color : #777777;
+        }
+
+        .tb_consoleDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+
+        .tb_consoleDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+
+        .tb_console .console_arrow {
+            background: url(images/console_arrow.png) no-repeat 0 0;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 9px;
+            height: 14px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[2]/input">
+            <div class="tb_console">
+                <div class="console_arrow"></div>
+                <div class="sbtb_middle">
+                    <input type="text" />
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
 <a:textbox name="searchbox">
     <a:style><![CDATA[
         .searchbox {
@@ -4839,6 +4913,193 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+<a:tab name="tab_console">
+    <a:style><![CDATA[
+        .tab_console {
+            padding : 0 0 0 0;
+            border: 0px solid #8c8c8c;
+            border-top: 1px solid #000000;
+            margin : 0 auto;
+            overflow: hidden;
+            position:relative;
+            padding-top: 28px;
+        }
+
+        .tab_console .btncontainer{
+            padding : 5px 6px 1px;
+            z-index : 100;
+            height: 20px;
+            overflow: visible;
+            white-space: nowrap;
+            color: #aaaaaa;
+            text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
+            font-family : Trebuchet MS;
+            font-size : 12px;
+
+            border-top: 1px solid #656565;
+            border-bottom: 1px solid #000000;
+
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(27,28,28)),color-stop(1, rgb(52,54,59)));
+            background: -moz-linear-gradient(center bottom,rgb(27,28,28) 0%,rgb(52,54,59) 100%);
+            margin-top : -28px;
+            width : auto;
+        }
+
+        .tab_console .btncontainer>div {
+            display: block;
+            display : inline-block;
+            margin: 0 0 0 0;
+            padding: 0;
+            position : relative;
+            vertical-align : bottom;
+        }
+
+        .tab_console .btncontainer .btntab {
+            padding      : 2px 19px 4px;
+            position     : relative;
+            margin-top:-1px;
+            text-align: center;
+        }
+
+        .tab_console .btncontainer .btntab .tab_console_icon {
+            height:16px;
+            left:1px;
+            position:absolute;
+            top:1px;
+            width:16px;
+        }
+
+        .tab_console .btncontainer .btntab .tab_console_title {
+            overflow : hidden;
+            padding  : 0 0 0 0;
+        }
+
+        .tab_console .btncontainer .btntab.btnclose .tab_console_title {
+            margin-right : 15px;
+        }
+
+        .tab_console .scale .btntab .tab_console_title{
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .tab_console .btncontainer div.over {
+            color: #ffffff;
+            cursor: default;
+        }
+
+        .tab_console .btncontainer div.curbtn {
+            color       : #a2c890;
+            cursor      : default;
+            z-index     : 1;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(30,31,31)),color-stop(1, rgb(36,36,36)));
+            background: -moz-linear-gradient(center bottom,rgb(30,31,31) 0%,rgb(36,36,36) 100%);
+            border-right : 1px solid #4c4c4c;
+            border-top: 1px solid #4c4c4c;
+            border-left: 1px solid #4c4c4c;
+            z-index:101;
+            padding      : 1px 18px 4px;
+        }
+
+        .tab_console .scale .btntab .tab_console_middle {
+            display : block;
+            overflow : hidden;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .tab_consoleFocus .curbtn{
+        }
+
+        .tab_console .btncontainer .btnclose strong {
+            width               : 14px;
+            height              : 14px;
+            display             : block;
+            position            : absolute;
+            right               : 0;
+            top                 : 7px;
+            /*cursor              : default;*/
+            background-image    : url(images/close_tab_btn.png);
+            background-repeat   : no-repeat;
+            background-position : 0 -14px;
+        }
+
+        .tab_console .btncontainer .btnclose strong:hover {
+            background-position : -14px -14px;
+        }
+
+        .tab_console .btncontainer .btnclose strong:active {
+            background-position : -28px -14px;
+        }
+
+        .tab_console .btncontainer .curbtn.btnclose strong {
+            background-position : 0 0;
+            top: 7px;
+        }
+
+        .tab_console .btncontainer .curbtn.btnclose strong:hover {
+            background-position : -14px 0;
+        }
+
+        .tab_console .btncontainer .curbtn.btnclose strong:active {
+            background-position : -28px 0;
+        }
+
+        .tab_console .page {
+            display : none;
+            position : absolute;
+            top : 28px;
+            bottom : 0;
+            left : 0;
+            right : 0;
+            z-index : 10;
+            margin: 0 auto;
+
+            overflow: hidden;
+            clear: both;
+            font-family : Trebuchet MS;
+            font-family: 12px;
+            color: #eeeeee;
+
+            border-top: 1px solid #333333;
+            border-bottom:1px solid #000000;
+
+            backgroud: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
+            background: -moz-linear-gradient(center bottom,rgb(50,51,52) 0%,rgb(30,30,30) 100%);
+        }
+
+        .tab_console .page.curpage{
+            display : block;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main pages="." buttons="div[1]">
+            <div class="tab_console">
+                <div class="btncontainer"> </div>
+            </div>
+        </a:main>
+        <a:button
+          caption   = "div[2]/text()"
+          container = "div"
+          icon      = "div[1]"
+          maxwidth  = "90"
+          minwidth  = "10">
+            <div class="btntab">
+                <div class="tab_console_icon"> </div>
+                <div class="tab_console_title">-</div>
+            </div>
+        </a:button>
+        <a:btnclose>
+            <strong> </strong>
+        </a:btnclose>
+        <a:page container=".">
+            <div class="page"> </div>
+        </a:page>
+    </a:presentation>
+</a:tab>
 <a:tab name="editor_tab">
     <a:style><![CDATA[
         .editor_tab {
@@ -5294,6 +5555,9 @@
                 border-top : 1px solid #ffffff;
                 border-right : 1px solid #8c8c8c;
                 border-bottom : 1px solid #8c8c8c;
+
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(199,199,199)),color-stop(1, rgb(214,214,214)));
+                background: -moz-linear-gradient(center bottom,rgb(199,199,199) 50%,rgb(214,214,214) 100%);
             }
 
             /*.tab .btncontainer div.firstbtn {
@@ -5325,11 +5589,8 @@
             }
 
             .tab .btncontainer div.over {
-                background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(199,199,199)),color-stop(1, rgb(214,214,214)));
-                background: -moz-linear-gradient(center bottom,rgb(199,199,199) 50%,rgb(214,214,214) 100%);
-                border-top : 1px solid #ffffff;
-                border-right : 1px solid #8c8c8c;
-                border-bottom : 1px solid #8c8c8c;
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
+                background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
                 cursor: default;
             }
 
@@ -5876,8 +6137,10 @@
         }
 
         .toolbar>.subbar>.divider {
-            border-left: 1px solid #c3c3c3;
-            border-right: 1px solid #FFFFFF;
+            border-left: 1px solid #c4c4c4;
+            border-right: 1px solid #fafafa;
+            border-bottom: none;
+            border-top: none;
             height: 17px;
             float: left;
             margin: 4px 0 0 0;
@@ -13090,6 +13353,24 @@
         .textFocus{
         }
 
+        .console_text {
+            font-family : menlo,courier,fixed,swiss,sans-serif;
+            background: none;
+        }
+
+        .console_text .red {
+            color: #c93a40;
+        }
+        .console_text .blue {
+            color: #86c2f6;
+        }
+        .console_text .gray {
+            color: #909090;
+        }
+        .console_text .white {
+            color: #eeeeee;
+        }
+
         .apf_console{
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
@@ -13110,7 +13391,7 @@
         }
 
         .apf_console .console_log{
-            color : black;
+            color : #eeeeee;
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
         }
 
@@ -13125,12 +13406,12 @@
 
         .apf_console .console_error{
             background : url(resources/exclamation.png) no-repeat 2px 2px;
-            color      : red;
+            color      : #c93a40;
         }
 
         .apf_console .console_repeat{
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
-            color      : #AAA;
+            color      : #909090;
         }
 
         .apf_console .item a{
@@ -13317,6 +13598,80 @@
         </a:main>
     </a:presentation>
 </a:text>
+<a:button name="btn_console_open">
+    <a:style><![CDATA[
+        .btn_console_open {
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            -moz-user-select   : none;
+            -khtml-user-select : none;
+            user-select        : none;
+            height             : 38px;
+        }
+
+        .btn_console_openOver {
+            background-position: 0 -38px;
+        }
+
+        .btn_console_openDown {
+            background-position: 0 -76px;
+        }
+        .btn_console_openDown:hover {
+            background-position: 0 -114px;
+        }
+
+        .btn_console_open.btnDisabled {
+            cursor: default;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main
+          caption    = "."
+          label      = "."
+          background = "."
+          icon       = "."
+          minwidth   = "18">
+            <div class="btn_console_open"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="btn_icon_only">
+    <a:style><![CDATA[
+        .btn_icon_only {
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            -moz-user-select   : none;
+            -khtml-user-select : none;
+            user-select        : none;
+            height             : 21px;
+            width              : 22px;
+        }
+
+        .btn_icon_onlyOver {
+            background-position: 0 -23px;
+        }
+
+        .btn_icon_onlyDown {
+            background-position: 0 -46px;
+        }
+
+        .btn_icon_only.btnDisabled {
+            cursor: default;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main
+          caption    = "."
+          label      = "."
+          background = "."
+          icon       = "."
+          minwidth   = "22">
+            <div class="btn_icon_only"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="labelbutton">
     <a:style><![CDATA[
         .lblbtn{

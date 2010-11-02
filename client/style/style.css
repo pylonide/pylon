@@ -81,3 +81,13 @@ BODY {
     margin : 0;
     display : inline-block;
 }
+
+.consoleInputBox {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(28,28,28)),color-stop(1, rgb(47,49,53)));
+    background: -moz-linear-gradient(center bottom,rgb(28,28,28) 0%,rgb(47,49,53) 100%);
+    padding : 1px;
+    margin: 0;
+    overflow: hidden;
+    border-top: 1px solid #656565;
+    border-bottom: 1px solid #b2b2b2;
+}

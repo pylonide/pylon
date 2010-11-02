@@ -76,7 +76,7 @@ return ext.register("ext/debugger/debugger", {
             // TODO sometimes we don't have a scriptID
         });
 
-        log.enable(true);
+        //log.enable(true);
     },
 
     jump : function(fileEl, row, column, text, doc, page) {
