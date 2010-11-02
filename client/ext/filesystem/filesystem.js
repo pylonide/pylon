@@ -33,10 +33,16 @@ return ext.register("ext/filesystem/filesystem", {
             this.webdav.list(path, callback);
     },
 
-    createFolder: function(name) {
-        var node = trFiles.selected;
+    createFolder: function(name, tree) {
+        if (!tree) {
+            tree = apf.document.activeElement;
+            if (!tree || tree.localName != "tree")
+                tree = trFiles;  
+        }
+        
+        var node = tree.selected;
         if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("folder");
+            node = tree.xmlRoot.selectSingleNode("folder");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
 
@@ -48,7 +54,7 @@ return ext.register("ext/filesystem/filesystem", {
                 path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
-            trFiles.focus();
+            tree.focus();
             this.webdav.exec("mkdir", [path, name], function(data) {
                 // @todo: in case of error, show nice alert dialog
                 if (data instanceof Error)
@@ -59,8 +65,8 @@ return ext.register("ext/filesystem/filesystem", {
 
                 var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
 
-                trFiles.select(folder);
-                trFiles.startRename();
+                tree.select(folder);
+                tree.startRename();
             });
         }
     },

@@ -13,11 +13,11 @@ return ext.register("ext/clipboard/clipboard", {
     name   : "Clipboard",
     alone  : true,
     type   : ext.GENERAL,
-    commands: {
+    /*commands: {
         "cut": {hint: "cut the selected text to the clipboard"},
         "copy": {hint: "copy the selected text to the clipboard"},
         "paste": {hint: "paste text from the clipboard into the active document"}
-    },
+    },*/
 
     nodes : [],
 
@@ -38,11 +38,11 @@ return ext.register("ext/clipboard/clipboard", {
             }))
         );
 
-        this.hotitems = {
+        /*this.hotitems = {
             "cut" : [this.nodes[1]],
             "copy" : [this.nodes[2]],
             "paste" : [this.nodes[3]]
-        };
+        };*/
     },
 
     cut: function() {
