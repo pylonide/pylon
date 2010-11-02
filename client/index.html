@@ -93,16 +93,14 @@
                             //"ext/formatjson/formatjson",
                             //"ext/docs/docs",
                             //"ext/richtext/richtext",
+                            "ext/run/run", //Add location rule
+                            "ext/debugger/debugger", //Add location rule
+                            "ext/noderunner/noderunner", //Add location rule
                             "ext/console/console",
                             "ext/tabbehaviors/tabbehaviors",
                             "ext/keybindings/keybindings"
                             //"ext/terminal/terminal"
                         ];
-                        if (location.host)
-                            modules.push(
-                                "ext/debugger/debugger",
-                                "ext/noderunner/noderunner",
-                                "ext/run/run");
 
                         apf.addEventListener("load", function(){
                             //Load extensions
