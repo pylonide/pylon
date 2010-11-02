@@ -32,36 +32,61 @@ return ext.register("ext/filesystem/filesystem", {
         if (this.webdav)
             this.webdav.list(path, callback);
     },
+    
+    exists : function(path, callback) {
+        this.readFile(path, function (data, state, extra) {
+            callback(state == apf.SUCCESS)
+        });
+    },
 
-    createFolder: function(name) {
-        var node = trFiles.selected;
+    createFolder: function(name, tree) {
+        if (!tree) {
+            tree = apf.document.activeElement;
+            if (!tree || tree.localName != "tree")
+                tree = trFiles;  
+        }
+        
+        var node = tree.selected;
         if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("folder");
+            node = tree.xmlRoot.selectSingleNode("folder");
         if (node.getAttribute("type") != "folder")
             node = node.parentNode;
 
         if (this.webdav) {
-            if (!name)
-                name = "New Folder";
+            var prefix = name ? name : "New Folder";
             var path = node.getAttribute("path");
             if (!path) {
                 path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
-            trFiles.focus();
-            this.webdav.exec("mkdir", [path, name], function(data) {
-                // @todo: in case of error, show nice alert dialog
-                if (data instanceof Error)
-                    throw Error;
-                
-                var strXml = data.match(new RegExp(("(<folder path='" + path 
-                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-
-                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
-
-                trFiles.select(folder);
-                trFiles.startRename();
-            });
+            
+            var _self = this,
+                index = 0;
+            
+            function test(exists) {
+                if (exists) {
+                    name = prefix + "." + index++;
+                    _self.exists(path + "/" + name, test);     
+                } else {
+		            tree.focus();
+		            _self.webdav.exec("mkdir", [path, name], function(data) {
+		                // @todo: in case of error, show nice alert dialog
+		                if (data instanceof Error)
+		                    throw Error;
+		                
+		                var strXml = data.match(new RegExp(("(<folder path='" + path 
+		                        + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
+		
+		                var folder = apf.xmldb.appendChild(node, apf.getXml(strXml));
+		
+		                tree.select(folder);
+		                tree.startRename();
+		            });
+	            }
+	        }
+	        
+	        name = prefix;
+	        this.exists(path + "/" + name, test);
         }
     },
 
@@ -73,8 +98,7 @@ return ext.register("ext/filesystem/filesystem", {
             node = node.parentNode;
 
         if (this.webdav) {
-            if (!filename)
-                filename = "Untitled.txt";
+            var prefix = filename ? filename : "Untitled.txt";
 
             trFiles.focus();
             var _self = this,
@@ -83,21 +107,34 @@ return ext.register("ext/filesystem/filesystem", {
                 path = ide.davPrefix;
                 node.setAttribute("path", path);
             }
-            this.webdav.exec("create", [path, filename], function(data) {
-                _self.webdav.exec("readdir", [path], function(data) {
-                    // @todo: in case of error, show nice alert dialog
-                    if (data instanceof Error)
-                        throw Error;
-                    
-                    var strXml = data.match(new RegExp(("(<file path='" + path 
-                        + "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
-
-                    var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
-                    
-                    trFiles.select(file);
-                    trFiles.startRename();
-                });
-            });
+            
+            var index = 0;
+            
+            function test(exists) {
+                if (exists) {
+                    filename = prefix + "." + index++;
+                    _self.exists(path + "/" + filename, test);    
+                } else {
+		            _self.webdav.exec("create", [path, filename], function(data) {
+		                _self.webdav.exec("readdir", [path], function(data) {
+		                    // @todo: in case of error, show nice alert dialog
+		                    if (data instanceof Error)
+		                        throw Error;
+		                    
+		                    var strXml = data.match(new RegExp(("(<file path='" + path 
+		                        + "/" + filename + "'.*?>)").replace(/\//g, "\\/")))[1];
+		
+		                    var file = apf.xmldb.appendChild(node, apf.getXml(strXml));
+		                    
+		                    trFiles.select(file);
+		                    trFiles.startRename();
+		                });
+		            });
+		        }
+            }
+	        
+	        filename = prefix;
+	        this.exists(path + "/" + filename, test);
         }
     },
 

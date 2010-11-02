@@ -38,27 +38,27 @@ function cloud9DebuggerPlugin(server) {
                 break;
             case "rundebug":
                 findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
-	                _self.NODE_DEBUG_PORT = port;
-	                message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
-	                message.debug = true;
-	                _self.$run(message);
-	
-	                setTimeout(function() {
-	                    _self.$startDebug();
-	                }, 100);
+                    _self.NODE_DEBUG_PORT = port;
+                    message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+                    message.debug = true;
+                    _self.$run(message);
+    
+                    setTimeout(function() {
+                        _self.$startDebug();
+                    }, 100);
                 });
                 break;
             case "rundedugbrk":
                 findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
                     
-	                message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
-	                message.debug = true;
-	                _self.$run(message);
-	
-	                setTimeout(function() {
-	                    _self.$startDebug();
-	                }, 100);
+                    message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+                    message.debug = true;
+                    _self.$run(message);
+    
+                    setTimeout(function() {
+                        _self.$startDebug();
+                    }, 100);
                 });
                 break;
             case "rundebugchrome":
@@ -112,22 +112,21 @@ function cloud9DebuggerPlugin(server) {
             return _self.server.error("Child process already running!", 1, message);
 
         var file = _self.server.workspaceDir + "/" + message.file;
-		
+        
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.server.error("File does not exist: " + message.file, 2, message);
-			
+            
            var cwd = _self.server.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
                    return _self.server.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
-                if (file.match(/\.js$/)){
-                    var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                    _self.$runProc(_self.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
-                }
-                else {
-                    _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
+                if(file.match(/\.js$/)){
+                   var args = (message.preArgs || []).concat(file).concat(message.args || []);
+                   _self.$runProc(_self.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+                } else {
+                   _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
                 }
            });
         });
@@ -216,18 +215,18 @@ var net = require("net");
 
 function findFreePort(start, hostname, callback) {
     var port = start;
-	asyncRepeat(function(next, done) {
-		var stream = net.createConnection(port, hostname);
-		
-		stream.on("connect", function() {
-		    stream.end();
-		    port++;
-		    next();
-		});
-		
-		stream.on("error", function() {
-		    done();
-		});
+    asyncRepeat(function(next, done) {
+        var stream = net.createConnection(port, hostname);
+        
+        stream.on("connect", function() {
+            stream.end();
+            port++;
+            next();
+        });
+        
+        stream.on("error", function() {
+            done();
+        });
     }, function() {
         callback(port);
     });

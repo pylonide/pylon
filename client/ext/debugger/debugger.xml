@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgStack" class="smallheader" title=" " skin="dockwin" modal="false" flex="1" buttons="close" draggable="false">
         <a:vbox splitters="true" class="thin_splitter" padding="3" anchors="0 0 0 0">
-            <a:tab flex="1">
+            <a:tab flex="2">
                 <a:page caption="Call Stack">
                     <a:datagrid
                       id         = "dgStack"
@@ -24,7 +24,7 @@
                 </a:page>
             </a:tab>
 
-            <a:tab flex="1">
+            <a:tab flex="3">
                 <a:page caption="Interactive">
                     <a:vbox anchors="0 0 0 0">
                         <a:toolbar>
@@ -63,7 +63,7 @@
                     </a:vbox>
                 </a:page>
                 <a:page caption="Variables" render2="runtime">
-            		<a:datagrid id="dgVars"
+                <a:datagrid id="dgVars"
                       anchors    = "0 0 0 0" 
                       border     = "0"
                       options    = "size|move"
@@ -74,7 +74,7 @@
                       loading-message = "Calculating...">
                         <a:actions />
                         <a:each match="[item|globals]" sort="[@name]">
-                          	<a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+                            <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
                             <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
                             <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                             <a:column caption="Value" value="[@value]" width="60%" />
@@ -84,16 +84,16 @@
                 </a:page>
                 <a:page caption="Breakpoints" render2="runtime">
                     <a:list id="lstBreakpoints"
-            		  autoselect = "false"
-            		  reselectable = "true"
-            		  anchors    = "0 0 0 0"
-            		  border     = "0"
-            		  model      = "mdlDbgBreakpoints"
-            		  each       = "[breakpoint]"
-            		  caption    = "[@text]"
-            		  icon       = "debugger/brkp_obj.png">
-            		    <a:actions />
-            		</a:list>
+                  autoselect = "false"
+                  reselectable = "true"
+                  anchors    = "0 0 0 0"
+                  border     = "0"
+                  model      = "mdlDbgBreakpoints"
+                  each       = "[breakpoint]"
+                  caption    = "[@text]"
+                  icon       = "debugger/brkp_obj.png">
+                    <a:actions />
+                </a:list>
                 </a:page>
             </a:tab>
         </a:vbox>

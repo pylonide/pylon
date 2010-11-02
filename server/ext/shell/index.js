@@ -28,7 +28,7 @@ function cloud9ShellPlugin(server) {
         var argv  = [].concat(message.argv),
             cmd   = argv.shift(),
             _self = this;
-        this.getListing(argv[0], message.cwd, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
+        this.getListing(argv.pop(), message.cwd, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
             _self.sendResult(0, "internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
@@ -79,11 +79,9 @@ function cloud9ShellPlugin(server) {
     this.getListing = function(tail, path, dirmode, callback) {
         var matches = [];
         tail    = (tail || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();
-        dirmode = dirmode || false;
         if (tail.indexOf("/") > -1) {
             path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
             tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
-            dirmode = true;
         }
         Async.readdir(path).stat().each(function(file, next) {
             if (file.name.indexOf(tail) === 0 && (!dirmode || file.stat.isDirectory()))

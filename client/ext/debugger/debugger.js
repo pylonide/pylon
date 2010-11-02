@@ -9,9 +9,10 @@ require.def("ext/debugger/debugger",
      "core/document",
      "core/ext",
      "ext/console/console",
+     "ext/panels/panels",
      "ext/filesystem/filesystem",
      "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, fs, markup) {
+    function(ide, Document, ext, log, panels, fs, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -27,13 +28,17 @@ return ext.register("ext/debugger/debugger", {
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
+        /*this.$layoutItem = mnuModes.appendChild(new apf.item({
             value   : "ext/debugger/debugger",
             caption : this.name
-        }));
+        }));*/
+        
+        panels.register(this);
     },
 
     init : function(amlNode){
+        this.panel = winDbgStack;
+        
         this.rightPane = colRight;
         this.nodes.push(
             //Append the stack window at the right
@@ -71,31 +76,44 @@ return ext.register("ext/debugger/debugger", {
             // TODO sometimes we don't have a scriptID
         });
 
-        log.enable(true);
+        //log.enable(true);
     },
 
-    jump : function(fileEl, row, column, text, doc) {
-        var path = fileEl.getAttribute("path");
+    jump : function(fileEl, row, column, text, doc, page) {
+        var path    = fileEl.getAttribute("path");
+        var hasData = fileEl.selectSingleNode("data") ? true : false;
 
         if (row !== undefined) {
-            ide.addEventListener("afteropenfile", function(e) {
-                var node = e.doc.getNode();
-                
-                if (node.getAttribute("path") == path) {
-                    ide.removeEventListener("afteropenfile", arguments.callee);
-                    setTimeout(function() {
-                        ceEditor.$editor.gotoLine(row, column);
-                        if (text)
-                            ceEditor.$editor.find(text);
-                        ceEditor.focus();
-                    }, 100);
-                }
-            });
+            function jumpTo(){
+                setTimeout(function() {
+                    ceEditor.$editor.gotoLine(row, column);
+                    if (text)
+                        ceEditor.$editor.find(text);
+                    ceEditor.focus();
+                }, 100);
+            }
+            
+            if (hasData) {
+                tabEditors.set(path);
+                jumpTo();
+            }
+            else
+                ide.addEventListener("afteropenfile", function(e) {
+                    var node = e.doc.getNode();
+                    
+                    if (node.getAttribute("path") == path) {
+                        ide.removeEventListener("afteropenfile", arguments.callee);
+                        jumpTo();
+                    }
+                });
         }
-
-        ide.dispatchEvent("openfile", {
-            doc: doc || ide.createDocument(fileEl)
-        });
+        
+        if (!hasData && !page) 
+            ide.dispatchEvent("openfile", {
+                doc: doc || ide.createDocument(fileEl)
+            });
+        else
+            tabEditors.set(path);
     },
 
     contentTypes : {
@@ -128,7 +146,7 @@ return ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 
         if (file) {
-            this.jump(file, row, column, text);
+            this.jump(file, row, column, text, null, true);
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
@@ -139,43 +157,42 @@ return ext.register("ext/debugger/debugger", {
 
             if (name.indexOf(ide.workspaceDir) == 0) {
                 var path = "/" + ide.davPrefix + name.slice(ide.workspaceDir.length + 1);
-	            // TODO this has to be refactored to support multiple tabs
-	            var page = tabEditors.getPage(path);
-	            if (page)
-	                tabEditors.set(page);
+                // TODO this has to be refactored to support multiple tabs
+                var page = tabEditors.getPage(path);
+                if (page)
+                    var node = page.xmlRoot;
                 else {
-	                var node = apf.n("<file />")
-	                    .attr("name", value)
-	                    .attr("path", path)
-	                    .attr("contenttype", "application/javascript")
-	                    .attr("scriptid", script.getAttribute("scriptid"))
-	                    .attr("scriptname", script.getAttribute("scriptname"))
-	                    .attr("lineoffset", "0").node();
-	
-	                this.jump(node, row, column, text);
+                    var node = apf.n("<file />")
+                        .attr("name", value)
+                        .attr("path", path)
+                        .attr("contenttype", "application/javascript")
+                        .attr("scriptid", script.getAttribute("scriptid"))
+                        .attr("scriptname", script.getAttribute("scriptname"))
+                        .attr("lineoffset", "0").node();
                 }
+                this.jump(node, row, column, text, null, page ? true : false);
             }
             else {
                 var page = tabEditors.getPage(value);
-	            if (page)
-	                tabEditors.set(page);
+                if (page)
+                    this.jump(page.xmlRoot, row, column, text, null, true);
                 else {
                     var node = apf.n("<file />")
-	                    .attr("name", value)
-	                    .attr("path", name)
-	                    .attr("contenttype", "application/javascript")
-	                    .attr("scriptid", script.getAttribute("scriptid"))
-	                    .attr("scriptname", script.getAttribute("scriptname"))
-	                    .attr("debug", "1")
-	                    .attr("lineoffset", "0").node();
+                        .attr("name", value)
+                        .attr("path", name)
+                        .attr("contenttype", "application/javascript")
+                        .attr("scriptid", script.getAttribute("scriptid"))
+                        .attr("scriptname", script.getAttribute("scriptname"))
+                        .attr("debug", "1")
+                        .attr("lineoffset", "0").node();
 
                     var _self = this;
                     dbg.loadScript(script, function(source) {
-	                    var doc = ide.createDocument(node, source);
-	
-	                    _self.jump(node, row, column, text, doc);
-	                });
-	            }
+                        var doc = ide.createDocument(node, source);
+    
+                        _self.jump(node, row, column, text, doc);
+                    });
+                }
             }
         }
     },
@@ -216,7 +233,7 @@ return ext.register("ext/debugger/debugger", {
                 item.show();
         });
         this.rightPane.setProperty("visible", true);
-        log.enable(true);
+        //log.enable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -229,7 +246,7 @@ return ext.register("ext/debugger/debugger", {
                 item.hide();
         });
         this.rightPane.setProperty("visible", false);
-        log.disable(true);
+        //log.disable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -244,6 +261,8 @@ return ext.register("ext/debugger/debugger", {
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
+        
+        panels.unregister(this);
     }
 });
 

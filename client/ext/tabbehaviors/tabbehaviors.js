@@ -105,10 +105,15 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             var page;
             if ((page = e.currentTarget) && page.parentNode == this && page.localName == "page" && page.fake) {
                 _self.addItem(page);
-                page.$button.ondblclick = function(e) {
-                    e = e || window.event;
-                    require("ext/panels/panels").toggleAll();
-                }
+                
+                var count = 0;
+                
+                apf.addListener(page.$button, "mousedown", function(e) {
+                    if (++count < 2)
+                        return setTimeout(function () { count = 0; }, 500);
+                    require("ext/panels/panels").toggleAll();
+                    count = 0;
+                });
             }
         })
     },

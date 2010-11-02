@@ -242,8 +242,8 @@ return ext.register("ext/save/save", {
         };
     
         if (path != newPath)
-            fs.readFile(newPath, function (data, state, extra) {
-                if (state == apf.SUCCESS) {
+            fs.exists(newPath, function (exists) {
+                if (exists) {
                     var name    = newPath.match(/\/([^/]*)$/)[1],
                         folder  = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
                     
