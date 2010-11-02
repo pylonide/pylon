@@ -37,10 +37,10 @@ return ext.register("ext/debugger/debugger", {
         this.rightPane = colRight;
         this.nodes.push(
             //Append the stack window at the right
-            this.rightPane.appendChild(winDbgStack),
+            this.rightPane.appendChild(winDbgStack)
 
             //Append the variable window on the right
-            this.rightPane.appendChild(winDbgInspect)
+            //this.rightPane.appendChild(winDbgInspect)
         );
 
         this.paths = {};
