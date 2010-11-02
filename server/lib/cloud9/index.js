@@ -39,7 +39,7 @@ exports.main = function(projectDir, port, ip) {
 
     // load plugins:
     var exts = {};
-    Fs.readdirSync(__dirname + "/../../ext").forEach(function(name){
+    Fs.readdirSync(Path.normalize(__dirname + "/../../ext")).forEach(function(name){
         exts[name] = require("ext/" + name);
     });
 
