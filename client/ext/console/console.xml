@@ -26,8 +26,8 @@
             </a:tab>
             <a:textbox id="txtConsoleInput"
               class     = "topborder"
-              onkeydown = "if (event.keyCode == 9) return require('ext/console/console').commandTextHandler(event)"
-              onkeyup   = "return require('ext/console/console').commandTextHandler(event)" />
+              onkeydown = "return require('ext/console/console').keydownHandler(event)"
+              onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
         </a:vbox>
     </a:window>
 </a:application>

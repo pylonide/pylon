@@ -62,7 +62,8 @@ return ext = {
             mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
         if (oExtension.commands) {
-            oExtension.commands.ext = path;
+            for (var cmd in oExtension.commands)
+                oExtension.commands[cmd].ext = path;
             apf.extend(this.commandsLut, oExtension.commands);
         }
 
@@ -183,7 +184,7 @@ return ext = {
             return false;
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] == "function")
-            return oCmd[cmd]();
+            return oExt[cmd]();
         return false;
     },
 

@@ -1,6 +1,7 @@
 <settings version="0.0.2">
     <auto />
-    <general name="General" page="pgSettingsGeneral" />
+    <general name="General" page="pgSettingsGeneral" 
+      saveallbeforerun="true" />
     <editors name="Editor" page="pgSettingsEditors">
         <code name="Code Editor"
           overwrite="false"
