@@ -136,6 +136,9 @@
             width            : 11px;
             background-image : url(images/win_x.png);
         }
+        .smallheader .docktitle .close {
+            margin-right : -5px;
+        }
 
         .dockwin .docktitle span {
             width   : 16px;
@@ -5280,10 +5283,11 @@
                 padding: 0;
                 position : relative;
                 vertical-align : bottom;
+                cursor : default;
             }
 
             .tab .btncontainer .btntab {
-                padding      : 1px 18px 2px 18px;
+                padding      : 1px 10px 2px 10px;
                 position     : relative;
                 margin-top:-1px;
                 text-align: center;
@@ -5326,7 +5330,7 @@
                 border-top : 1px solid #ffffff;
                 border-right : 1px solid #8c8c8c;
                 border-bottom : 1px solid #8c8c8c;
-                cursor: pointer;
+                cursor: default;
             }
 
             .tab .btncontainer div.curbtn {
@@ -5415,13 +5419,12 @@
                 </div>
             </a:main>
             <a:button
-              caption   = "div[2]/text()"
+              caption   = "div[1]/text()"
               container = "div"
-              icon      = "div[1]"
               maxwidth  = "90"
               minwidth  = "10">
                 <div class="btntab">
-                    <div class="tab_icon"> </div>
+                    <!--div class="tab_icon"> </div-->
                     <div class="tab_title">-</div>
                 </div>
             </a:button>
@@ -5921,7 +5924,7 @@
         }
 
         .menubar .toolbarbuttonOver, .menubar .toolbarbuttonDown {
-            cursor: pointer;
+            cursor: default;
             border-radius: 4px 4px 0px 0px;
             -moz-border-radius: 4px 4px 0px 0px;
             -webkit-border-bottom-right-radius: 0px;
@@ -10198,7 +10201,7 @@
             background: -moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
             overflow : hidden;
             text-overflow : ellipsis;
-            color: #515A61;
+            color: #333;
             border-bottom: 1px solid #BFBFBF;
         }
         .datagrid .headings div u{
@@ -12548,7 +12551,7 @@
         .lowtab .btncontainer .btn {
             border: 1px solid #8C8C8C;
             color: #f5f5f5;
-            cursor: pointer;
+            cursor: default;
             font-family: "Trebuchet MS";
             font-size:11px;
             position:relative;

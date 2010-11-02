@@ -5,7 +5,7 @@
       modal     = "false" 
       center    = "true" 
       width     = "350" 
-      height    = "350"
+      height    = "250"
       resizable = "true"
       kbclose   = "true"
       onshow    = "
