@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id="winDbgStack" class="smallheader" title=" " skin="dockwin" modal="false" flex="1" buttons="close" draggable="false">
         <a:vbox splitters="true" class="thin_splitter" padding="3" anchors="0 0 0 0">
-            <a:tab flex="1">
+            <a:tab flex="2">
                 <a:page caption="Call Stack">
                     <a:datagrid
                       id         = "dgStack"
@@ -24,7 +24,7 @@
                 </a:page>
             </a:tab>
 
-            <a:tab flex="2">
+            <a:tab flex="3">
                 <a:page caption="Interactive">
                     <a:vbox anchors="0 0 0 0">
                         <a:toolbar>
