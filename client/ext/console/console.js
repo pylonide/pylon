@@ -40,7 +40,7 @@ var trieInternals,
         "     help ................ show this help page",
         " "
     ];
-
+var tt=0;
 return ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Ajax.org",
@@ -105,6 +105,7 @@ return ext.register("ext/console/console", {
                     return "</span><span style='" + style + "'>"
                 }) + "</span></div>");
         }
+		//txtConsole.addValue((tt++)+"---------------------<br/>")
         txtConsole.addValue(log.join(""));
     },
 
@@ -117,7 +118,6 @@ return ext.register("ext/console/console", {
             msg = "<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
                 + msg + "</div></span>";
         }
-
         txtConsole.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
     },
 
