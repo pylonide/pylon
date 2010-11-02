@@ -28,6 +28,11 @@ return ext.register("ext/filesystem/filesystem", {
             this.webdav.write(path, data, null, callback);
     },
 
+    list : function(path, callback) {
+        if (this.webdav)
+            this.webdav.list(path, callback);
+    },
+
     createFolder: function(name) {
         var node = trFiles.selected;
         if (!node)

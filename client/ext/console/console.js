@@ -11,9 +11,9 @@ require.def("ext/console/console",
      "ext/panels/panels",
      "ext/console/parser",
      "ext/console/trie",
-     "text!ext/console/skin.xml",
+     "text!ext/console/console.css",
      "text!ext/console/console.xml"],
-    function(ide, ext, lang, panels, parserCls, Trie, skin, markup) {
+    function(ide, ext, lang, panels, parserCls, Trie, css, markup) {
 
 var trieInternals,
     cmdHistory = [],
@@ -46,8 +46,8 @@ return ext.register("ext/console/console", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
-    skin   : skin,
     markup : markup,
+    css    : css,
     commands: {
         "help": {hint: "show general help information and a list of available commands"},
         "clear": {hint: "clear all the messages from the console"}
@@ -241,13 +241,6 @@ return ext.register("ext/console/console", {
             }
             e.currentTarget.setValue(newVal);
 
-            // special commands (run & debug):
-            if (cmd == "debug" || cmd == "run") {
-                setDebug = (cmd == "debug");
-                setRun   = (cmd == "run");
-                cmd = "open";
-            }
-
             switch (cmd) {
                 case "help":
                     this.write(helpPage);
@@ -404,24 +397,35 @@ return ext.register("ext/console/console", {
         if (this.control && this.control.stop)
             this.control.stop();
 
-        var content = [];
+        var cmdName, cmd,
+            content = [];
         for (var i = 0, len = hints.length; i < len; ++i) {
-            var hint = base + hints[i];
-            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\''
-                + hint + '\')">' + hint + '</a><br />');
+            cmdName = base + hints[i];
+            cmd = ext.commandsLut[cmdName];
+            content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
+                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\')">'
+                + cmdName + '<span>' + cmd.hint + (cmd.hotkey
+                    ? '<span class="hints_hotkey">' + (apf.isMac
+                        ? apf.hotkeys.toMacNotation(cmd.hotkey)
+                        : cmd.hotkey) + '</span>'
+                    : '') + '</span></a>');
         }
-        winConsoleHints.$ext.innerHTML = content.join("");
 
-        var pos = apf.getAbsolutePosition(textbox.$ext, winConsoleHints.$ext.parentNode);
-        if (!winConsoleHints.visible) {
-            //winConsoleHints.$ext.style.top = "-30px";
-            winConsoleHints.show();
-            winConsoleHints.$ext.style.left = pos[0] + "px";
-            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
+        if (!this.$winHints)
+            this.$winHints = document.getElementById("winConsoleHints");
+
+        this.$winHints.innerHTML = content.join("");
+
+        var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
+        if (apf.getStyle(this.$winHints, "display") == "none") {
+            //this.$winHints.style.top = "-30px";
+            this.$winHints.style.display = "block";
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
             //txtConsoleInput.focus();
 
             //Animate
-            /*apf.tween.single(winConsoleHints.$ext, {
+            /*apf.tween.single(this.$winHints, {
                 type     : "fade",
                 anim     : apf.tween.easeInOutCubic,
                 from     : 0,
@@ -431,23 +435,25 @@ return ext.register("ext/console/console", {
                 control  : (this.control = {})
             });*/
         }
-        else if (winConsoleHints.visible) {
-            winConsoleHints.$ext.style.left = pos[0] + "px";
-            winConsoleHints.$ext.style.top = (pos[1] - winConsoleHints.$ext.offsetHeight) + "px";
+        else {
+            this.$winHints.style.left = pos[0] + "px";
+            this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
         }
     },
 
+    hintClick: function(base, cmdName, txtId) {
+        var textbox = self[txtId];
+        textbox.setValue(textbox.getValue().replace(base, cmdName));
+    },
+
     consoleTextHandler: function(e) {
-        if (e.keyCode == 9 && e.currentTarget == txtConsole) {
-            txtConsole.focus();
-            e.cancelBubble = true;
-            return false;
-        }
-        else if(e.keyCode == 13 && e.ctrlKey) {
+        if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
             var expression = txtCode.getValue();
             if (!expression.trim())
                 return;
+            
+            tabConsole.set(0);
 
             this.log(expression, "command");
             this.evaluate(expression, function(xmlNode, body, refs, error){
@@ -458,7 +464,7 @@ return ext.register("ext/console/console", {
                     if (className == "Function") {
                         var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(null, ["
                             + body.scriptId + ", " + body.line + ", " + body.position + ", "
-                            + body.handler + ",\"" + (body.name || body.inferredName) + "\"], \""
+                            + body.handle + ",\"" + (body.name || body.inferredName) + "\"], \""
                             + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
                         var post = "</a>";
                         var name = body.name || body.inferredName || "function";
@@ -498,7 +504,7 @@ return ext.register("ext/console/console", {
                                 out.push(name + "=" + item.value, ", ");
                                 t++;
                             }
-                            out.pop();
+                            if (t) out.pop();
 
                             _self.log(out.join(" "), "log", pre, post);
                         });
@@ -592,7 +598,7 @@ return ext.register("ext/console/console", {
         //Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole); //selectSingleNode("a:hbox[1]/a:vbox[2]").
 
-        apf.importCssString(".console_date{display:inline}");
+        apf.importCssString((this.css || "") + " .console_date{display:inline}");
     },
 
     enable : function(fromParent){
