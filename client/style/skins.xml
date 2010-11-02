@@ -5246,7 +5246,7 @@
                 margin : 0 auto;
                 overflow: hidden;
                 position:relative;
-                padding-top: 18px;
+                padding-top: 17px;
                 /*border-bottom: 1px solid white;*/
             }
 
@@ -5268,7 +5268,7 @@
 
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
                 background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
-                margin-top : -17px;
+                margin-top : -16px;
                 width : auto;
             }
 
@@ -5387,7 +5387,7 @@
             .tab .page {
                 display : none;
                 position : absolute;
-                top : 21px;
+                top : 18px;
                 bottom : 0;
                 left : 0;
                 right : 0;
