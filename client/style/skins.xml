@@ -4365,7 +4365,9 @@
         .tb_console .sbtb_middle {
             height           : 17px;
             padding          : 5px 10px 7px;
-            border-top       : 1px solid #ffffff;
+            -moz-box-shadow  : 1px 1px white inset;
+            -webkit-box-shadow  : 1px 1px white inset;
+            box-shadow       : 1px 1px white inset;
             color            : #303030;
             margin           : 0 0 0 26px;
             outline          : none;
@@ -17658,7 +17660,7 @@
             position            : relative;
             width               : 17px;
             overflow            : hidden;
-            padding             : 8px 0 8px 0;
+            padding             : 6px 0 6px 0;
             background-repeat   : no-repeat;
             background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
             background-position : 0 0;
@@ -17667,11 +17669,11 @@
         .wnscrollbar SPAN {
             width               : 17px;
             bottom              : 0;
-            height              : 8px;
+            height              : 6px;
             position            : absolute;
             background-repeat   : no-repeat;
             background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
-            background-position : -68px 0;
+            background-position : -34px 0;
         }
 
         .wnscrollbar .filler {
@@ -17679,19 +17681,19 @@
             width               : 17px;
             position            : relative;
             background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
-            background-position : -34px 0;
-        }
-
-        .wnscrollbarDisabled {
             background-position : -17px 0;
         }
 
+        .wnscrollbarDisabled {
+            
+        }
+
         .wnscrollbarDisabled span {
-            background-position : -85px 0;
+            
         }
 
         .wnscrollbarDisabled .filler {
-            background-position : -51px 0;
+            
         }
 
         .wnscrollbar .indicator {
@@ -17699,13 +17701,14 @@
             display  : none;
             position : absolute;
             overflow : hidden;
-            width    : 11px;
-            margin   : 0 0 0 3px;
+            width    : 18px;
+            margin   : 0 0 0 0;
+            min-height: 20px;
         }
 
         .wnscrollbar .indicator .indi_left {
             height              : 3px;
-            width               : 11px;
+            width               : 18px;
             position            : absolute;
             top                 : 0;
             left                : 0;
@@ -17717,19 +17720,17 @@
         .wnscrollbar .indicator .indi_middle {
             background-image    : url(images/scrollbar/grabber.png);
             background-repeat   : no-repeat;
-            background-position : -1px 50%;
+            background-position : 0px 50%;
             position            : absolute;
             top                 : 3px;
             bottom              : 3px;
             left                : 0;
-            width               : 9px;
-            border              : 1px solid #a4a4a4;
-            border-width        : 0 1px;
+            width               : 18px;
         }
 
         .wnscrollbar .indicator .indi_right {
             height              : 3px;
-            width               : 11px;
+            width               : 18px;
             position            : absolute;
             bottom              : 0;
             left                : 0;
@@ -17739,16 +17740,15 @@
         }
 
         .wnscrollbarDown .indicator .indi_left {
-            background-position : -11px 0;
+            background-position : -18px 0;
         }
 
         .wnscrollbarDown .indicator .indi_middle {
-            background-position : -12px 50%;
-            border-color        : #9ca1a4;
+            background-position : -18px 50%;
         }
 
         .wnscrollbarDown .indicator .indi_right {
-            background-position : -11px bottom;
+            background-position : -18px bottom;
         }
     ]]></a:style>
     <a:style condition="apf.isWebkit">

@@ -247,6 +247,7 @@ return ext.register("ext/console/console", {
             this.hideHints();
 
             this.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
+            this.enable();
 
             switch (cmd) {
                 case "help":

@@ -47,7 +47,6 @@ return ext.register("ext/panels/panels", {
         }));
         
         if (this.$settings && this.$settings[panelExt.path]) {
-            //if (panelExt.path == "ext/console/console") debugger;
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
         else if (panelExt.visible) {
@@ -106,7 +105,10 @@ return ext.register("ext/panels/panels", {
         
         var pset, panel = panelExt.panel, parent = panel.parentNode;
         for (var prop in set) {
-            if (prop == "parent" && !panelExt.excludeParent) {
+            if (prop == "parent") {
+                if (panelExt.excludeParent)
+                    continue;
+                
                 pset = set.parent;
                 for (prop in pset) {
                     if (parent[prop] != pset[prop])
@@ -114,8 +116,12 @@ return ext.register("ext/panels/panels", {
                 }
             }
             else {
-                if (panel[prop] != set[prop])
-                    panel.setAttribute(prop, set[prop]);
+                if (panel[prop] != set[prop]) {
+                    if (prop == "visible")
+                        panel[set[prop] ? "enable" : "disable"]();
+                    if (prop == "height" || !panelExt.excludeParent)
+                        panel.setAttribute(prop, set[prop]);
+                }
             }
         }
     },
