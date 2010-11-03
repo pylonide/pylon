@@ -12,8 +12,9 @@ require.def("ext/searchinfiles/searchinfiles",
      "ace/Search",
      "ext/editors/editors",
      "ext/console/console",
+     "text!ext/searchinfiles/skin.xml", 
      "text!ext/searchinfiles/searchinfiles.xml"],
-    function(ide, ext, util, plugins, search, editors, console, markup) {
+    function(ide, ext, util, plugins, search, editors, console, skin, markup) {
 
 return ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
@@ -21,6 +22,7 @@ return ext.register("ext/searchinfiles/searchinfiles", {
     type     : ext.GENERAL,
     alone    : true,
     markup   : markup,
+    skin     : skin,
     commands  : {
         "searchinfiles": {hint: "search for a string through all files in the current workspace"}
     },
