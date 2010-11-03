@@ -7789,15 +7789,6 @@
             margin-top: -18px;
         }
 
-        .searchinfiles LABEL {
-            padding: 1px 0 0 2px !important;
-            height: auto !important;
-        }
-
-        .searchinfiles DIV {
-            height: auto !important;
-        }
-
         .tree DIV.loading LABEL{
 
         }
@@ -7812,7 +7803,6 @@
             display: inline !important; display: block;
             padding: 2px 4px 2px 2px;
         }
-
 
         .treeFocus .indicate U{
             border: 1px dotted #BBB;/*#25a8e7;*/
