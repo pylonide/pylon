@@ -372,6 +372,9 @@ apf.scrollbar = function(struct, tagName){
                 to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
             }
             
+            if (this.$host)
+                oHtml[this.$scrollPos] = to;
+
             (this.$host && this.$host.dispatchEvent 
               ? this.$host 
               : this).dispatchEvent("scroll", {
@@ -382,9 +385,6 @@ apf.scrollbar = function(struct, tagName){
                     from         : from,
                     pos          : this.pos
                 });
-            
-            if (this.$host)
-                oHtml[this.$scrollPos] = to;
         }
         
         this.pos = this.$curValue;
