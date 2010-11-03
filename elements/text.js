@@ -156,7 +156,7 @@ apf.text = function(struct, tagName){
         value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
         
         if (forceAdd) {
-            this.$container.insertAdjacentHTML("beforeend", value);
+            apf.insertHtmlNode(null, this.$container, null, value);
             if (!this.value) this.value = "";
             this.value += value;
         }
