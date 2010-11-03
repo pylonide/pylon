@@ -86,7 +86,7 @@ If you get an error about unable to load o3-xml or an architecture error, you wi
     $ git clone http://github.com/ajaxorg/o3
     $ cd o3
     $ ./tools/node_modules_build
-    $ cp build/default/o3.node cloud9dir/common/jsdav/vendor/node-o3-xml/lib/o3-xml/
+    $ cp build/default/o3.node cloud9dir/support/jsdav/support/node-o3-xml/lib/o3-xml/
 
 after this you can start cloud9 manually using node bin/cloud9.js
 

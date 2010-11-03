@@ -1,6 +1,6 @@
 @echo off
 cd %~dp0..
-IF EXIST common\ace\LICENSE goto skip
+IF EXIST support\ace\LICENSE goto skip
 
 echo --- Initializing submodules for first launch, this can take a few minutes ---
 
@@ -13,7 +13,7 @@ echo ------ Submodules installed ----
 :skip
 echo ------ Starting Cloud9 server ------
 
-start common\node-builds\win32\node bin/cloud9.js -a "cmd /c start"
+start support\node-builds\win32\node bin/cloud9.js -a "cmd /c start"
 
 IF %ERRORLEVEL% EQ 0 goto exit
 

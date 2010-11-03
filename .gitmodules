@@ -1,21 +1,21 @@
-[submodule "common/socket.io"]
-	path = common/socket.io
+[submodule "support/socket.io"]
+	path = support/socket.io
 	url = http://github.com/ajaxorg/Socket.IO-node.git
-[submodule "common/connect"]
-	path = common/connect
+[submodule "support/connect"]
+	path = support/connect
 	url = http://github.com/senchalabs/connect.git
-[submodule "common/async"]
-	path = common/async
+[submodule "support/async"]
+	path = support/async
 	url = http://github.com/ajaxorg/async.js.git
-[submodule "common/jsdav"]
-	path = common/jsdav
+[submodule "support/jsdav"]
+	path = support/jsdav
 	url = http://github.com/ajaxorg/jsDAV.git
-[submodule "common/node-builds"]
-	path = common/node-builds
+[submodule "support/node-builds"]
+	path = support/node-builds
 	url = http://github.com/ajaxorg/node-builds.git
-[submodule "common/lib-v8debug"]
-	path = common/lib-v8debug
-	url = git://github.com/ajaxorg/lib-v8debug.git
-[submodule "common/ace"]
-	path = common/ace
-	url = git://github.com/ajaxorg/ace.git
+[submodule "support/lib-v8debug"]
+	path = support/lib-v8debug
+	url = http://github.com/ajaxorg/lib-v8debug.git
+[submodule "support/ace"]
+	path = support/ace
+	url = http://github.com/ajaxorg/ace.git

@@ -2,7 +2,7 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require("../../../common/paths");
+require("../../../support/paths");
 
 var Connect = require("connect");
 var Fs = require("fs");
@@ -19,11 +19,11 @@ exports.main = function(options) {
         throw new Error("Workspace directory does not exist: " + projectDir);
         
     var commonProvider = function() {
-        var common = Connect.staticProvider(Path.normalize(__dirname + "/../../../common"));
+        var common = Connect.staticProvider(Path.normalize(__dirname + "/../../../support"));
         return function(req, resp, next) {
             var path = require("url").parse(req.url).pathname;
-            if (path.indexOf("/common") === 0) {
-                req.url = req.url.replace("/common", "");
+            if (path.indexOf("/support") === 0) {
+                req.url = req.url.replace("/support", "");
                 common(req, resp, next);
             }
             else {
