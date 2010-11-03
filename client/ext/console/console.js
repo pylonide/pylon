@@ -53,6 +53,7 @@ return ext.register("ext/console/console", {
     markup : markup,
     css    : css,
     
+    excludeParent : true,
     visible  : true,
     commands : {
         "help": {hint: "show general help information and a list of available commands"},
@@ -806,10 +807,11 @@ return ext.register("ext/console/console", {
 
     hook : function(){
         panels.register(this);
+        panels.initPanel(this);
     },
 
     init : function(amlNode){
-        this.panel = winDbgConsole;
+        this.panel = tabConsole;
         this.$cwd  = "/workspace";
 
         //Append the console window at the bottom below the tab
@@ -821,33 +823,38 @@ return ext.register("ext/console/console", {
     },
 
     enable : function(fromParent){
-        if (!this.panel)
+        /*if (!this.panel)
             panels.initPanel(this);
 
         if (this.manual && fromParent)
             return;
 
         if (!fromParent)
-            this.manual = true;
+            this.manual = true;*/
 
         this.mnuItem.check();
-        winDbgConsole.show();
+        tabConsole.show();
         
-        mainRow.firstChild.setAttribute("edge", "8 8 0 8");
+        winDbgConsole.setAttribute("height", this.height || 200);
+        winDbgConsole.previousSibling.show();
+        
         apf.layout.forceResize();
     },
 
     disable : function(fromParent){
-        if (this.manual && fromParent || !this.inited)
+        /*if (this.manual && fromParent || !this.inited)
             return;
 
         if (!fromParent)
-            this.manual = true;
+            this.manual = true;*/
 
         this.mnuItem.uncheck();
-        winDbgConsole.hide();
+        tabConsole.hide();
         
-        mainRow.firstChild.setAttribute("edge", "8 8 8 8");
+        this.height = winDbgConsole.height;
+        winDbgConsole.setAttribute("height", 42);
+        winDbgConsole.previousSibling.hide();
+        
         apf.layout.forceResize();
     },
 

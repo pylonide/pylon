@@ -1,10 +1,10 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div id="barConsoleHints" class="barConsoleHints"/>
 
-    <a:bar id="winDbgConsole" skin="basic">
-        <a:vbox>
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="{!btnCollapseConsole.value}" height="200">
-<!--                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />-->
+    <a:bar id="winDbgConsole" skin="basic" height="42">
+        <a:vbox height="{winDbgConsole.height}">
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
+                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />
                 <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "
                     txtConsole.clear();
@@ -22,14 +22,17 @@
                 </a:page>-->
             </a:tab>
 
-            <a:hbox class="consoleInputBox" edge="1 1 2" padding="8">
+            <a:hbox class="consoleInputBox" edge="1" padding="8">
                 <a:textbox id="txtConsoleInput"
                   margin="4 0 0"
                   skin="tb_console"
                   flex="1"
                   onkeydown = "return require('ext/console/console').keydownHandler(event)"
                   onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
-                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"/>
+                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"
+                    onprop.value="
+                        require('ext/console/console')[event.value ? 'enable' : 'disable']();
+                    " />
             </a:hbox>
         </a:vbox>
     </a:bar>

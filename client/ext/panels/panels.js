@@ -105,7 +105,7 @@ return ext.register("ext/panels/panels", {
         
         var pset, panel = panelExt.panel, parent = panel.parentNode;
         for (var prop in set) {
-            if (prop == "parent") {
+            if (prop == "parent" && !panelExt.excludeParent) {
                 pset = set.parent;
                 for (prop in pset) {
                     if (parent[prop] != pset[prop])
