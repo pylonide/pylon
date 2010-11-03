@@ -17661,4 +17661,135 @@
         </a:empty>
     </a:presentation>
 </a:datagrid>
+<a:scrollbar name="wnscrollbar">
+    <a:style><![CDATA[
+        .wnscrollbar {
+            position            : relative;
+            width               : 17px;
+            overflow            : hidden;
+            padding             : 8px 0 8px 0;
+            background-repeat   : no-repeat;
+            background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
+            background-position : 0 0;
+        }
+
+        .wnscrollbar SPAN {
+            width               : 17px;
+            bottom              : 0;
+            height              : 8px;
+            position            : absolute;
+            background-repeat   : no-repeat;
+            background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
+            background-position : -68px 0;
+        }
+
+        .wnscrollbar .filler {
+            height              : 100%;
+            width               : 17px;
+            position            : relative;
+            background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
+            background-position : -34px 0;
+        }
+
+        .wnscrollbarDisabled {
+            background-position : -17px 0;
+        }
+
+        .wnscrollbarDisabled span {
+            background-position : -85px 0;
+        }
+
+        .wnscrollbarDisabled .filler {
+            background-position : -51px 0;
+        }
+
+        .wnscrollbar .indicator {
+            height   : 6px;
+            display  : none;
+            position : absolute;
+            overflow : hidden;
+            width    : 11px;
+            margin   : 0 0 0 3px;
+        }
+
+        .wnscrollbar .indicator .indi_left {
+            height              : 3px;
+            width               : 11px;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+            background-image    : url(images/scrollbar/grabber.png);
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+        }
+
+        .wnscrollbar .indicator .indi_middle {
+            background-image    : url(images/scrollbar/grabber.png);
+            background-repeat   : no-repeat;
+            background-position : -1px 50%;
+            position            : absolute;
+            top                 : 3px;
+            bottom              : 3px;
+            left                : 0;
+            width               : 9px;
+            border              : 1px solid #a4a4a4;
+            border-width        : 0 1px;
+        }
+
+        .wnscrollbar .indicator .indi_right {
+            height              : 3px;
+            width               : 11px;
+            position            : absolute;
+            bottom              : 0;
+            left                : 0;
+            background-image    : url(images/scrollbar/grabber.png);
+            background-repeat   : no-repeat;
+            background-position : 0 bottom;
+        }
+
+        .wnscrollbarDown .indicator .indi_left {
+            background-position : -11px 0;
+        }
+
+        .wnscrollbarDown .indicator .indi_middle {
+            background-position : -12px 50%;
+            border-color        : #9ca1a4;
+        }
+
+        .wnscrollbarDown .indicator .indi_right {
+            background-position : -11px bottom;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit">
+        .wnscrollbar{
+            display : -webkit-box;
+        }
+
+        .wnscrollbar span{
+            left : 0;
+        }
+
+        .wnscrollbar .filler{
+            left : 0;
+            height : auto;
+            top : 0;
+            bottom : 8px;
+        }
+    </a:style>
+
+    <a:presentation>
+        <a:main indicator="div/div">
+            <div class='wnscrollbar'>
+                <div class="filler">
+                    <div class='indicator'>
+                        <div class="indi_left"></div>
+                        <div class="indi_middle"></div>
+                        <div class="indi_right"></div>
+                    </div>
+                </div>
+                <span> </span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:scrollbar>
 </a:skin>
