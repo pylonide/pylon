@@ -97,7 +97,7 @@ apf.text = function(struct, tagName){
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
                     _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
-            }, 60);
+            }, 1000);
         }
         else {
             //this.removeEventListener("resize", this.$resize);
