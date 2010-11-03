@@ -4365,7 +4365,9 @@
         .tb_console .sbtb_middle {
             height           : 17px;
             padding          : 5px 10px 7px;
-            border-top       : 1px solid #ffffff;
+            -moz-box-shadow  : 1px 1px white inset;
+            -webkit-box-shadow  : 1px 1px white inset;
+            box-shadow       : 1px 1px white inset;
             color            : #303030;
             margin           : 0 0 0 26px;
             outline          : none;
