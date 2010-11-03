@@ -41,7 +41,11 @@ return ext.register("ext/console/console", {
     },
 
     clear : function() {
-        this.inited && txtConsole.clear();
+        this.inited && txtOutput.clear();
+    },
+    
+    showOutput : function(){
+        tabConsole.set(1);
     },
 
     jump: function(path, row, column) {
@@ -54,7 +58,7 @@ return ext.register("ext/console/console", {
         return this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
     },
 
-    logNodeStream : function(data, stream, workspaceDir, davPrefix) {
+    logNodeStream : function(data, stream, workspaceDir, davPrefix, useOutput) {
         var colors = {
             30: "#eee",
             31: "red",
@@ -95,15 +99,18 @@ return ext.register("ext/console/console", {
                     return "</span><span style='" + style + "'>"
                 }) + "</span></div>");
         }
-		//txtConsole.addValue((tt++)+"---------------------<br/>")
-        txtConsole.addValue(log.join(""));
+		
+        (useOutput ? txtOutput : txtConsole).addValue(log.join(""));
     },
 
-    log : function(msg, type, pre, post){
+    log : function(msg, type, pre, post, otherOutput){
         msg = apf.htmlentities(String(msg));
 
         if (!type)
             type = "log";
+        else if (type == "divider") {
+            msg = "<span style='display:block;border-top:1px solid #444; margin:6px 0 6px 0;'></span>";
+        }
         else if (type == "prompt") {
             msg = "<span style='color:#86c2f6'>" + msg + "</span>";
         }
@@ -111,14 +118,15 @@ return ext.register("ext/console/console", {
             msg = "<span style='color:#86c2f6'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
                 + msg + "</div></span>";
         }
-        txtConsole.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
+        (otherOutput || txtConsole).addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
     },
 
     write: function(aLines) {
         if (typeof aLines == "string")
             aLines = aLines.split("\n");
         for (var i = 0, l = aLines.length; i < l; ++i)
-            this.log(aLines[i], "log")
+            this.log(aLines[i], "log");
+        this.log("", "divider");
     },
 
     evaluate : function(expression, callback){
@@ -227,6 +235,11 @@ return ext.register("ext/console/console", {
 
         if (parser.argv.length === 0) {
             // no commmand line input
+
+            if (e.name == "keydown") {
+                this.log(this.getPrompt(), "prompt");
+                this.enable();
+            }
         }
         else if (parser.argQL[0]) {
             // first argument quoted -> error
@@ -401,10 +414,12 @@ return ext.register("ext/console/console", {
                 res = message.body;
                 //this.getPrompt() + " " + res.argv.join(" ") + "\n" + 
                 this.logNodeStream(res.out || res.err);
+                this.log("", "divider");
                 break;
             case "error":
                 //console.log("error: ", message.body);
                 this.log(message.body);
+                this.log("", "divider");
                 break;
         }
 
@@ -694,13 +709,14 @@ return ext.register("ext/console/console", {
     consoleTextHandler: function(e) {
         if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
+            
             var expression = txtCode.getValue().trim();
             if (!expression)
                 return;
             
-            tabConsole.set(0);
-
-            this.log(expression, "command");
+            tabConsole.set(1);
+            this.log(expression, "command", null, null, txtOutput);
+            
             this.evaluate(expression, function(xmlNode, body, refs, error){
                 if (error)
                     _self.log(error.message, "error");
@@ -713,7 +729,7 @@ return ext.register("ext/console/console", {
                             + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
                         var post = "</a>";
                         var name = body.name || body.inferredName || "function";
-                        _self.log(name + "()", "log", pre, post);
+                        _self.log(name + "()", "log", pre, post, txtOutput);
                     }
                     else if (className == "Array") {
                         var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/console/console\").showObject(\""
@@ -722,7 +738,7 @@ return ext.register("ext/console/console", {
                         var post = " }</a>";
 
                         _self.log("Array { length: "
-                            + (body.properties && body.properties.length - 1), "log", pre, post);
+                            + (body.properties && body.properties.length - 1), "log", pre, post, txtOutput);
                     }
                     else if (type == "object") {
                         var refs = [], props = body.properties;
@@ -751,11 +767,11 @@ return ext.register("ext/console/console", {
                             }
                             if (t) out.pop();
 
-                            _self.log(out.join(" "), "log", pre, post);
+                            _self.log(out.join(" "), "log", pre, post, txtOutput);
                         });
                     }
                     else
-                        _self.log(value, "log");
+                        _self.log(value, "log", null, null, txtOutput);
                 }
             });
 

@@ -103,7 +103,7 @@ return ext.register("ext/noderunner/noderunner", {
 
             case "node-data":
                 //ide.log(message.data);
-                log.logNodeStream(message.data, message.stream, ide.workspaceDir, ide.davPrefix);
+                log.logNodeStream(message.data, message.stream, ide.workspaceDir, ide.davPrefix, true);
                 break;
                 
             case "error":
@@ -147,6 +147,8 @@ return ext.register("ext/noderunner/noderunner", {
         ide.socket.send(JSON.stringify(command));
 
         log.clear();
+        log.showOutput();
+
         if (debug)
             stDebugProcessRunning.activate();
 
