@@ -5004,7 +5004,7 @@
             border-top: 1px solid #4c4c4c;
             border-left: 1px solid #4c4c4c;
             z-index:101;
-            padding      : 1px 18px 4px;
+            padding      : 3px 18px 2px;
         }
 
         .tab_console .scale .btntab .tab_console_middle {
@@ -5070,7 +5070,7 @@
             border-top: 1px solid #333333;
             border-bottom:1px solid #000000;
 
-            backgroud: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(50,51,52)),color-stop(1, rgb(30,30,30)));
             background: -moz-linear-gradient(center bottom,rgb(50,51,52) 0%,rgb(30,30,30) 100%);
         }
 
@@ -13367,7 +13367,7 @@
         }
         
         .console_text .item{
-            border-bottom : 1px solid #444;
+            border-bottom : 1px solid #3F3F3F;
             padding : 2px 10px;
         }
 
