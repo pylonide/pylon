@@ -178,6 +178,7 @@ apf.text = function(struct, tagName){
     this.addEventListener("prop.each", this.$eachHandler);
     
     this.addEventListener("$clear", function(){
+        this.$container.innerHTML = "";
         this.value = "";
         this.dispatchEvent("prop.value", {value: ""});
     });
