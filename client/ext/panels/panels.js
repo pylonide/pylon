@@ -47,6 +47,7 @@ return ext.register("ext/panels/panels", {
         }));
         
         if (this.$settings && this.$settings[panelExt.path]) {
+            //if (panelExt.path == "ext/console/console") debugger;
             this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
         }
         else if (panelExt.visible) {

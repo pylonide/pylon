@@ -877,8 +877,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.uncheck();
         tabConsole.hide();
-        
-        this.height = winDbgConsole.height == 42 ? 200 : winDbgConsole.height;
+
+        if (winDbgConsole.height != 42)
+            this.height = winDbgConsole.height;
         winDbgConsole.setAttribute("height", 42);
         winDbgConsole.previousSibling.hide();
         

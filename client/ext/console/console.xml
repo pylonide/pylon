@@ -10,7 +10,7 @@
                     txtConsole.clear();
                   "/>
                 <a:page caption="Console">
-                    <a:hbox anchors="0 0 0 0">
+                    <a:hbox anchors="3 0 0 0">
                         <a:text id="txtConsole"
                           flex       = "1"
                           scrolldown = "true"
@@ -21,8 +21,7 @@
                           for       = "txtConsole"
                           margin    = "3"
                           skin      = "wnscrollbar"
-                          width     = "17"
-                          overflow  = "auto" />
+                          width     = "17" />
                     </a:hbox>
                 </a:page>
             </a:tab>

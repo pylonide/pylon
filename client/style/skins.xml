@@ -13350,7 +13350,7 @@
         .console_text {
             font-family : menlo,courier new,fixed,swiss,sans-serif;
             background: none;
-            font-size : 11px;
+            font-size : 12px;
             margin : 3px 0 0 0;
             padding : 7px 0 3px 0;
             color : #eee;
@@ -13358,7 +13358,7 @@
         }
         
         .console_text .item{
-            border-bottom : 1px solid #3F3F3F;
+            /*border-bottom : 1px solid #3F3F3F;*/
             padding : 2px 10px;
         }
 
