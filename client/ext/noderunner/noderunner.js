@@ -158,7 +158,7 @@ return ext.register("ext/noderunner/noderunner", {
             return
 
         ext.setLayoutMode("default");
-        log.disable();
+        //log.disable();
 
         ide.socket.send(JSON.stringify({"command": "kill"}));
     },
