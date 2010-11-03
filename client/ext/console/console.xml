@@ -7,7 +7,10 @@
                 <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />
                 <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "
-                    txtConsole.clear();
+                    if (tabConsole.activepagenr == 0)
+                        txtConsole.clear();
+                    else if (tabConsole.activepagenr == 1)    
+                        txtOutput.clear();
                   "/>
                 <a:page caption="Console">
                     <a:hbox anchors="0 0 0 0">
@@ -20,6 +23,22 @@
                           class      = "console_text" />
                         <a:scrollbar
                           for       = "txtConsole"
+                          margin    = "0"
+                          skin      = "wnscrollbar"
+                          width     = "17" />
+                    </a:hbox>
+                </a:page>
+                <a:page caption="Output" render="runtime">
+                    <a:hbox anchors="0 0 0 0">
+                        <a:text id="txtOutput"
+                          margin     = "3 0 0 0"
+                          flex       = "1"
+                          scrolldown = "true"
+                          textselect = "true"
+                          focussable = "true"
+                          class      = "console_text" />
+                        <a:scrollbar
+                          for       = "txtOutput"
                           margin    = "0"
                           skin      = "wnscrollbar"
                           width     = "17" />

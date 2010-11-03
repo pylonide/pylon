@@ -4961,7 +4961,7 @@
         }
 
         .tab_console .btncontainer .btntab {
-            padding      : 2px 19px 4px;
+            padding      : 4px 19px 2px;
             position     : relative;
             margin-top:-1px;
             text-align: center;
