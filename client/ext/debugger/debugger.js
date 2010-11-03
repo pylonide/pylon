@@ -111,10 +111,10 @@ return ext.register("ext/debugger/debugger", {
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = fileEl.selectSingleNode("data") ? true : false;
+        var hasData = page && tabEditors.getPage(path).$doc ? true : false;
 
         if (row !== undefined) {
-            function jumpTo(){
+            var jumpTo = function(){
                 setTimeout(function() {
                     ceEditor.$editor.gotoLine(row, column);
                     if (text)
