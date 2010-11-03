@@ -260,7 +260,7 @@ return ext.register("ext/console/console", {
                     this.logNodeStream(text.join("\n"));
                     break;
                 case "clear":
-                    //@todo!
+                    txtConsole.clear();
                     break;
                 case "sudo":
                     s = parser.argv.join(" ").trim();
