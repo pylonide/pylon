@@ -17767,12 +17767,16 @@
         .wnscrollbar span{
             left : 0;
         }
+        
+        .wnscrollbar .mainrail {
+            height : auto;
+        }
 
         .wnscrollbar .filler{
             left : 0;
             height : auto;
             top : 0;
-            bottom : 8px;
+            bottom : 0;
         }
     </a:style>
 
