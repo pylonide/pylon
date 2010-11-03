@@ -10,7 +10,7 @@
                     txtConsole.clear();
                   "/>
                 <a:page caption="Console">
-                    <a:hbox anchors="0 0 0 0">
+                    <a:hbox anchors="3 0 0 0">
                         <a:text id="txtConsole"
                           flex       = "1"
                           scrolldown = "true"
@@ -21,8 +21,7 @@
                           for       = "txtConsole"
                           margin    = "0"
                           skin      = "wnscrollbar"
-                          width     = "17"
-                          overflow  = "auto" />
+                          width     = "17" />
                     </a:hbox>
                 </a:page>
             </a:tab>
@@ -35,8 +34,11 @@
                   onkeydown = "return require('ext/console/console').keydownHandler(event)"
                   onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"
+                    value = "{tabConsole.visible}"
                     onprop.value="
-                        require('ext/console/console')[event.value ? 'enable' : 'disable']();
+                        try {
+                            require('ext/console/console')[event.value ? 'enable' : 'disable']();
+                        }catch(e){}
                     " />
             </a:hbox>
         </a:vbox>

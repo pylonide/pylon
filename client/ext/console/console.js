@@ -104,6 +104,9 @@ return ext.register("ext/console/console", {
 
         if (!type)
             type = "log";
+        else if (type == "prompt") {
+            msg = "<span style='color:#86c2f6'>" + msg + "</span>";
+        }
         else if (type == "command") {
             msg = "<span style='color:#86c2f6'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
                 + msg + "</div></span>";
@@ -243,6 +246,9 @@ return ext.register("ext/console/console", {
             e.currentTarget.setValue(newVal);
             this.hideHints();
 
+            this.log(this.getPrompt() + " " + parser.argv.join(" "), "prompt");
+            this.enable();
+
             switch (cmd) {
                 case "help":
                     var words = trieCommands.getWords(),
@@ -255,7 +261,7 @@ return ext.register("ext/console/console", {
                     this.logNodeStream(text.join("\n"));
                     break;
                 case "clear":
-                    //@todo!
+                    txtConsole.clear();
                     break;
                 case "sudo":
                     s = parser.argv.join(" ").trim();
@@ -387,14 +393,14 @@ return ext.register("ext/console/console", {
             case "cd":
                 res = message.body;
                 if (res.cwd)
-                    this.write(this.setPrompt(res.cwd) + "\nWorking directory changed.");
+                    this.write("Working directory changed.");
                 break;
             case "git":
             case "pwd":
             case "ls":
                 res = message.body;
-                this.logNodeStream(this.getPrompt() + " " + res.argv.join(" ")
-                    + "\n" + (res.out || res.err));
+                //this.getPrompt() + " " + res.argv.join(" ") + "\n" + 
+                this.logNodeStream(res.out || res.err);
                 break;
             case "error":
                 //console.log("error: ", message.body);
@@ -855,8 +861,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.check();
         tabConsole.show();
-        
-        winDbgConsole.setAttribute("height", this.height || 200);
+
+        if (winDbgConsole.height == 42)
+            winDbgConsole.setAttribute("height", this.height || 200);
         winDbgConsole.previousSibling.show();
         
         apf.layout.forceResize();
@@ -871,8 +878,9 @@ return ext.register("ext/console/console", {
 
         this.mnuItem.uncheck();
         tabConsole.hide();
-        
-        this.height = winDbgConsole.height;
+
+        if (winDbgConsole.height != 42)
+            this.height = winDbgConsole.height;
         winDbgConsole.setAttribute("height", 42);
         winDbgConsole.previousSibling.hide();
         
