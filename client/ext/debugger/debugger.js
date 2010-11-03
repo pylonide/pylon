@@ -273,6 +273,9 @@ return ext.register("ext/debugger/debugger", {
     },
 
     disable : function(){
+        if (!this.panel)
+            return;
+        
         this.nodes.each(function(item){
             if (item.hide)
                 item.hide();
