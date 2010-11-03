@@ -1,5 +1,23 @@
 2010.11.03, Version 0.1.3
-...
+* Added 'save as' window
+* Fixed auto-indenting
+* Fixed search & replace
+* Creating a new folder with a name that already exists no longer crashes the server
+* Closing two tabs in rapid succession no longer maximizes the editor
+* Lots of debugger fixes
+* Search results are selected
+* Initial rendering of the scrollbar in the editor is fixed
+* Move lines up/down is more responsive
+* Split editor repository. 
+* The editor pane can now have a padding
+* JavaScript syntax highlighting enhancements.
+* Fix undo stack after moving lines up and down
+* Server-side extensions
+* New console to replace the terminal
+* Redesigned debug stepping look & feel
+* Fixed general focus and layout issues
+* Moved quickwatch into a window
+* Added keyboard support for stepping
 
 2010.10.25, Version 0.1.2
 
