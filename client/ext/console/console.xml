@@ -28,7 +28,7 @@
                           width     = "17" />
                     </a:hbox>
                 </a:page>
-                <a:page caption="Output" render="runtime">
+                <a:page caption="Output">
                     <a:hbox anchors="0 0 0 0">
                         <a:text id="txtOutput"
                           margin     = "3 0 0 0"
