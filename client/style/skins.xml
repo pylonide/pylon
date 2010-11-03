@@ -13364,6 +13364,7 @@
             margin : 3px 0 0 0;
             padding : 7px 0 3px 0;
             color : #eee;
+            overflow : hidden;
         }
         
         .console_text .item{

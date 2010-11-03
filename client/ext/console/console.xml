@@ -10,29 +10,28 @@
                     txtConsole.clear();
                   "/>
                 <a:page caption="Console">
-                    <a:text id="txtConsole"
-                      anchors   = "0 0 0 0"
-                      scrolldown = "true"
-                      textselect = "true"
-                      focussable = "true"
-                      class      = "console_text" />
-                    <a:scrollbar
-                      for       = "txtConsole"
-                      margin    = "3"
-                      skin      = "wnscrollbar"
-                      width     = "17"
-                      overflow  = "auto" />
+                    <a:hbox anchors="0 0 0 0">
+                        <a:text id="txtConsole"
+                          flex       = "1"
+                          scrolldown = "true"
+                          textselect = "true"
+                          focussable = "true"
+                          class      = "console_text" />
+                        <a:scrollbar
+                          for       = "txtConsole"
+                          margin    = "3"
+                          skin      = "wnscrollbar"
+                          width     = "17"
+                          overflow  = "auto" />
+                    </a:hbox>
                 </a:page>
-<!--                <a:page caption="Search results">
-
-                </a:page>-->
             </a:tab>
 
             <a:hbox class="consoleInputBox" edge="1" padding="8">
                 <a:textbox id="txtConsoleInput"
-                  margin="4 0 0"
-                  skin="tb_console"
-                  flex="1"
+                  margin    = "4 0 0"
+                  skin      = "tb_console"
+                  flex      = "1"
                   onkeydown = "return require('ext/console/console').keydownHandler(event)"
                   onkeyup   = "return require('ext/console/console').keyupHandler(event)" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console_collapse.png" state="true" height="38"
