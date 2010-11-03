@@ -694,8 +694,8 @@ return ext.register("ext/console/console", {
     consoleTextHandler: function(e) {
         if(e.keyCode == 13 && e.ctrlKey) {
             var _self = this;
-            var expression = txtCode.getValue();
-            if (!expression.trim())
+            var expression = txtCode.getValue().trim();
+            if (!expression)
                 return;
             
             tabConsole.set(0);
