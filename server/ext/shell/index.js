@@ -40,6 +40,29 @@ function cloud9ShellPlugin(server) {
         });
     };
 
+    this["internal-isfile"] = function(message) {
+        var file  = message.argv.pop(),
+            path  = message.cwd || this.server.workspaceDir,
+            _self = this;
+        path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
+
+        if (path.indexOf(this.server.workspaceDir) === -1) {
+            this.sendResult();
+            return;
+        }
+        Fs.stat(path, function(err, stat) {
+            if (err) {
+                return _self.sendResult(0, "error",
+                    err.toString().replace("Error: ENOENT, ", ""));
+            }
+            _self.sendResult(0, "internal-isfile", {
+                cwd: path,
+                isfile: (stat && !stat.isDirectory()),
+                sender: message.sender || "shell"
+            });
+        });
+    };
+
     this.commandhints = function(message) {
         var commands = {},
             _self    = this;

@@ -22,7 +22,12 @@ return ext.register("ext/debugger/debugger", {
     markup : markup,
     deps   : [log, fs],
     commands: {
-        "debug": {hint: "run and debug a node program on the server"}
+        "debug": {
+            "hint": "run and debug a node program on the server",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
+            }
+        }
     },
 
     nodes : [],
@@ -32,6 +37,30 @@ return ext.register("ext/debugger/debugger", {
             value   : "ext/debugger/debugger",
             caption : this.name
         }));*/
+
+        ide.addEventListener("consolecommand.debug", function(e) {
+            ide.socket.send(JSON.stringify({
+                command: "internal-isfile",
+                argv: e.data.argv,
+                cwd: e.data.cwd,
+                sender: "debugger"
+            }));
+            return false;
+        });
+
+        ide.addEventListener("consoleresult.internal-isfile", function(e) {
+            var data = e.data;
+            if (data.sender != "debugger")
+                return;
+            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            if (data.isfile) {
+                require("ext/debugger/debugger").showFile(path);
+                require("ext/run/run").run(true);
+            }
+            else {
+                require("ext/console/console").log("'" + path + "' is not a file.");
+            }
+        });
         
         panels.register(this);
     },

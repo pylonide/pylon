@@ -87,7 +87,7 @@ return keys.onLoad({
             "selectup": "Shift-Up",
             "golineup": "Up",
             "copylinesdown": "Ctrl-Alt-Down",
-            "movelinsedown": "Ctrl-Down",
+            "movelinesdown": "Ctrl-Down",
             "selecttoend": "Ctrl-Shift-Down",
             "gotoend": "Ctrl-End",
             "selectdown": "Shift-Down",

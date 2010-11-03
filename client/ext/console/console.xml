@@ -1,10 +1,17 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div id="barConsoleHints" class="barConsoleHints"/>
 
+<<<<<<< HEAD
     <a:bar id="winDbgConsole" skin="basic" height="42">
         <a:vbox height="{winDbgConsole.height}">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
                 <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />
+=======
+    <a:bar id="winDbgConsole" skin="basic">
+        <a:vbox>
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="true" height="200">
+<!--                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />-->
+>>>>>>> d7d9ef336d5dff1d1806938b3a07ad5dcad629aa
                 <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "
                     txtConsole.clear();
