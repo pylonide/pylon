@@ -43,22 +43,6 @@
             else
                 trSaveAs.expandAndSelect(file);
         }
-        
-        function choosePath(path) {
-            require("ext/filesystem/filesystem").list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
-                if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                    path  = path.replace(/workspace/, "Projects")
-                                .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\//, "");
-                    trSaveAs.expandList([path], function() {
-                        var node = trSaveAs.getModel().data.selectSingleNode(path);
-                         
-                        trSaveAs.select(node);
-                    });
-                } else
-                    require("ext/save/save").saveFileAs();
-            });
-        }
     ]]></a:script>
 
     <a:window
@@ -156,10 +140,10 @@
               align     = "center"
               padding   = "5">
                 <a:label flex="1">File name:</a:label>
-                <a:textbox
-                  id           = "txtSaveAs"
-                  flex         = "7"
-                  onkeydown    = "if (event.keyCode == 13) choosePath(this.getValue())" />
+	            <a:textbox
+	              id           = "txtSaveAs"
+	              flex         = "7"
+	              onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
             </a:hbox>
             <a:hbox
               pack    = "end"

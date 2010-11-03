@@ -16,6 +16,12 @@
                       textselect = "true"
                       focussable = "true"
                       class      = "console_text" />
+                    <a:scrollbar
+                      for       = "txtConsole"
+                      margin    = "3"
+                      skin      = "wnscrollbar"
+                      width     = "17"
+                      overflow  = "auto" />
                 </a:page>
 <!--                <a:page caption="Search results">
 
