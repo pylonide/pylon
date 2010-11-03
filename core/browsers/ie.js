@@ -151,11 +151,13 @@ apf.runIE = function(){
         return el.currentStyle[prop];
     };
   
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode){
-        for (var str = [], i = 0, l = nodeList.length; i < l; i++)
-            str[i] = nodeList[i].xml;
-
-        str = apf.html_entity_decode(str.join(""));
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
+        var str;
+        if (nodeList) {
+	        for (str = [], i = 0, l = nodeList.length; i < l; i++)
+	            str[i] = nodeList[i].xml;
+        }
+        str = s || apf.html_entity_decode(str.join(""));
         
         if (apf.isIE < 7)
             str = str.replace(/style="background-image:([^"]*)"/g, 

@@ -109,18 +109,21 @@ apf.runOpera = function (){
     //#endif
     
     var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var node,
-            frag = document.createDocumentFragment(),
-            i    = 0,
-            l    = nodeList.length
-        for (; i < l; i++) {
-            if (!(node = nodeList[i])) continue;
-            frag.appendChild(node);
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var node, frag, i, l;
+        if (nodeList) {
+            frag = document.createDocumentFragment();
+            i    = 0;
+            l    = nodeList.length;
+	        for (; i < l; i++) {
+	            if (!(node = nodeList[i])) continue;
+	            frag.appendChild(node);
+	        }
         }
+        
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
+            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
     };
 
     apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
