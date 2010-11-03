@@ -65,6 +65,7 @@ function cloud9ShellGitPlugin(server) {
                return;
             _self.sendResult(0, message.command, {
                 code: code,
+                argv: message.argv,
                 err: err,
                 out: out
             });
