@@ -56,21 +56,21 @@ return ext.register("ext/console/console", {
 
     logNodeStream : function(data, stream, workspaceDir, davPrefix) {
         var colors = {
-            30: "black",
+            30: "#eee",
             31: "red",
             32: "green",
             33: "yellow",
             34: "blue",
             35: "magenta",
             36: "cyan",
-            37: "white"
+            37: "#eee"
         };
 
         workspaceDir = workspaceDir || ide.workspaceDir;
         davPrefix = davPrefix || ide.davPrefix;
 
         var lines = data.split("\n");
-        var style = "color:black;";
+        var style = "color:#eee;";
         var log = [];
         // absolute workspace files
         var wsRe = new RegExp(lang.escapeRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
@@ -86,7 +86,7 @@ return ext.register("ext/console/console", {
                 .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"/" + davPrefix + "$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
-                    style = "color:" + (colors[color] || "black");
+                    style = "color:" + (colors[color] || "#eee");
                     if (extra == 1) {
                         style += ";font-weight=bold"
                     } else if (extra == 4) {
@@ -105,7 +105,7 @@ return ext.register("ext/console/console", {
         if (!type)
             type = "log";
         else if (type == "command") {
-            msg = "<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
+            msg = "<span style='color:#86c2f6'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 25px'>"
                 + msg + "</div></span>";
         }
         txtConsole.addValue("<div class='item console_" + type + "'>" + (pre || "") + msg + (post || "") + "</div>");
@@ -629,7 +629,7 @@ return ext.register("ext/console/console", {
 
         var pos = apf.getAbsolutePosition(textbox.$ext, this.$winHints.parentNode);
         this.$winHints.style.left = Math.max(cursorPos * 5, 5) + "px";
-        this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
+        //this.$winHints.style.top = (pos[1] - this.$winHints.offsetHeight) + "px";
     },
 
     hideHints: function() {

@@ -9,10 +9,11 @@ require.def("ext/debugger/debugger",
      "core/document",
      "core/ext",
      "ext/console/console",
+     "ext/noderunner/noderunner",
      "ext/panels/panels",
      "ext/filesystem/filesystem",
      "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, panels, fs, markup) {
+    function(ide, Document, ext, log, noderunner, panels, fs, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -257,6 +258,8 @@ return ext.register("ext/debugger/debugger", {
     },
 
     enable : function(){
+        panels.initPanel(this);
+        
         this.nodes.each(function(item){
             if (item.show)
                 item.show();

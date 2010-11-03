@@ -189,6 +189,8 @@ return ext = {
     },
 
     setLayoutMode : function(mode){
+        return;
+        
         if (this.currentLayoutMode)
             this.currentLayoutMode.disable();
 

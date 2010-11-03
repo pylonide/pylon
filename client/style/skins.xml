@@ -13358,8 +13358,17 @@
         }
 
         .console_text {
-            font-family : menlo,courier,fixed,swiss,sans-serif;
+            font-family : menlo,courier new,fixed,swiss,sans-serif;
             background: none;
+            font-size : 11px;
+            margin : 3px 0 0 0;
+            padding : 7px 0 3px 0;
+            color : #eee;
+        }
+        
+        .console_text .item{
+            border-bottom : 1px solid #444;
+            padding : 2px 10px;
         }
 
         .console_text .red {
