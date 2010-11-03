@@ -9,7 +9,12 @@ var Fs = require("fs");
 var Path = require("path");
 var IdeServer = require("lib/cloud9/server");
 
-exports.main = function(projectDir, port, ip) {
+exports.main = function(options) {
+    var projectDir = options.workspace,
+        port = options.port,
+        ip = options.ip,
+        user = options.user,
+        group = options.group;
     if (!Path.existsSync(projectDir)) 
         throw new Error("Workspace directory does not exist: " + projectDir);
         
@@ -44,9 +49,12 @@ exports.main = function(projectDir, port, ip) {
     });
 
     server.listen(port, ip);
+    //obfuscate process rights if configured
+    if(group) process.setgid(group);
+    if(user) process.setuid(user);
     new IdeServer(projectDir, server, exts);
 };
 
 if (module === require.main) {
-    exports.main(".", 3000, '127.0.0.1')
+    exports.main({workspace: ".", port: 3000, ip: '127.0.0.1'})
 }

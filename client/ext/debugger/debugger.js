@@ -9,9 +9,11 @@ require.def("ext/debugger/debugger",
      "core/document",
      "core/ext",
      "ext/console/console",
+     "ext/noderunner/noderunner",
+     "ext/panels/panels",
      "ext/filesystem/filesystem",
      "text!ext/debugger/debugger.xml"],
-    function(ide, Document, ext, log, fs, markup) {
+    function(ide, Document, ext, log, noderunner, panels, fs, markup) {
 
 return ext.register("ext/debugger/debugger", {
     name   : "Debug",
@@ -21,19 +23,52 @@ return ext.register("ext/debugger/debugger", {
     markup : markup,
     deps   : [log, fs],
     commands: {
-        "debug": {hint: "run and debug a node program on the server"}
+        "debug": {
+            "hint": "run and debug a node program on the server",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
+            }
+        }
     },
 
     nodes : [],
 
     hook : function(){
-        this.$layoutItem = mnuModes.appendChild(new apf.item({
+        /*this.$layoutItem = mnuModes.appendChild(new apf.item({
             value   : "ext/debugger/debugger",
             caption : this.name
-        }));
+        }));*/
+
+        ide.addEventListener("consolecommand.debug", function(e) {
+            ide.socket.send(JSON.stringify({
+                command: "internal-isfile",
+                argv: e.data.argv,
+                cwd: e.data.cwd,
+                sender: "debugger"
+            }));
+            return false;
+        });
+
+        ide.addEventListener("consoleresult.internal-isfile", function(e) {
+            var data = e.data;
+            if (data.sender != "debugger")
+                return;
+            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            if (data.isfile) {
+                require("ext/debugger/debugger").showFile(path);
+                require("ext/run/run").run(true);
+            }
+            else {
+                require("ext/console/console").log("'" + path + "' is not a file.");
+            }
+        });
+        
+        panels.register(this);
     },
 
     init : function(amlNode){
+        this.panel = winDbgStack;
+        
         this.rightPane = colRight;
         this.nodes.push(
             //Append the stack window at the right
@@ -71,31 +106,44 @@ return ext.register("ext/debugger/debugger", {
             // TODO sometimes we don't have a scriptID
         });
 
-        log.enable(true);
+        //log.enable(true);
     },
 
-    jump : function(fileEl, row, column, text, doc) {
-        var path = fileEl.getAttribute("path");
+    jump : function(fileEl, row, column, text, doc, page) {
+        var path    = fileEl.getAttribute("path");
+        var hasData = fileEl.selectSingleNode("data") ? true : false;
 
         if (row !== undefined) {
-            ide.addEventListener("afteropenfile", function(e) {
-                var node = e.doc.getNode();
-                
-                if (node.getAttribute("path") == path) {
-                    ide.removeEventListener("afteropenfile", arguments.callee);
-                    setTimeout(function() {
-                        ceEditor.$editor.gotoLine(row, column);
-                        if (text)
-                            ceEditor.$editor.find(text);
-                        ceEditor.focus();
-                    }, 100);
-                }
-            });
+            function jumpTo(){
+                setTimeout(function() {
+                    ceEditor.$editor.gotoLine(row, column);
+                    if (text)
+                        ceEditor.$editor.find(text);
+                    ceEditor.focus();
+                }, 100);
+            }
+            
+            if (hasData) {
+                tabEditors.set(path);
+                jumpTo();
+            }
+            else
+                ide.addEventListener("afteropenfile", function(e) {
+                    var node = e.doc.getNode();
+                    
+                    if (node.getAttribute("path") == path) {
+                        ide.removeEventListener("afteropenfile", arguments.callee);
+                        jumpTo();
+                    }
+                });
         }
-
-        ide.dispatchEvent("openfile", {
-            doc: doc || ide.createDocument(fileEl)
-        });
+        
+        if (!hasData && !page) 
+            ide.dispatchEvent("openfile", {
+                doc: doc || ide.createDocument(fileEl)
+            });
+        else
+            tabEditors.set(path);
     },
 
     contentTypes : {
@@ -128,7 +176,7 @@ return ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 
         if (file) {
-            this.jump(file, row, column, text);
+            this.jump(file, row, column, text, null, true);
         } else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
@@ -152,12 +200,12 @@ return ext.register("ext/debugger/debugger", {
                         .attr("scriptname", script.getAttribute("scriptname"))
                         .attr("lineoffset", "0").node();
                 }
-                this.jump(node, row, column, text);
+                this.jump(node, row, column, text, null, page ? true : false);
             }
             else {
                 var page = tabEditors.getPage(value);
                 if (page)
-                    this.jump(page.xmlRoot, row, column, text);
+                    this.jump(page.xmlRoot, row, column, text, null, true);
                 else {
                     var node = apf.n("<file />")
                         .attr("name", value)
@@ -210,12 +258,14 @@ return ext.register("ext/debugger/debugger", {
     },
 
     enable : function(){
+        panels.initPanel(this);
+        
         this.nodes.each(function(item){
             if (item.show)
                 item.show();
         });
         this.rightPane.setProperty("visible", true);
-        log.enable(true);
+        //log.enable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -228,7 +278,7 @@ return ext.register("ext/debugger/debugger", {
                 item.hide();
         });
         this.rightPane.setProperty("visible", false);
-        log.disable(true);
+        //log.disable(true);
 
         //Quick Fix
         if (apf.isGecko)
@@ -243,6 +293,8 @@ return ext.register("ext/debugger/debugger", {
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
+        
+        panels.unregister(this);
     }
 });
 

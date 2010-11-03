@@ -20,7 +20,12 @@ return ext.register("ext/noderunner/noderunner", {
     markup : markup,
     deps   : [log],
     commands: {
-        "run": {hint: "run a node program on the server"}
+        "run": {
+            "hint": "run a node program on the server",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
+            }
+        }
     },
 
     init : function(amlNode){
@@ -33,11 +38,36 @@ return ext.register("ext/noderunner/noderunner", {
 
         stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
         stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
+
+        ide.addEventListener("consolecommand.run", function(e) {
+            ide.socket.send(JSON.stringify({
+                command: "internal-isfile",
+                argv: e.data.argv,
+                cwd: e.data.cwd,
+                sender: "noderunner"
+            }));
+            return false;
+        });
+
+        ide.addEventListener("consoleresult.internal-isfile", function(e) {
+            var data = e.data;
+            if (data.sender != "noderunner")
+                return;
+            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            if (data.isfile) {
+                require("ext/debugger/debugger").showFile(path);
+                require("ext/run/run").run(false);
+            }
+            else {
+                require("ext/console/console").log("'" + path + "' is not a file.");
+            }
+        });
     },
 
     $onDebugProcessActivate : function() {
         dbg.attach(dbgNode, 0);
-        ext.setLayoutMode("ext/debugger/debugger");
+        require("ext/debugger/debugger").enable();
+        //ext.setLayoutMode("ext/debugger/debugger");
     },
 
     $onDebugProcessDeactivate : function() {
@@ -102,8 +132,8 @@ return ext.register("ext/noderunner/noderunner", {
     },
 
     run : function(path, args, debug) {
-        if (stProcessRunning.active || !stServerConnected.active)
-            return;
+        if (stProcessRunning.active || !stServerConnected.active || !path)
+            return false;
 
         var page = ide.getActivePageModel();
         var command = {
@@ -128,8 +158,9 @@ return ext.register("ext/noderunner/noderunner", {
         if (!stProcessRunning.active)
             return
 
-        ext.setLayoutMode("default");
-        log.disable();
+        require("ext/debugger/debugger").disable();
+        //ext.setLayoutMode("default");
+        //log.disable();
 
         ide.socket.send(JSON.stringify({"command": "kill"}));
     },

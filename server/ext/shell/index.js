@@ -40,6 +40,29 @@ function cloud9ShellPlugin(server) {
         });
     };
 
+    this["internal-isfile"] = function(message) {
+        var file  = message.argv.pop(),
+            path  = message.cwd || this.server.workspaceDir,
+            _self = this;
+        path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
+
+        if (path.indexOf(this.server.workspaceDir) === -1) {
+            this.sendResult();
+            return;
+        }
+        Fs.stat(path, function(err, stat) {
+            if (err) {
+                return _self.sendResult(0, "error",
+                    err.toString().replace("Error: ENOENT, ", ""));
+            }
+            _self.sendResult(0, "internal-isfile", {
+                cwd: path,
+                isfile: (stat && !stat.isDirectory()),
+                sender: message.sender || "shell"
+            });
+        });
+    };
+
     this.commandhints = function(message) {
         var commands = {},
             _self    = this;
@@ -74,6 +97,41 @@ function cloud9ShellPlugin(server) {
              .end(function() {
                  _self.sendResult(0, message.command, commands)
              });
+    };
+
+    this.pwd =
+    this.ls  = function(message) {
+        var _self = this;
+        this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
+            if (!_self.server.client)
+               return;
+            _self.sendResult(0, message.command, {
+                code: code,
+                argv: message.argv,
+                err: err,
+                out: out
+            });
+        });
+    };
+
+    this.cd = function(message) {
+        var to    = message.argv.pop(),
+            path  = message.cwd || this.server.workspaceDir,
+            _self = this;
+        if (to != "/") {
+            path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
+            if (path.indexOf(this.server.workspaceDir) === -1)
+                return this.sendResult();
+            Fs.stat(path, function(err, stat) {
+                if (err) {
+                    return _self.sendResult(0, "error",
+                        err.toString().replace("Error: ENOENT, ", ""));
+                }
+                if (!stat.isDirectory())
+                    return _self.sendResult(0, "error", "Not a directory.");
+                _self.sendResult(0, message.command, {cwd: path});
+            });
+        }
     };
 
     this.getListing = function(tail, path, dirmode, callback) {

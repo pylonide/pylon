@@ -56,8 +56,22 @@ function cloud9ShellGitPlugin(server) {
     };
 
     this.command = function(message) {
-        //if (message && message.command != "state")
+        if (!message && message.command != "git")
             return false;
+
+        var _self = this;
+        this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
+            if (!_self.server.client)
+               return;
+            _self.sendResult(0, message.command, {
+                code: code,
+                argv: message.argv,
+                err: err,
+                out: out
+            });
+        });
+
+        return true;
     };
 }).call(cloud9ShellGitPlugin.prototype = new Plugin());
 

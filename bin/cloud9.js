@@ -9,20 +9,24 @@ var Sys = require("sys"),
         w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
         p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
         l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
-        a: { key: "action", hint: "ACTION", dev:null, parser: function(value) {
+        a: { key: "action", hint: "ACTION", def:null, parser: function(value) {
             return value.split(/\s+/g);
         }},
+        u: { key: "user", hint: "RUN_AS_USER", def: null },
+        g: { key: "group", hint: "RUN_AS_GROUP", def: null },
         c: { key: "_config", parser: function(value) {
             var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
                 return require(pref + value.replace(".js", "")).Config;
             },
-            hint: "configFile" }
+            hint: "configFile"
+        }
     };
 
 function usage() {
     var message = "USAGE: cloud9",
         hint, opt, def,
         mapOption;
+
     for(opt in mapOptions) {
         mapOption = mapOptions[opt];
         hint = mapOption.hint;
@@ -57,8 +61,7 @@ function parseArguments(argv) {
     //set default values
     for(key in mapOptions) {
         opt = mapOptions[key];
-        if(opt.def)
-            opts_def[opt.key] = opt.def;
+        opts_def[opt.key] = opt.def;
     }
     //merge config options
     for(key in opts_def) {
@@ -77,7 +80,7 @@ if (parseInt(process.version.split(".")[1]) < 2) {
 
 var options = parseArguments(process.argv.slice(2)),
     version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
-require("../server/lib/cloud9").main(options.workspace, options.port, options.ip);
+require("../server/lib/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                           _<iIIviiiiiiiiiillli<_.\n\

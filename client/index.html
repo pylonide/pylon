@@ -93,16 +93,14 @@
                             //"ext/formatjson/formatjson",
                             //"ext/docs/docs",
                             //"ext/richtext/richtext",
+                            "ext/run/run", //Add location rule
+                            "ext/debugger/debugger", //Add location rule
+                            "ext/noderunner/noderunner", //Add location rule
                             "ext/console/console",
                             "ext/tabbehaviors/tabbehaviors",
                             "ext/keybindings/keybindings"
                             //"ext/terminal/terminal"
                         ];
-                        if (location.host)
-                            modules.push(
-                                "ext/debugger/debugger",
-                                "ext/noderunner/noderunner",
-                                "ext/run/run");
 
                         apf.addEventListener("load", function(){
                             //Load extensions
@@ -206,7 +204,7 @@
             </a:toolbar>
 
             <a:vbox id="mainRow" padding="8" splitters="true" flex="1">
-                <a:hbox padding="8" edge="8 8 8 8" flex="1" splitters="true">
+                <a:hbox padding="8" edge="8 8 0 8" flex="1" splitters="true">
                     <a:vbox id="colLeft" padding="8" width="200" splitters="true" />
                     <a:vbox id="colMiddle" flex="1" padding="8" splitters="true" />
                     <a:vbox id="colRight" padding="8" width="300" visible="false" splitters="true" />

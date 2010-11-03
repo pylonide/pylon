@@ -20,10 +20,10 @@ return ext.register("ext/run/run", {
     markup : markup,
     deps   : [noderunner],
     commands : {
-        "resume"   : {hint: ""},
-        "stepinto" : {hint: ""},
-        "stepover" : {hint: ""},
-        "stepout"  : {hint: ""}
+        "resume"   : {hint: "resume the current paused process"},
+        "stepinto" : {hint: "step into the function that is next on the execution stack"},
+        "stepover" : {hint: "step over the current expression on the execution stack"},
+        "stepout"  : {hint: "step out of the current function scope"}
     },
     hotitems: {},
 

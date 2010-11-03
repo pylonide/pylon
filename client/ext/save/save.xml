@@ -58,37 +58,38 @@
         <a:vbox
           anchors   = "5 5 0 5"
           padding   = "5">
-            <a:hbox>
-	            <a:button
-	              icon     = "folder_up.png"
-	              onclick  = "gotoParent()"
-	              tooltip  = "Go to parent" />
-	            <a:button
-	              icon     = "folder_new.png"
-	              onclick  = "require('ext/filesystem/filesystem').createFolder()"
+            <a:hbox padding="5">
+                <a:button
+                  icon     = "folder_up.png"
+                  class    = "btnIconOnly"
+                  onclick  = "gotoParent()"
+                  tooltip  = "Go to parent" />
+                <a:button
+                  icon     = "folder_new.png"
+                  class    = "btnIconOnly"
+                  onclick  = "require('ext/filesystem/filesystem').createFolder()"
                   tooltip  = "Create folder" />
 	        </a:hbox>
             <a:hbox
               flex      = "1"
               padding   = "5"
               splitters = "true">
-		        <a:tree  
-		          id            = "trSaveAs"
-		          flex          = "1"
+                <a:tree
+                  id            = "trSaveAs"
+                  flex          = "1"
                   model         = "{require('ext/filesystem/filesystem').model}"
                   contextmenu   = "mnuCtxTree"
                   onafterchoose = "chooseFolder(this.selected)">
                     <a:each match="[folder]">
-	                   <a:insert
-	                     match = "[folder]"
-	                     get   = "{location.host and davProject.readdir([@path])}" />
-	                   <a:caption match="[@name]" />
-	                   <a:icon
-	                     match = "[folder]"
-	                     value = "folder.png" />
-				    </a:each>
-				    
-				    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                       <a:insert
+                         match = "[folder]"
+                         get   = "{location.host and davProject.readdir([@path])}" />
+                       <a:caption match="[@name]" />
+                       <a:icon
+                         match = "[folder]"
+                         value = "folder.png" />
+                    </a:each>
+                    <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                     <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
                     <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
                     <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
@@ -98,22 +99,22 @@
                     <a:drag match="[folder|file]" />
                     <a:drop match="[folder|file]" target="[folder]"
                         action="tree-append" copy="{event.ctrlKey}" />
-		        </a:tree>
-		        <a:datagrid id="dgTest"
-		          autoselect       = "false"
-	              flex             = "3"
-	              model            = "{trSaveAs.selected}"
+                </a:tree>
+                <a:datagrid id="dgTest"
+                  autoselect       = "false"
+                  flex             = "3"
+                  model            = "{trSaveAs.selected}"
                   onafterselect    = "txtSaveAs.setValue(this.selected.getAttribute('path'))"
-	              onafterchoose    = "chooseFile(this.selected)"
-	              onkeydown        = "if (event.keyCode == 8) { gotoParent(); return false; }"
-	              loading-message  = "Loading...">
-		            <a:each
+                  onafterchoose    = "chooseFile(this.selected)"
+                  onkeydown        = "if (event.keyCode == 8) { gotoParent(); return false; }"
+                  loading-message  = "Loading...">
+                    <a:each
                       match         = "[folder|file]"
                       filter        = "{drpSaveAs.value.replace('*', '')}"
                       filter-fields = "@name"
                       sort          = "[@name]" 
                       sort-method   = "filesort">
-		                <a:load get="{ location.host and davProject.readdir([@path]) }" />
+                        <a:load get="{ location.host and davProject.readdir([@path]) }" />
                         <a:column
                           caption   = "Name"
                           value     = "[@name]"
@@ -133,8 +134,8 @@
                           width     = "20%" />
 	    		    </a:each>
                     <a:actions /> 
-		        </a:datagrid>
-		    </a:hbox>
+                </a:datagrid>
+            </a:hbox>
             <a:hbox
               align     = "center"
               padding   = "5">
@@ -144,19 +145,19 @@
 	              flex         = "7"
 	              onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(this.getValue())" />
             </a:hbox>
-	        <a:hbox
+            <a:hbox
               pack    = "end"
               padding = "5">
-	            <a:button
-	              class    = "ui-btn-green"
-	              onclick  = "require('ext/save/save').saveFileAs()">
-	                Save
-	            </a:button>
-	            <a:button
-	              onclick = "winSaveAs.hide()">
-	                Cancel
-	            </a:button>
-	        </a:hbox>
+                <a:button
+                  class    = "ui-btn-green"
+                  onclick  = "require('ext/save/save').saveFileAs()">
+                    Save
+                </a:button>
+                <a:button
+                  onclick = "winSaveAs.hide()">
+                    Cancel
+                </a:button>
+            </a:hbox>
         </a:vbox>
     </a:window>
 </a:application>
