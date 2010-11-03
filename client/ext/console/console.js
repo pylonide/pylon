@@ -41,7 +41,7 @@ return ext.register("ext/console/console", {
     },
 
     clear : function() {
-        this.inited && txtOutput && txtOutput.clear();
+        this.inited && txtOutput.clear();
     },
     
     showOutput : function(){
