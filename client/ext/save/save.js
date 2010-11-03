@@ -202,12 +202,12 @@ return ext.register("ext/save/save", {
     choosePath : function(path, select) {
         var _self = this;
         
-        console.log("Choosing path " + path);
         fs.list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                path  = path.replace(/workspace/, "cloud9")
-                            .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                path  = path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                            .replace(/\[@name="workspace"\]/, "")
                             .replace(/\//, "");
+                console.log(path);
                 trSaveAs.expandList([path], function() {
                     var node = trSaveAs.getModel().data.selectSingleNode(path);
                      

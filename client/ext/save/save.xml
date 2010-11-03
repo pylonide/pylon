@@ -76,7 +76,7 @@
               splitters = "true">
                 <a:tree
                   id            = "trSaveAs"
-                  flex          = "1"
+                  flex          = "2"
                   model         = "{require('ext/filesystem/filesystem').model}"
                   contextmenu   = "mnuCtxTree"
                   onafterchoose = "chooseFolder(this.selected)">
