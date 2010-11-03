@@ -10,8 +10,9 @@
                     txtConsole.clear();
                   "/>
                 <a:page caption="Console">
-                    <a:hbox anchors="3 0 0 0">
+                    <a:hbox anchors="0 0 0 0">
                         <a:text id="txtConsole"
+                          margin     = "3 0 0 0"
                           flex       = "1"
                           scrolldown = "true"
                           textselect = "true"
