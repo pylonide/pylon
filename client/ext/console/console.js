@@ -384,16 +384,35 @@ return ext.register("ext/console/console", {
                     lastSearch.trie.add(res.matches[i]);
                 this.showHints(res.textbox, res.base || "", res.matches, null, res.cursor);
                 break;
-            case "git":
+            case "cd":
                 res = message.body;
-                this.logNodeStream(res.out || res.err);
+                if (res.cwd)
+                    this.write(this.setPrompt(res.cwd) + "\nWorking directory changed.");
+                break;
+            case "git":
+            case "pwd":
+            case "ls":
+                res = message.body;
+                this.logNodeStream(this.getPrompt() + " " + res.argv.join(" ")
+                    + "\n" + (res.out || res.err));
                 break;
             case "error":
+                //console.log("error: ", message.body);
                 this.log(message.body);
                 break;
         }
 
         ide.dispatchEvent("consoleresult." + message.subtype, {data: message.body});
+    },
+
+    setPrompt: function(cwd) {
+        if (cwd)
+            this.$cwd = cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+        return this.getPrompt();
+    },
+
+    getPrompt: function() {
+        return "[guest@cloud9]:" + this.$cwd + "$";
     },
 
     subCommands: function(cmds, prefix) {
