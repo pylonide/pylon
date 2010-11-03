@@ -17660,7 +17660,7 @@
             position            : relative;
             width               : 17px;
             overflow            : hidden;
-            padding             : 6px 0 6px 0;
+            padding             : 6px 0 3px 0;
             background-repeat   : no-repeat;
             background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
             background-position : 0 0;
@@ -17669,7 +17669,7 @@
         .wnscrollbar SPAN {
             width               : 17px;
             bottom              : 0;
-            height              : 6px;
+            height              : 3px;
             position            : absolute;
             background-repeat   : no-repeat;
             background-image    : url(images/scrollbar/sprite_ver_scrollbar.png);
@@ -17677,6 +17677,14 @@
         }
 
         .wnscrollbar .filler {
+            height              : 100%;
+            width               : 17px;
+            position            : absolute;
+            top                 : 0;
+            bottom              : 0;
+            z-index             : 1;
+        }
+        .wnscrollbar .mainrail {
             height              : 100%;
             width               : 17px;
             position            : relative;
@@ -17778,6 +17786,7 @@
                         <div class="indi_right"></div>
                     </div>
                 </div>
+                <div class="mainrail"></div>
                 <span> </span>
             </div>
         </a:main>
