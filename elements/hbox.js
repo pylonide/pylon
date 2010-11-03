@@ -564,6 +564,9 @@ apf.vbox = function(struct, tagName){
                 
                 if (!apf.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
+                
+                if (insert && amlNode.visible !== false) 
+                    visibleHandler.call(amlNode, {value: true});
             }
             //#ifdef __LAYOUT_ENABLE_SPLITTERS
             else if (this.splitters && !amlNode.$splitter && amlNode.visible !== false) {
