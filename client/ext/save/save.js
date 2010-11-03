@@ -199,9 +199,31 @@ return ext.register("ext/save/save", {
         return false;
     },
     
+    choosePath : function(path, select) {
+        var _self = this;
+        
+        console.log("Choosing path " + path);
+        fs.list(path.match(/(.*)\/[^/]*/)[1], function (data, state, extra) {
+            if (new RegExp("<folder.*" + path + ".*>").test(data)) {
+                path  = path.replace(/workspace/, "cloud9")
+                            .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                            .replace(/\//, "");
+                trSaveAs.expandList([path], function() {
+                    var node = trSaveAs.getModel().data.selectSingleNode(path);
+                     
+                    trSaveAs.select(node);
+                });
+            } else
+                _self.saveFileAs();
+        });
+    },
+    
     saveas : function(){
+        var path = tabEditors.getPage().$model.data.getAttribute("path");
+        
         ext.initExtension(this);
-        txtSaveAs.setValue(tabEditors.getPage().$model.data.getAttribute("path"));
+        txtSaveAs.setValue(path);
+        this.choosePath(path.match(/(.*)\/[^/]/)[1]);
         winSaveAs.show();
     },
     
