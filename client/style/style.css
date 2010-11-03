@@ -58,30 +58,6 @@ BODY {
     position : relative;
 }
 
-.searchinfiles .linenumber {
-    width : 35px;
-    display : inline-block;
-    text-align : right;
-    padding : 0 5px 0 0;
-}
-
-.searchinfiles .excerpt {
-    margin : 0;
-    display : inline-block;
-}
-
-.searchresults .line{
-    width : 35px;
-    display : inline-block;
-    text-align : right;
-    padding : 0 5px 0 0;
-}
-
-.searchresults pre{
-    margin : 0;
-    display : inline-block;
-}
-
 .consoleInputBox {
     background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(28,28,28)),color-stop(1, rgb(47,49,53)));
     background: -moz-linear-gradient(center bottom,rgb(28,28,28) 0%,rgb(47,49,53) 100%);
