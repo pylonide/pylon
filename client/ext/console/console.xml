@@ -3,7 +3,7 @@
 
     <a:bar id="winDbgConsole" skin="basic">
         <a:vbox>
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="{!btnCollapseConsole.value}" height="200">
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="true" height="200">
 <!--                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />-->
                 <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "

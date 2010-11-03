@@ -231,12 +231,14 @@ return ext.register("ext/console/console", {
         else {
             var s,
                 cmd = parser.argv[parser.argc++];
-            cmdHistory.push(line);
-            cmdBuffer = null;
 
             if (e.keyCode == 9) {
-                return this.autoComplete(e, parser, 1);
+                this.autoComplete(e, parser, 1);
+                return false;
             }
+
+            cmdHistory.push(line);
+            cmdBuffer = null;
             e.currentTarget.setValue(newVal);
             this.hideHints();
 
@@ -409,6 +411,11 @@ return ext.register("ext/console/console", {
 
     autoComplete: function(e, parser, mode) {
         mode = mode || 2;
+        if (mode === 1) {
+            if (this.$busy) return;
+            var _self = this;
+            this.$busy = setTimeout(function(){clearTimeout(_self.$busy);_self.$busy = null;}, 100);
+        }
         if (!trieCommands) {
             trieCommands = new Trie();
             apf.extend(commands, ext.commandsLut);
@@ -497,13 +504,14 @@ return ext.register("ext/console/console", {
                             list.splice(0, 1);
                             var newbase = base.split("/").pop();
                             if (!newbase) {
-                                base = newbase;
+                                base = "";
                                 list = lastSearch.trie.getWords();
                             }
                             else if (newbase.indexOf(lastSearch.base) > -1) {
-                                //console.log("searching for ", newbase, base, "mode:", mode);
+                                console.log("searching for ", newbase, base, "mode:", mode);
                                 root = lastSearch.trie.find(newbase);
                                 if (root) {
+                                    console.log("setting base ", base, "to", base, newbase);
                                     base = newbase;
                                     list = root.getWords();
                                 }
@@ -553,6 +561,8 @@ return ext.register("ext/console/console", {
                 }));
             }
             else {
+                if (!!(cmds || commands)[base + ins])
+                    ins += " "; // for commands we suffix with whitespace
                 var newval = val.substr(0, cursorPos + 1) + ins + val.substr(cursorPos + 1);
                 if (val != newval)
                     textbox.setValue(newval);
@@ -560,31 +570,30 @@ return ext.register("ext/console/console", {
             }
             this.hideHints();
         }
-
-        return false;
     },
 
     showHints: function(textbox, base, hints, cmdsLut, cursorPos) {
         var name = "console_hints";
         if (typeof textbox == "string")
             textbox = self[textbox];
+        //console.log("showing hints for ", base, hints && hints[0]);
         //base = base.substr(0, base.length - 1);
 
         if (this.control && this.control.stop)
             this.control.stop();
 
-        var cmdName, cmd,
+        var cmdName, cmd, isCmd,
             content = [],
             i       = 0,
             len     = hints.length;
 
         for (; i < len; ++i) {
             cmdName = base ? base + hints[i].substr(1) : hints[i];
+            //console.log("isn't this OK? ", cmdName, base);
             cmd = (cmdsLut || commands)[cmdName];
-            if (!cmd)
-                cmdName = hints[i];
+            isCmd = !!cmd;
             content.push('<a href="javascript:void(0);" onclick="require(\'ext/console/console\').hintClick(\'' 
-                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\', ' + cursorPos + ')">'
+                + base + '\', \'' + cmdName + '\', \'' + textbox.id + '\', ' + cursorPos + ', ' + isCmd + ')">'
                 + cmdName + ( cmd
                 ? '<span>' + cmd.hint + (cmd.hotkey
                     ? '<span class="hints_hotkey">' + (apf.isMac
@@ -629,7 +638,9 @@ return ext.register("ext/console/console", {
         //@todo: animation
     },
 
-    hintClick: function(base, cmdName, txtId, insertPoint) {
+    hintClick: function(base, cmdName, txtId, insertPoint, isCmd) {
+        if (isCmd)
+            cmdName += " "; // for commands we suffix with whitespace
         var textbox = self[txtId],
             input   = textbox.$ext.getElementsByTagName("input")[0],
             val     = textbox.getValue(),
