@@ -6,6 +6,9 @@ require.def("ext/keybindings_default/default_win", ["core/ide", "ext/keybindings
 
 return keys.onLoad({
     "ext" : {
+        "console" : {
+            "switchconsole": "Shift-Esc"
+        },        
         "save" : {
             "quicksave": "Ctrl-S",
             "saveas": "Ctrl-Shift-S"
