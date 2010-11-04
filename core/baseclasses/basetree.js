@@ -726,6 +726,9 @@ apf.BaseTree = function(){
     
     //check databinding for how this is normally implemented
     this.$extend = function(xmlNode, container, immediate, callback){
+        if (!this.$hasLoadStatus(xmlNode, "potential")) 
+            return;
+
         var rule       = this.$getBindRule("insert", xmlNode),
             xmlContext = rule && rule.match
                 ? (rule.cmatch || rule.compile("match"))(xmlNode)
@@ -786,11 +789,11 @@ apf.BaseTree = function(){
 
         //this.$hasLoadStatus(e.xmlNode, "loading")
         if (e.action == "insert" && e.result.length > 0) {
-            if (this.$hasLoadStatus(e.xmlNode, "loaded")) {
+            if (this.$hasLoadStatus(e.xmlNode, "loaded", true)) {
                 var container = this.$getLayoutNode("item", "container", htmlNode);
                 this.slideOpen(container, e.xmlNode);//, e.$anim ? false : true
             }
-            else if (this.$hasLoadStatus(e.xmlNode, "potential")) {
+            else if (this.$hasLoadStatus(e.xmlNode, "potential", true)) {
                 this.$setLoadStatus(e.xmlNode, "loaded");
             }
         }

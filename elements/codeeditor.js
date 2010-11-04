@@ -77,11 +77,12 @@ apf.codeeditor = function(struct, tagName) {
     this.$booleanProperties["showprintmargin"] = true;
     this.$booleanProperties["overwrite"]       = true;
     this.$booleanProperties["softtabs"]        = true;
+    this.$booleanProperties["gutter"]          = true;
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme");
+        "theme", "gutter");
 
     var cacheId = 0;
     this.$getCacheKey = function(value) {
@@ -187,10 +188,15 @@ apf.codeeditor = function(struct, tagName) {
         };
     };
 
-    this.$updateMarker = function() {
+    //@todo fix that this is not called three times
+    this.$updateMarker = function(removeOnly) {
         if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
             this.$editor.renderer.removeMarker(this.$marker);
             this.$marker = null;
+            
+            if (removeOnly)
+                return;
         }
 
         if (!this.$debugger)
@@ -204,12 +210,20 @@ apf.codeeditor = function(struct, tagName) {
         if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid"))
             return;
 
+        var head  = this.$debugger.$mdlStack.queryNode("frame[1]");
+        var isTop = frame == head;
+        
         var lineOffset = parseInt(script.getAttribute("lineoffset") || "0");
         var row = parseInt(frame.getAttribute("line")) - lineOffset;
         var range = new Range(row, 0, row+1, 0);
-        this.$marker = this.$editor.renderer.addMarker(range, "ace_step", "line");
 
-        this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
+        this.$marker = this.$editor.renderer.addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
+        var type = isTop ? "arrow" : "stack";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
+        
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column")));
+        //this.$editor.moveCursorTo(row, parseInt(frame.getAttribute("column")));
     };
 
     this.$updateBreakpoints = function(doc) {
@@ -309,7 +323,11 @@ apf.codeeditor = function(struct, tagName) {
     this.$propHandlers["scrollspeed"] = function(value, prop, initial) {
         this.$editor.setScrollSpeed(value || 2);
     };
-
+    
+    this.$propHandlers["gutter"] = function(value, prop, initial) {
+        this.$editor.setShowGutter(value);
+    };
+    
     this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
         this.$debuggerBreakpoints = false;
         
@@ -334,8 +352,9 @@ apf.codeeditor = function(struct, tagName) {
     
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (this.$debugger) {
-            this.$debugger.removeEventListener("prop.activeframe", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
             this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
         }
         
         if (typeof value === "string") {
@@ -358,11 +377,15 @@ apf.codeeditor = function(struct, tagName) {
             
         this.$updateMarker();
         var _self = this;
-        this.$onChangeActiveFrame = function() {
+        this.$onChangeActiveFrame = function(e) {
             _self.$updateMarker();
         }
-        this.$debugger.addEventListener("prop.activeframe", this.$onChangeActiveFrame);
+        this.$onBeforeContinue = function() {
+            _self.$updateMarker(true);
+        }
+        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
         this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
     };
 
     var propModelHandler = this.$propHandlers["model"];
@@ -455,10 +478,11 @@ apf.codeeditor = function(struct, tagName) {
 
     this.syncValue = function() {
         var doc = this.$editor.getDocument();
-        if (doc.cacheId == this.$getCacheKey(this.value)) {
+        if (!doc.cacheId || doc.cacheId == this.$getCacheKey(this.value)) {
             var value = this.getValue();
             if (this.value != value)
-                this.change(value);
+                this.setProperty("value", value);
+                //this.change(value);
         }
     };
 
@@ -474,7 +498,7 @@ apf.codeeditor = function(struct, tagName) {
 
     //@todo
     this.addEventListener("keydown", function(e){
-        //this.$editor.
+        
     }, true);
 
     /**** Init ****/

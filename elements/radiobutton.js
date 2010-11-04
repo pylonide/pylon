@@ -94,7 +94,7 @@ apf.radiobutton = function(struct, tagName){
     this.implement(apf.ChildValue);
     this.$childProperty = "label";
     
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = apf.KEYBOARD; // This object can get the focus
     
     //1 = force no bind rule, 2 = force bind rule
     /*this.$attrExcludePropBind = apf.extend({

@@ -193,8 +193,13 @@ apf.scrollbar = function(struct, tagName){
                 });
                 amlNode.addEventListener("xmlupdate", function(){
                     _self.$update();
-                }); 
+                });
             }
+            
+            amlNode.addEventListener("prop.value", function(){
+                _self.$update();
+            });
+            
             if (amlNode.$isTreeArch) {
                 amlNode.addEventListener("collapse", function(){
                     _self.$update();
@@ -367,6 +372,9 @@ apf.scrollbar = function(struct, tagName){
                 to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
             }
             
+            if (this.$host)
+                oHtml[this.$scrollPos] = to;
+
             (this.$host && this.$host.dispatchEvent 
               ? this.$host 
               : this).dispatchEvent("scroll", {
@@ -377,9 +385,6 @@ apf.scrollbar = function(struct, tagName){
                     from         : from,
                     pos          : this.pos
                 });
-            
-            if (this.$host)
-                oHtml[this.$scrollPos] = to;
         }
         
         this.pos = this.$curValue;

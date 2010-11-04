@@ -60,7 +60,7 @@ apf.button  = function(struct, tagName){
 
     /**** Properties and Attributes ****/
 
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.value       = null;
     
     this.$init(function(){
@@ -292,6 +292,9 @@ apf.button  = function(struct, tagName){
                     _self.dispatchEvent("click");
             });
         }
+
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
     }
     //#endif
 
@@ -318,7 +321,8 @@ apf.button  = function(struct, tagName){
     }
 
     function menuDown(e){
-        var menu = self[this.submenu];
+        var menu = self[this.submenu],
+            $button1;
 
         this.value = !this.value;
 
@@ -336,6 +340,9 @@ apf.button  = function(struct, tagName){
         if (!this.value) {
             menu.hide();
             this.$setState("Over", {}, "toolbarover");
+
+            if($button1 = this.parentNode.$button1)
+                $button1.$setState("Over", {}, "toolbarover");
 
             this.parentNode.menuIsPressed = false;
             if (this.parentNode.hasMoved)
@@ -490,10 +497,14 @@ apf.button  = function(struct, tagName){
     };
 
     this.$setState = function(state, e, strEvent){
+        var parentNode = this.parentNode;
         //if (this.disabled)
             //return;
 
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
+            return;
+        
+        if(parentNode.$button2 && parentNode.$button2.value && !this.submenu)
             return;
 
         this.$doBgSwitch(this.states[state]);
@@ -530,6 +541,11 @@ apf.button  = function(struct, tagName){
     //#endif
 
     /**** Init ****/
+
+    this.addEventListener("$skinchange", function(e){
+        if (this.tooltip)
+            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+    });
 
     this.$draw  = function(){
         var pNode, isToolbarButton = (pNode = this.parentNode) 

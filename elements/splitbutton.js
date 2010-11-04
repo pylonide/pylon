@@ -108,8 +108,14 @@ apf.splitbutton = function(struct, tagName){
                 _self.$button1.$setState("Over", {});
             },
             onmouseout: function() {
-                apf.setStyleClass(this.$ext, "", ["primary"]);
-                _self.$button1.$setState("Out", {});
+                if(!_self.$button2.value) {
+                    apf.setStyleClass(this.$ext, "", ["primary"]);
+                    _self.$button1.$setState("Out", {});
+                }
+                else {
+                    apf.setStyleClass(this.$ext, "primary");
+                    _self.$button1.$setState("Over", {});
+                }
             }
         });
     };

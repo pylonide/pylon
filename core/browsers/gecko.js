@@ -90,16 +90,17 @@ apf.runGecko = function(){
     
     var serializer = new XMLSerializer();
     var o = document.createElement("div");
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode) {
-        var frag = document.createDocumentFragment(),
-            i    = nodeList.length - 1,
-            l, node;
-        for (; i >= 0; i--) {
-            node = nodeList[i];
-            frag.insertBefore(node, frag.firstChild);
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var frag, l, node, i;
+        if (nodeList) {
+            frag = document.createDocumentFragment();
+	        for (i = nodeList.length - 1; i >= 0; i--) {
+	            node = nodeList[i];
+	            frag.insertBefore(node, frag.firstChild);
+	        }
         }
-
-        o.innerHTML = apf.html_entity_decode(serializer.serializeToString(frag))
+        
+        o.innerHTML = s || apf.html_entity_decode(serializer.serializeToString(frag))
             .replace(/<([^>]+)\/>/g, "<$1></$1>");
 
         frag = document.createDocumentFragment();

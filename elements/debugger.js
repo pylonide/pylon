@@ -74,39 +74,44 @@ apf.dbg = function(struct, tagName){
             dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
             
             _self.$loadSources(function() {           
-	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {                    
-                    var frame = _self.$mdlStack.queryNode("frame[1]");
-                    if (frame) {
-                        var scriptId = frame.getAttribute("scriptid");
-                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
-                        
-                        if (scriptName) {
-                            var line = frame.getAttribute("line");
-                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
-                        }
-                        if (!scriptName || !bp) {
-                           _self.$debugger.continueScript();
-                        }
-                    }
-	            });            
+	            dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {      
+	                _self.$debugger.backtrace(_self.$mdlStack, function() {              
+	                    var frame = _self.$mdlStack.queryNode("frame[1]");
+	                    if (frame) {
+	                        var scriptId = frame.getAttribute("scriptid");
+	                        var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+	                        
+	                        if (scriptName) {
+	                            var line = frame.getAttribute("line");
+	                            var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+	                        }
+	                        if (!scriptName || !bp) {
+	                           _self.$debugger.continueScript();
+	                        }
+	                    }
+                    });
+	            });
             });
         });
     };
     
     this.$onChangeRunning = function() {
-        var isRunning = this.$debugger.isRunning();
+        var isRunning = this.$debugger && this.$debugger.isRunning();
         if (this.$stRunning.active && !isRunning)
             this.$onBreak();
         
         this.$stRunning.setProperty("active", isRunning);
         
-        if (isRunning)
-            this.$mdlStack.load("<frames />");
+        //if (isRunning)
+            //this.$mdlStack.load("<frames />");
     };
     
     this.$onBreak = function() {
         var _self = this;
-        this.$debugger.backtrace(this.$mdlStack, function() {            
+        if (!this.$debugger || this.$debugger.isRunning())
+            return;
+            
+        this.$debugger.backtrace(this.$mdlStack, function() {
             _self.dispatchEvent("break");
         });
     };
@@ -189,6 +194,9 @@ apf.dbg = function(struct, tagName){
     };
 
     this.continueScript = function(callback) {
+//        this.dispatchEvent("beforecontinue");
+//        this.$stRunning.setProperty("active", true);
+        
         if (this.$debugger)
             this.$debugger.continueScript(callback);
         else
@@ -196,14 +204,23 @@ apf.dbg = function(struct, tagName){
     };
 
     this.stepInto = function() {
+//        this.dispatchEvent("beforecontinue");
+//        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepInto();
     };
 
     this.stepNext = function() {
+//        this.dispatchEvent("beforecontinue");
+//        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepNext();
     };
 
     this.stepOut = function() {
+//        this.dispatchEvent("beforecontinue");
+//        this.$stRunning.setProperty("active", true);
+        
         this.$debugger && this.$debugger.stepOut();
     };    
 

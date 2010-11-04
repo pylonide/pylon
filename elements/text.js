@@ -97,7 +97,7 @@ apf.text = function(struct, tagName){
             this.$textTimer = setInterval(function(){
                 if (_self.$scrollArea && _self.$scrolldown && _self.scrolldown)
                     _self.$scrollArea.scrollTop = _self.$scrollArea.scrollHeight;
-            }, 60);
+            }, 1000);
         }
         else {
             //this.removeEventListener("resize", this.$resize);
@@ -156,7 +156,7 @@ apf.text = function(struct, tagName){
         value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
         
         if (forceAdd) {
-            this.$container.insertAdjacentHTML("beforeend", value);
+            apf.insertHtmlNodes(null, this.$container, null, value);
             if (!this.value) this.value = "";
             this.value += value;
         }
@@ -191,7 +191,7 @@ apf.text = function(struct, tagName){
 
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
-        this.dispatchEvent("prop.value", {value: value});
+        this.dispatchEvent("prop.value", {value: this.value});
     }
 
     /**

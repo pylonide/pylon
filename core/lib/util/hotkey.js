@@ -124,7 +124,8 @@ apf.hotkeys = {};
         var handler = (_self.$keys[hashId] || {})[(key
             || String.fromCharCode(eInfo.keyCode)).toLowerCase()];
         if (handler) {
-            eInfo.returnValue = handler();
+            handler();
+            eInfo.returnValue = false;
             // #ifdef __WITH_QUEUE
             apf.queue.empty();
             // #endif
