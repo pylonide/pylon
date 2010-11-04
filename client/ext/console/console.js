@@ -55,7 +55,7 @@ return ext.register("ext/console/console", {
     },
 
     getCwd: function() {
-        return this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
+        return this.$cwd && this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
     },
 
     logNodeStream : function(data, stream, workspaceDir, davPrefix, useOutput) {
