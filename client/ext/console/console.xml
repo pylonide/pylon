@@ -4,7 +4,28 @@
     <a:bar id="winDbgConsole" skin="basic" height="42">
         <a:vbox height="{winDbgConsole.height}">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
-                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" />
+                <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true"
+                  onprop.value = "
+                    if (event.value) {
+                        document.body.appendChild(winDbgConsole.$ext);
+                        winDbgConsole.$ext.style.position = 'absolute';
+                        winDbgConsole.$ext.style.left = 0;
+                        winDbgConsole.$ext.style.top = 0;
+                        winDbgConsole.$ext.style.right = 0;
+                        winDbgConsole.$ext.style.bottom = 0;
+                        winDbgConsole.$ext.style.width = 'auto';
+                        winDbgConsole.lastHeight = winDbgConsole.height;
+                        winDbgConsole.setAttribute('height', '100%');
+                        winDbgConsole.$ext.style.zIndex = 9999;
+                    }
+                    else {
+                        winDbgConsole.parentNode.$int.appendChild(winDbgConsole.$ext);
+                        winDbgConsole.$ext.style.position = 'relative';
+                        winDbgConsole.$ext.style.width = '1px';
+                        winDbgConsole.setAttribute('height', winDbgConsole.lastHeight);
+                        winDbgConsole.$ext.style.zIndex = 1;
+                    }
+                  "/>
                 <a:button skin="btn_icon_only" icon="console_clear.png" top="4" right="32"
                   onclick  = "
                     if (tabConsole.activepagenr == 0)
