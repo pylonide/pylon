@@ -6,6 +6,9 @@ require.def("ext/keybindings_default/default_mac", ["core/ide", "ext/keybindings
 
 return keys.onLoad({
     "ext" : {
+        "console" : {
+            "switchconsole": "Shift-Esc"
+        },
         "save" : {
             "quicksave": "Command-S",
             "saveas": "Command-Shift-S"

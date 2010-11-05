@@ -16,7 +16,7 @@ function cloud9ShellPlugin(server) {
 
 (function() {
     this.command = function(message) {
-        if (message && !this[message.command])
+        if (!this[message.command])
             return false;
 
         this[message.command](message);

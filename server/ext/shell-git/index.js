@@ -56,7 +56,7 @@ function cloud9ShellGitPlugin(server) {
     };
 
     this.command = function(message) {
-        if (!message && message.command != "git")
+        if (message.command != "git")
             return false;
 
         var _self = this;

@@ -47,12 +47,14 @@ return ext.register("ext/keybindings/keybindings", {
             oExt     = ext.extLut[i];
             if (!bindings || !oExt.commands) continue;
             for (command in oExt.commands) {
+                if (!bindings[command])
+                    continue;
                 if (typeof (val = oExt.commands[command])["hotkey"] !== "undefined")
                     apf.hotkeys.remove(val.hotkey);
                 oExt.commands[command].hotkey = bindings[command];
                 if (ext.commandsLut[command])
                     ext.commandsLut[command].hotkey = bindings[command];
-                if ((items = oExt.hotitems[command])) {
+                if ((items = (oExt.hotitems && oExt.hotitems[command]))) {
                     for (j = 0, l = items.length; j < l; ++j) {
                         item = items[j];
                         if (!item.setAttribute) continue;

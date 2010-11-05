@@ -27,7 +27,7 @@
 
             var HOST    = "http://dev1.ajax.org";
             var TESTING = false; //Load data from test models
-            var VERSION = FILES; //Change the version you want to use here
+            var VERSION = RELEASE; //Change the version you want to use here
 
             var apfLoc = VERSION == FILES
                 ? "support/apf/apf.js"
@@ -35,7 +35,7 @@
 
             var config = {
                 paths: {
-                    "ace": "support/ace/lib/ace",
+                    "ace": VERSION == FILES ? "support/ace/lib/ace" : "support/ace/build/ace",
                     "debug": "support/lib-v8debug/lib/v8debug",
                     "apf": "support/apf"
                 },
@@ -63,6 +63,8 @@
                     var list = ["core/ide", "core/ext", "core/util"];
                     if (location.host)
                         list.push("text!workspace/.settings.xml");
+                    if (VERSION == RELEASE)
+                        list.push("ace/Editor")
 
                     require(list, function(ide, ext, util, settings){
                         ide.settings = settings;

@@ -37,11 +37,34 @@ return ext.register("ext/console/console", {
     visible  : true,
     commands : {
         "help": {hint: "show general help information and a list of available commands"},
-        "clear": {hint: "clear all the messages from the console"}
+        "clear": {hint: "clear all the messages from the console"},
+        "switchconsole" : {hint: "toggle focus between the editor and the console"}
     },
 
+    help : function() {
+        var words = trieCommands.getWords(),
+            text  = [];
+
+        for (var i = 0, l = words.length; i < l; ++i) {
+            if (!commands[words[i]]) continue;
+            text.push(words[i] + "\t\t\t\t" + commands[words[i]].hint);
+        }
+        this.logNodeStream(text.join("\n"));
+    },
+    
     clear : function() {
         this.inited && txtOutput.clear();
+    },
+    
+    switchconsole : function() {
+        if (apf.activeElement == txtConsoleInput) {
+            if (window.ceEditor) {
+                ceEditor.focus();
+                this.disable();
+            }
+        }
+        else
+            txtConsoleInput.focus()
     },
     
     showOutput : function(){
@@ -264,14 +287,7 @@ return ext.register("ext/console/console", {
 
             switch (cmd) {
                 case "help":
-                    var words = trieCommands.getWords(),
-                        text  = [];
-
-                    for (var i = 0, l = words.length; i < l; ++i) {
-                        if (!commands[words[i]]) continue;
-                        text.push(words[i] + "\t\t\t\t" + commands[words[i]].hint);
-                    }
-                    this.logNodeStream(text.join("\n"));
+                    this.help();
                     break;
                 case "clear":
                     txtConsole.clear();
