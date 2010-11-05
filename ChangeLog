@@ -1,4 +1,14 @@
+2010.11.05, Version 0.1.5
+
+- fix server issue on Linux
+
+2010.11.04, Version 0.1.4
+
+- fix stopping applications
+- use packaged APF
+
 2010.11.03, Version 0.1.3
+
 * Added 'save as' window
 * Fixed auto-indenting
 * Fixed search & replace
