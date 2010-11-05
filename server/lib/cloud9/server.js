@@ -44,7 +44,7 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
             delete _self.client;
         });
 
-        this.execHook("connect", {});
+        this.execHook("connect");
     };
 
     this.onClientMessage = function(message) {
@@ -83,8 +83,8 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
-        //this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
-        //    + JSON.stringify(args), 9, args[0]);
+        this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
+            + JSON.stringify(args), 9, args[0]);
     };
 
     this.error = function(description, code, message) {
