@@ -1,6 +1,6 @@
 2010.11.05, Version 0.1.5
 
-- fix running and debugging applications on Linux
+- fix running and debugging node applications on Linux
 - fix server crash when using certain versions of Google Chrome
 
 2010.11.04, Version 0.1.4
