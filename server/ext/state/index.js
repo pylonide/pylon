@@ -14,7 +14,7 @@ function cloud9StatePlugin(server) {
 (function() {
     this.command =
     this.connect = function(message) {
-        if (!message || message.command != "state")
+        if (message.command != "state")
             return false;
 
         var state = {
