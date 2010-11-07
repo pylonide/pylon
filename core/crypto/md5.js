@@ -30,10 +30,14 @@ apf.crypto.MD5 = {
     b64pad : "", /* base-64 pad character. "=" for strict RFC compliance   */
     chrsz  : 8,  /* bits per input character. 8 - ASCII; 16 - Unicode      */
 
-    /*
+    /**
      * These are the functions you'll usually want to call
      * They take string arguments and return either hex or base-64 encoded strings
+     * 
+     * Example:
+     * var hash = apf.crypto.MD5.hex_md5("uzza"); //fddb7463a72e6b000abf631f558cf034
      */
+    
     hex_md5: function(s) {
         return this.binl2hex(this.core_md5(this.str2binl(s), s.length * this.chrsz));
     },
