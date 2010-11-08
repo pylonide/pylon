@@ -124,7 +124,7 @@ apf.calendar = function(struct, tagName){
         //#endif
     );
 
-    this.$supportedProperties.push("output-format", "default");
+    this.$supportedProperties.push("output-format", "default", "day", "month", "year");
 
     /**
      * @attribute {String} output-format is a style of returned date
@@ -167,7 +167,6 @@ apf.calendar = function(struct, tagName){
     };
 
     this.$propHandlers["value"] = function(value) {
-        console.log(value)
         var c = this.$calVars;
         
         if (!this.outputFormat) {
@@ -191,6 +190,10 @@ apf.calendar = function(struct, tagName){
         c.hours   = date.getHours();
         c.minutes = date.getMinutes();
         c.seconds = date.getSeconds();
+        
+        this.setProperty("day", c.day);
+        this.setProperty("month", c.month + 1);
+        this.setProperty("year", c.year);
 
         this.value = value;
         this.redraw(c.month, c.year);
@@ -548,7 +551,7 @@ apf.calendar = function(struct, tagName){
     };
     
     this.getMonth = function() {
-        return this.$calVars.currentMonth;
+        return this.$calVars.currentMonth + 1;
     };
     
     this.getDay = function() {
