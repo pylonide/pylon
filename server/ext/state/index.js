@@ -5,11 +5,14 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("lib/cloud9/plugin");
+var sys = require("sys");
 
-function cloud9StatePlugin(server) {
+var cloud9StatePlugin = module.exports = function(server) {
     this.server = server;
     this.hooks = ["connect", "command"];
 }
+
+sys.inherits(cloud9StatePlugin, Plugin);
 
 (function() {
     this.command =
@@ -17,16 +20,19 @@ function cloud9StatePlugin(server) {
         if (message && message.command != "state")
             return false;
 
-        var state = {
-            "type": "state",
-            "workspaceDir": this.server.workspaceDir,
-            "davPrefix": this.server.davPrefix
-        };
-        this.emit("statechange", state);
-
-        this.server.client.send(JSON.stringify(state));
+        this.publishState();
         return true;
     };
-}).call(cloud9StatePlugin.prototype = new Plugin());
-
-module.exports = cloud9StatePlugin;
+    
+    this.publishState = function() {
+		var state = {
+		    "type": "state",
+		    "workspaceDir": this.server.workspaceDir,
+		    "davPrefix": this.server.davPrefix
+		};
+		this.emit("statechange", state);
+		
+        this.server.broadcast(JSON.stringify(state));
+    };
+    
+}).call(cloud9StatePlugin.prototype);

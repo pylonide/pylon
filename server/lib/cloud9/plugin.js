@@ -21,7 +21,7 @@ function cloud9Plugin() {}
 
     this.sendResult = function(sid, type, msg) {
         //console.log("sending result to client: ", type, JSON.stringify(msg));
-        this.server.client.send(JSON.stringify({
+        this.server.broadcast(JSON.stringify({
             type   : "result",
             subtype: type || "error",
             sid    : sid  || 0,
@@ -39,12 +39,6 @@ function cloud9Plugin() {}
 
         function sender(stream) {
             return function(data) {
-                /*if (!_self.server.client) {
-                    try {
-                        child.kill();
-                    } catch(e) {}
-                    return;
-                }*/
                 var s = data.toString("utf8");
                 if (stream == "stderr") {
                     err += s;

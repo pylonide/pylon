@@ -5,6 +5,7 @@
 require("../../../support/paths");
 
 var Connect = require("connect");
+var IO = require("socket.io");
 var Fs = require("fs");
 var Path = require("path");
 var IdeServer = require("lib/cloud9/server");
@@ -49,10 +50,20 @@ exports.main = function(options) {
     });
 
     server.listen(port, ip);
+    
     //obfuscate process rights if configured
-    if(group) process.setgid(group);
-    if(user) process.setuid(user);
-    new IdeServer(projectDir, server, exts);
+    if (group)
+        process.setgid(group);
+    if (user)
+        process.setuid(user);
+        
+    // create web socket
+    var options = {
+        transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+    };
+    var socketIo = IO.listen(server, options);
+    
+    new IdeServer(projectDir, server, socketIo, exts);
 };
 
 process.on("uncaughtException", function(e) {

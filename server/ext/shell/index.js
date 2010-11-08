@@ -103,8 +103,6 @@ function cloud9ShellPlugin(server) {
     this.ls  = function(message) {
         var _self = this;
         this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
-            if (!_self.server.client)
-               return;
             _self.sendResult(0, message.command, {
                 code: code,
                 argv: message.argv,
