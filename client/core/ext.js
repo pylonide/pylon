@@ -177,14 +177,14 @@ return ext = {
         });
     },
 
-    execCommand: function(cmd) {
+    execCommand: function(cmd, data) {
         cmd = (cmd || "").trim();
         var oCmd = this.commandsLut[cmd];
         if (!oCmd || !oCmd.ext)
             return false;
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] == "function")
-            return oExt[cmd]();
+            return oExt[cmd](data);
         return false;
     },
 
