@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <div id="barConsoleHints" class="barConsoleHints"/>
 
-    <a:bar id="winDbgConsole" skin="basic" height="42">
+    <a:bar id="winDbgConsole" skin="basic" height="41">
         <a:vbox height="{winDbgConsole.height}">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false">
                 <a:button skin="btn_icon_only" icon="console_max.png" top="4" right="5" state="true"

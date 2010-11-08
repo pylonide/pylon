@@ -894,7 +894,7 @@ return ext.register("ext/console/console", {
         this.mnuItem.check();
         tabConsole.show();
 
-        if (winDbgConsole.height == 42)
+        if (winDbgConsole.height == 41)
             winDbgConsole.setAttribute("height", this.height || 200);
         winDbgConsole.previousSibling.show();
         
@@ -911,9 +911,9 @@ return ext.register("ext/console/console", {
         this.mnuItem.uncheck();
         tabConsole.hide();
 
-        if (winDbgConsole.height != 42)
+        if (winDbgConsole.height != 41)
             this.height = winDbgConsole.height;
-        winDbgConsole.setAttribute("height", 42);
+        winDbgConsole.setAttribute("height", 41);
         winDbgConsole.previousSibling.hide();
         
         apf.layout.forceResize();
