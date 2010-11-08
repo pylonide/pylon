@@ -55,6 +55,11 @@ exports.main = function(options) {
     new IdeServer(projectDir, server, exts);
 };
 
+process.on("uncaughtException", function(e) {
+    console.log("uncaught exception:");
+    console.log(e.stack + "");
+})
+
 if (module === require.main) {
     exports.main({workspace: ".", port: 3000, ip: '127.0.0.1'})
 }

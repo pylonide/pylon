@@ -106,6 +106,21 @@ return ext.register("ext/debugger/debugger", {
             // TODO sometimes we don't have a scriptID
         });
 
+        ide.addEventListener("afterfilesave", function(e) {
+            var node = e.node;
+            var doc = e.doc;
+            
+            var scriptId = node.getAttribute("scriptid");
+            if (!scriptId)
+                return;
+                
+            var value = e.value || doc.getValue();
+            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { "
+            var NODE_POSTFIX = "\n});";
+            dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
+                //console.log("v8 updated", e);
+            });
+        })
         //log.enable(true);
     },
 
