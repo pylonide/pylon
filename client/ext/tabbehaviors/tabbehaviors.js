@@ -16,6 +16,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     menus   : [],
     sep     : null,
     more    : null,
+    tabSub  : 2,
     commands : {
         "closetab": {hint: "close the tab that is currently active"},
         "closealltabs": {hint: "close all opened tabs"},
@@ -207,7 +208,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[nr + 3];
+        var item = this.nodes[nr + this.tabSub];
         if (item && item.relPage) {
             tabEditors.set(item.relPage);
             return false;
@@ -229,7 +230,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         ) - 1;
 
-        var keyId = "tab" + (no - 3 == 10 ? 0 : no - 3);
+        var keyId = "tab" + (no - this.tabSub == 10 ? 0 : no - this.tabSub);
         this.hotitems[keyId] = [this.nodes[no]];
         if (typeof this.commands[keyId]["hotkey"] != "undefined") {
             apf.hotkeys.register(this.commands[keyId].hotkey, this[keyId].bind(this));
@@ -245,7 +246,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
-                keyId = "tab" + (i - 3 == 10 ? 0 : i - 3);
+                keyId = "tab" + (i - this.tabSub == 10 ? 0 : i - this.tabSub);
                 if (typeof this.commands[keyId]["hotkey"] != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
                 return this.updateState();
