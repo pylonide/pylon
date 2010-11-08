@@ -67,7 +67,6 @@ return ext.register("ext/noderunner/noderunner", {
     $onDebugProcessActivate : function() {
         dbg.attach(dbgNode, 0);
         require("ext/debugger/debugger").enable();
-        //ext.setLayoutMode("ext/debugger/debugger");
     },
 
     $onDebugProcessDeactivate : function() {
@@ -102,7 +101,6 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "node-data":
-                //ide.log(message.data);
                 log.logNodeStream(message.data, message.stream, ide.workspaceDir, ide.davPrefix, true);
                 break;
                 
@@ -161,9 +159,6 @@ return ext.register("ext/noderunner/noderunner", {
             return
 
         require("ext/debugger/debugger").disable();
-        //ext.setLayoutMode("default");
-        //log.disable();
-
         ide.socket.send(JSON.stringify({"command": "kill"}));
     },
 
