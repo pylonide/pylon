@@ -173,11 +173,12 @@ return ext.register("ext/save/save", {
             return;
 
         var path = node.getAttribute("path");
-        var data = doc.getValue();
+        var value = doc.getValue();
         
         var _self = this, panel = sbMain.firstChild;
         panel.setAttribute("caption", "Saving file " + path);
-        fs.saveFile(path, data, function(data, state, extra){
+        
+        fs.saveFile(path, value, function(data, state, extra){
             if (state != apf.SUCCESS) {
                 util.alert(
                     "Could not save document",
@@ -189,6 +190,8 @@ return ext.register("ext/save/save", {
             }
             
             panel.setAttribute("caption", "Saved file " + path);
+            ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
+            
             setTimeout(function(){
                 if (panel.caption == "Saved file " + path)
                     panel.removeAttribute("caption");
