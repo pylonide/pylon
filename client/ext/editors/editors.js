@@ -265,7 +265,7 @@ return ext.register("ext/editors/editors", {
         page.$doc.dispatchEvent("close");
 
         mdl.removeXml("data");
-        ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
+        ide.dispatchEvent("closefile", {xmlNode: mdl.data});
 
         //mdl.unshare();
         mdl.destroy();
