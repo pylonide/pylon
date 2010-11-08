@@ -588,8 +588,8 @@ apf.model = function(struct, tagName){
     this.reset = function(){
         var doc = this.data.ownerDocument;
         doc.removeChild(this.data);
-        doc.appendChild(this.$copy);
-        this.load(this.$copy);
+        var node = doc.appendChild(doc.importNode ? doc.importNode(this.$copy) : this.$copy);
+        this.load(node);
     };
 
     /**

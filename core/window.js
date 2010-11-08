@@ -983,7 +983,7 @@ apf.window = function(){
             }
             else if ((amlNode.disabled == undefined || amlNode.disabled < 1) 
               && amlNode.focussable !== false) {
-                if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
+                if (amlNode.$focussable) { // === apf.KEYBOARD_MOUSE
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else if (amlNode.canHaveChildren == 2) {
@@ -992,7 +992,8 @@ apf.window = function(){
                         apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else {
-                    apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
+                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
             }
             else {
