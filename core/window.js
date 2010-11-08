@@ -992,7 +992,8 @@ apf.window = function(){
                         apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else {
-                    apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
+                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
             }
             else {
