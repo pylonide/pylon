@@ -24,6 +24,10 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
 
+            this.workspaceDir = window.cloud9config.workspaceDir;
+            this.davPrefix = window.cloud9config.davPrefix;
+            this.settingsFile = window.cloud9config.settingsFile;
+
             this.dispatchEvent("load");
 
             /**** Error Handling ****/
@@ -189,16 +193,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 });
                 if (message.type && message.type == "state") {
                     stProcessRunning.setProperty("active", message.processRunning);
-                    if (ide.workspaceDir !== message.workspaceDir) {
-                        ide.workspaceDir = message.workspaceDir;
-                        ide.dispatchEvent("workspaceDirChange", {
-                            workspaceDir: ide.workspaceDir
-                        });
-                    }
-                    var isInit = !ide.davPrefix;
-                    ide.davPrefix = message.davPrefix;
-                    if (isInit)
-                        ide.dispatchEvent("ideready")
                 }
             };
 

@@ -444,7 +444,7 @@ return ext.register("ext/console/console", {
 
     setPrompt: function(cwd) {
         if (cwd)
-            this.$cwd = cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            this.$cwd = cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), ide.davPrefix);
         return this.getPrompt();
     },
 

@@ -189,14 +189,14 @@ return ext.register("ext/filesystem/filesystem", {
     
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='/workspace' root='1'/></data>");
+        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
 
         var url;
         if (location.host) {
-	        var dav_url = location.href.replace(location.hash, '');
+            var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
             this.webdav = new apf.webdav({
                 id  : "davProject",
-                url : dav_url+"workspace"
+                url : dav_url
             });
             url = "{davProject.getroot()}";
         }
@@ -254,32 +254,15 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-                    if (!ide.davPrefix) {
-                        /*util.alert(
-                            "Could not connect to server backend",
-                            "Could not connect",
-                            "There is more than one session open with the server. " +
-                            "This is currently not supported. Please close the other " +
-                            "sessions and restart this one.");
-                        return;*/
-                        
-                        ide.addEventListener("ideready", function(){
-                            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-                            ide.removeEventListener("ideready", arguments.callee);
-                        });
-                    }
-                    else
-                        node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+	                node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
                     
                     doc.setValue(data);
-                    ide.dispatchEvent("afteropenfile", {doc: doc});
+	                ide.dispatchEvent("afteropenfile", {doc: doc});	                
                 }
             });
         });
-
-        ide.addEventListener("workspaceDirChange", function(e) {
-            fs.setProjectName(e.workspaceDir.replace(/\/+$/, "").split("/").pop());
-        });
+        
+        fs.setProjectName(ide.workspaceDir.replace(/\/+$/, "").split("/").pop());
     },
 
     setProjectName : function(name) {
