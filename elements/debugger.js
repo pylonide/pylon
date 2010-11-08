@@ -194,8 +194,7 @@ apf.dbg = function(struct, tagName){
     };
 
     this.continueScript = function(callback) {
-//        this.dispatchEvent("beforecontinue");
-//        this.$stRunning.setProperty("active", true);
+        this.dispatchEvent("beforecontinue");
         
         if (this.$debugger)
             this.$debugger.continueScript(callback);
@@ -204,22 +203,19 @@ apf.dbg = function(struct, tagName){
     };
 
     this.stepInto = function() {
-//        this.dispatchEvent("beforecontinue");
-//        this.$stRunning.setProperty("active", true);
+        this.dispatchEvent("beforecontinue");
         
         this.$debugger && this.$debugger.stepInto();
     };
 
     this.stepNext = function() {
-//        this.dispatchEvent("beforecontinue");
-//        this.$stRunning.setProperty("active", true);
+        this.dispatchEvent("beforecontinue");
         
         this.$debugger && this.$debugger.stepNext();
     };
 
     this.stepOut = function() {
-//        this.dispatchEvent("beforecontinue");
-//        this.$stRunning.setProperty("active", true);
+        this.dispatchEvent("beforecontinue");
         
         this.$debugger && this.$debugger.stepOut();
     };    
@@ -230,7 +226,11 @@ apf.dbg = function(struct, tagName){
     
     this.evaluate = function(expression, frame, global, disableBreak, callback){
         this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
-    }
+    };
+    
+    this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+        this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+    };
     
 }).call(apf.dbg.prototype = new apf.AmlElement());
 
