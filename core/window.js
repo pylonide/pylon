@@ -983,7 +983,7 @@ apf.window = function(){
             }
             else if ((amlNode.disabled == undefined || amlNode.disabled < 1) 
               && amlNode.focussable !== false) {
-                if (amlNode.$focussable === apf.KEYBOARD_MOUSE) {
+                if (amlNode.$focussable) { // === apf.KEYBOARD_MOUSE
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else if (amlNode.canHaveChildren == 2) {
