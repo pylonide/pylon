@@ -376,12 +376,12 @@ return ext.register("ext/console/console", {
                         break;
                     }
                     else {
-                        if (ext.execCommand(cmd) === false) {
-                            var data = {
-                                command: cmd,
-                                argv: parser.argv,
-                                cwd: this.getCwd()
-                            };
+                        var data = {
+                            command: cmd,
+                            argv: parser.argv,
+                            cwd: this.getCwd()
+                        };
+                        if (ext.execCommand(cmd, data) === false) {
                             if (ide.dispatchEvent("consolecommand." + cmd, {
                               data: data
                             }) !== false) {
