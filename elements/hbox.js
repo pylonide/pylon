@@ -763,7 +763,7 @@ apf.vbox = function(struct, tagName){
     };
     
     this.$resize = function(force){
-        if (!this.$amlLoaded || this.$noResize) //force !== true && 
+        if (!this.$amlLoaded || this.$noResize) // || apf.isIE7 && force !== true)
             return;
 
         //Protection for stretch re-resizing

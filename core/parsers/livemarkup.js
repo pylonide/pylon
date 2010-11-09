@@ -2226,7 +2226,7 @@ apf.lm_exec = new (function(){
             ? (m.substr(0,1) != "/" 
                 ? apf.xmlToXpath(n, null, false) 
                 : "") + "/" + m 
-            : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
+            : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
     }
 
 //    function _edit(n, opts){
@@ -2264,7 +2264,7 @@ apf.lm_exec = new (function(){
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + (res || options && options.initial || "&nbsp;") 
+                : "") + '>' + (res || options && options.initial || "&#32;") 
               + '</div>';
         }
         else {
