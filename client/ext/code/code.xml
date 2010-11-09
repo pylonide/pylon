@@ -31,7 +31,7 @@
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       contextmenu       = "mnuCtxEditor"
-      debugger          = "{this.syntax == 'JavaScript' ? dbg : null}"
+      debugger          = "{this.syntax == 'javascript' ? dbg : null}"
       readonly          = "{location.host and stDebugProcessRunning.active and [@scriptid]}"
     />
     
