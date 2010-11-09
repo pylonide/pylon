@@ -72,71 +72,7 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                         })
                     });
                 });
-    
-                //Connection Error
-                /*pWorknets.addEventListener("error", function(e){
-                    if (e.status == 403) {
-                        ide.util.alert("Permission Denied",
-                            "Permission Denied Accessing This Page",
-                            "You are not allowed to view the page you clicked on.");
-                        ide.loader.hide();
-    
-                        e.stopPropagation();
-                        return false;
-                    }
-    
-                    setTimeout(function(){
-                        if (apf.isDestroying)
-                            return;
-    
-                        ide.redirectPage = ide.objId;
-                        auth.authRequired(null, true);
-                    });
-    
-                    e.stopPropagation();
-                    return false;
-                });*/
             }
-            
-            /**** Log in Flow ****/
-
-            /*auth.addEventListener("loginsuccess", function(e){
-                apf.storage.put('username', e.username);
-                apf.storage.put('password', e.password);
-                ide.userId = e.data.uId;
-                if (!ide.loc)
-                    ide.navigateTo(ide.redirectPage || 'myhome');
-            });
-
-            auth.addEventListener("loginfail", function(e){
-                if (!ide.loc || !pgSite.activepage) {
-                    ide.navigateTo('home');
-                    ide.loader.hide();
-                }
-            });
-
-            this.logout = function(e){
-                apf.storage.remove('username');
-                apf.storage.remove('password');
-                if (e) {
-                    ide.navigateTo('home');
-                    delete ide.redirectPage;
-                    delete ide.loc;
-                }
-                delete ide.inviteInfo;
-                delete ide.userId;
-
-                rmtWorknets.clear();
-                mdlDashboard.clear();
-                //mdlDashboard.load("<person />");
-            }
-
-            auth.addEventListener("logoutfail", this.logout);
-            auth.addEventListener("logoutsuccess", this.logout);
-
-            auth.addEventListener("authrequired", function(e){
-                mdlDashboard.unshare();
-            });*/
         };
 
         apf.addEventListener("load", function(){
@@ -155,15 +91,16 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"],
                 transportOptions: {
                     "xhr-polling": {
-                        timeout: 30000
+                        timeout: 15000
                     },
                     "jsonp-polling": {
-                        timeout: 30000
+                        timeout: 15000
                     }
                 }
             };
             ide.socketConnect = function() {
                 clearTimeout(ide.$retryTimer);
+                winReconnect.hide();
                 stServerConnected.activate();
                 ide.dispatchEvent("socketConnect");
             };
@@ -172,8 +109,9 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 stProcessRunning.deactivate();
                 ide.dispatchEvent("socketDisconnect");
 
+                winReconnect.show();
                 clearTimeout(ide.$retryTimer);
-                ide.$retryTimer = setTimeout(function() {
+                ide.$retryTimer = setInterval(function() {
                     ide.socket.connect();
                 }, 2000);
             };

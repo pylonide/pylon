@@ -27,21 +27,21 @@ function cloud9DebuggerPlugin(server) {
     this.NODE_DEBUG_PORT = 5858;
     this.CHROME_DEBUG_PORT = 9222;
 
-    this.command = function(message) {
+    this.command = function(message, client) {
         var _self = this;
 
         var cmd = (message.command || "").toLowerCase(),
             res = true;
         switch (cmd) {
             case "run":
-                this.$run(message);
+                this.$run(message, client);
                 break;
             case "rundebug":
                 findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
-                    _self.$run(message);
+                    _self.$run(message, client);
     
                     setTimeout(function() {
                         _self.$startDebug();
@@ -54,7 +54,7 @@ function cloud9DebuggerPlugin(server) {
                     
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
-                    _self.$run(message);
+                    _self.$run(message, client);
     
                     setTimeout(function() {
                         _self.$startDebug();
@@ -70,7 +70,7 @@ function cloud9DebuggerPlugin(server) {
                 this.chromeDebugProxy.connect();
 
                 this.chromeDebugProxy.addEventListener("connection", function() {
-                    _self.server.client && _self.server.client.send('{"type": "chrome-debug-ready"}');
+                    _self.server.broadcast('{"type": "chrome-debug-ready"}');
                 });
                 break;
             case "debugnode":
@@ -81,7 +81,7 @@ function cloud9DebuggerPlugin(server) {
                 break;
             case "debugattachnode":
                 if (this.nodeDebugProxy)
-                    this.server.client.send('{"type": "node-debug-ready"}');
+                    this.server.broadcast('{"type": "node-debug-ready"}');
                 break;
             case "kill":
                 var child = this.child;
@@ -105,7 +105,7 @@ function cloud9DebuggerPlugin(server) {
         return res;
     };
 
-    this.$run = function(message) {
+    this.$run = function(message, client) {
         var _self = this;
 
         if (this.child)
@@ -142,32 +142,26 @@ function cloud9DebuggerPlugin(server) {
         }
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
-        _self.server.client.send(JSON.stringify({"type": "node-start"}));
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
+        _self.server.getExt("state").publishState();
+        _self.server.broadcast(JSON.stringify({"type": "node-start"}));
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
         function sender(stream) {
             return function(data) {
-                if (!_self.server.client) {
-                    try {
-                        child.kill();
-                    } catch(e) {}
-                    return;
-                }
                 var message = {
                     "type": "node-data",
                     "stream": stream,
                     "data": data.toString("utf8")
                 };
-                _self.server.client.send(JSON.stringify(message));
+                _self.server.broadcast(JSON.stringify(message));
             };
         }
 
         child.on("exit", function(code) {
-            if (_self.server.client)
-                _self.server.client.send(JSON.stringify({"type": "node-exit"}));
+            _self.server.broadcast(JSON.stringify({"type": "node-exit"}));
 
             _self.debugClient = false;
             delete _self.child;
@@ -188,17 +182,15 @@ function cloud9DebuggerPlugin(server) {
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT);
         this.nodeDebugProxy.on("message", function(body) {
-            if (!_self.server.client) return;
-
             var msg = {
                 "type": "node-debug",
                 "body": body
             };
-            _self.server.client.send(JSON.stringify(msg));
+            _self.server.broadcast(JSON.stringify(msg));
         });
 
         this.nodeDebugProxy.on("connection", function() {
-            _self.server.client && _self.server.client.send('{"type": "node-debug-ready"}');
+            _self.server.broadcast('{"type": "node-debug-ready"}');
         });
 
         this.nodeDebugProxy.on("end", function() {

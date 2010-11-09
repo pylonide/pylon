@@ -3,10 +3,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var jsDAV = require("jsdav"),
-    IO    = require("socket.io"),
     Async = require("async");
 
-module.exports = IdeServer = function(workspaceDir, server, exts) {
+module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
     this.workspaceDir = Async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
 
@@ -14,15 +13,12 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
     jsDAV.mount(this.workspaceDir, this.davPrefix, server);
 
     var _self = this;
-    var options = {
-        transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
-    };
-    this.socketIo = IO.listen(server, options);
+    this.socketIo = socketIo;
     this.socketIo.on("connection", function(client) {
         _self.onClientConnection(client);
     });
 
-    this.client  = null;
+    this.clients = [];
     this.nodeCmd = process.argv[0];
 
     this.registerExts(exts);
@@ -31,30 +27,33 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
 (function () {
 
     this.onClientConnection = function(client) {
-        // we allow only one client at the moment
-        if (this.client) return;
-
         var _self = this;
-        this.client = client;
+        this.clients[client.sessionId] = client;
+        
         client.on("message", function(message) {
-            _self.onClientMessage(message);
+            _self.onClientMessage(message, client);
         });
 
         client.on("disconnect", function() {
-            delete _self.client;
+            delete _self.clients[client.sessionId];
         });
 
         this.execHook("connect");
     };
 
-    this.onClientMessage = function(message) {
+    this.broadcast = function(msg) {
+        for (var id in this.clients) 
+            this.clients[id].send(msg);
+    };
+
+    this.onClientMessage = function(message, client) {
         try {
             message = JSON.parse(message);
         } catch (e) {
-            return this.error("Error parsing message: " + e, 8);
+            return this.error("Error parsing message: " + e + "\nmessage: " + message, 8);
         }
 
-        this.execHook("command", message);
+        this.execHook("command", message, client);
     };
 
     this.registerExts = function(exts) {
@@ -88,7 +87,7 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
     };
 
     this.error = function(description, code, message) {
-        console.log("Socket error: " + description);
+        console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
         var error = {
             "type": "error",
@@ -96,6 +95,6 @@ module.exports = IdeServer = function(workspaceDir, server, exts) {
             "code": code,
             "message": description
         };
-        this.client.send(JSON.stringify(error));
+        this.broadcast(JSON.stringify(error));
     };
 }).call(IdeServer.prototype);

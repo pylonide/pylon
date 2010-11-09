@@ -65,5 +65,5 @@ BODY {
     margin: 0;
     overflow: hidden;
     border-top: 1px solid #656565;
-    border-bottom: 1px solid #b2b2b2;
+    /*border-bottom: 1px solid #b2b2b2;*/
 }

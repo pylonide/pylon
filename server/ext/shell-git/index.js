@@ -62,8 +62,6 @@ function cloud9ShellGitPlugin(server) {
         var _self = this;
         var argv = message.argv || [];
         this.spawnCommand(message.command, argv.slice(1), message.cwd, null, null, function(code, err, out) {
-            if (!_self.server.client)
-               return;
             _self.sendResult(0, message.command, {
                 code: code,
                 argv: message.argv,
