@@ -38,7 +38,8 @@ return ext.register("ext/console/console", {
     commands : {
         "help": {hint: "show general help information and a list of available commands"},
         "clear": {hint: "clear all the messages from the console"},
-        "switchconsole" : {hint: "toggle focus between the editor and the console"}
+        "switchconsole" : {hint: "toggle focus between the editor and the console"},
+        "send": {hint: "send a message to the server"}
     },
 
     help : function() {
@@ -66,6 +67,12 @@ return ext.register("ext/console/console", {
         else
             txtConsoleInput.focus()
     },
+
+    send : function(data) {
+        ide.socket.send(data.line.replace(data.command,"").trim());
+        return true;
+    },
+
     
     showOutput : function(){
         tabConsole.set(1);
@@ -78,7 +85,7 @@ return ext.register("ext/console/console", {
     },
 
     getCwd: function() {
-        return this.$cwd && this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
+        return this.$cwd && this.$cwd.replace("/workspace", (ide.workspaceDir || "").replace(/\/+$/, ""));
     },
 
     logNodeStream : function(data, stream, workspaceDir, davPrefix, useOutput) {
@@ -379,6 +386,7 @@ return ext.register("ext/console/console", {
                         var data = {
                             command: cmd,
                             argv: parser.argv,
+                            line: line,
                             cwd: this.getCwd()
                         };
                         if (ext.execCommand(cmd, data) === false) {
