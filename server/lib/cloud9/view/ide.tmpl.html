@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head profile="http://www.w3.org/2005/10/profile">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Cloud9 IDE - Ajax.org</title>
+        <meta name="description" content=""/>
+        <meta name="keywords" content=""/>
+
+        <link rel="icon" type="image/gif" href="/static/favicon.ico" />
+
+        <link rel="stylesheet" type="text/css" href="/static/style/style.css" />
+
+        <script type="text/javascript" src="/static/require.js"></script>
+        <script type="text/javascript">//<!--
+
+            window.cloud9config = <%config%>;
+
+            var RELEASE = "release";
+            var DEBUG   = "debug";
+            var FILES   = "files";
+            
+            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
+
+            var apfLoc = VERSION == FILES
+                ? "/static/support/apf/apf.js"
+                : "/static/js/apf_" + VERSION + ".js";
+
+            var config = {
+                paths: {
+                    "ace": VERSION == FILES ? "/static/support/ace/lib/ace" : "/static/support/ace/build/ace",
+                    "debug": "/static/support/lib-v8debug/lib/v8debug",
+                    "apf": "/static/support/apf"
+                },
+                waitSeconds: 30
+            }
+            require(config, [apfLoc], function(){
+                apf.onstart = function(){
+                    var list = ["core/ide", "core/ext", "core/util"];
+                    if (VERSION == RELEASE)
+                        list.push("ace/Editor")
+
+                    require(list, function(ide, ext, util){
+                        ide.settings = <%settings%>;
+
+                        var modules = [
+                            "ext/filesystem/filesystem",
+                            "ext/settings/settings",
+                            "ext/editors/editors",
+                            "ext/themes/themes",
+                            "ext/themes_default/themes_default",
+                            "ext/panels/panels",
+                            "ext/tree/tree",
+                            "ext/save/save",
+                            "ext/gotofile/gotofile",
+                            "ext/newresource/newresource",
+                            "ext/undo/undo",
+                            "ext/clipboard/clipboard",
+                            //"ext/refactor/refactor",
+                            "ext/searchinfiles/searchinfiles",
+                            "ext/searchreplace/searchreplace",
+                            "ext/quickwatch/quickwatch",
+                            "ext/quicksearch/quicksearch",
+                            "ext/gotoline/gotoline",
+                            "ext/html/html",
+                            "ext/browser/browser",
+                            "ext/code/code",
+                            "ext/extmgr/extmgr",
+                            //"ext/formatjson/formatjson",
+                            //"ext/docs/docs",
+                            //"ext/richtext/richtext",
+                            "ext/run/run", //Add location rule
+                            "ext/debugger/debugger", //Add location rule
+                            "ext/noderunner/noderunner", //Add location rule
+                            "ext/console/console",
+                            "ext/tabbehaviors/tabbehaviors",
+                            "ext/keybindings/keybindings"
+                        ];
+
+                        apf.addEventListener("load", function(){
+                            //Load extensions
+                            require(modules, function(){
+                                ide.dispatchEvent("extload", {modules: modules});
+                            });
+                        });
+                    });
+                }
+                if (apf.started)
+                    apf.onstart();
+            });
+        //--></script>
+    </head>
+    <body>
+        <div id="noscript">
+            <div class="noscript">
+                <div id="hp_header">
+                    <div id="logo"></div>
+                </div>
+                <div class="oldbro_middle_panel">
+                    <div class="content">
+                        <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
+                        <span class="browser_option">
+                            <a href="http://www.mozilla.com/firefox" target="_blank">
+                                <img src="/static/style/images/browsers/ff_32x32.png" alt="" />
+                                <div>Mozilla Firefox</div>
+                            </a>
+                        </span>
+                        <span class="browser_option" style="width:50px;">
+                            <a href="http://www.apple.com/safari" target="_blank">
+                                <img src="/static/style/images/browsers/safari_32x32.png" alt="" />
+                                <div>Safari</div>
+                            </a>
+                        </span>
+                        <span class="browser_option">
+                            <a href="http://www.google.com/chrome" target="_blank">
+                                <img src="/static/style/images/browsers/chrome_32x32.png" alt="" />
+                                <div>Google Chrome</div>
+                            </a>
+                        </span>
+                        <span class="browser_option">
+                            <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
+                                <img src="/static/style/images/browsers/ie_32x32.png" alt="" />
+                                <div>Internet Explorer</div>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="wn_main_section_rounded">
+                    <div class="wnmsr_left"></div>
+                    <div class="wnmsr_middle"></div>
+                    <div class="wnmsr_right"></div>
+                </div>
+            </div>
+        </div>
+
+        <a:skin
+          src        = "/static/style/skins.xml"
+          media-path = "/static/style/images/"
+          icon-path  = "/static/style/icons/" />
+
+        <a:appsettings name="ide" debug="false"
+          disable-space       = "true"
+          auto-hide-loading   = "true"
+          allow-select        = "false"
+          allow-blur          = "true"
+          initdelay           = "false"
+          storage             = "cookie"
+          baseurl             = "{apf.host ? apf.host : ''}" />
+
+        <!-- default model -->
+        <a:model />
+
+        <a:loader id="loader">
+            <div id="loadscreen" class="loader">
+                <div>Loading...</div>
+            </div>
+        </a:loader>
+
+        <a:state id="stServerConnected" active="false" />
+        <a:state id="stProcessRunning" active="false" />
+
+        <a:include src="/static/include/models.xml" />
+        <a:include src="/static/include/menus.xml" />
+        <a:include src="/static/include/windows.xml" />
+
+        <a:vbox anchors="0 0 0 0" id="vbMain">
+            <a:bar skin="headerbar">
+                <a id="logo" href="#" title="cloud9 ide">cloud9</a>
+            </a:bar>
+            <a:toolbar id="tbMain">
+                <a:menubar id="barMenu" class="headerMenuBar">
+                    <a:button submenu="mnuFile">File</a:button>
+                    <a:button submenu="mnuEdit">Edit</a:button>
+                    <a:button submenu="mnuView">View</a:button>
+                </a:menubar>
+                <a:bar id="barTools">
+
+                </a:bar>
+            </a:toolbar>
+
+            <a:vbox id="mainRow" padding="8" splitters="true" flex="1">
+                <a:hbox padding="8" edge="8 8 0 8" flex="1" splitters="true">
+                    <a:vbox id="colLeft" padding="8" width="200" splitters="true" />
+                    <a:vbox id="colMiddle" flex="1" padding="8" splitters="true" />
+                    <a:vbox id="colRight" padding="8" width="300" visible="false" splitters="true" />
+                </a:hbox>
+            </a:vbox>
+            
+            <a:statusbar id="sbMain" visible="false">
+                <a:section />
+            </a:statusbar>
+        </a:vbox>
+    </body>
+</html>

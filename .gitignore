@@ -10,3 +10,4 @@ client/common
 .DS_Store
 /nbproject
 support/apf
+support/packager/
