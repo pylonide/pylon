@@ -229,7 +229,7 @@ apf.dbg = function(struct, tagName){
     };
     
     this.changeLive = function(scriptId, newSource, previewOnly, callback) {
-        this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+        this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
     };
     
 }).call(apf.dbg.prototype = new apf.AmlElement());
