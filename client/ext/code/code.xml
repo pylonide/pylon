@@ -1,17 +1,17 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:script><![CDATA[
         SupportedModes = {
-            "application/javascript": "JavaScript",
-            "application/json": "JavaScript",
-            "text/css": "Css",
-            "text/html": "Html",
-            "application/xhtml+xml": "Html",
-            "application/xml": "Xml"
+            "application/javascript": "javascript",
+            "application/json": "javascript",
+            "text/css": "css",
+            "text/html": "html",
+            "application/xhtml+xml": "html",
+            "application/xml": "xml"
         }
 
         function getSyntax(type) {
             var mime = type.split(";")[0];
-            return (SupportedModes[mime] || "Text");
+            return (SupportedModes[mime] || "text");
         }
      ]]></a:script>
 

@@ -85,7 +85,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
         });
 
         ide.addEventListener("extload", function() {
-            //setTimeout(function() {
             // fire up the socket connection:
             var options = {
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"],
@@ -145,7 +144,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             ide.socket.on("connect",    ide.socketConnect);
             ide.socket.on("disconnect", ide.socketDisconnect);
             ide.socket.connect();
-            //}, 1000);
         });
         
         ide.getActivePageModel = function() {

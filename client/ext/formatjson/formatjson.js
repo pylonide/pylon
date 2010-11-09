@@ -9,7 +9,7 @@ require.def("ext/formatjson/formatjson",
      "core/ext", 
      "core/util", 
      "ext/editors/editors", 
-     "ace/Range", 
+     "ace/range", 
      "text!ext/formatjson/formatjson.xml"],
     function(ide, ext, util, editors, Range, markup) {
         

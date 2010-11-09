@@ -7,8 +7,8 @@
 require.def("ext/gotolinewindow/gotolinewindow",
     ["core/ide",
      "core/ext",
-     "ace/PluginManager",
-     "ace/Search",
+     "ace/plugin_manager",
+     "ace/search",
      "text!ext/gotolinewindow/gotolinewindow.xml"],
     function(ide, ext, plugins, search, markup) {
 

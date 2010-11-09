@@ -64,7 +64,7 @@
                     if (location.host)
                         list.push("text!workspace/.settings.xml");
                     if (VERSION == RELEASE)
-                        list.push("ace/Editor")
+                        list.push("ace/editor")
 
                     require(list, function(ide, ext, util, settings){
                         ide.settings = settings;

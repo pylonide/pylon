@@ -9,7 +9,7 @@ require.def("ext/code/code",
      "core/ext", 
      "text!ext/code/code.xml",
      "text!ext/code/settings.xml",
-     "ace/Document"
+     "ace/document"
     ],
     function(ide, ext, markup, settings, Document) {
 
@@ -101,7 +101,7 @@ return ext.register("ext/code/code", {
         });
         
         // preload common language modes
-        require(["ace/mode/JavaScript", "ace/mode/Html", "ace/mode/Css"], function() {});
+        require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
 
     init : function(amlPage) {
