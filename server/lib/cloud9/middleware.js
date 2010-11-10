@@ -1,7 +1,8 @@
+var Path = require("path");
 var connect = require("connect");
 
 exports.staticProvider = function(path, mount) {
-    var common = connect.staticProvider(path);
+    var common = connect.staticProvider(Path.normalize(path));
     return function(req, resp, next) {
         var path = require("url").parse(req.url).pathname;
         if (path.indexOf(mount) === 0) {
