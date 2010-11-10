@@ -108,9 +108,11 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 stProcessRunning.deactivate();
                 ide.dispatchEvent("socketDisconnect");
 
-                winReconnect.show();
                 clearTimeout(ide.$retryTimer);
+                var retries = 0;
                 ide.$retryTimer = setInterval(function() {
+                    if (retries++ == 1)
+                        winReconnect.show();
                     ide.socket.connect();
                 }, 2000);
             };
