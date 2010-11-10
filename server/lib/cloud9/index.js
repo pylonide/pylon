@@ -34,7 +34,14 @@ exports.main = function(options) {
         };
         var socketIo = IO.listen(server, options);
         
-        var ide = new IdeServer(projectDir, server, socketIo, exts);
+        var serverOptions = {
+            workspaceDir: projectDir,
+            davPrefix: "/workspace",
+            baseUrl: "",
+            debug: true,
+            staticUrl: "/static"
+        }
+        var ide = new IdeServer(serverOptions, server, socketIo, exts);
         
         return function(req, res, next) {
             ide.handle(req, res, next);
@@ -63,7 +70,7 @@ exports.main = function(options) {
 
 process.on("uncaughtException", function(e) {
     console.log("uncaught exception:");
-    //console.log(e.stack + "");
+    console.log(e.stack + "");
 })
 
 if (module === require.main) {

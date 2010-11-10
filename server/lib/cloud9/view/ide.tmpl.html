@@ -6,11 +6,11 @@
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
 
-        <link rel="icon" type="image/gif" href="/static/favicon.ico" />
+        <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
-        <link rel="stylesheet" type="text/css" href="/static/style/style.css" />
+        <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
 
-        <script type="text/javascript" src="/static/require.js"></script>
+        <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         <script type="text/javascript">//<!--
 
             window.cloud9config = {
@@ -27,14 +27,14 @@
             var VERSION = window.cloud9config.debug ? FILES : RELEASE;
 
             var apfLoc = VERSION == FILES
-                ? "/static/support/apf/apf.js"
-                : "/static/js/apf_" + VERSION + ".js";
+                ? "[%staticUrl%]/support/apf/apf.js"
+                : "[%staticUrl%]/js/apf_" + VERSION + ".js";
 
             var config = {
                 paths: {
-                    "ace": VERSION == FILES ? "/static/support/ace/lib/ace" : "/static/support/ace/build/ace",
-                    "debug": "/static/support/lib-v8debug/lib/v8debug",
-                    "apf": "/static/support/apf"
+                    "ace": VERSION == FILES ? "[%staticUrl%]/support/ace/lib/ace" : "[%staticUrl%]/support/ace/build/ace",
+                    "debug": "[%staticUrl%]/support/lib-v8debug/lib/v8debug",
+                    "apf": "[%staticUrl%]/support/apf"
                 },
                 waitSeconds: 30
             }
@@ -105,25 +105,25 @@
                         <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
                         <span class="browser_option">
                             <a href="http://www.mozilla.com/firefox" target="_blank">
-                                <img src="/static/style/images/browsers/ff_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/style/images/browsers/ff_32x32.png" alt="" />
                                 <div>Mozilla Firefox</div>
                             </a>
                         </span>
                         <span class="browser_option" style="width:50px;">
                             <a href="http://www.apple.com/safari" target="_blank">
-                                <img src="/static/style/images/browsers/safari_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/style/images/browsers/safari_32x32.png" alt="" />
                                 <div>Safari</div>
                             </a>
                         </span>
                         <span class="browser_option">
                             <a href="http://www.google.com/chrome" target="_blank">
-                                <img src="/static/style/images/browsers/chrome_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/style/images/browsers/chrome_32x32.png" alt="" />
                                 <div>Google Chrome</div>
                             </a>
                         </span>
                         <span class="browser_option">
                             <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
-                                <img src="/static/style/images/browsers/ie_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/style/images/browsers/ie_32x32.png" alt="" />
                                 <div>Internet Explorer</div>
                             </a>
                         </span>
@@ -138,9 +138,9 @@
         </div>
 
         <a:skin
-          src        = "/static/style/skins.xml"
-          media-path = "/static/style/images/"
-          icon-path  = "/static/style/icons/" />
+          src        = "[%staticUrl%]/style/skins.xml"
+          media-path = "[%staticUrl%]/style/images/"
+          icon-path  = "[%staticUrl%]/style/icons/" />
 
         <a:appsettings name="ide" debug="false"
           disable-space       = "true"
@@ -163,9 +163,9 @@
         <a:state id="stServerConnected" active="false" />
         <a:state id="stProcessRunning" active="false" />
 
-        <a:include src="/static/include/models.xml" />
-        <a:include src="/static/include/menus.xml" />
-        <a:include src="/static/include/windows.xml" />
+        <a:include src="[%staticUrl%]/include/models.xml" />
+        <a:include src="[%staticUrl%]/include/menus.xml" />
+        <a:include src="[%staticUrl%]/include/windows.xml" />
 
         <a:vbox anchors="0 0 0 0" id="vbMain">
             <a:bar skin="headerbar">

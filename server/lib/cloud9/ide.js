@@ -6,19 +6,20 @@ var jsDAV = require("jsdav"),
     Async = require("async"),
     fs = require("fs"),
     Path = require("path"),
+    lang = require("ace/lib/lang"),
     Url = require("url");
-    
 
-module.exports = Ide = function(workspaceDir, server, socketIo, exts) {
-    this.workspaceDir = Async.abspath(workspaceDir).replace(/\/+$/, "");
+module.exports = Ide = function(options, server, socketIo, exts) {
     this.server = server;
-    this.davPrefix = "workspace/";
 
+    var workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
+    var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     this.options = {
-        workspaceDir: this.workspaceDir,
-        davPrefix: this.davPrefix,
-        baseurl: "/",
-        debug: true
+        workspaceDir: workspaceDir,
+        davPrefix: options.davPrefix || (baseUrl + "/workspace"),
+        baseUrl: baseUrl,
+        debug: options.debug === true,
+        staticUrl: options.staticUrl || "/static"
     }
 
     var _self = this;
@@ -37,10 +38,14 @@ module.exports = Ide = function(workspaceDir, server, socketIo, exts) {
     
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
-        if (path.match(/^\/(?:index.html?)?$/))
+        
+        this.indexRe = this.indexRe || new RegExp("^" + lang.escapeRegExp(this.options.baseUrl) + "\\/(?:index.html?)?$");
+        this.workspaceRe = this.workspaceRe || new RegExp("^" + lang.escapeRegExp(this.options.davPrefix) + "\\/?");
+        
+        if (path.match(this.indexRe))
             this.$serveIndex(req, res, next)
-        else if (path.match(/^\/workspace\/?/)) {
-            this.davServer = jsDAV.mount(this.workspaceDir, this.davPrefix, this.server);
+        else if (path.match(this.workspaceRe)) {
+            this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.server);
             this.davServer.exec(req, res);
         } else
             next();
@@ -55,10 +60,11 @@ module.exports = Ide = function(workspaceDir, server, socketIo, exts) {
             res.writeHead(200, {"Content-Type": "text/html"});
             
             var replacements = {
-                davPrefix: self.options.baseurl + "workspace",
+                davPrefix: self.options.davPrefix,
                 workspaceDir: self.options.workspaceDir,
-                settingsUrl: self.options.baseurl + "workspace/.settings.xml",
-                debug: self.options.debug
+                settingsUrl: self.options.baseUrl + "/workspace/.settings.xml",
+                debug: self.options.debug,
+                staticUrl: self.options.staticUrl
             }; 
  
             var settingsPath = self.options.workspaceDir + "/.settings.xml";
@@ -79,9 +85,13 @@ module.exports = Ide = function(workspaceDir, server, socketIo, exts) {
     };
 
     this.$fillTemplate = function(template, replacements) {
-        return template.replace(/<%(.+?)%>/g, function(str, m) {
-            return JSON.stringify(replacements[m] || "");
-        }); 
+        return template
+            .replace(/<%(.+?)%>/g, function(str, m) {
+                return JSON.stringify(replacements[m] || "");
+            })
+            .replace(/\[%(.+?)%\]/g, function(str, m) {
+                return replacements[m] || "";
+            }); 
     };
     
     this.onClientConnection = function(client) {
