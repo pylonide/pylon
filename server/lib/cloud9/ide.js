@@ -12,10 +12,10 @@ var jsDAV = require("jsdav"),
 module.exports = Ide = function(options, server, socketIo, exts) {
     this.server = server;
 
-    var workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
+    this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     this.options = {
-        workspaceDir: workspaceDir,
+        workspaceDir: this.workspaceDir,
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         baseUrl: baseUrl,
         debug: options.debug === true,
