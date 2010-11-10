@@ -24,9 +24,9 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
 
-            this.workspaceDir = window.cloud9config.workspaceDir;
-            this.davPrefix = window.cloud9config.davPrefix;
-            this.settingsFile = window.cloud9config.settingsFile;
+            this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
+            this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.settingsUrl = window.cloud9config.settingsUrl;
 
             this.dispatchEvent("load");
 

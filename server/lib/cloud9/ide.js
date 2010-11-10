@@ -9,7 +9,7 @@ var jsDAV = require("jsdav"),
     Url = require("url");
     
 
-module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
+module.exports = Ide = function(workspaceDir, server, socketIo, exts) {
     this.workspaceDir = Async.abspath(workspaceDir).replace(/\/+$/, "");
     this.server = server;
     this.davPrefix = "workspace/";
@@ -31,7 +31,6 @@ module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
     this.nodeCmd = process.argv[0];
 
     this.registerExts(exts);
-    
 };
 
 (function () {
@@ -39,45 +38,52 @@ module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
     this.handle = function(req, res, next) {
         var path = Url.parse(req.url).pathname;
         if (path.match(/^\/(?:index.html?)?$/))
-            this.serveIndex(req, res, next)
+            this.$serveIndex(req, res, next)
         else if (path.match(/^\/workspace\/?/)) {
-		    this.davServer = jsDAV.mount(this.workspaceDir, this.davPrefix, this.server);
+            this.davServer = jsDAV.mount(this.workspaceDir, this.davPrefix, this.server);
             this.davServer.exec(req, res);
         } else
             next();
     };
 
-    this.serveIndex = function(req, res, next) {
-	    var self = this;
+    this.$serveIndex = function(req, res, next) {
+        var self = this;
         fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
-	        if (err)
+            if (err)
                 return next(err);
-	           
-	        res.writeHead(200, {"Content-Type": "text/html"});
+               
+            res.writeHead(200, {"Content-Type": "text/html"});
             
-            index = index.replace("<%config%>", JSON.stringify({
-                davPrefix: self.options.baseurl + "/workspace",
+            var replacements = {
+                davPrefix: self.options.baseurl + "workspace",
                 workspaceDir: self.options.workspaceDir,
-                settingsUrl: self.options.baseurl + "/workspace/.settings.xml",
+                settingsUrl: self.options.baseurl + "workspace/.settings.xml",
                 debug: self.options.debug
-            })); 
+            }; 
  
             var settingsPath = self.options.workspaceDir + "/.settings.xml";
             Path.exists(settingsPath, function(exists) {
                 if (exists) {
                     fs.readFile(settingsPath, "utf8", function(err, settings) {
-                        index = index.replace("<%settings%>", '"' + settings.replace(/"/g, '\\"') + '"');
+                        replacements.settingsXml = settings;
+                        index = self.$fillTemplate(index, replacements);
                         res.end(index);
                     });
                 }
                 else {
-                    index = index.replace("<%settings%>", '""');
+                    index = self.$fillTemplate(index, replacements);
                     res.end(index);
                 }
             });
-	    });
+        });
     };
 
+    this.$fillTemplate = function(template, replacements) {
+        return template.replace(/<%(.+?)%>/g, function(str, m) {
+            return JSON.stringify(replacements[m] || "");
+        }); 
+    };
+    
     this.onClientConnection = function(client) {
         var _self = this;
         this.clients[client.sessionId] = client;
@@ -149,4 +155,4 @@ module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
         };
         this.broadcast(JSON.stringify(error));
     };
-}).call(IdeServer.prototype);
+}).call(Ide.prototype);

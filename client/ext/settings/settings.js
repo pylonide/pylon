@@ -15,7 +15,7 @@ return ext.register("ext/settings/settings", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-    file    : ide.settingsFile,
+    file    : ide.settingsUrl,
     commands : {
         "showsettings": {hint: "open the settings window"}
     },

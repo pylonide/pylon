@@ -13,7 +13,12 @@
         <script type="text/javascript" src="/static/require.js"></script>
         <script type="text/javascript">//<!--
 
-            window.cloud9config = <%config%>;
+            window.cloud9config = {
+                davPrefix: <%davPrefix%>,
+                workspaceDir: <%workspaceDir%>,
+                settingsUrl: <%settingsUrl%>,
+                debug: <%debug%>
+            };
 
             var RELEASE = "release";
             var DEBUG   = "debug";
@@ -40,7 +45,7 @@
                         list.push("ace/Editor")
 
                     require(list, function(ide, ext, util){
-                        ide.settings = <%settings%>;
+                        ide.settings = <%settingsXml%>;
 
                         var modules = [
                             "ext/filesystem/filesystem",

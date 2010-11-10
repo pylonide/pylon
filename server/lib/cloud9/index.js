@@ -8,7 +8,7 @@ var Connect = require("connect");
 var IO = require("socket.io");
 var Fs = require("fs");
 var Path = require("path");
-var IdeServer = require("./server");
+var IdeServer = require("./ide");
 var middleware = require("./middleware");
 
 exports.main = function(options) {
@@ -63,7 +63,7 @@ exports.main = function(options) {
 
 process.on("uncaughtException", function(e) {
     console.log("uncaught exception:");
-    console.log(e.stack + "");
+    //console.log(e.stack + "");
 })
 
 if (module === require.main) {

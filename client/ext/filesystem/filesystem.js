@@ -221,7 +221,7 @@ return ext.register("ext/filesystem/filesystem", {
             var data = e.data;
             if (data.sender != "filesystem")
                 return;
-            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (data.isfile)
                 require("ext/debugger/debugger").showFile(path);
             else
@@ -262,7 +262,7 @@ return ext.register("ext/filesystem/filesystem", {
             });
         });
         
-        fs.setProjectName(ide.workspaceDir.replace(/\/+$/, "").split("/").pop());
+        fs.setProjectName(ide.workspaceDir.split("/").pop());
     },
 
     setProjectName : function(name) {

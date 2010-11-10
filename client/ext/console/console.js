@@ -78,10 +78,10 @@ return ext.register("ext/console/console", {
     },
 
     getCwd: function() {
-        return this.$cwd && this.$cwd.replace("/workspace", ide.workspaceDir.replace(/\/+$/, ""));
+        return this.$cwd && this.$cwd.replace("/workspace", ide.workspaceDir);
     },
 
-    logNodeStream : function(data, stream, workspaceDir, davPrefix, useOutput) {
+    logNodeStream : function(data, stream, useOutput) {
         var colors = {
             30: "#eee",
             31: "red",
@@ -93,8 +93,8 @@ return ext.register("ext/console/console", {
             37: "#eee"
         };
 
-        workspaceDir = workspaceDir || ide.workspaceDir;
-        davPrefix = davPrefix || ide.davPrefix;
+        workspaceDir = ide.workspaceDir;
+        davPrefix = ide.davPrefix;
 
         var lines = data.split("\n");
         var style = "color:#eee;";
@@ -109,8 +109,8 @@ return ext.register("ext/console/console", {
 
             log.push("<div class='item'><span style='" + style + "'>" + lines[i]
                 .replace(/\s/g, "&nbsp;")
-                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"/" + davPrefix + "$1\", \"$2\", \"$3\")'>$1$2$3</a>")
-                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"/" + davPrefix + "$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
+                .replace(wsrRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>$1$2$3</a>")
+                .replace(wsRe, "<a href='javascript:void(0)' onclick='require(\"ext/console/console\").jump(\"" + davPrefix + "/$1\", \"$2\", \"$3\")'>"+workspaceDir+"/$1$2$3</a>")
                 .replace(/(((http:\/\/)|(www\.))[\w\d\.]*(:\d+)?(\/[\w\d]+)?)/, "<a href='$1' target='_blank'>$1</a>")
                 .replace(/\033\[(?:(\d+);)?(\d+)m/g, function(m, extra, color) {
                     style = "color:" + (colors[color] || "#eee");
@@ -444,7 +444,7 @@ return ext.register("ext/console/console", {
 
     setPrompt: function(cwd) {
         if (cwd)
-            this.$cwd = cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), ide.davPrefix);
+            this.$cwd = cwd.replace(ide.workspaceDir, ide.davPrefix);
         return this.getPrompt();
     },
 

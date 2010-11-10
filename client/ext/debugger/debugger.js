@@ -53,7 +53,7 @@ return ext.register("ext/debugger/debugger", {
             var data = e.data;
             if (data.sender != "debugger")
                 return;
-            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (data.isfile) {
                 require("ext/debugger/debugger").showFile(path);
                 require("ext/run/run").run(true);
@@ -201,7 +201,7 @@ return ext.register("ext/debugger/debugger", {
             var value = name.split("/").pop();
 
             if (name.indexOf(ide.workspaceDir) == 0) {
-                var path = "/" + ide.davPrefix + name.slice(ide.workspaceDir.length + 1);
+                var path = ide.davPrefix + name.slice(ide.workspaceDir.length);
                 // TODO this has to be refactored to support multiple tabs
                 var page = tabEditors.getPage(path);
                 if (page)
