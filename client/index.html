@@ -61,8 +61,6 @@
 
                 apf.onstart = function(){
                     var list = ["core/ide", "core/ext", "core/util"];
-                    if (location.host)
-                        list.push("text!workspace/.settings.xml");
                     if (VERSION == RELEASE)
                         list.push("ace/editor")
 
