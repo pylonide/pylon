@@ -29,16 +29,16 @@ exports.main = function(options) {
         });
         
         // create web socket
-        var options = {
+        var socketOptions = {
             transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
         };
-        var socketIo = IO.listen(server, options);
+        var socketIo = IO.listen(server, socketOptions);
         
         var serverOptions = {
             workspaceDir: projectDir,
             davPrefix: "/workspace",
             baseUrl: "",
-            debug: true,
+            debug: options.debug,
             staticUrl: "/static"
         }
         var ide = new IdeServer(serverOptions, server, socketIo, exts);

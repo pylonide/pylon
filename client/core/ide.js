@@ -94,10 +94,10 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"],
                 transportOptions: {
                     "xhr-polling": {
-                        timeout: 15000
+                        timeout: 30000
                     },
                     "jsonp-polling": {
-                        timeout: 15000
+                        timeout: 30000
                     }
                 }
             };

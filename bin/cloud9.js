@@ -12,6 +12,7 @@ var Sys = require("sys"),
         a: { key: "action", hint: "ACTION", def:null, parser: function(value) {
             return value.split(/\s+/g);
         }},
+        d: { key: "debug", hint: "DEBUG", def: false, type: "boolean"},
         u: { key: "user", hint: "RUN_AS_USER", def: null },
         g: { key: "group", hint: "RUN_AS_GROUP", def: null },
         c: { key: "_config", parser: function(value) {
@@ -38,10 +39,14 @@ function usage() {
 }
 
 function getArg(argv, arg) {
-    var option = argv.shift(),
-        optionMap = mapOptions[arg.replace("-", "")],
-        key = optionMap ? optionMap.key : null,
-        parser = optionMap ? optionMap.parser : null;
+    var optionMap = mapOptions[arg.replace("-", "")];
+    var key = optionMap ? optionMap.key : null;
+    var parser = optionMap ? optionMap.parser : null;
+
+    if (optionMap && optionMap.type == "boolean")
+        return {key: key, value: true};
+    
+    var option = argv.shift();
 
     if(!key || !option){
         usage();
@@ -78,8 +83,9 @@ if (parseInt(process.version.split(".")[1]) < 2) {
     process.exit(1);
 }
 
-var options = parseArguments(process.argv.slice(2)),
-    version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
+var options = parseArguments(process.argv.slice(2));
+var version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
+
 require("../server/lib/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
