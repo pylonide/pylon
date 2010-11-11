@@ -39,7 +39,8 @@ exports.main = function(options) {
             davPrefix: "/workspace",
             baseUrl: "",
             debug: options.debug,
-            staticUrl: "/static"
+            staticUrl: "/static",
+            name: projectDir.split("/").pop()
         }
         var ide = new IdeServer(serverOptions, server, socketIo, exts);
         
