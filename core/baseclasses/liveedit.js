@@ -405,8 +405,14 @@ apf.LiveEdit = function() {
             
             // remove the content of a selection manually when it's ranging
             // multiple DOM nodes
-            if (apf.w3cRange && !this.$selection.isCollapsed() && apf.isCharacter(code))
-                this.$selection.remove();
+            
+            
+            if (apf.w3cRange && !this.$selection.isCollapsed() && apf.isCharacter(code)) {
+                if (this.$activeNode.innerHTML.trim() != '')
+                    this.$selection.remove();
+                //else
+                    //debugger;
+            }
         }
 
         if (found)
