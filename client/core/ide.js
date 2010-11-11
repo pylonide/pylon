@@ -27,6 +27,7 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
             this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
             this.settingsUrl = window.cloud9config.settingsUrl;
+            this.sessionId = window.cloud9config.sessionId;
 
             this.dispatchEvent("load");
 
@@ -102,10 +103,10 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 }
             };
             ide.socketConnect = function() {
-                clearTimeout(ide.$retryTimer);
-                winReconnect.hide();
-                stServerConnected.activate();
-                ide.dispatchEvent("socketConnect");
+                ide.socket.send(JSON.stringify({
+                    command: "attach",
+                    sessionId: ide.sessionId
+                }));
             };
 
             ide.socketDisconnect = function() {
@@ -127,6 +128,13 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 } catch(e) {
                     return;
                 }
+
+                if (message.type == "attached") {
+                    clearTimeout(ide.$retryTimer);
+                    winReconnect.hide();
+                    stServerConnected.activate();
+                }
+
                 ide.dispatchEvent("socketMessage", {
                     message: message
                 });

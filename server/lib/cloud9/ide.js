@@ -105,8 +105,6 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         client.on("disconnect", function() {
             delete _self.clients[client.sessionId];
         });
-
-        this.execHook("connect");
     };
 
     this.broadcast = function(msg) {
@@ -126,6 +124,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
 
     this.registerExts = function(exts) {
         this.exts = {}
+
         for (var ext in exts)
             this.exts[ext] = new exts[ext](this);
         for (ext in this.exts) {
