@@ -10,7 +10,7 @@ var jsDAV = require("jsdav"),
     lang = require("ace/lib/lang"),
     Url = require("url");
 
-module.exports = Ide = function(options, server, socketIo, exts) {
+module.exports = Ide = function(options, server, exts) {
     this.server = server;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
@@ -23,12 +23,6 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         staticUrl: options.staticUrl || "/static",
         workspaceId: options.workspaceId || "ide"
     }
-
-    var _self = this;
-    this.socketIo = socketIo;
-    this.socketIo.on("connection", function(client) {
-        _self.onClientConnection(client);
-    });
 
     this.clients = [];
     this.nodeCmd = process.argv[0];
@@ -70,7 +64,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
                 settingsUrl: self.options.baseUrl + "/workspace/.settings.xml",
                 debug: self.options.debug,
                 staticUrl: self.options.staticUrl,
-                sessionId: req.sessionId,
+                sessionId: req.sessionID, // set by connect
                 workspaceId: self.options.workspaceId
             }; 
  
@@ -101,7 +95,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
             }); 
     };
     
-    this.onClientConnection = function(client) {
+    this.addClientConnection = function(client, message) {
         var _self = this;
         this.clients[client.sessionId] = client;
         
@@ -112,6 +106,9 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         client.on("disconnect", function() {
             delete _self.clients[client.sessionId];
         });
+        
+        if (message)
+            _self.onClientMessage(message, client);            
     };
 
     this.onClientMessage = function(message, client) {
@@ -150,7 +147,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
             hook = args.shift().toLowerCase().replace(/^[\s]+/, "").replace(/[\s]+$/, "");
         for (var name in this.exts) {
             ext   = this.exts[name];
-            hooks = ext.getHooks();
+            hooks = ext.getHooks();            
             if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
                 return;
         }
@@ -162,7 +159,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
     };
 
     this.error = function(description, code, message, client) {
-        console.log("Socket error: " + description, new Error().stack);
+        //console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
         var error = JSON.stringify({
             "type": "error",
