@@ -28,6 +28,7 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
             this.settingsUrl = window.cloud9config.settingsUrl;
             this.sessionId = window.cloud9config.sessionId;
+            this.workspaceId = window.cloud9config.workspaceId;
 
             this.dispatchEvent("load");
 
@@ -105,7 +106,8 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             ide.socketConnect = function() {
                 ide.socket.send(JSON.stringify({
                     command: "attach",
-                    sessionId: ide.sessionId
+                    sessionId: ide.sessionId,
+                    workspaceId: ide.workspaceId
                 }));
             };
 

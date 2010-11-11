@@ -20,7 +20,7 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
-        sessionId: options.sessionId || "ide"
+        workspaceId: options.workspaceId || "ide"
     }
 
     var _self = this;
@@ -69,7 +69,8 @@ module.exports = Ide = function(options, server, socketIo, exts) {
                 settingsUrl: self.options.baseUrl + "/workspace/.settings.xml",
                 debug: self.options.debug,
                 staticUrl: self.options.staticUrl,
-                sessionId: self.options.sessionId
+                sessionId: req.sessionId,
+                workspaceId: self.options.workspaceId
             }; 
  
             var settingsPath = self.options.workspaceDir + "/.settings.xml";

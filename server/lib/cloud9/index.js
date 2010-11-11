@@ -34,17 +34,20 @@ exports.main = function(options) {
         };
         var socketIo = IO.listen(server, socketOptions);
         
+        var name = projectDir.split("/").pop();
         var serverOptions = {
             workspaceDir: projectDir,
             davPrefix: "/workspace",
             baseUrl: "",
             debug: options.debug,
             staticUrl: "/static",
-            name: projectDir.split("/").pop()
+            workspaceId: name,
+            name: name
         }
         var ide = new IdeServer(serverOptions, server, socketIo, exts);
         
         return function(req, res, next) {
+            req.sessionId = "123";
             ide.handle(req, res, next);
         }
     }

@@ -20,7 +20,7 @@ sys.inherits(AuthPlugin, Plugin);
         if (message.command != "attach")
             return false;
 
-        if (message.sessionId != this.server.options.sessionId) {
+        if (message.workspaceId != this.server.options.workspaceId) {
             this.server.error("Unable to attach web socket!", 10, message, client)
             return false;
         }
