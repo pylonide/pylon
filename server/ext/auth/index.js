@@ -22,7 +22,7 @@ sys.inherits(AuthPlugin, Plugin);
 
         if (message.workspaceId != this.server.options.workspaceId) {
             this.server.error("Unable to attach web socket!", 10, message, client)
-            return false;
+            return true;
         }
 
         client.send('{"type": "attached"}')

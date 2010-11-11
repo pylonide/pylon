@@ -5,6 +5,7 @@
 var jsDAV = require("jsdav"),
     Async = require("async"),
     fs = require("fs"),
+    sys = require("sys"),
     Path = require("path"),
     lang = require("ace/lib/lang"),
     Url = require("url");
@@ -155,8 +156,9 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         }
         // if we get here, no hook function was successfully delegated to an
         // extension.
+
         this.error("Error: no handler found for hook '" + hook + "'. Arguments: "
-            + JSON.stringify(args), 9, args[0]);
+            + sys.inspect(args), 9, args[0]);
     };
 
     this.error = function(description, code, message, client) {
