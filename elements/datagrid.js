@@ -917,7 +917,7 @@ apf.datagrid = function(struct, tagName){
                 //@todo copy all non-known properties of the prop element
 
                 if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
-                    info.caption   = h.caption || "[text()]";
+                    info.caption   = h.eachcaption || "[text()]";
                     info.eachvalue = h.eachvalue || "[@value]";
                     info.each      = h.each || "item";
                     info.model     = h.model || "{" + this.id + ".selected}";
