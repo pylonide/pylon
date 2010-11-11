@@ -17,8 +17,13 @@ sys.inherits(AuthPlugin, Plugin);
 (function() {
     
     this.command = function(message, client) {
-        if (message.command != "auth")
+        if (message.command != "attach")
             return false;
+
+        if (message.sessionId != this.server.options.sessionId) {
+            this.server.error("Unable to attach web socket!", 10, message, client)
+            return false;
+        }
 
         client.send('{"type": "attached"}')
         this.server.execHook("connect");        

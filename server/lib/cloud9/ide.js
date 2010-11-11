@@ -19,7 +19,8 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
         baseUrl: baseUrl,
         debug: options.debug === true,
-        staticUrl: options.staticUrl || "/static"
+        staticUrl: options.staticUrl || "/static",
+        sessionId: options.sessionId || "ide"
     }
 
     var _self = this;
@@ -67,7 +68,8 @@ module.exports = Ide = function(options, server, socketIo, exts) {
                 workspaceDir: self.options.workspaceDir,
                 settingsUrl: self.options.baseUrl + "/workspace/.settings.xml",
                 debug: self.options.debug,
-                staticUrl: self.options.staticUrl
+                staticUrl: self.options.staticUrl,
+                sessionId: self.options.sessionId
             }; 
  
             var settingsPath = self.options.workspaceDir + "/.settings.xml";
@@ -110,11 +112,6 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         });
     };
 
-    this.broadcast = function(msg) {
-        for (var id in this.clients) 
-            this.clients[id].send(msg);
-    };
-
     this.onClientMessage = function(message, client) {
         try {
             message = JSON.parse(message);
@@ -123,6 +120,11 @@ module.exports = Ide = function(options, server, socketIo, exts) {
         }
 
         this.execHook("command", message, client);
+    };
+
+    this.broadcast = function(msg) {
+        for (var id in this.clients) 
+            this.clients[id].send(msg);
     };
 
     this.registerExts = function(exts) {
@@ -156,15 +158,18 @@ module.exports = Ide = function(options, server, socketIo, exts) {
             + JSON.stringify(args), 9, args[0]);
     };
 
-    this.error = function(description, code, message) {
+    this.error = function(description, code, message, client) {
         console.log("Socket error: " + description, new Error().stack);
         var sid = (message || {}).sid || -1;
-        var error = {
+        var error = JSON.stringify({
             "type": "error",
             "sid": sid,
             "code": code,
             "message": description
-        };
-        this.broadcast(JSON.stringify(error));
+        });
+        if (client)
+            client.send(error)
+        else
+            this.broadcast(error);
     };
 }).call(Ide.prototype);
