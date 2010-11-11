@@ -964,7 +964,7 @@ apf.datagrid = function(struct, tagName){
             else {
                 oEditor = this.$editors[editor];
                 
-                if (oEditor.hasFeature(apf.__MULTISELECT__))
+                if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model)
                     oEditor.setAttribute("model", "{" + this.id + ".selected}");
 
                 oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
