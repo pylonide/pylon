@@ -8,12 +8,15 @@ var Path             = require("path"),
     Spawn            = require("child_process").spawn,
     NodeDebugProxy   = require("./nodedebugproxy"),
     ChromeDebugProxy = require("./chromedebugproxy"),
-    Plugin           = require("lib/cloud9/plugin");
+    Plugin           = require("lib/cloud9/plugin"),
+    sys              = require("sys");
 
-function cloud9DebuggerPlugin(server) {
+var DebuggerPlugin = module.exports = function(server) {
     this.server = server;
     this.hooks = ["command"];
 }
+
+sys.inherits(DebuggerPlugin, Plugin);
 
 (function() {
     this.init = function() {
@@ -201,7 +204,7 @@ function cloud9DebuggerPlugin(server) {
 
         this.nodeDebugProxy.connect();
     };
-}).call(cloud9DebuggerPlugin.prototype = new Plugin());
+}).call(DebuggerPlugin.prototype);
 
 var net = require("net");
 
@@ -229,5 +232,3 @@ function asyncRepeat(callback, onDone) {
         asyncRepeat(callback, onDone);
     }, onDone);
 }
-    
-module.exports = cloud9DebuggerPlugin;

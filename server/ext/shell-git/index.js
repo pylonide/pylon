@@ -5,11 +5,14 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("lib/cloud9/plugin");
+var sys    = require("sys");
 
-function cloud9ShellGitPlugin(server) {
+var ShellGitPlugin = module.exports = function(server) {
     this.server = server;
     this.hooks = ["command"];
 }
+
+sys.inherits(ShellGitPlugin, Plugin);
 
 (function() {
     var githelp     = "",
@@ -72,6 +75,4 @@ function cloud9ShellGitPlugin(server) {
 
         return true;
     };
-}).call(cloud9ShellGitPlugin.prototype = new Plugin());
-
-module.exports = cloud9ShellGitPlugin;
+}).call(ShellGitPlugin.prototype);

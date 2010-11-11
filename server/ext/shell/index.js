@@ -7,12 +7,15 @@
 var Plugin = require("lib/cloud9/plugin"),
     Fs     = require("fs"),
     Path   = require("path"),
-    Async  = require("async");
+    Async  = require("async"),
+    sys    = require("sys");
 
-function cloud9ShellPlugin(server) {
+var ShellPlugin = module.exports = function(server) {
     this.server = server;
     this.hooks = ["command"];
 }
+
+sys.inherits(ShellPlugin, Plugin);
 
 (function() {
     this.command = function(message) {
@@ -148,6 +151,4 @@ function cloud9ShellPlugin(server) {
             callback(tail, matches);
         });
     };
-}).call(cloud9ShellPlugin.prototype = new Plugin());
-
-module.exports = cloud9ShellPlugin;
+}).call(ShellPlugin.prototype);
