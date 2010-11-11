@@ -916,13 +916,12 @@ apf.datagrid = function(struct, tagName){
                 
                 //@todo copy all non-known properties of the prop element
 
-                /*if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
-                    info.caption   = "[text()]";
-                    info.eachvalue = "[@value]";
-                    info.each      = "item";
-                    info.model     = "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
-                }*/
+                if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                    info.caption   = h.caption || "[text()]";
+                    info.eachvalue = h.eachvalue || "[@value]";
+                    info.each      = h.each || "item";
+                    info.model     = h.model || "{" + this.id + ".selected}";
+                }
 
                 oEditor = this.$editors[editor] = new constr(info);
 
@@ -966,8 +965,7 @@ apf.datagrid = function(struct, tagName){
                 oEditor = this.$editors[editor];
                 
                 if (oEditor.hasFeature(apf.__MULTISELECT__))
-                    oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                    oEditor.setAttribute("model", "{" + this.id + ".selected}");
 
                 oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
                     + (v = h.value).substr(1, v.length - 2) 
