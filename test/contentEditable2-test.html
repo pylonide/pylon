@@ -1,0 +1,569 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <title>Ajax.org Cloud IDE Preview (pre-pre-alpha)</title>
+        <style>
+            html{
+                overflow : hidden; /* IE bug */
+                cursor : default;
+            }
+            
+            body{
+                background : #dedede; /*url(images/Cumulus_clouds_panorama.jpg) 0 -200px no-repeat; /* 7f7f7f */
+                display : none;
+            }
+        </style>
+        <link href="../debugwin/editable.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../skins.xml" 
+          media-path = "../images/" 
+          icon-path  = "../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:model id="mdlTools">
+            <category name="Elements" xmlns:a="http://ajax.org/2005/aml" >
+                <subcat name="Default">
+                    <item name="Arrow" icon="Actions.png" />
+                    <item name="Selection" icon="selection.gif" />
+                </subcat>
+                <subcat name="Containers">
+                    <item name="Accordion" value="elements.accordion" icon="ui-accordion.png" />
+                    <item name="Bar" value="elements.bar" icon="layout-select.png" />
+                    <item name="Frame" value="elements.frame" icon="ui-group-box.png" />
+                    <item name="Modalwindow" value="elements.modalwindow" icon="application-blue.png" />
+                    <item name="Section" value="elements.section" icon="section.png"/>
+                    <!-- add panel demo -->
+                    <item name="Statusbar" value="elements.statusbar" icon="layout-select-footer.png"/>
+                    <item name="Tab" value="elements.tab" icon="ui-tab-content.png"/>
+                    <item name="Page" value="elements.page" icon="ui-tab-content.png"/>
+                    <item name="Toolbar" value="elements.toolbar" icon="ui-toolbar.png"/>
+                </subcat>
+                <subcat name="Form elements">
+                    <item name="Button" value="elements.button" icon="ui-button.png">
+                        <a:button width="100" />
+                    </item>
+                    <item name="Caldropdown" value="elements.caldropdown" icon="ui-combo-box-calendar.png"/>
+                    <item name="Calendar" value="elements.calendar" icon="data.png" />
+                    <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png" />
+                    <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png"/>
+                    <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png" />
+                    <item name="Editor" value="elements.editor" icon="ui-editor.png" />
+                    <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+                    <item name="Label" value="elements.label" icon="ui-label.png"/>
+                    <item name="Palette" value="elements.palette" icon="palette.png"/>
+                    <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
+                    <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
+                    <item name="Slider" value="elements.slider" icon="ui-slider.png" />
+                    <item name="Spinner" value="elements.spinner" icon="ui-spin.png" />
+                    <item name="Text" value="elements.text" icon="ui-textarea.png" />
+                    <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />
+                    <item name="Textbox" value="elements.textbox" icon="ui-text-field.png" />
+                    <!--<item name="Upload" value="elements.upload"/>-->
+                </subcat>
+                <subcat name="Selection elements">
+                    <item name="Datagrid" value="elements.datagrid" icon="table-fugue.png" />
+                    <item name="List" value="elements.list" icon="text_list_bullets.png"/>
+                    <item name="Tree" value="elements.tree" icon="tree.png" />
+                    <!--item name="Property editor" value="elements.propedit" icon="table.png" /-->
+                    <item name="Menu" value="elements.menu" icon="ui-menu.png" />
+                    <item name="Pager" value="elements.pager" icon="pager.png" />
+                    <!--item name="Toc" value="elements.toc"/-->
+                </subcat>
+                <subcat name="Media">
+                    <item name="Browser" value="elements.browser" icon="application-browser.png"/>
+                    <item name="Img" value="elements.img" icon="image.png" />
+                </subcat>
+            </category>
+        </a:model>
+        
+        <!--a:window id="toolbox" skin="docklet" title="Toolbox" icon="cog.png" zindex="1000001"
+          width="150" visible="true" left="10" top="80" height="100%-110" resizable="vertical"-->
+        <!--
+        <a:accordion
+          height        = "240"
+          animtype      = "easein easein"
+          animdelay     = "10"
+          multiexpand   = "true"
+          expand        = "click"
+          startexpanded = "false"
+          skin          = "accordion_apf_hor">
+            <a:bar 
+              title    = "Iron Maiden"
+              icon     = "accordion_apf_icon_hor.png"
+              expanded = "true">
+        -->
+        <a:tree id="trTools" skin="doctree" 
+          top       = "55"
+          left      = "0"
+          width     = "150"
+          bottom    = "0"
+          value     = "Arrow"
+          zindex    = "1000001"
+          startcollapsed = "false"
+          eachvalue = "[@name]"
+          caption   = "[@name]"
+          each      = "[subcat|item]"
+          icon      = "[@icon]"
+          drag      = "[item]"
+          ondragout = "
+            apf.document.execCommand('mode', null, {
+                mode     : 'add',
+                parent   : app,
+                value    : this.selected.childNodes.length
+                  ? apf.getFirstElement(this.selected)
+                  : this.value.toLowerCase(), 
+                ev       : event
+            });
+          "
+          onafterselect = "
+            document.title = 'lm bug';
+            /*if (this.value == 'Arrow' || !this.value) {
+                //apf.ContentEditable2.setMode('cursor')
+            }
+            else if (this.value == 'Selection') {
+                //apf.ContentEditable2.setMode('select')
+            }
+            else {
+                //apf.ContentEditable2.setMode('add', this.value.toLowerCase());
+            }*/
+          ">
+            <a:actions />
+        </a:tree>
+        <a:script>
+            apf.registerHotkey("Shift-S", function(){
+                trTools.select(trTools.queryNode("//node()[@name='Selection']"));
+            });
+        </a:script>
+        
+        <a:toolbar realtime="true" left="0" top="0" right="0">
+            <a:menubar>
+                <a:button submenu="mnuProject">Project</a:button>
+                <a:button submenu="mnuContentEditable">Edit</a:button>
+                <a:button submenu="mnuSelect">Select</a:button>
+            </a:menubar>
+            <a:bar style="background:#f2f2f2;" height="36">
+                <a:hbox id="hboxTools" padding="5" edge="8" model="mdlSelection">
+                    <a:label id="lblX">X:</a:label>
+                    <a:textbox id="elX" value="100" width="30" prop="left"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                    <a:label id="lblY">Y:</a:label>
+                    <a:textbox id="elY" value="100" width="30" prop="top"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                    <a:label id="lblW">W:</a:label>
+                    <a:textbox id="elW" value="100" width="30" prop="width"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                    <a:label id="lblH">H:</a:label>
+                    <a:textbox id="elH" value="100" width="30" prop="height"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                    
+                    <a:divider id="divBaseFeat" />    
+                        
+                    <a:label id="lblCols">Columns:</a:label>
+                    <a:textbox id="tbCols" value="100,100" width="80" prop="columns"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'columns', value: this.value});" />
+                        
+                    <a:label id="lblEdge">Edge:</a:label>
+                    <a:slider id="tbEdge" skin="tslider" mask="#" value="5" min="0" max="50" prop="edge"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'edge', value: this.value});" />
+                    <a:label id="lblPadding">Padding:</a:label>
+                    <a:slider id="tbPadding" skin="tslider" mask="#" value="2" min="0" max="50" prop="padding" 
+                        onafterchange="apf.document.execCommand('property', null, {name: 'padding', value: this.value});" />
+                    
+                    <a:label id="lblPack">Pack:</a:label>
+                    <a:dropdown id="ddPack" width="50" prop="pack"
+                      onafterchange="apf.document.execCommand('property', null, {name: 'pack', value: this.value});">
+                        <a:item value="start">Start</a:item>
+                        <a:item value="middle">Middle</a:item>
+                        <a:item value="end">End</a:item>
+                    </a:dropdown>
+                    
+                    <a:checkbox id="elStretch" prop="stretch" values="true|false" margin="0 0 0 3"
+                      onafterchange="apf.document.execCommand('property', null, {name: 'stretch', value: this.value});"> 
+                        Stretch
+                    </a:checkbox>
+                    
+                    <a:divider id="divMoreFeat" />
+                    
+                    <a:label id="lblMargin">Margin:</a:label>
+                    <a:slider id="elMargin" skin="tslider" mask="#" value="5" min="0" max="50" prop="margin"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'margin', value: this.value});" />
+                    <a:label id="lblSpan">Span:</a:label>
+                    <a:spinner id="elSpan" value="1" prop="span" min="1" max="20"
+                        onafterchange="apf.document.execCommand('property', null, {name: 'span', value: this.value});" />
+                    <!--a:label id="lblAlign">Align:</a:label>
+                    <a:dropdown id="ddAlign" width="50" prop="align"
+                      onafterchange="apf.document.execCommand('property', null, {name: 'align', value: this.value});">
+                        <a:item value="">None</a:item>
+                        <a:item value="start">Start</a:item>
+                        <a:item value="end">End</a:item>
+                    </a:dropdown-->
+                    
+                    <a:divider id="divActions" />
+                    
+                    <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
+                        <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                        <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
+                        <a:button id="btnTable" skin="toolbarbutton" onclick="apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
+                        <a:divider id="div1" margin="2 2 0 2" />
+                        <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
+                        <a:divider id="div2" margin="2 2 0 2" />
+                        <a:button id="btnFront" skin="toolbarbutton" onclick="apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
+                        <a:button id="btnForward" skin="toolbarbutton" onclick="apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
+                        <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
+                        <a:button id="btnBack" skin="toolbarbutton" onclick="apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
+                    </a:hbox>
+                </a:hbox>
+            </a:bar>
+        </a:toolbar>
+        
+        <a:script >//<![CDATA[
+            var layout    = ["vbox", "hbox", "table"];
+            var lastList  = [], lastSel, timer;
+            var selection = apf.document.getSelection();
+            selection.addEventListener("update", function(e){
+                clearTimeout(timer);
+                timer = apf.setTimeout(function(){
+                    var sel = selection.$getNodeList();//e.value;
+                    var multiple = sel.length > 1;
+                    var newList = [];
+
+                    btnBar.show();
+
+                    //Multiple
+                    if (multiple) {
+                        newList.push(btnVBox, btnHBox, btnTable, div1, btnEraser, div2, btnFront, btnForward, btnBackward, btnBack);
+                    }
+                    else if (sel.length) {
+                        sel = sel[0];
+                        
+                        if (lastSel != sel) {
+                            var isLayout   = layout.indexOf(sel.localName) > -1;
+                            var isTable    = sel.localName == "table";
+                            var isInLayout = layout.indexOf(sel.parentNode.localName) > -1;
+
+                            if (isLayout)
+                                newList.push(divMoreFeat, btnEraser, divBaseFeat, lblEdge, tbEdge, lblPadding, tbPadding, lblPack, ddPack, elStretch);
+                            else if (sel != app)
+                                newList.push(btnEraser, divActions, div2, btnFront, btnForward, btnBackward, btnBack);
+                            
+                            if (isTable) {
+                                newList.push(lblCols);
+                                newList.push(tbCols);
+                            }
+                            
+                            if (isInLayout) {
+                                newList.push(lblW, elW);
+                                /*if (sel.parentNode.localName != "table")
+                                    newList.push(lblH, elH, lblAlign, ddAlign);
+                                else*/
+                                    newList.push(lblSpan, elSpan);
+    
+                                newList.push(divMoreFeat, lblMargin, elMargin);
+                            }
+                            else
+                                newList.push(/*lblX, elX, lblY, elY,*/ lblW, elW, lblH, elH /*, lblAlign, ddAlign */);
+                        }
+                    }
+
+                    if (lastSel != sel) {
+                        for (var i = 0, il = lastList.length; i < il; i++) {
+                            lastList[i].setProperty("visible", false);
+                        }
+                        lastList = newList;
+                    }
+                    
+                    for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                        prop = (item = newList[i]).prop;
+                        
+                        if (lastSel != sel) {
+                            if (prop == "height" && sel.top && sel.bottom) {
+                                lblH.setProperty("visible", false);
+                                continue;
+                            }
+                            if (prop == "width" && sel.left && sel.right) {
+                                lblW.setProperty("visible", false);
+                                continue;
+                            }
+                            item.setProperty("visible", true);
+                        }
+                        
+                        if (prop) //@todo check this
+                            item.setProperty("value", sel[prop]);    
+                    }
+
+                    lastSel  = sel;
+
+                    apf.layout.processQueue();
+                }, 100);
+            });
+            
+            selection.addEventListener("update-content", function(e){
+                var newList = lastList;
+                var sel     = e.sel;
+
+                if (lastSel != sel)
+                    return;
+                
+                for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                    prop = (item = newList[i]).prop;
+                    
+                    if (lastSel != sel) {
+                        if (prop == "height" && sel.top && sel.bottom) {
+                            lblH.setProperty("visible", false);
+                            continue;
+                        }
+                        if (prop == "width" && sel.left && sel.right) {
+                            lblW.setProperty("visible", false);
+                            continue;
+                        }
+                        //item.setProperty("visible", true);
+                    }
+
+                    if (prop) //@todo check this
+                        item.setProperty("value", sel[prop]);    
+                }
+
+                apf.layout.processQueue();
+            })
+            
+            var nodes = hboxTools.childNodes;
+            for (var i = 0, il = nodes.length; i < il; i++) {
+                if (nodes[i].hide)
+                    nodes[i].hide();
+            }
+            var nodes = btnBar.childNodes;
+            for (var i = 0, il = nodes.length; i < il; i++) {
+                if (nodes[i].hide)
+                    nodes[i].hide();
+            }
+            
+            if (apf.isIE)
+                apf.mouseEventBuffer = 30; //@todo - this should auto-adjust based on the system performance
+        //]]></a:script>
+        
+        <a:menu id="mnuProject" >
+            <a:item hotkey="Ctrl-S">Save</a:item>
+            <a:item>Share</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuContentEditable">
+            <a:item hotkey="Ctrl-Z" disabled="{!apf.window.undoManager.undolength}" onclick="apf.document.execCommand('undo')">Undo</a:item>
+            <a:item hotkey="Ctrl-Y" disabled="{!apf.window.undoManager.redolength}" onclick="apf.document.execCommand('redo')">Redo</a:item>
+            <a:divider />
+            <a:item hotkey="Ctrl-X" onclick="apf.document.execCommand('cut')">Cut</a:item>
+            <a:item hotkey="Ctrl-C" onclick="apf.document.execCommand('copy')">Copy</a:item>
+            <a:item hotkey="Ctrl-V" onclick="apf.document.execCommand('paste')">Paste</a:item>
+            <a:divider />
+            <a:item hotkey="Ctrl-D" onclick="apf.document.execCommand('duplicate')">Duplicate</a:item>
+            <a:divider />
+            <a:item hotkey="Ctrl-2" onclick="apf.document.execCommand('lock')">Lock</a:item>
+            <a:item hotkey="Del" onclick="apf.document.execCommand('remove')">Remove</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuSelect" >
+            <a:item hotkey="Ctrl-Q" onclick="
+              var s = apf.document.getSelection();
+              var p = s.$getFirstNode().parentNode;
+              if (p &amp;&amp; p.focus) p.focus();
+            ">
+                Select Parent
+            </a:item>
+            <a:item hotkey="Ctrl-A" onclick="
+              var s = apf.document.getSelection();
+              var n = s.$getFirstNode().parentNode.childNodes;
+              var c = [];
+              for (var i = 0; i &lt; n.length; i++) {
+                if (n[i].editable &amp;&amp; n[i].$ext) 
+                    c.push(n[i]);
+              }
+              if (c.length)
+                s.$selectList(c);
+            ">
+                Select All
+            </a:item>
+            <a:divider />
+            <a:item hotkey="Shift-Q" onclick="">Ungroup</a:item>
+        </a:menu>
+        
+        <!--a:menu id="mnuAlign">
+            <a:item hotkey="Ctrl-Shift-Up Arrow" onclick="apf.document.execCommand('align', {to: 'top'})">Top</a:item>
+            <a:item hotkey="Ctrl-Shift-Left Arrow" onclick="apf.document.execCommand('align', {to: 'left'})">Left</a:item>
+            <a:item onclick="apf.document.execCommand('align', {to: 'middle'})">Middle</a:item>
+            <a:item hotkey="Ctrl-Shift-Right Arrow" onclick="apf.document.execCommand('align', {to: 'right'})">Right</a:item>
+            <a:item hotkey="Ctrl-Shift-Down Arrow" onclick="apf.document.execCommand('align', {to: 'bottom'})">Bottom</a:item>
+        </a:menu-->
+        
+        <a:window skin="dockwin" width="220" height="185" visible="true" title="Info" buttons="min|close" modal="false" right="10" top="100">
+            <a:table columns="20, 50%, 20, 50%" edge="10" padding="4">
+                <a:label caption="X:" />
+                <a:label caption="{apf.config.x}" textalign="right" />
+                <a:label caption="W:" />
+                <a:label caption="{apf.config.w}" textalign="right" />
+                <a:label caption="Y:" />
+                <a:label caption="{apf.config.y}" textalign="right" />
+                <a:label caption="H:" />
+                <a:label caption="{apf.config.h}" textalign="right" />
+                <a:divider span="4" height="2" margin="2 0 2 0"/>
+                    
+                <a:checkbox id="cbSg" checked="{apf.config.showgrid}" span="2">Show grid</a:checkbox>
+                <a:hbox span="2" edge="0">
+                    <a:label caption="Grid size: " />
+                    <a:filler />
+                    <a:spinner id="spGridSize" value="{apf.config.gridsize}" width="40" min="5" max="25" realtime="true" /> 
+                </a:hbox>
+                
+                <a:divider span="4" height="2" margin="10 0 6 0">Snap to</a:divider>
+                <a:checkbox id="cbGr" checked="{apf.config.snapgrid}" span="2">Grid</a:checkbox>
+                <a:checkbox id="cbGu" checked="{apf.config.snapguide}" span="2">Guides</a:checkbox>
+                <a:checkbox id="cbEl" checked="{apf.config.snapelement}" span="2">Elements</a:checkbox>
+                <a:checkbox id="cbCo" checked="{apf.config.snapcontainer}" span="2">Container</a:checkbox>
+            </a:table>
+            <a:script>
+                /* to be removed */
+                apf.addEventListener("load", function(){
+                    apf.config.$setDynamicProperty("gridsize", "{spGridSize.value}");
+                    apf.config.$setDynamicProperty("showgrid", "{cbSg.value}");
+                    apf.config.$setDynamicProperty("snapgrid", "{cbGr.value}");
+                    apf.config.$setDynamicProperty("snapguide", "{cbGu.value}");
+                    apf.config.$setDynamicProperty("snapelement", "{cbEl.value}");
+                    apf.config.$setDynamicProperty("snapcontainer", "{cbCo.value}");
+                });
+            </a:script>
+        </a:window>
+
+        <a:window id="app" title="Application" icon="application.png" visible="true"  modal="false"
+          width="400" height="400" left="160" top="68" editable="true">
+            <!--a:table left="10" top="10" width="159" height="209" id="Table1" columns="25,25,25,25" edge="6.923076923076923" padding="8.846153846153846"><a:textbox id="Textbox1" value="Textbox1" left="-17" top="12" span="4"/><a:button width="" id="Button1" caption="-" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button></a:table-->
+            
+            <a:table xmlns:a="http://ajax.org/2005/aml" left="10" top="10" width="159" height="209" id="Table1" columns="25,25,25,25" edge="6.923076923076923" padding="8.846153846153846"><a:textbox xmlns:a="http://ajax.org/2005/aml" id="Textbox1" value="Textbox1" left="-17" top="12" span="7"/><a:frame xmlns:a="http://ajax.org/2005/aml" id="Frame1" caption="Frame1" left="-10" top="41" span="4" height="128"/><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="10" top="10" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="" top="" caption="+">Show Errorbox</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" width="" id="Button1" caption="-" editable="true" left="" top=""/><a:button xmlns:a="http://ajax.org/2005/aml" onclick="err.show()" left="10" top="27" caption="+">Show Errorbox</a:button></a:table>
+            
+            <!--a:button width="72" height="25" left="30" top="77">Button 1</a:button>
+            <a:button width="76" height="25" left="173" top="77">Button 2</a:button>
+            <a:button width="100" id="Button1" caption="m" left="103" top="90"/>
+                
+            <a:button xmlns:a="http://ajax.org/2005/aml" width="72" height="25" left="30" top="120">Button 1</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="76" height="25" left="173" top="120">Button 2</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="100" id="Button1" caption="m" left="103" top="133" height="25"/><a:button xmlns:a="http://ajax.org/2005/aml" width="72" height="25" left="30" top="163">Button 1</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="76" height="25" left="173" top="163">Button 2</a:button><a:button xmlns:a="http://ajax.org/2005/aml" width="100" id="Button1" caption="m" left="103" top="176" height="25"/-->
+            
+            <!--a:vbox left="0" top="0" right="0" bottom="0" margin="10">
+                <a:slider />
+                <a:hbox height="100">
+                    <a:label width="100" />
+                    <a:button />
+                </a:hbox>
+                <a:label height="100%" />
+            </a:vbox-->
+            
+            <!--a:vbox left="56" top="25" width="228" height="219" stretch="1">
+                <a:button left="" top="" width="" height="25" id="q24" margin="0"/>
+                <a:label left="" top="" width="" height="46" margin="37.5"/>
+                <a:label left="" top="" width="" height="100%" margin="0"/>
+            </a:vbox--> 
+            
+            <!--a:table>
+                <a:button />
+                <a:button />
+                <a:button />
+                <a:button />
+            </a:table>
+            
+            <a:textbox /-->
+            
+            <!--a:vbox width="200" left="10" top="10">
+                <a:button />
+                <a:checkbox />
+                <a:label>asdl laksjdl ajsdl ajsdlajsdljasldkjalskjdla jslajsdl jalj dslajsdljasl jdal sjdlajsdl jasd</a:label>
+                    
+                <a:tab height="100">
+                    <a:page>
+                        <a:frame left="10" top="10" right="10" bottom="10">
+                    
+                        </a:frame>
+                    </a:page>
+                </a:tab>
+            </a:vbox>
+            
+            <a:hbox bottom="0" right="0" left="0" pack="end">
+                <a:button>test</a:button>
+                <a:button />
+            </a:hbox-->
+            
+            <!--a:button left="30" top="30">test</a:button>
+            <a:button left="30" top="60">test</a:button>
+                
+            <a:frame left="100" right="10" top="10" height="50%-15" />
+            <a:hbox left="100" right="10" bottom="10" height="50%-15">
+                <a:button>test</a:button>
+                <a:button />
+            </a:hbox-->
+            
+            <!--a:bar caption="test" left="10" right="10" top="10" bottom="10">
+                <a:button left="70" top="70" />
+            </a:bar-->
+            <!--a:button left="10" top="100" width="300" /-->
+            
+            <!--a:vbox left="0" top="0" width="200" height="200">
+                <a:label height="25" />
+                <a:label>test</a:label>
+                <a:label>test</a:label>
+                <a:label height="100%"/>
+            </a:vbox-->
+            
+            <!--
+                <a:label height="25" left="10" top="10" width="100" />
+                <a:label left="10" top="40" width="100" />
+                <a:label left="10" top="60" width="100" />
+                <a:label height="20" left="10" top="80" width="100" />
+            -->
+            
+            <!--a:tab id="t" left="5" top="5" right="5" bottom="5">
+                <a:page caption="General">
+                    <a:checkbox id="cb1" left="10" top="10">I love FOWA</a:checkbox>
+                    Test
+                    <a:checkbox left="10" top="30">Panda's are beautiful</a:checkbox>
+                    Test
+                    
+                    <a:frame caption="Test" width="150" height="25" left="30" top="70" />
+                    
+                    <a:button
+                        default = "true"
+                        caption = "Click me"
+                        right   = "10"
+                        bottom  = "10"
+                        width   = "120"
+                        onclick = "
+                            alert(2);
+                        "></a:button>
+                    <a:button
+                        caption = "Don't click me"
+                        right   = "135"
+                        bottom  = "10"
+                        width   = "120"
+                        onclick = "
+                            alert(1);
+                        "></a:button>
+                </a:page>
+                <a:page caption="Advanced">
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    
+                    <a:button width="100" height="30" right="10" bottom="10">Test</a:button>
+                </a:page>
+                <a:page caption="Ajax.org">
+                    <a:tree 
+                      anchors = "5 5 5 5"
+                      model   = "mdl"
+                      each    = "[drive|folder]"
+                      caption = "[@caption]" 
+                      drag    = "true"
+                      drop    = "true" />
+                </a:page>
+            </a:tab-->
+        </a:window>
+
+        <a:model id="mdl" src="filesystem.xml" />
+    </body>
+</html>
