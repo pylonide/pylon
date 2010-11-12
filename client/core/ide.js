@@ -24,6 +24,12 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             this.sbMain       = sbMain;
             this.vbMain       = vbMain;
 
+            this.workspaceDir = window.cloud9config.workspaceDir.replace(/\/+$/, "");
+            this.davPrefix = window.cloud9config.davPrefix.replace(/\/+$/, "");
+            this.settingsUrl = window.cloud9config.settingsUrl;
+            this.sessionId = window.cloud9config.sessionId;
+            this.workspaceId = window.cloud9config.workspaceId;
+
             this.dispatchEvent("load");
 
             /**** Error Handling ****/
@@ -85,33 +91,35 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
         });
 
         ide.addEventListener("extload", function() {
-            //setTimeout(function() {
             // fire up the socket connection:
             var options = {
                 transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling", "jsonp-polling"],
                 transportOptions: {
                     "xhr-polling": {
-                        timeout: 15000
+                        timeout: 30000
                     },
                     "jsonp-polling": {
-                        timeout: 15000
+                        timeout: 30000
                     }
                 }
             };
             ide.socketConnect = function() {
-                clearTimeout(ide.$retryTimer);
-                winReconnect.hide();
-                stServerConnected.activate();
-                ide.dispatchEvent("socketConnect");
+                ide.socket.send(JSON.stringify({
+                    command: "attach",
+                    sessionId: ide.sessionId,
+                    workspaceId: ide.workspaceId
+                }));
             };
 
             ide.socketDisconnect = function() {
                 stProcessRunning.deactivate();
                 ide.dispatchEvent("socketDisconnect");
 
-                winReconnect.show();
                 clearTimeout(ide.$retryTimer);
+                var retries = 0;
                 ide.$retryTimer = setInterval(function() {
+                    if (retries++ == 1)
+                        winReconnect.show();
                     ide.socket.connect();
                 }, 2000);
             };
@@ -122,21 +130,18 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
                 } catch(e) {
                     return;
                 }
+
+                if (message.type == "attached") {
+                    clearTimeout(ide.$retryTimer);
+                    winReconnect.hide();
+                    stServerConnected.activate();
+                }
+
                 ide.dispatchEvent("socketMessage", {
                     message: message
                 });
                 if (message.type && message.type == "state") {
                     stProcessRunning.setProperty("active", message.processRunning);
-                    if (ide.workspaceDir !== message.workspaceDir) {
-                        ide.workspaceDir = message.workspaceDir;
-                        ide.dispatchEvent("workspaceDirChange", {
-                            workspaceDir: ide.workspaceDir
-                        });
-                    }
-                    var isInit = !ide.davPrefix;
-                    ide.davPrefix = message.davPrefix;
-                    if (isInit)
-                        ide.dispatchEvent("ideready")
                 }
             };
 
@@ -145,7 +150,6 @@ require.def("core/ide", ["core/document", "/socket.io/socket.io.js"],
             ide.socket.on("connect",    ide.socketConnect);
             ide.socket.on("disconnect", ide.socketDisconnect);
             ide.socket.connect();
-            //}, 1000);
         });
         
         ide.getActivePageModel = function() {

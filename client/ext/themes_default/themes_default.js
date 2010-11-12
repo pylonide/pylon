@@ -16,17 +16,17 @@ return ext.register("ext/themes_default/themes_default", {
     nodes   : [],
 
     themes  : {
-        "TextMate" : "ace/theme/TextMate",
-        "Eclipse" : "ace/theme/Eclipse",
-        "Dawn" : "ace/theme/Dawn",
-        "IdleFingers" : "ace/theme/IdleFingers",
-        "Twilight" : "ace/theme/Twilight",
-        "Monokai": "ace/theme/Monokai",
-        "Cobalt": "ace/theme/Cobalt",
-        "Mono Industrial": "ace/theme/MonoIndustrial",
-        "Clouds": "ace/theme/Clouds",
-        "Clouds Midnight": "ace/theme/CloudsMidnight",     
-        "krTheme": "ace/theme/KrTheme"        
+        "TextMate" : "ace/theme/textmate",
+        "Eclipse" : "ace/theme/eclipse",
+        "Dawn" : "ace/theme/dawn",
+        "IdleFingers" : "ace/theme/idle_fingers",
+        "Twilight" : "ace/theme/twilight",
+        "Monokai": "ace/theme/monokai",
+        "Cobalt": "ace/theme/cobalt",
+        "Mono Industrial": "ace/theme/mono_industrial",
+        "Clouds": "ace/theme/clouds",
+        "Clouds Midnight": "ace/theme/clouds_midnight",     
+        "krTheme": "ace/theme/kr_theme"        
     },
 
     init : function(){

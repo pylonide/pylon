@@ -7,8 +7,8 @@
 require.def("ext/searchreplace/searchreplace",
     ["core/ide",
      "core/ext",
-     "ace/PluginManager",
-     "ace/Search",
+     "ace/plugin_manager",
+     "ace/search",
      "ext/editors/editors", 
      "text!ext/searchreplace/searchreplace.xml"],
     function(ide, ext, plugins, search, editors, markup) {
