@@ -324,6 +324,9 @@ apf.table = function(struct, tagName){
         },
         
         "align" : function(value){
+            if ("left|right".indexOf(value) == -1)
+                return;
+            
             this.$altExt.align = value;
         }
     }

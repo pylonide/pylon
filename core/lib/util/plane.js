@@ -41,6 +41,10 @@ apf.plane = {
         return item;
     },
     
+    get : function(options){
+        return this.$find(options && options.protect || "default");
+    },
+    
     show : function(o, reAppend, copyCursor, useRealSize, options){
         var item = this.$find(options && options.protect || "default");
         item.show(o, reAppend, copyCursor, useRealSize, options);
