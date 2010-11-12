@@ -24,7 +24,7 @@ exports.main = function(options) {
     var ideProvider = function(projectDir, server) {
         // load plugins:
         var exts = {};
-        Fs.readdirSync(Path.normalize(__dirname + "/../../ext")).forEach(function(name){
+        Fs.readdirSync(Path.normalize(__dirname + "/ext")).forEach(function(name){
             exts[name] = require("ext/" + name);
         });
         
