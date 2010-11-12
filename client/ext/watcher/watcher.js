@@ -18,6 +18,8 @@ return ext.register("ext/watcher/watcher", {
     visible : true,
     
     hook : function() {
+        console.log("Initializing watcher");
+        
         var removedPaths        = {},
             removedPathCount    = 0,
             changedPaths        = {},
@@ -126,7 +128,7 @@ return ext.register("ext/watcher/watcher", {
             }
         }
         
-        ide.addEventListener("socketConnect", function() {
+        stServerConnected.addEventListener("activate", function() {
             var pages = tabEditors.getPages();
             
             pages.forEach(function (page) {
@@ -137,12 +139,13 @@ return ext.register("ext/watcher/watcher", {
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
 
+            console.log("Opened file " + path);
             if (ide.socket)
                 sendWatchFile(path);
             else
-                ide.addEventListener("socketConnect", function () {
+                stServerConnected.addEventListener("activate", function () {
                     sendWatchFile(path);
-                    ide.removeEventListener("socketConnect", arguments.callee);
+                    stServerConnected.removeEventListener("activate", arguments.callee);
                 });
         });        
 
@@ -152,9 +155,9 @@ return ext.register("ext/watcher/watcher", {
             if (ide.socket)
                 sendUnwatchFile(path);
             else
-                ide.addEventListener("socketConnect", function () {
+                stServerConnected.addEventListener("activate", function () {
                     sendUnwatchFile(path);
-                    ide.removeEventListener("socketConnect", arguments.callee);
+                    stServerConnected.removeEventListener("activate", arguments.callee);
                 });
         });
         
