@@ -35,6 +35,7 @@ module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
         });
 
         client.on("disconnect", function() {
+            _self.execHook("disconnect");
             delete _self.clients[client.sessionId];
         });
 
@@ -77,7 +78,7 @@ module.exports = IdeServer = function(workspaceDir, server, socketIo, exts) {
         for (var name in this.exts) {
             ext   = this.exts[name];
             hooks = ext.getHooks();
-            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true)
+            if (hooks.indexOf(hook) > -1 && ext[hook].apply(ext, args) === true) 
                 return;
         }
         // if we get here, no hook function was successfully delegated to an

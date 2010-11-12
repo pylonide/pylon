@@ -20,6 +20,16 @@ require.def("core/util",
                 winConfirmHeader.$ext.innerHTML = header;
                 winConfirmMsg.$ext.innerHTML = msg;
                 btnConfirmOk.onclick = onconfirm;
+            },
+            question : function(title, header, msg, onyes, onyestoall, onno, onnotoall) {
+                winQuestion.show();   
+                winQuestion.setAttribute("title", title);
+                winQuestionHeader.$ext.innerHTML = header;
+                winQuestionMsg.$ext.innerHTML = msg;
+                btnQuestionYes.onclick = onyes;
+                btnQuestionYesToAll.onclick = onyestoall;
+                btnQuestionNo.onclick = onno;
+                btnQuestionNoToAll.onclick = onnotoall;
             }
         };
     }

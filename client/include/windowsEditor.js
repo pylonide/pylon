@@ -225,8 +225,7 @@ return ext.register("ext/editors/editors", {
             tabEditors.setAttribute("buttons", "close,scale");
 
         fake.$at.addEventListener("afterchange", function(){
-            var val = (!fake.$at.ignoreChange && this.undolength ? 1 : undefined);
-            fake.$at.ignoreChange = false;
+            var val = (this.undolength ? 1 : undefined);
             if (fake.changed != val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
@@ -266,7 +265,7 @@ return ext.register("ext/editors/editors", {
         page.$doc.dispatchEvent("close");
 
         mdl.removeXml("data");
-        ide.dispatchEvent("closefile", {xmlNode: mdl.data});
+        ide.dispatchEvent("clearfilecache", {xmlNode: mdl.data});
 
         //mdl.unshare();
         mdl.destroy();
@@ -400,17 +399,6 @@ return ext.register("ext/editors/editors", {
 
             if (state != (pNode && pNode.xml))
                 return true;
-        });
-        
-        ide.addEventListener("afterreload", function(e) {
-            var doc     = e.doc,
-                acedoc  = doc.acedoc,
-                sel     = acedoc.getSelection();
-            
-            sel.selectAll();
-            acedoc.getUndoManager().ignoreChange = true;
-            acedoc.replace(sel.getRange(), e.data);
-            sel.clearSelection();
         });
     },
 
