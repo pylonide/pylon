@@ -610,7 +610,22 @@ apf.datagrid = function(struct, tagName){
         for (var cellType, cell, h, i = 0; i < this.$headings.length; i++) {
             h = this.$headings[i];
             
-            if (h.tree) {
+            if (h.tree && h.check) {
+                cellType = "treecheckcell";
+                
+                this.$getNewContext("treecheckcell");
+                cell = this.$getLayoutNode("treecheckcell");
+                var oc = this.$getLayoutNode("treecheckcell", "openclose");
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);\
+                    event.cancelBubble = true;\
+                    apf.window.$mousedown(event);");
+            
+                oc.setAttribute("ondblclick", "event.cancelBubble = true");
+            }
+            else if (h.tree) {
                 cellType = "treecell";
                 
                 this.$getNewContext("treecell");
@@ -917,7 +932,7 @@ apf.datagrid = function(struct, tagName){
                 //@todo copy all non-known properties of the prop element
 
                 if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
-                    info.caption   = h.caption || "[text()]";
+                    info.caption   = h.eachcaption || "[text()]";
                     info.eachvalue = h.eachvalue || "[@value]";
                     info.each      = h.each || "item";
                     info.model     = h.model || "{" + this.id + ".selected}";
