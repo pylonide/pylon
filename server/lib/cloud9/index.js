@@ -33,6 +33,9 @@ exports.main = function(options) {
             transports:  ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
         };
         var socketIo = IO.listen(server, socketOptions);
+        socketIo.on("clientConnect", function(client) {
+            ide.addClientConnection(client, null);
+        });
         
         var name = projectDir.split("/").pop();
         var serverOptions = {
@@ -44,7 +47,7 @@ exports.main = function(options) {
             workspaceId: name,
             name: name
         }
-        var ide = new IdeServer(serverOptions, server, socketIo, exts);
+        var ide = new IdeServer(serverOptions, server, exts);
         
         return function(req, res, next) {
             req.sessionId = "123";
