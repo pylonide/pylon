@@ -2063,8 +2063,14 @@ apf.lm_exec = new (function(){
     }
 
     function _xptm(m, x){       // return the query with model wrapped in an object
+        if (m && !m.$isModel) {
+            var node = m;
+            m = apf.xmldb.findModel(m);
+            x = apf.xmlToXpath(node, m.data) + "/" + x;
+        }
+        
         return {
-            model:    (m && m.$isModel ? m : (m && apf.xmldb.findModel(m) || m)),
+            model:    m,
             xpath:    x,
             toString: function(){
                 return "LM Xpath object with model: " + this.x

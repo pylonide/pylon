@@ -933,10 +933,25 @@ apf.datagrid = function(struct, tagName){
 
                 if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
                     info.caption   = h.eachcaption || "[text()]";
-                    info.eachvalue = h.eachvalue || "[@value]";
-                    info.each      = h.each || "item";
-                    info.model     = h.model || "{" + this.id + ".selected}";
+                    info.eachvalue = h.eachvalue; // || "[@value]";
+                    
+                    var model;
+                    if (model = h.getAttribute("model")) {
+                        info.model = model;
+                        info.each  = h.each;
+                    }
+                    else {
+                        /*var each = h.each;
+                        if (each.charAt(0) == "[")
+                            each = each.substr(1, each.length - 2);
+                        info.each  = "[{" + this.id + ".selected}::" + each + "]";*/
+                        info.model = "{" + this.id + ".selected}"
+                        info.each = h.each;
+                    }
                 }
+                
+                if (h.skin)
+                    info.skin = h.skin;
 
                 oEditor = this.$editors[editor] = new constr(info);
 
@@ -979,12 +994,21 @@ apf.datagrid = function(struct, tagName){
             else {
                 oEditor = this.$editors[editor];
                 
-                if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model)
-                    oEditor.setAttribute("model", "{" + this.id + ".selected}");
+                if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
+                    //oEditor.setAttribute("model", "{" + this.id + ".selected}");
+                    /*var each = h.each;
+                    if (each.charAt(0) == "[")
+                        each = each.substr(1, each.length - 2);
+                    oEditor.setAttribute("each", "[{" + this.id + ".selected}::" + each + "]");*/
+                    /*apf.queue.empty();*/
+                    oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2) 
+                        + "]");
+                }
 
-                oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                /*oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
                     + (v = h.value).substr(1, v.length - 2) 
-                    + "]");
+                    + "]");*/
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
@@ -1030,6 +1054,9 @@ apf.datagrid = function(struct, tagName){
         if (this.$lastEditor) {
             var ed = this.$lastEditor;
             this.$lastEditor = null;
+
+            if (ed[0].hasFeature(apf.__MULTISELECT__)) // && !ed[0].model
+                ed[0].$clearDynamicProperty("value");
 
             //this.$lastEditor[0].$blur();
             ed[0].setProperty("visible", false);

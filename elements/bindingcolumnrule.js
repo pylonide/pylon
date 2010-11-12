@@ -49,13 +49,18 @@ apf.BindingColumnRule = function(struct, tagName){
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
-        css     : 1,
-        icon    : 1,
-        caption : 1
+        css         : 1,
+        icon        : 1,
+        caption     : 1,
+        eachcaption : 1,
+        eachvalue   : 1,
+        each        : 1,
+        icon        : 1
     }, this.$attrExcludePropBind);
     
     this.$supportedProperties.push("tree", "icon", "caption", "width", "options", 
-        "check", "editor", "colspan", "align", "css", "sorted");
+        "check", "editor", "colspan", "align", "css", "sorted", "each", 
+        "eachvalue", "eachcaption", "model");
     
     this.$booleanProperties["tree"]  = true;
     this.$booleanProperties["check"] = true;
