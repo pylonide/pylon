@@ -8,8 +8,9 @@ var Path             = require("path"),
     Spawn            = require("child_process").spawn,
     NodeDebugProxy   = require("./nodedebugproxy"),
     ChromeDebugProxy = require("./chromedebugproxy"),
-    Plugin           = require("lib/cloud9/plugin"),
-    sys              = require("sys");
+    Plugin           = require("./plugin"),
+    sys              = require("sys"),
+    netutil          = require("./netutil");
 
 var DebuggerPlugin = module.exports = function(server) {
     this.server = server;
@@ -40,9 +41,9 @@ sys.inherits(DebuggerPlugin, Plugin);
                 this.$run(message, client);
                 break;
             case "rundebug":
-                findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
-                    message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
+                    message.preArgs = ["--debug=" + _self.NODE_DEBUG_PORT];
                     message.debug = true;
                     _self.$run(message, client);
     
@@ -52,7 +53,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                 });
                 break;
             case "rundedugbrk":
-                findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
+                netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
                     
                     message.preArgs = ["--debug-brk=" + _self.NODE_DEBUG_PORT];
@@ -205,30 +206,3 @@ sys.inherits(DebuggerPlugin, Plugin);
         this.nodeDebugProxy.connect();
     };
 }).call(DebuggerPlugin.prototype);
-
-var net = require("net");
-
-function findFreePort(start, hostname, callback) {
-    var port = start;
-    asyncRepeat(function(next, done) {
-        var stream = net.createConnection(port, hostname);
-        
-        stream.on("connect", function() {
-            stream.end();
-            port++;
-            next();
-        });
-        
-        stream.on("error", function() {
-            done();
-        });
-    }, function() {
-        callback(port);
-    });
-}
-
-function asyncRepeat(callback, onDone) {
-    callback(function() {
-        asyncRepeat(callback, onDone);
-    }, onDone);
-}
