@@ -262,27 +262,6 @@ apf.ContentEditable = function() {
         }
         
         if (value) {
-            //#ifdef __WITH_DEBUG_WIN
-            if (!apf.ContentEditable.inited && this.parentNode.nodeType == 9) {
-                apf.getData(apf.basePath + "/debugwin/editable.css", {
-                    callback: function(data){
-                        apf.importCssString(data);
-                    }
-                });
-
-                if (!apf.loaded)
-                    apf.addEventListener("load", function(){
-                        apf.document.documentElement.insertMarkup(apf.basePath 
-                            + "/debugwin/editable.inc");
-                    });
-                else
-                    apf.document.documentElement.insertMarkup(apf.basePath 
-                        + "/debugwin/editable.inc");
-                
-                apf.ContentEditable.inited = true;
-            }
-            //#endif
-            
             if (this.$canEdit && this.$ext && !this.$coreHtml) {
                 this.dragOutline = true; //@todo via config setting??
 
