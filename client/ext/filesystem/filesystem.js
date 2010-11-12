@@ -262,7 +262,6 @@ return ext.register("ext/filesystem/filesystem", {
             });
         });
         
-<<<<<<< HEAD
         ide.addEventListener("reload", function(e) {
             var doc  = e.doc,
                 node = doc.getNode(),
@@ -283,9 +282,7 @@ return ext.register("ext/filesystem/filesystem", {
             });
         });   
 
-        ide.addEventListener("workspaceDirChange", function(e) {
-            fs.setProjectName(ide.workspaceDir.split("/").pop());
-        });
+        fs.setProjectName(ide.workspaceDir.split("/").pop());
     },
 
     setProjectName : function(name) {
