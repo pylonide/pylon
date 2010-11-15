@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var fs      = require("fs"),
-    plugin  = require("lib/cloud9/plugin");
+    plugin  = require("cloud9/plugin");
 
 function cloud9WatcherPlugin(server) {
     this.server = server;

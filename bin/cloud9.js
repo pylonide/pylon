@@ -86,7 +86,7 @@ if (parseInt(process.version.split(".")[1]) < 2) {
 var options = parseArguments(process.argv.slice(2));
 var version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 
-require("../server/lib/cloud9").main(options);
+require("../server/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                           _<iIIviiiiiiiiiillli<_.\n\
