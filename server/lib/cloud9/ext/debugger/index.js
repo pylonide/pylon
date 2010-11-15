@@ -8,9 +8,9 @@ var Path             = require("path"),
     Spawn            = require("child_process").spawn,
     NodeDebugProxy   = require("./nodedebugproxy"),
     ChromeDebugProxy = require("./chromedebugproxy"),
-    Plugin           = require("./plugin"),
+    Plugin           = require("../../plugin"),
     sys              = require("sys"),
-    netutil          = require("./netutil");
+    netutil          = require("../../netutil");
 
 var DebuggerPlugin = module.exports = function(server) {
     this.server = server;
