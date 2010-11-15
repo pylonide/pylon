@@ -10,8 +10,8 @@ var Plugin = require("cloud9/plugin"),
     Async  = require("async"),
     sys    = require("sys");
 
-var ShellPlugin = module.exports = function(server) {
-    this.server = server;
+var ShellPlugin = module.exports = function(ide) {
+    this.ide = ide;
     this.hooks = ["command"];
 }
 
@@ -45,11 +45,11 @@ sys.inherits(ShellPlugin, Plugin);
 
     this["internal-isfile"] = function(message) {
         var file  = message.argv.pop(),
-            path  = message.cwd || this.server.workspaceDir,
+            path  = message.cwd || this.ide.workspaceDir,
             _self = this;
         path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
-        if (path.indexOf(this.server.workspaceDir) === -1) {
+        if (path.indexOf(this.ide.workspaceDir) === -1) {
             this.sendResult();
             return;
         }
@@ -70,9 +70,9 @@ sys.inherits(ShellPlugin, Plugin);
         var commands = {},
             _self    = this;
 
-        Async.list(Object.keys(this.server.exts))
+        Async.list(Object.keys(this.ide.exts))
              .each(function(sName, next) {
-                 var oExt = _self.server.getExt(sName);
+                 var oExt = _self.ide.getExt(sName);
                  if (oExt["$commandHints"]) {
                      oExt["$commandHints"](commands, message, next);
                  }
@@ -117,11 +117,11 @@ sys.inherits(ShellPlugin, Plugin);
 
     this.cd = function(message) {
         var to    = message.argv.pop(),
-            path  = message.cwd || this.server.workspaceDir,
+            path  = message.cwd || this.ide.workspaceDir,
             _self = this;
         if (to != "/") {
             path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-            if (path.indexOf(this.server.workspaceDir) === -1)
+            if (path.indexOf(this.ide.workspaceDir) === -1)
                 return this.sendResult();
             Fs.stat(path, function(err, stat) {
                 if (err) {

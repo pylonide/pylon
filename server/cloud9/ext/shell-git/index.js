@@ -7,8 +7,8 @@
 var Plugin = require("cloud9/plugin");
 var sys    = require("sys");
 
-var ShellGitPlugin = module.exports = function(server) {
-    this.server = server;
+var ShellGitPlugin = module.exports = function(ide) {
+    this.ide = ide;
     this.hooks = ["command"];
 }
 

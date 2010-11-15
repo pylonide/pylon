@@ -12,8 +12,8 @@ var Path             = require("path"),
     sys              = require("sys"),
     netutil          = require("cloud9/netutil");
 
-var DebuggerPlugin = module.exports = function(server) {
-    this.server = server;
+var DebuggerPlugin = module.exports = function(ide) {
+    this.ide = ide;
     this.hooks = ["command"];
 }
 
@@ -22,7 +22,7 @@ sys.inherits(DebuggerPlugin, Plugin);
 (function() {
     this.init = function() {
         var _self = this;
-        this.server.getExt("state").on("statechange", function(state) {
+        this.ide.getExt("state").on("statechange", function(state) {
             state.debugClient    = !!_self.debugClient;
             state.processRunning = !!_self.child;
         });
@@ -67,25 +67,25 @@ sys.inherits(DebuggerPlugin, Plugin);
                 break;
             case "rundebugchrome":
                 if (this.chromeDebugProxy) {
-                    this.server.error("Chrome debugger already running!", 7, message);
+                    this.ide.error("Chrome debugger already running!", 7, message);
                     break;
                 }
                 this.chromeDebugProxy = new ChromeDebugProxy(this.CHROME_DEBUG_PORT);
                 this.chromeDebugProxy.connect();
 
                 this.chromeDebugProxy.addEventListener("connection", function() {
-                    _self.server.broadcast('{"type": "chrome-debug-ready"}');
+                    _self.ide.broadcast('{"type": "chrome-debug-ready"}');
                 });
                 break;
             case "debugnode":
                 if (!this.nodeDebugProxy)
-                    this.server.error("No debug session running!", 6, message);
+                    this.ide.error("No debug session running!", 6, message);
                 else
                     this.nodeDebugProxy.send(message.body);
                 break;
             case "debugattachnode":
                 if (this.nodeDebugProxy)
-                    this.server.broadcast('{"type": "node-debug-ready"}');
+                    this.ide.broadcast('{"type": "node-debug-ready"}');
                 break;
             case "kill":
                 var child = this.child;
@@ -113,22 +113,22 @@ sys.inherits(DebuggerPlugin, Plugin);
         var _self = this;
 
         if (this.child)
-            return _self.server.error("Child process already running!", 1, message);
+            return _self.ide.error("Child process already running!", 1, message);
 
-        var file = _self.server.workspaceDir + "/" + message.file;
+        var file = _self.ide.workspaceDir + "/" + message.file;
         
         Path.exists(file, function(exists) {
            if (!exists)
-               return _self.server.error("File does not exist: " + message.file, 2, message);
+               return _self.ide.error("File does not exist: " + message.file, 2, message);
             
-           var cwd = _self.server.workspaceDir + "/" + (message.cwd || "");
+           var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
-                   return _self.server.error("cwd does not exist: " + message.cwd, 3, message);
+                   return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
                 if(file.match(/\.js$/)){
                    var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                   _self.$runProc(_self.server.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+                   _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
                 } else {
                    _self.$runProc(file, message.args||[], cwd, message.env || {}, false);
                 }
@@ -147,8 +147,8 @@ sys.inherits(DebuggerPlugin, Plugin);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.server.getExt("state").publishState();
-        _self.server.broadcast(JSON.stringify({"type": "node-start"}));
+        _self.ide.getExt("state").publishState();
+        _self.ide.broadcast(JSON.stringify({"type": "node-start"}));
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
@@ -160,12 +160,12 @@ sys.inherits(DebuggerPlugin, Plugin);
                     "stream": stream,
                     "data": data.toString("utf8")
                 };
-                _self.server.broadcast(JSON.stringify(message));
+                _self.ide.broadcast(JSON.stringify(message));
             };
         }
 
         child.on("exit", function(code) {
-            _self.server.broadcast(JSON.stringify({"type": "node-exit"}));
+            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}));
 
             _self.debugClient = false;
             delete _self.child;
@@ -179,10 +179,10 @@ sys.inherits(DebuggerPlugin, Plugin);
         var _self = this;
 
         if (!this.debugClient)
-            return this.server.error("No debuggable application running", 4, message);
+            return this.ide.error("No debuggable application running", 4, message);
 
         if (this.nodeDebugProxy)
-            return this.server.error("Debug session already running", 5, message);
+            return this.ide.error("Debug session already running", 5, message);
 
         this.nodeDebugProxy = new NodeDebugProxy(this.NODE_DEBUG_PORT);
         this.nodeDebugProxy.on("message", function(body) {
@@ -190,11 +190,11 @@ sys.inherits(DebuggerPlugin, Plugin);
                 "type": "node-debug",
                 "body": body
             };
-            _self.server.broadcast(JSON.stringify(msg));
+            _self.ide.broadcast(JSON.stringify(msg));
         });
 
         this.nodeDebugProxy.on("connection", function() {
-            _self.server.broadcast('{"type": "node-debug-ready"}');
+            _self.ide.broadcast('{"type": "node-debug-ready"}');
         });
 
         this.nodeDebugProxy.on("end", function() {
