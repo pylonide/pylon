@@ -262,6 +262,26 @@ return ext.register("ext/filesystem/filesystem", {
             });
         });
         
+        ide.addEventListener("reload", function(e) {
+            var doc  = e.doc,
+                node = doc.getNode(),
+                path = node.getAttribute("path");
+            
+            console.log("Reloading file " + path);
+            fs.readFile(path, function(data, state, extra) {
+	            if (state != apf.SUCCESS) {
+	                if (extra.status == 404)
+	                    ide.dispatchEvent("filenotfound", {
+	                        node : node,
+	                        url  : extra.url,
+	                        path : path
+	                    });
+	            } else {
+	               ide.dispatchEvent("afterreload", {doc : doc, data : data});
+	            }
+            });
+        });   
+
         fs.setProjectName(ide.workspaceDir.split("/").pop());
     },
 

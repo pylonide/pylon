@@ -1,0 +1,6 @@
+{
+    "name"          : "watcher",
+    "description"   : "Provides notifications to the client on file changes",
+    "version"       : "0.1",
+    "author"        : "Ajax.org B.V. <info@ajax.org>"
+}
