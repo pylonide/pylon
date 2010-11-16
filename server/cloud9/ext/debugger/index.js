@@ -52,7 +52,7 @@ sys.inherits(DebuggerPlugin, Plugin);
                     }, 100);
                 });
                 break;
-            case "rundedugbrk":
+            case "rundebugbrk":
                 netutil.findFreePort(this.NODE_DEBUG_PORT, "localhost", function(port) {
                     _self.NODE_DEBUG_PORT = port;
                     

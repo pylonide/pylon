@@ -7,8 +7,8 @@ require ("../support/paths");
 
 var Sys = require("sys"),
     Fs  = require("fs"),
-    Parser = require("cloud9/optparse")
-    mapOptions = {
+    Parser = require("cloud9/optparse"),
+    parser = new Parser({
         w: { key: "workspace", hint: "WORKSPACE_DIR ('{def}')", def: "." },
         p: { key: "port", parser: parseInt, hint: "PORT ({def})", def: 3000 },
         l: { key: "ip", hint: "LISTEN_IP ('{def}')", def: "127.0.0.1" },
@@ -24,8 +24,7 @@ var Sys = require("sys"),
             },
             hint: "configFile"
         }
-    },
-    parser = new Parser(mapOptions);
+    });
 
 
 if (parseInt(process.version.split(".")[1]) < 2) {
