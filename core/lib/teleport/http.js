@@ -434,8 +434,6 @@ apf.http = function(){
             }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
-            if (!apf.isWebkit)
-                setRequestHeader("User-Agent", "Ajax.org Teleport 3.0"); //@deprecated
             setRequestHeader("X-Requested-With", "XMLHttpRequest");
             if (!options.headers || !options.headers["Content-type"])
                 setRequestHeader("Content-type", options.contentType || this.contentType
