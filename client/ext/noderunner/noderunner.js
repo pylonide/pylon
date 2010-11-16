@@ -53,7 +53,7 @@ return ext.register("ext/noderunner/noderunner", {
             var data = e.data;
             if (data.sender != "noderunner")
                 return;
-            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (data.isfile) {
                 require("ext/debugger/debugger").showFile(path);
                 require("ext/run/run").run(false);
@@ -101,7 +101,7 @@ return ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "node-data":
-                log.logNodeStream(message.data, message.stream, ide.workspaceDir, ide.davPrefix, true);
+                log.logNodeStream(message.data, message.stream, true);
                 break;
                 
             case "error":
@@ -135,7 +135,7 @@ return ext.register("ext/noderunner/noderunner", {
 
         var page = ide.getActivePageModel();
         var command = {
-            "command" : debug ? "RunDebug" : "Run",
+            "command" : debug ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
             "args"    : args || "",
             "env"     : {

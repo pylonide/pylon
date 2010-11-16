@@ -189,14 +189,14 @@ return ext.register("ext/filesystem/filesystem", {
     
     init : function(amlNode){
         this.model = new apf.model();
-        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='/workspace' root='1'/></data>");
+        this.model.load("<data><folder type='folder' name='" + this.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
 
         var url;
         if (location.host) {
-	        var dav_url = location.href.replace(location.hash, '');
+            var dav_url = location.href.replace(location.path + location.hash, "") + ide.davPrefix;
             this.webdav = new apf.webdav({
                 id  : "davProject",
-                url : dav_url+"workspace"
+                url : dav_url
             });
             url = "{davProject.getroot()}";
         }
@@ -221,7 +221,7 @@ return ext.register("ext/filesystem/filesystem", {
             var data = e.data;
             if (data.sender != "filesystem")
                 return;
-            var path = data.cwd.replace(ide.workspaceDir.replace(/\/+$/, ""), "/workspace");
+            var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (data.isfile)
                 require("ext/debugger/debugger").showFile(path);
             else
@@ -254,32 +254,35 @@ return ext.register("ext/filesystem/filesystem", {
                     }
                 }
                 else {
-                    if (!ide.davPrefix) {
-                        /*util.alert(
-                            "Could not connect to server backend",
-                            "Could not connect",
-                            "There is more than one session open with the server. " +
-                            "This is currently not supported. Please close the other " +
-                            "sessions and restart this one.");
-                        return;*/
-                        
-                        ide.addEventListener("ideready", function(){
-                            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-                            ide.removeEventListener("ideready", arguments.callee);
-                        });
-                    }
-                    else
-                        node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
+	                node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
                     
                     doc.setValue(data);
-                    ide.dispatchEvent("afteropenfile", {doc: doc});
+	                ide.dispatchEvent("afteropenfile", {doc: doc});	                
                 }
             });
         });
+        
+        ide.addEventListener("reload", function(e) {
+            var doc  = e.doc,
+                node = doc.getNode(),
+                path = node.getAttribute("path");
+            
+            console.log("Reloading file " + path);
+            fs.readFile(path, function(data, state, extra) {
+	            if (state != apf.SUCCESS) {
+	                if (extra.status == 404)
+	                    ide.dispatchEvent("filenotfound", {
+	                        node : node,
+	                        url  : extra.url,
+	                        path : path
+	                    });
+	            } else {
+	               ide.dispatchEvent("afterreload", {doc : doc, data : data});
+	            }
+            });
+        });   
 
-        ide.addEventListener("workspaceDirChange", function(e) {
-            fs.setProjectName(e.workspaceDir.replace(/\/+$/, "").split("/").pop());
-        });
+        fs.setProjectName(ide.workspaceDir.split("/").pop());
     },
 
     setProjectName : function(name) {
