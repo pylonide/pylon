@@ -14,3 +14,22 @@ exports.staticProvider = function(path, mount) {
         }
     };
 }
+
+exports.errorHandler = function() {
+    return function(err, req, res, next) {
+        if (!(err instanceof Error)) {
+            err = new error.InternalServerError(err + "")
+        }
+        else if (!(err instanceof error.HttpError)) {
+            err.code = 500
+            err.defaultMessage = "Internal Server Error"
+        }
+
+        res.writeHead(err.code, {
+            "Content-Type": "text/plain"
+        });
+        res.end(err.message + err.stack?("\n" + err.stack):"");
+        if (err.stack)
+            console.log("Exception found" + err.message + "\n" + err.stack);
+    }
+};
