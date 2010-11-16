@@ -18,7 +18,7 @@ return ext.register("ext/watcher/watcher", {
     visible : true,
     
     hook : function() {
-        console.log("Initializing watcher");
+        // console.log("Initializing watcher");
         
         var removedPaths        = {},
             removedPathCount    = 0,
@@ -27,7 +27,7 @@ return ext.register("ext/watcher/watcher", {
             ignoredPaths        = {};
             
         function sendWatchFile(path) {
-            console.log("Sending watchFile message for file " + path);
+            // console.log("Sending watchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "watchFile",
@@ -36,7 +36,7 @@ return ext.register("ext/watcher/watcher", {
         }
         
         function sendUnwatchFile(path) {
-            console.log("Sending unwatchFile message for file " + path);
+            // console.log("Sending unwatchFile message for file " + path);
             ide.socket.send(JSON.stringify({
                 "command"     : "watcher",
                 "type"        : "unwatchFile",
@@ -88,8 +88,8 @@ return ext.register("ext/watcher/watcher", {
 	                    winQuestion.hide();
 	                }
                 );
-                btnQuestionYesToAll.setAttribute("disabled", removedPathCount == 1);
-                btnQuestionNoToAll.setAttribute("disabled", removedPathCount == 1);
+                btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
+                btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
             } else if (changedPaths[path]) {
                 util.question(
                     "File changed, reload tab?",
@@ -123,8 +123,8 @@ return ext.register("ext/watcher/watcher", {
                         winQuestion.hide();
                     }
                 );
-                btnQuestionYesToAll.setAttribute("disabled", changedPathCount == 1);
-                btnQuestionNoToAll.setAttribute("disabled", changedPathCount == 1);
+                btnQuestionYesToAll.setAttribute("visible", changedPathCount > 1);
+                btnQuestionNoToAll.setAttribute("visible", changedPathCount > 1);
             }
         }
         
@@ -139,7 +139,7 @@ return ext.register("ext/watcher/watcher", {
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
 
-            console.log("Opened file " + path);
+            // console.log("Opened file " + path);
             if (ide.socket)
                 sendWatchFile(path);
             else
@@ -164,7 +164,7 @@ return ext.register("ext/watcher/watcher", {
         ide.addEventListener("afterfilesave", function(e) {
             var path = e.node.getAttribute("path");
             
-            console.log("Adding " + path + " to ignore list");
+            // console.log("Adding " + path + " to ignore list");
             ignoredPaths[path] = path;
         });
                 
@@ -188,7 +188,7 @@ return ext.register("ext/watcher/watcher", {
                     break;
                 case "change":
                     if (ignoredPaths[path]) {
-                        console.log("Ignoring change notification for file " + path);
+                        // console.log("Ignoring change notification for file " + path);
                         delete ignoredPaths[path];
                     } else if (!changedPaths[path]) {
                         changedPaths[path] = path;

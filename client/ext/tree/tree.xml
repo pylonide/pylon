@@ -27,6 +27,11 @@
     ]]></a:script>
 
     <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
+        <a:button
+          top="-20"
+          right="20"
+          icon="arrow_rotate_anticlockwise.png" 
+          onclick="require('ext/tree/tree').refresh()" />
         <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true">
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
@@ -47,12 +52,12 @@
             <a:drop match="[folder|file]" target="[folder]"
                 action="tree-append" copy="{event.ctrlKey}" />
         </a:tree>
-
         <a:menu id="mnuCtxTree">
             <a:item match="[file]" class="strong" onclick="
                 require('core/ide').dispatchEvent('openfile', {node: apf.activeElement.selected});
             ">Edit</a:item>
             <a:divider />
+            <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
             <a:item onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />

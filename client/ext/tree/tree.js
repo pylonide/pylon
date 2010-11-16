@@ -11,12 +11,16 @@ require.def("ext/tree/tree",
     function(ide, ext, fs, settings, panels, markup) {
 
 return ext.register("ext/tree/tree", {
-    name    : "Tree",
-    dev     : "Ajax.org",
-    alone   : true,
-    type    : ext.GENERAL,
-    markup  : markup,
-    visible : true,
+    name            : "Tree",
+    dev             : "Ajax.org",
+    alone           : true,
+    type            : ext.GENERAL,
+    markup          : markup,
+    visible         : true,
+    currentSettings : [],
+    expandedList    : {},
+    loading         : false,
+    changed         : false,
     
     //@todo deprecated?
     getSelectedPath: function() {
@@ -57,35 +61,35 @@ return ext.register("ext/tree/tree", {
 
         /**** Support for state preservation ****/
         
-        var expandedList = {}, loading = false, changed = false;
+        var _self = this;
+        
         trFiles.addEventListener("expand", function(e){
-            expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
+            _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
 
-            if (!loading) {
-                changed = true;
+            if (!_self.loading) {
+                _self.changed = true;
                 settings.save();
             }
         });
         trFiles.addEventListener("collapse", function(e){
-            delete expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+            delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
             
-            if (!loading) {
-                changed = true;
+            if (!_self.loading) {
+                _self.changed = true;
                 settings.save();
             }
         });
 
-        var currentSettings = [];
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/tree");
             if (strSettings) {
-                loading = true;
-                currentSettings = apf.unserialize(strSettings);
+                _self.loading = true;
+                _self.currentSettings = apf.unserialize(strSettings);
                 
                 //Unstable - temporary fix
                 try{
-                    trFiles.expandList(currentSettings, function(){
-                        loading = false;
+                    trFiles.expandList(_self.currentSettings, function(){
+                        _self.loading = false;
                     });
                 }catch(e){
                     e.model.setQueryValue("auto/tree/text()", "");
@@ -94,22 +98,22 @@ return ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("savesettings", function(e){
-            if (!changed)
+            if (!_self.changed)
                 return;
             
             var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
 
-            currentSettings = [];
+            _self.currentSettings = [];
 
             var path, id, lut = {};
-            for (id in expandedList) {
+            for (id in _self.expandedList) {
                 try {
-                    path = apf.xmlToXpath(expandedList[id], trFiles.xmlRoot);
+                    path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
                     lut[path] = true;
                 }
                 catch(e){
                     //Node is deleted
-                    delete expandedList[id];
+                    delete _self.expandedList[id];
                 }
             }
             
@@ -125,12 +129,27 @@ return ext.register("ext/tree/tree", {
                 } while(lut[cc]);
                 
                 if (!parts.length)
-                    currentSettings.push(path);
+                    _self.currentSettings.push(path);
             }
             
-            xmlSettings.nodeValue = apf.serialize(currentSettings);
+            xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });
+    },
+
+    refresh : function(){
+        trFiles.getModel().load("<data><folder type='folder' name='" + "Project" + "' path='" + ide.davPrefix + "' root='1'/></data>");
+        this.expandedList = {};
+        this.loading = true;
+        try {
+            var _self = this;
+                    
+            trFiles.expandList(this.currentSettings, function(){
+                _self.loading = false;
+            });
+        } catch(e) {
+        
+        }
     },
 
     enable : function(){

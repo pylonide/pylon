@@ -225,8 +225,13 @@ return ext.register("ext/editors/editors", {
             tabEditors.setAttribute("buttons", "close,scale");
 
         fake.$at.addEventListener("afterchange", function(){
-            var val = (!fake.$at.ignoreChange && this.undolength ? 1 : undefined);
-            fake.$at.ignoreChange = false;
+            var val;
+            
+            if (fake.$at.ignoreChange) {
+                val = undefined;
+                fake.$at.ignoreChange = false;
+            } else
+                val = this.undolength ? 1 : undefined;
             if (fake.changed != val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
