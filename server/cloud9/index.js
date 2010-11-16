@@ -2,7 +2,7 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-require("../../../support/paths");
+require("../../support/paths");
 
 var Connect = require("connect");
 var IO = require("socket.io");
@@ -24,8 +24,8 @@ exports.main = function(options) {
     var ideProvider = function(projectDir, server) {
         // load plugins:
         var exts = {};
-        Fs.readdirSync(Path.normalize(__dirname + "/../../ext")).forEach(function(name){
-            exts[name] = require("ext/" + name);
+        Fs.readdirSync(Path.normalize(__dirname + "/ext")).forEach(function(name){
+            exts[name] = require("./ext/" + name);
         });
         
         // create web socket
@@ -60,8 +60,8 @@ exports.main = function(options) {
     server.use(Connect.conditionalGet());
     //server.use(Connect.gzip());
     server.use(ideProvider(projectDir, server));
-    server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../../support"), "/static/support"));
-    server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../../client"), "/static"));
+    server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
+    server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
 
     //obfuscate process rights if configured
     if (group)

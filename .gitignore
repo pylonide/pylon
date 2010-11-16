@@ -11,3 +11,5 @@ client/common
 /nbproject
 support/apf
 support/packager/
+aut.js
+helloworld.js

@@ -10,8 +10,8 @@ var jsDAV = require("jsdav"),
     lang = require("ace/lib/lang"),
     Url = require("url");
 
-module.exports = Ide = function(options, server, exts) {
-    this.server = server;
+module.exports = Ide = function(options, httpServer, exts) {
+    this.httpServer = httpServer;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
@@ -44,7 +44,7 @@ module.exports = Ide = function(options, server, exts) {
             this.$serveIndex(req, res, next)
         }
         else if (path.match(this.workspaceRe)) {
-            this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.server);
+            this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.httpServer);
             this.davServer.exec(req, res);
         } else
             next();
@@ -104,6 +104,7 @@ module.exports = Ide = function(options, server, exts) {
         });
 
         client.on("disconnect", function() {
+            _self.execHook("disconnect");
             delete _self.clients[client.sessionId];
         });
         

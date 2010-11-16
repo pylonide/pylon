@@ -135,7 +135,7 @@ return ext.register("ext/noderunner/noderunner", {
 
         var page = ide.getActivePageModel();
         var command = {
-            "command" : debug ? "RunDebug" : "Run",
+            "command" : debug ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
             "args"    : args || "",
             "env"     : {

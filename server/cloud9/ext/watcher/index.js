@@ -5,10 +5,10 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var fs      = require("fs"),
-    plugin  = require("lib/cloud9/plugin");
+    plugin  = require("cloud9/plugin");
 
-function cloud9WatcherPlugin(server) {
-    this.server = server;
+function cloud9WatcherPlugin(ide) {
+    this.ide = ide;
     this.hooks  = ["disconnect", "command"];
 }
 
@@ -36,7 +36,7 @@ function cloud9WatcherPlugin(server) {
         with (message) {
             if (command != "watcher")
                 return false;
-            filename = path.replace(/\/workspace/, this.server.workspaceDir);
+            filename = path.replace(/\/workspace/, this.ide.workspaceDir);
             switch (type) {
             case "watchFile":
                 if (filenames[filename]) 
@@ -53,7 +53,7 @@ function cloud9WatcherPlugin(server) {
                             subtype = "change";
                         else
                             return;
-                        that.server.broadcast(JSON.stringify({
+                        that.ide.broadcast(JSON.stringify({
                             "type"      : "watcher",
                             "subtype"   : subtype,
                             "path"      : path

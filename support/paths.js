@@ -5,7 +5,6 @@
  
 require("./requireJS-node");
 require.paths.unshift(__dirname + "/../server");
-require.paths.unshift(__dirname + "/../server/lib");
 
 require.paths.unshift(__dirname + "/connect/lib");
 require.paths.unshift(__dirname + "/async/lib");

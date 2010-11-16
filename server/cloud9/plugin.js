@@ -21,7 +21,7 @@ function cloud9Plugin() {}
 
     this.sendResult = function(sid, type, msg) {
         //console.log("sending result to client: ", type, JSON.stringify(msg));
-        this.server.broadcast(JSON.stringify({
+        this.ide.broadcast(JSON.stringify({
             type   : "result",
             subtype: type || "error",
             sid    : sid  || 0,
