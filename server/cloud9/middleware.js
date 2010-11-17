@@ -1,5 +1,6 @@
 var Path = require("path");
 var connect = require("connect");
+var error = require("./error");
 
 exports.staticProvider = function(path, mount) {
     var common = connect.staticProvider(Path.normalize(path));
