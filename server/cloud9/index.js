@@ -69,9 +69,6 @@ exports.main = function(options) {
     if (user)
         process.setuid(user);
 
-    if (ip === "all" || ip === "0.0.0.0")
-        ip = null;
-
     server.listen(port, ip);
 };
 
