@@ -105,11 +105,11 @@
         vbox : function(l, t, htmlNode, e){
             if (e) {
                 var prevTop = htmlNode.style.top;
-                var el = this;
-                apf.plane.plane.style.top = 
+                var el = this, plane = apf.plane.get();
+                plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
                 var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
-                apf.plane.plane.style.top = 0;
+                plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
                 
                 if (amlNode && amlNode != el && (amlNode.parentNode == (lastReparent || el.parentNode))) {
@@ -158,11 +158,11 @@
         hbox : function(l, t, htmlNode, e){
             if (e) {
                 var prevTop = htmlNode.style.top;
-                var el = this;
-                apf.plane.plane.style.top = 
+                var el = this, plane = apf.plane.get();
+                plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
                 var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
-                apf.plane.plane.style.top = 0;
+                plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
     
                 showDrag.reparent.call(this, amlNode, el, e);
@@ -210,13 +210,13 @@
         
         table : function(l, t, htmlNode, e){
             if (e) {
-                var prevTop = htmlNode.style.top;
+                var prevTop = htmlNode.style.top, plane = apf.plane.get()
                 var el = this;
                 dragIndicator1.style.top = 
-                apf.plane.plane.style.top = 
+                plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
                 var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
-                apf.plane.plane.style.top = 0;
+                plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
                 
                 showDrag.reparent.call(this, amlNode, el, e);
@@ -262,9 +262,10 @@
                 if (lastAmlNode)
                     clearTimeout(lastAmlNode[4]);
 
+                var plane = apf.plane.get()
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
-                  && (htmlNode.parentNode != apf.plane.plane || amlNode.$int != document.body)
+                  && (htmlNode.parentNode != plane.plane || amlNode.$int != document.body)
                   && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
                     var ev = {clientX: e.clientX, clientY: e.clientY, ctrlKey: e.ctrlKey}
                     lastAmlNode = [amlNode, new Date().getTime(), e.clientX, e.clientY,
@@ -284,12 +285,12 @@
             var oOutline = this.$ext;
             var prevTop = htmlNode.style.top;
             
-            var el = this;
+            var el = this, plane = apf.plane.get();
             dragIndicator1.style.top = 
-            apf.plane.plane.style.top = 
+            plane.plane.style.top = 
             htmlNode.style.top = "-2000px";
             var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
-            apf.plane.plane.style.top = 0;
+            plane.plane.style.top = 0;
             htmlNode.style.top = prevTop;
     
             showDrag.reparent.call(this, amlNode, el, e);

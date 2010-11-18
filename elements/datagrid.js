@@ -610,7 +610,22 @@ apf.datagrid = function(struct, tagName){
         for (var cellType, cell, h, i = 0; i < this.$headings.length; i++) {
             h = this.$headings[i];
             
-            if (h.tree) {
+            if (h.tree && h.check) {
+                cellType = "treecheckcell";
+                
+                this.$getNewContext("treecheckcell");
+                cell = this.$getLayoutNode("treecheckcell");
+                var oc = this.$getLayoutNode("treecheckcell", "openclose");
+                oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
+                oc.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.slideToggle(this, null, null, true);\
+                    event.cancelBubble = true;\
+                    apf.window.$mousedown(event);");
+            
+                oc.setAttribute("ondblclick", "event.cancelBubble = true");
+            }
+            else if (h.tree) {
                 cellType = "treecell";
                 
                 this.$getNewContext("treecell");
@@ -916,13 +931,27 @@ apf.datagrid = function(struct, tagName){
                 
                 //@todo copy all non-known properties of the prop element
 
-                /*if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
-                    info.caption   = "[text()]";
-                    info.eachvalue = "[@value]";
-                    info.each      = "item";
-                    info.model     = "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
-                }*/
+                if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                    info.caption   = h.eachcaption || "[text()]";
+                    info.eachvalue = h.eachvalue; // || "[@value]";
+                    
+                    var model;
+                    if (model = h.getAttribute("model")) {
+                        info.model = model;
+                        info.each  = h.each;
+                    }
+                    else {
+                        /*var each = h.each;
+                        if (each.charAt(0) == "[")
+                            each = each.substr(1, each.length - 2);
+                        info.each  = "[{" + this.id + ".selected}::" + each + "]";*/
+                        info.model = "{" + this.id + ".selected}"
+                        info.each = h.each;
+                    }
+                }
+                
+                if (h.skin)
+                    info.skin = h.skin;
 
                 oEditor = this.$editors[editor] = new constr(info);
 
@@ -965,13 +994,21 @@ apf.datagrid = function(struct, tagName){
             else {
                 oEditor = this.$editors[editor];
                 
-                if (oEditor.hasFeature(apf.__MULTISELECT__))
-                    oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
+                    //oEditor.setAttribute("model", "{" + this.id + ".selected}");
+                    /*var each = h.each;
+                    if (each.charAt(0) == "[")
+                        each = each.substr(1, each.length - 2);
+                    oEditor.setAttribute("each", "[{" + this.id + ".selected}::" + each + "]");*/
+                    /*apf.queue.empty();*/
+                    oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                        + (v = h.value).substr(1, v.length - 2) 
+                        + "]");
+                }
 
-                oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
+                /*oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
                     + (v = h.value).substr(1, v.length - 2) 
-                    + "]");
+                    + "]");*/
 
                 oEditor.setProperty("visible", true);
                 editParent.appendChild(oEditor.$ext);
@@ -1017,6 +1054,9 @@ apf.datagrid = function(struct, tagName){
         if (this.$lastEditor) {
             var ed = this.$lastEditor;
             this.$lastEditor = null;
+
+            if (ed[0].hasFeature(apf.__MULTISELECT__)) // && !ed[0].model
+                ed[0].$clearDynamicProperty("value");
 
             //this.$lastEditor[0].$blur();
             ed[0].setProperty("visible", false);
@@ -1204,7 +1244,7 @@ apf.datagrid = function(struct, tagName){
                 };
         }
         
-        this.$container.ondblclick = function(e){
+        this.$container[this.clickedit ? "onmousedown" : "ondblclick"] = function(e){
             if (!e) e = event;
             _self.$dblclick(e.srcElement || e.target);
         }

@@ -22,6 +22,7 @@
 //#ifdef __WITH_CONFIG
 
 apf.config = new apf.Class().$init();
+apf.config.$setProperty = apf.config.setProperty;
 apf.extend(apf.config, {
     //Defaults
     disableRightClick  : false,
@@ -128,8 +129,10 @@ apf.extend(apf.config, {
             return m1.toUpperCase()
         })] = this[name] = value;
         
-        (this.$propHandlers && this.$propHandlers[name]
-          || apf.GuiElement.propHandlers[name] || apf.K).call(this, value);
+        /*(this.$propHandlers && this.$propHandlers[name]
+          || apf.GuiElement.propHandlers[name] || apf.K).call(this, value);*/
+          
+        this.$setProperty(name, value);
     },
     
     $inheritProperties : {},

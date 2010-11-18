@@ -3,7 +3,10 @@
     <drive caption="Boot Disk (C:)" date="">
         <folder caption="My Documents" fid="1" icon="folder_page.png" date="21-06-1980">
             <folder caption="Assets" fid="2" date="21-06-1980">
-                <file filename="bach.wma" fid="2" date="21-06-1980" />
+                <file filename="bach.wma" fid="2" date="21-06-1980">
+                    <option name="Option 1"></option>
+                    <option name="Option 2"></option>
+                </file>
                 <file filename="escher.zip" fid="2" date="21-06-1980" />
                 <file filename="godel.doc" fid="2" date="21-06-1980" />
                 <file filename="Todo.txt" fid="2" date="21-06-1980" />

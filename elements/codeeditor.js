@@ -40,7 +40,7 @@ if (!apf.hasRequireJS)
     apf.aml.setElement("codeeditor", apf.textbox);
 else
     require.def("apf/elements/codeeditor",
-        ["ace/Editor", "ace/VirtualRenderer", "ace/Document", "ace/UndoManager", "ace/Range"],
+        ["ace/editor", "ace/virtual_renderer", "ace/document", "ace/undomanager", "ace/range"],
         function(Editor, VirtualRenderer, Document, UndoManager, Range) {
 
 apf.codeeditor = function(struct, tagName) {
@@ -267,7 +267,7 @@ apf.codeeditor = function(struct, tagName) {
     this.$modes = {};
 
     this.$getMode = function(syntax, callback) {
-        syntax = syntax || "Text";
+        syntax = (syntax || "text").toLowerCase();
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
         if (this.$modes[syntax])
