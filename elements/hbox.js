@@ -297,7 +297,7 @@ apf.vbox = function(struct, tagName){
     
     function resizeHandler(){
         if (!this.flex) {
-            if (this.$lastSizeChild && 
+            if (this.$isRszHandling || this.$lastSizeChild && 
               this.$lastSizeChild[0] == this.$ext.offsetWidth && 
               this.$lastSizeChild[1] == this.$ext.offsetHeight)
                 return;
@@ -774,7 +774,7 @@ apf.vbox = function(struct, tagName){
         
         if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
             return;
-
+this.$noResize = true;
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
 
         //this.$ext.style.border = "1px solid " + (["red", "green", "blue", "orange", "pink", "yellow"])[Math.round(Math.random() * 5)];
@@ -904,6 +904,7 @@ apf.vbox = function(struct, tagName){
             this.$int.style.overflow = "";
         }
         
+        this.$noResize = false;
         /*this.$noResize = true;
         var _self = this;
         setTimeout(function(){
