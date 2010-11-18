@@ -1244,7 +1244,7 @@ apf.datagrid = function(struct, tagName){
                 };
         }
         
-        this.$container.ondblclick = function(e){
+        this.$container[this.clickedit ? "onmousedown" : "ondblclick"] = function(e){
             if (!e) e = event;
             _self.$dblclick(e.srcElement || e.target);
         }
