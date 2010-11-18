@@ -267,7 +267,6 @@ return ext.register("ext/filesystem/filesystem", {
                 node = doc.getNode(),
                 path = node.getAttribute("path");
             
-            console.log("Reloading file " + path);
             fs.readFile(path, function(data, state, extra) {
 	            if (state != apf.SUCCESS) {
 	                if (extra.status == 404)
