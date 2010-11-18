@@ -100,7 +100,7 @@ return ext.register("ext/noderunner/noderunner", {
                 ide.dispatchEvent("noderunnerready");
                 break;
 
-            case "node-data":
+            case "node-data":            
                 log.logNodeStream(message.data, message.stream, true);
                 break;
                 
