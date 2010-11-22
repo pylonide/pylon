@@ -7760,7 +7760,7 @@
             padding: 0;
             height: 18px;
             padding-left: 15px;
-            overflow : hidden;
+            /*overflow : hidden;*/
 
             font-family: Tahoma, Arial;
             font-size: 11px;
