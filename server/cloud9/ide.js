@@ -24,7 +24,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
-        workspaceId: options.workspaceId || "ide"
+        workspaceId: options.workspaceId || "ide",
+        db: options.db || null
     }
 
     this.clients = [];
@@ -179,4 +180,16 @@ sys.inherits(Ide, EventEmitter);
         else
             this.broadcast(error);
     };
+    
+    this.destroy = function(callback) {
+        Async.values(this.exts)
+            .filter(function(ext) {
+                return typeof ext.destroy == "function";
+            })
+            .each(function(ext, next) {
+                ext.destroy(next);
+            })
+            .end(callback);
+    };
+    
 }).call(Ide.prototype);
