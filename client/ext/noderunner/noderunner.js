@@ -141,7 +141,7 @@ return ext.register("ext/noderunner/noderunner", {
             "file"    : path.replace(/^\/+/, ""),
             "args"    : args || "",
             "env"     : {
-                "C9_SELECTED_FILE": page ? ide.workspaceDir + page.getAttribute("path").slice(ide.davPrefix.length) : ""
+                "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
         };
         ide.socket.send(JSON.stringify(command));
