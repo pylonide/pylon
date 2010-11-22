@@ -331,7 +331,9 @@ apf.BaseTree = function(){
         var _self = this;
         var prevHeight = container.style.height;
         container.style.overflow = "visible";
-        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+        if (!apf.isIE7) {
+            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+        }
         var height = container.scrollHeight;
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
@@ -353,13 +355,17 @@ apf.BaseTree = function(){
                         _self.$extend(xmlNode, container, null, callback);
                     });
                     if (container != this.$container) {
-                        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";;
+                        if (!apf.isIE7) {
+                            container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                        }
                         container.style.overflow = "visible";
                     }
                 }
                 else if (container != this.$container) {
                     container.style.overflow = "visible";
-                    container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                    if (!apf.isIE7) {
+                        container.style.height = apf.hasHeightAutoDrawBug ? "100%" : "auto";
+                    }
                 }
                 _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
