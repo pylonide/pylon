@@ -66,9 +66,10 @@ return ext.register("ext/settings/settings", {
         if (page)
             return page;
 		var node = this.model.queryNode(xpath + "/" + tagName);
-        if (!node)
+        if (!node) {
+            console.log("Poof", this.model.data);
             this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
-		else
+		} else
 			node.setAttribute("page", id);
         page = pgSettings.add(name, id);
         page.$at = new apf.actiontracker();

@@ -1,3 +1,4 @@
+var path = require("path");
 var currentModule, defaultCompile = module.constructor.prototype._compile;
 
 module.constructor.prototype._compile = function(content, filename){  
@@ -10,6 +11,8 @@ module.constructor.prototype._compile = function(content, filename){
   }
 };
 
+var requireModule = module;
+
 global.define = function (id, injects, factory) {
     if (currentModule == null) {
       throw new Error("define() may only be called during module factory instantiation");
@@ -17,14 +20,12 @@ global.define = function (id, injects, factory) {
     var module = currentModule;
     
     var req = function(relativeId){
-        if(relativeId.charAt(0) === '.'){
-            relativeId = id.substring(0, id.lastIndexOf('/') + 1) + relativeId;
-            while(lastId !== relativeId) {
-                var lastId = relativeId;
-                relativeId = relativeId.replace(/\/[^\/]*\/\.\.\//,'/');
-            }
-            relativeId = relativeId.replace(/\/\.\//g,'/');
-        }
+        if (relativeId.charAt(0) === '.') {
+		    var  rootPath       = path.dirname(path.dirname(requireModule.filename)) + "/",
+		         absolutePath   = path.dirname(module.filename) + "/" + relativeId;
+		         
+		    relativeId = "../" + absolutePath.match(new RegExp(rootPath + "(.*)"))[1];
+		}
         return require(relativeId);
     };
     if (!factory) {

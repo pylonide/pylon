@@ -429,8 +429,10 @@ return ext.register("ext/console/console", {
                 break;
             case "cd":
                 res = message.body;
-                if (res.cwd)
+                if (res.cwd) {
+                    this.$cwd = res.cwd;
                     this.write("Working directory changed.");
+                }
                 break;
             case "git":
             case "pwd":
