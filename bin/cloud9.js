@@ -61,6 +61,9 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                               version " + version + "\n\
 Project root is: " + options.workspace);
 
+if (options.ip === "all" || options.ip === "0.0.0.0")
+    options.ip = "localhost";
+
 var url = "http://" + options.ip + ":" + options.port;
 if (options.action) {
     Sys.puts("Trying to start your browser in: "+url);

@@ -9,7 +9,6 @@ client/common
 .settings.xml.old
 .DS_Store
 /nbproject
-support/apf
 support/packager/
 aut.js
 helloworld.js

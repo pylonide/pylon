@@ -8,9 +8,12 @@ var jsDAV = require("jsdav"),
     sys = require("sys"),
     Path = require("path"),
     lang = require("ace/lib/lang"),
-    Url = require("url");
+    Url = require("url"),
+    EventEmitter = require("events").EventEmitter;
 
 module.exports = Ide = function(options, httpServer, exts) {
+    EventEmitter.call(this);
+    
     this.httpServer = httpServer;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
@@ -30,6 +33,8 @@ module.exports = Ide = function(options, httpServer, exts) {
     this.registerExts(exts);
 };
 
+sys.inherits(Ide, EventEmitter);
+
 (function () {
     
     this.handle = function(req, res, next) {
@@ -45,6 +50,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         }
         else if (path.match(this.workspaceRe)) {
             this.davServer = jsDAV.mount(this.options.workspaceDir, this.options.davPrefix, this.httpServer);
+            this.emit("configureDav", this.davServer);
             this.davServer.exec(req, res);
         } else
             next();
