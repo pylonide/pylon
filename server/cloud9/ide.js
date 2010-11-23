@@ -24,7 +24,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
-        workspaceId: options.workspaceId || "ide"
+        workspaceId: options.workspaceId || "ide",
+        db: options.db || null
     }
 
     this.clients = [];
