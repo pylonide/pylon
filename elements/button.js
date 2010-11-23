@@ -411,8 +411,15 @@ apf.button  = function(struct, tagName){
      */
     this.$propHandlers["submenu"] = function(value){
         if (!value){
-            if (this.value && this.parentNode)
+            if (this.value && this.parentNode) {
+                //#ifdef __DEBUG
+                try{
+                //#endif
                 menuDown.call(this);
+                //#ifdef __DEBUG
+                }catch(ex){}
+                //#endif
+            }
 
             this.$focussable = true;
             this.$setNormalBehaviour();
