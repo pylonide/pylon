@@ -241,7 +241,7 @@ apf.layout = {
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
 
             oHtml.onresize = rsz;
-            if (!no_exec)oHtml.className
+            if (!no_exec) 
                 rsz();
         }
         else {
