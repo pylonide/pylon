@@ -35,6 +35,12 @@
           group    = "core"
           out      = "{cwd}/../../client/js/core.js"
           filehead = "1" /-->
+        <!--p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "ace"
+          out      = "{cwd}/../../client/js/ace.js"
+          filehead = "1" /-->
 
         <!--p:compress
           cmd      = "yuicompressor"
@@ -107,53 +113,53 @@
             <p:node path="jpack_end.js" />
         </p:node>
         
-        <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/event.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/lang.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/textinput.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_mac.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_win.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/plugin_manager.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/commands/default_commands.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/keybinding.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/event_emitter.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/range.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/selection.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/tokenizer.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/document.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/search.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/background_tokenizer.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/undomanager.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/gutter.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/marker.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/dom.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/text.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/cursor.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/scrollbar.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/renderloop.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/virtual_renderer.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/doc_comment_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/textmate.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html_highlight_rules.js" group="apf" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="apf" /-->
+        <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/event.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/lang.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/textinput.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_mac.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_win.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/plugin_manager.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/commands/default_commands.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/keybinding.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/event_emitter.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/range.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/selection.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/tokenizer.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/document.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/search.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/background_tokenizer.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/undomanager.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/gutter.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/marker.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/dom.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/text.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/cursor.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/scrollbar.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/renderloop.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/virtual_renderer.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/doc_comment_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/textmate.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html_highlight_rules.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" /-->
 
         <!--p:node path="{__dirname}/../../../client/core/ide.js" group="core" />
         <p:node path="{__dirname}/../../../client/core/ext.js" group="core" />
