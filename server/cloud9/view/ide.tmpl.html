@@ -45,7 +45,7 @@
                 apf.onstart = function(){
                     var list = ["core/ide", "core/ext", "core/util"];
                     if (VERSION == RELEASE)
-                        list.push("ace/Editor")
+                        list.push("ace/editor")
 
                     require(list, function(ide, ext, util){
                         ide.settings = <%settingsXml%>;
