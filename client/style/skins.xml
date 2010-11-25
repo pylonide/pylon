@@ -7831,6 +7831,7 @@
             height: 0;
             overflow: hidden;
             background: repeat-y 0px center;
+			clear: both;
         }
         /*.tree BLOCKQUOTE.root{padding:0}*/
 
