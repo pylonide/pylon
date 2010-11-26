@@ -113,7 +113,7 @@
             <p:node path="jpack_end.js" />
         </p:node>
         
-        <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
+        <p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/lib/event.js" group="ace" />
@@ -159,11 +159,11 @@
         <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" />
         <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" /-->
+        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" />
 
-        <!--p:node path="{__dirname}/../../../client/core/ide.js" group="core" />
+        <p:node path="{__dirname}/../../../client/core/ide.js" group="core" />
         <p:node path="{__dirname}/../../../client/core/ext.js" group="core" />
-        <p:node path="{__dirname}/../../../client/core/util.js" group="core" /-->
+        <p:node path="{__dirname}/../../../client/core/util.js" group="core" />
 
         <p:node path="{__dirname}/../../../client/ext/filesystem/filesystem.js" group="modules" />
         <p:node path="{__dirname}/../../../client/ext/settings/settings.js" group="modules" />
@@ -215,6 +215,7 @@
         <p:define name="__WITH_XML_JQUERY_API" value="1" />
         <p:define name="__WITH_CSS_BINDS" value="1" />
         <p:define name="__WITH_DATE" value="1" />
+		<p:define name="__WITH_DATE_EXT" value="1" />
         
         <p:define name="__WITH_DATA_INSTRUCTIONS" value="1" />
         <p:define name="__WITH_ECMAEXT" value="1" />
@@ -431,6 +432,7 @@
 
 
 
+        <!-- NOT USED DEFINES -->
 
         <!--p:define name="__INC_ALL" value="1" /-->
 
@@ -449,7 +451,6 @@
         <p:define name="__TP_SOCKET" value="1" />
         <p:define name="__AMLTEMPLATE" value="1" />
         <p:define name="__WITH_AMLTEXTRECTANGLE" value="1" />
-        <p:define name="__WITH_DATE_EXT" value="1" />
 
         <p:define name="__ENABLE_DRAW_CANVAS" value="1" />
         <p:define name="__WITH_VALIDATION" value="1" />
