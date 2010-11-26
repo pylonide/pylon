@@ -32,6 +32,7 @@
                                 <a:button
                                   disabled = "{!stDebugProcessRunning.active or stRunning.active}"
                                   caption  = "Execute" 
+                                  tooltip  = "Ctrl+Enter"
                                   onclick  = "
                                     require('ext/console/console').consoleTextHandler({keyCode:13,ctrlKey:true})
                                   " />

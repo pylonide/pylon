@@ -24,6 +24,55 @@
             return icon + ".png";
         }
         
+        var confirmed = false;
+        
+        function remove() {
+            if (!confirmed) {
+	            var files = trFiles.getSelection();
+	            
+	            function confirm(file) {
+	                var name = file.getAttribute("name");
+	                
+		            require("core/util").question(
+		                "Remove file?",
+		                "You are about to remove the file " + name,
+		                "Do you want continue? (This change cannot be undone)",
+		                function () { // Yes
+		                    confirmed = true;
+		                    trFiles.remove(file);
+		                    confirmed = false;
+		                    if (files.length > 0)
+		                        confirm(files.shift());
+		                    else
+		                        winQuestion.hide();
+		                },
+		                function () { // Yes to all
+		                    confirmed = true;
+		                    trFiles.remove(file);
+		                    files.forEach(function (file) {
+		                        trFiles.remove(file);
+		                    });
+		                    confirmed = false;
+		                    winQuestion.hide();
+		                },
+		                function () { // No
+		                    if (files.length > 0)
+		                        confirm(files.shift());
+		                    else
+		                        winQuestion.hide();
+		                },
+		                function () { // No to all
+		                    winQuestion.hide();
+		                }
+		            );
+		            btnQuestionYesToAll.setAttribute("visible", files.length > 0);
+		            btnQuestionNoToAll.setAttribute("visible", files.length > 0);
+		        }
+		        confirm(files.shift());
+		        return false;
+		    } else
+                return true;
+        };       
     ]]></a:script>
 
     <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
@@ -33,7 +82,8 @@
           icon="arrow_rotate_anticlockwise.png" 
           onclick="require('ext/tree/tree').refresh()" />
         <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true">
+          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+          onbeforeremove="return remove()">
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="{location.host and davProject.readdir([@path])}" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
