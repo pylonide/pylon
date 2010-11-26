@@ -77,9 +77,11 @@
 
     <a:window id="winFilesViewer" flex="3" skin="dockwin" title="Files" modal="false" visible="true" buttons="close" optimize="true">
         <a:button
-          top="-20"
+          top="-15"
+          skin="btn_icon_only"
+          class="dim14-14"
           right="20"
-          icon="arrow_rotate_anticlockwise.png" 
+          icon="refresh-icon-states.png"
           onclick="require('ext/tree/tree').refresh()" />
         <a:tree id="trFiles" canrename="true" anchors="0 0 0 0" border="0"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"

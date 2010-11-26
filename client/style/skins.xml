@@ -97,7 +97,7 @@
             margin-top : 5px;
             padding-bottom:3px;
             padding-left:3px;
-            padding-right:2px;
+            padding-right:0px;
             background : no-repeat 0 0;
             background-color    : transparent;
             cursor     : pointer;
@@ -137,7 +137,7 @@
             background-image : url(images/win_x.png);
         }
         .smallheader .docktitle .close {
-            margin-right : -5px;
+            margin-right : -3px;
         }
 
         .dockwin .docktitle span {
@@ -7831,6 +7831,7 @@
             height: 0;
             overflow: hidden;
             background: repeat-y 0px center;
+			clear: both;
         }
         /*.tree BLOCKQUOTE.root{padding:0}*/
 
@@ -8034,7 +8035,7 @@
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
             width:  134px;
-            height: 19px;
+            height: 15px;
             margin: 0;
             padding : 2px 21px 2px 0;
 
@@ -13661,12 +13662,26 @@
             width              : 22px;
         }
 
+        .dim14-14 {
+            width: 14px;
+            height: 14px;
+        }
+
         .btn_icon_onlyOver {
             background-position: 0 -23px;
         }
 
+        .dim14-14.btn_icon_onlyOver {
+            background-position: 0 -14px;
+        }
+
+
         .btn_icon_onlyDown {
             background-position: 0 -46px;
+        }
+
+        .dim14-14.btn_icon_onlyDown {
+            background-position: 0 -28px;
         }
 
         .btn_icon_only.btnDisabled {
