@@ -23,12 +23,12 @@
           group    = "apf"
           out      = "{cwd}/../../client/js/apf_release.js"
           filehead = "1" />
-        <p:combine
+        <!--p:combine
           type     = "script"
           defines  = "1"
           group    = "modules"
           out      = "{cwd}/../../client/js/modules.js"
-          filehead = "1" />
+          filehead = "1" /-->
         <!--p:combine
           type     = "script"
           defines  = "1"
