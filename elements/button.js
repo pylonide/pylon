@@ -504,7 +504,7 @@ apf.button  = function(struct, tagName){
         if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
             return;
         
-        if(parentNode.$button2 && parentNode.$button2.value && !this.submenu)
+        if(parentNode && parentNode.$button2 && parentNode.$button2.value && !this.submenu)
             return;
 
         this.$doBgSwitch(this.states[state]);
