@@ -9,6 +9,7 @@ var jsDAV = require("jsdav"),
     Path = require("path"),
     lang = require("ace/lib/lang"),
     Url = require("url"),
+    template = require("./template"),
     EventEmitter = require("events").EventEmitter;
 
 module.exports = Ide = function(options, httpServer, exts) {
@@ -24,7 +25,8 @@ module.exports = Ide = function(options, httpServer, exts) {
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
-        workspaceId: options.workspaceId || "ide"
+        workspaceId: options.workspaceId || "ide",
+        db: options.db || null
     }
 
     this.clients = [];
@@ -79,28 +81,18 @@ sys.inherits(Ide, EventEmitter);
                 if (exists) {
                     fs.readFile(settingsPath, "utf8", function(err, settings) {
                         replacements.settingsXml = settings;
-                        index = self.$fillTemplate(index, replacements);
+                        index = template.fill(index, replacements);
                         res.end(index);
                     });
                 }
                 else {
-                    index = self.$fillTemplate(index, replacements);
+                    index = template.fill(index, replacements);
                     res.end(index);
                 }
             });
         });
     };
 
-    this.$fillTemplate = function(template, replacements) {
-        return template
-            .replace(/<%(.+?)%>/g, function(str, m) {
-                return JSON.stringify(replacements[m] || "");
-            })
-            .replace(/\[%(.+?)%\]/g, function(str, m) {
-                return replacements[m] || "";
-            }); 
-    };
-    
     this.addClientConnection = function(client, message) {
         var _self = this;
         this.clients[client.sessionId] = client;
