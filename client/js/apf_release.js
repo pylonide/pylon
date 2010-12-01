@@ -55336,6 +55336,129 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
+/**
+ * Element displaying a frame with a caption, containing other elements. This
+ * element is called a fieldset in html.
+ * Example:
+ * <code>
+ *  <a:frame caption="Options">
+ *      <a:radiobutton value="1">Option 1</a:radiobutton>
+ *      <a:radiobutton value="2">Option 2</a:radiobutton>
+ *      <a:radiobutton value="3">Option 3</a:radiobutton>
+ *      <a:radiobutton value="4">Option 4</a:radiobutton>
+ *  </a:frame>
+ * </code>
+ *
+ * @constructor
+ * @define fieldset, frame
+ * @allowchild {elements}, {anyaml}
+ * @addnode elements:frame
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ *
+ * @inherits apf.Presentation
+ */
+apf.panel    = function(struct, tagName){
+    this.$init(tagName || "panel", apf.NODE_VISIBLE, struct);
+};
+
+apf.fieldset = function(struct, tagName){
+    this.$init(tagName || "fieldset", apf.NODE_VISIBLE, struct);
+};
+
+apf.frame    = function(struct, tagName){
+    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.implement(apf.BaseStateButtons);
+
+    this.$focussable     = false;
+    
+    
+    
+    /**** Properties and Attributes ****/
+    
+    /**
+     * @attribute {String} caption the text of the caption. 
+     */
+    this.$supportedProperties.push("caption", "url");
+    this.$propHandlers["caption"] = function(value){
+        if (!this.oCaption) return;
+        
+        if (this.oCaption.nodeType == 1)
+            this.oCaption.innerHTML = value;
+        else
+            this.oCaption.nodeValue = value;
+    };
+    
+    /**
+     * @attribute {String} icon the location of the image.
+     */
+    this.$propHandlers["icon"] = function(value){
+        var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
+        if (!oIcon) return;
+
+        if (oIcon.nodeType == 1)
+            oIcon.style.display = value ? "block" : "none";
+        apf.skins.setIcon(oIcon, value, this.iconPath);
+    };
+    
+    this.$propHandlers["url"] = function(value){
+        var node = this.oCaption;
+        if (node.tagName == "A" || node.nodeType != 1) 
+            node = node.parentNode;
+
+        node.innerHTML = "<a href='" + value + "' " 
+            + (value.match(/^http:\/\//) ? "target='_blank'" : "") + ">" 
+            + this.caption + "</a>";
+        this.oCaption = this.oCaption.firstChild;
+    };
+    
+    /** 
+     * Sets the text of the title of this element
+     * @param {String} value the text of the title.
+     */
+    this.setTitle = function(value){
+        this.setProperty("title", value);
+    };
+    
+    /**** Init ****/
+    
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext     = this.$getExternal(null, null, function(oExt){
+            this.$initButtons(oExt);
+        });
+        this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
+        this.$int     = this.$getLayoutNode("main", "container", this.$ext);
+        this.$buttons = this.$getLayoutNode("main", "buttons",  this.$ext);
+
+        /*if (this.oCaption) {
+            this.oCaption = this.oCaption.nodeType == 1 
+                ? this.oCaption 
+                : this.oCaption.parentNode;
+        }*/
+    };
+    
+    this.$loadAml = function(x){
+        // not implement now.
+    };
+    
+        
+}).call(apf.frame.prototype = new apf.Presentation());
+
+apf.panel.prototype    =
+apf.fieldset.prototype = apf.frame.prototype;
+
+apf.aml.setElement("panel", apf.panel);
+apf.aml.setElement("fieldset", apf.fieldset);
+apf.aml.setElement("frame", apf.frame);
+
+
+
 
 /*FILEHEAD(/cygdrive/c/Development/javeline/cloud9/support/packager/lib/../../apf/elements/gallery.js)SIZE(28217)TIME(Tue, 23 Nov 2010 12:18:41 GMT)*/
 
