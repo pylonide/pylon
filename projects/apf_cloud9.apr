@@ -425,6 +425,7 @@
         <p:define name="__LAYOUT_ENABLE_SPLITTERS" value="1" />
         <p:define name="__WITH_JSLT_EVENTS" value="1" />
         <p:define name="__AMLSTATE" value="1" />
+        <p:define name="__AMLFRAME" value="1" />
 
         <p:define name="__AMLPROPEDIT" value="1" />
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
@@ -476,7 +477,6 @@
         <p:define name="__AMLSWITCH" value="1" />
         <p:define name="__WITH_RSB" value="1" />
         <p:define name="__AMLSELECT1" value="1" />
-        <p:define name="__AMLFRAME" value="1" />
         <p:define name="__AMLRANGE" value="1" />
         <p:define name="__AMLSUBMITFORM" value="1" />
         <p:define name="__WITH_RDB" value="1" />
