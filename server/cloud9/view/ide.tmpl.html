@@ -51,7 +51,7 @@
                         ide.settings = <%settingsXml%>;
 
                         var modules = [
-                            VERSION == FILES ? (
+                            // VERSION == FILES ? (
                                 "ext/filesystem/filesystem",
                                 "ext/settings/settings",
                                 "ext/editors/editors",
@@ -84,8 +84,8 @@
                                 "ext/tabbehaviors/tabbehaviors",
                                 "ext/keybindings/keybindings",
                                 //"ext/terminal/terminal"
-                                "ext/watcher/watcher")
-                            : "js/modules"
+                                "ext/watcher/watcher"
+                            // ) : "js/modules"
                         ];
 
                         apf.addEventListener("load", function(){
