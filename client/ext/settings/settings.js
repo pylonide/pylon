@@ -67,7 +67,6 @@ return ext.register("ext/settings/settings", {
             return page;
 		var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node) {
-            console.log("Poof", this.model.data);
             this.model.appendXml('<' + tagName + ' name="' + name +'" page="' + id + '" />', xpath);
 		} else
 			node.setAttribute("page", id);
@@ -113,7 +112,7 @@ return ext.register("ext/settings/settings", {
         };
         this.$timer = setInterval(checkSave, 60000);
 
-        apf.addEventListener("exit", checkSave);
+        // apf.addEventListener("exit", checkSave);
 
         ide.addEventListener("$event.loadsettings", function(callback) {
             callback({model: _self.model});

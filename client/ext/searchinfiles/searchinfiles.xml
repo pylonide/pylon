@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 	<a:skin id="searchinfiles"
   	src        = "{require('ext/searchinfiles/searchinfiles').skin}" 
-  	media-path = "ext/searchinfiles/images/" />
+  	media-path = "static/ext/searchinfiles/images/" />
 	
     <a:window id="winSearchInFiles"
       onhide="require('ext/searchinfiles/searchinfiles').onHide()"

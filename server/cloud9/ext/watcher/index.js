@@ -29,7 +29,7 @@ function cloud9WatcherPlugin(ide) {
     };
 
     this.command = function(message) {
-        var filename, that, subtype;
+        var filename, that, subtype, files;
 
         if (!message || message.command != "watcher") 
             return false;
@@ -53,10 +53,23 @@ function cloud9WatcherPlugin(ide) {
                             subtype = "change";
                         else
                             return;
+                        if (curr.isDirectory()) {
+                            files = {};
+                            
+                            fs.readdirSync(filename).forEach(function (file) {
+                                var stat = fs.statSync(filename + "/" + file);
+
+                                files[file] = {
+                                    type : stat.isDirectory() ? "folder" : "file",
+                                    name : file
+                                };
+                            });
+                        }
                         that.ide.broadcast(JSON.stringify({
                             "type"      : "watcher",
                             "subtype"   : subtype,
-                            "path"      : path
+                            "path"      : path,
+                            "files"     : files
                         }));
                         console.log("Sent " + subtype + " notification for file " + filename);
                     });

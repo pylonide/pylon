@@ -135,6 +135,18 @@ sys.inherits(ShellPlugin, Plugin);
         }
     };
 
+    this.mkdir = function(message) {
+        var _self = this;
+        this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
+            _self.sendResult(0, message.command, {
+                code    : code,
+                argv    : message.argv,
+                err     : err,
+                out     : out
+            });
+        });
+    };
+
     this.getListing = function(tail, path, dirmode, callback) {
         var matches = [];
         tail    = (tail || "").replace(/^[\s]+/g, "").replace(/[\s]+$/g, "").split(/[\s]+/g).pop();

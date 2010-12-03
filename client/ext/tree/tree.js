@@ -135,6 +135,81 @@ return ext.register("ext/tree/tree", {
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
             return true;
         });
+        
+        /*
+        ide.addEventListener("treecreate", function (e) {
+            var names   = e.path.replace(/^\//g, "").split("/").reverse(),
+                parent  = trFiles.getModel().data.firstChild,
+                name, node;
+                
+            names.pop();
+            do {
+                if (!trFiles.$hasLoadStatus(parent, "loaded"))
+                    break;
+                name    = names.pop();
+                console.log("CHECKING", parent, name);
+                node    = parent.selectSingleNode("node()[@name=\"" + name + "\"]");
+                if (!node) {
+                    var path = parent.getAttribute("path") + "/" + name,
+                        xmlNode;
+                        
+                    if (names.length > 0 || e.type == "folder")
+                        xmlNode = "<folder type='folder' " + " path='" + path + "' name='" + name + "' />";
+                    console.log("INSERTING", xmlNode, parent);
+                    trFiles.add(xmlNode, parent);
+                    break;   
+                }
+                parent = node;
+            } while (names.length > 0);
+                
+        });
+        
+        ide.addEventListener("treeremove", function (e) {
+            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                        .replace(/\[@name="workspace"\]/, "")
+                        .replace(/\//, "");
+            var node = trFiles.getModel().data.selectSingleNode(path);
+            
+            if (node)
+                apf.xmldb.removeNode(node);
+        });
+        */
+        
+        ide.addEventListener("treechange", function(e) {
+            var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                .replace(/\[@name="workspace"\]/, "")
+                                .replace(/\//, ""),
+                parent  = trFiles.getModel().data.selectSingleNode(path),
+                nodes   = parent.childNodes,
+                files   = e.files,
+                removed = [];
+            
+            for (var i = 0; i < nodes.length; ++i) {
+                var node    = nodes[i],
+                    name    = node.getAttribute("name");
+                 
+                if (files[name])
+                    delete files[name];
+                else
+                    removed.push(node);
+            }
+            removed.forEach(function (node) {
+                // console.log("REMOVE", node);
+                apf.xmldb.removeNode(node); 
+            });
+            path = parent.getAttribute("path");
+            for (var name in files) {
+                var file = files[name];
+                
+                xmlNode = "<" + file.type +
+                    " type='" + file.type + "'" +
+                    " name='" + name + "'" +
+                    " path='" + path + "/" + name + "'" +
+                "/>";
+                // console.log("CREATE", xmlNode, parent);
+                trFiles.add(xmlNode, parent);
+            }
+        });
     },
 
     refresh : function(){

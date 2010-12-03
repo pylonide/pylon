@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="gotoline" 
       src        = "{require('ext/gotoline/gotoline').skin}" 
-      media-path = "ext/gotoline/images/" />
+      media-path = "static/ext/gotoline/images/" />
 
     <a:bar id="winGotoLine"
       skinset = "gotoline"

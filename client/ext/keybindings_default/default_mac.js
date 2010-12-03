@@ -116,7 +116,7 @@ return keys.onLoad({
             "selectlinestart": "Shift-Home",
             "selectlineend": "Shift-End",
             "del": "Delete",
-            "backspace": "Backspace",
+            "backspace": "Command-Backspace|Option-Backspace|Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
         }

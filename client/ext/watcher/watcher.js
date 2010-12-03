@@ -24,7 +24,8 @@ return ext.register("ext/watcher/watcher", {
             removedPathCount    = 0,
             changedPaths        = {},
             changedPathCount    = 0,
-            ignoredPaths        = {};
+            ignoredPaths        = {},
+            expandedPaths       = {};
             
         function sendWatchFile(path) {
             // console.log("Sending watchFile message for file " + path);
@@ -134,6 +135,8 @@ return ext.register("ext/watcher/watcher", {
             pages.forEach(function (page) {
                 sendWatchFile(page.$model.data.getAttribute("path"));
             });
+            for (var path in expandedPaths)
+                sendWatchFile(path);
         });
         
         ide.addEventListener("openfile", function(e) {
@@ -172,7 +175,14 @@ return ext.register("ext/watcher/watcher", {
             var pages = tabEditors.getPages();
             
             with (e.message) {
-                if (type != "watcher" || !pages.some(function (page) {
+                if (type != "watcher")
+                    return;
+	            if (expandedPaths[path])
+	                return ide.dispatchEvent("treechange", {
+	                    path    : path,
+	                    files   : files
+	                });
+                if (!pages.some(function (page) {
                     return page.$model.data.getAttribute("path") == path;
                 }))
                     return;
@@ -184,6 +194,11 @@ return ext.register("ext/watcher/watcher", {
                         removedPaths[path] = path;
                         ++removedPathCount;
                         checkPage();
+                        /*
+                        ide.dispatchEvent("treeremove", {
+                            path : path
+                        });
+                        */
                     }
                     break;
                 case "change":
@@ -202,6 +217,28 @@ return ext.register("ext/watcher/watcher", {
         
         tabEditors.addEventListener("afterswitch", function(e) {
             checkPage();
+        });
+        
+        trFiles.addEventListener("expand", function(e) {
+            var node = e.xmlNode;
+            
+            if (node.getAttribute("type") == "folder") {
+                var path = node.getAttribute("path");
+                
+                expandedPaths[path] = path;
+                sendWatchFile(path);
+            }
+        });
+        
+        trFiles.addEventListener("collapse", function (e) {
+            var node = e.xmlNode;
+            
+            if (node.getAttribute("type") == "folder") {
+                var path = node.getAttribute("path");
+                
+                delete expandedPaths[path];
+                sendUnwatchFile(path);
+            }
         });
     },
 });
