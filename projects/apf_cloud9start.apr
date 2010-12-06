@@ -122,6 +122,7 @@
         <!-- include all available general options -->
         <p:define name="__WITH_PROPERTY_WATCH" value="1" />
         <p:define name="__WITH_APP_DEFAULTS" value="1" />
+        <p:define name="__WITH_CONTEXTMENU" value="1" />
         <p:define name="__WITH_CONVENIENCE_API" value="1" />
         <p:define name="__WITH_STYLE" value="1" />
         <p:define name="__WITH_XML_UTIL" value="1" />
@@ -151,6 +152,7 @@
         <p:define name="__WITH_PROPERTY_BINDING" value="1" />
         <p:define name="__WITH_QUERYAPPEND" value="1" />
         <p:define name="__WITH_REGISTRY" value="1" />
+        <p:define name="__WITH_RESIZE" value="1" />
         <p:define name="__WITH_SORTING" value="1" />
         <p:define name="__WITH_TWEEN" value="1" />
         <p:define name="__WITH_UTILITIES" value="1" />
