@@ -280,6 +280,7 @@
         <p:define name="__AMLSTATE" value="1" />
         <p:define name="__AMLSTATEGROUP" value="1" />
         <p:define name="__AMLFRAME" value="1" />
+        <p:define name="__WITH_LIVEMARKUP" value="1" />
 
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
 
