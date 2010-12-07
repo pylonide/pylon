@@ -13693,8 +13693,7 @@
           caption    = "."
           label      = "."
           background = "."
-          icon       = "."
-          minwidth   = "22">
+          icon       = ".">
             <div class="btn_icon_only"> </div>
         </a:main>
     </a:presentation>
