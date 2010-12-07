@@ -23,24 +23,6 @@
           group    = "apf"
           out      = "{cwd}/build/apf_cloud9start.js"
           filehead = "1" />
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "modules"
-          out      = "{cwd}/../../client/js/modules.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "core"
-          out      = "{cwd}/../../client/js/core.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "ace"
-          out      = "{cwd}/../../client/js/ace.js"
-          filehead = "1" /-->
 
         <p:compress
           cmd      = "yuicompressor"
@@ -116,15 +98,17 @@
 
     <p:defines defaults="defines.xml">
         <p:define name="__APFVERSION" value="{version}"/>
-        <p:define name="__DEBUG" value="1" />
+        <p:define name="__DEBUG" value="0" />
         <p:define name="__PACKAGED" value="1"/>
         <p:define name="__PROCESSED" value="1"/>
         <!-- include all available general options -->
+        <p:define name="__WITH_ABSTRACTEVENT" value="1" />
         <p:define name="__WITH_PROPERTY_WATCH" value="1" />
         <p:define name="__WITH_APP_DEFAULTS" value="1" />
         <p:define name="__WITH_CONTEXTMENU" value="1" />
         <p:define name="__WITH_CONVENIENCE_API" value="1" />
         <p:define name="__WITH_STYLE" value="1" />
+        <p:define name="__WITH_JSON_API" value="1" />
         <p:define name="__WITH_XML_UTIL" value="1" />
         <p:define name="__WITH_DATE" value="1" />
         <p:define name="__WITH_DATE_EXT" value="1" />
@@ -167,6 +151,7 @@
         <p:define name="__WITH_VISIBILITYMANAGER" value="1" />
         <p:define name="__WITH_ZMANAGER" value="1" />
         <p:define name="__WITH_XMLDATABASE" value="1" />
+        <p:define name="__WITH_XMLMUTATION_BINDING" value="1" />
         <p:define name="__WITH_SMARTBINDINGS" value="1" />
         <p:define name="__WITH_SCRIPT" value="1" />
         <p:define name="__WITH_APPSETTINGS" value="1" />
@@ -185,9 +170,7 @@
         <p:define name="__PARSE_GET_VARS" value="1" />
         <p:define name="__PARSER_AML" value="1" />
         <p:define name="__WITH_EXPLICIT_LOWERCASE" value="1" />
-        <p:define name="__WITH_SKIN_AUTOLOAD" value="1" />
         <p:define name="__WITH_SKIN_INCLUDES" value="1" />
-        <p:define name="__WITH_HTML5" value="1" />
         
         <p:define name="__WITH_DOMPARSER" value="1" />
         <p:define name="__DOMPARSER" value="1" />
@@ -216,6 +199,8 @@
         <p:define name="__WITH_GUIELEMENT" value="1" />
         <p:define name="__WITH_INTERACTIVE" value="1" />
         <p:define name="__WITH_AMLDOM" value="1" />
+        <p:define name="__WITH_AMLSELECTION" value="1" />
+        <p:define name="__WITH_AMLCHARACTERDATA" value="1" />
         <p:define name="__WITH_AMLDOM_FULL" value="1" />
         <p:define name="__WITH_MULTIBINDING" value="1" />
         <p:define name="__WITH_MULTISELECT" value="1" />
@@ -228,6 +213,7 @@
         <p:define name="__WITH_AMLEVENT" value="1" />
         <p:define name="__WITH_AMLDOCUMENTFRAGMENT" value="1" />
         <p:define name="__WITH_AMLCONFIGURATION" value="1" />
+        <p:define name="__WITH_AMLCDATASECTION" value="1" />
         <p:define name="__WITH_AMLATTR" value="1" />
         <p:define name="__WITH_AMLTEXT" value="1" />
         <!-- binding options -->
@@ -267,12 +253,12 @@
         <p:define name="__AMLBAR" value="1" />
         <p:define name="__AMLRADIOBUTTON" value="1" />
         <p:define name="__AMLPAGE" value="1" />
+        <p:define name="__ENABLE_PAGE_TRANSITIONS" value="1" />
         <p:define name="__AMLDIVIDER" value="1" />
         <p:define name="__AMLVBOX" value="1" />
         <p:define name="__AMLHBOX" value="1" />
         <p:define name="__AMLTABLE" value="1" />
         <p:define name="__AMLTAB" value="1" />
-        <p:define name="__ENABLE_PAGE_TRANSITIONS" value="1" />
         <p:define name="__AMLPAGES" value="1" />
         <p:define name="__AMLTELEPORT" value="1" />
         
@@ -293,6 +279,7 @@
         <p:define name="__LAYOUT_ENABLE_SPLITTERS" value="1" />
         <p:define name="__AMLSTATE" value="1" />
         <p:define name="__AMLSTATEGROUP" value="1" />
+        <p:define name="__AMLFRAME" value="1" />
 
         <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
 
