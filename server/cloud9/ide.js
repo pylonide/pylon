@@ -26,6 +26,7 @@ module.exports = Ide = function(options, httpServer, exts) {
         debug: options.debug === true,
         staticUrl: options.staticUrl || "/static",
         workspaceId: options.workspaceId || "ide",
+        settingsFile: options.settingsFile || ".settings.xml",
         db: options.db || null
     }
 
@@ -69,14 +70,14 @@ sys.inherits(Ide, EventEmitter);
             var replacements = {
                 davPrefix: self.options.davPrefix,
                 workspaceDir: self.options.workspaceDir,
-                settingsUrl: self.options.baseUrl + "/workspace/.settings.xml",
+                settingsUrl: self.options.baseUrl + "/workspace/" + self.options.settingsFile,
                 debug: self.options.debug,
                 staticUrl: self.options.staticUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: self.options.workspaceId
             }; 
  
-            var settingsPath = self.options.workspaceDir + "/.settings.xml";
+            var settingsPath = self.options.workspaceDir + "/" + self.options.settingsFile;
             Path.exists(settingsPath, function(exists) {
                 if (exists) {
                     fs.readFile(settingsPath, "utf8", function(err, settings) {
