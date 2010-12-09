@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 	<a:skin id="searchinfiles"
   	src        = "{require('ext/searchinfiles/searchinfiles').skin}" 
-  	media-path = "static/ext/searchinfiles/images/" />
+  	media-path = "/static/ext/searchinfiles/images/" />
 	
     <a:window id="winSearchInFiles"
       onhide="require('ext/searchinfiles/searchinfiles').onHide()"
@@ -18,7 +18,7 @@
             </a:hbox>
             <a:hbox align="center">
                 <a:label width="95">Filename Patterns</a:label>
-                <a:dropdown id="ddSFPatterns" flex="1" autoselect="true" maxitems="10">
+                <a:dropdown id="ddSFPatterns" flex2="1" autoselect="true" maxitems="10" width="213" height="21">
                     <a:item value="all">All known filetypes</a:item>
                     <a:item value="actionscript">Actionscript files</a:item>
                     <a:item value="ada">Ada files</a:item>

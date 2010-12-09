@@ -236,7 +236,7 @@ return ext.register("ext/panels/panels", {
                 var panel = this.panels[key];
             
                 if (panel.panel && panel.hidden) {
-                    console.log("Showing " + key);
+                    // console.log("Showing " + key);
                     panel.enable();
                     panel.hidden = false;
                 }

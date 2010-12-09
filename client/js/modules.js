@@ -1315,7 +1315,7 @@ return ext.register("ext/panels/panels", {
                 var panel = this.panels[key];
             
                 if (panel.panel && panel.hidden) {
-                    console.log("Showing " + key);
+                    // console.log("Showing " + key);
                     panel.enable();
                     panel.hidden = false;
                 }
@@ -1721,7 +1721,7 @@ return ext.register("ext/save/save", {
                 path  = path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                             .replace(/\[@name="workspace"\]/, "")
                             .replace(/\//, "");
-                console.log(path);
+                // console.log(path);
                 trSaveAs.expandList([path], function() {
                     var node = trSaveAs.getModel().data.selectSingleNode(path);
                      
@@ -1751,7 +1751,7 @@ return ext.register("ext/save/save", {
             var panel   = sbMain.firstChild,
                 value   = page.$doc.getValue();
   
-            console.log(value);
+            //console.log(value);
             winConfirm.hide();
             winSaveAs.hide();
             

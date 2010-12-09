@@ -15,7 +15,9 @@
             //"video":'movie',
             //"audio": 'audio',
             "text/plain": 'page_white_text',
-            "application/javascript": 'page_white_code'
+            "application/javascript": 'page_white_code',
+            "text/x-script.python": 'script_code',
+            "text/x-script.coffeescript": 'script_code'
         };
         
         function getIcon(xmlNode){

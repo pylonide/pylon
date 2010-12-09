@@ -389,7 +389,7 @@ return ext.register("ext/console/console", {
                             line: line,
                             cwd: this.getCwd()
                         };
-                        if (ext.execCommand(cmd, data) === false) {
+                        if (ext.execCommand(cmd, data) !== false) {
                             if (ide.dispatchEvent("consolecommand." + cmd, {
                               data: data
                             }) !== false) {
@@ -408,7 +408,6 @@ return ext.register("ext/console/console", {
         if (message.type != "result")
             return;
 
-        console.log(message.subtype);
         switch (message.subtype) {
             case "commandhints":
                 var cmds = message.body;
@@ -585,10 +584,10 @@ return ext.register("ext/console/console", {
                                 list = lastSearch.trie.getWords();
                             }
                             else if (newbase.indexOf(lastSearch.base) > -1) {
-                                console.log("searching for ", newbase, base, "mode:", mode);
+                                // console.log("searching for ", newbase, base, "mode:", mode);
                                 root = lastSearch.trie.find(newbase);
                                 if (root) {
-                                    console.log("setting base ", base, "to", base, newbase);
+                                    // console.log("setting base ", base, "to", base, newbase);
                                     base = newbase;
                                     list = root.getWords();
                                 }

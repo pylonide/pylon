@@ -9510,6 +9510,11 @@
     	    margin : 5px 0 7px -3px;
     	}
     </a:style>
+    <a:style condition="apf.isWebkit">
+    	.frame .legend{
+    	    height:20px
+    	}
+    </a:style>
     <a:style condition="apf.isIE &gt; 7">
         .frame {
             padding-top : 10px;
@@ -13714,8 +13719,7 @@
           caption    = "."
           label      = "."
           background = "."
-          icon       = "."
-          minwidth   = "22">
+          icon       = ".">
             <div class="btn_icon_only"> </div>
         </a:main>
     </a:presentation>

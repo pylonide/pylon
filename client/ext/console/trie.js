@@ -256,8 +256,7 @@ var Trie = (function() {
             for (; i < l; ++i) {
                 if (c[i].wordCount)
                     words.push(s + c[i].stem);
-                else
-                    words = words.concat(c[i].getWords(s + c[i].stem));
+                words = words.concat(c[i].getWords(s + c[i].stem));
             }
             return words;
         },
