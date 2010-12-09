@@ -181,11 +181,10 @@ return ext = {
         cmd = (cmd || "").trim();
         var oCmd = this.commandsLut[cmd];
         if (!oCmd || !oCmd.ext)
-            return false;
+            return;
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] == "function")
             return oExt[cmd](data);
-        return false;
     },
 
     setLayoutMode : function(mode){

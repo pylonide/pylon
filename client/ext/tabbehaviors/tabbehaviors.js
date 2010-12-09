@@ -9,15 +9,15 @@ require.def("ext/tabbehaviors/tabbehaviors",
     function(ide, ext, util, save) {
 
 return ext.register("ext/tabbehaviors/tabbehaviors", {
-    name    : "Tab Behaviors",
-    dev     : "Ajax.org",
-    alone   : true,
-    type    : ext.GENERAL,
-    menus   : [],
-    sep     : null,
-    more    : null,
-    tabSub  : 2,
-    commands : {
+    name       : "Tab Behaviors",
+    dev        :  "Ajax.org",
+    alone      : true,
+    type       : ext.GENERAL,
+    menus      : [],
+    sep        : null,
+    more       : null,
+    menuOffset : 5,
+    commands   : {
         "closetab": {hint: "close the tab that is currently active"},
         "closealltabs": {hint: "close all opened tabs"},
         "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active"},
@@ -34,9 +34,9 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab9": {hint: "navigate to the ninth tab"},
         "tab0": {hint: "navigate to the tenth tab"}
     },
-    hotitems: {},
+    hotitems   : {},
 
-    nodes   : [],
+    nodes      : [],
 
     init : function(amlNode){
         var _self = this;
@@ -114,7 +114,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                         return setTimeout(function () { count = 0; }, 500);
                     require("ext/panels/panels").toggleAll();
                     count = 0;
-                });
+                });
             }
         })
     },
@@ -208,7 +208,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[nr + this.tabSub];
+        var item = this.nodes[nr + this.menuOffset];
         if (item && item.relPage) {
             tabEditors.set(item.relPage);
             return false;
@@ -216,7 +216,6 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     addItem: function(page) {
-        this.updateState(true);
         if (this.more)
             return; // no more items allowed...
         var no = this.nodes.push(
@@ -229,24 +228,19 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
                 }
             }))
         ) - 1;
-
-        var keyId = "tab" + (no - this.tabSub == 10 ? 0 : no - this.tabSub);
-        this.hotitems[keyId] = [this.nodes[no]];
-        if (typeof this.commands[keyId]["hotkey"] != "undefined") {
-            apf.hotkeys.register(this.commands[keyId].hotkey, this[keyId].bind(this));
-            this.nodes[no].setAttribute("hotkey", this.commands[keyId].hotkey);
-        }
+        this.updateState();
     },
 
     removeItem: function(page) {
-        var item, keyId,
-            i = 0,
+        var item, idx, keyId,
+            i = this.menuOffset,
             l = this.nodes.length;
         for (; i < l; ++i) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
-                keyId = "tab" + (i - this.tabSub == 10 ? 0 : i - this.tabSub);
+                idx   = i - this.menuOffset + 1;
+                keyId = "tab" + (idx == 10 ? 0 : idx);
                 if (typeof this.commands[keyId]["hotkey"] != "undefined")
                     apf.hotkeys.remove(this.commands[keyId].hotkey);
                 return this.updateState();
@@ -255,7 +249,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     updateState: function(force) {
-        var len = this.nodes.length - 4;
+        var len = this.nodes.length - this.menuOffset;
         if (this.sep && !len) {
             this.sep.destroy(true, true);
             this.sep = null;
@@ -284,7 +278,7 @@ return ext.register("ext/tabbehaviors/tabbehaviors", {
 
         // update hotkeys and hotitems:
         var keyId,
-            aItems = this.nodes.slice(4),
+            aItems = this.nodes.slice(this.menuOffset),
             i      = 0,
             l      = aItems.length;
         for (; i < l; ++i) {

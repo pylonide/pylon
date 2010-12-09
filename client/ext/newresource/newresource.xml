@@ -10,8 +10,10 @@
         <a:divider />
         <a:item value="txt" icon="page_white_text.png">Text file</a:item>
         <a:item value="js" icon="page_white_code.png">JavaScript file</a:item>
+        <a:item value="coffee" icon="page_white_code.png">CoffeeScript file</a:item>
         <a:item value="html" icon="html.png">HTML file</a:item>
         <a:item value="xml" icon="page_white_code_red.png">XML file</a:item>
         <a:item value="css" icon="css.png">CSS file</a:item>
+        <a:item value="py" icon="script_code.png">Python file</a:item>
     </a:menu>
 </a:application>
