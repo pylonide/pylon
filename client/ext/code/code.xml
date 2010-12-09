@@ -6,7 +6,8 @@
             "text/css": "css",
             "text/html": "html",
             "application/xhtml+xml": "html",
-            "application/xml": "xml"
+            "application/xml": "xml",
+            text/x-script.python": "python"
         }
 
         function getSyntax(type) {
@@ -58,5 +59,6 @@
         <a:item type="radio" value="text/css">CSS</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
+        <a:item type="radio" value="text/x-script.python">Python</a:item>
     </a:menu>
 </a:application>
