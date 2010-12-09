@@ -40,7 +40,8 @@ return ext.register("ext/code/code", {
         "application/x-httpd-php",
         "text/html",
         "application/xhtml+xml",
-        "text/x-script.python"
+        "text/x-script.python",
+        "text/x-script.coffeescript"
     ],
     markup  : markup,
 
