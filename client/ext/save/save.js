@@ -89,6 +89,7 @@ return ext.register("ext/save/save", {
     },
 
     init : function(amlNode){
+        var _self = this;
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
                 winCloseConfirm.all = 1;
